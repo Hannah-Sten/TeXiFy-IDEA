@@ -2,6 +2,7 @@ package nl.stenwessel.texifyidea;
 
 import com.intellij.lexer.FlexAdapter;
 import com.intellij.lexer.FlexLexer;
+import nl.stenwessel.texifyidea.grammar._LatexLexer;
 
 /**
  * @author Sten Wessel
@@ -9,6 +10,6 @@ import com.intellij.lexer.FlexLexer;
 public class LatexLexerAdapter extends FlexAdapter {
 
     public LatexLexerAdapter() {
-        super(new LatexLexer(null));
+        super(new _LatexLexer(null));
     }
 }
