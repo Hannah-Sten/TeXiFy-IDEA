@@ -24,6 +24,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="nl.stenwessel.texifyidea.LatexFileTypeFactory"/>
+    <lang.parserDefinition language="Latex" implementationClass="nl.stenwessel.texifyidea.LatexParserDefinition"/>
   </extensions>
 
   <actions>
