@@ -1,0 +1,55 @@
+{
+    parserClass="nl.stenwessel.texifyidea.parser.LatexParser"
+
+    extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix="Latex"
+    psiImplClassSuffix="Impl"
+    psiPackage="nl.stenwessel.texifyidea.psi"
+    psiImplPackage="nl.stenwessel.texifyidea.psi.impl"
+
+    elementTypeHolderClass="nl.stenwessel.texifyidea.psi.LatexTypes"
+    elementTypeClass="nl.stenwessel.texifyidea.psi.LatexElementType"
+    tokenTypeClass="nl.stenwessel.texifyidea.psi.LatexTokenType"
+
+    tokens=[
+        WHITE_SPACE='regexp:\s+'
+        DISPLAY_MATH_START='\['
+        DISPLAY_MATH_END='\]'
+        INLINE_MATH_DELIM='$'
+        COMMAND='regexp:\\([a-zA-Z]+|.)'
+        COMMENT='regexp:%[^\r\n]*'
+        STAR='*'
+        OPEN_BRACKET='['
+        CLOSE_BRACKET=']'
+        OPEN_BRACE='{'
+        CLOSE_BRACE='}'
+        TEXT='regexp:[^\\{}%\[\]$]+'
+    ]
+}
+
+latexFile ::= content*
+
+content ::= no_math_content | math_environment
+
+no_math_content ::= comment | command | group | open_group | TEXT
+
+command ::= COMMAND STAR? parameter*
+
+parameter ::= optional_param | required_param
+
+optional_param ::= open_group
+
+required_param ::= group
+
+group ::= OPEN_BRACE content* CLOSE_BRACE
+
+open_group ::= OPEN_BRACKET content* CLOSE_BRACKET
+
+comment ::= COMMENT
+
+math_environment ::= inline_math | display_math
+
+inline_math ::= INLINE_MATH_DELIM (no_math_content)* INLINE_MATH_DELIM
+
+display_math ::= DISPLAY_MATH_START (no_math_content)* DISPLAY_MATH_END
