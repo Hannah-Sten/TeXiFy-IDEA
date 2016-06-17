@@ -1,0 +1,33 @@
+<idea-plugin version="2">
+  <id>nl.stenwessel.texifyidea</id>
+  <name>TeXiFy IDEA</name>
+  <version>0.1</version>
+  <vendor email="sten.wessel@gmail.com" url="http://stenwessel.github.io">Sten Wessel</vendor>
+
+  <description><![CDATA[
+      Plugin for LaTeX support in IntelliJ IDEA.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      None.
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="141.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="nl.stenwessel.texifyidea.LatexFileTypeFactory"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>
