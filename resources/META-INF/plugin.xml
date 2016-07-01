@@ -25,6 +25,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="nl.rubensten.texifyidea.LatexFileTypeFactory"/>
     <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.LatexSyntaxHighlighterFactory"/>
   </extensions>
 
   <actions>
