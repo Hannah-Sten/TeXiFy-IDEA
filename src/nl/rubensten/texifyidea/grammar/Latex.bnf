@@ -1,5 +1,5 @@
 {
-    parserClass="nl.stenwessel.texifyidea.parser.LatexParser"
+    parserClass="nl.rubensten.texifyidea.parser.LatexParser"
 
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -8,9 +8,9 @@
     psiPackage="nl.stenwessel.texifyidea.psi"
     psiImplPackage="nl.stenwessel.texifyidea.psi.impl"
 
-    elementTypeHolderClass="nl.stenwessel.texifyidea.psi.LatexTypes"
-    elementTypeClass="nl.stenwessel.texifyidea.psi.LatexElementType"
-    tokenTypeClass="nl.stenwessel.texifyidea.psi.LatexTokenType"
+    elementTypeHolderClass="nl.rubensten.texifyidea.psi.LatexTypes"
+    elementTypeClass="nl.rubensten.texifyidea.psi.LatexElementType"
+    tokenTypeClass="nl.rubensten.texifyidea.psi.LatexTokenType"
 
     tokens=[
         WHITE_SPACE='regexp:\s+'

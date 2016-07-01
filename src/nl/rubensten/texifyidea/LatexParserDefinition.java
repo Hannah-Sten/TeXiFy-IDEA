@@ -1,4 +1,4 @@
-package nl.stenwessel.texifyidea;
+package nl.rubensten.texifyidea;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
@@ -12,8 +12,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import nl.stenwessel.texifyidea.parser.LatexParser;
-import nl.stenwessel.texifyidea.psi.LatexTypes;
+import nl.rubensten.texifyidea.psi.LatexTypes;
+import nl.rubensten.texifyidea.parser.LatexParser;
 import org.jetbrains.annotations.NotNull;
 
 /**

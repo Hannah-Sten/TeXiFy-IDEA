@@ -23,8 +23,8 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="nl.stenwessel.texifyidea.LatexFileTypeFactory"/>
-    <lang.parserDefinition language="Latex" implementationClass="nl.stenwessel.texifyidea.LatexParserDefinition"/>
+    <fileTypeFactory implementation="nl.rubensten.texifyidea.LatexFileTypeFactory"/>
+    <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
   </extensions>
 
   <actions>

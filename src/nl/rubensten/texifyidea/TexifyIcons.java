@@ -1,4 +1,4 @@
-package nl.stenwessel.texifyidea;
+package nl.rubensten.texifyidea;
 
 import com.intellij.openapi.util.IconLoader;
 
@@ -10,6 +10,6 @@ import javax.swing.*;
 public class TexifyIcons {
 
     public static final Icon LATEX_FILE = IconLoader.getIcon(
-            "/nl/stenwessel/texifyidea/icons/latex-file.png"
+            "/nl/rubensten/texifyidea/icons/latex-file.png"
     );
 }

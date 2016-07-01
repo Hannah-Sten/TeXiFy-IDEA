@@ -1,4 +1,4 @@
-package nl.stenwessel.texifyidea;
+package nl.rubensten.texifyidea;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;

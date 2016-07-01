@@ -1,4 +1,4 @@
-package nl.stenwessel.texifyidea;
+package nl.rubensten.texifyidea;
 
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.colors.TextAttributesKey;

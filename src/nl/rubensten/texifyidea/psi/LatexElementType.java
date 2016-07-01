@@ -1,7 +1,7 @@
-package nl.stenwessel.texifyidea.psi;
+package nl.rubensten.texifyidea.psi;
 
 import com.intellij.psi.tree.IElementType;
-import nl.stenwessel.texifyidea.LatexLanguage;
+import nl.rubensten.texifyidea.LatexLanguage;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 

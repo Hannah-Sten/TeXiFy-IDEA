@@ -1,8 +1,7 @@
-package nl.stenwessel.texifyidea;
+package nl.rubensten.texifyidea;
 
 import com.intellij.lexer.FlexAdapter;
-import com.intellij.lexer.FlexLexer;
-import nl.stenwessel.texifyidea.grammar._LatexLexer;
+import nl.rubensten.texifyidea.grammar._LatexLexer;
 
 /**
  * @author Sten Wessel

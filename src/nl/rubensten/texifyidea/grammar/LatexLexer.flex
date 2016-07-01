@@ -1,7 +1,7 @@
 package nl.stenwessel.texifyidea.grammar;
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
-import static nl.stenwessel.texifyidea.psi.LatexTypes.*;
+import static LatexTypes.*;
 
 %%
 
