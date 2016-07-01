@@ -26,6 +26,7 @@
     <fileTypeFactory implementation="nl.rubensten.texifyidea.LatexFileTypeFactory"/>
     <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
     <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.LatexSyntaxHighlighterFactory"/>
+    <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
     <colorSettingsPage implementation="nl.rubensten.texifyidea.LatexColorSettingsPage"/>
   </extensions>
 
