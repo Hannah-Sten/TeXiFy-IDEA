@@ -23,27 +23,27 @@ LINE_WS=[\ \t\f]
 WHITE_SPACE=({LINE_WS}|{EOL})+
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
-COMMAND=\\([a-zA-Z]+|.)
-COMMENT=%[^\r\n]*
-TEXT=[^\\{}%\[\]$]+
+COMMAND_TOKEN=\\([a-zA-Z]+|.)
+COMMENT_TOKEN=%[^\r\n]*
+NORMAL_TEXT=[^\\{}%\[\]$]+
 
 %%
 <YYINITIAL> {
-  {WHITE_SPACE}      { return com.intellij.psi.TokenType.WHITE_SPACE; }
+  {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
-  "\\["              { return DISPLAY_MATH_START; }
-  "\\]"              { return DISPLAY_MATH_END; }
-  "$"                { return INLINE_MATH_DELIM; }
-  "*"                { return STAR; }
-  "["                { return OPEN_BRACKET; }
-  "]"                { return CLOSE_BRACKET; }
-  "{"                { return OPEN_BRACE; }
-  "}"                { return CLOSE_BRACE; }
+  "\\["                { return DISPLAY_MATH_START; }
+  "\\]"                { return DISPLAY_MATH_END; }
+  "$"                  { return INLINE_MATH_DELIM; }
+  "*"                  { return STAR; }
+  "["                  { return OPEN_BRACKET; }
+  "]"                  { return CLOSE_BRACKET; }
+  "{"                  { return OPEN_BRACE; }
+  "}"                  { return CLOSE_BRACE; }
 
-  {WHITE_SPACE}      { return WHITE_SPACE; }
-  {COMMAND}          { return COMMAND; }
-  {COMMENT}          { return COMMENT; }
-  {TEXT}             { return TEXT; }
+  {WHITE_SPACE}        { return WHITE_SPACE; }
+  {COMMAND_TOKEN}      { return COMMAND_TOKEN; }
+  {COMMENT_TOKEN}      { return COMMENT_TOKEN; }
+  {NORMAL_TEXT}        { return NORMAL_TEXT; }
 
   [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
