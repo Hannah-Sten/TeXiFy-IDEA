@@ -23,6 +23,7 @@ public class LatexParserDefinition implements ParserDefinition {
 
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     public static final TokenSet COMMENTS = TokenSet.create(LatexTypes.COMMENT);
+    public static final TokenSet NORMAL_TEXT = TokenSet.create(LatexTypes.NORMAL_TEXT);
 
     public static final IFileElementType FILE = new IFileElementType(
             Language.findInstance(LatexLanguage.class)
@@ -59,7 +60,7 @@ public class LatexParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public TokenSet getStringLiteralElements() {
-        return TokenSet.EMPTY;
+        return NORMAL_TEXT;
     }
 
     @NotNull
