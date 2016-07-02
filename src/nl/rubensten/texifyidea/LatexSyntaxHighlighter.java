@@ -13,9 +13,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
 
+    public static final TextAttributesKey COMMAND = TextAttributesKey.
+            createTextAttributesKey("LATEX_COMMAND", DefaultLanguageHighlighterColors.KEYWORD);
+
     public static final TextAttributesKey COMMENT = TextAttributesKey.
             createTextAttributesKey("LATEX_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
 
+    private static final TextAttributesKey[] COMMAND_KEYS = new TextAttributesKey[]{COMMAND};
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{COMMENT};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
@@ -31,6 +35,8 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(LatexTypes.COMMENT_TOKEN)) {
             return COMMENT_KEYS;
+        } else if (tokenType.equals(LatexTypes.COMMAND_TOKEN)) {
+            return COMMAND_KEYS;
         } else {
             return EMPTY_KEYS;
         }
