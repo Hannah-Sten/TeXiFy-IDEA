@@ -12,8 +12,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import nl.rubensten.texifyidea.psi.LatexTypes;
 import nl.rubensten.texifyidea.parser.LatexParser;
+import nl.rubensten.texifyidea.psi.LatexTypes;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class LatexParserDefinition implements ParserDefinition {
 
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(LatexTypes.COMMENT);
+    public static final TokenSet COMMENTS = TokenSet.create(LatexTypes.COMMENT_TOKEN);
     public static final TokenSet NORMAL_TEXT = TokenSet.create(LatexTypes.NORMAL_TEXT);
 
     public static final IFileElementType FILE = new IFileElementType(
