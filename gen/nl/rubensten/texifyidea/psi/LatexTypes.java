@@ -4,18 +4,7 @@ package nl.rubensten.texifyidea.psi;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
-import nl.rubensten.texifyidea.psi.impl.LatexCommandImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexCommentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexContentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexDisplayMathImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexGroupImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexInlineMathImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexMathEnvironmentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexNoMathContentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexOpenGroupImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexOptionalParamImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexParameterImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexRequiredParamImpl;
+import nl.rubensten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
 
@@ -32,16 +21,16 @@ public interface LatexTypes {
   IElementType PARAMETER = new LatexElementType("PARAMETER");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
-  IElementType CLOSE_BRACE = new LatexTokenType("}");
-  IElementType CLOSE_BRACKET = new LatexTokenType("]");
+  IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
+  IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");
   IElementType COMMAND_TOKEN = new LatexTokenType("COMMAND_TOKEN");
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
   IElementType DISPLAY_MATH_START = new LatexTokenType("\\[");
   IElementType INLINE_MATH_DELIM = new LatexTokenType("$");
   IElementType NORMAL_TEXT = new LatexTokenType("NORMAL_TEXT");
-  IElementType OPEN_BRACE = new LatexTokenType("{");
-  IElementType OPEN_BRACKET = new LatexTokenType("[");
+  IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
+  IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");
   IElementType STAR = new LatexTokenType("*");
 
   class Factory {

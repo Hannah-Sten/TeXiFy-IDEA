@@ -3,15 +3,13 @@ package nl.rubensten.texifyidea.parser;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-
+import static nl.rubensten.texifyidea.psi.LatexTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
-
-import com.intellij.lang.parser.GeneratedParserUtilBase;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
-import nl.rubensten.texifyidea.psi.LatexTypes;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -25,40 +23,40 @@ public class LatexParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == LatexTypes.COMMAND) {
+    if (t == COMMAND) {
       r = command(b, 0);
     }
-    else if (t == LatexTypes.COMMENT) {
+    else if (t == COMMENT) {
       r = comment(b, 0);
     }
-    else if (t == LatexTypes.CONTENT) {
+    else if (t == CONTENT) {
       r = content(b, 0);
     }
-    else if (t == LatexTypes.DISPLAY_MATH) {
+    else if (t == DISPLAY_MATH) {
       r = display_math(b, 0);
     }
-    else if (t == LatexTypes.GROUP) {
+    else if (t == GROUP) {
       r = group(b, 0);
     }
-    else if (t == LatexTypes.INLINE_MATH) {
+    else if (t == INLINE_MATH) {
       r = inline_math(b, 0);
     }
-    else if (t == LatexTypes.MATH_ENVIRONMENT) {
+    else if (t == MATH_ENVIRONMENT) {
       r = math_environment(b, 0);
     }
-    else if (t == LatexTypes.NO_MATH_CONTENT) {
+    else if (t == NO_MATH_CONTENT) {
       r = no_math_content(b, 0);
     }
-    else if (t == LatexTypes.OPEN_GROUP) {
+    else if (t == OPEN_GROUP) {
       r = open_group(b, 0);
     }
-    else if (t == LatexTypes.OPTIONAL_PARAM) {
+    else if (t == OPTIONAL_PARAM) {
       r = optional_param(b, 0);
     }
-    else if (t == LatexTypes.PARAMETER) {
+    else if (t == PARAMETER) {
       r = parameter(b, 0);
     }
-    else if (t == LatexTypes.REQUIRED_PARAM) {
+    else if (t == REQUIRED_PARAM) {
       r = required_param(b, 0);
     }
     else {
@@ -75,20 +73,20 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // COMMAND_TOKEN STAR? parameter*
   public static boolean command(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "command")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.COMMAND_TOKEN)) return false;
+    if (!nextTokenIs(b, COMMAND_TOKEN)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = GeneratedParserUtilBase.consumeToken(b, LatexTypes.COMMAND_TOKEN);
+    r = consumeToken(b, COMMAND_TOKEN);
     r = r && command_1(b, l + 1);
     r = r && command_2(b, l + 1);
-    exit_section_(b, m, LatexTypes.COMMAND, r);
+    exit_section_(b, m, COMMAND, r);
     return r;
   }
 
   // STAR?
   private static boolean command_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "command_1")) return false;
-    GeneratedParserUtilBase.consumeToken(b, LatexTypes.STAR);
+    consumeToken(b, STAR);
     return true;
   }
 
@@ -108,11 +106,11 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // COMMENT_TOKEN
   public static boolean comment(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "comment")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.COMMENT_TOKEN)) return false;
+    if (!nextTokenIs(b, COMMENT_TOKEN)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = GeneratedParserUtilBase.consumeToken(b, LatexTypes.COMMENT_TOKEN);
-    exit_section_(b, m, LatexTypes.COMMENT, r);
+    r = consumeToken(b, COMMENT_TOKEN);
+    exit_section_(b, m, COMMENT, r);
     return r;
   }
 
@@ -121,7 +119,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "content")) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, LatexTypes.CONTENT, "<content>");
+    Marker m = enter_section_(b, l, _NONE_, CONTENT, "<content>");
     r = no_math_content(b, l + 1);
     if (!r) r = math_environment(b, l + 1);
     exit_section_(b, l, m, r, false, null);
@@ -132,13 +130,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // DISPLAY_MATH_START (no_math_content)* DISPLAY_MATH_END
   public static boolean display_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.DISPLAY_MATH_START)) return false;
+    if (!nextTokenIs(b, DISPLAY_MATH_START)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = GeneratedParserUtilBase.consumeToken(b, LatexTypes.DISPLAY_MATH_START);
+    r = consumeToken(b, DISPLAY_MATH_START);
     r = r && display_math_1(b, l + 1);
-    r = r && GeneratedParserUtilBase.consumeToken(b, LatexTypes.DISPLAY_MATH_END);
-    exit_section_(b, m, LatexTypes.DISPLAY_MATH, r);
+    r = r && consumeToken(b, DISPLAY_MATH_END);
+    exit_section_(b, m, DISPLAY_MATH, r);
     return r;
   }
 
@@ -168,13 +166,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // OPEN_BRACE content* CLOSE_BRACE
   public static boolean group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.OPEN_BRACE)) return false;
+    if (!nextTokenIs(b, OPEN_BRACE)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = GeneratedParserUtilBase.consumeToken(b, LatexTypes.OPEN_BRACE);
+    r = consumeToken(b, OPEN_BRACE);
     r = r && group_1(b, l + 1);
-    r = r && GeneratedParserUtilBase.consumeToken(b, LatexTypes.CLOSE_BRACE);
-    exit_section_(b, m, LatexTypes.GROUP, r);
+    r = r && consumeToken(b, CLOSE_BRACE);
+    exit_section_(b, m, GROUP, r);
     return r;
   }
 
@@ -194,13 +192,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // INLINE_MATH_DELIM (no_math_content)* INLINE_MATH_DELIM
   public static boolean inline_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.INLINE_MATH_DELIM)) return false;
+    if (!nextTokenIs(b, INLINE_MATH_DELIM)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = GeneratedParserUtilBase.consumeToken(b, LatexTypes.INLINE_MATH_DELIM);
+    r = consumeToken(b, INLINE_MATH_DELIM);
     r = r && inline_math_1(b, l + 1);
-    r = r && GeneratedParserUtilBase.consumeToken(b, LatexTypes.INLINE_MATH_DELIM);
-    exit_section_(b, m, LatexTypes.INLINE_MATH, r);
+    r = r && consumeToken(b, INLINE_MATH_DELIM);
+    exit_section_(b, m, INLINE_MATH, r);
     return r;
   }
 
@@ -243,9 +241,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // inline_math | display_math
   public static boolean math_environment(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "math_environment")) return false;
-    if (!nextTokenIs(b, "<math environment>", LatexTypes.DISPLAY_MATH_START, LatexTypes.INLINE_MATH_DELIM)) return false;
+    if (!nextTokenIs(b, "<math environment>", DISPLAY_MATH_START, INLINE_MATH_DELIM)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, LatexTypes.MATH_ENVIRONMENT, "<math environment>");
+    Marker m = enter_section_(b, l, _NONE_, MATH_ENVIRONMENT, "<math environment>");
     r = inline_math(b, l + 1);
     if (!r) r = display_math(b, l + 1);
     exit_section_(b, l, m, r, false, null);
@@ -257,12 +255,12 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, LatexTypes.NO_MATH_CONTENT, "<no math content>");
+    Marker m = enter_section_(b, l, _NONE_, NO_MATH_CONTENT, "<no math content>");
     r = comment(b, l + 1);
     if (!r) r = command(b, l + 1);
     if (!r) r = group(b, l + 1);
     if (!r) r = open_group(b, l + 1);
-    if (!r) r = GeneratedParserUtilBase.consumeToken(b, LatexTypes.NORMAL_TEXT);
+    if (!r) r = consumeToken(b, NORMAL_TEXT);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -271,13 +269,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // OPEN_BRACKET content* CLOSE_BRACKET
   public static boolean open_group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "open_group")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.OPEN_BRACKET)) return false;
+    if (!nextTokenIs(b, OPEN_BRACKET)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = GeneratedParserUtilBase.consumeToken(b, LatexTypes.OPEN_BRACKET);
+    r = consumeToken(b, OPEN_BRACKET);
     r = r && open_group_1(b, l + 1);
-    r = r && GeneratedParserUtilBase.consumeToken(b, LatexTypes.CLOSE_BRACKET);
-    exit_section_(b, m, LatexTypes.OPEN_GROUP, r);
+    r = r && consumeToken(b, CLOSE_BRACKET);
+    exit_section_(b, m, OPEN_GROUP, r);
     return r;
   }
 
@@ -297,11 +295,11 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // open_group
   public static boolean optional_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.OPEN_BRACKET)) return false;
+    if (!nextTokenIs(b, OPEN_BRACKET)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = open_group(b, l + 1);
-    exit_section_(b, m, LatexTypes.OPTIONAL_PARAM, r);
+    exit_section_(b, m, OPTIONAL_PARAM, r);
     return r;
   }
 
@@ -309,9 +307,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // optional_param | required_param
   public static boolean parameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter")) return false;
-    if (!nextTokenIs(b, "<parameter>", LatexTypes.OPEN_BRACE, LatexTypes.OPEN_BRACKET)) return false;
+    if (!nextTokenIs(b, "<parameter>", OPEN_BRACE, OPEN_BRACKET)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, LatexTypes.PARAMETER, "<parameter>");
+    Marker m = enter_section_(b, l, _NONE_, PARAMETER, "<parameter>");
     r = optional_param(b, l + 1);
     if (!r) r = required_param(b, l + 1);
     exit_section_(b, l, m, r, false, null);
@@ -322,11 +320,11 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // group
   public static boolean required_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param")) return false;
-    if (!GeneratedParserUtilBase.nextTokenIs(b, LatexTypes.OPEN_BRACE)) return false;
+    if (!nextTokenIs(b, OPEN_BRACE)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = group(b, l + 1);
-    exit_section_(b, m, LatexTypes.REQUIRED_PARAM, r);
+    exit_section_(b, m, REQUIRED_PARAM, r);
     return r;
   }
 

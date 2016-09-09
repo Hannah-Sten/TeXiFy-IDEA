@@ -20,10 +20,6 @@
         COMMAND_TOKEN='regexp:\\([a-zA-Z]+|.)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
-        OPEN_BRACKET='['
-        CLOSE_BRACKET=']'
-        OPEN_BRACE='{'
-        CLOSE_BRACE='}'
         NORMAL_TEXT='regexp:[^\\{}%\[\]$]+'
     ]
 }

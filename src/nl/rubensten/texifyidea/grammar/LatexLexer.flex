@@ -21,6 +21,12 @@ import static LatexTypes.*;
 EOL="\r"|"\n"|"\r\n"
 LINE_WS=[\ \t\f]
 WHITE_SPACE=({LINE_WS}|{EOL})+
+DISPLAY_MATH_START="\["
+DISPLAY_MATH_END="\]"
+OPEN_BRACKET="["
+CLOSE_BRACKET="]"
+OPEN_BRACE="{"
+CLOSE_BRACE="}"
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 COMMAND_TOKEN=\\([a-zA-Z]+|.)

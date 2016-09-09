@@ -27,6 +27,7 @@
     <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
     <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.LatexSyntaxHighlighterFactory"/>
     <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
+    <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.LatexPairedBraceMatcher"/>
     <colorSettingsPage implementation="nl.rubensten.texifyidea.LatexColorSettingsPage"/>
     <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
   </extensions>
