@@ -1,4 +1,4 @@
-package nl.stenwessel.texifyidea.grammar;
+package nl.rubensten.texifyidea.grammar;
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
 import static LatexTypes.*;
