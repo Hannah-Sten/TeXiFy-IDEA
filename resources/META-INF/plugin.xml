@@ -33,6 +33,8 @@
     <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.LatexLineMarkerProvider"/>
 
     <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
+
+    <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
   </extensions>
 
   <actions>

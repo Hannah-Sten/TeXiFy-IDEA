@@ -37,7 +37,7 @@ public class LatexModuleType extends ModuleType<LatexModuleBuilder> {
     @NotNull
     @Override
     public String getDescription() {
-        return null;
+        return "LaTeX";
     }
 
     @Override
