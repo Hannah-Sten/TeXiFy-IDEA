@@ -2,7 +2,7 @@
   <id>nl.rubensten.texifyidea</id>
   <name>TeXiFy IDEA</name>
   <version>0.1</version>
-  <vendor email="sten.wessel@gmail.com" url="http://stenwessel.github.io">Sten Wessel</vendor>
+  <vendor email="sten.wessel@gmail.com" url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
   <description><![CDATA[
       Plugin for LaTeX support in IntelliJ IDEA.
