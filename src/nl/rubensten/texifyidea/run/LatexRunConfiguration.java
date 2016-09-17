@@ -7,11 +7,14 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.filters.RegexpFilter;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +29,7 @@ public class LatexRunConfiguration extends RunConfigurationBase {
     private static final String AUX_DIR = "aux-dir";
 
     private LatexCompiler compiler;
-    private String mainFile;
+    private VirtualFile mainFile;
     private boolean auxDir = true;
 
     protected LatexRunConfiguration(Project project, ConfigurationFactory factory, String name) {
@@ -47,7 +50,11 @@ public class LatexRunConfiguration extends RunConfigurationBase {
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-        return null;
+        RegexpFilter filter = new RegexpFilter(environment.getProject(), "^$FILE_PATH$:$LINE$");
+
+        LatexCommandLineState state =  new LatexCommandLineState(environment, this);
+        state.addConsoleFilters(filter);
+        return state;
     }
 
     @Override
@@ -62,7 +69,7 @@ public class LatexRunConfiguration extends RunConfigurationBase {
                 this.compiler = null;
             }
 
-            this.mainFile = parent.getChildText(MAIN_FILE);
+            this.mainFile = LocalFileSystem.getInstance().findFileByPath(parent.getChildText(MAIN_FILE));
             this.auxDir = Boolean.parseBoolean(parent.getChildText(AUX_DIR));
         }
     }
@@ -84,7 +91,7 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         parent.addContent(compilerElt);
 
         final Element mainFileElt = new Element(MAIN_FILE);
-        compilerElt.setText(mainFile);
+        compilerElt.setText(mainFile.getPath());
         parent.addContent(mainFileElt);
 
         final Element auxDirElt = new Element(AUX_DIR);
@@ -100,15 +107,19 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         this.compiler = compiler;
     }
 
-    public String getMainFile() {
+    public VirtualFile getMainFile() {
         return this.mainFile;
     }
 
-    public void setMainFile(String mainFile) {
+    public void setMainFile(String mainFilePath) {
+        setMainFile(LocalFileSystem.getInstance().findFileByPath(mainFilePath));
+    }
+
+    public void setMainFile(VirtualFile mainFile) {
         this.mainFile = mainFile;
     }
 
-    public boolean getAuxDir() {
+    public boolean hasAuxDir() {
         return this.auxDir;
     }
 

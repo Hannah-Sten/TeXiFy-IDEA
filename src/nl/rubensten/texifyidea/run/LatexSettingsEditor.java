@@ -33,8 +33,8 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     @Override
     protected void resetEditorFrom(@NotNull LatexRunConfiguration s) {
         compiler.getComponent().setSelectedItem(s.getCompiler());
-        ((TextFieldWithBrowseButton)mainFile.getComponent()).setText(s.getMainFile());
-        auxDir.setSelected(s.getAuxDir());
+        ((TextFieldWithBrowseButton)mainFile.getComponent()).setText(s.getMainFile().getPath());
+        auxDir.setSelected(s.hasAuxDir());
 
         project = s.getProject();
     }

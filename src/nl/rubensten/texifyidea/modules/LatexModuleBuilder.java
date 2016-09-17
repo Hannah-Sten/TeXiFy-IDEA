@@ -49,6 +49,20 @@ public class LatexModuleBuilder extends ModuleBuilder {
 
                 }
             }
+
+            String path = getContentEntryPath() + File.separator + "out";
+            new File(path).mkdirs();
+            final VirtualFile outRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
+            if (outRoot != null) {
+                contentEntry.addExcludeFolder(outRoot);
+            }
+
+            path = getContentEntryPath() + File.separator + "auxil";
+            new File(path).mkdirs();
+            final VirtualFile auxRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
+            if (auxRoot != null) {
+                contentEntry.addExcludeFolder(auxRoot);
+            }
         }
     }
 
