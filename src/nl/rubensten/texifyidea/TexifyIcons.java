@@ -16,4 +16,8 @@ public class TexifyIcons {
     public static final Icon LATEX_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/latex-file.png"
     );
+
+    public static final Icon LATEX_MODULE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/latex-module.png"
+    );
 }
