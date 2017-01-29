@@ -12,9 +12,4 @@ public class LatexTokenType extends IElementType {
     public LatexTokenType(@NotNull @NonNls String debugName) {
         super(debugName, LatexLanguage.INSTANCE);
     }
-
-    @Override
-    public String toString() {
-        return "LatexTokenType." + super.toString();
-    }
 }
