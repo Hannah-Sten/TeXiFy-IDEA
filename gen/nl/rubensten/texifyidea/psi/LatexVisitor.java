@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public class LatexVisitor extends PsiElementVisitor {
 
-  public void visitCommand(@NotNull LatexCommand o) {
+  public void visitCommands(@NotNull LatexCommands o) {
     visitPsiElement(o);
   }
 

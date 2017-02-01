@@ -1,8 +1,7 @@
 package nl.rubensten.texifyidea.grammar;
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
-import static LatexTypes.*;
-
+import static LatexTypes.*;import static nl.rubensten.texifyidea.psi.LatexTypes.*;
 %%
 
 %{
@@ -29,7 +28,7 @@ OPEN_BRACE="{"
 CLOSE_BRACE="}"
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
-COMMAND_TOKEN=\\([a-zA-Z]+|.)
+COMMAND_TOKEN=\\([a-zA-Z]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT=[^\\{}%\[\]$]+
 

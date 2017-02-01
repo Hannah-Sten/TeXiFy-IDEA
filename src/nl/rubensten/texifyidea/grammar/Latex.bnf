@@ -5,8 +5,8 @@
 
     psiClassPrefix="Latex"
     psiImplClassSuffix="Impl"
-    psiPackage="nl.stenwessel.texifyidea.psi"
-    psiImplPackage="nl.stenwessel.texifyidea.psi.impl"
+    psiPackage="nl.rubensten.texifyidea.psi"
+    psiImplPackage="nl.rubensten.texifyidea.psi.impl"
 
     elementTypeHolderClass="nl.rubensten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.rubensten.texifyidea.psi.LatexElementType"
@@ -17,20 +17,22 @@
         DISPLAY_MATH_START='\['
         DISPLAY_MATH_END='\]'
         INLINE_MATH_DELIM='$'
-        COMMAND_TOKEN='regexp:\\([a-zA-Z]+|.)'
+        COMMAND_TOKEN='regexp:\\([a-zA-Z]+|.|\n|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
         NORMAL_TEXT='regexp:[^\\{}%\[\]$]+'
     ]
 }
 
+
+
 latexFile ::= content*
 
 content ::= no_math_content | math_environment
 
-no_math_content ::= comment | command | group | open_group | NORMAL_TEXT
+no_math_content ::= comment | commands | group | open_group | NORMAL_TEXT
 
-command ::= COMMAND_TOKEN STAR? parameter*
+commands ::= COMMAND_TOKEN STAR? parameter*
 
 parameter ::= optional_param | required_param
 

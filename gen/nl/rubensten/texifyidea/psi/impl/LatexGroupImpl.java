@@ -2,15 +2,14 @@
 package nl.rubensten.texifyidea.psi.impl;
 
 import java.util.List;
-
-import nl.rubensten.texifyidea.psi.LatexContent;
-import nl.rubensten.texifyidea.psi.LatexGroup;
-import nl.rubensten.texifyidea.psi.LatexVisitor;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
+import static nl.rubensten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.rubensten.texifyidea.psi.*;
 
 public class LatexGroupImpl extends ASTWrapperPsiElement implements LatexGroup {
 

@@ -1,15 +1,47 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.rubensten.texifyidea.psi.LatexTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.parser.GeneratedParserUtilBase.TRUE_CONDITION;
+import static com.intellij.lang.parser.GeneratedParserUtilBase._COLLAPSE_;
+import static com.intellij.lang.parser.GeneratedParserUtilBase._NONE_;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.adapt_builder_;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.consumeToken;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.current_position_;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.empty_element_parsed_guard_;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.enter_section_;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.exit_section_;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.nextTokenIs;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.recursion_guard_;
+import static nl.rubensten.texifyidea.psi.LatexTypes.CLOSE_BRACE;
+import static nl.rubensten.texifyidea.psi.LatexTypes.CLOSE_BRACKET;
+import static nl.rubensten.texifyidea.psi.LatexTypes.COMMANDS;
+import static nl.rubensten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
+import static nl.rubensten.texifyidea.psi.LatexTypes.COMMENT;
+import static nl.rubensten.texifyidea.psi.LatexTypes.COMMENT_TOKEN;
+import static nl.rubensten.texifyidea.psi.LatexTypes.CONTENT;
+import static nl.rubensten.texifyidea.psi.LatexTypes.DISPLAY_MATH;
+import static nl.rubensten.texifyidea.psi.LatexTypes.DISPLAY_MATH_END;
+import static nl.rubensten.texifyidea.psi.LatexTypes.DISPLAY_MATH_START;
+import static nl.rubensten.texifyidea.psi.LatexTypes.GROUP;
+import static nl.rubensten.texifyidea.psi.LatexTypes.INLINE_MATH;
+import static nl.rubensten.texifyidea.psi.LatexTypes.INLINE_MATH_DELIM;
+import static nl.rubensten.texifyidea.psi.LatexTypes.MATH_ENVIRONMENT;
+import static nl.rubensten.texifyidea.psi.LatexTypes.NORMAL_TEXT;
+import static nl.rubensten.texifyidea.psi.LatexTypes.NO_MATH_CONTENT;
+import static nl.rubensten.texifyidea.psi.LatexTypes.OPEN_BRACE;
+import static nl.rubensten.texifyidea.psi.LatexTypes.OPEN_BRACKET;
+import static nl.rubensten.texifyidea.psi.LatexTypes.OPEN_GROUP;
+import static nl.rubensten.texifyidea.psi.LatexTypes.OPTIONAL_PARAM;
+import static nl.rubensten.texifyidea.psi.LatexTypes.PARAMETER;
+import static nl.rubensten.texifyidea.psi.LatexTypes.REQUIRED_PARAM;
+import static nl.rubensten.texifyidea.psi.LatexTypes.STAR;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -23,8 +55,8 @@ public class LatexParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == COMMAND) {
-      r = command(b, 0);
+    if (t == COMMANDS) {
+      r = commands(b, 0);
     }
     else if (t == COMMENT) {
       r = comment(b, 0);
@@ -71,32 +103,32 @@ public class LatexParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // COMMAND_TOKEN STAR? parameter*
-  public static boolean command(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "command")) return false;
+  public static boolean commands(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "commands")) return false;
     if (!nextTokenIs(b, COMMAND_TOKEN)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMAND_TOKEN);
-    r = r && command_1(b, l + 1);
-    r = r && command_2(b, l + 1);
-    exit_section_(b, m, COMMAND, r);
+    r = r && commands_1(b, l + 1);
+    r = r && commands_2(b, l + 1);
+    exit_section_(b, m, COMMANDS, r);
     return r;
   }
 
   // STAR?
-  private static boolean command_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "command_1")) return false;
+  private static boolean commands_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "commands_1")) return false;
     consumeToken(b, STAR);
     return true;
   }
 
   // parameter*
-  private static boolean command_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "command_2")) return false;
+  private static boolean commands_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "commands_2")) return false;
     int c = current_position_(b);
     while (true) {
       if (!parameter(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "command_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "commands_2", c)) break;
       c = current_position_(b);
     }
     return true;
@@ -251,13 +283,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | command | group | open_group | NORMAL_TEXT
+  // comment | commands | group | open_group | NORMAL_TEXT
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NO_MATH_CONTENT, "<no math content>");
     r = comment(b, l + 1);
-    if (!r) r = command(b, l + 1);
+    if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
     if (!r) r = open_group(b, l + 1);
     if (!r) r = consumeToken(b, NORMAL_TEXT);

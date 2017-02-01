@@ -6,7 +6,7 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
-import nl.rubensten.texifyidea.psi.LatexCommand;
+import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,8 +21,8 @@ public class LatexLineMarkerProvider extends RelatedItemLineMarkerProvider {
     @Override
     protected void collectNavigationMarkers(@NotNull PsiElement element,
                                             Collection<? super RelatedItemLineMarkerInfo> result) {
-        if (element instanceof LatexCommand) {
-            LatexCommand command = (LatexCommand)element;
+        if (element instanceof LatexCommands) {
+            LatexCommands command = (LatexCommands)element;
             if (command.getCommandToken().getText().equals("\\input")) {
 
                 // Try to get the filename parameter

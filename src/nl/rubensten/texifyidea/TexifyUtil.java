@@ -1,6 +1,6 @@
 package nl.rubensten.texifyidea;
 
-import nl.rubensten.texifyidea.psi.LatexCommand;
+import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * @author Sten Wessel
  */
 public class TexifyUtil {
-    public static List<LatexRequiredParam> getRequiredParameters(LatexCommand command) {
+    public static List<LatexRequiredParam> getRequiredParameters(LatexCommands command) {
         return command.getParameterList().stream()
                 .filter(p -> p.getRequiredParam() != null)
                 .map(LatexParameter::getRequiredParam)

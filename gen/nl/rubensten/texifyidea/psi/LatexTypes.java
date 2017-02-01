@@ -8,7 +8,7 @@ import nl.rubensten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
 
-  IElementType COMMAND = new LatexElementType("COMMAND");
+  IElementType COMMANDS = new LatexElementType("COMMANDS");
   IElementType COMMENT = new LatexElementType("COMMENT");
   IElementType CONTENT = new LatexElementType("CONTENT");
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");
@@ -36,8 +36,8 @@ public interface LatexTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == COMMAND) {
-        return new LatexCommandImpl(node);
+       if (type == COMMANDS) {
+        return new LatexCommandsImpl(node);
       }
       else if (type == COMMENT) {
         return new LatexCommentImpl(node);

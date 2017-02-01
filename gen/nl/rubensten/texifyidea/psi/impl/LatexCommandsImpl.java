@@ -1,27 +1,28 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi.impl;
 
-import java.util.List;
-
-import nl.rubensten.texifyidea.psi.LatexCommand;
-import nl.rubensten.texifyidea.psi.LatexParameter;
-import nl.rubensten.texifyidea.psi.LatexTypes;
-import nl.rubensten.texifyidea.psi.LatexVisitor;
-import org.jetbrains.annotations.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexParameter;
+import nl.rubensten.texifyidea.psi.LatexVisitor;
+import org.jetbrains.annotations.NotNull;
 
-public class LatexCommandImpl extends ASTWrapperPsiElement implements LatexCommand {
+import java.util.List;
 
-  public LatexCommandImpl(ASTNode node) {
+import static nl.rubensten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
+
+public class LatexCommandsImpl extends ASTWrapperPsiElement implements LatexCommands {
+
+  public LatexCommandsImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitCommand(this);
+    visitor.visitCommands(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -38,7 +39,7 @@ public class LatexCommandImpl extends ASTWrapperPsiElement implements LatexComma
   @Override
   @NotNull
   public PsiElement getCommandToken() {
-    return findNotNullChildByType(LatexTypes.COMMAND_TOKEN);
+    return findNotNullChildByType(COMMAND_TOKEN);
   }
 
 }

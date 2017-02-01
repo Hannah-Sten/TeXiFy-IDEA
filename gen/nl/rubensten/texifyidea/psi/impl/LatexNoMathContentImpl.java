@@ -1,18 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi.impl;
 
-import nl.rubensten.texifyidea.psi.LatexCommand;
-import nl.rubensten.texifyidea.psi.LatexComment;
-import nl.rubensten.texifyidea.psi.LatexGroup;
-import nl.rubensten.texifyidea.psi.LatexNoMathContent;
-import nl.rubensten.texifyidea.psi.LatexOpenGroup;
-import nl.rubensten.texifyidea.psi.LatexTypes;
-import nl.rubensten.texifyidea.psi.LatexVisitor;
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static nl.rubensten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.rubensten.texifyidea.psi.*;
 
 public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements LatexNoMathContent {
 
@@ -31,8 +28,8 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @Nullable
-  public LatexCommand getCommand() {
-    return findChildByClass(LatexCommand.class);
+  public LatexCommands getCommands() {
+    return findChildByClass(LatexCommands.class);
   }
 
   @Override
@@ -56,7 +53,7 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
   @Override
   @Nullable
   public PsiElement getNormalText() {
-    return findChildByType(LatexTypes.NORMAL_TEXT);
+    return findChildByType(NORMAL_TEXT);
   }
 
 }

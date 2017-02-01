@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.FoldingGroup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.rubensten.texifyidea.psi.LatexCommand;
+import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,8 +31,8 @@ public class LatexMathSymbolFoldingBuilder extends FoldingBuilderEx {
         Collection<LatexMathEnvironment> mathEnvs = PsiTreeUtil.findChildrenOfType(root, LatexMathEnvironment.class);
 
         for (LatexMathEnvironment mathEnv : mathEnvs) {
-            Collection<LatexCommand> commands = PsiTreeUtil.findChildrenOfType(mathEnv, LatexCommand.class);
-            for (LatexCommand command : commands) {
+            Collection<LatexCommands> commands = PsiTreeUtil.findChildrenOfType(mathEnv, LatexCommands.class);
+            for (LatexCommands command : commands) {
                 LatexMathCommand c = LatexMathCommand.get(command.getCommandToken().getText().substring(1));
                 if (c != null) {
                     descriptors.add(new FoldingDescriptor(
