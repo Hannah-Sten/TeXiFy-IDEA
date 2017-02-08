@@ -1,6 +1,8 @@
-package nl.rubensten.texifyidea;
+package nl.rubensten.texifyidea.file;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import nl.rubensten.texifyidea.LatexLanguage;
+import nl.rubensten.texifyidea.TexifyIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

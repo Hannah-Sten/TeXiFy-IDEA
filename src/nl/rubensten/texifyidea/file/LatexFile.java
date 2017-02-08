@@ -1,8 +1,9 @@
-package nl.rubensten.texifyidea;
+package nl.rubensten.texifyidea.file;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import nl.rubensten.texifyidea.LatexLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
