@@ -13,8 +13,8 @@ public class LatexFileTypeFactory extends FileTypeFactory {
 
     @Override
     public void createFileTypes(@NotNull FileTypeConsumer consumer) {
-        consumer.consume(LatexFileType.INSTANCE, "latex");
-        consumer.consume(StyleFileType.INSTANCE, "latex-style");
-        consumer.consume(ClassFileType.INSTANCE, "latex-class");
+        consumer.consume(LatexFileType.INSTANCE, LatexFileType.INSTANCE.getDefaultExtension());
+        consumer.consume(StyleFileType.INSTANCE, StyleFileType.INSTANCE.getDefaultExtension());
+        consumer.consume(ClassFileType.INSTANCE, ClassFileType.INSTANCE.getDefaultExtension());
     }
 }
