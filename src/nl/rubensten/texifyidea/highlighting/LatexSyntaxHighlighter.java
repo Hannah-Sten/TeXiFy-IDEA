@@ -1,10 +1,11 @@
-package nl.rubensten.texifyidea;
+package nl.rubensten.texifyidea.highlighting;
 
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
+import nl.rubensten.texifyidea.LatexLexerAdapter;
 import nl.rubensten.texifyidea.psi.LatexTypes;
 import org.jetbrains.annotations.NotNull;
 

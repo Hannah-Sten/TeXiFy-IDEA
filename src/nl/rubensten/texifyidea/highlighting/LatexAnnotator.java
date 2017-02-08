@@ -4,7 +4,6 @@ import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-import nl.rubensten.texifyidea.LatexSyntaxHighlighter;
 import nl.rubensten.texifyidea.psi.LatexContent;
 import nl.rubensten.texifyidea.psi.LatexDisplayMath;
 import nl.rubensten.texifyidea.psi.LatexInlineMath;
