@@ -17,6 +17,7 @@ import java.util.Map;
 public class LatexColorSettingsPage implements ColorSettingsPage {
 
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
+            new AttributesDescriptor("Braces", LatexSyntaxHighlighter.BRACES),
             new AttributesDescriptor("Command", LatexSyntaxHighlighter.COMMAND),
             new AttributesDescriptor("Comment", LatexSyntaxHighlighter.COMMENT),
             new AttributesDescriptor("Inline Math", LatexSyntaxHighlighter.INLINE_MATH),

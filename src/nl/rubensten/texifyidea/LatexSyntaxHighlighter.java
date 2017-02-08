@@ -16,6 +16,11 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     /*
      * TextAttributesKeys
      */
+    public static final TextAttributesKey BRACES = TextAttributesKey.createTextAttributesKey(
+            "LATEX_BRACES",
+            DefaultLanguageHighlighterColors.BRACES
+    );
+
     public static final TextAttributesKey COMMAND = TextAttributesKey.createTextAttributesKey(
             "LATEX_COMMAND",
             DefaultLanguageHighlighterColors.KEYWORD
@@ -39,6 +44,10 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     /*
      * TextAttributeKey[]s
      */
+    private static final TextAttributesKey[] BRACES_KEYS = new TextAttributesKey[] {
+            BRACES
+    };
+
     private static final TextAttributesKey[] COMMAND_KEYS = new TextAttributesKey[] {
             COMMAND
     };
@@ -66,6 +75,11 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+        // Braces
+        if (tokenType.equals(LatexTypes.OPEN_BRACE) ||
+                tokenType.equals(LatexTypes.CLOSE_BRACE)) {
+            return BRACES_KEYS;
+        }
         // Comments
         if (tokenType.equals(LatexTypes.COMMENT_TOKEN)) {
             return COMMENT_KEYS;
