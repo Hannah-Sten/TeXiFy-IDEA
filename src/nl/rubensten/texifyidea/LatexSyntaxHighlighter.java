@@ -21,6 +21,11 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             DefaultLanguageHighlighterColors.BRACES
     );
 
+    public static final TextAttributesKey BRACKETS = TextAttributesKey.createTextAttributesKey(
+            "LATEX_BRACKETS",
+            DefaultLanguageHighlighterColors.BRACKETS
+    );
+
     public static final TextAttributesKey COMMAND = TextAttributesKey.createTextAttributesKey(
             "LATEX_COMMAND",
             DefaultLanguageHighlighterColors.KEYWORD
@@ -46,6 +51,10 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
      */
     private static final TextAttributesKey[] BRACES_KEYS = new TextAttributesKey[] {
             BRACES
+    };
+
+    private static final TextAttributesKey[] BRACKET_KEYS = new TextAttributesKey[] {
+            BRACKETS
     };
 
     private static final TextAttributesKey[] COMMAND_KEYS = new TextAttributesKey[] {
@@ -80,8 +89,13 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
                 tokenType.equals(LatexTypes.CLOSE_BRACE)) {
             return BRACES_KEYS;
         }
+        // Brackets
+        else if (tokenType.equals(LatexTypes.OPEN_BRACKET) ||
+                tokenType.equals(LatexTypes.CLOSE_BRACKET)) {
+            return BRACKET_KEYS;
+        }
         // Comments
-        if (tokenType.equals(LatexTypes.COMMENT_TOKEN)) {
+        else if (tokenType.equals(LatexTypes.COMMENT_TOKEN)) {
             return COMMENT_KEYS;
         }
         // Commands
