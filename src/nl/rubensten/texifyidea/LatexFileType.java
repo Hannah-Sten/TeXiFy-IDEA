@@ -20,13 +20,13 @@ public class LatexFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getName() {
-        return "LaTeX file";
+        return "LaTeX source file";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "LaTeX file";
+        return "LaTeX source file";
     }
 
     @NotNull

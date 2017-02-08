@@ -25,7 +25,7 @@ public class LatexFile extends PsiFileBase {
 
     @Override
     public String toString() {
-        return "Latex File";
+        return "LaTeX source file";
     }
 
     @Nullable
