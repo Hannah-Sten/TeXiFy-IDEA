@@ -46,6 +46,11 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             DefaultLanguageHighlighterColors.STRING
     );
 
+    public static final TextAttributesKey STAR = TextAttributesKey.createTextAttributesKey(
+            "LATEX_STAR",
+            DefaultLanguageHighlighterColors.DOT
+    );
+
     /*
      * TextAttributeKey[]s
      */
@@ -71,6 +76,10 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
 
     private static final TextAttributesKey[] DISPLAY_MATH_KEYS = new TextAttributesKey[] {
             DISPLAY_MATH
+    };
+
+    private static final TextAttributesKey[] STAR_KEYS = new TextAttributesKey[] {
+            STAR
     };
 
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
@@ -109,6 +118,10 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
         else if (tokenType.equals(LatexTypes.DISPLAY_MATH_START) ||
                 tokenType.equals(LatexTypes.DISPLAY_MATH_END)) {
             return DISPLAY_MATH_KEYS;
+        }
+        // Star
+        else if (tokenType.equals(LatexTypes.STAR)) {
+            return STAR_KEYS;
         }
         // When no supported highlights is available
         else {

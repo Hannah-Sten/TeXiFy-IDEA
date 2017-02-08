@@ -22,7 +22,8 @@ public class LatexColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Command", LatexSyntaxHighlighter.COMMAND),
             new AttributesDescriptor("Comment", LatexSyntaxHighlighter.COMMENT),
             new AttributesDescriptor("Inline Math", LatexSyntaxHighlighter.INLINE_MATH),
-            new AttributesDescriptor("Display Math", LatexSyntaxHighlighter.DISPLAY_MATH)
+            new AttributesDescriptor("Display Math", LatexSyntaxHighlighter.DISPLAY_MATH),
+            new AttributesDescriptor("Star", LatexSyntaxHighlighter.STAR),
     };
 
     @Nullable

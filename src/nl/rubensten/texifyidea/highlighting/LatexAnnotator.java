@@ -16,6 +16,7 @@ public class LatexAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
+        // Math display
         if (psiElement instanceof LatexInlineMath) {
             annotateInlineMath((LatexInlineMath)psiElement, annotationHolder);
         }
