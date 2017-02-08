@@ -12,18 +12,19 @@ import javax.swing.*;
 import java.util.Map;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexColorSettingsPage implements ColorSettingsPage {
 
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
             new AttributesDescriptor("Braces", LatexSyntaxHighlighter.BRACES),
             new AttributesDescriptor("Brackets", LatexSyntaxHighlighter.BRACKETS),
-            new AttributesDescriptor("Command", LatexSyntaxHighlighter.COMMAND),
-            new AttributesDescriptor("Comment", LatexSyntaxHighlighter.COMMENT),
+            new AttributesDescriptor("Optional Parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
+            new AttributesDescriptor("Commands", LatexSyntaxHighlighter.COMMAND),
+            new AttributesDescriptor("Comments", LatexSyntaxHighlighter.COMMENT),
             new AttributesDescriptor("Inline Math", LatexSyntaxHighlighter.INLINE_MATH),
             new AttributesDescriptor("Display Math", LatexSyntaxHighlighter.DISPLAY_MATH),
-            new AttributesDescriptor("Star", LatexSyntaxHighlighter.STAR),
+            new AttributesDescriptor("Stars", LatexSyntaxHighlighter.STAR),
     };
 
     @Nullable

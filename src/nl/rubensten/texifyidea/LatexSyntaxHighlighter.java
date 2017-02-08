@@ -26,6 +26,11 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             DefaultLanguageHighlighterColors.BRACKETS
     );
 
+    public static final TextAttributesKey OPTIONAL_PARAM = TextAttributesKey.createTextAttributesKey(
+            "LATEX_OPTIONAL_PARAM",
+            DefaultLanguageHighlighterColors.PARAMETER
+    );
+
     public static final TextAttributesKey COMMAND = TextAttributesKey.createTextAttributesKey(
             "LATEX_COMMAND",
             DefaultLanguageHighlighterColors.KEYWORD
