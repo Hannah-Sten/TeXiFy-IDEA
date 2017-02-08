@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
+import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,5 +15,6 @@ public class LatexFileTypeFactory extends FileTypeFactory {
     public void createFileTypes(@NotNull FileTypeConsumer consumer) {
         consumer.consume(LatexFileType.INSTANCE, "latex");
         consumer.consume(StyleFileType.INSTANCE, "latex-style");
+        consumer.consume(ClassFileType.INSTANCE, "latex-class");
     }
 }
