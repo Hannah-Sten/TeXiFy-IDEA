@@ -19,6 +19,8 @@ public class LatexColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
             new AttributesDescriptor("Command", LatexSyntaxHighlighter.COMMAND),
             new AttributesDescriptor("Comment", LatexSyntaxHighlighter.COMMENT),
+            new AttributesDescriptor("Inline Math", LatexSyntaxHighlighter.INLINE_MATH),
+            new AttributesDescriptor("Display Math", LatexSyntaxHighlighter.DISPLAY_MATH)
     };
 
     @Nullable
@@ -168,6 +170,8 @@ public class LatexColorSettingsPage implements ColorSettingsPage {
                 "       \\( a_{1} > x^{2n} + y^{2n} > x' \\)\n" +
                 "or  \n" +
                 "       \\( \\ip{A}{B} = \\sum_{i} a_{i} b_{i} \\).\n" +
+                "or  \n" +
+                "       $34 + 2y^2 - \\sqrt{x} = -3$\n" +
                 "The spaces you type in a formula are \n" +
                 "ignored.  Remember that a letter like\n" +
                 "       $x$                   % $ ... $  and  \\( ... \\)  are equivalent\n" +
