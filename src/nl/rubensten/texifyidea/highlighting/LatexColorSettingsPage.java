@@ -1,10 +1,11 @@
-package nl.rubensten.texifyidea;
+package nl.rubensten.texifyidea.highlighting;
 
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
+import nl.rubensten.texifyidea.TexifyIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,13 +13,23 @@ import javax.swing.*;
 import java.util.Map;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexColorSettingsPage implements ColorSettingsPage {
 
-    private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Command", LatexSyntaxHighlighter.COMMAND),
-            new AttributesDescriptor("Comment", LatexSyntaxHighlighter.COMMENT),
+    private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[] {
+            new AttributesDescriptor("Braces", LatexSyntaxHighlighter.BRACES),
+            new AttributesDescriptor("Brackets", LatexSyntaxHighlighter.BRACKETS),
+            new AttributesDescriptor("Optional parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
+            new AttributesDescriptor("Commands", LatexSyntaxHighlighter.COMMAND),
+            new AttributesDescriptor("Commands in inline math mode", LatexSyntaxHighlighter
+                    .COMMAND_MATH_INLINE),
+            new AttributesDescriptor("Commands in display math mode", LatexSyntaxHighlighter
+                    .COMMAND_MATH_DISPLAY),
+            new AttributesDescriptor("Comments", LatexSyntaxHighlighter.COMMENT),
+            new AttributesDescriptor("Inline math", LatexSyntaxHighlighter.INLINE_MATH),
+            new AttributesDescriptor("Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
+            new AttributesDescriptor("Stars", LatexSyntaxHighlighter.STAR),
     };
 
     @Nullable
@@ -106,7 +117,7 @@ public class LatexColorSettingsPage implements ColorSettingsPage {
                 "and a punctuation \n" +
                 "       dash---like \n" +
                 "this.\n" +
-                "\n" +
+                "\n\\section*{Starsection}\n" +
                 "A sentence-ending space should be larger than the\n" +
                 "space between words within a sentence.  You\n" +
                 "sometimes have to type special commands in\n" +
@@ -168,6 +179,8 @@ public class LatexColorSettingsPage implements ColorSettingsPage {
                 "       \\( a_{1} > x^{2n} + y^{2n} > x' \\)\n" +
                 "or  \n" +
                 "       \\( \\ip{A}{B} = \\sum_{i} a_{i} b_{i} \\).\n" +
+                "or  \n" +
+                "       $34 + 2y^2 - \\sqrt{x} = -3$\n" +
                 "The spaces you type in a formula are \n" +
                 "ignored.  Remember that a letter like\n" +
                 "       $x$                   % $ ... $  and  \\( ... \\)  are equivalent\n" +
