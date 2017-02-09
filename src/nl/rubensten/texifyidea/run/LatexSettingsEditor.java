@@ -5,11 +5,8 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.ComponentWithBrowseButton;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.TextBrowseFolderListener;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.ui.*;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.TitledSeparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +35,8 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Reset the main file to compile.
         TextFieldWithBrowseButton txtFile = (TextFieldWithBrowseButton)mainFile.getComponent();
-        String path = runConfiguration.getMainFile().getPath();
+        VirtualFile virtualFile = runConfiguration.getMainFile();
+        String path = (virtualFile == null ? "" : virtualFile.getPath());
         txtFile.setText(path);
 
         // Reset seperate auxiliary files.

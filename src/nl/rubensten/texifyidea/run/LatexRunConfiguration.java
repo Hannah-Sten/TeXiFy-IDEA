@@ -2,11 +2,7 @@ package nl.rubensten.texifyidea.run;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.RegexpFilter;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
@@ -73,7 +69,6 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         }
         catch (IllegalArgumentException e) {
             this.compiler = null;
-            throw new InvalidDataException("Could not load compiler!");
         }
 
         // Read main file.
@@ -109,7 +104,7 @@ public class LatexRunConfiguration extends RunConfigurationBase {
 
         // Write main file.
         final Element mainFileElt = new Element(MAIN_FILE);
-        compilerElt.setText(mainFile.getPath());
+        compilerElt.setText((mainFile == null ? "" : mainFile.getPath()));
         parent.addContent(mainFileElt);
 
         // Write auxiliary directories.
@@ -150,4 +145,13 @@ public class LatexRunConfiguration extends RunConfigurationBase {
     public void setAuxDir(boolean auxDir) {
         this.auxDir = auxDir;
     }
+
+    @Override
+    public String toString() {
+        return "LatexRunConfiguration{" + "compiler=" + compiler +
+                ", mainFile=" + mainFile +
+                ", auxDir=" + auxDir +
+                '}';
+    }
+
 }
