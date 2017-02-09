@@ -1,10 +1,7 @@
-package nl.rubensten.texifyidea;
+package nl.rubensten.texifyidea.file;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
-import nl.rubensten.texifyidea.file.ClassFileType;
-import nl.rubensten.texifyidea.file.LatexFileType;
-import nl.rubensten.texifyidea.file.StyleFileType;
 import org.jetbrains.annotations.NotNull;
 
 /**

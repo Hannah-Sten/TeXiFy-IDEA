@@ -23,7 +23,7 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="nl.rubensten.texifyidea.LatexFileTypeFactory"/>
+    <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
     <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
     <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.LatexSyntaxHighlighterFactory"/>
     <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
