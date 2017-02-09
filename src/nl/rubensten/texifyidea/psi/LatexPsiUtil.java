@@ -14,6 +14,36 @@ public class LatexPsiUtil {
     }
 
     /**
+     * Get all the elements of the subtree starting at the given Latex {@link PsiElement}.
+     * <p>
+     * This method uses a depth-first traversal.
+     *
+     * @param element
+     *         The {@link PsiElement} contained in {@link nl.rubensten.texifyidea.psi} of which you
+     *         want to get all the elements of the subtree of.
+     * @return A list of all elements in the subtree starting at, and including, the given element
+     * at index 0. The list will be empty when the element has no children or when the element is
+     * not a Latex element.
+     */
+    public static List<PsiElement> getAllChildren(PsiElement element) {
+        return getAllChildren(new ArrayList<>(), element);
+    }
+
+    /**
+     * See {@link LatexPsiUtil#getAllChildren(PsiElement)}, but appends all children to the
+     * given list.
+     */
+    private static List<PsiElement> getAllChildren(List<PsiElement> result, PsiElement element) {
+        result.add(element);
+
+        for (PsiElement child : getChildren(element)) {
+            getAllChildren(result, child);
+        }
+
+        return result;
+    }
+
+    /**
      * Get all the Latex children of the given Latex {@link PsiElement}s.
      *
      * @param element
