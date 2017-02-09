@@ -104,12 +104,12 @@ public class LatexRunConfiguration extends RunConfigurationBase {
 
         // Write main file.
         final Element mainFileElt = new Element(MAIN_FILE);
-        compilerElt.setText((mainFile == null ? "" : mainFile.getPath()));
+        mainFileElt.setText((mainFile == null ? "" : mainFile.getPath()));
         parent.addContent(mainFileElt);
 
         // Write auxiliary directories.
         final Element auxDirElt = new Element(AUX_DIR);
-        compilerElt.setText(Boolean.toString(auxDir));
+        auxDirElt.setText(Boolean.toString(auxDir));
         parent.addContent(auxDirElt);
     }
 
