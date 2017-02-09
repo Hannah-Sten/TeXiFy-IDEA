@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.highlight;
+package nl.rubensten.texifyidea.highlighting;
 
 import com.intellij.lang.BracePair;
 import com.intellij.lang.PairedBraceMatcher;

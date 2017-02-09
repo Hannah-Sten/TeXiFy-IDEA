@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.highlight;
+package nl.rubensten.texifyidea.highlighting;
 
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
