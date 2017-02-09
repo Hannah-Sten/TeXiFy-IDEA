@@ -17,14 +17,18 @@ import java.util.Map;
  */
 public class LatexColorSettingsPage implements ColorSettingsPage {
 
-    private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
+    private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[] {
             new AttributesDescriptor("Braces", LatexSyntaxHighlighter.BRACES),
             new AttributesDescriptor("Brackets", LatexSyntaxHighlighter.BRACKETS),
-            new AttributesDescriptor("Optional Parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
+            new AttributesDescriptor("Optional parameters", LatexSyntaxHighlighter.OPTIONAL_PARAM),
             new AttributesDescriptor("Commands", LatexSyntaxHighlighter.COMMAND),
+            new AttributesDescriptor("Commands in inline math mode", LatexSyntaxHighlighter
+                    .COMMAND_MATH_INLINE),
+            new AttributesDescriptor("Commands in display math mode", LatexSyntaxHighlighter
+                    .COMMAND_MATH_DISPLAY),
             new AttributesDescriptor("Comments", LatexSyntaxHighlighter.COMMENT),
-            new AttributesDescriptor("Inline Math", LatexSyntaxHighlighter.INLINE_MATH),
-            new AttributesDescriptor("Display Math", LatexSyntaxHighlighter.DISPLAY_MATH),
+            new AttributesDescriptor("Inline math", LatexSyntaxHighlighter.INLINE_MATH),
+            new AttributesDescriptor("Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
             new AttributesDescriptor("Stars", LatexSyntaxHighlighter.STAR),
     };
 

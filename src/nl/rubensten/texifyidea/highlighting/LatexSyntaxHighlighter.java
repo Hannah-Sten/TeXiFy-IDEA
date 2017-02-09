@@ -37,6 +37,17 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             DefaultLanguageHighlighterColors.KEYWORD
     );
 
+    public static final TextAttributesKey COMMAND_MATH_INLINE = TextAttributesKey.createTextAttributesKey(
+            "LATEX_COMMAND_MATH_INLINE",
+            DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
+    );
+
+    public static final TextAttributesKey COMMAND_MATH_DISPLAY = TextAttributesKey
+            .createTextAttributesKey(
+            "LATEX_COMMAND_MATH_DISPLAY",
+            DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
+    );
+
     public static final TextAttributesKey COMMENT = TextAttributesKey.createTextAttributesKey(
             "LATEX_COMMENT",
             DefaultLanguageHighlighterColors.LINE_COMMENT
