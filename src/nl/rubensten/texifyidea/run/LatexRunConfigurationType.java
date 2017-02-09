@@ -35,6 +35,8 @@ public class LatexRunConfigurationType implements ConfigurationType {
 
     @Override
     public ConfigurationFactory[] getConfigurationFactories() {
-        return new ConfigurationFactory[]{new LatexConfigurationFactory(this)};
+        return new ConfigurationFactory[] {
+                new LatexConfigurationFactory(this)
+        };
     }
 }
