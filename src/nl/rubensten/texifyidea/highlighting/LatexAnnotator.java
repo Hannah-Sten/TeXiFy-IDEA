@@ -95,7 +95,15 @@ public class LatexAnnotator implements Annotator {
             }
 
             LatexContent content = (LatexContent)element;
-            PsiElement toStyle = content.getNoMathContent().getNormalText();
+            LatexNoMathContent noMathContent = content.getNoMathContent();
+            if (noMathContent == null) {
+                continue;
+            }
+
+            PsiElement toStyle = noMathContent.getNormalText();
+            if (toStyle == null) {
+                continue;
+            }
 
             Annotation annotation = annotationHolder.createInfoAnnotation(toStyle, null);
             annotation.setTextAttributes(LatexSyntaxHighlighter.OPTIONAL_PARAM);

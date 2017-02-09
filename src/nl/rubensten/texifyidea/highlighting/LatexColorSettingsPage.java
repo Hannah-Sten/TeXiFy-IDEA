@@ -117,7 +117,7 @@ public class LatexColorSettingsPage implements ColorSettingsPage {
                 "and a punctuation \n" +
                 "       dash---like \n" +
                 "this.\n" +
-                "\n" +
+                "\n\\section*{Starsection}\n" +
                 "A sentence-ending space should be larger than the\n" +
                 "space between words within a sentence.  You\n" +
                 "sometimes have to type special commands in\n" +
