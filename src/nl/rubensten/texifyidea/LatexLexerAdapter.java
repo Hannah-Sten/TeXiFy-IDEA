@@ -1,7 +1,7 @@
 package nl.rubensten.texifyidea;
 
 import com.intellij.lexer.FlexAdapter;
-import nl.rubensten.texifyidea.grammar._LatexLexer;
+import nl.rubensten.texifyidea.grammar.LatexLexer;
 
 /**
  * @author Sten Wessel
@@ -9,6 +9,6 @@ import nl.rubensten.texifyidea.grammar._LatexLexer;
 public class LatexLexerAdapter extends FlexAdapter {
 
     public LatexLexerAdapter() {
-        super(new _LatexLexer(null));
+        super(new LatexLexer(null));
     }
 }
