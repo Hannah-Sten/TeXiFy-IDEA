@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Sten Wessel
  */
 public class LatexRunConfiguration extends RunConfigurationBase {
+
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
     private static final String MAIN_FILE = "main-file";
@@ -44,7 +45,6 @@ public class LatexRunConfiguration extends RunConfigurationBase {
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-
     }
 
     @Nullable
@@ -52,7 +52,7 @@ public class LatexRunConfiguration extends RunConfigurationBase {
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
         RegexpFilter filter = new RegexpFilter(environment.getProject(), "^$FILE_PATH$:$LINE$");
 
-        LatexCommandLineState state =  new LatexCommandLineState(environment, this);
+        LatexCommandLineState state = new LatexCommandLineState(environment, this);
         state.addConsoleFilters(filter);
         return state;
     }
@@ -62,16 +62,28 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         super.readExternal(element);
 
         Element parent = element.getChild(TEXIFY_PARENT);
-        if (parent != null) {
-            try {
-                this.compiler = LatexCompiler.valueOf(parent.getChildText(COMPILER));
-            } catch (IllegalArgumentException e) {
-                this.compiler = null;
-            }
-
-            this.mainFile = LocalFileSystem.getInstance().findFileByPath(parent.getChildText(MAIN_FILE));
-            this.auxDir = Boolean.parseBoolean(parent.getChildText(AUX_DIR));
+        if (parent == null) {
+            return;
         }
+
+        // Read compiler.
+        String compilerName = parent.getChildText(COMPILER);
+        try {
+            this.compiler = LatexCompiler.valueOf(compilerName);
+        }
+        catch (IllegalArgumentException e) {
+            this.compiler = null;
+            throw new InvalidDataException("Could not load compiler!");
+        }
+
+        // Read main file.
+        LocalFileSystem fileSystem = LocalFileSystem.getInstance();
+        String filePath = parent.getChildText(MAIN_FILE);
+        this.mainFile = fileSystem.findFileByPath(filePath);
+
+        // Read auxiliary directories.
+        String auxDirBoolean = parent.getChildText(AUX_DIR);
+        this.auxDir = Boolean.parseBoolean(auxDirBoolean);
     }
 
     @Override
@@ -79,21 +91,28 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         super.writeExternal(element);
 
         Element parent = element.getChild(TEXIFY_PARENT);
+
+        // Create a new parent when there is no parent present.
         if (parent == null) {
             parent = new Element(TEXIFY_PARENT);
             element.addContent(parent);
-        } else {
+        }
+        // Otherwise overwrite (remove + write).
+        else {
             parent.removeContent();
         }
 
+        // Write compiler.
         final Element compilerElt = new Element(COMPILER);
-        compilerElt.setText(compiler == null? "" : compiler.name());
+        compilerElt.setText(compiler == null ? "" : compiler.name());
         parent.addContent(compilerElt);
 
+        // Write main file.
         final Element mainFileElt = new Element(MAIN_FILE);
         compilerElt.setText(mainFile.getPath());
         parent.addContent(mainFileElt);
 
+        // Write auxiliary directories.
         final Element auxDirElt = new Element(AUX_DIR);
         compilerElt.setText(Boolean.toString(auxDir));
         parent.addContent(auxDirElt);
@@ -111,8 +130,13 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         return this.mainFile;
     }
 
+    /**
+     * Looks up the corresponding {@link VirtualFile} and calls {@link
+     * LatexRunConfiguration#getMainFile()}.
+     */
     public void setMainFile(String mainFilePath) {
-        setMainFile(LocalFileSystem.getInstance().findFileByPath(mainFilePath));
+        LocalFileSystem fileSystem = LocalFileSystem.getInstance();
+        setMainFile(fileSystem.findFileByPath(mainFilePath));
     }
 
     public void setMainFile(VirtualFile mainFile) {
