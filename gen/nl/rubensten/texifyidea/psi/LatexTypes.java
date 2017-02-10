@@ -27,7 +27,8 @@ public interface LatexTypes {
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
   IElementType DISPLAY_MATH_START = new LatexTokenType("\\[");
-  IElementType INLINE_MATH_DELIM = new LatexTokenType("$");
+  IElementType INLINE_MATH_END = new LatexTokenType("$");
+  IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
   IElementType NORMAL_TEXT = new LatexTokenType("NORMAL_TEXT");
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
   IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");

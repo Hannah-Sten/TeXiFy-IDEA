@@ -1,47 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.parser;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
+import static nl.rubensten.texifyidea.psi.LatexTypes.*;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
-
-import static com.intellij.lang.parser.GeneratedParserUtilBase.TRUE_CONDITION;
-import static com.intellij.lang.parser.GeneratedParserUtilBase._COLLAPSE_;
-import static com.intellij.lang.parser.GeneratedParserUtilBase._NONE_;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.adapt_builder_;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.consumeToken;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.current_position_;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.empty_element_parsed_guard_;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.enter_section_;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.exit_section_;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.nextTokenIs;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.recursion_guard_;
-import static nl.rubensten.texifyidea.psi.LatexTypes.CLOSE_BRACE;
-import static nl.rubensten.texifyidea.psi.LatexTypes.CLOSE_BRACKET;
-import static nl.rubensten.texifyidea.psi.LatexTypes.COMMANDS;
-import static nl.rubensten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
-import static nl.rubensten.texifyidea.psi.LatexTypes.COMMENT;
-import static nl.rubensten.texifyidea.psi.LatexTypes.COMMENT_TOKEN;
-import static nl.rubensten.texifyidea.psi.LatexTypes.CONTENT;
-import static nl.rubensten.texifyidea.psi.LatexTypes.DISPLAY_MATH;
-import static nl.rubensten.texifyidea.psi.LatexTypes.DISPLAY_MATH_END;
-import static nl.rubensten.texifyidea.psi.LatexTypes.DISPLAY_MATH_START;
-import static nl.rubensten.texifyidea.psi.LatexTypes.GROUP;
-import static nl.rubensten.texifyidea.psi.LatexTypes.INLINE_MATH;
-import static nl.rubensten.texifyidea.psi.LatexTypes.INLINE_MATH_DELIM;
-import static nl.rubensten.texifyidea.psi.LatexTypes.MATH_ENVIRONMENT;
-import static nl.rubensten.texifyidea.psi.LatexTypes.NORMAL_TEXT;
-import static nl.rubensten.texifyidea.psi.LatexTypes.NO_MATH_CONTENT;
-import static nl.rubensten.texifyidea.psi.LatexTypes.OPEN_BRACE;
-import static nl.rubensten.texifyidea.psi.LatexTypes.OPEN_BRACKET;
-import static nl.rubensten.texifyidea.psi.LatexTypes.OPEN_GROUP;
-import static nl.rubensten.texifyidea.psi.LatexTypes.OPTIONAL_PARAM;
-import static nl.rubensten.texifyidea.psi.LatexTypes.PARAMETER;
-import static nl.rubensten.texifyidea.psi.LatexTypes.REQUIRED_PARAM;
-import static nl.rubensten.texifyidea.psi.LatexTypes.STAR;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.PsiParser;
+import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -221,15 +189,15 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // INLINE_MATH_DELIM (no_math_content)* INLINE_MATH_DELIM
+  // INLINE_MATH_START (no_math_content)* INLINE_MATH_END
   public static boolean inline_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math")) return false;
-    if (!nextTokenIs(b, INLINE_MATH_DELIM)) return false;
+    if (!nextTokenIs(b, INLINE_MATH_START)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, INLINE_MATH_DELIM);
+    r = consumeToken(b, INLINE_MATH_START);
     r = r && inline_math_1(b, l + 1);
-    r = r && consumeToken(b, INLINE_MATH_DELIM);
+    r = r && consumeToken(b, INLINE_MATH_END);
     exit_section_(b, m, INLINE_MATH, r);
     return r;
   }
@@ -273,7 +241,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // inline_math | display_math
   public static boolean math_environment(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "math_environment")) return false;
-    if (!nextTokenIs(b, "<math environment>", DISPLAY_MATH_START, INLINE_MATH_DELIM)) return false;
+    if (!nextTokenIs(b, "<math environment>", DISPLAY_MATH_START, INLINE_MATH_START)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MATH_ENVIRONMENT, "<math environment>");
     r = inline_math(b, l + 1);
