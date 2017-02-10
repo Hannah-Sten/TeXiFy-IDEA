@@ -129,7 +129,8 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             return COMMAND_KEYS;
         }
         // Math environment
-        else if (tokenType.equals(LatexTypes.INLINE_MATH_DELIM)) {
+        else if (tokenType.equals(LatexTypes.INLINE_MATH_END) ||
+                tokenType.equals(LatexTypes.INLINE_MATH_END)) {
             return INLINE_MATH_KEYS;
         }
         else if (tokenType.equals(LatexTypes.DISPLAY_MATH_START) ||
