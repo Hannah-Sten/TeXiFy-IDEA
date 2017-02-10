@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea;
+package nl.rubensten.texifyidea.highlighting;
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;

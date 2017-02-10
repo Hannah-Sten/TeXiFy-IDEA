@@ -13,19 +13,12 @@
     ]]>
   </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="141.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
-
   <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="nl.rubensten.texifyidea.LatexFileTypeFactory"/>
+    <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
     <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.LatexSyntaxHighlighterFactory"/>
+    <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
     <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
     <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
     <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
@@ -38,6 +31,9 @@
     <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
 
     <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
+
+    <!-- Annotators -->
+    <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
   </extensions>
 
   <actions>

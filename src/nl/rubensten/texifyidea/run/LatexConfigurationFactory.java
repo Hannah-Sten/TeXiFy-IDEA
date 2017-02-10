@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Sten Wessel
  */
 public class LatexConfigurationFactory extends ConfigurationFactory {
+
     private static final String FACTORY_NAME = "LaTeX configuration factory";
 
     public LatexConfigurationFactory(ConfigurationType type) {
