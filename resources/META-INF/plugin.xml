@@ -21,6 +21,8 @@
     <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
     <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
     <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
+    <!--<lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexPackageDocumentationProvider"/>-->
+    <documentationProvider implementation="nl.rubensten.texifyidea.documentation.LatexPackageDocumentationProvider"/>
     <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
     <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
     <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
