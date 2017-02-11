@@ -39,7 +39,6 @@ Please bear in mind that this is just a side project for us.
 * Fancy icons for `.tex`, `.sty` and `.cls` files (see [GreanTeaFlavouredIcons](https://github.com/RubenSchellekens/GreenTeaFlavouredIcons)), and LaTeX modules.
 
 ## In the works
-* Gutter icon to compile the selected file [[gutter-icons](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/gutter-icons)].
 * Document structure view [[structure-view](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/structure-view)].
 
 ## Planned
