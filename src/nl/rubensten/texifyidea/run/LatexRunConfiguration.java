@@ -2,11 +2,7 @@ package nl.rubensten.texifyidea.run;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.RegexpFilter;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
@@ -22,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Sten Wessel
  */
-public class LatexRunConfiguration extends RunConfigurationBase {
+public class LatexRunConfiguration extends RunConfigurationBase implements LocatableConfiguration {
 
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
@@ -62,17 +58,27 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         super.readExternal(element);
 
         Element parent = element.getChild(TEXIFY_PARENT);
-        if (parent != null) {
-            try {
-                this.compiler = LatexCompiler.valueOf(parent.getChildText(COMPILER));
-            }
-            catch (IllegalArgumentException e) {
-                this.compiler = null;
-            }
-
-            this.mainFile = LocalFileSystem.getInstance().findFileByPath(parent.getChildText(MAIN_FILE));
-            this.auxDir = Boolean.parseBoolean(parent.getChildText(AUX_DIR));
+        if (parent == null) {
+            return;
         }
+
+        // Read compiler.
+        String compilerName = parent.getChildText(COMPILER);
+        try {
+            this.compiler = LatexCompiler.valueOf(compilerName);
+        }
+        catch (IllegalArgumentException e) {
+            this.compiler = null;
+        }
+
+        // Read main file.
+        LocalFileSystem fileSystem = LocalFileSystem.getInstance();
+        String filePath = parent.getChildText(MAIN_FILE);
+        this.mainFile = fileSystem.findFileByPath(filePath);
+
+        // Read auxiliary directories.
+        String auxDirBoolean = parent.getChildText(AUX_DIR);
+        this.auxDir = Boolean.parseBoolean(auxDirBoolean);
     }
 
     @Override
@@ -80,24 +86,30 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         super.writeExternal(element);
 
         Element parent = element.getChild(TEXIFY_PARENT);
+
+        // Create a new parent when there is no parent present.
         if (parent == null) {
             parent = new Element(TEXIFY_PARENT);
             element.addContent(parent);
         }
+        // Otherwise overwrite (remove + write).
         else {
             parent.removeContent();
         }
 
+        // Write compiler.
         final Element compilerElt = new Element(COMPILER);
         compilerElt.setText(compiler == null ? "" : compiler.name());
         parent.addContent(compilerElt);
 
+        // Write main file.
         final Element mainFileElt = new Element(MAIN_FILE);
-        compilerElt.setText(mainFile.getPath());
+        mainFileElt.setText((mainFile == null ? "" : mainFile.getPath()));
         parent.addContent(mainFileElt);
 
+        // Write auxiliary directories.
         final Element auxDirElt = new Element(AUX_DIR);
-        compilerElt.setText(Boolean.toString(auxDir));
+        auxDirElt.setText(Boolean.toString(auxDir));
         parent.addContent(auxDirElt);
     }
 
@@ -113,20 +125,59 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         return this.mainFile;
     }
 
+    /**
+     * Looks up the corresponding {@link VirtualFile} and calls {@link
+     * LatexRunConfiguration#getMainFile()}.
+     */
     public void setMainFile(String mainFilePath) {
-        setMainFile(LocalFileSystem.getInstance().findFileByPath(mainFilePath));
+        LocalFileSystem fileSystem = LocalFileSystem.getInstance();
+        setMainFile(fileSystem.findFileByPath(mainFilePath));
     }
 
     public void setMainFile(VirtualFile mainFile) {
         this.mainFile = mainFile;
     }
 
-    public boolean hasAuxDir() {
+    public boolean hasAuxiliaryDirectories() {
         return this.auxDir;
     }
 
-    public void setAuxDir(boolean auxDir) {
+    public void setAuxiliaryDirectories(boolean auxDir) {
         this.auxDir = auxDir;
     }
 
+    public void setDefaultCompiler() {
+        setCompiler(LatexCompiler.PDFLATEX);
+    }
+
+    public void setDefaultAuxiliaryDirectories() {
+        setAuxiliaryDirectories(true);
+    }
+
+    public void setSuggestedName() {
+        setName(suggestedName());
+    }
+
+    @Override
+    public boolean isGeneratedName() {
+        return mainFile.getNameWithoutExtension().equals(getName());
+    }
+
+    @Nullable
+    @Override
+    public String suggestedName() {
+        if (mainFile == null) {
+            return null;
+        }
+
+        return mainFile.getNameWithoutExtension();
+    }
+
+    @Override
+    public String toString() {
+        return "LatexRunConfiguration{" + "compiler=" + compiler +
+                ", mainFile=" + mainFile +
+                ", auxDir=" + auxDir +
+                '}';
+    }
 }

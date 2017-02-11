@@ -25,12 +25,11 @@ public class LatexMathSymbolFoldingBuilder extends FoldingBuilderEx {
     @Override
     public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document
             document, boolean quick) {
-        FoldingGroup group = FoldingGroup.newGroup("latexMathSymbol");
-
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         Collection<LatexMathEnvironment> mathEnvs = PsiTreeUtil.findChildrenOfType(root, LatexMathEnvironment.class);
 
         for (LatexMathEnvironment mathEnv : mathEnvs) {
+            FoldingGroup group = FoldingGroup.newGroup("latexMathSymbol");
             Collection<LatexCommands> commands = PsiTreeUtil.findChildrenOfType(mathEnv, LatexCommands.class);
             for (LatexCommands command : commands) {
                 LatexMathCommand c = LatexMathCommand.get(command.getCommandToken().getText().substring(1));

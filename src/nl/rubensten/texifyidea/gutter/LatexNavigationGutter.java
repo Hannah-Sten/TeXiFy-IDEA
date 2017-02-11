@@ -7,9 +7,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.TexifyUtil;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.util.TeXiFyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -28,7 +28,7 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
             if (command.getCommandToken().getText().equals("\\input")) {
 
                 // Try to get the filename parameter
-                List<LatexRequiredParam> params = TexifyUtil.getRequiredParameters(command);
+                List<LatexRequiredParam> params = TeXiFyUtil.getRequiredParameters(command);
                 if (params.size() > 0) {
                     String fileName = params.get(0).getGroup().getText();
                     fileName = fileName.substring(1, fileName.length() - 1);

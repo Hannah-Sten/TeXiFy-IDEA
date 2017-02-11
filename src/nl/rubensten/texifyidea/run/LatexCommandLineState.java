@@ -9,6 +9,8 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * @author Sten Wessel
  */
@@ -26,7 +28,9 @@ public class LatexCommandLineState extends CommandLineState {
     @NotNull
     @Override
     protected ProcessHandler startProcess() throws ExecutionException {
-        GeneralCommandLine cmdLine = new GeneralCommandLine(runConfig.getCompiler().getCommand(runConfig, project));
+        LatexCompiler compiler = runConfig.getCompiler();
+        List<String> command = compiler.getCommand(runConfig, project);
+        GeneralCommandLine cmdLine = new GeneralCommandLine(command).withWorkDirectory(runConfig.getMainFile().getParent().getPath());
 
         return new OSProcessHandler(cmdLine);
     }

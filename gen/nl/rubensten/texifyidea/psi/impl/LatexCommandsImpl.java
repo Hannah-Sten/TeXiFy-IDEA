@@ -1,19 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import java.util.List;
+import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.psi.LatexParameter;
-import nl.rubensten.texifyidea.psi.LatexVisitor;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-
-import static nl.rubensten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
+import static nl.rubensten.texifyidea.psi.LatexTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.rubensten.texifyidea.psi.*;
 
 public class LatexCommandsImpl extends ASTWrapperPsiElement implements LatexCommands {
 

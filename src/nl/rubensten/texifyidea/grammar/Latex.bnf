@@ -16,7 +16,8 @@
         WHITE_SPACE='regexp:\s+'
         DISPLAY_MATH_START='\['
         DISPLAY_MATH_END='\]'
-        INLINE_MATH_DELIM='$'
+        INLINE_MATH_START='$'
+        INLINE_MATH_END='$'
         COMMAND_TOKEN='regexp:\\([a-zA-Z]+|.|\n|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
@@ -48,6 +49,6 @@ comment ::= COMMENT_TOKEN
 
 math_environment ::= inline_math | display_math
 
-inline_math ::= INLINE_MATH_DELIM (no_math_content)* INLINE_MATH_DELIM
+inline_math ::= INLINE_MATH_START (no_math_content)* INLINE_MATH_END
 
 display_math ::= DISPLAY_MATH_START (no_math_content)* DISPLAY_MATH_END
