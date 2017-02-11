@@ -30,7 +30,7 @@ public class LatexCommandLineState extends CommandLineState {
     protected ProcessHandler startProcess() throws ExecutionException {
         LatexCompiler compiler = runConfig.getCompiler();
         List<String> command = compiler.getCommand(runConfig, project);
-        GeneralCommandLine cmdLine = new GeneralCommandLine(command);
+        GeneralCommandLine cmdLine = new GeneralCommandLine(command).withWorkDirectory(runConfig.getMainFile().getParent().getPath());
 
         return new OSProcessHandler(cmdLine);
     }

@@ -43,7 +43,7 @@ public enum LatexCompiler {
             }
         }
 
-        command.add(mainFile.getPath());
+        command.add(mainFile.getName());
 
         return command;
     }
