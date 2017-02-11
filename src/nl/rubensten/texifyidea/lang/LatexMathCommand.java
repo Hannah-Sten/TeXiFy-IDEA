@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.folding;
+package nl.rubensten.texifyidea.lang;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -151,6 +151,10 @@ public enum LatexMathCommand {
         this.command = command;
         this.display = display;
         this.collapse = collapse;
+    }
+
+    LatexMathCommand(String command) {
+        this.command = command;
     }
 
     public static LatexMathCommand get(String command) {
