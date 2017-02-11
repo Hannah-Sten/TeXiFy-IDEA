@@ -7,4 +7,9 @@ public class OptionalArgument extends Argument {
     OptionalArgument(String name) {
         super(name);
     }
+
+    @Override
+    public String toString() {
+        return "[" + getName() + "]";
+    }
 }

@@ -65,7 +65,7 @@ public enum LatexNoMathCommand {
     FRQQ("frqq", "»"),
     GLOSSARYENTRY("glossaryentry", new RequiredArgument("text"),
                   new RequiredArgument("pagenum")),
-    GLOSSARY("glossary", "text"),
+    GLOSSARY("glossary", new RequiredArgument("text")),
     GLQ("glq", ","),
     GLQQ("glqq", "„"),
     GRQ("grq", "‘"),
@@ -326,8 +326,21 @@ public enum LatexNoMathCommand {
         return command;
     }
 
+    public String getCommandDisplay() {
+        return "\\" + command;
+    }
+
     public Argument[] getArguments() {
         return arguments;
+    }
+
+    public String getArgumentsDisplay() {
+        StringBuilder sb = new StringBuilder();
+        for (Argument arg : arguments) {
+            sb.append(arg.toString());
+        }
+
+        return sb.toString();
     }
 
     public String getDisplay() {

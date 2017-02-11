@@ -14,4 +14,6 @@ public abstract class Argument {
     public String getName() {
         return name;
     }
+
+    public abstract String toString();
 }

@@ -165,6 +165,10 @@ public enum LatexMathCommand {
         return command;
     }
 
+    public String getCommandDisplay() {
+        return "\\" + command;
+    }
+
     public String getDisplay() {
         return display;
     }
