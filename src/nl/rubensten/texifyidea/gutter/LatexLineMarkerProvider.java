@@ -16,6 +16,5 @@ public class LatexLineMarkerProvider extends RelatedItemLineMarkerProvider {
     protected void collectNavigationMarkers(@NotNull PsiElement element,
                                             Collection<? super RelatedItemLineMarkerInfo> result) {
         new LatexNavigationGutter().collectNavigationMarkers(element, result);
-        new LatexCompileGutter().collectNavigationMarkers(element, result);
     }
 }

@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Sten Wessel
  */
 public class LatexRunConfiguration extends RunConfigurationBase {
+
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
     private static final String MAIN_FILE = "main-file";
@@ -44,7 +45,6 @@ public class LatexRunConfiguration extends RunConfigurationBase {
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-
     }
 
     @Nullable
@@ -52,7 +52,7 @@ public class LatexRunConfiguration extends RunConfigurationBase {
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
         RegexpFilter filter = new RegexpFilter(environment.getProject(), "^$FILE_PATH$:$LINE$");
 
-        LatexCommandLineState state =  new LatexCommandLineState(environment, this);
+        LatexCommandLineState state = new LatexCommandLineState(environment, this);
         state.addConsoleFilters(filter);
         return state;
     }
@@ -65,7 +65,8 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         if (parent != null) {
             try {
                 this.compiler = LatexCompiler.valueOf(parent.getChildText(COMPILER));
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 this.compiler = null;
             }
 
@@ -82,12 +83,13 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         if (parent == null) {
             parent = new Element(TEXIFY_PARENT);
             element.addContent(parent);
-        } else {
+        }
+        else {
             parent.removeContent();
         }
 
         final Element compilerElt = new Element(COMPILER);
-        compilerElt.setText(compiler == null? "" : compiler.name());
+        compilerElt.setText(compiler == null ? "" : compiler.name());
         parent.addContent(compilerElt);
 
         final Element mainFileElt = new Element(MAIN_FILE);
@@ -126,4 +128,5 @@ public class LatexRunConfiguration extends RunConfigurationBase {
     public void setAuxDir(boolean auxDir) {
         this.auxDir = auxDir;
     }
+
 }

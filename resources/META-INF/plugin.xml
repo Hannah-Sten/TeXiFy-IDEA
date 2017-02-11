@@ -1,46 +1,61 @@
 <idea-plugin version="2">
-  <id>nl.rubensten.texifyidea</id>
-  <name>TeXiFy IDEA</name>
-  <version>0.1</version>
-  <vendor email="sten.wessel@gmail.com" url="http://ruben-sten.github.io">Ruben-Sten</vendor>
+    <id>nl.rubensten.texifyidea</id>
+    <name>TeXiFy IDEA</name>
+    <version>0.1</version>
+    <vendor email="sten.wessel@gmail.com" url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
-  <description><![CDATA[
+    <description><![CDATA[
       Plugin for LaTeX support in IntelliJ IDEA.
     ]]></description>
 
-  <change-notes><![CDATA[
+    <change-notes><![CDATA[
       None.
     ]]>
-  </change-notes>
+    </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="141.0"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="141.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
 
-  <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
-    <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.LatexSyntaxHighlighterFactory"/>
-    <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
-    <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.LatexPairedBraceMatcher"/>
-    <colorSettingsPage implementation="nl.rubensten.texifyidea.LatexColorSettingsPage"/>
-    <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
-    <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexLineMarkerProvider"/>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Files and project -->
+        <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
+        <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
 
-    <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
+        <!-- Languages -->
+        <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Latex"
+                                       implementationClass="nl.rubensten.texifyidea.LatexSyntaxHighlighterFactory"/>
+        <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
+        <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.LatexPairedBraceMatcher"/>
 
-    <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
+        <!-- Colours -->
+        <colorSettingsPage implementation="nl.rubensten.texifyidea.LatexColorSettingsPage"/>
 
-    <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
-  </extensions>
+        <!-- Editor -->
+        <completion.contributor language="Latex"
+                                implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
+        <lang.foldingBuilder language="Latex"
+                             implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
 
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
+        <!-- Line markers -->
+        <codeInsight.lineMarkerProvider language="Latex"
+                                        implementationClass="nl.rubensten.texifyidea.gutter.LatexLineMarkerProvider"/>
+        <runLineMarkerContributor language="Latex"
+                                  implementationClass="nl.rubensten.texifyidea.gutter.LatexCompileGutter"/>
+
+        <!-- Run configurations -->
+        <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
+        <runConfigurationProducer implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationProducer"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
 
 </idea-plugin>

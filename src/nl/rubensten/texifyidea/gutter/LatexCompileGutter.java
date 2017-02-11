@@ -1,21 +1,15 @@
 package nl.rubensten.texifyidea.gutter;
 
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
-import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.markup.GutterIconRenderer;
-import com.intellij.openapi.util.TextRange;
+import com.intellij.execution.lineMarker.RunLineMarkerContributor;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.psi.PsiElement;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,62 +17,109 @@ import java.util.List;
  *
  * @author Ruben Schellekens
  */
-public class LatexCompileGutter extends RelatedItemLineMarkerProvider {
+public class LatexCompileGutter extends RunLineMarkerContributor {
 
+    @Nullable
     @Override
-    protected void collectNavigationMarkers(@NotNull PsiElement element,
-                                            Collection<? super RelatedItemLineMarkerInfo> result) {
+    public Info getInfo(PsiElement element) {
         if (!(element instanceof LatexCommands)) {
-            return;
+            return null;
         }
 
         LatexCommands command = (LatexCommands)element;
         PsiElement token = command.getCommandToken();
         List<LatexParameter> params = command.getParameterList();
         if (params.isEmpty()) {
-            return;
+            return null;
         }
 
         // Check for \begin command.
         if (!token.getText().equals("\\begin")) {
-            return;
+            return null;
         }
 
         LatexParameter param = params.get(0);
         LatexRequiredParam requiredParam = param.getRequiredParam();
         if (requiredParam == null) {
-            return;
+            return null;
         }
 
         // Check if the command has 'document' as required argument.
         String paramName = requiredParam.getText();
         if (paramName == null) {
-            return;
+            return null;
         }
 
         if (!paramName.equals("{document}")) {
-            return;
-        }
-        NavigationGutterIconBuilder.create(TexifyIcons.BUILD);
-
-        RelatedItemLineMarkerInfo<PsiElement> info = new RelatedItemLineMarkerInfo<>(
-                element,
-                TextRange.allOf("Build PDF"),
-                TexifyIcons.BUILD,
-                0,
-                x -> "Build PDF",
-                this::buildEvent,
-                GutterIconRenderer.Alignment.CENTER,
-                Collections.emptyList());
-        result.add(info);
-    }
-
-    private void buildEvent(MouseEvent event, PsiElement element) {
-        if (event.getButton() != MouseEvent.BUTTON1) {
-            return;
+            return null;
         }
 
-        Logger.getInstance(getClass()).info("TEXIFY CLICK : " + element + " @ " + element.getClass());
+        // Lookup actions.
+        ActionManager actionManager = ActionManager.getInstance();
+
+        AnAction runnerActions = actionManager.getAction("RunnerActions");
+        AnAction chooseRun = actionManager.getAction("ChooseRunConfiguration");
+        AnAction editConfigs = actionManager.getAction("editRunConfigurations");
+
+        // Create icon.
+        return new RunLineMarkerContributor.Info(TexifyIcons.BUILD, e -> "Compile document",
+                runnerActions, chooseRun, editConfigs);
     }
+
+    //    @Override
+//    protected void collectNavigationMarkers(@NotNull PsiElement element,
+//                                            Collection<? super RelatedItemLineMarkerInfo> result) {
+//        if (!(element instanceof LatexCommands)) {
+//            return;
+//        }
+//
+//        LatexCommands command = (LatexCommands)element;
+//        PsiElement token = command.getCommandToken();
+//        List<LatexParameter> params = command.getParameterList();
+//        if (params.isEmpty()) {
+//            return;
+//        }
+//
+//        // Check for \begin command.
+//        if (!token.getText().equals("\\begin")) {
+//            return;
+//        }
+//
+//        LatexParameter param = params.get(0);
+//        LatexRequiredParam requiredParam = param.getRequiredParam();
+//        if (requiredParam == null) {
+//            return;
+//        }
+//
+//        // Check if the command has 'document' as required argument.
+//        String paramName = requiredParam.getText();
+//        if (paramName == null) {
+//            return;
+//        }
+//
+//        if (!paramName.equals("{document}")) {
+//            return;
+//        }
+//        NavigationGutterIconBuilder.create(TexifyIcons.BUILD);
+//
+//        RelatedItemLineMarkerInfo<PsiElement> info = new RelatedItemLineMarkerInfo<>(
+//                element,
+//                TextRange.allOf("Build PDF"),
+//                TexifyIcons.BUILD,
+//                0,
+//                x -> "Build PDF",
+//                this::buildEvent,
+//                GutterIconRenderer.Alignment.CENTER,
+//                Collections.emptyList());
+//        result.add(info);
+//    }
+//
+//    private void buildEvent(MouseEvent event, PsiElement element) {
+//        if (event.getButton() != MouseEvent.BUTTON1) {
+//            return;
+//        }
+//
+//        Logger.getInstance(getClass()).info("TEXIFY CLICK : " + element + " @ " + element.getClass());
+//    }
 
 }
