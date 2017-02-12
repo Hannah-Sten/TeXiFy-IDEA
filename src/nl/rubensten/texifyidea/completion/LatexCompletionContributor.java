@@ -15,13 +15,13 @@ public class LatexCompletionContributor extends CompletionContributor {
     public LatexCompletionContributor() {
         extend(
             CompletionType.BASIC,
-            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN).withParent(LatexMathEnvironment.class).withLanguage(LatexLanguage.INSTANCE),
+            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN).inside(LatexMathEnvironment.class).withLanguage(LatexLanguage.INSTANCE),
             new LatexCommandProvider(LatexMode.MATH)
         );
 
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN).andNot(PlatformPatterns.psiElement().withParent(LatexMathEnvironment.class)).withLanguage(LatexLanguage.INSTANCE),
+                PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN).andNot(PlatformPatterns.psiElement().inside(LatexMathEnvironment.class)).withLanguage(LatexLanguage.INSTANCE),
                 new LatexCommandProvider(LatexMode.NORMAL)
         );
     }

@@ -25,24 +25,26 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext
             context, @NotNull CompletionResultSet result) {
-        switch (mode) {
-            case NORMAL:
-                result.addAllElements(ContainerUtil.map2List(
-                        LatexNoMathCommand.values(),
-                        cmd -> LookupElementBuilder.create(cmd.getCommandDisplay())
-                                .bold()
-                                .withTailText(cmd.getArgumentsDisplay(), true)
-                                .withTypeText(cmd.getDisplay())
-                ));
-            case MATH:
-                result.addAllElements(ContainerUtil.map2List(
-                        LatexMathCommand.values(),
-                        cmd -> LookupElementBuilder.create(cmd.getCommandDisplay())
-                        .bold()
-                        .withTypeText(cmd.getDisplay())
-                ));
-        }
 
+        if (mode == LatexMode.NORMAL) {
+            result.addAllElements(ContainerUtil.map2List(
+                    LatexNoMathCommand.values(),
+                    cmd -> LookupElementBuilder.create(cmd.getCommandDisplay())
+                            .bold()
+                            .withTailText(cmd.getArgumentsDisplay(), true)
+                            .withTypeText(cmd.getDisplay())
+            ));
+
+        }
+        else if (mode == LatexMode.MATH) {
+            result.addAllElements(ContainerUtil.map2List(
+                    LatexMathCommand.values(),
+                    cmd -> LookupElementBuilder.create(cmd.getCommandDisplay())
+                            .bold()
+                            .withTypeText(cmd.getDisplay())
+            ));
+
+        }
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.");
     }
 }
