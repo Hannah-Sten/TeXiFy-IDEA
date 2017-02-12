@@ -38,7 +38,7 @@ public enum LatexCompiler {
             command.add("-interaction=nonstopmode");
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
 
-            if (runConfig.hasAuxDir()) {
+            if (runConfig.hasAuxiliaryDirectories()) {
                 command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
             }
         }

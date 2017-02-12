@@ -40,7 +40,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         txtFile.setText(path);
 
         // Reset seperate auxiliary files.
-        auxDir.setSelected(runConfiguration.hasAuxDir());
+        auxDir.setSelected(runConfiguration.hasAuxiliaryDirectories());
 
         // Reset project.
         project = runConfiguration.getProject();
@@ -60,7 +60,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Apply auxiliary files.
         boolean auxDirectories = auxDir.isSelected();
-        runConfiguration.setAuxDir(auxDirectories);
+        runConfiguration.setAuxiliaryDirectories(auxDirectories);
     }
 
     @NotNull

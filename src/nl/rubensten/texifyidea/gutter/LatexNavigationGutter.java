@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea;
+package nl.rubensten.texifyidea.gutter;
 
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
@@ -6,17 +6,19 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
+import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.util.TeXiFyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens
  */
-public class LatexLineMarkerProvider extends RelatedItemLineMarkerProvider {
+public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
 
     @Override
     protected void collectNavigationMarkers(@NotNull PsiElement element,
@@ -26,7 +28,7 @@ public class LatexLineMarkerProvider extends RelatedItemLineMarkerProvider {
             if (command.getCommandToken().getText().equals("\\input")) {
 
                 // Try to get the filename parameter
-                List<LatexRequiredParam> params = TexifyUtil.getRequiredParameters(command);
+                List<LatexRequiredParam> params = TeXiFyUtil.getRequiredParameters(command);
                 if (params.size() > 0) {
                     String fileName = params.get(0).getGroup().getText();
                     fileName = fileName.substring(1, fileName.length() - 1);
@@ -52,4 +54,5 @@ public class LatexLineMarkerProvider extends RelatedItemLineMarkerProvider {
             }
         }
     }
+
 }

@@ -14,12 +14,14 @@ Please bear in mind that this is just a side project for us.
 * Multiple 'compile' (run) configurations.
 * Supported compilers: `pdfLaTeX`
 * Seperate auxiliary files from output (only supported for `MiKTeX`).
+* Dynamically detect what runtime configuration to use based on the active file.
 
 ### Editor
 * Brace matching for `{}`, `[]`, `\[\]` and `$$`.
 * Automatically inserts other half of `{}`, `[]`, `\[\]` and `$$`.
 * Most math commands get replaced by their unicode representation using folding.
 * Gutter icon to navigate to included files.
+* Gutter icon to automatically compile the active file.
 
 ### Syntax highlighting
 * Braces
@@ -37,7 +39,6 @@ Please bear in mind that this is just a side project for us.
 * Fancy icons for `.tex`, `.sty` and `.cls` files (see [GreanTeaFlavouredIcons](https://github.com/RubenSchellekens/GreenTeaFlavouredIcons)), and LaTeX modules.
 
 ## In the works
-* Gutter icon to compile the selected file [[gutter-icons](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/gutter-icons)].
 * Document structure view [[structure-view](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/structure-view)].
 
 ## Planned

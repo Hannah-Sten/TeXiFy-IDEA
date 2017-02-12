@@ -2,15 +2,21 @@ package nl.rubensten.texifyidea.run;
 
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
+import com.intellij.execution.configurations.ConfigurationTypeUtil;
 import nl.rubensten.texifyidea.TexifyIcons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexRunConfigurationType implements ConfigurationType {
+
+    @NotNull
+    public static LatexRunConfigurationType getInstance() {
+        return ConfigurationTypeUtil.findConfigurationType(LatexRunConfigurationType.class);
+    }
 
     @Override
     public String getDisplayName() {
