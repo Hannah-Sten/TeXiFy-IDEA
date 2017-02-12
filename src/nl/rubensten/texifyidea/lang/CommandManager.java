@@ -125,7 +125,7 @@ public class CommandManager implements Iterable<String>, Serializable {
      *         When the command has already been registered.s
      */
     public void registerCommandNoSlash(String commandNoSlash) throws IllegalArgumentException {
-        // TODO: implement
+        registerCommand("\\" + commandNoSlash);
     }
 
     /**
@@ -163,7 +163,7 @@ public class CommandManager implements Iterable<String>, Serializable {
      *         When the given command already exixts.
      */
     public void registerAliasNoSlash(String commandNoSlash, String aliasNoSlash) throws IllegalArgumentException {
-        // TODO: implement.
+        registerAlias("\\" + commandNoSlash, "\\" + aliasNoSlash);
     }
 
     /**
@@ -194,8 +194,7 @@ public class CommandManager implements Iterable<String>, Serializable {
      *         When the given command is not registered.
      */
     public Set<String> getAliasesNoSlash(String commandNoSlash) throws IllegalArgumentException {
-        // TODO: implement.
-        return null;
+        return getAliases("\\" + commandNoSlash);
     }
 
     /**
@@ -235,8 +234,7 @@ public class CommandManager implements Iterable<String>, Serializable {
      *         When the original command has not been registered.
      */
     public Set<String> getAliasesFromOriginalNoSlash(String originalCommandNoSlash) {
-        // TODO: implement.
-        return null;
+        return getAliasesFromOriginal("\\" + originalCommandNoSlash);
     }
 
     /**
@@ -271,8 +269,7 @@ public class CommandManager implements Iterable<String>, Serializable {
      * otherwise.
      */
     public boolean isRegisteredNoSlash(String commandNoSlash) {
-        // TODO: implement.
-        return false;
+        return isRegistered("\\" + commandNoSlash);
     }
 
     /**
@@ -304,8 +301,7 @@ public class CommandManager implements Iterable<String>, Serializable {
      * {@code false} if not.
      */
     public boolean isOriginalNoSlash(String commandNoSlash) {
-        // TODO: implement.
-        return false;
+        return isOriginal("\\" + commandNoSlash);
     }
 
     /**
@@ -402,5 +398,4 @@ public class CommandManager implements Iterable<String>, Serializable {
     public Spliterator<String> spliteratorOriginal() {
         return original.keySet().spliterator();
     }
-
 }
