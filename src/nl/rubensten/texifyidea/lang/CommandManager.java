@@ -32,7 +32,7 @@ public class CommandManager implements Iterable<String>, Serializable {
     /**
      * TODO: docs.
      */
-    private static CommandManager getInstance() {
+    public static CommandManager getInstance() {
         return INSTANCE;
     }
 
