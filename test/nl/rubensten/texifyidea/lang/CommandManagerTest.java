@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.lang;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Function;
@@ -270,7 +271,6 @@ public class CommandManagerTest {
 
         manager.registerAlias("\\two", "\\een");
 
-        System.out.println(manager);
         Set<String> aliases = manager.getAliasesFromOriginal("\\een");
         assertEquals("From original", true, aliases.contains("\\one"));
         assertEquals("From new set", false, aliases.contains("\\two"));
@@ -467,6 +467,52 @@ public class CommandManagerTest {
         resetup(getDefaultAliasGroups());
 
         manager.getAliasesFromOriginal("\\hihihahaheejheej");
+    }
+
+    /**
+     * The test case in {@link CommandManager#original}
+     * <p>
+     * Latex:<br>
+     * {@code \let\goodepsilon\varepsilon}<br>
+     * {@code \let\varepsilon\epsilon}<br>
+     * {@code \let\epsilon\goodepsilon}
+     * <p>
+     * Definitions:<br>
+     * {@code A := {\epsilon, \goodepsilon}}<br>
+     * {@code B := {\varepsilon}}
+     * <p>
+     * Map:<br>
+     * {@code \epsilon => B}<br>
+     * {@code \varepsilon => A}
+     */
+    @Test
+    public void epsilon() {
+        resetup(null);
+
+        // Original commands
+        manager.registerCommandNoSlash("epsilon");
+        manager.registerCommandNoSlash("varepsilon");
+
+        // Set aliases
+        manager.registerAliasNoSlash("varepsilon", "goodepsilon");
+        manager.registerAliasNoSlash("epsilon", "varepsilon");
+        manager.registerAliasNoSlash("goodepsilon", "epsilon");
+
+        // Result checking
+        Set<String> A = manager.getAliasesFromOriginalNoSlash("varepsilon");
+        Set<String> B = manager.getAliasesFromOriginalNoSlash("epsilon");
+
+        // The old 'varepsilon' should link to the nice epsilon, which is renamed to 'epsilon' with
+        // 'goodepsilon' used in the process.
+        assertEquals("A", new HashSet<String>() {{
+            add("\\epsilon");
+            add("\\goodepsilon");
+        }}, A);
+
+        // The old 'epsilon' should link to the ugly epsilon, which is put into 'varepsilon'.
+        assertEquals("B", new HashSet<String>() {{
+            add("\\varepsilon");
+        }}, B);
     }
 
 }
