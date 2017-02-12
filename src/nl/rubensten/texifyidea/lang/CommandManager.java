@@ -111,7 +111,8 @@ public class CommandManager implements Iterable<String>, Serializable {
      */
     public void registerCommand(String command) throws IllegalArgumentException {
         if (isRegistered(command)) {
-            throw new IllegalArgumentException("command has already been registered");
+            throw new IllegalArgumentException(
+                    "command '" + command + "' has already been registered");
         }
 
         Set<String> aliasSet = new HashSet<>();
@@ -152,13 +153,14 @@ public class CommandManager implements Iterable<String>, Serializable {
      */
     public void registerAlias(String command, String alias) throws IllegalArgumentException {
         if (!isRegistered(command)) {
-            throw new IllegalArgumentException("command has not been registererd");
+            throw new IllegalArgumentException(
+                    "command '" + command + "' has not been registererd");
         }
 
         Set<String> aliasSet = aliases.get(command);
 
         // If the alias is already assigned: unassign it.
-        if (!isRegistered(alias)) {
+        if (isRegistered(alias)) {
             Set<String> previousAliases = aliases.get(alias);
             previousAliases.remove(alias);
             aliases.remove(alias);
@@ -200,7 +202,8 @@ public class CommandManager implements Iterable<String>, Serializable {
      */
     public Set<String> getAliases(String command) throws IllegalArgumentException {
         if (!isRegistered(command)) {
-            throw new IllegalArgumentException("command has not been registered");
+            throw new IllegalArgumentException(
+                    "command '" + command + "' has not been registered");
         }
 
         return Collections.unmodifiableSet(aliases.get(command));
@@ -238,8 +241,9 @@ public class CommandManager implements Iterable<String>, Serializable {
      */
     public Set<String> getAliasesFromOriginal(String originalCommand) throws
             IllegalArgumentException {
-        if (!isOriginalNoSlash(originalCommand)) {
-            throw new IllegalArgumentException("originalCommand has not been registered");
+        if (!isOriginal(originalCommand)) {
+            throw new IllegalArgumentException(
+                    "originalCommand '" + originalCommand + "' has not been registered");
         }
 
         return Collections.unmodifiableSet(original.get(originalCommand));
@@ -425,5 +429,12 @@ public class CommandManager implements Iterable<String>, Serializable {
      */
     public Spliterator<String> spliteratorOriginal() {
         return original.keySet().spliterator();
+    }
+
+    @Override
+    public String toString() {
+        return "CommandManager{" + "aliases=" + aliases +
+                ", original=" + original +
+                '}';
     }
 }

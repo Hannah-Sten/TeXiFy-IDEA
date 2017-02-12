@@ -98,60 +98,59 @@ public class CommandManagerTest {
 
     private void checkDefaultAliases(Function<String, Set<String>> method) {
         assertEquals("Alias 1: contains \\one",
-                method.apply("\\one").contains("\\one"), true);
+                true, method.apply("\\one").contains("\\one"));
         assertEquals("Alias 1: contains \\un",
-                method.apply("\\ein").contains("\\un"), true);
+                true, method.apply("\\ein").contains("\\un"));
         assertEquals("Alias 1: contains \\een",
-                method.apply("\\un").contains("\\een"), true);
+                true, method.apply("\\un").contains("\\een"));
         assertEquals("Alias 1: contains \\ein",
-                method.apply("\\een").contains("\\ein"), true);
+                true, method.apply("\\een").contains("\\ein"));
 
         assertEquals("Alias 2: contains \\two",
-                method.apply("\\two").contains("\\two"), true);
+                true, method.apply("\\two").contains("\\two"));
         assertEquals("Alias 2: contains \\deux",
-                method.apply("\\zwei").contains("\\deux"), true);
+                true, method.apply("\\zwei").contains("\\deux"));
         assertEquals("Alias 2: contains \\twee",
-                method.apply("\\deux").contains("\\twee"), true);
+                true, method.apply("\\deux").contains("\\twee"));
         assertEquals("Alias 2: contains \\zwei",
-                method.apply("\\twee").contains("\\zwei"), true);
-
+                true, method.apply("\\twee").contains("\\zwei"));
         assertEquals("Alias 3: only contains \\three",
-                method.apply("\\three").contains("\\three") &&
-                        method.apply("\\three").size() == 1, true);
+                true, method.apply("\\three").contains("\\three") &&
+                        method.apply("\\three").size() == 1);
 
         assertEquals("Alias 10: contains \\ten",
-                method.apply("\\tien").contains("\\ten"), true);
+                true, method.apply("\\tien").contains("\\ten"));
         assertEquals("Alias 10: contains \\tien",
-                method.apply("\\ten").contains("\\tien"), true);
+                true, method.apply("\\ten").contains("\\tien"));
     }
 
     private void checkDefaultAliasesNoSlash(Function<String, Set<String>> method) {
         assertEquals("Alias 1: contains one",
-                method.apply("one").contains("\\one"), true);
+                true, method.apply("one").contains("\\one"));
         assertEquals("Alias 1: contains un",
-                method.apply("ein").contains("\\un"), true);
+                true, method.apply("ein").contains("\\un"));
         assertEquals("Alias 1: contains een",
-                method.apply("un").contains("\\een"), true);
+                true, method.apply("un").contains("\\een"));
         assertEquals("Alias 1: contains ein",
-                method.apply("een").contains("\\ein"), true);
+                true, method.apply("een").contains("\\ein"));
 
         assertEquals("Alias 2: contains two",
-                method.apply("two").contains("\\two"), true);
+                true, method.apply("two").contains("\\two"));
         assertEquals("Alias 2: contains deux",
-                method.apply("zwei").contains("\\deux"), true);
+                true, method.apply("zwei").contains("\\deux"));
         assertEquals("Alias 2: contains twee",
-                method.apply("deux").contains("\\twee"), true);
+                true, method.apply("deux").contains("\\twee"));
         assertEquals("Alias 2: contains zwei",
-                method.apply("twee").contains("\\zwei"), true);
+                true, method.apply("twee").contains("\\zwei"));
 
         assertEquals("Alias 3: only contains three",
-                method.apply("three").contains("\\three") &&
-                        method.apply("three").size() == 1, true);
+                true, method.apply("three").contains("\\three") &&
+                        method.apply("three").size() == 1);
 
         assertEquals("Alias 10: contains ten",
-                method.apply("tien").contains("\\ten"), true);
+                true, method.apply("tien").contains("\\ten"));
         assertEquals("Alias 10: contains tien",
-                method.apply("ten").contains("\\tien"), true);
+                true, method.apply("ten").contains("\\tien"));
     }
 
     private String[][] getDefaultAliasGroups() {
@@ -176,11 +175,11 @@ public class CommandManagerTest {
         final int EXPECTED_SIZE = 5;
 
         assertEquals("New count", EXPECTED_SIZE, manager.originalSize());
-        assertEquals("Contains begin", manager.isRegistered("\\begin"), true);
-        assertEquals("Contains alpha", manager.isRegistered("\\alpha"), true);
-        assertEquals("Contains beta", manager.isRegistered("\\beta"), true);
-        assertEquals("Contains gamma", manager.isRegistered("\\gamma"), true);
-        assertEquals("Contains delta", manager.isRegistered("\\delta"), true);
+        assertEquals("Contains begin", true, manager.isRegistered("\\begin"));
+        assertEquals("Contains alpha", true, manager.isRegistered("\\alpha"));
+        assertEquals("Contains beta", true, manager.isRegistered("\\beta"));
+        assertEquals("Contains gamma", true, manager.isRegistered("\\gamma"));
+        assertEquals("Contains delta", true, manager.isRegistered("\\delta"));
     }
 
     @Test
@@ -196,11 +195,11 @@ public class CommandManagerTest {
         final int EXPECTED_SIZE = 5;
 
         assertEquals("New count", EXPECTED_SIZE, manager.originalSize());
-        assertEquals("Contains begin", manager.isRegistered("\\begin"), true);
-        assertEquals("Contains alpha", manager.isRegistered("\\alpha"), true);
-        assertEquals("Contains beta", manager.isRegistered("\\beta"), true);
-        assertEquals("Contains gamma", manager.isRegistered("\\gamma"), true);
-        assertEquals("Contains delta", manager.isRegistered("\\delta"), true);
+        assertEquals("Contains begin", true, manager.isRegistered("\\begin"));
+        assertEquals("Contains alpha", true, manager.isRegistered("\\alpha"));
+        assertEquals("Contains beta", true, manager.isRegistered("\\beta"));
+        assertEquals("Contains gamma", true, manager.isRegistered("\\gamma"));
+        assertEquals("Contains delta", true, manager.isRegistered("\\delta"));
     }
 
     @Test
@@ -236,17 +235,17 @@ public class CommandManagerTest {
         manager.registerCommand("\\three");
         manager.registerCommand("\\ten");
 
-        manager.registerAliasNoSlash("\\one", "\\een");
-        manager.registerAliasNoSlash("\\one", "\\un");
-        manager.registerAliasNoSlash("\\een", "\\ein");
+        manager.registerAliasNoSlash("one", "een");
+        manager.registerAliasNoSlash("one", "un");
+        manager.registerAliasNoSlash("een", "ein");
 
-        manager.registerAliasNoSlash("\\two", "\\twee");
-        manager.registerAliasNoSlash("\\twee", "\\deux");
-        manager.registerAliasNoSlash("\\deux", "\\zwei");
+        manager.registerAliasNoSlash("two", "twee");
+        manager.registerAliasNoSlash("twee", "deux");
+        manager.registerAliasNoSlash("deux", "zwei");
 
-        manager.registerAliasNoSlash("\\three", "\\tien");
-        manager.registerAliasNoSlash("\\ten", "\\tien");
-        manager.registerAliasNoSlash("\\tien", "\\dix");
+        manager.registerAliasNoSlash("three", "tien");
+        manager.registerAliasNoSlash("ten", "tien");
+        manager.registerAliasNoSlash("tien", "dix");
 
         checkDefaultAliases(manager::getAliases);
     }
@@ -271,9 +270,10 @@ public class CommandManagerTest {
 
         manager.registerAlias("\\two", "\\een");
 
+        System.out.println(manager);
         Set<String> aliases = manager.getAliasesFromOriginal("\\een");
-        assertEquals("From original", aliases.contains("\\een"), true);
-        assertEquals("From new set", aliases.contains("\\two"), false);
+        assertEquals("From original", true, aliases.contains("\\one"));
+        assertEquals("From new set", false, aliases.contains("\\two"));
     }
 
     @Test
@@ -283,8 +283,8 @@ public class CommandManagerTest {
         manager.registerAlias("\\twee", "\\een");
 
         Set<String> aliases = manager.getAliasesFromOriginalNoSlash("een");
-        assertEquals("From original", aliases.contains("\\een"), true);
-        assertEquals("From new set", aliases.contains("\\two"), false);
+        assertEquals("From original", true, aliases.contains("\\one"));
+        assertEquals("From new set", false, aliases.contains("\\two"));
     }
 
     @Test
@@ -292,39 +292,32 @@ public class CommandManagerTest {
         resetup(getDefaultAliasGroups());
 
         Set<String> commands = manager.getAllCommands();
-        assertEquals("All commands 1", manager.getAllCommands().contains("\\one"), true);
-        assertEquals("All commands 2", manager.getAllCommands().contains("\\two"), true);
-        assertEquals("All commands 3", manager.getAllCommands().contains("\\three"), true);
-        assertEquals("All commands 10", manager.getAllCommands().contains("\\tien"), true);
-
-        assertEquals("All commands !2 (no Germans allowed).",
-                manager.getAllCommands().contains("\\zwei"), false);
-        assertEquals("All commands !3 (no Germans allowed).",
-                manager.getAllCommands().contains("\\drei"), false);
+        assertEquals("All commands 1", true, manager.getAllCommands().contains("\\one"));
+        assertEquals("All commands 2", true, manager.getAllCommands().contains("\\two"));
+        assertEquals("All commands 3", true, manager.getAllCommands().contains("\\three"));
+        assertEquals("All commands 10", true, manager.getAllCommands().contains("\\tien"));
     }
 
     @Test
     public void isRegistered() throws Exception {
         resetup(getDefaultAliasGroups());
 
-        assertEquals("Is Registered \\one", manager.isRegistered("\\one"), true);
-        assertEquals("Is Registered \\three", manager.isRegistered("\\three"), true);
-        assertEquals("Is Not Registered (alias) \\twee",
-                manager.isRegistered("\\twee"), false);
+        assertEquals("Is Registered \\one", true, manager.isRegistered("\\one"));
+        assertEquals("Is Registered \\three", true, manager.isRegistered("\\three"));
         assertEquals("Is Not Registered (bullshit) \\ninety",
-                manager.isRegistered("\\ninety"), false);
+                false, manager.isRegistered("\\ninety"));
     }
 
     @Test
     public void isRegisteredNoSlash() throws Exception {
         resetup(getDefaultAliasGroups());
 
-        assertEquals("Is Registered one", manager.isRegistered("one"), true);
-        assertEquals("Is Registered three", manager.isRegistered("three"), true);
+        assertEquals("Is Registered one", true, manager.isRegisteredNoSlash("one"));
+        assertEquals("Is Registered three", true, manager.isRegisteredNoSlash("three"));
         assertEquals("Is Not Registered (alias) twee",
-                manager.isRegistered("twee"), false);
+                false, manager.isRegistered("twee"));
         assertEquals("Is Not Registered (bullshit) ninety",
-                manager.isRegistered("ninety"), false);
+                false, manager.isRegistered("ninety"));
     }
 
     @Test
@@ -333,12 +326,12 @@ public class CommandManagerTest {
 
         manager.registerAlias("\\two", "\\een");
 
-        assertEquals("Is Registered \\een", manager.isOriginal("\\een"), true);
-        assertEquals("Is Registered \\twee", manager.isOriginal("\\twee"), true);
+        assertEquals("Is Registered \\een", true, manager.isOriginal("\\een"));
+        assertEquals("Is Registered \\twee", true, manager.isOriginal("\\twee"));
         assertEquals("Is Not Registered (alias) \\two",
-                manager.isOriginal("\\two"), false);
+                false, manager.isOriginal("\\two"));
         assertEquals("Is Not Registered (bullshit) \\ninety",
-                manager.isOriginal("\\ninety"), false);
+                false, manager.isOriginal("\\ninety"));
     }
 
     @Test
@@ -347,14 +340,14 @@ public class CommandManagerTest {
 
         manager.registerAlias("\\twee", "\\one");
 
-        assertEquals("Is Registered \\one",
-                manager.isOriginalNoSlash("\\one"), true);
-        assertEquals("Is Registered \\two",
-                manager.isOriginalNoSlash("\\two"), true);
-        assertEquals("Is Not Registered (alias) \\twee",
-                manager.isOriginalNoSlash("\\twee"), false);
+        assertEquals("Is Registered \\een",
+                true, manager.isOriginalNoSlash("een"));
+        assertEquals("Is Registered \\twee",
+                true, manager.isOriginalNoSlash("twee"));
+        assertEquals("Is Not Registered (alias) \\two",
+                false, manager.isOriginalNoSlash("two"));
         assertEquals("Is Not Registered (bullshit) \\ninety",
-                manager.isOriginalNoSlash("\\ninety"), false);
+                false, manager.isOriginalNoSlash("ninety"));
     }
 
     @Test
@@ -362,14 +355,14 @@ public class CommandManagerTest {
         resetup(getDefaultAliasGroups());
 
         manager.clear();
-        assertEquals("Cleared", manager.size(), 0);
+        assertEquals("Cleared", 0, manager.size());
     }
 
     @Test
     public void size() throws Exception {
         resetup(getDefaultAliasGroups());
 
-        assertEquals("Count", manager.size(), 11);
+        assertEquals("Count", 11, manager.size());
     }
 
     @Test
@@ -381,7 +374,7 @@ public class CommandManagerTest {
         manager.registerAlias("\\two", "\\un");
         manager.registerAlias("\\two", "\\ein");
 
-        assertEquals("Original size", manager.originalSize(), 4);
+        assertEquals("Original size", 4, manager.originalSize());
     }
 
     @Test
@@ -391,7 +384,7 @@ public class CommandManagerTest {
         long count = manager.stream().filter(s -> s.equals("\\one") || s.equals("\\ten") ||
                 s.equals("\\zwei") || s.equals("\\twee")).count();
 
-        assertEquals("Alias Stream", count, 4);
+        assertEquals("Alias Stream", 4, count);
     }
 
     @Test
@@ -401,7 +394,7 @@ public class CommandManagerTest {
         long count = manager.parallelStream().filter(s -> s.equals("\\one") || s.equals("\\ten") ||
                 s.equals("\\zwei") || s.equals("\\twee")).count();
 
-        assertEquals("Alias Parallel Stream", count, 4);
+        assertEquals("Alias Parallel Stream", 4, count);
     }
 
     @Test
@@ -413,7 +406,7 @@ public class CommandManagerTest {
         for (String alias : manager) {
             count++;
         }
-        assertEquals("Alias Iterator", count, aliases);
+        assertEquals("Alias Iterator", aliases, count);
     }
 
     @Test
@@ -423,7 +416,7 @@ public class CommandManagerTest {
         long count = manager.streamOriginal().filter(s -> s.equals("\\een") || s.equals("\\three"))
                 .count();
 
-        assertEquals("Original Stream", count, 2);
+        assertEquals("Original Stream", 2, count);
     }
 
     @Test
@@ -433,7 +426,7 @@ public class CommandManagerTest {
         long count = manager.parallelStreamOriginal().filter(s -> s.equals("\\een") || s.equals("\\three"))
                 .count();
 
-        assertEquals("Original Parallel Stream", count, 4);
+        assertEquals("Original Parallel Stream", 2, count);
     }
 
     @Test
@@ -445,7 +438,7 @@ public class CommandManagerTest {
         for (Iterator<String> it = manager.iteratorOriginal(); it.hasNext(); it.next()) {
             count++;
         }
-        assertEquals("Original Iterator", count, originals);
+        assertEquals("Original Iterator", originals, count);
     }
 
     @Test(expected = IllegalArgumentException.class)
