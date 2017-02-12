@@ -167,6 +167,20 @@ public class CommandManager implements Iterable<String>, Serializable {
     /**
      * TODO: docs.
      */
+    public Stream<String> streamOriginal() {
+        return StreamSupport.stream(spliteratorOriginal(), false);
+    }
+
+    /**
+     * TODO: docs.
+     */
+    public Stream<String> parallelStreamOriginal() {
+        return StreamSupport.stream(spliteratorOriginal(), true);
+    }
+
+    /**
+     * TODO: docs.
+     */
     @Override
     public Iterator<String> iterator() {
         return aliases.keySet().iterator();
@@ -178,6 +192,20 @@ public class CommandManager implements Iterable<String>, Serializable {
     @Override
     public Spliterator<String> spliterator() {
         return aliases.keySet().spliterator();
+    }
+
+    /**
+     * TODO: docs.
+     */
+    public Iterator<String> iteratorOriginal() {
+        return original.keySet().iterator();
+    }
+
+    /**
+     * TODO: docs.
+     */
+    public Spliterator<String> spliteratorOriginal() {
+        return original.keySet().spliterator();
     }
 
 }

@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.lang;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -268,9 +269,9 @@ public class CommandManagerTest {
     public void getAliasesFromOriginal() throws Exception {
         resetup(getDefaultAliasGroups());
 
-        manager.registerAlias("\\twee", "\\one");
+        manager.registerAlias("\\two", "\\een");
 
-        Set<String> aliases = manager.getAliasesFromOriginal("\\one");
+        Set<String> aliases = manager.getAliasesFromOriginal("\\een");
         assertEquals("From original", aliases.contains("\\een"), true);
         assertEquals("From new set", aliases.contains("\\two"), false);
     }
@@ -279,9 +280,9 @@ public class CommandManagerTest {
     public void getAliasesFromOriginalNoSlash() throws Exception {
         resetup(getDefaultAliasGroups());
 
-        manager.registerAlias("\\twee", "\\one");
+        manager.registerAlias("\\twee", "\\een");
 
-        Set<String> aliases = manager.getAliasesFromOriginalNoSlash("one");
+        Set<String> aliases = manager.getAliasesFromOriginalNoSlash("een");
         assertEquals("From original", aliases.contains("\\een"), true);
         assertEquals("From new set", aliases.contains("\\two"), false);
     }
@@ -330,12 +331,12 @@ public class CommandManagerTest {
     public void isOriginal() throws Exception {
         resetup(getDefaultAliasGroups());
 
-        manager.registerAlias("\\twee", "\\one");
+        manager.registerAlias("\\two", "\\een");
 
-        assertEquals("Is Registered \\one", manager.isOriginal("\\one"), true);
-        assertEquals("Is Registered \\two", manager.isOriginal("\\two"), true);
-        assertEquals("Is Not Registered (alias) \\twee",
-                manager.isOriginal("\\twee"), false);
+        assertEquals("Is Registered \\een", manager.isOriginal("\\een"), true);
+        assertEquals("Is Registered \\twee", manager.isOriginal("\\twee"), true);
+        assertEquals("Is Not Registered (alias) \\two",
+                manager.isOriginal("\\two"), false);
         assertEquals("Is Not Registered (bullshit) \\ninety",
                 manager.isOriginal("\\ninety"), false);
     }
@@ -375,10 +376,10 @@ public class CommandManagerTest {
     public void originalSize() throws Exception {
         resetup(getDefaultAliasGroups());
 
-        manager.registerAlias("\\twee", "\\one");
-        manager.registerAlias("\\twee", "\\een");
-        manager.registerAlias("\\twee", "\\un");
-        manager.registerAlias("\\twee", "\\ein");
+        manager.registerAlias("\\two", "\\one");
+        manager.registerAlias("\\two", "\\een");
+        manager.registerAlias("\\two", "\\un");
+        manager.registerAlias("\\two", "\\ein");
 
         assertEquals("Original size", manager.originalSize(), 4);
     }
@@ -412,7 +413,39 @@ public class CommandManagerTest {
         for (String alias : manager) {
             count++;
         }
-        assertEquals("Iterator", count, aliases);
+        assertEquals("Alias Iterator", count, aliases);
+    }
+
+    @Test
+    public void streamOriginal() throws Exception {
+        resetup(getDefaultAliasGroups());
+
+        long count = manager.streamOriginal().filter(s -> s.equals("\\een") || s.equals("\\three"))
+                .count();
+
+        assertEquals("Original Stream", count, 2);
+    }
+
+    @Test
+    public void parallelStreamOriginal() throws Exception {
+        resetup(getDefaultAliasGroups());
+
+        long count = manager.parallelStreamOriginal().filter(s -> s.equals("\\een") || s.equals("\\three"))
+                .count();
+
+        assertEquals("Original Parallel Stream", count, 4);
+    }
+
+    @Test
+    public void iteratorOriginal() throws Exception {
+        resetup(getDefaultAliasGroups());
+
+        int originals = manager.originalSize();
+        int count = 0;
+        for (Iterator<String> it = manager.iteratorOriginal(); it.hasNext(); it.next()) {
+            count++;
+        }
+        assertEquals("Original Iterator", count, originals);
     }
 
 }
