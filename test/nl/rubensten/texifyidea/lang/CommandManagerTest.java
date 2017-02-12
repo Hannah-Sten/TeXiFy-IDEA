@@ -448,4 +448,32 @@ public class CommandManagerTest {
         assertEquals("Original Iterator", count, originals);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionRegisterCommand() {
+        resetup(getDefaultAliasGroups());
+
+        manager.registerCommand("\\one");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionRegisterAlias() {
+        resetup(getDefaultAliasGroups());
+
+        manager.registerAlias("\\GoodDaySir", "\\BullShitStuffs");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionGetAliases() {
+        resetup(getDefaultAliasGroups());
+
+        manager.getAliases("\\hihihahaheejheej");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionGetAliasesOriginal() {
+        resetup(getDefaultAliasGroups());
+
+        manager.getAliasesFromOriginal("\\hihihahaheejheej");
+    }
+
 }

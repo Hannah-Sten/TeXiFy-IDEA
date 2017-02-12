@@ -110,7 +110,14 @@ public class CommandManager implements Iterable<String>, Serializable {
      *         When the command has already been registered.s
      */
     public void registerCommand(String command) throws IllegalArgumentException {
-        // TODO: implement.
+        if (isRegistered(command)) {
+            throw new IllegalArgumentException("command has already been registered");
+        }
+
+        Set<String> aliasSet = new HashSet<>();
+        aliasSet.add(command);
+        original.put(command, aliasSet);
+        aliases.put(command, aliasSet);
     }
 
     /**
@@ -141,10 +148,24 @@ public class CommandManager implements Iterable<String>, Serializable {
      *         The alias to register for the command starting with a backslash. This could be either
      *         a new command, or an existing command <i>E.g. {@code \start}</i>
      * @throws IllegalArgumentException
-     *         When the given command already exixts.
+     *         When the given command does not exixt.
      */
     public void registerAlias(String command, String alias) throws IllegalArgumentException {
-        // TODO: implement.
+        if (!isRegistered(command)) {
+            throw new IllegalArgumentException("command has not been registererd");
+        }
+
+        Set<String> aliasSet = aliases.get(command);
+
+        // If the alias is already assigned: unassign it.
+        if (!isRegistered(alias)) {
+            Set<String> previousAliases = aliases.get(alias);
+            previousAliases.remove(alias);
+            aliases.remove(alias);
+        }
+
+        aliasSet.add(alias);
+        aliases.put(alias, aliasSet);
     }
 
     /**
@@ -178,8 +199,11 @@ public class CommandManager implements Iterable<String>, Serializable {
      *         When the given command is not registered.
      */
     public Set<String> getAliases(String command) throws IllegalArgumentException {
-        // TODO: implement.
-        return null;
+        if (!isRegistered(command)) {
+            throw new IllegalArgumentException("command has not been registered");
+        }
+
+        return Collections.unmodifiableSet(aliases.get(command));
     }
 
     /**
@@ -214,8 +238,11 @@ public class CommandManager implements Iterable<String>, Serializable {
      */
     public Set<String> getAliasesFromOriginal(String originalCommand) throws
             IllegalArgumentException {
-        // TODO: implement.
-        return null;
+        if (!isOriginalNoSlash(originalCommand)) {
+            throw new IllegalArgumentException("originalCommand has not been registered");
+        }
+
+        return Collections.unmodifiableSet(original.get(originalCommand));
     }
 
     /**
@@ -233,7 +260,8 @@ public class CommandManager implements Iterable<String>, Serializable {
      * @throws IllegalArgumentException
      *         When the original command has not been registered.
      */
-    public Set<String> getAliasesFromOriginalNoSlash(String originalCommandNoSlash) {
+    public Set<String> getAliasesFromOriginalNoSlash(String originalCommandNoSlash) throws
+            IllegalArgumentException {
         return getAliasesFromOriginal("\\" + originalCommandNoSlash);
     }
 
