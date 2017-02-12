@@ -40,6 +40,7 @@ Please bear in mind that this is just a side project for us.
 
 ## In the works
 * Document structure view [[structure-view](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/structure-view)].
+* Command autocomplete [[completion](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/completion)].
 
 ## Planned
 * Embedded (automatically updating) PDF viewer.
