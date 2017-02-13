@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.folding;
+package nl.rubensten.texifyidea.lang;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +133,94 @@ public enum LatexMathCommand {
     BOXED_MINUS("boxminus", "⊟", false),
     BOXED_TIMES("boxtimes", "⊠", false),
     BOXED_DOT("boxdot", "⊡", false),
+
+    /*
+        Generic commands
+     */
+    MATHBF("mathbf", new RequiredArgument("text")),
+    MATHCAL("mathcal", new RequiredArgument("text")),
+    MATHDS("mathds", new RequiredArgument("mathds")),
+    MATHELLIPSIS("mathellipsis"),
+    MATHGROUP("mathgroup"),
+    MATHIT("mathit", new RequiredArgument("text")),
+    MATHNORMAL("mathnormal", new RequiredArgument("text")),
+    MATHRM("mathrm", new RequiredArgument("text")),
+    MATHSCR("mathscr"),
+    MATHSF("mathsf", new RequiredArgument("text")),
+    MATHSTERLING("mathsterling"),
+    MATHTT("mathtt", new RequiredArgument("text")),
+    MATHUNDERSCORE("mathunderscore"),
+    SQRT("sqrt", new OptionalArgument("root"), new RequiredArgument("arg")),
+    ACUTE("acute", new RequiredArgument("a")),
+    ALEPH("aleph"),
+    AMALG("amalg"),
+    ARCCOS("arccos"),
+    ARCSIN("arcsin"),
+    ARCTAN("arctan"),
+    ARG("arg"),
+    ARROWVERT("arrowvert"),
+    CAPITAL_ARROWVERT("Arrowvert"),
+    ASYMP("asymp"),
+    BACKSLASH("backslash"),
+    BAR("bar", new RequiredArgument("a")),
+    BIGCAP("bigcap"),
+    BIGCIRC("bigcirc"),
+    BIGCUP("bigcup"),
+    BIGODOT("bigodot"),
+    BIGOPLUS("bigoplus"),
+    BIGOTIMES("bigotimes"),
+    BIGSQCUP("bigsqcup"),
+    BIGTRIANGLEDOWN("bigtriangledown"),
+    BIGTRIANGLEUP("bigtriangleup"),
+    BIGUPLUS("biguplus"),
+    BIGVEE("bigvee"),
+    BIGWEDGE("bigwedge"),
+    BOT("bot"),
+    BRACEVERT("bracevert"),
+    BREVE("breve", new RequiredArgument("a")),
+    CDOT("cdot"),
+    CDOTS("cdots"),
+    CHECK("check", new RequiredArgument("a")),
+    CLUBSUIT("clubsuit"),
+    COLON("colon"),
+    CONG("cong"),
+    COS("cos"),
+    COSH("cosh"),
+    COT("cot"),
+    COTH("coth"),
+    CSC("csc"),
+    DAGGER("dagger"),
+    DASHV("dashv"),
+    DD("dd"),
+    DDAGGER("ddagger"),
+    DDOT("ddot", new RequiredArgument("a")),
+    DDOTS("ddots"),
+    DEG("deg"),
+    DET("det"),
+    DFRAC("dfrac", new RequiredArgument("num"), new RequiredArgument("den")),
+    DIAMOND("diamond"),
+    DIAMONDSUIT("diamondsuit"),
+    DIM("dim"),
+    DIV("div"),
+    DOTEQ("doteq"),
+    DOT("dot", new RequiredArgument("a")),
+    DOWNARROW("downarrow"),
+    CAPITAL_DOWNARROW("Downarrow"),
+    ELL("ell"),
+    EXP("exp"),
+    FLAT("flat"),
+    FRAC("frac", new RequiredArgument("num"), new RequiredArgument("den")),
+    GRAVE("grave", new RequiredArgument("a")),
+    HAT("hat", new RequiredArgument("a")),
+    MATHRING("mathring", new RequiredArgument("a")),
+    OVERBRACE("overbrace", new RequiredArgument("text")),
+    OVERLINE("overline", new RequiredArgument("text")),
+    TILDE("tilde", new RequiredArgument("a")),
+    UNDERBRACE("underbrace", new RequiredArgument("text")),
+    UNDERLINE("underline", new RequiredArgument("text")),
+    VEC("vec", new RequiredArgument("a")),
+    WIDEHAT("widehat", new RequiredArgument("text")),
+    WIDETILDE("widetilde", new RequiredArgument("text")),
     ;
 
     private static final Map<String, LatexMathCommand> lookup = new HashMap<>();
@@ -144,13 +232,23 @@ public enum LatexMathCommand {
     }
 
     private String command;
+    private Argument[] arguments;
     private String display;
     private boolean collapse;
 
-    LatexMathCommand(String command, String display, boolean collapse) {
-        this.command = command;
+    LatexMathCommand(String command, String display, boolean collapse, Argument... arguments) {
+        this(command, arguments);
         this.display = display;
         this.collapse = collapse;
+    }
+
+    LatexMathCommand(String command, Argument... arguments) {
+        this.command = command;
+        this.arguments = arguments != null ? arguments : new Argument[]{};
+    }
+
+    LatexMathCommand(String command) {
+        this.command = command;
     }
 
     public static LatexMathCommand get(String command) {
@@ -159,6 +257,23 @@ public enum LatexMathCommand {
 
     public String getCommand() {
         return command;
+    }
+
+    public String getCommandDisplay() {
+        return "\\" + command;
+    }
+
+    public Argument[] getArguments() {
+        return arguments != null ? arguments : new Argument[] {};
+    }
+
+    public String getArgumentsDisplay() {
+        StringBuilder sb = new StringBuilder();
+        for (Argument arg : getArguments()) {
+            sb.append(arg.toString());
+        }
+
+        return sb.toString();
     }
 
     public String getDisplay() {

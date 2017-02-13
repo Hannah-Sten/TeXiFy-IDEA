@@ -64,6 +64,7 @@
 
         <!-- Editor -->
         <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
+        <codeInsight.parameterInfo language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexParameterInfoHandler"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
         <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
 
