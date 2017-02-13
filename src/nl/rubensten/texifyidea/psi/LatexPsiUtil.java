@@ -1,6 +1,9 @@
 package nl.rubensten.texifyidea.psi;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.TokenSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,4 +130,10 @@ public class LatexPsiUtil {
         return result;
     }
 
+    /**
+     * Returns whether the node has one of the element types specified in the token set.
+     */
+    public static boolean hasElementType(@NotNull ASTNode node, @NotNull TokenSet set) {
+        return set.contains(node.getElementType());
+    }
 }
