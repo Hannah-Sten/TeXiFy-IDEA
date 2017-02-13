@@ -1,0 +1,9 @@
+%
+% ${NAME} package
+% Author: ${USER}
+% ${DATE}
+%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{${NAME}}[${USER}'s Package]
+

@@ -57,6 +57,13 @@
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
         <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
 
+        <!-- Templates -->
+        <internalFileTemplate name="LaTeX Source"/>
+        <internalFileTemplate name="LaTeX Package"/>
+        <internalFileTemplate name="LaTeX Document class"/>
+
+        <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
+
         <!-- Settings -->
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
 

@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 /**
  * @author Ruben Schellekens, Sten Wessel
  */
-public class TeXiFyUtil {
+public class TexifyUtil {
 
-    private TeXiFyUtil() {
+    private TexifyUtil() {
     }
 
     /**
@@ -104,7 +104,7 @@ public class TeXiFyUtil {
         for (PsiElement element : elements) {
             if (element instanceof LatexCommands) {
                 LatexCommands commands = (LatexCommands)element;
-                if (TeXiFyUtil.isEntryPoint(commands)) {
+                if (TexifyUtil.isEntryPoint(commands)) {
                     return true;
                 }
             }
