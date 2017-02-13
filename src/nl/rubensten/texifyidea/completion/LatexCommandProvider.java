@@ -43,6 +43,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                     cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
                             .withPresentableText(cmd.getCommandDisplay())
                             .bold()
+                            .withTailText(cmd.getArgumentsDisplay(), true)
                             .withTypeText(cmd.getDisplay())
             ));
 
