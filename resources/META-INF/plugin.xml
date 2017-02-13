@@ -45,6 +45,10 @@
 
     <!-- Custom actions -->
     <actions>
+        <!-- New LaTeX file -->
+        <action id="texify.NewFile" class="nl.rubensten.texifyidea.action.NewLatexFileAction">
+            <add-to-group group-id="NewGroup1" anchor="after" relative-to-action="NewModuleInGroup"/>
+        </action>
     </actions>
 
     <!-- Hooks for plugin functionality -->

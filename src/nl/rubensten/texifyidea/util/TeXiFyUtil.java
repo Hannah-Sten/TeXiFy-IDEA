@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -16,6 +17,39 @@ import java.util.stream.Collectors;
 public class TeXiFyUtil {
 
     private TeXiFyUtil() {
+    }
+
+    /**
+     * Appends an extension to a path only if the given path does not end in that extension.
+     *
+     * @param path
+     *         The path to append the extension to.
+     * @param extensionWithoutDot
+     *         The extension to append optionally.
+     * @return A path ending with the given extension without duplications (e.g. {@code .tex.tex} is
+     * impossible}.
+     * @throws IllegalArgumentException
+     *         When {@code path} or {@code extensionWithoutDot} is {@code null}.
+     */
+    public static String appendExtension(@NotNull String path, @NotNull String extensionWithoutDot)
+            throws IllegalArgumentException {
+        if (path == null) {
+            throw new IllegalArgumentException("path cannot be null");
+        }
+
+        if (extensionWithoutDot == null) {
+            throw new IllegalArgumentException("extensionWithoutDot cannot be null");
+        }
+
+        if (path.toLowerCase().endsWith("." + extensionWithoutDot.toLowerCase())) {
+            return path;
+        }
+
+        if (path.endsWith(".")) {
+            return path + extensionWithoutDot;
+        }
+
+        return path + "." + extensionWithoutDot;
     }
 
     /**
