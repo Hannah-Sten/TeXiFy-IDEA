@@ -21,7 +21,7 @@ public class CommandManagerTest {
 
     @Before
     public void setup() {
-        manager = CommandManager.getInstance();
+        manager = new CommandManager();
     }
 
     private void resetup(String[][] aliasGroups) {
@@ -513,6 +513,13 @@ public class CommandManagerTest {
         assertEquals("B", new HashSet<String>() {{
             add("\\varepsilon");
         }}, B);
+    }
+
+    @Test
+    public void emptyOnCreation() {
+        manager = new CommandManager();
+
+        assertEquals("Empty on creation", 0, manager.size());
     }
 
 }

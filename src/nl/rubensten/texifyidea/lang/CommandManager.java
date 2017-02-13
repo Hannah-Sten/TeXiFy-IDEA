@@ -19,19 +19,12 @@ import java.util.stream.StreamSupport;
  * <p>
  * <i>Aliases</i> are just what they say on the tin: alternate names for a command. The manager
  * makes you register and look up all aliases for a given command.
- * <p>
- * Singleton. Access via {@link CommandManager#getInstance()}.
  *
  * @author Ruben Schellekens
  */
 public class CommandManager implements Iterable<String>, Serializable {
 
     private static final long serialVersionUID = 192873489129843L;
-
-    /**
-     * Singleton instance of CommandManager.
-     */
-    private static final CommandManager INSTANCE = new CommandManager();
 
     /**
      * Maps a command to a set of aliases including the command itself.
@@ -87,13 +80,9 @@ public class CommandManager implements Iterable<String>, Serializable {
     private Map<String, Set<String>> original;
 
     /**
-     * Get the singleton instance.
+     * Create a new command manager without any commands registered.
      */
-    public static CommandManager getInstance() {
-        return INSTANCE;
-    }
-
-    private CommandManager() {
+    public CommandManager() {
         aliases = new HashMap<>();
         original = new HashMap<>();
     }
