@@ -24,6 +24,7 @@
     <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
     <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
     <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
+    <codeInsight.parameterInfo language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexParameterInfoHandler"/>
     <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.LatexLineMarkerProvider"/>
 
     <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
