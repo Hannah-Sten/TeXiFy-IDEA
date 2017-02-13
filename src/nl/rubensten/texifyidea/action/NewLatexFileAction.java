@@ -4,6 +4,7 @@ import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -56,6 +57,11 @@ public class NewLatexFileAction extends AnAction implements DumbAware {
             this.fileSystem = LocalFileSystem.getInstance();
         }
 
+        private void openFile(VirtualFile virtualFile) {
+            FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+            fileEditorManager.openFile(virtualFile, true);
+        }
+
         @Nullable
         @Override
         public PsiElement createFile(@NotNull String fileName, @NotNull String option) {
@@ -75,13 +81,15 @@ public class NewLatexFileAction extends AnAction implements DumbAware {
             }
 
             VirtualFile virtualFile = fileSystem.refreshAndFindFileByPath(newFilePath);
+            openFile(virtualFile);
+
             return PsiManager.getInstance(project).findFile(virtualFile);
         }
 
         @NotNull
         @Override
         public String getActionName(@NotNull String fileName, @NotNull String option) {
-            return "texify.NewFile";
+            return "New LaTeX File";
         }
     }
 }
