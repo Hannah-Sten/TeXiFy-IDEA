@@ -29,7 +29,8 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         if (mode == LatexMode.NORMAL) {
             result.addAllElements(ContainerUtil.map2List(
                     LatexNoMathCommand.values(),
-                    cmd -> LookupElementBuilder.create(cmd.getCommandDisplay())
+                    cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
+                            .withPresentableText(cmd.getCommandDisplay())
                             .bold()
                             .withTailText(cmd.getArgumentsDisplay(), true)
                             .withTypeText(cmd.getDisplay())
@@ -39,7 +40,8 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         else if (mode == LatexMode.MATH) {
             result.addAllElements(ContainerUtil.map2List(
                     LatexMathCommand.values(),
-                    cmd -> LookupElementBuilder.create(cmd.getCommandDisplay())
+                    cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
+                            .withPresentableText(cmd.getCommandDisplay())
                             .bold()
                             .withTypeText(cmd.getDisplay())
             ));
