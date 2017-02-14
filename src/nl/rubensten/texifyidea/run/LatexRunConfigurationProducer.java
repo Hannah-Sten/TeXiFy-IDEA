@@ -28,6 +28,10 @@ public class LatexRunConfigurationProducer extends RunConfigurationProducer<Late
         }
 
         PsiFile container = getEntryPointContainer(location);
+        if (container == null) {
+            return false;
+        }
+
         VirtualFile mainFile = container.getVirtualFile();
         if (mainFile == null) {
             return false;
@@ -55,7 +59,12 @@ public class LatexRunConfigurationProducer extends RunConfigurationProducer<Late
     public boolean isConfigurationFromContext(LatexRunConfiguration runConfiguration,
                                               ConfigurationContext context) {
         VirtualFile mainFile = runConfiguration.getMainFile();
-        VirtualFile currentFile = context.getDataContext().getData(DataKeys.PSI_FILE).getVirtualFile();
+        PsiFile psiFile = context.getDataContext().getData(DataKeys.PSI_FILE);
+        if (psiFile == null) {
+            return false;
+        }
+
+        VirtualFile currentFile = psiFile.getVirtualFile();
 
         return mainFile.getPath().equals(currentFile.getPath());
     }
