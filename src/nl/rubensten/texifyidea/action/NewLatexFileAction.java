@@ -17,8 +17,6 @@ import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static nl.rubensten.texifyidea.util.TexifyUtil.logf;
-
 /**
  * @author Ruben Schellekens
  */
@@ -35,8 +33,6 @@ public class NewLatexFileAction extends CreateElementActionBase {
     @NotNull
     @Override
     protected PsiElement[] invokeDialog(Project project, PsiDirectory psiDirectory) {
-        logf("invokeDialog(%s, %s)", project, psiDirectory);
-
         LatexFileCreator fileCreator = new LatexFileCreator(project, psiDirectory);
 
         CreateFileFromTemplateDialog.Builder builder = CreateFileFromTemplateDialog.createDialog(project);

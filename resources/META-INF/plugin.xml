@@ -62,7 +62,7 @@
         <internalFileTemplate name="LaTeX Package"/>
         <internalFileTemplate name="LaTeX Document class"/>
 
-        <!--<fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>-->
+        <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Settings -->
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
