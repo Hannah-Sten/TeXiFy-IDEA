@@ -73,6 +73,14 @@ public class TexifyIcons {
             "/nl/rubensten/texifyidea/icons/text-file.png"
     );
 
+    /**
+     * Copyright (c) 2016 Ruben Schellekens
+     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     */
+    public static final Icon BUILD = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/build.png"
+    );
+
     public static final Icon LATEX_MODULE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/latex-module.png"
     );

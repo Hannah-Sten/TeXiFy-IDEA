@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Sten Wessel
  */
-public class LatexRunConfiguration extends RunConfigurationBase {
+public class LatexRunConfiguration extends RunConfigurationBase implements LocatableConfiguration {
 
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
@@ -138,12 +138,39 @@ public class LatexRunConfiguration extends RunConfigurationBase {
         this.mainFile = mainFile;
     }
 
-    public boolean hasAuxDir() {
+    public boolean hasAuxiliaryDirectories() {
         return this.auxDir;
     }
 
-    public void setAuxDir(boolean auxDir) {
+    public void setAuxiliaryDirectories(boolean auxDir) {
         this.auxDir = auxDir;
+    }
+
+    public void setDefaultCompiler() {
+        setCompiler(LatexCompiler.PDFLATEX);
+    }
+
+    public void setDefaultAuxiliaryDirectories() {
+        setAuxiliaryDirectories(true);
+    }
+
+    public void setSuggestedName() {
+        setName(suggestedName());
+    }
+
+    @Override
+    public boolean isGeneratedName() {
+        return mainFile.getNameWithoutExtension().equals(getName());
+    }
+
+    @Nullable
+    @Override
+    public String suggestedName() {
+        if (mainFile == null) {
+            return null;
+        }
+
+        return mainFile.getNameWithoutExtension();
     }
 
     @Override
@@ -153,5 +180,4 @@ public class LatexRunConfiguration extends RunConfigurationBase {
                 ", auxDir=" + auxDir +
                 '}';
     }
-
 }

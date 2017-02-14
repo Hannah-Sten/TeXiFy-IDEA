@@ -1,0 +1,62 @@
+package nl.rubensten.texifyidea.run;
+
+import com.intellij.execution.Location;
+import com.intellij.execution.actions.ConfigurationContext;
+import com.intellij.execution.actions.RunConfigurationProducer;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.util.Ref;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+
+/**
+ * @author Ruben Schellekens
+ */
+public class LatexRunConfigurationProducer extends RunConfigurationProducer<LatexRunConfiguration> {
+
+    protected LatexRunConfigurationProducer() {
+        super(LatexRunConfigurationType.getInstance());
+    }
+
+    @Override
+    protected boolean setupConfigurationFromContext(LatexRunConfiguration runConfiguration,
+                                                    ConfigurationContext context,
+                                                    Ref<PsiElement> sourceElement) {
+        Location location = context.getLocation();
+        if (location == null) {
+            return false;
+        }
+
+        PsiFile container = getEntryPointContainer(location);
+        VirtualFile mainFile = container.getVirtualFile();
+        if (mainFile == null) {
+            return false;
+        }
+
+        // Setup run configuration.
+        runConfiguration.setMainFile(mainFile);
+        runConfiguration.setDefaultAuxiliaryDirectories();
+        runConfiguration.setDefaultCompiler();
+        runConfiguration.setSuggestedName();
+
+        return true;
+    }
+
+    private PsiFile getEntryPointContainer(Location location) {
+        if (location == null) {
+            return null;
+        }
+
+        PsiElement locationElement = location.getPsiElement();
+        return locationElement.getContainingFile();
+    }
+
+    @Override
+    public boolean isConfigurationFromContext(LatexRunConfiguration runConfiguration,
+                                              ConfigurationContext context) {
+        VirtualFile mainFile = runConfiguration.getMainFile();
+        VirtualFile currentFile = context.getDataContext().getData(DataKeys.PSI_FILE).getVirtualFile();
+
+        return mainFile.getPath().equals(currentFile.getPath());
+    }
+}
