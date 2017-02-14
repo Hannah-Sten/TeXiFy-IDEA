@@ -126,7 +126,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
                 return smallFileName;
             }
 
-            return TexifyUtil.appendExtension(smallFileName, fileType.getDefaultExtension());
+            return TexifyUtil.appendExtension(fileName, fileType.getDefaultExtension());
         }
 
         @Nullable
