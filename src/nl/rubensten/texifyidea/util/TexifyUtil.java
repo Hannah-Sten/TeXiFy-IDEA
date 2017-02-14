@@ -1,10 +1,15 @@
 package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.PsiElement;
+import nl.rubensten.texifyidea.file.ClassFileType;
+import nl.rubensten.texifyidea.file.LatexFileType;
+import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -13,9 +18,68 @@ import java.util.stream.Collectors;
 /**
  * @author Ruben Schellekens, Sten Wessel
  */
-public class TeXiFyUtil {
+public class TexifyUtil {
 
-    private TeXiFyUtil() {
+    private TexifyUtil() {
+    }
+
+    /**
+     * Get the FileType instance that corresponds to the given file extension.
+     *
+     * @param extensionWithoutDot
+     *         The file extension to get the corresponding FileType instance of without a dot in
+     *         front.
+     * @return The corresponding FileType instance.
+     * @throws IllegalArgumentException
+     *         When {@code extensionWithoutDot} is {@code null}.
+     */
+    public static FileType getFileTypeByExtension(@NotNull String extensionWithoutDot)
+            throws IllegalArgumentException {
+        if (extensionWithoutDot == null) {
+            throw new IllegalArgumentException("extensionWithoutDot cannot be null");
+        }
+
+        switch (extensionWithoutDot.toLowerCase()) {
+            case "cls":
+                return ClassFileType.INSTANCE;
+            case "sty":
+                return StyleFileType.INSTANCE;
+            default:
+                return LatexFileType.INSTANCE;
+        }
+    }
+
+    /**
+     * Appends an extension to a path only if the given path does not end in that extension.
+     *
+     * @param path
+     *         The path to append the extension to.
+     * @param extensionWithoutDot
+     *         The extension to append optionally.
+     * @return A path ending with the given extension without duplications (e.g. {@code .tex.tex} is
+     * impossible}.
+     * @throws IllegalArgumentException
+     *         When {@code path} or {@code extensionWithoutDot} is {@code null}.
+     */
+    public static String appendExtension(@NotNull String path, @NotNull String extensionWithoutDot)
+            throws IllegalArgumentException {
+        if (path == null) {
+            throw new IllegalArgumentException("path cannot be null");
+        }
+
+        if (extensionWithoutDot == null) {
+            throw new IllegalArgumentException("extensionWithoutDot cannot be null");
+        }
+
+        if (path.toLowerCase().endsWith("." + extensionWithoutDot.toLowerCase())) {
+            return path;
+        }
+
+        if (path.endsWith(".")) {
+            return path + extensionWithoutDot;
+        }
+
+        return path + "." + extensionWithoutDot;
     }
 
     /**
@@ -70,7 +134,7 @@ public class TeXiFyUtil {
         for (PsiElement element : elements) {
             if (element instanceof LatexCommands) {
                 LatexCommands commands = (LatexCommands)element;
-                if (TeXiFyUtil.isEntryPoint(commands)) {
+                if (TexifyUtil.isEntryPoint(commands)) {
                     return true;
                 }
             }

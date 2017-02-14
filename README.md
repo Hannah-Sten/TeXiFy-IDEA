@@ -36,6 +36,12 @@ Please bear in mind that this is just a side project for us.
 * Display math
 * Stars
 
+### Templates
+* Available file templates for `.tex`, `.sty` and `.cls` files. 
+
+### User Interface
+* Create new `.tex`, `.sty` and `.cls` files from the new file menu.
+
 ### Other
 * Fancy icons for `.tex`, `.sty` and `.cls` files (see [GreanTeaFlavouredIcons](https://github.com/RubenSchellekens/GreenTeaFlavouredIcons)), and LaTeX modules.
 

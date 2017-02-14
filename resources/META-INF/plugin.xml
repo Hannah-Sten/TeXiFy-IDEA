@@ -106,6 +106,10 @@
 
     <!-- Custom actions -->
     <actions>
+        <!-- New LaTeX file -->
+        <action id="texify.NewFile" class="nl.rubensten.texifyidea.action.NewLatexFileAction">
+            <add-to-group group-id="NewGroup1" anchor="after" relative-to-action="NewModuleInGroup"/>
+        </action>
     </actions>
 
     <!-- Hooks for plugin functionality -->
@@ -113,6 +117,13 @@
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
         <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
+
+        <!-- Templates -->
+        <internalFileTemplate name="LaTeX Source"/>
+        <internalFileTemplate name="LaTeX Package"/>
+        <internalFileTemplate name="LaTeX Document class"/>
+
+        <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Settings -->
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>

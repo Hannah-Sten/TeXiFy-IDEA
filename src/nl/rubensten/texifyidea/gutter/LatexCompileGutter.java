@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.psi.PsiElement;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.util.TeXiFyUtil;
+import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -26,7 +26,7 @@ public class LatexCompileGutter extends RunLineMarkerContributor {
 
         // Break when not a valid command: don't show icon.
         LatexCommands command = (LatexCommands)element;
-        if (!TeXiFyUtil.isEntryPoint(command)) {
+        if (!TexifyUtil.isEntryPoint(command)) {
             return null;
         }
 
