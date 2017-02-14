@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import nl.rubensten.texifyidea.file.LatexFileType;
 
 /**
  * @author Ruben Schellekens
@@ -34,6 +35,12 @@ public class LatexRunConfigurationProducer extends RunConfigurationProducer<Late
 
         VirtualFile mainFile = container.getVirtualFile();
         if (mainFile == null) {
+            return false;
+        }
+
+        // Only activate on .tex files.
+        String extension = mainFile.getExtension();
+        if (!extension.equalsIgnoreCase(LatexFileType.INSTANCE.getDefaultExtension())) {
             return false;
         }
 
