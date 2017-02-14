@@ -40,9 +40,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <h1>v0.1.0 (upcoming &mdash; not released yet!)</h1>
+        <h1>Beta 0.1</h1>
         <p>
-            Our first version of the plugin! We are very proud to present our efforts to make writing LaTeX great again,
+            Our first release of the plugin! We are very proud to present our efforts to make writing LaTeX great again,
             by making use of the excellent Jetbrains IDEA platform. We have a limited feature set available right now,
             but we intend increase support for the LaTeX language to the fullest extent possible on the IDEA platform.
         </p>
@@ -66,6 +66,18 @@
                     <li>Most math commands get replaced by their unicode representation using folding.</li>
                     <li>Gutter icon to navigate to included files.</li>
                     <li>Gutter icon to automatically compile the active file.</li>
+                </ul>
+            </li>
+            <li>
+                Templates
+                <ul>
+                    <li>Available file templates for <code>.tex</code>, <code>.sty</code> and <code>.cls</code> files.</li>
+                </ul>
+            </li>
+            <li>
+                User interface
+                <ul>
+                    <li>Create new <code>.tex</code>, <code>.sty</code> and <code>.cls</code> files from the new file menu.</li>
                 </ul>
             </li>
             <li>
