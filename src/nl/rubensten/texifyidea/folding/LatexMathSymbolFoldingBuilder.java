@@ -34,7 +34,7 @@ public class LatexMathSymbolFoldingBuilder extends FoldingBuilderEx {
             Collection<LatexCommands> commands = PsiTreeUtil.findChildrenOfType(mathEnv, LatexCommands.class);
             for (LatexCommands command : commands) {
                 LatexMathCommand c = LatexMathCommand.get(command.getCommandToken().getText().substring(1));
-                if (c != null) {
+                if (c != null && c.getDisplay() != null) {
                     descriptors.add(new FoldingDescriptor(
                             command.getCommandToken().getNode(),
                             command.getCommandToken().getTextRange(),
