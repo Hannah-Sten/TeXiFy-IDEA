@@ -17,6 +17,7 @@ Please bear in mind that this is just a side project for us.
 * Dynamically detect what runtime configuration to use based on the active file.
 
 ### Editor
+* Basic autocompletion form a predefined list of commands.
 * Brace matching for `{}`, `[]`, `\[\]` and `$$`.
 * Automatically inserts other half of `{}`, `[]`, `\[\]` and `$$`.
 * Most math commands get replaced by their unicode representation using folding.
@@ -40,11 +41,10 @@ Please bear in mind that this is just a side project for us.
 
 ## In the works
 * Document structure view [[structure-view](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/structure-view)].
-* Command autocomplete [[completion](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/completion)].
+* Jumping to source code of packages [[TeXiFy-IDEA-2](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/TeXiFy-IDEA-2)].
 
 ## Planned
 * Embedded (automatically updating) PDF viewer.
-* Autocomplete for default tex commands.
 * Autocomplete for custom commands.
 * Inspections.
 * Bibliography file (`.bib`) support.
