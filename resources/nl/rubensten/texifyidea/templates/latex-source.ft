@@ -1,11 +1,12 @@
-%
-% ${NAME}
-% Author: ${USER}
-% ${DATE}
-%
+%%
+%% Author: ${USER}
+%% ${DATE}
+%%
 
+% Preamble
 \documentclass[a4wide,11pt]{article}
 
+% Document
 \begin{document}
 
 

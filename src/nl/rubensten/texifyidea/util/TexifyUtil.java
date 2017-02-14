@@ -1,7 +1,11 @@
 package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.PsiElement;
+import nl.rubensten.texifyidea.file.ClassFileType;
+import nl.rubensten.texifyidea.file.LatexFileType;
+import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
@@ -17,6 +21,32 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
+    }
+
+    /**
+     * Get the FileType instance that corresponds to the given file extension.
+     *
+     * @param extensionWithoutDot
+     *         The file extension to get the corresponding FileType instance of without a dot in
+     *         front.
+     * @return The corresponding FileType instance.
+     * @throws IllegalArgumentException
+     *         When {@code extensionWithoutDot} is {@code null}.
+     */
+    public static FileType getFileTypeByExtension(@NotNull String extensionWithoutDot)
+            throws IllegalArgumentException {
+        if (extensionWithoutDot == null) {
+            throw new IllegalArgumentException("extensionWithoutDot cannot be null");
+        }
+
+        switch (extensionWithoutDot.toLowerCase()) {
+            case "cls":
+                return ClassFileType.INSTANCE;
+            case "sty":
+                return StyleFileType.INSTANCE;
+            default:
+                return LatexFileType.INSTANCE;
+        }
     }
 
     /**

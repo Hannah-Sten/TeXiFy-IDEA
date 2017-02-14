@@ -1,28 +1,28 @@
 package nl.rubensten.texifyidea.action;
 
+import com.intellij.ide.actions.CreateElementActionBase;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.templates.LatexTemplatesFactory;
+import nl.rubensten.texifyidea.util.Constants;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
+import static nl.rubensten.texifyidea.util.TexifyUtil.logf;
 
 /**
  * @author Ruben Schellekens
  */
-public class NewLatexFileAction extends AnAction implements DumbAware {
+public class NewLatexFileAction extends CreateElementActionBase {
 
     private static final String OPTION_TEX_FILE = "tex";
     private static final String OPTION_STY_FILE = "sty";
@@ -32,26 +32,51 @@ public class NewLatexFileAction extends AnAction implements DumbAware {
         super("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE);
     }
 
+    @NotNull
     @Override
-    public void actionPerformed(AnActionEvent event) {
-        final Project project = event.getData(PlatformDataKeys.PROJECT);
-        final VirtualFile directory = event.getData(PlatformDataKeys.VIRTUAL_FILE);
+    protected PsiElement[] invokeDialog(Project project, PsiDirectory psiDirectory) {
+        logf("invokeDialog(%s, %s)", project, psiDirectory);
+
+        LatexFileCreator fileCreator = new LatexFileCreator(project, psiDirectory);
 
         CreateFileFromTemplateDialog.Builder builder = CreateFileFromTemplateDialog.createDialog(project);
         builder.setTitle("Create a New LaTeX File");
         builder.addKind("Sources (.tex)", TexifyIcons.LATEX_FILE, OPTION_TEX_FILE);
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE);
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE);
-        builder.show("", null, new LatexFileCreator(project, directory));
+        builder.show("", null, fileCreator);
+
+        return fileCreator.getCreatedElements();
+    }
+
+    @NotNull
+    @Override
+    protected PsiElement[] create(String s, PsiDirectory psiDirectory) throws Exception {
+        return Constants.EMPTY_PSI_ELEMENT_ARRAY;
+    }
+
+    @Override
+    protected String getErrorTitle() {
+        return "Error";
+    }
+
+    @Override
+    protected String getCommandName() {
+        return null;
+    }
+
+    @Override
+    protected String getActionName(PsiDirectory psiDirectory, String s) {
+        return null;
     }
 
     private class LatexFileCreator implements CreateFileFromTemplateDialog.FileCreator<PsiElement> {
 
         private final Project project;
-        private final VirtualFile directory;
+        private final PsiDirectory directory;
         private final LocalFileSystem fileSystem;
 
-        private LatexFileCreator(Project project, VirtualFile directory) {
+        private LatexFileCreator(Project project, PsiDirectory directory) {
             this.project = project;
             this.directory = directory;
             this.fileSystem = LocalFileSystem.getInstance();
@@ -62,28 +87,32 @@ public class NewLatexFileAction extends AnAction implements DumbAware {
             fileEditorManager.openFile(virtualFile, true);
         }
 
+        private String getTemplateNameFromExtension(String extensionWithoutDot) {
+            switch (extensionWithoutDot) {
+                case OPTION_STY_FILE:
+                    return LatexTemplatesFactory.FILE_TEMPLATE_STY;
+                case OPTION_CLS_FILE:
+                    return LatexTemplatesFactory.FILE_TEMPLATE_CLS;
+                default:
+                    return LatexTemplatesFactory.FILE_TEMPLATE_TEX;
+            }
+        }
+
+        public PsiElement[] getCreatedElements() {
+            return Constants.EMPTY_PSI_ELEMENT_ARRAY;
+        }
+
         @Nullable
         @Override
         public PsiElement createFile(@NotNull String fileName, @NotNull String option) {
-            if (directory == null) {
-                return null;
-            }
+            String newFileName = TexifyUtil.appendExtension(fileName, option);
+            String templateName = getTemplateNameFromExtension(option);
+            FileType fileType = TexifyUtil.getFileTypeByExtension(option);
 
-            String dirPath = directory.getPath();
-            String newFilePath = TexifyUtil.appendExtension(dirPath + "/" + fileName, option);
-            File newFile = new File(newFilePath);
-
-            try {
-                newFile.createNewFile();
-            }
-            catch (IOException e) {
-                throw new RuntimeException("Couldn't create new file!", e);
-            }
-
-            VirtualFile virtualFile = fileSystem.refreshAndFindFileByPath(newFilePath);
-            openFile(virtualFile);
-
-            return PsiManager.getInstance(project).findFile(virtualFile);
+            PsiFile file = LatexTemplatesFactory.createFromTemplate(directory, newFileName,
+                    templateName, fileType);
+            openFile(file.getVirtualFile());
+            return file;
         }
 
         @NotNull
