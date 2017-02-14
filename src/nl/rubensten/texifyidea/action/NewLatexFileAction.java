@@ -11,6 +11,9 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.file.ClassFileType;
+import nl.rubensten.texifyidea.file.LatexFileType;
+import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.templates.LatexTemplatesFactory;
 import nl.rubensten.texifyidea.util.Constants;
 import nl.rubensten.texifyidea.util.TexifyUtil;
@@ -83,6 +86,10 @@ public class NewLatexFileAction extends CreateElementActionBase {
             fileEditorManager.openFile(virtualFile, true);
         }
 
+        public PsiElement[] getCreatedElements() {
+            return Constants.EMPTY_PSI_ELEMENT_ARRAY;
+        }
+
         private String getTemplateNameFromExtension(String extensionWithoutDot) {
             switch (extensionWithoutDot) {
                 case OPTION_STY_FILE:
@@ -94,16 +101,40 @@ public class NewLatexFileAction extends CreateElementActionBase {
             }
         }
 
-        public PsiElement[] getCreatedElements() {
-            return Constants.EMPTY_PSI_ELEMENT_ARRAY;
+        private FileType getFileType(@NotNull String fileName, String option) {
+            String smallFileName = fileName.toLowerCase();
+
+            if (smallFileName.endsWith("." + OPTION_TEX_FILE)) {
+                return LatexFileType.INSTANCE;
+            }
+
+            if (smallFileName.endsWith("." + OPTION_CLS_FILE)) {
+                return ClassFileType.INSTANCE;
+            }
+
+            if (smallFileName.endsWith("." + OPTION_STY_FILE)) {
+                return StyleFileType.INSTANCE;
+            }
+
+            return TexifyUtil.getFileTypeByExtension(option);
+        }
+
+        private String getNewFileName(@NotNull String fileName, FileType fileType) {
+            String smallFileName = fileName.toLowerCase();
+
+            if (smallFileName.endsWith("." + fileType.getDefaultExtension())) {
+                return smallFileName;
+            }
+
+            return TexifyUtil.appendExtension(smallFileName, fileType.getDefaultExtension());
         }
 
         @Nullable
         @Override
         public PsiElement createFile(@NotNull String fileName, @NotNull String option) {
-            String newFileName = TexifyUtil.appendExtension(fileName, option);
-            String templateName = getTemplateNameFromExtension(option);
-            FileType fileType = TexifyUtil.getFileTypeByExtension(option);
+            FileType fileType = getFileType(fileName, option);
+            String newFileName = getNewFileName(fileName, fileType);
+            String templateName = getTemplateNameFromExtension(fileType.getDefaultExtension());
 
             PsiFile file = LatexTemplatesFactory.createFromTemplate(directory, newFileName,
                     templateName, fileType);
