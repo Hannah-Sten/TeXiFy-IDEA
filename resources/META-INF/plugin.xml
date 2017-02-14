@@ -21,22 +21,83 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-<idea-plugin version="2">
+<idea-plugin url="https://github.com/Ruben-Sten/TeXiFy-IDEA">
 
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
     <version>0.1</version>
     <idea-version since-build="141.0"/>
-    <vendor email="sten.wessel@gmail.com" url="http://ruben-sten.github.io">Ruben-Sten</vendor>
+    <vendor url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
     <description><![CDATA[
-      Plugin for LaTeX support in IntelliJ IDEA.
+      <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
+      <p>
+          Note to users: all suggestions/requests/bug reports/kudos/critique/(non-)creative ideas/contributions are
+          welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin GitHub page</a>.
+      </p>
     ]]></description>
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-      None.
+        <h1>v0.1.0 (upcoming &mdash; not released yet!)</h1>
+        <p>
+            Our first version of the plugin! We are very proud to present our efforts to make writing LaTeX great again,
+            by making use of the excellent Jetbrains IDEA platform. We have a limited feature set available right now,
+            but we intend increase support for the LaTeX language to the fullest extent possible on the IDEA platform.
+        </p>
+        <p><em>New features</em></p>
+        <ul>
+            <li>
+                Run configurations
+                <ul>
+                    <li>Multiple 'compile' (run) configurations.</li>
+                    <li><code>pdfLaTeX</code> supported as compiler.</li>
+                    <li>Separate auxiliary files from output (MiKTeX only).</li>
+                    <li>Dynamically detect what runtime configuration to use based on the active file.</li>
+                </ul>
+            </li>
+            <li>
+                Editor
+                <ul>
+                    <li>Brace matching for <code>{}</code>, <code>[]</code>, <code>\[\]</code> and <code>$$</code>.</li>
+                    <li>Brace matching for <code>{}</code>, <code>[]</code>, <code>\[\]</code> and <code>$$</code>.</li>
+                    <li>Automatically inserts other half of <code>{}</code>, <code>[]</code>, <code>\[\]</code> and <code>$$</code>.</li>
+                    <li>Most math commands get replaced by their unicode representation using folding.</li>
+                    <li>Gutter icon to navigate to included files.</li>
+                    <li>Gutter icon to automatically compile the active file.</li>
+                </ul>
+            </li>
+            <li>
+                Autocomplete
+                <ul>
+                    <li>For most common default LaTeX macros in both math and non-math mode.</li>
+                    <li>Separates non-math from math commands in autocomplete (context-aware).</li>
+                    <li>Shows parameter hints for known commands.</li>
+                </ul>
+            </li>
+            <li>
+                Syntax highlighting
+                <ul>
+                    <li>Braces</li>
+                    <li>Brackets</li>
+                    <li>Optional parameters</li>
+                    <li>Commands</li>
+                    <li>Commands in inline math mode</li>
+                    <li>Commands in display math mode</li>
+                    <li>Comments</li>
+                    <li>Inline math</li>
+                    <li>Display math</li>
+                    <li>Stars</li>
+                </ul>
+            </li>
+            <li>
+                Other
+                <ul>
+                    <li>Fancy icons for <code>.tex</code>, <code>.sty</code> and <code>.cls</code> files (see <a href="https://github.com/RubenSchellekens/GreenTeaFlavouredIcons">GreanTeaFlavouredIcons</a>), and LaTeX modules.</li>
+                </ul>
+            </li>
+        </ul>
     ]]>
     </change-notes>
 
