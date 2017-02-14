@@ -26,7 +26,8 @@ public class LatexPairedBraceMatcher implements PairedBraceMatcher {
     @Override
     public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType lbraceType, @Nullable
             IElementType contextType) {
-        return true;
+        // Automatic completion by IJ fails with multiple characters for rbrace.
+        return lbraceType != LatexTypes.DISPLAY_MATH_START;
     }
 
     @Override

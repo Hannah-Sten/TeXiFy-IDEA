@@ -24,19 +24,48 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
 
         if (file instanceof LatexFile) {
             if (c == '$') {
-                int caret = editor.getCaretModel().getOffset();
-
-                final EditorHighlighter highlighter = ((EditorEx)editor).getHighlighter();
-                HighlighterIterator iterator = highlighter.createIterator(caret - 1);
-                IElementType tokenType = iterator.getTokenType();
+                IElementType tokenType = getTypedTokenType(editor);
 
                 if (tokenType != LatexTypes.COMMAND_TOKEN) {
-                    editor.getDocument().insertString(caret, String.valueOf(c));
-                    result = Result.STOP;
+                    editor.getDocument().insertString(
+                            editor.getCaretModel().getOffset(),
+                            String.valueOf(c)
+                    );
+                    return Result.STOP;
                 }
             }
+            else if (c == '[') {
+                return insertDisplayMathClose(c, editor);
+            }
+
         }
 
-        return result;
+        return Result.CONTINUE;
+    }
+
+    /**
+     * Upon typing {@code \[}, inserts the closing delimiter {@code \[}.
+     */
+    private Result insertDisplayMathClose(char c, Editor editor) {
+        IElementType tokenType = getTypedTokenType(editor);
+
+        if (tokenType == LatexTypes.DISPLAY_MATH_START) {
+            editor.getDocument().insertString(editor.getCaretModel().getOffset(), "\\]");
+            return Result.STOP;
+        }
+
+        return Result.CONTINUE;
+    }
+
+    /**
+     * Retrieves the token type of the character just typed.
+     */
+    private IElementType getTypedTokenType(Editor editor) {
+        int caret = editor.getCaretModel().getOffset();
+
+        final EditorHighlighter highlighter = ((EditorEx)editor).getHighlighter();
+        HighlighterIterator iterator = highlighter.createIterator(caret - 1);
+
+        return iterator.getTokenType();
     }
 }
