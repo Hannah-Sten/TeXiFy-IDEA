@@ -23,6 +23,7 @@ Please bear in mind that this is just a side project for us.
 * Most math commands get replaced by their unicode representation using folding.
 * Gutter icon to navigate to included files.
 * Gutter icon to automatically compile the active file.
+* Comment out lines.
 
 ### Syntax highlighting
 * Braces
