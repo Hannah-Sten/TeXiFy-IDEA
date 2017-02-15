@@ -4,7 +4,10 @@
 %%
 
 % Preamble
-\documentclass[a4wide,11pt]{article}
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{a4wide}
 
 % Document
 \begin{document}
