@@ -1,12 +1,12 @@
 package nl.rubensten.texifyidea.lang;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Sten Wessel
  */
 public enum LatexNoMathCommand {
+
     A_RING("aa", "å"),
     CAPITAL_A_RING("AA", "Å"),
     AE("ae", "æ"),
@@ -19,7 +19,7 @@ public enum LatexNoMathCommand {
     BFSERIES("bfseries"),
     BIBITEM("bibitem", new OptionalArgument("label"), new RequiredArgument("citekey")),
     BIBLIOGRAPHYSTYLE("bibliographystyle", new RequiredArgument("style")),
-    BIBLIOGRAPHY("bibliography", new RequiredArgument("bibfile")),
+    BIBLIOGRAPHY("bibliography", new RequiredFileArgument("bibliography file", "bib")),
     BIGSKIP("bigskip"),
     BOLDMATH("boldmath"),
     CAPTION("caption", new OptionalArgument("shorttext"),
@@ -32,11 +32,11 @@ public enum LatexNoMathCommand {
     CLEARPAGE("clearpage"),
     COLUMNWIDTH("columnwidth"),
     CONTENTSLINE("contentsline", new RequiredArgument("type"),
-                 new RequiredArgument("text"), new RequiredArgument("page")),
+            new RequiredArgument("text"), new RequiredArgument("page")),
     CONTENTSNAME("contentsname", new RequiredArgument("name")),
     DATE("date", new RequiredArgument("text")),
     DOCUMENTCLASS("documentclass", new OptionalArgument("options"),
-                  new RequiredArgument("class")),
+            new RequiredArgument("class")),
     EM("em"),
     EMPH("emph", new RequiredArgument("text")),
     ENLARGETHISPAGE("enlargethispage", new RequiredArgument("size")),
@@ -56,15 +56,15 @@ public enum LatexNoMathCommand {
     FONTSIZE("fontsize", new RequiredArgument("size"), new RequiredArgument("skip")),
     FOOTNOTESIZE("footnotesize"),
     FOOTNOTETEXT("footnotetext", new OptionalArgument("number"),
-                 new RequiredArgument("text")),
+            new RequiredArgument("text")),
     FOOTNOTE("footnote", new OptionalArgument("number"), new RequiredArgument("text")),
     FRAMEBOX("framebox", new OptionalArgument("width"),
-             new OptionalArgument("pos"), new OptionalArgument("text")),
+            new OptionalArgument("pos"), new OptionalArgument("text")),
     FRAME("frame", new RequiredArgument("text")),
     FRQ("frq", "›"),
     FRQQ("frqq", "»"),
     GLOSSARYENTRY("glossaryentry", new RequiredArgument("text"),
-                  new RequiredArgument("pagenum")),
+            new RequiredArgument("pagenum")),
     GLOSSARY("glossary", new RequiredArgument("text")),
     GLQ("glq", ","),
     GLQQ("glqq", "„"),
@@ -80,9 +80,9 @@ public enum LatexNoMathCommand {
     CAPITAL_HUGE("Huge"),
     HYPHENATION("hyphenation", new RequiredArgument("words")),
     I("i", "i (dotless)"),
-    INCLUDE("include", new RequiredArgument("file")),
-    INPUT("input", new RequiredArgument("file")),
-    INCLUDEONLY("includeonly", new RequiredArgument("files")),
+    INCLUDE("include", new RequiredFileArgument("source file", "tex")),
+    INPUT("input", new RequiredFileArgument("source file", "tex")),
+    INCLUDEONLY("includeonly", new RequiredFileArgument("source file", "tex")),
     INDEXNAME("indexname", new RequiredArgument("name")),
     INDEXSPACE("indexspace"),
     INDEX("intex", new RequiredArgument("entry")),
@@ -113,16 +113,16 @@ public enum LatexNoMathCommand {
     MBOX("mbox", new RequiredArgument("text")),
     MEDSKIP("medskip"),
     MULTICOLUMN("multicolumn", new RequiredArgument("cols"),
-                new RequiredArgument("pos"), new RequiredArgument("text")),
+            new RequiredArgument("pos"), new RequiredArgument("text")),
     NEWLABEL("newlabel"),
     NEWLENGTH("newlength", new RequiredArgument("length")),
     NEWLINE("newline"),
     NEWPAGE("newpage"),
     NEWTHEOREM("newtheorem", new RequiredArgument("envname"),
-               new OptionalArgument("numberedlike"), new RequiredArgument("caption"),
-               new OptionalArgument("within")),
+            new OptionalArgument("numberedlike"), new RequiredArgument("caption"),
+            new OptionalArgument("within")),
     NEWTHEOREM_STAR("newtheorem*", new RequiredArgument("envname"),
-                    new RequiredArgument("caption")),
+            new RequiredArgument("caption")),
     NOCITE("nocite", new RequiredArgument("keys")),
     NOFILES("nofiles"),
     NOLINEBREAK("nolinebreak", new OptionalArgument("number")),
@@ -141,11 +141,11 @@ public enum LatexNoMathCommand {
     PAGESTYLE("pagestyle", new RequiredArgument("style")),
     PAGETOTAL("pagetotal"),
     PARAGRAPH("paragraph", new OptionalArgument("shorttitle"),
-              new RequiredArgument("title")),
+            new RequiredArgument("title")),
     PARAGRAPH_STAR("paragraph*", new RequiredArgument("title")),
     PARAGRAPHMARK("paragraphmark"),
     PARBOX("parbox", new OptionalArgument("pos"), new RequiredArgument("width"),
-           new RequiredArgument("text")),
+            new RequiredArgument("text")),
     PART("part", new OptionalArgument("shorttitle"), new RequiredArgument("title")),
     PART_STAR("part*", new RequiredArgument("title")),
     PARTNAME("partname", new RequiredArgument("name")),
@@ -162,10 +162,10 @@ public enum LatexNoMathCommand {
     ROMAN("roman", new RequiredArgument("counter")),
     CAPITAL_ROBAN("Roman", new RequiredArgument("counter")),
     RULE("rule", new OptionalArgument("line"), new RequiredArgument("width"),
-         new RequiredArgument("thickness")),
+            new RequiredArgument("thickness")),
     SAMEPAGE("samepage"),
     SBOX("sbox", new RequiredArgument("cmd"),
-         new RequiredArgument("length")),
+            new RequiredArgument("length")),
     SCRIPTSIZE("scriptsize"),
     SCSHAPE("scshape"),
     SECTION("section", new OptionalArgument("shorttitle"),
@@ -173,10 +173,10 @@ public enum LatexNoMathCommand {
     SECTION_STAR("section", new RequiredArgument("title")),
     SELECTFONT("selectfont"),
     SETLENGTH("setlength", new RequiredArgument("cmd"),
-              new RequiredArgument("length")),
+            new RequiredArgument("length")),
     SFFAMILY("sffamily"),
     SHORTSTACK("shortstack", new OptionalArgument("pos"),
-               new RequiredArgument("text")),
+            new RequiredArgument("text")),
     SLSHAPE("slshape"),
     SMALL("small"),
     SMASH("smash"),
@@ -185,16 +185,16 @@ public enum LatexNoMathCommand {
     STOP("stop"),
     SUBITEM("subitem"),
     SUBPARAGRAPH("subparagraph", new OptionalArgument("shorttitle"),
-                 new RequiredArgument("title")),
+            new RequiredArgument("title")),
     SUBPARAGRAPH_STAR("subparagraph*", new RequiredArgument("title")),
     SUBPARAGRAPHMARK("subparagraphmark", new RequiredArgument("code")),
     SUBSECTION("subsection", new OptionalArgument("shorttitle"),
-               new RequiredArgument("title")),
+            new RequiredArgument("title")),
     SUBSECTION_STAR("subsection*", new RequiredArgument("title")),
     SUBSECTIONMARK("subsectionmark", new RequiredArgument("code")),
     SUBSUBITEM("subsubitem"),
     SUBSUBSECTION("subsubsection", new OptionalArgument("shorttitle"),
-                  new RequiredArgument("title")),
+            new RequiredArgument("title")),
     SUBSUBSECTION_STAR("subsubsection*", new RequiredArgument("title")),
     SUBSUBSECTIONMARK("subsubsectionmark", new RequiredArgument("code")),
     SUPPRESSFLOATS("suppressfloats", new OptionalArgument("placement")),
@@ -261,7 +261,7 @@ public enum LatexNoMathCommand {
     UNDERLINE("underline", new RequiredArgument("text")),
     UPSHAPE("upshape"),
     USEPACKAGE("usepackage", new OptionalArgument("options"),
-               new RequiredArgument("package")),
+            new RequiredArgument("package")),
     VDOTS("vdots", "⋮"),
     VLINE("vline"),
     VSPACE("vspace", new RequiredArgument("length")),
@@ -272,29 +272,28 @@ public enum LatexNoMathCommand {
         New definitions
      */
     NEWCOMMAND("newcommand", new RequiredArgument("cmd"), new OptionalArgument("args"),
-               new OptionalArgument("default"), new RequiredArgument("def")),
+            new OptionalArgument("default"), new RequiredArgument("def")),
     NEWCOMMAND_STAR("newcommand*", new RequiredArgument("cmd"),
-                    new OptionalArgument("args"), new OptionalArgument("default"),
-                    new RequiredArgument("def")),
+            new OptionalArgument("args"), new OptionalArgument("default"),
+            new RequiredArgument("def")),
     PROVIDECOMMAND("providecommand", new RequiredArgument("cmd"),
-                   new OptionalArgument("args"), new OptionalArgument("default"),
-                   new RequiredArgument("def")),
+            new OptionalArgument("args"), new OptionalArgument("default"),
+            new RequiredArgument("def")),
     PROVIDECOMMAND_STAR("providecommand*", new RequiredArgument("cmd"),
-                        new OptionalArgument("args"), new OptionalArgument("default"),
-                        new RequiredArgument("def")),
+            new OptionalArgument("args"), new OptionalArgument("default"),
+            new RequiredArgument("def")),
     RENEWCOMMAND("renewcommand", new RequiredArgument("cmd"),
-                 new OptionalArgument("args"), new OptionalArgument("default"),
-                 new RequiredArgument("def")),
+            new OptionalArgument("args"), new OptionalArgument("default"),
+            new RequiredArgument("def")),
     RENEWCOMMAND_STAR("renewcommand*", new RequiredArgument("cmd"),
-                      new OptionalArgument("args"), new OptionalArgument("default"),
-                      new RequiredArgument("def")),
+            new OptionalArgument("args"), new OptionalArgument("default"),
+            new RequiredArgument("def")),
     NEWENVIRONMENT("newenvironment", new RequiredArgument("name"),
-                   new OptionalArgument("args"), new OptionalArgument("default"),
-                   new RequiredArgument("begdef"), new RequiredArgument("enddef")),
+            new OptionalArgument("args"), new OptionalArgument("default"),
+            new RequiredArgument("begdef"), new RequiredArgument("enddef")),
     RENEWENVIRONMENT("renewenvironment", new RequiredArgument("name"),
-                     new OptionalArgument("args"), new OptionalArgument("default"),
-                     new RequiredArgument("begdef"), new RequiredArgument("enddef")),
-    ;
+            new OptionalArgument("args"), new OptionalArgument("default"),
+            new RequiredArgument("begdef"), new RequiredArgument("enddef")),;
 
     private static final Map<String, LatexNoMathCommand> lookup = new HashMap<>();
 
@@ -318,8 +317,8 @@ public enum LatexNoMathCommand {
         this.arguments = arguments;
     }
 
-    public static LatexNoMathCommand get(String command) {
-        return lookup.get(command);
+    public static Optional<LatexNoMathCommand> get(String command) {
+        return Optional.ofNullable(lookup.get(command));
     }
 
     public String getCommand() {
@@ -332,6 +331,18 @@ public enum LatexNoMathCommand {
 
     public Argument[] getArguments() {
         return arguments;
+    }
+
+    public <T extends Argument> List<T> getArgumentsOf(Class<T> clazz) {
+        List<T> requiredArguments = new ArrayList<>();
+
+        for (Argument argument : arguments) {
+            if (clazz.isAssignableFrom(argument.getClass())) {
+                requiredArguments.add((T)argument);
+            }
+        }
+
+        return requiredArguments;
     }
 
     public String getArgumentsDisplay() {
