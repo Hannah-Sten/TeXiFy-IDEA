@@ -49,6 +49,7 @@ Please bear in mind that this is just a side project for us.
 ## In the works
 * Document structure view [[structure-view](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/structure-view)].
 * Jumping to source code of packages [[TeXiFy-IDEA-2](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/TeXiFy-IDEA-2)].
+* Bibtex support [[bibtex](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/bibtex)].
 
 ## Planned
 * Embedded (automatically updating) PDF viewer.
