@@ -84,4 +84,42 @@ public class TexifyIcons {
     public static final Icon LATEX_MODULE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/latex-module.png"
     );
+
+    /**
+     * Get the file icon object that corresponds to the given file extension.
+     * <p>
+     * This method ignores case.
+     *
+     * @param extension
+     *         The extension of the file to get the icon of without a dot.
+     * @return The Icon that corresponds to the given extension.
+     * @throws IllegalArgumentException
+     *         When {@code extension} is null.
+     */
+    public static Icon getIconFromExtension(String extension) {
+        if (extension == null) {
+            return FILE;
+        }
+
+        switch (extension.toLowerCase()) {
+            case "tex":
+                return LATEX_FILE;
+            case "bib":
+                return BIBLIOGRAPHY_FILE;
+            case "cls":
+                return CLASS_FILE;
+            case "dtx":
+                return DOCUMENTED_LATEX_SOURCE;
+            case "sty":
+                return STYLE_FILE;
+            case "txt":
+                return TEXT_FILE;
+            case "log":
+                return TEXT_FILE;
+            case "pdf":
+                return PDF_FILE;
+            default:
+                return FILE;
+        }
+    }
 }

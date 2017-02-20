@@ -1,0 +1,87 @@
+package nl.rubensten.texifyidea.lang;
+
+import nl.rubensten.texifyidea.file.FileExtensionMatcher;
+import nl.rubensten.texifyidea.file.FileNameMatcher;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+/**
+ * Ignores case: everything will be converted to lower case.
+ *
+ * @author Ruben Schellekens
+ */
+public class RequiredFileArgument extends RequiredArgument implements FileNameMatcher, FileExtensionMatcher {
+
+    private Set<String> extensions;
+    private Pattern pattern;
+
+    /**
+     * Create a new required file argument with a given name and a pattern that matches
+     * corresponding file names.
+     *
+     * @param name
+     *         The name of the required argument.
+     * @param extensions
+     *         All supported extensions.
+     */
+    protected RequiredFileArgument(String name, String... extensions) {
+        super(name);
+        setExtensions(extensions);
+    }
+
+    /**
+     * Registers all extensions and compiles them to a regex file matcher.
+     *
+     * @param extensions
+     *         All the file extensions (lower case) that should result in match for this required
+     *         argument. The file extensions should <em>not</em> have a dot. When given no
+     *         extensions, all files will match.
+     */
+    private void setExtensions(String... extensions) {
+        this.extensions = new HashSet<>();
+
+        StringBuilder regex = new StringBuilder(".*");
+
+        if (extensions.length == 0) {
+            setRegex(regex.toString());
+            return;
+        }
+
+        regex.append("(");
+        for (String extension : extensions) {
+            regex.append("\\.");
+
+            String extensionLower = extension.toLowerCase();
+            regex.append(extensionLower);
+            this.extensions.add(extensionLower);
+
+            if (extension != extensions[extensions.length - 1]) {
+                regex.append("|");
+            }
+        }
+        regex.append(")$");
+
+        setRegex(regex.toString());
+    }
+
+    private void setRegex(String regex) {
+        this.pattern = Pattern.compile(regex);
+    }
+
+    public Set<String> getSupportedExtensions() {
+        return Collections.unmodifiableSet(extensions);
+    }
+
+    @Override
+    public boolean matchesName(String fileName) {
+        return pattern.matcher(fileName.toLowerCase()).matches();
+    }
+
+    @Override
+    public boolean matchesExtension(String extension) {
+        return extensions.contains(extension);
+    }
+}
