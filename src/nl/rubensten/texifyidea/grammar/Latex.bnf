@@ -18,6 +18,8 @@
         DISPLAY_MATH_END='\]'
         INLINE_MATH_START='$'
         INLINE_MATH_END='$'
+        BEGIN_TOKEN='\begin'
+        END_TOKEN='\end'
         COMMAND_TOKEN='regexp:\\([a-zA-Z]+|.|\n|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
@@ -31,9 +33,15 @@ latexFile ::= content*
 
 content ::= no_math_content | math_environment
 
-no_math_content ::= comment | commands | group | open_group | NORMAL_TEXT
+no_math_content ::= comment | environment | commands | group | open_group | NORMAL_TEXT
+
+environment ::= begin_command content* end_command
 
 commands ::= COMMAND_TOKEN STAR? parameter*
+
+begin_command ::= BEGIN_TOKEN STAR? parameter*
+
+end_command ::= END_TOKEN STAR? parameter*
 
 parameter ::= optional_param | required_param
 

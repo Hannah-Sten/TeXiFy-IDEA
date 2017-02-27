@@ -32,6 +32,8 @@ OPEN_BRACE="{"
 CLOSE_BRACE="}"
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
+BEGIN_TOKEN="\\begin"
+END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT=[^\\{}%\[\]$]+
@@ -58,6 +60,8 @@ NORMAL_TEXT=[^\\{}%\[\]$]+
 "}"                  { return CLOSE_BRACE; }
 
 {WHITE_SPACE}        { return WHITE_SPACE; }
+{BEGIN_TOKEN}        { return BEGIN_TOKEN; }
+{END_TOKEN}          { return END_TOKEN; }
 {COMMAND_TOKEN}      { return COMMAND_TOKEN; }
 {COMMENT_TOKEN}      { return COMMENT_TOKEN; }
 {NORMAL_TEXT}        { return NORMAL_TEXT; }

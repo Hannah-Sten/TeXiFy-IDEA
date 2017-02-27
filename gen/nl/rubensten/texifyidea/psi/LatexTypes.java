@@ -8,10 +8,13 @@ import nl.rubensten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
 
+  IElementType BEGIN_COMMAND = new LatexElementType("BEGIN_COMMAND");
   IElementType COMMANDS = new LatexElementType("COMMANDS");
   IElementType COMMENT = new LatexElementType("COMMENT");
   IElementType CONTENT = new LatexElementType("CONTENT");
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");
+  IElementType END_COMMAND = new LatexElementType("END_COMMAND");
+  IElementType ENVIRONMENT = new LatexElementType("ENVIRONMENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
@@ -21,12 +24,14 @@ public interface LatexTypes {
   IElementType PARAMETER = new LatexElementType("PARAMETER");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
+  IElementType BEGIN_TOKEN = new LatexTokenType("\\begin");
   IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
   IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");
   IElementType COMMAND_TOKEN = new LatexTokenType("COMMAND_TOKEN");
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
   IElementType DISPLAY_MATH_START = new LatexTokenType("\\[");
+  IElementType END_TOKEN = new LatexTokenType("\\end");
   IElementType INLINE_MATH_END = new LatexTokenType("$");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
   IElementType NORMAL_TEXT = new LatexTokenType("NORMAL_TEXT");
@@ -37,7 +42,10 @@ public interface LatexTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == COMMANDS) {
+       if (type == BEGIN_COMMAND) {
+        return new LatexBeginCommandImpl(node);
+      }
+      else if (type == COMMANDS) {
         return new LatexCommandsImpl(node);
       }
       else if (type == COMMENT) {
@@ -48,6 +56,12 @@ public interface LatexTypes {
       }
       else if (type == DISPLAY_MATH) {
         return new LatexDisplayMathImpl(node);
+      }
+      else if (type == END_COMMAND) {
+        return new LatexEndCommandImpl(node);
+      }
+      else if (type == ENVIRONMENT) {
+        return new LatexEnvironmentImpl(node);
       }
       else if (type == GROUP) {
         return new LatexGroupImpl(node);
