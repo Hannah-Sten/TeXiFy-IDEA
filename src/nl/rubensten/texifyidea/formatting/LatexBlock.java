@@ -26,6 +26,7 @@ import static nl.rubensten.texifyidea.psi.LatexPsiUtil.hasElementType;
  * @author Sten Wessel
  */
 public class LatexBlock extends AbstractBlock {
+
     private static final TokenSet LATEX_DISPLAY_MATH_DELIM = TokenSet.create(
             LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END
     );
@@ -55,7 +56,6 @@ public class LatexBlock extends AbstractBlock {
                     wrap = Wrap.createWrap(WrapType.ALWAYS, true);
                     indent = Indent.getNormalIndent();
                 }
-
             }
 
             if (child.getElementType() != TokenType.WHITE_SPACE) {
