@@ -23,7 +23,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == COMMANDS) {
+    if (t == BEGIN_COMMAND) {
+      r = begin_command(b, 0);
+    }
+    else if (t == COMMANDS) {
       r = commands(b, 0);
     }
     else if (t == COMMENT) {
@@ -34,6 +37,12 @@ public class LatexParser implements PsiParser, LightPsiParser {
     }
     else if (t == DISPLAY_MATH) {
       r = display_math(b, 0);
+    }
+    else if (t == END_COMMAND) {
+      r = end_command(b, 0);
+    }
+    else if (t == ENVIRONMENT) {
+      r = environment(b, 0);
     }
     else if (t == GROUP) {
       r = group(b, 0);
@@ -67,6 +76,39 @@ public class LatexParser implements PsiParser, LightPsiParser {
 
   protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return latexFile(b, l + 1);
+  }
+
+  /* ********************************************************** */
+  // BEGIN_TOKEN STAR? parameter*
+  public static boolean begin_command(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "begin_command")) return false;
+    if (!nextTokenIs(b, BEGIN_TOKEN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, BEGIN_TOKEN);
+    r = r && begin_command_1(b, l + 1);
+    r = r && begin_command_2(b, l + 1);
+    exit_section_(b, m, BEGIN_COMMAND, r);
+    return r;
+  }
+
+  // STAR?
+  private static boolean begin_command_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "begin_command_1")) return false;
+    consumeToken(b, STAR);
+    return true;
+  }
+
+  // parameter*
+  private static boolean begin_command_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "begin_command_2")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!parameter(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "begin_command_2", c)) break;
+      c = current_position_(b);
+    }
+    return true;
   }
 
   /* ********************************************************** */
@@ -163,6 +205,65 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // END_TOKEN STAR? parameter*
+  public static boolean end_command(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "end_command")) return false;
+    if (!nextTokenIs(b, END_TOKEN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, END_TOKEN);
+    r = r && end_command_1(b, l + 1);
+    r = r && end_command_2(b, l + 1);
+    exit_section_(b, m, END_COMMAND, r);
+    return r;
+  }
+
+  // STAR?
+  private static boolean end_command_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "end_command_1")) return false;
+    consumeToken(b, STAR);
+    return true;
+  }
+
+  // parameter*
+  private static boolean end_command_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "end_command_2")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!parameter(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "end_command_2", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // begin_command content* end_command
+  public static boolean environment(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "environment")) return false;
+    if (!nextTokenIs(b, BEGIN_TOKEN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = begin_command(b, l + 1);
+    r = r && environment_1(b, l + 1);
+    r = r && end_command(b, l + 1);
+    exit_section_(b, m, ENVIRONMENT, r);
+    return r;
+  }
+
+  // content*
+  private static boolean environment_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "environment_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "environment_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
   // OPEN_BRACE content* CLOSE_BRACE
   public static boolean group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group")) return false;
@@ -251,12 +352,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | commands | group | open_group | NORMAL_TEXT
+  // comment | environment | commands | group | open_group | NORMAL_TEXT
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NO_MATH_CONTENT, "<no math content>");
     r = comment(b, l + 1);
+    if (!r) r = environment(b, l + 1);
     if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
     if (!r) r = open_group(b, l + 1);

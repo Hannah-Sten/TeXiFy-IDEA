@@ -7,6 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public class LatexVisitor extends PsiElementVisitor {
 
+  public void visitBeginCommand(@NotNull LatexBeginCommand o) {
+    visitPsiElement(o);
+  }
+
   public void visitCommands(@NotNull LatexCommands o) {
     visitPsiElement(o);
   }
@@ -20,6 +24,14 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitDisplayMath(@NotNull LatexDisplayMath o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEndCommand(@NotNull LatexEndCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEnvironment(@NotNull LatexEnvironment o) {
     visitPsiElement(o);
   }
 

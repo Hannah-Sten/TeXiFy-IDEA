@@ -12,7 +12,6 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.TokenSet;
-import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.psi.LatexTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +28,10 @@ public class LatexBlock extends AbstractBlock {
 
     private static final TokenSet LATEX_DISPLAY_MATH_DELIM = TokenSet.create(
             LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END
+    );
+
+    private static final TokenSet LATEX_ENVIRONMENT_DELIM = TokenSet.create(
+            LatexTypes.BEGIN_COMMAND, LatexTypes.END_COMMAND
     );
 
     private SpacingBuilder spacingBuilder;
@@ -57,6 +60,12 @@ public class LatexBlock extends AbstractBlock {
                     indent = Indent.getNormalIndent();
                 }
             }
+            else if (myNode.getElementType() == LatexTypes.ENVIRONMENT) {
+                // Skip \begin and \end
+                if (child != myNode.getFirstChildNode() && child != myNode.getLastChildNode()) {
+                    indent = Indent.getNormalIndent(true);
+                }
+            }
 
             if (child.getElementType() != TokenType.WHITE_SPACE) {
                 blocks.add(new LatexBlock(child, wrap, align, indent, spacingBuilder));
@@ -79,11 +88,11 @@ public class LatexBlock extends AbstractBlock {
         if (myNode.getElementType() == LatexTypes.DISPLAY_MATH) {
             return new ChildAttributes(Indent.getNormalIndent(), null);
         }
-        else if (myNode.getPsi() instanceof LatexFile) {
-            return new ChildAttributes(Indent.getNoneIndent(), null);
+        else if (myNode.getElementType() == LatexTypes.ENVIRONMENT) {
+            return new ChildAttributes(Indent.getNormalIndent(), null);
         }
 
-        return new ChildAttributes(null, null);
+        return new ChildAttributes(Indent.getNoneIndent(), null);
     }
 
     @Nullable

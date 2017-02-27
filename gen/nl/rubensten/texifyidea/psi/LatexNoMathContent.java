@@ -14,6 +14,9 @@ public interface LatexNoMathContent extends PsiElement {
   LatexComment getComment();
 
   @Nullable
+  LatexEnvironment getEnvironment();
+
+  @Nullable
   LatexGroup getGroup();
 
   @Nullable
