@@ -10,6 +10,7 @@ import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexMode;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.LatexNoMathEnvironment;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -49,6 +50,13 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                             .withTypeText(cmd.getDisplay())
             ));
 
+        }
+        else if (mode == LatexMode.ENVIRONMENT_NAME) {
+            result.addAllElements(ContainerUtil.map2List(
+                    LatexNoMathEnvironment.values(),
+                    cmd -> LookupElementBuilder.create(cmd, cmd.getName())
+                            .withPresentableText(cmd.getName())
+            ));
         }
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.");
     }
