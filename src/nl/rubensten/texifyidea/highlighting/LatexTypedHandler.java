@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.highlighting;
 
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
+import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
@@ -25,11 +26,19 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
     public Result beforeCharTyped(char c, Project project, Editor editor, PsiFile file, FileType fileType) {
         if (file instanceof LatexFile) {
             if (c == '$') {
-                PsiElement element = file.findElementAt(editor.getCaretModel().getOffset());
+                CaretModel caret = editor.getCaretModel();
+                PsiElement element = file.findElementAt(caret.getOffset());
                 LatexInlineMath parent = PsiTreeUtil.getParentOfType(element, LatexInlineMath.class);
-                if (parent != null && (parent.getTextLength() > 2)) {
-                    // Non-empty contents
-                    editor.getCaretModel().moveCaretRelatively(1, 0, false, false, true);
+
+                if (parent == null) {
+                    return Result.CONTINUE;
+                }
+
+                int endOffset = parent.getTextRange().getEndOffset();
+
+                if (caret.getOffset() == endOffset - 1) {
+                    // Caret is at the end of the environment, so run over the closing $
+                    caret.moveCaretRelatively(1, 0, false, false, true);
                     return Result.STOP;
                 }
             }
