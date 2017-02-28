@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.templates;
 
 import com.intellij.codeInsight.template.impl.DefaultLiveTemplatesProvider;
+import nl.rubensten.texifyidea.util.Constants;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -10,12 +11,14 @@ public class LatexLiveTemplateProvider implements DefaultLiveTemplatesProvider {
 
     @Override
     public String[] getDefaultLiveTemplateFiles() {
-        return new String[0];
+        return Constants.EMPTY_STRING_ARRAY;
     }
 
     @Nullable
     @Override
     public String[] getHiddenLiveTemplateFiles() {
-        return new String[]{"liveTemplates/hidden/LaTeX"};
+        return new String[] {
+                "liveTemplates/hidden/LaTeX"
+        };
     }
 }

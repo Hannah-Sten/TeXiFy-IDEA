@@ -25,39 +25,51 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
     }
 
     @Override
-    protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext
-            context, @NotNull CompletionResultSet result) {
-
-        if (mode == LatexMode.NORMAL) {
-            result.addAllElements(ContainerUtil.map2List(
-                    LatexNoMathCommand.values(),
-                    cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
-                            .withPresentableText(cmd.getCommandDisplay())
-                            .bold()
-                            .withTailText(cmd.getArgumentsDisplay(), true)
-                            .withTypeText(cmd.getDisplay())
-                            .withInsertHandler(new LatexNoMathInsertHandler())
-            ));
-
+    protected void addCompletions(@NotNull CompletionParameters parameters,
+                                  ProcessingContext context, @NotNull CompletionResultSet result) {
+        switch (mode) {
+            case NORMAL:
+                addNormalCommands(result);
+                break;
+            case MATH:
+                addMathCommands(result);
+                break;
+            case ENVIRONMENT_NAME:
+                addEnvironments(result);
+                break;
         }
-        else if (mode == LatexMode.MATH) {
-            result.addAllElements(ContainerUtil.map2List(
-                    LatexMathCommand.values(),
-                    cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
-                            .withPresentableText(cmd.getCommandDisplay())
-                            .bold()
-                            .withTailText(cmd.getArgumentsDisplay(), true)
-                            .withTypeText(cmd.getDisplay())
-            ));
 
-        }
-        else if (mode == LatexMode.ENVIRONMENT_NAME) {
-            result.addAllElements(ContainerUtil.map2List(
-                    LatexNoMathEnvironment.values(),
-                    cmd -> LookupElementBuilder.create(cmd, cmd.getName())
-                            .withPresentableText(cmd.getName())
-            ));
-        }
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.");
+    }
+
+    private void addNormalCommands(CompletionResultSet result) {
+        result.addAllElements(ContainerUtil.map2List(
+                LatexNoMathCommand.values(),
+                cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
+                        .withPresentableText(cmd.getCommandDisplay())
+                        .bold()
+                        .withTailText(cmd.getArgumentsDisplay(), true)
+                        .withTypeText(cmd.getDisplay())
+                        .withInsertHandler(new LatexNoMathInsertHandler())
+        ));
+    }
+
+    private void addMathCommands(CompletionResultSet result) {
+        result.addAllElements(ContainerUtil.map2List(
+                LatexMathCommand.values(),
+                cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
+                        .withPresentableText(cmd.getCommandDisplay())
+                        .bold()
+                        .withTailText(cmd.getArgumentsDisplay(), true)
+                        .withTypeText(cmd.getDisplay())
+        ));
+    }
+
+    private void addEnvironments(CompletionResultSet result) {
+        result.addAllElements(ContainerUtil.map2List(
+                LatexNoMathEnvironment.values(),
+                cmd -> LookupElementBuilder.create(cmd, cmd.getName())
+                        .withPresentableText(cmd.getName())
+        ));
     }
 }
