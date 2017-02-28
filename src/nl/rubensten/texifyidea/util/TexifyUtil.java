@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.psi.LatexBeginCommand;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
@@ -97,6 +98,20 @@ public class TexifyUtil {
     }
 
     /**
+     * Looks up all the required parameters from a given {@link LatexCommands}.
+     *
+     * @param command
+     *         The command to get the required parameters of.
+     * @return A list of all required parameters.
+     */
+    public static List<LatexRequiredParam> getRequiredParameters(LatexBeginCommand command) {
+        return command.getParameterList().stream()
+                .filter(p -> p.getRequiredParam() != null)
+                .map(LatexParameter::getRequiredParam)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Checks if the given latex command marks a valid entry point for latex compilation.
      * <p>
      * A valid entry point means that a latex compilation can start from the file containing the
@@ -106,12 +121,8 @@ public class TexifyUtil {
      *         The command to check if the file marks a valid entry point.
      * @return {@code true} if the command marks a valid entry point, {@code false} if not.
      */
-    public static boolean isEntryPoint(LatexCommands command) {
+    public static boolean isEntryPoint(LatexBeginCommand command) {
         // Currently: only allowing '\begin{document}'
-        if (!command.getCommandToken().getText().equals("\\begin")) {
-            return false;
-        }
-
         List<LatexRequiredParam> requiredParams = getRequiredParameters(command);
         if (requiredParams.size() != 1) {
             return false;
@@ -132,9 +143,9 @@ public class TexifyUtil {
      */
     public static boolean containsEntryPoint(PsiElement[] elements) {
         for (PsiElement element : elements) {
-            if (element instanceof LatexCommands) {
-                LatexCommands commands = (LatexCommands)element;
-                if (TexifyUtil.isEntryPoint(commands)) {
+            if (element instanceof LatexBeginCommand) {
+                LatexBeginCommand command = (LatexBeginCommand)element;
+                if (TexifyUtil.isEntryPoint(command)) {
                     return true;
                 }
             }
