@@ -1,15 +1,23 @@
 package nl.rubensten.texifyidea.modules;
 
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
+import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.ide.util.projectWizard.SdkSettingsStep;
+import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import nl.rubensten.texifyidea.sdk.LatexSdkType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +28,27 @@ import java.util.List;
  * @author Sten Wessel
  */
 public class LatexModuleBuilder extends ModuleBuilder {
+
+    @Override
+    public boolean isSuitableSdkType(SdkTypeId sdkType) {
+        return sdkType == LatexSdkType.getInstance();
+    }
+
+    @Nullable
+    @Override
+    public ModuleWizardStep modifySettingsStep(@NotNull SettingsStep settingsStep) {
+        return new SdkSettingsStep(settingsStep, this, new Condition<SdkTypeId>() {
+            @Override
+            public boolean value(SdkTypeId sdkTypeId) {
+                return isSuitableSdkType(sdkTypeId);
+            }
+        }){
+            @Override
+            public void updateDataModel() {
+                super.updateDataModel();
+            }
+        };
+    }
 
     @Override
     public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
