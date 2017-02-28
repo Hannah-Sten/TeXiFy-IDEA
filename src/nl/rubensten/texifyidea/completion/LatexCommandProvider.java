@@ -6,6 +6,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
+import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexMode;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
@@ -34,6 +35,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                             .bold()
                             .withTailText(cmd.getArgumentsDisplay(), true)
                             .withTypeText(cmd.getDisplay())
+                            .withInsertHandler(new LatexNoMathInsertHandler())
             ));
 
         }

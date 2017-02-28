@@ -10,12 +10,12 @@ public class LatexLiveTemplateProvider implements DefaultLiveTemplatesProvider {
 
     @Override
     public String[] getDefaultLiveTemplateFiles() {
-        return new String[]{"liveTemplates/LaTeX"};
+        return new String[0];
     }
 
     @Nullable
     @Override
     public String[] getHiddenLiveTemplateFiles() {
-        return new String[0];
+        return new String[]{"liveTemplates/hidden/LaTeX"};
     }
 }
