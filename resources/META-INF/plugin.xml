@@ -136,6 +136,10 @@
         <internalFileTemplate name="LaTeX Document class"/>
 
         <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
+        
+        <!-- Live templates -->
+        <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.LatexLiveTemplateProvider"/>
+        <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.LatexContext"/>
 
         <!-- Settings -->
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
