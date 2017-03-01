@@ -168,6 +168,9 @@
 
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
+
+        <!-- Blame -->
+        <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>
   </extensions>
 
 </idea-plugin>
