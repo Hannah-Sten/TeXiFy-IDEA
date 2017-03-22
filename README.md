@@ -60,3 +60,24 @@ Please bear in mind that this is just a side project for us.
 * Menu items to insert LaTeX commands/templates for the forgetful.
 * Code folding.
 * Easter eggs.
+
+## How to build the project using IntelliJ
+(Disclaimer: it worked on at least one windows 8.1 machine, no guarantees)
+* Clone or download the project.
+* Make a new project from existing sources, even if you used the option 'new project from version control'.
+* Follow through the instructions.
+* In `TeXiFy-IDEA.iml` (in the root directory) change the module type to `PLUGIN_MODULE`.
+* In Project Structure under Project, add a new project SDK, namely an IntelliJ Platform Plugin SDK.
+* Select the (by default selected) IntelliJ directory if prompted.
+* Under Project Structure - Modules - Plugin Deployment change the resources path to the correct path, `\path\to\TeXiFy-IDEA\resources`.
+* Add a new run configuration of type Plugin (if you cannot make a new run configuration, restart some stuff or wait a bit).
+* Mark the `resources` folder as resources root by right-clicking on it and selecting Mark Directory As - Resources, otherwise it won't find the great icons.
+#### To run directly from source
+* Run in debug mode, normal run may not work.
+* To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
+* Compile a `.tex` file by clicking on the gutter icon next to `\begin{document`.
+* After running the pdf is in the folder `out`.
+* Pro tip: until there is an embedded pdf viewer use SumatraPDF which allows you to keep the file open while recompiling.
+#### To build the plugin for use in IntelliJ
+* Use Build - Prepare Plugin Module ...
+* Add the plugin to IntelliJ using Settings - Plugins - Install plugin from disk.
