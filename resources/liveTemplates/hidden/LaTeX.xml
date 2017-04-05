@@ -1,0 +1,8 @@
+<templateSet group="LaTeX">
+    <template id="LATEX.begin" name="begin" value="{$ENVNAME$}&#10;    $END$&#10;\end{$ENVNAME$}" description="Starts a new environment." toReformat="true" toShortenFQNames="false">
+        <variable name="ENVNAME" expression="complete()" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true" />
+        </context>
+    </template>
+</templateSet>

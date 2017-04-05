@@ -5,5 +5,6 @@ package nl.rubensten.texifyidea.lang;
  */
 public enum LatexMode {
     NORMAL,
-    MATH
+    MATH,
+    ENVIRONMENT_NAME,
 }
