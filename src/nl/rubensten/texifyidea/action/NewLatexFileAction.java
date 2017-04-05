@@ -147,5 +147,10 @@ public class NewLatexFileAction extends CreateElementActionBase {
         public String getActionName(@NotNull String fileName, @NotNull String option) {
             return "New LaTeX File";
         }
+
+        @Override
+        public boolean startInWriteAction() {
+            return false;
+        }
     }
 }
