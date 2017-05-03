@@ -38,11 +38,10 @@ public class LatexModuleBuilder extends ModuleBuilder {
             return;
         }
 
-        final List<Pair<String, String>> sourcePaths = getSourcePaths();
-        for (final Pair<String, String> sourcePath : sourcePaths) {
+        for (final Pair<String, String> sourcePath : getSourcePaths()) {
             String path = sourcePath.first;
             new File(path).mkdirs();
-            final VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
+            final VirtualFile sourceRoot = fileSystem.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
 
             if (sourceRoot != null) {
                 contentEntry.addSourceFolder(sourceRoot, false, sourcePath.second);
@@ -55,13 +54,15 @@ public class LatexModuleBuilder extends ModuleBuilder {
             String path = sourcePath.first;
             new File(path).mkdirs();
 
-            final VirtualFile sourceRoot = fileSystem.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
+            final String fileName = FileUtil.toSystemIndependentName(path);
+            final VirtualFile sourceRoot = fileSystem.refreshAndFindFileByPath(fileName);
             if (sourceRoot == null) {
                 continue;
             }
 
             contentEntry.addSourceFolder(sourceRoot, false, sourcePath.second);
             addMainFile(project, path);
+            fileSystem.refresh(true);
         }
 
         // Create output directory.
