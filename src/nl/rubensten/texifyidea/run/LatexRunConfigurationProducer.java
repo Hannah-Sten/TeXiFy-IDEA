@@ -39,8 +39,9 @@ public class LatexRunConfigurationProducer extends RunConfigurationProducer<Late
         }
 
         // Only activate on .tex files.
-        String extension = mainFile.getExtension();
-        if (!extension.equalsIgnoreCase(LatexFileType.INSTANCE.getDefaultExtension())) {
+        final String extension = mainFile.getExtension();
+        final String texTension = LatexFileType.INSTANCE.getDefaultExtension();
+        if (extension == null || !extension.equalsIgnoreCase(texTension)) {
             return false;
         }
 
