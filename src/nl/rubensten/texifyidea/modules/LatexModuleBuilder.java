@@ -38,6 +38,18 @@ public class LatexModuleBuilder extends ModuleBuilder {
             return;
         }
 
+        final List<Pair<String, String>> sourcePaths = getSourcePaths();
+        for (final Pair<String, String> sourcePath : sourcePaths) {
+            String path = sourcePath.first;
+            new File(path).mkdirs();
+            final VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
+
+            if (sourceRoot != null) {
+                contentEntry.addSourceFolder(sourceRoot, false, sourcePath.second);
+                addMainFile(project, path);
+            }
+        }
+
         // Create source directory.
         for (Pair<String, String> sourcePath : getSourcePaths()) {
             String path = sourcePath.first;
