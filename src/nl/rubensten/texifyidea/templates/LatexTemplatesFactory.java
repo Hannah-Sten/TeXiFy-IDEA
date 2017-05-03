@@ -1,12 +1,15 @@
 package nl.rubensten.texifyidea.templates;
 
 import com.intellij.ide.fileTemplates.*;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.util.Container;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -40,7 +43,13 @@ public class LatexTemplatesFactory implements FileTemplateGroupDescriptorFactory
 
         PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
         PsiFile file = fileFactory.createFileFromText(fileName, fileType, templateText);
-        return (PsiFile)directory.add(file);
+
+        Container<PsiFile> createdFile = new Container<>();
+        Application application = ApplicationManager.getApplication();
+        application.runWriteAction(() -> createdFile.setItem((PsiFile)directory.add(file)));
+
+        return createdFile.getItem()
+                .orElseThrow(() -> new RuntimeException("No created file in container."));
     }
 
     @Override
