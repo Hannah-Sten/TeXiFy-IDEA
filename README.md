@@ -62,10 +62,9 @@ Please bear in mind that this is just a side project for us.
 * Easter eggs.
 
 ## How to build the project using IntelliJ
-(Disclaimer: it worked on at least one windows 8.1 machine, no guarantees)
 * Clone or download the project.
 * Make a new project from existing sources, even if you used the option 'new project from version control'.
-* Follow through the instructions.
+* Follow the instructions.
 * In `TeXiFy-IDEA.iml` (in the root directory) change the module type to `PLUGIN_MODULE`.
 * In Project Structure under Project, add a new project SDK, namely an IntelliJ Platform Plugin SDK.
 * Select the (by default selected) IntelliJ directory if prompted.
@@ -75,7 +74,7 @@ Please bear in mind that this is just a side project for us.
 #### To run directly from source
 * Run in debug mode, normal run may not work.
 * To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
-* Compile a `.tex` file by clicking on the gutter icon next to `\begin{document`.
+* Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
 * After running the pdf is in the folder `out`.
 * Pro tip: until there is an embedded pdf viewer use SumatraPDF which allows you to keep the file open while recompiling.
 #### To build the plugin for use in IntelliJ
