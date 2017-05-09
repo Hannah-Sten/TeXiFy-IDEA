@@ -40,76 +40,42 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <h1>Beta 0.1</h1>
+        <h1>Beta 0.2</h1>
         <p>
-            Our first release of the plugin! We are very proud to present our efforts to make writing LaTeX great again,
-            by making use of the excellent Jetbrains IDEA platform. We have a limited feature set available right now,
-            but we intend increase support for the LaTeX language to the fullest extent possible on the IDEA platform.
+            Second release of TeXiFy-IDEA, full of improvements and bug fixes. Thanks to all issue reporters for their
+            contributions! All feature requests and bug reports are more than welcome on our Issues page. Pull requests
+            are also welcome!
         </p>
-        <p><em>New features</em></p>
+        <p><em>Additions</em></p>
         <ul>
             <li>
-                Run configurations
+                UI
                 <ul>
-                    <li>Multiple 'compile' (run) configurations.</li>
-                    <li><code>pdfLaTeX</code> supported as compiler.</li>
-                    <li>Separate auxiliary files from output (MiKTeX only).</li>
-                    <li>Dynamically detect what runtime configuration to use based on the active file.</li>
+                    <li>New icons! The new icons designed by Ruben integrate much better within the new IntelliJ design.</li>
+                    <li>More advanced gutter icons, including navigation icons for <code>\include</code>,
+                        <code>\includeonly</code> and <code>\bibliography</code>.</li>
                 </ul>
             </li>
             <li>
                 Editor
                 <ul>
-                    <li>Brace matching for <code>{}</code>, <code>[]</code>, <code>\[\]</code> and <code>$$</code>.</li>
-                    <li>Brace matching for <code>{}</code>, <code>[]</code>, <code>\[\]</code> and <code>$$</code>.</li>
-                    <li>Automatically inserts other half of <code>{}</code>, <code>[]</code>, <code>\[\]</code> and <code>$$</code>.</li>
-                    <li>Most math commands get replaced by their unicode representation using folding.</li>
-                    <li>Gutter icon to navigate to included files.</li>
-                    <li>Gutter icon to automatically compile the active file.</li>
-                </ul>
-            </li>
-            <li>
-                Templates
-                <ul>
-                    <li>Available file templates for <code>.tex</code>, <code>.sty</code> and <code>.cls</code> files.</li>
-                </ul>
-            </li>
-            <li>
-                User interface
-                <ul>
-                    <li>Create new <code>.tex</code>, <code>.sty</code> and <code>.cls</code> files from the new file menu.</li>
+                    <li>Brace matching is now also available for parentheses (<code>()</code>).</li>
+                    <li>For all the hideous code you don't want to see, you can now fold environments.</li>
+                    <li>Caret will now recognize and run over the terminating $ of an inline math environment.</li>
                 </ul>
             </li>
             <li>
                 Autocomplete
                 <ul>
-                    <li>For most common default LaTeX macros in both math and non-math mode.</li>
-                    <li>Separates non-math from math commands in autocomplete (context-aware).</li>
-                    <li>Shows parameter hints for known commands.</li>
-                </ul>
-            </li>
-            <li>
-                Syntax highlighting
-                <ul>
-                    <li>Braces</li>
-                    <li>Brackets</li>
-                    <li>Optional parameters</li>
-                    <li>Commands</li>
-                    <li>Commands in inline math mode</li>
-                    <li>Commands in display math mode</li>
-                    <li>Comments</li>
-                    <li>Inline math</li>
-                    <li>Display math</li>
-                    <li>Stars</li>
-                </ul>
-            </li>
-            <li>
-                Other
-                <ul>
-                    <li>Fancy icons for <code>.tex</code>, <code>.sty</code> and <code>.cls</code> files (see <a href="https://github.com/RubenSchellekens/GreenTeaFlavouredIcons">GreanTeaFlavouredIcons</a>), and LaTeX modules.</li>
+                    <li>Has been extended to environments: <code>\end</code> will be automatically inserted and a list
+                        of standard LaTeX environments is provided to choose from when you select <code>\begin</code> from
+                        autocomplete.</li>
                 </ul>
             </li>
         </ul>
+
+        <p><em>Bug fixes</em></p>
+        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.2">GitHub release page</a>.</p>
     ]]>
     </change-notes>
 
