@@ -34,6 +34,8 @@ public interface LatexTypes {
   IElementType END_TOKEN = new LatexTokenType("\\end");
   IElementType INLINE_MATH_END = new LatexTokenType("$");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
+  IElementType M_CLOSE_BRACKET = new LatexTokenType("M_CLOSE_BRACKET");
+  IElementType M_OPEN_BRACKET = new LatexTokenType("M_OPEN_BRACKET");
   IElementType NORMAL_TEXT = new LatexTokenType("NORMAL_TEXT");
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
   IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");

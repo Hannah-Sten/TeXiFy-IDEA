@@ -57,6 +57,6 @@ comment ::= COMMENT_TOKEN
 
 math_environment ::= inline_math | display_math
 
-inline_math ::= INLINE_MATH_START (no_math_content)* INLINE_MATH_END
+inline_math ::= INLINE_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* INLINE_MATH_END
 
-display_math ::= DISPLAY_MATH_START (no_math_content)* DISPLAY_MATH_END
+display_math ::= DISPLAY_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* DISPLAY_MATH_END

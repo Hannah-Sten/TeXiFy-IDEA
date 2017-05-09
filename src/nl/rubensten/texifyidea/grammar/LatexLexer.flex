@@ -28,6 +28,8 @@ DISPLAY_MATH_START="\["
 DISPLAY_MATH_END="\]"
 OPEN_BRACKET="["
 CLOSE_BRACKET="]"
+M_OPEN_BRACKET="["
+M_CLOSE_BRACKET="]"
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
 
@@ -38,11 +40,11 @@ COMMAND_TOKEN=\\([a-zA-Z]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT=[^\\{}%\[\]$]+
 
-%states INLINE_MATH
+%states INLINE_MATH DISPLAY_MATH
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
-"\\["                { return DISPLAY_MATH_START; }
+"\\["                { yybegin(DISPLAY_MATH); return DISPLAY_MATH_START; }
 "\\]"                { return DISPLAY_MATH_END; }
 
 <YYINITIAL> {
@@ -50,7 +52,14 @@ NORMAL_TEXT=[^\\{}%\[\]$]+
 }
 
 <INLINE_MATH> {
+    {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
+    {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
     "$"                { yybegin(YYINITIAL); return INLINE_MATH_END; }
+}
+
+<DISPLAY_MATH> {
+    {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
+    {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
 }
 
 "*"                  { return STAR; }
