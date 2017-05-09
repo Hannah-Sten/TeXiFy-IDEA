@@ -352,7 +352,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | environment | commands | group | open_group | NORMAL_TEXT
+  // comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | NORMAL_TEXT
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -362,6 +362,8 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
     if (!r) r = open_group(b, l + 1);
+    if (!r) r = consumeToken(b, OPEN_PAREN);
+    if (!r) r = consumeToken(b, CLOSE_PAREN);
     if (!r) r = consumeToken(b, NORMAL_TEXT);
     exit_section_(b, l, m, r, false, null);
     return r;
