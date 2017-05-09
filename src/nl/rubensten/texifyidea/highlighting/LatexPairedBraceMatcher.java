@@ -21,6 +21,7 @@ public class LatexPairedBraceMatcher implements PairedBraceMatcher {
                 new BracePair(LatexTypes.OPEN_PAREN, LatexTypes.CLOSE_PAREN, false),
                 new BracePair(LatexTypes.OPEN_BRACE, LatexTypes.CLOSE_BRACE, false),
                 new BracePair(LatexTypes.OPEN_BRACKET, LatexTypes.CLOSE_BRACKET, false),
+                new BracePair(LatexTypes.M_OPEN_BRACKET, LatexTypes.M_CLOSE_BRACKET, false),
         };
     }
 

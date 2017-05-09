@@ -169,7 +169,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DISPLAY_MATH_START (no_math_content)* DISPLAY_MATH_END
+  // DISPLAY_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* DISPLAY_MATH_END
   public static boolean display_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math")) return false;
     if (!nextTokenIs(b, DISPLAY_MATH_START)) return false;
@@ -182,7 +182,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (no_math_content)*
+  // (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)*
   private static boolean display_math_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math_1")) return false;
     int c = current_position_(b);
@@ -194,12 +194,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (no_math_content)
+  // M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content
   private static boolean display_math_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = no_math_content(b, l + 1);
+    r = consumeToken(b, M_OPEN_BRACKET);
+    if (!r) r = consumeToken(b, M_CLOSE_BRACKET);
+    if (!r) r = no_math_content(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -290,7 +292,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // INLINE_MATH_START (no_math_content)* INLINE_MATH_END
+  // INLINE_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* INLINE_MATH_END
   public static boolean inline_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math")) return false;
     if (!nextTokenIs(b, INLINE_MATH_START)) return false;
@@ -303,7 +305,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (no_math_content)*
+  // (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)*
   private static boolean inline_math_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math_1")) return false;
     int c = current_position_(b);
@@ -315,12 +317,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (no_math_content)
+  // M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content
   private static boolean inline_math_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = no_math_content(b, l + 1);
+    r = consumeToken(b, M_OPEN_BRACKET);
+    if (!r) r = consumeToken(b, M_CLOSE_BRACKET);
+    if (!r) r = no_math_content(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
