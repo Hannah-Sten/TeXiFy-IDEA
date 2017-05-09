@@ -30,13 +30,15 @@ OPEN_BRACKET="["
 CLOSE_BRACKET="]"
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
+OPEN_PAREN="("
+CLOSE_PAREN=")"
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
-NORMAL_TEXT=[^\\{}%\[\]$]+
+NORMAL_TEXT=[^\\{}%\[\]$\(\)]+
 
 %states INLINE_MATH
 %%
@@ -58,6 +60,8 @@ NORMAL_TEXT=[^\\{}%\[\]$]+
 "]"                  { return CLOSE_BRACKET; }
 "{"                  { return OPEN_BRACE; }
 "}"                  { return CLOSE_BRACE; }
+{OPEN_PAREN}         { return OPEN_PAREN; }
+{CLOSE_PAREN}        { return CLOSE_PAREN; }
 
 {WHITE_SPACE}        { return WHITE_SPACE; }
 {BEGIN_TOKEN}        { return BEGIN_TOKEN; }

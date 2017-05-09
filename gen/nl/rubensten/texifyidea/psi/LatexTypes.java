@@ -27,6 +27,7 @@ public interface LatexTypes {
   IElementType BEGIN_TOKEN = new LatexTokenType("\\begin");
   IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
   IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");
+  IElementType CLOSE_PAREN = new LatexTokenType("CLOSE_PAREN");
   IElementType COMMAND_TOKEN = new LatexTokenType("COMMAND_TOKEN");
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
@@ -37,6 +38,7 @@ public interface LatexTypes {
   IElementType NORMAL_TEXT = new LatexTokenType("NORMAL_TEXT");
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
   IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");
+  IElementType OPEN_PAREN = new LatexTokenType("OPEN_PAREN");
   IElementType STAR = new LatexTokenType("*");
 
   class Factory {

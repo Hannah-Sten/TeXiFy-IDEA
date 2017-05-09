@@ -18,6 +18,7 @@ public class LatexPairedBraceMatcher implements PairedBraceMatcher {
         return new BracePair[]{
                 new BracePair(LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END, true),
                 new BracePair(LatexTypes.INLINE_MATH_START, LatexTypes.INLINE_MATH_END, false),
+                new BracePair(LatexTypes.OPEN_PAREN, LatexTypes.CLOSE_PAREN, false),
                 new BracePair(LatexTypes.OPEN_BRACE, LatexTypes.CLOSE_BRACE, false),
                 new BracePair(LatexTypes.OPEN_BRACKET, LatexTypes.CLOSE_BRACKET, false),
         };
