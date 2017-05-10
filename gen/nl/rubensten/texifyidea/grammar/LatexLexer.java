@@ -66,10 +66,11 @@ public class LatexLexer implements FlexLexer {
   private static final String ZZ_ACTION_PACKED_0 =
     "\3\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7"+
     "\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17"+
-    "\1\11\1\20\1\21\1\22\6\20\1\23\1\20\1\24";
+    "\2\11\1\20\1\21\3\20\1\22\3\20\1\23\1\20"+
+    "\1\24";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[31];
+    int [] result = new int[32];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -96,11 +97,11 @@ public class LatexLexer implements FlexLexer {
   private static final String ZZ_ROWMAP_PACKED_0 =
     "\0\0\0\26\0\54\0\102\0\130\0\156\0\156\0\156"+
     "\0\156\0\156\0\156\0\204\0\232\0\156\0\102\0\156"+
-    "\0\156\0\156\0\156\0\156\0\156\0\156\0\260\0\306"+
-    "\0\334\0\362\0\u0108\0\u011e\0\334\0\u0134\0\334";
+    "\0\156\0\156\0\260\0\156\0\156\0\156\0\306\0\334"+
+    "\0\362\0\156\0\u0108\0\u011e\0\u0134\0\362\0\u014a\0\362";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[31];
+    int [] result = new int[32];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -127,18 +128,19 @@ public class LatexLexer implements FlexLexer {
     "\1\5\1\14\10\4\1\15\1\16\1\17\1\4\2\5"+
     "\1\20\1\21\1\10\1\11\1\12\1\13\1\5\1\14"+
     "\10\4\1\15\1\22\1\17\1\4\2\5\1\20\1\21"+
-    "\1\10\1\11\1\12\1\13\1\5\1\14\10\4\1\15"+
-    "\1\23\1\17\3\4\6\0\1\4\1\0\10\4\2\0"+
+    "\1\10\1\11\1\12\1\13\1\5\1\23\10\4\1\15"+
+    "\1\24\1\17\3\4\6\0\1\4\1\0\10\4\2\0"+
     "\2\4\2\5\6\0\1\5\1\0\10\4\2\0\1\4"+
-    "\26\0\3\24\1\25\1\26\4\24\1\0\1\24\1\27"+
-    "\1\30\5\31\1\0\3\24\1\15\1\0\24\15\13\0"+
-    "\1\31\1\32\5\31\17\0\4\31\1\33\2\31\17\0"+
-    "\7\31\17\0\2\31\1\34\4\31\17\0\5\31\1\35"+
-    "\1\31\17\0\3\31\1\36\3\31\17\0\4\31\1\37"+
-    "\2\31\4\0";
+    "\26\0\3\25\1\26\5\25\1\0\1\25\1\27\1\30"+
+    "\5\31\1\0\3\25\1\15\1\0\24\15\3\25\1\26"+
+    "\1\32\4\25\1\0\1\25\1\27\1\30\5\31\1\0"+
+    "\3\25\13\0\1\31\1\33\5\31\17\0\4\31\1\34"+
+    "\2\31\17\0\7\31\17\0\2\31\1\35\4\31\17\0"+
+    "\5\31\1\36\1\31\17\0\3\31\1\37\3\31\17\0"+
+    "\4\31\1\40\2\31\4\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[330];
+    int [] result = new int[352];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -176,10 +178,11 @@ public class LatexLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\3\0\2\1\6\11\2\1\1\11\1\1\7\11\11\1";
+    "\3\0\2\1\6\11\2\1\1\11\1\1\3\11\1\1"+
+    "\3\11\3\1\1\11\6\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[31];
+    int [] result = new int[32];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -555,7 +558,7 @@ public class LatexLexer implements FlexLexer {
             }
           case 37: break;
           case 18: 
-            { return DISPLAY_MATH_END;
+            { yybegin(YYINITIAL); return DISPLAY_MATH_END;
             }
           case 38: break;
           case 19: 

@@ -47,7 +47,6 @@ NORMAL_TEXT=[^\\{}%\[\]$\(\)]+
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
 "\\["                { yybegin(DISPLAY_MATH); return DISPLAY_MATH_START; }
-"\\]"                { return DISPLAY_MATH_END; }
 
 <YYINITIAL> {
     "$"                { yybegin(INLINE_MATH); return INLINE_MATH_START; }
@@ -62,6 +61,7 @@ NORMAL_TEXT=[^\\{}%\[\]$\(\)]+
 <DISPLAY_MATH> {
     {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
     {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
+    "\\]"              { yybegin(YYINITIAL); return DISPLAY_MATH_END; }
 }
 
 "*"                  { return STAR; }
