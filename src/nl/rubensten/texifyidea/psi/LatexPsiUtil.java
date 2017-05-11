@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,31 @@ import java.util.List;
 public class LatexPsiUtil {
 
     private LatexPsiUtil() {
+    }
+
+    /**
+     * Looks up the first parent of a given child that has the given class.
+     *
+     * @param child
+     *         The child from which to find the parent of.
+     * @param parentClass
+     *         The type the parent has.
+     * @return The first parent that has the given class, or {@code null} when the parent can't be
+     * found.
+     */
+    @Nullable
+    public static <T extends PsiElement> T getParentOfType(@Nullable PsiElement child,
+                                                           @NotNull Class<T> parentClass) {
+        PsiElement element = child;
+        while (element != null) {
+            if (parentClass.isAssignableFrom(element.getClass())) {
+                return (T)element;
+            }
+
+            element = element.getParent();
+        }
+
+        return (T)element;
     }
 
     /**
