@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.util.ProcessingContext;
+import nl.rubensten.texifyidea.util.Kindness;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,6 +23,6 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
         result.addElement(LookupElementBuilder.create("that"));
         result.addElement(LookupElementBuilder.create("bison"));
 
-        result.addLookupAdvertisement("Hello :)");
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 }
