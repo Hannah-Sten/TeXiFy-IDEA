@@ -34,6 +34,9 @@
 
     <!-- Annotators -->
     <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
+
+    <!-- Inspections -->
+    <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspection.ReplaceInlineMathToRobustInspection" groupName="TeXiFy" displayName="Replace inline math to robust"/>
   </extensions>
 
   <actions>
