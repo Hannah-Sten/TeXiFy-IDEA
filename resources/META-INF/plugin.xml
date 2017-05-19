@@ -138,6 +138,8 @@
 
         <!-- Stubs -->
         <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
+
+        <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
   </extensions>
 
 </idea-plugin>
