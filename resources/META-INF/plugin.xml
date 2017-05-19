@@ -135,6 +135,9 @@
 
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
+
+        <!-- Stubs -->
+        <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
   </extensions>
 
 </idea-plugin>
