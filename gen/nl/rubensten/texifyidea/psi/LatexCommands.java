@@ -2,10 +2,14 @@
 package nl.rubensten.texifyidea.psi;
 
 import java.util.List;
+
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.StubBasedPsiElement;
+import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexCommands extends PsiElement {
+public interface LatexCommands extends PsiNamedElement, StubBasedPsiElement<LatexCommandsStub> {
 
   @NotNull
   List<LatexParameter> getParameterList();
