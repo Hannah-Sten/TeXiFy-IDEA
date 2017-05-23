@@ -93,6 +93,12 @@ public class TexifyIcons {
             "/nl/rubensten/texifyidea/icons/dot-cmd.png"
     );
 
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_LABEL = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-lbl.png"
+    );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens

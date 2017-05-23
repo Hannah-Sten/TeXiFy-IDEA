@@ -14,18 +14,18 @@ import java.util.List;
 /**
  * @author Ruben Schellekens
  */
-public class LatexStructureViewSectionElement implements StructureViewTreeElement, SortableTreeElement {
+public class LatexStructureViewCommandElement implements StructureViewTreeElement, SortableTreeElement {
 
     private final LatexCommands element;
-    private final List<LatexStructureViewSectionElement> sectionChildren = new ArrayList<>();
+    private final List<LatexStructureViewCommandElement> sectionChildren = new ArrayList<>();
     private final ItemPresentation presentation;
 
-    public LatexStructureViewSectionElement(LatexCommands element) {
+    public LatexStructureViewCommandElement(LatexCommands element) {
         this.element = element;
         this.presentation = LatexPresentationFactory.getPresentation(element);
     }
 
-    public void addSectionChild(LatexStructureViewSectionElement child) {
+    public void addSectionChild(LatexStructureViewCommandElement child) {
         sectionChildren.add(child);
     }
 

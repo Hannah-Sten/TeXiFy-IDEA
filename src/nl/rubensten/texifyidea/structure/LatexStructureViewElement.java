@@ -56,13 +56,13 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     @Override
     public String getAlphaSortKey() {
         if (element instanceof LatexCommands) {
-            return ((LatexCommands)element).getCommandToken().getText();
+            return ((LatexCommands)element).getCommandToken().getText().toLowerCase();
         }
         else if (element instanceof PsiNamedElement) {
-            return ((PsiNamedElement)element).getName();
+            return ((PsiNamedElement)element).getName().toLowerCase();
         }
         else {
-            return element.getText();
+            return element.getText().toLowerCase();
         }
     }
 
@@ -90,7 +90,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         List<LatexCommands> commands = TexifyUtil.getAllCommands(element);
         List<TreeElement> treeElements = new ArrayList<>();
 
-        Deque<LatexStructureViewSectionElement> sections = new ArrayDeque<>();
+        Deque<LatexStructureViewCommandElement> sections = new ArrayDeque<>();
 
         for (LatexCommands currentCmd : commands) {
             String token = currentCmd.getCommandToken().getText();
@@ -100,7 +100,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
                 continue;
             }
 
-            LatexStructureViewSectionElement child = new LatexStructureViewSectionElement(currentCmd);
+            LatexStructureViewCommandElement child = new LatexStructureViewCommandElement(currentCmd);
 
             // First section.
             if (sections.isEmpty()) {
@@ -126,14 +126,16 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             }
         }
 
-        addNewCommands(treeElements, commands);
+        addFromCommand(treeElements, commands, "\\newcommand");
+        addFromCommand(treeElements, commands, "\\label");
 
         return treeElements.toArray(new TreeElement[treeElements.size()]);
     }
 
-    private void addNewCommands(List<TreeElement> treeElements, List<LatexCommands> commands) {
+    private void addFromCommand(List<TreeElement> treeElements, List<LatexCommands> commands,
+                                String commandName) {
         for (LatexCommands cmd : commands) {
-            if (!cmd.getCommandToken().getText().equals("\\newcommand")) {
+            if (!cmd.getCommandToken().getText().equals(commandName)) {
                 continue;
             }
 
@@ -142,12 +144,12 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
                 continue;
             }
 
-            treeElements.add(new LatexStructureViewElement(cmd));
+            treeElements.add(new LatexStructureViewCommandElement(cmd));
         }
     }
 
-    private void registerHigher(Deque<LatexStructureViewSectionElement> sections,
-                                LatexStructureViewSectionElement child,
+    private void registerHigher(Deque<LatexStructureViewCommandElement> sections,
+                                LatexStructureViewCommandElement child,
                                 LatexCommands currentCmd,
                                 List<TreeElement> treeElements) {
         int indexInsert = order(currentCmd);
@@ -167,18 +169,18 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         }
     }
 
-    private void registerDeeper(Deque<LatexStructureViewSectionElement> sections,
-                                LatexStructureViewSectionElement child) {
+    private void registerDeeper(Deque<LatexStructureViewCommandElement> sections,
+                                LatexStructureViewCommandElement child) {
         current(sections).addSectionChild(child);
         queue(child, sections);
     }
 
-    private void registerSameLevel(Deque<LatexStructureViewSectionElement> sections,
-                                   LatexStructureViewSectionElement child,
+    private void registerSameLevel(Deque<LatexStructureViewCommandElement> sections,
+                                   LatexStructureViewCommandElement child,
                                    LatexCommands currentCmd,
                                    List<TreeElement> treeElements) {
         sections.removeFirst();
-        LatexStructureViewSectionElement parent = sections.peekFirst();
+        LatexStructureViewCommandElement parent = sections.peekFirst();
         if (parent != null) {
             parent.addSectionChild(child);
         }
@@ -189,20 +191,20 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         }
     }
 
-    private void pop(Deque<LatexStructureViewSectionElement> sections) {
+    private void pop(Deque<LatexStructureViewCommandElement> sections) {
         sections.removeFirst();
     }
 
-    private void queue(LatexStructureViewSectionElement child,
-                       Deque<LatexStructureViewSectionElement> sections) {
+    private void queue(LatexStructureViewCommandElement child,
+                       Deque<LatexStructureViewCommandElement> sections) {
         sections.addFirst(child);
     }
 
-    private LatexStructureViewSectionElement current(Deque<LatexStructureViewSectionElement> sections) {
+    private LatexStructureViewCommandElement current(Deque<LatexStructureViewCommandElement> sections) {
         return sections.getFirst();
     }
 
-    private int order(LatexStructureViewSectionElement element) {
+    private int order(LatexStructureViewCommandElement element) {
         return order(element.getCommandName());
     }
 

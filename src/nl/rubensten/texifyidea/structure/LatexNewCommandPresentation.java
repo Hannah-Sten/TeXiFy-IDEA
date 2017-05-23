@@ -31,7 +31,7 @@ public class LatexNewCommandPresentation implements ItemPresentation {
             catch (NumberFormatException ignored) {
             }
         }
-        String suffix = params != -1 ? " {x" + params + "}" : "";
+        String suffix = params != -1 ? "{x" + params + "}" : "";
 
         // Get command name.
         List<String> required = newCommand.getRequiredParameters();

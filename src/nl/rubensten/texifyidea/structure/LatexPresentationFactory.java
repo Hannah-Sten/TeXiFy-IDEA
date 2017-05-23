@@ -22,6 +22,8 @@ public class LatexPresentationFactory {
                 return new LatexSubParagraphPresentation(commands);
             case "\\newcommand":
                 return new LatexNewCommandPresentation(commands);
+            case "\\label":
+                return new LatexLabelPresentation(commands);
         }
 
         throw new IllegalArgumentException(
