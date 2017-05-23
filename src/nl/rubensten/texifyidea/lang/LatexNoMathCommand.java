@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.lang;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * @author Sten Wessel
@@ -362,4 +363,12 @@ public enum LatexNoMathCommand {
         return display;
     }
 
+    /**
+     * Checks whether {@code {}} must be automatically inserted in the auto complete.
+     *
+     * @return {@code true} to insert automatically, {@code false} not to insert.
+     */
+    public boolean autoInsertRequired() {
+        return Stream.of(arguments).filter(arg -> arg instanceof RequiredArgument).count() >= 1;
+    }
 }

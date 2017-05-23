@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.lang;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author Sten Wessel
@@ -220,8 +221,7 @@ public enum LatexMathCommand {
     UNDERLINE("underline", new RequiredArgument("text")),
     VEC("vec", new RequiredArgument("a")),
     WIDEHAT("widehat", new RequiredArgument("text")),
-    WIDETILDE("widetilde", new RequiredArgument("text")),
-    ;
+    WIDETILDE("widetilde", new RequiredArgument("text")),;
 
     private static final Map<String, LatexMathCommand> lookup = new HashMap<>();
 
@@ -244,7 +244,7 @@ public enum LatexMathCommand {
 
     LatexMathCommand(String command, Argument... arguments) {
         this.command = command;
-        this.arguments = arguments != null ? arguments : new Argument[]{};
+        this.arguments = arguments != null ? arguments : new Argument[] {};
     }
 
     LatexMathCommand(String command) {
@@ -282,5 +282,14 @@ public enum LatexMathCommand {
 
     public boolean isCollapse() {
         return collapse;
+    }
+
+    /**
+     * Checks whether {@code {}} must be automatically inserted in the auto complete.
+     *
+     * @return {@code true} to insert automatically, {@code false} not to insert.
+     */
+    public boolean autoInsertRequired() {
+        return Stream.of(arguments).filter(arg -> arg instanceof RequiredArgument).count() >= 1;
     }
 }

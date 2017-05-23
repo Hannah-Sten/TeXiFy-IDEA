@@ -8,7 +8,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
-import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
+import nl.rubensten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexMode;
@@ -59,7 +59,8 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .bold()
                         .withTailText(cmd.getArgumentsDisplay(), true)
                         .withTypeText(cmd.getDisplay())
-                        .withInsertHandler(new LatexNoMathInsertHandler())
+//                        .withInsertHandler(new LatexNoMathInsertHandler())
+                        .withInsertHandler(new LatexCommandArgumentInsertHandler())
         ));
     }
 
@@ -71,6 +72,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .bold()
                         .withTailText(cmd.getArgumentsDisplay(), true)
                         .withTypeText(cmd.getDisplay())
+                        .withInsertHandler(new LatexCommandArgumentInsertHandler())
         ));
     }
 
@@ -104,10 +106,16 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 }
             }
 
+            String tailText = Strings.repeat("{param}", Math.min(4, cmdParameterCount));
+            if (cmdParameterCount > 4) {
+                tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)";
+            }
+
             result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))
                     .withPresentableText(cmdName)
                     .bold()
-                    .withTailText(Strings.repeat("{param}", cmdParameterCount), true));
+                    .withTailText(tailText, true)
+                    .withInsertHandler(new LatexCommandArgumentInsertHandler()));
         }
     }
 }

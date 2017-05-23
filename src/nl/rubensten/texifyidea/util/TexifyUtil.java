@@ -25,6 +25,25 @@ public class TexifyUtil {
     }
 
     /**
+     * Repeats the given string a given amount of times.
+     *
+     * @param string
+     *         The string to repeat.
+     * @param count
+     *         The amount of times to repeat the string.
+     * @return A string where {@code string} has been repeated {@code count} times.
+     */
+    public static String fill(String string, int count) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < count; i++) {
+            sb.append(string);
+        }
+
+        return sb.toString();
+    }
+
+    /**
      * Get the FileType instance that corresponds to the given file extension.
      *
      * @param extensionWithoutDot
