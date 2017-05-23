@@ -6,6 +6,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ProcessingContext;
+import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.Kindness;
@@ -30,7 +31,8 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
 
         for (LatexCommands commands : cmds) {
             for (String label : commands.getRequiredParameters()) {
-                result.addElement(LookupElementBuilder.create(label));
+                result.addElement(LookupElementBuilder.create(label)
+                        .withInsertHandler(new LatexReferenceInsertHandler()));
             }
         }
 
