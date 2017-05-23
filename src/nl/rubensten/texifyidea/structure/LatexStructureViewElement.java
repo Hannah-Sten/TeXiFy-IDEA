@@ -5,15 +5,23 @@ import com.intellij.ide.util.treeView.smartTree.SortableTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiNamedElement;
 import nl.rubensten.texifyidea.file.LatexFile;
+import nl.rubensten.texifyidea.file.LatexFileType;
+import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+
+import static nl.rubensten.texifyidea.util.TexifyUtil.findFile;
 
 /**
  * @author Ruben Schellekens
@@ -91,11 +99,10 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         List<TreeElement> treeElements = new ArrayList<>();
 
         // Add includes.
-        addFromCommand(treeElements, commands, "\\include");
-        addFromCommand(treeElements, commands, "\\includeonly");
+        addIncludes(treeElements, commands);
 
+        // Add sectioning.
         Deque<LatexStructureViewCommandElement> sections = new ArrayDeque<>();
-
         for (LatexCommands currentCmd : commands) {
             String token = currentCmd.getCommandToken().getText();
 
@@ -139,6 +146,46 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         return treeElements.toArray(new TreeElement[treeElements.size()]);
     }
 
+    private void addIncludes(List<TreeElement> treeElements, List<LatexCommands> commands) {
+        for (LatexCommands cmd : commands) {
+            String name = cmd.getCommandToken().getText();
+            if (!name.equals("\\include") && !name.equals("\\includeonly")) {
+                continue;
+            }
+
+            List<String> required = cmd.getRequiredParameters();
+            if (required.isEmpty()) {
+                continue;
+            }
+
+            // Find file
+            Optional<LatexNoMathCommand> latexCommandHuh = LatexNoMathCommand.get(name.substring(1));
+            if (!latexCommandHuh.isPresent()) {
+                continue;
+            }
+            RequiredFileArgument argument = latexCommandHuh.get()
+                    .getArgumentsOf(RequiredFileArgument.class)
+                    .get(0);
+
+            String fileName = required.get(0);
+            VirtualFile directory = element.getContainingFile().getContainingDirectory().getVirtualFile();
+            Optional<VirtualFile> fileHuh = findFile(directory, fileName, argument.getSupportedExtensions());
+            if (!fileHuh.isPresent()) {
+                continue;
+            }
+
+            PsiFile psiFile = PsiManager.getInstance(element.getProject()).findFile(fileHuh.get());
+            if (!psiFile.getFileType().equals(LatexFileType.INSTANCE) && !psiFile.getFileType()
+                    .equals(StyleFileType.INSTANCE)) {
+                continue;
+            }
+
+            LatexStructureViewCommandElement elt = new LatexStructureViewCommandElement(cmd);
+            elt.addChild(new LatexStructureViewElement(psiFile));
+            treeElements.add(elt);
+        }
+    }
+
     private void addFromCommand(List<TreeElement> treeElements, List<LatexCommands> commands,
                                 String commandName) {
         for (LatexCommands cmd : commands) {
@@ -178,7 +225,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
     private void registerDeeper(Deque<LatexStructureViewCommandElement> sections,
                                 LatexStructureViewCommandElement child) {
-        current(sections).addSectionChild(child);
+        current(sections).addChild(child);
         queue(child, sections);
     }
 
@@ -189,7 +236,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         sections.removeFirst();
         LatexStructureViewCommandElement parent = sections.peekFirst();
         if (parent != null) {
-            parent.addSectionChild(child);
+            parent.addChild(child);
         }
         sections.addFirst(child);
 

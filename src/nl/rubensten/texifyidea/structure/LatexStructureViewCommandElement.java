@@ -17,7 +17,7 @@ import java.util.List;
 public class LatexStructureViewCommandElement implements StructureViewTreeElement, SortableTreeElement {
 
     private final LatexCommands element;
-    private final List<LatexStructureViewCommandElement> sectionChildren = new ArrayList<>();
+    private final List<TreeElement> sectionChildren = new ArrayList<>();
     private final ItemPresentation presentation;
 
     public LatexStructureViewCommandElement(LatexCommands element) {
@@ -25,7 +25,7 @@ public class LatexStructureViewCommandElement implements StructureViewTreeElemen
         this.presentation = LatexPresentationFactory.getPresentation(element);
     }
 
-    public void addSectionChild(LatexStructureViewCommandElement child) {
+    public void addChild(TreeElement child) {
         sectionChildren.add(child);
     }
 

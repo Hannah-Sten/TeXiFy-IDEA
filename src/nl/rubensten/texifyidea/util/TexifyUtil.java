@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
@@ -12,9 +13,7 @@ import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +22,38 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
+    }
+
+    /**
+     * Looks for a certain file.
+     * <p>
+     * First looks if the file including extensions exists, when it doesn't it tries to append
+     * all possible extensions until it finds a good one.
+     *
+     * @param directory
+     *         The directory where the search is rooted from.
+     * @param fileName
+     *         The name of the file relative to the directory.
+     * @param extensions
+     *         Set of all supported extensions to look for.
+     * @return The matching file.
+     */
+    public static Optional<VirtualFile> findFile(VirtualFile directory, String fileName,
+                                                 Set<String> extensions) {
+        VirtualFile file = directory.findFileByRelativePath(fileName);
+        if (file != null) {
+            return Optional.of(file);
+        }
+
+        for (String extension : extensions) {
+            file = directory.findFileByRelativePath(fileName + "." + extension);
+
+            if (file != null) {
+                return Optional.of(file);
+            }
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -103,12 +134,18 @@ public class TexifyUtil {
         return path + "." + extensionWithoutDot;
     }
 
+    /**
+     * Get all commands that are children of the given element.
+     */
     public static List<LatexCommands> getAllCommands(PsiElement element) {
         List<LatexCommands> commands = new ArrayList<>();
         getAllCommands(element, commands);
         return commands;
     }
 
+    /**
+     * Recursive implementation of {@link TexifyUtil#getAllCommands(PsiElement)}.
+     */
     private static void getAllCommands(PsiElement element, List<LatexCommands> commands) {
         for (PsiElement child : element.getChildren()) {
             getAllCommands(child, commands);
