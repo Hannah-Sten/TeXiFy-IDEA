@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public enum LatexNoMathCommand {
 
