@@ -19,7 +19,12 @@ public class LatexParagraphPresentation implements ItemPresentation {
             throw new IllegalArgumentException("command is no \\paragraph-command");
         }
 
-        this.paragraphName = paragraphCommand.getRequiredParameters().get(0);
+        if (paragraphCommand.getRequiredParameters().isEmpty()) {
+            this.paragraphName = "";
+        }
+        else {
+            this.paragraphName = paragraphCommand.getRequiredParameters().get(0);
+        }
     }
 
     @Nullable

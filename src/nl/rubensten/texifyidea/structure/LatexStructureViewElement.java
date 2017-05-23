@@ -111,6 +111,10 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
                 continue;
             }
 
+            if (currentCmd.getRequiredParameters().isEmpty()) {
+                continue;
+            }
+
             LatexStructureViewCommandElement child = new LatexStructureViewCommandElement(currentCmd);
 
             // First section.

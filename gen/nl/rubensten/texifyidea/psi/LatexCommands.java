@@ -35,6 +35,7 @@ public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, P
     default List<String> getOptionalParameters() {
         return getParameterList().stream()
                 .map(LatexParameter::getOptionalParam)
+                .filter(Objects::nonNull)
                 .flatMap(op -> {
                     if (op == null || op.getOpenGroup() == null) {
                         return Stream.empty();
@@ -45,8 +46,9 @@ public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, P
                 })
                 .filter(Objects::nonNull)
                 .map(LatexNoMathContent::getNormalText)
+                .filter(Objects::nonNull)
                 .map(PsiElement::getText)
-                .filter(s -> s != null)
+                .filter(Objects::nonNull)
                 .flatMap(text -> OPTIONAL_SPLIT.splitAsStream(text))
                 .collect(Collectors.toList());
     }
