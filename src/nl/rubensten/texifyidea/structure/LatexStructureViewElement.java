@@ -118,7 +118,24 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             }
         }
 
+        addNewCommands(treeElements, commands);
+
         return treeElements.toArray(new TreeElement[treeElements.size()]);
+    }
+
+    private void addNewCommands(List<TreeElement> treeElements, List<LatexCommands> commands) {
+        for (LatexCommands cmd : commands) {
+            if (!cmd.getCommandToken().getText().equals("\\newcommand")) {
+                continue;
+            }
+
+            List<String> required = cmd.getRequiredParameters();
+            if (required.isEmpty()) {
+                continue;
+            }
+
+            treeElements.add(new LatexStructureViewElement(cmd));
+        }
     }
 
     private void registerHigher(Deque<LatexStructureViewSectionElement> sections,

@@ -20,6 +20,8 @@ public class LatexPresentationFactory {
                 return new LatexParagraphPresentation(commands);
             case "\\subparagraph":
                 return new LatexSubParagraphPresentation(commands);
+            case "\\newcommand":
+                return new LatexNewCommandPresentation(commands);
         }
 
         throw new IllegalArgumentException(
