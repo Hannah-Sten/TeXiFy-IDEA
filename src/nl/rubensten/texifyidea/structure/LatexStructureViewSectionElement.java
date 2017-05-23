@@ -16,9 +16,7 @@ import java.util.List;
  */
 public class LatexStructureViewSectionElement implements StructureViewTreeElement, SortableTreeElement {
 
-    private static int ID_COUNTER = 0;
 
-    private final int id = ID_COUNTER++;
     private final LatexCommands element;
     private final List<LatexStructureViewSectionElement> sectionChildren = new ArrayList<>();
 
@@ -31,11 +29,7 @@ public class LatexStructureViewSectionElement implements StructureViewTreeElemen
     }
 
     public String getCommandName() {
-        return element.getName();
-    }
-
-    public int getId() {
-        return id;
+        return element.getCommandToken().getText();
     }
 
     @Override

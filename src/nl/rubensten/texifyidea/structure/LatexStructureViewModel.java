@@ -6,7 +6,6 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.Sorter;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
-import nl.rubensten.texifyidea.file.LatexFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +31,6 @@ public class LatexStructureViewModel extends StructureViewModelBase implements E
 
     @Override
     public boolean isAlwaysLeaf(StructureViewTreeElement structureViewTreeElement) {
-        return structureViewTreeElement instanceof LatexFile;
+        return false;
     }
 }
