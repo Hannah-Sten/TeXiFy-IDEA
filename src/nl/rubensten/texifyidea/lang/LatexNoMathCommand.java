@@ -8,6 +8,7 @@ import java.util.stream.Stream;
  */
 public enum LatexNoMathCommand {
 
+    ADDTOCOUNTER("addtocounter", required("countername"), required("value")),
     A_RING("aa", "å"),
     CAPITAL_A_RING("AA", "Å"),
     AE("ae", "æ"),

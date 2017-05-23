@@ -1,8 +1,8 @@
 package nl.rubensten.texifyidea.structure;
 
-import com.intellij.navigation.ItemPresentation;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -10,9 +10,10 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexParagraphPresentation implements ItemPresentation {
+public class LatexParagraphPresentation implements EditableHintPresentation {
 
     private final String paragraphName;
+    private String hint = "";
 
     public LatexParagraphPresentation(LatexCommands paragraphCommand) {
         if (!paragraphCommand.getCommandToken().getText().equals("\\paragraph")) {
@@ -36,12 +37,17 @@ public class LatexParagraphPresentation implements ItemPresentation {
     @Nullable
     @Override
     public String getLocationString() {
-        return null;
+        return hint;
     }
 
     @Nullable
     @Override
     public Icon getIcon(boolean b) {
         return TexifyIcons.DOT_PARAGRAPH;
+    }
+
+    @Override
+    public void setHint(@NotNull String hint) {
+        this.hint = hint;
     }
 }

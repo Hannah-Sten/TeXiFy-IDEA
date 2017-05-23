@@ -32,7 +32,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             "\\section", "\\subsection", "\\subsubsection", "\\paragraph", "\\subparagraph"
     );
 
-    private PsiElement element;
+    private final PsiElement element;
 
     public LatexStructureViewElement(PsiElement element) {
         this.element = element;
@@ -95,6 +95,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         }
 
         // Fetch all commands in the active file.
+        SectionNumbering numbering = new SectionNumbering();
         List<LatexCommands> commands = TexifyUtil.getAllCommands(element);
         List<TreeElement> treeElements = new ArrayList<>();
 
@@ -105,6 +106,12 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         Deque<LatexStructureViewCommandElement> sections = new ArrayDeque<>();
         for (LatexCommands currentCmd : commands) {
             String token = currentCmd.getCommandToken().getText();
+
+            // Update counter.
+            if (token.equals("\\addtocounter") || token.equals("\\setcounter")) {
+                updateNumbering(currentCmd, numbering);
+                continue;
+            }
 
             // Only consider section markers.
             if (!SECTION_MARKERS.contains(token)) {
@@ -121,6 +128,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             if (sections.isEmpty()) {
                 sections.addFirst(child);
                 treeElements.add(child);
+                setLevelHint(child, numbering);
                 continue;
             }
 
@@ -129,15 +137,15 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
             // Same level.
             if (currentIndex == nextIndex) {
-                registerSameLevel(sections, child, currentCmd, treeElements);
+                registerSameLevel(sections, child, currentCmd, treeElements, numbering);
             }
             // Go deeper
             else if (nextIndex > currentIndex) {
-                registerDeeper(sections, child);
+                registerDeeper(sections, child, numbering);
             }
             // Go higher
             else {
-                registerHigher(sections, child, currentCmd, treeElements);
+                registerHigher(sections, child, currentCmd, treeElements, numbering);
             }
         }
 
@@ -209,34 +217,39 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     private void registerHigher(Deque<LatexStructureViewCommandElement> sections,
                                 LatexStructureViewCommandElement child,
                                 LatexCommands currentCmd,
-                                List<TreeElement> treeElements) {
+                                List<TreeElement> treeElements,
+                                SectionNumbering numbering) {
         int indexInsert = order(currentCmd);
         while (!sections.isEmpty()) {
             pop(sections);
             int index = order(current(sections));
 
             if (index == indexInsert) {
-                registerSameLevel(sections, child, currentCmd, treeElements);
+                registerSameLevel(sections, child, currentCmd, treeElements, numbering);
                 break;
             }
 
             if (indexInsert > index) {
-                registerDeeper(sections, child);
+                registerDeeper(sections, child, numbering);
                 break;
             }
         }
     }
 
     private void registerDeeper(Deque<LatexStructureViewCommandElement> sections,
-                                LatexStructureViewCommandElement child) {
+                                LatexStructureViewCommandElement child,
+                                SectionNumbering numbering) {
         current(sections).addChild(child);
         queue(child, sections);
+
+        setLevelHint(child, numbering);
     }
 
     private void registerSameLevel(Deque<LatexStructureViewCommandElement> sections,
                                    LatexStructureViewCommandElement child,
                                    LatexCommands currentCmd,
-                                   List<TreeElement> treeElements) {
+                                   List<TreeElement> treeElements,
+                                   SectionNumbering numbering) {
         sections.removeFirst();
         LatexStructureViewCommandElement parent = sections.peekFirst();
         if (parent != null) {
@@ -244,8 +257,50 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         }
         sections.addFirst(child);
 
+        setLevelHint(child, numbering);
+
         if (currentCmd.getCommandToken().getText().equals("\\section")) {
             treeElements.add(child);
+        }
+    }
+
+    private void setLevelHint(LatexStructureViewCommandElement child, SectionNumbering numbering) {
+        int level = order(child);
+        numbering.increase(level);
+        child.setHint(numbering.getTitle(level));
+    }
+
+    private void updateNumbering(LatexCommands cmd, SectionNumbering numbering) {
+        String token = cmd.getCommandToken().getText();
+        List<String> required = cmd.getRequiredParameters();
+
+        if (required.size() < 2) {
+            return;
+        }
+
+        // Get the level to modify.
+        String name = required.get(0);
+        int level = order("\\" + name);
+        if (level == -1) {
+            return;
+        }
+
+        // Get the amount to modify with.
+        int amount = -1;
+        try {
+            amount = Integer.parseInt(required.get(1));
+        }
+        catch (NumberFormatException nfe) {
+            return;
+        }
+
+        // Setcounter
+        if (token.equals("\\setcounter")) {
+            numbering.setCounter(level, amount);
+        }
+        // Addcounter
+        else {
+            numbering.addCounter(level, amount);
         }
     }
 

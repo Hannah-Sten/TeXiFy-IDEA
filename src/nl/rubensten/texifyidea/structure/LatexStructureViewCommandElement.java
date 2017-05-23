@@ -33,6 +33,12 @@ public class LatexStructureViewCommandElement implements StructureViewTreeElemen
         return element.getCommandToken().getText();
     }
 
+    public void setHint(String hint) {
+        if (presentation instanceof EditableHintPresentation) {
+            ((EditableHintPresentation)presentation).setHint(hint);
+        }
+    }
+
     @Override
     public Object getValue() {
         return element;

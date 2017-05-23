@@ -1,8 +1,8 @@
 package nl.rubensten.texifyidea.structure;
 
-import com.intellij.navigation.ItemPresentation;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -10,9 +10,10 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexSubSubSectionPresentation implements ItemPresentation {
+public class LatexSubSubSectionPresentation implements EditableHintPresentation {
 
     private final String subSubSectionName;
+    private String hint = "";
 
     public LatexSubSubSectionPresentation(LatexCommands sectionCommand) {
         if (!sectionCommand.getCommandToken().getText().equals("\\subsubsection")) {
@@ -31,12 +32,17 @@ public class LatexSubSubSectionPresentation implements ItemPresentation {
     @Nullable
     @Override
     public String getLocationString() {
-        return null;
+        return hint;
     }
 
     @Nullable
     @Override
     public Icon getIcon(boolean b) {
         return TexifyIcons.DOT_SUBSUBSECTION;
+    }
+
+    @Override
+    public void setHint(@NotNull String hint) {
+        this.hint = hint;
     }
 }

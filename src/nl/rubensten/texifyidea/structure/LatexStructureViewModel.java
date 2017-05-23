@@ -7,10 +7,7 @@ import com.intellij.ide.util.treeView.smartTree.Filter;
 import com.intellij.ide.util.treeView.smartTree.Sorter;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
-import nl.rubensten.texifyidea.structure.filter.LatexIncludesFilter;
-import nl.rubensten.texifyidea.structure.filter.LatexLabelFilter;
-import nl.rubensten.texifyidea.structure.filter.LatexNewCommandFilter;
-import nl.rubensten.texifyidea.structure.filter.LatexSectionFilter;
+import nl.rubensten.texifyidea.structure.filter.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
