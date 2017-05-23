@@ -55,7 +55,6 @@ public class LatexCommandsStubElementType extends IStubElementType<LatexCommands
 
     @Override
     public void serialize(@NotNull LatexCommandsStub latexCommandsStub, @NotNull StubOutputStream stubOutputStream) throws IOException {
-        System.out.println("@serialize >> " + latexCommandsStub);
         stubOutputStream.writeName(latexCommandsStub.getName());
         stubOutputStream.writeName(serialiseRequired(latexCommandsStub));
         stubOutputStream.writeName(serialiseOptional(latexCommandsStub));
