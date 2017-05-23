@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.structure.filter.LatexLabelFilter;
 import nl.rubensten.texifyidea.structure.filter.LatexNewCommandFilter;
+import nl.rubensten.texifyidea.structure.filter.LatexSectionFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,13 +20,13 @@ public class LatexStructureViewModel extends StructureViewModelBase implements E
 
     public static final Sorter[] SORTERS = new Sorter[] { Sorter.ALPHA_SORTER };
     public static final Filter[] FILTERS = new Filter[] {
-            new LatexLabelFilter(),
-            new LatexNewCommandFilter()
+            new LatexSectionFilter(),
+            new LatexNewCommandFilter(),
+            new LatexLabelFilter()
     };
 
     public LatexStructureViewModel(@NotNull PsiFile psiFile, @Nullable Editor editor) {
         super(psiFile, editor, new LatexStructureViewElement(psiFile));
-        getFilters();
     }
 
     @NotNull
