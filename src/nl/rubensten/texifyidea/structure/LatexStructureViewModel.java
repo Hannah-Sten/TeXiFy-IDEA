@@ -8,6 +8,7 @@ import com.intellij.ide.util.treeView.smartTree.Sorter;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.structure.filter.LatexLabelFilter;
+import nl.rubensten.texifyidea.structure.filter.LatexNewCommandFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +19,8 @@ public class LatexStructureViewModel extends StructureViewModelBase implements E
 
     public static final Sorter[] SORTERS = new Sorter[] { Sorter.ALPHA_SORTER };
     public static final Filter[] FILTERS = new Filter[] {
-            new LatexLabelFilter()
+            new LatexLabelFilter(),
+            new LatexNewCommandFilter()
     };
 
     public LatexStructureViewModel(@NotNull PsiFile psiFile, @Nullable Editor editor) {
