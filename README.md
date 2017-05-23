@@ -24,6 +24,7 @@ Please bear in mind that this is just a side project for us.
 * Gutter icon to navigate to included files.
 * Gutter icon to automatically compile the active file.
 * Comment out lines.
+* Code folding for environments.
 
 ### Syntax highlighting
 * Braces
@@ -44,12 +45,15 @@ Please bear in mind that this is just a side project for us.
 * Create new `.tex`, `.sty` and `.cls` files from the new file menu.
 
 ### Other
-* Fancy icons for `.tex`, `.sty` and `.cls` files (see [GreanTeaFlavouredIcons](https://github.com/RubenSchellekens/GreenTeaFlavouredIcons)), and LaTeX modules.
+* Fancy icons for `.tex`, `.sty` and `.cls` files and LaTeX modules.
 
 ## In the works
 * Document structure view [[structure-view](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/structure-view)].
 * Jumping to source code of packages [[TeXiFy-IDEA-2](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/TeXiFy-IDEA-2)].
 * Bibtex support [[bibtex](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/bibtex)].
+* PDF viewer [[pdf-viewer](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/pdf-viewer)].
+* Auto completion for references [[reference-completion](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/reference-completion)].
+* Inspections [[inspection](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/inspection)].
 
 ## Planned
 * Embedded (automatically updating) PDF viewer.
@@ -58,7 +62,6 @@ Please bear in mind that this is just a side project for us.
 * Bibliography file (`.bib`) support.
 * Support for more LaTeX compilers.
 * Menu items to insert LaTeX commands/templates for the forgetful.
-* Code folding.
 * Easter eggs.
 
 ## How to build the project using IntelliJ
