@@ -12,6 +12,7 @@ import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -100,6 +101,22 @@ public class TexifyUtil {
         }
 
         return path + "." + extensionWithoutDot;
+    }
+
+    public static List<LatexCommands> getAllCommands(PsiElement element) {
+        List<LatexCommands> commands = new ArrayList<>();
+        getAllCommands(element, commands);
+        return commands;
+    }
+
+    private static void getAllCommands(PsiElement element, List<LatexCommands> commands) {
+        for (PsiElement child : element.getChildren()) {
+            getAllCommands(child, commands);
+        }
+
+        if (element instanceof LatexCommands) {
+            commands.add((LatexCommands)element);
+        }
     }
 
     /**

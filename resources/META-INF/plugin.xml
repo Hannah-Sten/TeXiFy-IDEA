@@ -102,7 +102,7 @@
         <internalFileTemplate name="LaTeX Document class"/>
 
         <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
-        
+
         <!-- Live templates -->
         <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.LatexLiveTemplateProvider"/>
         <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.LatexContext"/>
@@ -115,6 +115,9 @@
         <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
         <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
+
+        <!-- Structure view -->
+        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.LatexStructureViewFactory"/>
 
         <!-- Editor -->
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>

@@ -10,79 +10,115 @@ import javax.swing.*;
 public class TexifyIcons {
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/latex-file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon PDF_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/pdf-file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BIBLIOGRAPHY_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/bibliography-file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon CLASS_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/class-file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOCUMENTED_LATEX_SOURCE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/doc-latex-file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon STYLE_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/style-file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon TEXT_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/text-file.png"
     );
 
     /**
-     * Copyright (c) 2016 Ruben Schellekens
-     * https://github.com/RubenSchellekens/GreenTeaFlavouredIcons
+     * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BUILD = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/build.png"
     );
 
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon LATEX_MODULE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/latex-module.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_LATEX = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-tex.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_SECTION = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-sec.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_SUBSECTION = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-subsec.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_SUBSUBSECTION = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-subsubsec.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_PARAGRAPH = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-par.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_SUBPARAGRAPH = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-subpar.png"
     );
 
     /**

@@ -24,21 +24,30 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
     private static final Pattern PRECEDING_SLASH = Pattern.compile("^\\\\");
 
     /**
-     * Get all the indexed LaTeX commands in the project.
+     * Get all the indexed LaTeX commands in a given scope.
      */
     @NotNull
-    public static Collection<LatexCommands> getIndexedCommands(@NotNull Project project) {
+    public static Collection<LatexCommands> getIndexedCommands(@NotNull Project project,
+                                                               @NotNull GlobalSearchScope scope) {
         Collection<LatexCommands> commands = new ArrayList<>();
 
         for (String key : getKeys(project)) {
-            commands.addAll(getCommandsByName(key, project));
+            commands.addAll(getCommandsByName(key, project, scope));
         }
 
         return commands;
     }
 
     /**
-     * Get all the indexed LaTeX commands in the project with a certain name.
+     * Get all indexed LaTeX commands in the project.
+     */
+    @NotNull
+    public static Collection<LatexCommands> getIndexedCommands(@NotNull Project project) {
+        return getIndexedCommands(project, GlobalSearchScope.projectScope(project));
+    }
+
+    /**
+     * Get all the indexed LaTeX commands with a certain name.
      *
      * @param name
      *         The name of the commands to get. E.g. "label" will only get all Label-commands .
@@ -46,11 +55,12 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
      */
     @NotNull
     public static Collection<LatexCommands> getIndexedCommandsByName(@NotNull String name,
-                                                                     @NotNull Project project) {
+                                                                     @NotNull Project project,
+                                                                     @NotNull GlobalSearchScope scope) {
         Collection<LatexCommands> commands = new ArrayList<>();
 
         for (String key : getKeys(project)) {
-            Collection<LatexCommands> cmds = getCommandsByName(key, project);
+            Collection<LatexCommands> cmds = getCommandsByName(key, project, scope);
 
             for (LatexCommands cmd : cmds) {
                 String cmdToken = PRECEDING_SLASH.matcher(cmd.getCommandToken().getText()).replaceFirst("");
@@ -67,10 +77,23 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
         return commands;
     }
 
+    /**
+     * Get all the indexed LaTeX commands with a certain name in the project.
+     *
+     * @param name
+     *         The name of the commands to get. E.g. "label" will only get all Label-commands .
+     *         Preceding slashes will be ignored.
+     */
+    @NotNull
+    public static Collection<LatexCommands> getIndexedCommandsByName(@NotNull String name,
+                                                                     @NotNull Project project) {
+        return getIndexedCommandsByName(name, project, GlobalSearchScope.projectScope(project));
+    }
+
     @NotNull
     public static Collection<LatexCommands> getCommandsByName(@NotNull String name,
-                                                              @NotNull Project project) {
-        GlobalSearchScope scope = GlobalSearchScope.projectScope(project);
+                                                              @NotNull Project project,
+                                                              @NotNull GlobalSearchScope scope) {
         return StubIndex.getElements(LatexCommandsIndex.KEY, name, project, scope, LatexCommands.class);
     }
 
