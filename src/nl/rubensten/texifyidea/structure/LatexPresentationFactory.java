@@ -24,6 +24,10 @@ public class LatexPresentationFactory {
                 return new LatexNewCommandPresentation(commands);
             case "\\label":
                 return new LatexLabelPresentation(commands);
+            case "\\include":
+                return new LatexIncludePresentation(commands);
+            case "\\includeonly":
+                return new LatexIncludePresentation(commands);
         }
 
         throw new IllegalArgumentException(

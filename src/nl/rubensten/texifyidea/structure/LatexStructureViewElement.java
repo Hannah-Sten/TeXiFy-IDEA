@@ -90,6 +90,10 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         List<LatexCommands> commands = TexifyUtil.getAllCommands(element);
         List<TreeElement> treeElements = new ArrayList<>();
 
+        // Add includes.
+        addFromCommand(treeElements, commands, "\\include");
+        addFromCommand(treeElements, commands, "\\includeonly");
+
         Deque<LatexStructureViewCommandElement> sections = new ArrayDeque<>();
 
         for (LatexCommands currentCmd : commands) {
@@ -126,7 +130,10 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             }
         }
 
+        // Add command definitions.
         addFromCommand(treeElements, commands, "\\newcommand");
+
+        // Add label definitions.
         addFromCommand(treeElements, commands, "\\label");
 
         return treeElements.toArray(new TreeElement[treeElements.size()]);
