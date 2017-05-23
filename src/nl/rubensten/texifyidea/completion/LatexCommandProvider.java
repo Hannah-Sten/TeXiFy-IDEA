@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
 import nl.rubensten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler;
+import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexMode;
@@ -59,7 +60,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .bold()
                         .withTailText(cmd.getArgumentsDisplay(), true)
                         .withTypeText(cmd.getDisplay())
-//                        .withInsertHandler(new LatexNoMathInsertHandler())
+                        .withInsertHandler(new LatexNoMathInsertHandler())
                         .withInsertHandler(new LatexCommandArgumentInsertHandler())
         ));
     }
