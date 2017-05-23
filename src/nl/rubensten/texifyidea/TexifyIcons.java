@@ -110,6 +110,13 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon DOT_ENVIRONMENT = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-env.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon DOT_SECTION = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/dot-sec.png"
     );

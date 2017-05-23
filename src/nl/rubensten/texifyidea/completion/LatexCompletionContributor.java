@@ -53,7 +53,8 @@ public class LatexCompletionContributor extends CompletionContributor {
                                 LatexCommands command = LatexPsiUtil.getParentOfType(
                                         psiElement, LatexCommands.class
                                 );
-                                return command.getCommandToken().getText().equals("\\ref");
+                                return command != null &&
+                                        command.getCommandToken().getText().equals("\\ref");
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),

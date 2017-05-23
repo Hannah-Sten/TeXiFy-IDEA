@@ -8,6 +8,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
+import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler;
 import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
@@ -38,16 +39,16 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         switch (mode) {
             case NORMAL:
                 addNormalCommands(result);
+                addCustomCommands(parameters.getEditor().getProject(), result);
                 break;
             case MATH:
                 addMathCommands(result);
+                addCustomCommands(parameters.getEditor().getProject(), result);
                 break;
             case ENVIRONMENT_NAME:
                 addEnvironments(result);
                 break;
         }
-
-        addCustomCommands(parameters.getEditor().getProject(), result);
 
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.");
     }
@@ -61,7 +62,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withTailText(cmd.getArgumentsDisplay(), true)
                         .withTypeText(cmd.getDisplay())
                         .withInsertHandler(new LatexNoMathInsertHandler())
-                        .withInsertHandler(new LatexCommandArgumentInsertHandler())
+                        .withIcon(TexifyIcons.DOT_COMMAND)
         ));
     }
 
@@ -74,6 +75,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withTailText(cmd.getArgumentsDisplay(), true)
                         .withTypeText(cmd.getDisplay())
                         .withInsertHandler(new LatexCommandArgumentInsertHandler())
+                        .withIcon(TexifyIcons.DOT_COMMAND)
         ));
     }
 
@@ -82,6 +84,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 LatexNoMathEnvironment.values(),
                 cmd -> LookupElementBuilder.create(cmd, cmd.getName())
                         .withPresentableText(cmd.getName())
+                        .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
     }
 
@@ -116,7 +119,9 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                     .withPresentableText(cmdName)
                     .bold()
                     .withTailText(tailText, true)
-                    .withInsertHandler(new LatexCommandArgumentInsertHandler()));
+                    .withInsertHandler(new LatexCommandArgumentInsertHandler())
+                    .withIcon(TexifyIcons.DOT_COMMAND)
+            );
         }
     }
 }
