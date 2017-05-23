@@ -7,7 +7,9 @@ import com.intellij.psi.StubBasedPsiElement;
 import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,6 +43,7 @@ public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, P
                     return op.getOpenGroup().getContentList().stream()
                             .map(LatexContent::getNoMathContent);
                 })
+                .filter(Objects::nonNull)
                 .map(LatexNoMathContent::getNormalText)
                 .map(PsiElement::getText)
                 .filter(s -> s != null)
