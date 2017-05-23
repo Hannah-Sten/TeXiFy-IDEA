@@ -55,7 +55,15 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     @NotNull
     @Override
     public String getAlphaSortKey() {
-        return (element instanceof PsiNamedElement) ? ((PsiNamedElement)element).getName() : null;
+        if (element instanceof LatexCommands) {
+            return ((LatexCommands)element).getCommandToken().getText();
+        }
+        else if (element instanceof PsiNamedElement) {
+            return ((PsiNamedElement)element).getName();
+        }
+        else {
+            return element.getText();
+        }
     }
 
     @NotNull

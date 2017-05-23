@@ -16,12 +16,13 @@ import java.util.List;
  */
 public class LatexStructureViewSectionElement implements StructureViewTreeElement, SortableTreeElement {
 
-
     private final LatexCommands element;
     private final List<LatexStructureViewSectionElement> sectionChildren = new ArrayList<>();
+    private final ItemPresentation presentation;
 
     public LatexStructureViewSectionElement(LatexCommands element) {
         this.element = element;
+        this.presentation = LatexPresentationFactory.getPresentation(element);
     }
 
     public void addSectionChild(LatexStructureViewSectionElement child) {
@@ -40,13 +41,13 @@ public class LatexStructureViewSectionElement implements StructureViewTreeElemen
     @NotNull
     @Override
     public String getAlphaSortKey() {
-        return element.getName();
+        return presentation.getPresentableText();
     }
 
     @NotNull
     @Override
     public ItemPresentation getPresentation() {
-        return LatexPresentationFactory.getPresentation(element);
+        return presentation;
     }
 
     @NotNull

@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LatexStructureViewModel extends StructureViewModelBase implements ElementInfoProvider {
 
+    public static final Sorter[] SORTERS = new Sorter[] { Sorter.ALPHA_SORTER };
+
     public LatexStructureViewModel(@NotNull PsiFile psiFile, @Nullable Editor editor) {
         super(psiFile, editor, new LatexStructureViewElement(psiFile));
     }
@@ -21,7 +23,7 @@ public class LatexStructureViewModel extends StructureViewModelBase implements E
     @NotNull
     @Override
     public Sorter[] getSorters() {
-        return Sorter.EMPTY_ARRAY;
+        return SORTERS;
     }
 
     @Override
