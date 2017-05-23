@@ -1,58 +1,98 @@
 package nl.rubensten.texifyidea.index.stub;
 
-import com.intellij.lang.Language;
 import com.intellij.psi.stubs.*;
+import nl.rubensten.texifyidea.LatexLanguage;
+import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.impl.LatexCommandsImpl;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Ruben Schellekens
  */
-public class LatexCommandsStubElementType
-        extends IStubElementType<LatexCommandsStub, LatexCommands> {
+public class LatexCommandsStubElementType extends IStubElementType<LatexCommandsStub, LatexCommands> {
 
-    public LatexCommandsStubElementType(@NotNull String debugName, @Nullable Language language) {
-        // TODO: See Properties example.
-        super(debugName, language);
+    private static final Pattern SEPERATOR = Pattern.compile("\u1923\u9123\u2d20 hello\u0012");
+
+    public LatexCommandsStubElementType(@NotNull String debugName) {
+        super("latex-commands", LatexLanguage.INSTANCE);
     }
 
     @Override
     public LatexCommands createPsi(@NotNull LatexCommandsStub latexCommandsStub) {
-        // TODO: Implement.
-        return null;
+        return new LatexCommandsImpl(latexCommandsStub, this) {{
+            setName(latexCommandsStub.getName());
+        }};
     }
 
     @NotNull
     @Override
-    public LatexCommandsStub createStub(@NotNull LatexCommands latexCommands, StubElement stubElement) {
-        // TODO: Implement.
-        return null;
+    public LatexCommandsStub createStub(@NotNull LatexCommands latexCommands, StubElement parent) {
+        String commandToken = latexCommands.getCommandToken().getText();
+        latexCommands.setName(commandToken);
+
+        List<String> requiredParameters = latexCommands.getRequiredParameters();
+        List<String> optionalParameters = latexCommands.getOptionalParameters();
+
+        return new LatexCommandsStubImpl(
+                parent, this,
+                commandToken,
+                requiredParameters,
+                optionalParameters
+        );
     }
 
     @NotNull
     @Override
     public String getExternalId() {
-        // TODO: Implement.
-        return null;
+        return "texify.latex.commands";
     }
 
     @Override
     public void serialize(@NotNull LatexCommandsStub latexCommandsStub, @NotNull StubOutputStream stubOutputStream) throws IOException {
-        // TODO: Implement.
+        System.out.println("@serialize >> " + latexCommandsStub);
+        stubOutputStream.writeName(latexCommandsStub.getName());
+        stubOutputStream.writeName(serialiseRequired(latexCommandsStub));
+        stubOutputStream.writeName(serialiseOptional(latexCommandsStub));
     }
 
     @NotNull
     @Override
-    public LatexCommandsStub deserialize(@NotNull StubInputStream stubInputStream, StubElement stubElement) throws IOException {
-        // TODO: Implement.
-        return null;
+    public LatexCommandsStub deserialize(@NotNull StubInputStream stubInputStream, StubElement parent) throws IOException {
+        final String name = stubInputStream.readName().toString();
+        final List<String> required = deserialiseList(stubInputStream.readName().toString());
+        final List<String> optional = deserialiseList(stubInputStream.readName().toString());
+
+        return new LatexCommandsStubImpl(
+                parent, this,
+                stubInputStream.readName().getString(),
+                required,
+                optional
+        );
     }
 
     @Override
     public void indexStub(@NotNull LatexCommandsStub latexCommandsStub, @NotNull IndexSink indexSink) {
-        // TODO: Implement.
+        indexSink.occurrence(LatexCommandsIndex.KEY, latexCommandsStub.getCommandToken());
+    }
+
+    @NotNull
+    private List<String> deserialiseList(@NotNull String string) {
+        return SEPERATOR.splitAsStream(string).collect(Collectors.toList());
+    }
+
+    @NotNull
+    private String serialiseRequired(@NotNull LatexCommandsStub stub) {
+        return String.join(SEPERATOR.pattern(), stub.getRequiredParams());
+    }
+
+    @NotNull
+    private String serialiseOptional(@NotNull LatexCommandsStub stub) {
+        return String.join(SEPERATOR.pattern(), stub.getOptionalParams());
     }
 }

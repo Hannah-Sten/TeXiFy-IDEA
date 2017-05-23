@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> {
 
-    private static final StubIndexKey<String, LatexCommands> KEY =
+    public static final StubIndexKey<String, LatexCommands> KEY =
             StubIndexKey.createIndexKey("nl.rubensten.texifyidea.commands");
 
     @NotNull

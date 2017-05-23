@@ -1,20 +1,73 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi;
 
-import java.util.List;
-
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
 
-public interface LatexCommands extends PsiNamedElement, StubBasedPsiElement<LatexCommandsStub> {
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-  @NotNull
-  List<LatexParameter> getParameterList();
+public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, PsiNamedElement {
 
-  @NotNull
-  PsiElement getCommandToken();
+    static final Pattern OPTIONAL_SPLIT = Pattern.compile(",");
 
+    @NotNull
+    List<LatexParameter> getParameterList();
+
+    @NotNull
+    PsiElement getCommandToken();
+
+    default String getName() {
+        return getCommandToken().getText();
+    }
+
+    /**
+     * Generates a list of all names of all optional parameters in the command.
+     */
+    default List<String> getOptionalParameters() {
+        return getParameterList().stream()
+                .map(LatexParameter::getOptionalParam)
+                .flatMap(op -> {
+                    if (op == null || op.getOpenGroup() == null) {
+                        return Stream.empty();
+                    }
+
+                    return op.getOpenGroup().getContentList().stream()
+                            .map(LatexContent::getNoMathContent);
+                })
+                .map(LatexNoMathContent::getNormalText)
+                .map(PsiElement::getText)
+                .filter(s -> s != null)
+                .flatMap(text -> OPTIONAL_SPLIT.splitAsStream(text))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Generates a list of all names of all required parameters in the command.
+     */
+    default List<String> getRequiredParameters() {
+        return getParameterList().stream()
+                .map(LatexParameter::getRequiredParam)
+                .flatMap(rp -> {
+                    if (rp == null || rp.getGroup() == null) {
+                        return Stream.empty();
+                    }
+
+                    return rp.getGroup().getContentList().stream()
+                            .map(LatexContent::getNoMathContent);
+                })
+                .flatMap(content -> {
+                    if (content == null || content.getNormalText() == null) {
+                        return Stream.empty();
+                    }
+
+                    return Stream.of(content.getNormalText().getText());
+                })
+                .collect(Collectors.toList());
+    }
 }

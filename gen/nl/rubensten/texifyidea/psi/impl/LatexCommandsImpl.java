@@ -1,4 +1,3 @@
-// This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi.impl;
 
 import java.util.List;
@@ -22,8 +21,14 @@ import nl.rubensten.texifyidea.psi.*;
 public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub>
         implements LatexCommands {
 
+    private String name;
+
     public LatexCommandsImpl(ASTNode node) {
         super(node);
+    }
+
+    public LatexCommandsImpl(LatexCommandsStub stub, IStubElementType nodeType) {
+        super(stub, nodeType);
     }
 
     public void accept(@NotNull LatexVisitor visitor) {
@@ -52,20 +57,18 @@ public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub
     }
 
     @Override
-    public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-        // TODO: Implement.
-        return null;
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        this.name = name;
+        return this;
     }
 
     @Override
-    public IStubElementType getElementType() {
-        // TODO: Implement.
-        return null;
+    public String getName() {
+        return name;
     }
 
     @Override
-    public LatexCommandsStub getStub() {
-        // TODO: Implement.
-        return null;
+    public String toString() {
+        return "LatexCommandsImpl(COMMANDS)[STUB]{" + getName() + "}";
     }
 }
