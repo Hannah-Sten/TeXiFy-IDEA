@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, PsiNamedElement {
 
@@ -58,15 +59,27 @@ public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, P
                         return Stream.empty();
                     }
 
-                    return rp.getGroup().getContentList().stream()
-                            .map(LatexContent::getNoMathContent);
+                    return Stream.of(rp.getGroup());
                 })
-                .flatMap(content -> {
-                    if (content == null || content.getNormalText() == null) {
-                        return Stream.empty();
-                    }
+                .map(group -> {
+                    return String.join("", group.getContentList().stream()
+                            .flatMap(c -> {
+                                LatexNoMathContent content = c.getNoMathContent();
 
-                    return Stream.of(content.getNormalText().getText());
+                                if (content == null) {
+                                    return Stream.empty();
+                                }
+
+                                if (content.getCommands() != null && content.getNormalText() == null) {
+                                    return Stream.of(content.getCommands().getCommandToken().getText());
+                                }
+                                else if (content.getNormalText() != null) {
+                                    return Stream.of(content.getNormalText().getText());
+                                }
+
+                                return Stream.empty();
+                            })
+                            .collect(Collectors.toList()));
                 })
                 .collect(Collectors.toList());
     }

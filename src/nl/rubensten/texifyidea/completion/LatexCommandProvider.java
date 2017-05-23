@@ -1,17 +1,24 @@
 package nl.rubensten.texifyidea.completion;
 
+import com.google.common.base.Strings;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
 import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
+import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexMode;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathEnvironment;
+import nl.rubensten.texifyidea.psi.LatexCommands;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Sten Wessel
@@ -38,6 +45,8 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 addEnvironments(result);
                 break;
         }
+
+        addCustomCommands(parameters.getEditor().getProject(), result);
 
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.");
     }
@@ -71,5 +80,34 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 cmd -> LookupElementBuilder.create(cmd, cmd.getName())
                         .withPresentableText(cmd.getName())
         ));
+    }
+
+    private void addCustomCommands(Project project, CompletionResultSet result) {
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommandsByName("newcommand", project);
+
+        for (LatexCommands cmd : cmds) {
+            List<String> required = cmd.getRequiredParameters();
+            List<String> optional = cmd.getOptionalParameters();
+
+            if (required.isEmpty()) {
+                continue;
+            }
+
+            String cmdName = required.get(0);
+            int cmdParameterCount = 0;
+
+            if (!optional.isEmpty()) {
+                try {
+                    cmdParameterCount = Integer.parseInt(optional.get(0));
+                }
+                catch (NumberFormatException ignore) {
+                }
+            }
+
+            result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))
+                    .withPresentableText(cmdName)
+                    .bold()
+                    .withTailText(Strings.repeat("{param}", cmdParameterCount), true));
+        }
     }
 }

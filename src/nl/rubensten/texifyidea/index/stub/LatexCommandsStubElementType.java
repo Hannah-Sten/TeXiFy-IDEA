@@ -69,7 +69,7 @@ public class LatexCommandsStubElementType extends IStubElementType<LatexCommands
 
         return new LatexCommandsStubImpl(
                 parent, this,
-                stubInputStream.readName().getString(),
+                name,
                 required,
                 optional
         );
