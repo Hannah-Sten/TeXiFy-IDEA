@@ -1,15 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi;
 
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
+import nl.rubensten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.rubensten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
 
   IElementType BEGIN_COMMAND = new LatexElementType("BEGIN_COMMAND");
-  IElementType COMMANDS = new LatexElementType("COMMANDS");
+  IStubElementType COMMANDS = new LatexCommandsStubElementType("COMMANDS");
   IElementType COMMENT = new LatexElementType("COMMENT");
   IElementType CONTENT = new LatexElementType("CONTENT");
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");

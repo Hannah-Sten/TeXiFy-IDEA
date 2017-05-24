@@ -17,7 +17,9 @@ Please bear in mind that this is just a side project for us.
 * Dynamically detect what runtime configuration to use based on the active file.
 
 ### Editor
-* Basic autocompletion form a predefined list of commands.
+* Autocompletion form a predefined list of commands.
+* Commands defined in the project will also be added to the autocompletion list.
+* Autocompletion of defined labels (using `\label`).
 * Brace matching for `{}`, `[]`, `\[\]` and `$$`.
 * Automatically inserts other half of `{}`, `[]`, `\[\]` and `$$`.
 * Most math commands get replaced by their unicode representation using folding.
@@ -27,16 +29,23 @@ Please bear in mind that this is just a side project for us.
 * Code folding for environments.
 
 ### Syntax highlighting
-* Braces
-* Brackets
-* Optional parameters
-* Commands
-* Commands in inline math mode
-* Commands in display math mode
-* Comments
-* Inline math
-* Display math
-* Stars
+Braces, 
+Brackets, 
+Optional parameters, 
+Commands, 
+Commands in inline math mode, 
+Commands in display math mode, 
+Comments, 
+Inline math, 
+Display math, 
+and Stars.
+
+### Structure view
+* Shows sectioning, inclusions, labels and command definitions.
+* Items can be sorted.
+* Filters to add/remove items from view.
+* Section numbering behind section items that takes `\setcounter` and `\addtocounter` into account.
+* Included files also show their item tree in the overview.
 
 ### Templates
 * Available file templates for `.tex`, `.sty` and `.cls` files. 
@@ -45,19 +54,16 @@ Please bear in mind that this is just a side project for us.
 * Create new `.tex`, `.sty` and `.cls` files from the new file menu.
 
 ### Other
-* Fancy icons for `.tex`, `.sty` and `.cls` files and LaTeX modules.
+* Many fancy icons with the look and feel of the IntelliJ platform.
 
 ## In the works
-* Document structure view [[structure-view](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/structure-view)].
 * Jumping to source code of packages [[TeXiFy-IDEA-2](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/TeXiFy-IDEA-2)].
 * Bibtex support [[bibtex](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/bibtex)].
 * PDF viewer [[pdf-viewer](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/pdf-viewer)].
-* Auto completion for references [[reference-completion](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/reference-completion)].
 * Inspections [[inspection](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/inspection)].
 
 ## Planned
 * Embedded (automatically updating) PDF viewer.
-* Autocomplete for custom commands.
 * Inspections.
 * Bibliography file (`.bib`) support.
 * Support for more LaTeX compilers.

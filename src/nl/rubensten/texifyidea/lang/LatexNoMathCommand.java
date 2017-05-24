@@ -1,12 +1,14 @@
 package nl.rubensten.texifyidea.lang;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public enum LatexNoMathCommand {
 
+    ADDTOCOUNTER("addtocounter", required("countername"), required("value")),
     A_RING("aa", "å"),
     CAPITAL_A_RING("AA", "Å"),
     AE("ae", "æ"),
@@ -362,4 +364,12 @@ public enum LatexNoMathCommand {
         return display;
     }
 
+    /**
+     * Checks whether {@code {}} must be automatically inserted in the auto complete.
+     *
+     * @return {@code true} to insert automatically, {@code false} not to insert.
+     */
+    public boolean autoInsertRequired() {
+        return Stream.of(arguments).filter(arg -> arg instanceof RequiredArgument).count() >= 1;
+    }
 }
