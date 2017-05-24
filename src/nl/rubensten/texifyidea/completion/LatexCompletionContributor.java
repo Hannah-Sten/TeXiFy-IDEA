@@ -8,8 +8,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import nl.rubensten.texifyidea.LatexLanguage;
 import nl.rubensten.texifyidea.lang.LatexMode;
+import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * @author Sten Wessel, Ruben Schellekens
@@ -43,6 +47,7 @@ public class LatexCompletionContributor extends CompletionContributor {
                 new LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
         );
 
+        // References.
         extend(
                 CompletionType.BASIC,
                 PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT)
@@ -59,6 +64,32 @@ public class LatexCompletionContributor extends CompletionContributor {
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 new LatexReferenceProvider()
+        );
+
+        // File names
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT)
+                        .inside(LatexRequiredParam.class)
+                        .with(new PatternCondition<PsiElement>(null) {
+                            @Override
+                            public boolean accepts(@NotNull PsiElement psiElement, ProcessingContext processingContext) {
+                                LatexCommands command = LatexPsiUtil.getParentOfType(
+                                        psiElement, LatexCommands.class
+                                );
+
+                                String name = command.getCommandToken().getText();
+                                LatexNoMathCommand cmd = LatexNoMathCommand.get(name.substring(1)).orElse(null);
+                                if (cmd == null) {
+                                    return false;
+                                }
+
+                                List<RequiredFileArgument> args = cmd.getArgumentsOf(RequiredFileArgument.class);
+                                return !args.isEmpty();
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                new LatexFileProvider()
         );
     }
 }
