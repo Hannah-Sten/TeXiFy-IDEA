@@ -143,6 +143,9 @@
         <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
 
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
+
+        <!-- Inspections -->
+        <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
   </extensions>
 
 </idea-plugin>
