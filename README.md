@@ -47,6 +47,9 @@ and Stars.
 * Section numbering behind section items that takes `\setcounter` and `\addtocounter` into account.
 * Included files also show their item tree in the overview.
 
+### Inspections
+* Integration with the default IntelliJ spell checker. 
+
 ### Templates
 * Available file templates for `.tex`, `.sty` and `.cls` files. 
 
