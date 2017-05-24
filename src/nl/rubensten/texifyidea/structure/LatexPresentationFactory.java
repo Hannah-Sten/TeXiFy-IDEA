@@ -28,6 +28,8 @@ public class LatexPresentationFactory {
                 return new LatexIncludePresentation(commands);
             case "\\includeonly":
                 return new LatexIncludePresentation(commands);
+            case "\\input":
+                return new LatexIncludePresentation(commands);
         }
 
         throw new IllegalArgumentException(
