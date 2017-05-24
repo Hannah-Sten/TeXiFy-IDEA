@@ -20,6 +20,7 @@ Please bear in mind that this is just a side project for us.
 * Autocompletion form a predefined list of commands.
 * Commands defined in the project will also be added to the autocompletion list.
 * Autocompletion of defined labels (using `\label`).
+* Autocompletion for file names.
 * Brace matching for `{}`, `[]`, `\[\]` and `$$`.
 * Automatically inserts other half of `{}`, `[]`, `\[\]` and `$$`.
 * Most math commands get replaced by their unicode representation using folding.
