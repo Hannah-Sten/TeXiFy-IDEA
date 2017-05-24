@@ -4,7 +4,9 @@ import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.util.TextRange;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.LatexCommands;
@@ -65,7 +67,42 @@ public class LatexCommandArgumentInsertHandler implements InsertHandler<LookupEl
 
     private void insert(InsertionContext context, String text) {
         Editor editor = context.getEditor();
+        Document document = editor.getDocument();
         CaretModel caret = editor.getCaretModel();
+        int offset = caret.getOffset();
+
+        // When not followed by {}, insert {}.
+        if (!document.getText(TextRange.from(offset, 1)).equals("{")) {
+            insertSquigglyBracketPair(editor, caret);
+        }
+        else {
+            skipSquigglyBrackets(editor, caret);
+        }
+    }
+
+    private void skipSquigglyBrackets(Editor editor, CaretModel caret) {
+        Document document = editor.getDocument();
+        int offset = caret.getOffset();
+
+        int depth = 0;
+        for (int i = offset; i < editor.getDocument().getTextLength(); i++) {
+            String text = document.getText(TextRange.from(i, 1));
+
+            switch (text) {
+                case "{":
+                    depth++;
+                    break;
+                case "}":
+                    if (--depth == 0) {
+                        caret.moveToOffset(i + 1);
+                        return;
+                    }
+                default:
+            }
+        }
+    }
+
+    private void insertSquigglyBracketPair(Editor editor, CaretModel caret) {
         editor.getDocument().insertString(caret.getOffset(), "{}");
         caret.moveToOffset(caret.getOffset() + 1);
     }
