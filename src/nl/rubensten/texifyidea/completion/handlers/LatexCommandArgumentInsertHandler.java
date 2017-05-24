@@ -72,7 +72,8 @@ public class LatexCommandArgumentInsertHandler implements InsertHandler<LookupEl
         int offset = caret.getOffset();
 
         // When not followed by {}, insert {}.
-        if (!document.getText(TextRange.from(offset, 1)).equals("{")) {
+        if (offset >= document.getTextLength() - 1 ||
+                !document.getText(TextRange.from(offset, 1)).equals("{")) {
             insertSquigglyBracketPair(editor, caret);
         }
         else {
