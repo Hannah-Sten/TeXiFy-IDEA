@@ -78,6 +78,10 @@ public class LatexCompletionContributor extends CompletionContributor {
                                         psiElement, LatexCommands.class
                                 );
 
+                                if (command == null) {
+                                    return false;
+                                }
+
                                 String name = command.getCommandToken().getText();
                                 LatexNoMathCommand cmd = LatexNoMathCommand.get(name.substring(1)).orElse(null);
                                 if (cmd == null) {
