@@ -27,17 +27,11 @@ public class TexifyUtil {
     private static final TreeMap<Integer, String> ROMAN = new TreeMap<>();
     static {
         ROMAN.put(1000, "M");
-        ROMAN.put(900, "CM");
         ROMAN.put(500, "D");
-        ROMAN.put(400, "CD");
         ROMAN.put(100, "C");
-        ROMAN.put(90, "XC");
         ROMAN.put(50, "L");
-        ROMAN.put(40, "XL");
         ROMAN.put(10, "X");
-        ROMAN.put(9, "IX");
         ROMAN.put(5, "V");
-        ROMAN.put(4, "IV");
         ROMAN.put(1, "I");
     }
 
@@ -60,7 +54,7 @@ public class TexifyUtil {
             return ROMAN.get(integer);
         }
 
-        return ROMAN.get(fromMap) + toRoman(integer - 1);
+        return ROMAN.get(fromMap) + toRoman(integer - fromMap);
     }
 
     /**
