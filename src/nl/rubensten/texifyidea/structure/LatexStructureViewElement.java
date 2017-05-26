@@ -10,12 +10,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.search.GlobalSearchScope;
 import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.structure.SectionNumbering.DocumentClass;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +32,7 @@ import static nl.rubensten.texifyidea.util.TexifyUtil.findFile;
 public class LatexStructureViewElement implements StructureViewTreeElement, SortableTreeElement {
 
     public static final List<String> SECTION_MARKERS = Arrays.asList(
+            "\\part", "\\chapter",
             "\\section", "\\subsection", "\\subsubsection", "\\paragraph", "\\subparagraph"
     );
 
@@ -94,8 +98,18 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             return EMPTY_ARRAY;
         }
 
+        // Get document class.
+        GlobalSearchScope scope = GlobalSearchScope.fileScope((PsiFile)element);
+        String docClass = LatexCommandsIndex.getIndexedCommands(element.getProject(), scope)
+                .stream()
+                .filter(cmd -> cmd.getCommandToken().getText().equals("\\documentclass") &&
+                        !cmd.getRequiredParameters().isEmpty())
+                .map(cmd -> cmd.getRequiredParameters().get(0))
+                .findFirst()
+                .orElse("article");
+
         // Fetch all commands in the active file.
-        SectionNumbering numbering = new SectionNumbering();
+        SectionNumbering numbering = new SectionNumbering(DocumentClass.getClassByName(docClass));
         List<LatexCommands> commands = TexifyUtil.getAllCommands(element);
         List<TreeElement> treeElements = new ArrayList<>();
 
@@ -115,6 +129,10 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
             // Only consider section markers.
             if (!SECTION_MARKERS.contains(token)) {
+                continue;
+            }
+
+            if (!docClass.equals("book") && (token.equals("\\part") || token.equals("\\chapter"))) {
                 continue;
             }
 
@@ -259,7 +277,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
         setLevelHint(child, numbering);
 
-        if (currentCmd.getCommandToken().getText().equals("\\section")) {
+        if (currentCmd.getCommandToken().getText().equals(highestLevel(sections))) {
             treeElements.add(child);
         }
     }
@@ -302,6 +320,14 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         else {
             numbering.addCounter(level, amount);
         }
+    }
+
+    private String highestLevel(Deque<LatexStructureViewCommandElement> sections) {
+        return sections.stream()
+                .map(this::order)
+                .min(Integer::compareTo)
+                .map(SECTION_MARKERS::get)
+                .orElse("\\section");
     }
 
     private void pop(Deque<LatexStructureViewCommandElement> sections) {

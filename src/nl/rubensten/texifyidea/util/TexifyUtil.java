@@ -24,6 +24,39 @@ public class TexifyUtil {
     private TexifyUtil() {
     }
 
+    private static final TreeMap<Integer, String> ROMAN = new TreeMap<>();
+    static {
+        ROMAN.put(1000, "M");
+        ROMAN.put(500, "D");
+        ROMAN.put(100, "C");
+        ROMAN.put(50, "L");
+        ROMAN.put(10, "X");
+        ROMAN.put(5, "V");
+        ROMAN.put(1, "I");
+    }
+
+    /**
+     * Turns a given integer into a roman numeral.
+     *
+     * @param integer
+     *         The (positive) integer to convert to roman.
+     * @return The roman representation of said integer.
+     * @throws IllegalArgumentException
+     *         When the integer is smaller or equal to 0.
+     */
+    public static String toRoman(int integer) throws IllegalArgumentException {
+        if (integer <= 0) {
+            throw new IllegalArgumentException("Integer must be positive!");
+        }
+
+        Integer fromMap = ROMAN.floorKey(integer);
+        if (integer == fromMap) {
+            return ROMAN.get(integer);
+        }
+
+        return ROMAN.get(fromMap) + toRoman(integer - fromMap);
+    }
+
     /**
      * Looks for a certain file.
      * <p>
