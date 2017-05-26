@@ -161,7 +161,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     private void addIncludes(List<TreeElement> treeElements, List<LatexCommands> commands) {
         for (LatexCommands cmd : commands) {
             String name = cmd.getCommandToken().getText();
-            if (!name.equals("\\include") && !name.equals("\\includeonly")) {
+            if (!name.equals("\\include") && !name.equals("\\includeonly") && !name.equals("\\input")) {
                 continue;
             }
 

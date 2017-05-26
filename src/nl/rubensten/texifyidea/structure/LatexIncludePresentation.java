@@ -17,7 +17,8 @@ public class LatexIncludePresentation implements ItemPresentation {
 
     public LatexIncludePresentation(LatexCommands labelCommand) {
         if (!labelCommand.getCommandToken().getText().equals("\\include") &&
-                !labelCommand.getCommandToken().getText().equals("\\includeonly")) {
+                !labelCommand.getCommandToken().getText().equals("\\includeonly") &&
+                !labelCommand.getCommandToken().getText().equals("\\input")) {
             throw new IllegalArgumentException("command is no \\include(only)-command");
         }
 

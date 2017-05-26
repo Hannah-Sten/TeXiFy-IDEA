@@ -22,7 +22,8 @@ public class LatexIncludesFilter implements Filter {
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
         return !element.getCommandName().equals("\\include") &&
-                !element.getCommandName().equals("\\includeonly");
+                !element.getCommandName().equals("\\includeonly") &&
+                !element.getCommandName().equals("\\input");
     }
 
     @Override
