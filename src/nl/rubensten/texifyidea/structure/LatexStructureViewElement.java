@@ -10,7 +10,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
@@ -18,6 +20,7 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexTypes;
 import nl.rubensten.texifyidea.structure.SectionNumbering.DocumentClass;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -122,7 +125,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             String token = currentCmd.getCommandToken().getText();
 
             // Update counter.
-            if (token.equals("\\addtocounter") || token.equals("\\setcounter")) {
+            if ((token.equals("\\addtocounter") || token.equals("\\setcounter"))) {
                 updateNumbering(currentCmd, numbering);
                 continue;
             }
@@ -283,6 +286,10 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     }
 
     private void setLevelHint(LatexStructureViewCommandElement child, SectionNumbering numbering) {
+        if (hasStar((LatexCommands)child.getValue())) {
+            return;
+        }
+
         int level = order(child);
         numbering.increase(level);
         child.setHint(numbering.getTitle(level));
@@ -320,6 +327,12 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         else {
             numbering.addCounter(level, amount);
         }
+    }
+
+    private boolean hasStar(LatexCommands commands) {
+        LeafPsiElement[] leafs = PsiTreeUtil.getChildrenOfType(commands, LeafPsiElement.class);
+        return Arrays.stream(leafs)
+                .anyMatch(l -> l.getElementType().equals(LatexTypes.STAR));
     }
 
     private String highestLevel(Deque<LatexStructureViewCommandElement> sections) {
