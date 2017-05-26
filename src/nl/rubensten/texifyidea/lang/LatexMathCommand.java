@@ -1,5 +1,7 @@
 package nl.rubensten.texifyidea.lang;
 
+import nl.rubensten.texifyidea.lang.Argument.Type;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -138,21 +140,21 @@ public enum LatexMathCommand {
     /*
         Generic commands
      */
-    MATHBF("mathbf", new RequiredArgument("text")),
-    MATHCAL("mathcal", new RequiredArgument("text")),
-    MATHDS("mathds", new RequiredArgument("mathds")),
+    MATHBF("mathbf", required("text")),
+    MATHCAL("mathcal", required("text")),
+    MATHDS("mathds", required("mathds")),
     MATHELLIPSIS("mathellipsis"),
     MATHGROUP("mathgroup"),
-    MATHIT("mathit", new RequiredArgument("text")),
-    MATHNORMAL("mathnormal", new RequiredArgument("text")),
-    MATHRM("mathrm", new RequiredArgument("text")),
+    MATHIT("mathit", required("text")),
+    MATHNORMAL("mathnormal", required("text")),
+    MATHRM("mathrm", required("text")),
     MATHSCR("mathscr"),
-    MATHSF("mathsf", new RequiredArgument("text")),
+    MATHSF("mathsf", required("text")),
     MATHSTERLING("mathsterling"),
-    MATHTT("mathtt", new RequiredArgument("text")),
+    MATHTT("mathtt", required("text")),
     MATHUNDERSCORE("mathunderscore"),
-    SQRT("sqrt", new OptionalArgument("root"), new RequiredArgument("arg")),
-    ACUTE("acute", new RequiredArgument("a")),
+    SQRT("sqrt", optional("root"), required("arg")),
+    ACUTE("acute", required("a")),
     ALEPH("aleph"),
     AMALG("amalg"),
     ARCCOS("arccos"),
@@ -163,7 +165,7 @@ public enum LatexMathCommand {
     CAPITAL_ARROWVERT("Arrowvert"),
     ASYMP("asymp"),
     BACKSLASH("backslash"),
-    BAR("bar", new RequiredArgument("a")),
+    BAR("bar", required("a")),
     BIGCAP("bigcap"),
     BIGCIRC("bigcirc"),
     BIGCUP("bigcup"),
@@ -178,10 +180,10 @@ public enum LatexMathCommand {
     BIGWEDGE("bigwedge"),
     BOT("bot"),
     BRACEVERT("bracevert"),
-    BREVE("breve", new RequiredArgument("a")),
+    BREVE("breve", required("a")),
     CDOT("cdot"),
     CDOTS("cdots"),
-    CHECK("check", new RequiredArgument("a")),
+    CHECK("check", required("a")),
     CLUBSUIT("clubsuit"),
     COLON("colon"),
     CONG("cong"),
@@ -194,34 +196,34 @@ public enum LatexMathCommand {
     DASHV("dashv"),
     DD("dd"),
     DDAGGER("ddagger"),
-    DDOT("ddot", new RequiredArgument("a")),
+    DDOT("ddot", required("a")),
     DDOTS("ddots"),
     DEG("deg"),
     DET("det"),
-    DFRAC("dfrac", new RequiredArgument("num"), new RequiredArgument("den")),
+    DFRAC("dfrac", required("num"), required("den")),
     DIAMOND("diamond"),
     DIAMONDSUIT("diamondsuit"),
     DIM("dim"),
     DIV("div"),
     DOTEQ("doteq"),
-    DOT("dot", new RequiredArgument("a")),
+    DOT("dot", required("a")),
     DOWNARROW("downarrow"),
     CAPITAL_DOWNARROW("Downarrow"),
     ELL("ell"),
     EXP("exp"),
     FLAT("flat"),
-    FRAC("frac", new RequiredArgument("num"), new RequiredArgument("den")),
-    GRAVE("grave", new RequiredArgument("a")),
-    HAT("hat", new RequiredArgument("a")),
-    MATHRING("mathring", new RequiredArgument("a")),
-    OVERBRACE("overbrace", new RequiredArgument("text")),
-    OVERLINE("overline", new RequiredArgument("text")),
-    TILDE("tilde", new RequiredArgument("a")),
-    UNDERBRACE("underbrace", new RequiredArgument("text")),
-    UNDERLINE("underline", new RequiredArgument("text")),
-    VEC("vec", new RequiredArgument("a")),
-    WIDEHAT("widehat", new RequiredArgument("text")),
-    WIDETILDE("widetilde", new RequiredArgument("text")),;
+    FRAC("frac", required("num"), required("den")),
+    GRAVE("grave", required("a")),
+    HAT("hat", required("a")),
+    MATHRING("mathring", required("a")),
+    OVERBRACE("overbrace", required("text")),
+    OVERLINE("overline", required("text")),
+    TILDE("tilde", required("a")),
+    UNDERBRACE("underbrace", required("text")),
+    UNDERLINE("underline", required("text")),
+    VEC("vec", required("a")),
+    WIDEHAT("widehat", required("text")),
+    WIDETILDE("widetilde", required("text"));
 
     private static final Map<String, LatexMathCommand> lookup = new HashMap<>();
 
@@ -253,6 +255,22 @@ public enum LatexMathCommand {
 
     public static LatexMathCommand get(String command) {
         return lookup.get(command);
+    }
+
+    private static RequiredArgument required(String name) {
+        return new RequiredArgument(name);
+    }
+
+    private static RequiredArgument requiredText(String name) {
+        return new RequiredArgument(name, Type.TEXT);
+    }
+
+    private static OptionalArgument optional(String name) {
+        return new OptionalArgument(name);
+    }
+
+    private static OptionalArgument optionalText(String name) {
+        return new OptionalArgument(name, Type.TEXT);
     }
 
     public String getCommand() {
