@@ -1,7 +1,12 @@
 package nl.rubensten.texifyidea.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 import java.util.stream.Stream;
+
+import static nl.rubensten.texifyidea.lang.Package.DEFAULT;
+import static nl.rubensten.texifyidea.lang.Package.FONTENC;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -70,6 +75,8 @@ public enum LatexNoMathCommand {
     GLQQ("glqq", "„"),
     GRQ("grq", "‘"),
     GRQQ("grqq", "“"),
+    GUILLEMOTLEFT("guillemotleft", FONTENC.with("T1"), ""),
+    GUILLEMOTRIGHT("guillemotright", FONTENC.with("T1"), ""),
     HFILL("hfill"),
     HRULE("hrule"),
     HRULEFILL("hrulefill"),
@@ -294,25 +301,34 @@ public enum LatexNoMathCommand {
             required("begdef"), required("enddef")),;
 
     private static final Map<String, LatexNoMathCommand> lookup = new HashMap<>();
-
     static {
         for (LatexNoMathCommand command : LatexNoMathCommand.values()) {
             lookup.put(command.getCommand(), command);
         }
     }
 
-    private String command;
-    private Argument[] arguments;
-    private String display;
+    private final String command;
+    private final Package thePackage;
+    private final Argument[] arguments;
+    private final String display;
 
-    LatexNoMathCommand(String command, String display, Argument... arguments) {
-        this(command, arguments);
+    LatexNoMathCommand(String command, Package thePackage, String display, Argument... arguments) {
+        this.command = command;
+        this.thePackage = thePackage;
+        this.arguments = arguments;
         this.display = display;
     }
 
+    LatexNoMathCommand(String command, Package thePackage, Argument... arguments) {
+        this(command, thePackage, null, arguments);
+    }
+
+    LatexNoMathCommand(String command, String display, Argument... arguments) {
+        this(command, DEFAULT, display, arguments);
+    }
+
     LatexNoMathCommand(String command, Argument... arguments) {
-        this.command = command;
-        this.arguments = arguments;
+        this(command, DEFAULT, arguments);
     }
 
     public static Optional<LatexNoMathCommand> get(String command) {
@@ -362,6 +378,11 @@ public enum LatexNoMathCommand {
 
     public String getDisplay() {
         return display;
+    }
+
+    @NotNull
+    public Package getPackage() {
+        return thePackage;
     }
 
     /**
