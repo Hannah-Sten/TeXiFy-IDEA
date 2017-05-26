@@ -10,6 +10,10 @@ public class LatexPresentationFactory {
 
     public static ItemPresentation getPresentation(LatexCommands commands) {
         switch (commands.getCommandToken().getText()) {
+            case "\\part":
+                return new LatexPartPresentation(commands);
+            case "\\chapter":
+                return new LatexChapterPresentation(commands);
             case "\\section":
                 return new LatexSectionPresentation(commands);
             case "\\subsection":
