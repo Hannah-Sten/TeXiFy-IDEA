@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.structure;
 
 import com.intellij.navigation.ItemPresentation;
+import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 
 /**
@@ -34,10 +35,9 @@ public class LatexPresentationFactory {
                 return new LatexIncludePresentation(commands);
             case "\\input":
                 return new LatexIncludePresentation(commands);
+            default:
+                return new LatexOtherCommandPresentation(commands, TexifyIcons.DOT_COMMAND);
         }
-
-        throw new IllegalArgumentException(
-                "Commands " + commands.getCommandToken().getText() + "" + " not supported");
     }
 
     private LatexPresentationFactory() {

@@ -4,6 +4,7 @@ import com.intellij.ide.util.treeView.smartTree.ActionPresentation;
 import com.intellij.ide.util.treeView.smartTree.Filter;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.structure.LatexOtherCommandPresentation;
 import nl.rubensten.texifyidea.structure.LatexStructureViewCommandElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +22,8 @@ public class LatexNewCommandFilter implements Filter {
         }
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !element.getCommandName().equals("\\newcommand");
+        return !(element.getCommandName().equals("\\newcommand") ||
+                element.getPresentation() instanceof LatexOtherCommandPresentation);
     }
 
     @Override
