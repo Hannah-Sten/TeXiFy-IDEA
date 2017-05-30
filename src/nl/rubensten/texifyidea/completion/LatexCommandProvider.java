@@ -106,7 +106,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                     .withPresentableText(cmdName)
                     .bold()
                     .withTailText(tailText, true)
-                    .withTypeText(typeText)
+                    .withTypeText(typeText, true)
                     .withInsertHandler(new LatexCommandArgumentInsertHandler())
                     .withIcon(TexifyIcons.DOT_COMMAND)
             );
