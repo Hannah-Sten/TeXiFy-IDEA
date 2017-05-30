@@ -4,14 +4,13 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
-import nl.rubensten.texifyidea.psi.LatexBeginCommand;
-import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.psi.LatexParameter;
-import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +32,30 @@ public class TexifyUtil {
         ROMAN.put(10, "X");
         ROMAN.put(5, "V");
         ROMAN.put(1, "I");
+    }
+
+    /**
+     * Looks for the next command relative to the given command.
+     *
+     * @param commands
+     *         The command to start looking from.
+     * @return The next command in the file, or {@code null} when there is no such command.
+     */
+    @Nullable
+    public static LatexCommands getNextCommand(@NotNull LatexCommands commands) {
+        LatexContent content = (LatexContent)commands.getParent().getParent();
+        PsiElement nextPsi = content.getNextSibling();
+        if (!(nextPsi instanceof LatexContent)) {
+            return null;
+        }
+
+        LatexContent siblingContent = (LatexContent)nextPsi;
+        LatexCommands childCommand = PsiTreeUtil.findChildOfType(siblingContent, LatexCommands.class);
+        if (childCommand == null) {
+            return null;
+        }
+
+        return childCommand;
     }
 
     /**

@@ -17,7 +17,9 @@ import nl.rubensten.texifyidea.lang.LatexMode;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathEnvironment;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -89,39 +91,108 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
     }
 
     private void addCustomCommands(Project project, CompletionResultSet result) {
-        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommandsByName("newcommand", project);
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project);
 
         for (LatexCommands cmd : cmds) {
-            List<String> required = cmd.getRequiredParameters();
-            List<String> optional = cmd.getOptionalParameters();
-
-            if (required.isEmpty()) {
+            if (!isDefinition(cmd)) {
                 continue;
             }
 
-            String cmdName = required.get(0);
-            int cmdParameterCount = 0;
-
-            if (!optional.isEmpty()) {
-                try {
-                    cmdParameterCount = Integer.parseInt(optional.get(0));
-                }
-                catch (NumberFormatException ignore) {
-                }
-            }
-
-            String tailText = Strings.repeat("{param}", Math.min(4, cmdParameterCount));
-            if (cmdParameterCount > 4) {
-                tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)";
-            }
+            String cmdName = getCommandName(cmd);
+            String tailText = getTailText(cmd);
+            String typeText = getTypeText(cmd);
 
             result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))
                     .withPresentableText(cmdName)
                     .bold()
                     .withTailText(tailText, true)
+                    .withTypeText(typeText)
                     .withInsertHandler(new LatexCommandArgumentInsertHandler())
                     .withIcon(TexifyIcons.DOT_COMMAND)
             );
         }
+    }
+
+    @NotNull
+    private String getTypeText(@NotNull LatexCommands commands) {
+        if ("\\newcommand".equals(commands.getCommandToken().getText())) {
+            return "";
+        }
+
+        LatexCommands firstNext = TexifyUtil.getNextCommand(commands);
+        if (firstNext == null) {
+            return "";
+        }
+
+        LatexCommands secondNext = TexifyUtil.getNextCommand(firstNext);
+        if (secondNext == null) {
+            return "";
+        }
+
+        String lookup = secondNext.getCommandToken().getText();
+        return lookup == null ? "" : lookup;
+    }
+
+    @NotNull
+    private String getTailText(@NotNull LatexCommands commands) {
+        if (!"\\newcommand".equals(commands.getCommandToken().getText())) {
+            return "";
+        }
+
+        List<String> optional = commands.getOptionalParameters();
+
+        int cmdParameterCount = 0;
+
+        if (!optional.isEmpty()) {
+            try {
+                cmdParameterCount = Integer.parseInt(optional.get(0));
+            }
+            catch (NumberFormatException ignore) {
+            }
+        }
+
+        String tailText = Strings.repeat("{param}", Math.min(4, cmdParameterCount));
+        if (cmdParameterCount > 4) {
+            tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)";
+        }
+
+        return tailText;
+    }
+
+    @Nullable
+    private String getCommandName(@NotNull LatexCommands commands) {
+        if ("\\newcommand".equals(commands.getCommandToken().getText())) {
+            return getNewCommandName(commands);
+        }
+
+        return getDefinitionName(commands);
+    }
+
+    @Nullable
+    private String getNewCommandName(@NotNull LatexCommands commands) {
+        List<String> required = commands.getRequiredParameters();
+        if (required.isEmpty()) {
+            return null;
+        }
+
+        return required.get(0);
+    }
+
+    @Nullable
+    private String getDefinitionName(@NotNull LatexCommands commands) {
+        LatexCommands next = TexifyUtil.getNextCommand(commands);
+        if (next == null) {
+            return null;
+        }
+
+        return next.getCommandToken().getText();
+    }
+
+    private boolean isDefinition(@Nullable LatexCommands commands) {
+        return commands != null && (
+                "\\newcommand".equals(commands.getCommandToken().getText()) ||
+                        "\\let".equals(commands.getCommandToken().getText()) ||
+                        "\\def".equals(commands.getCommandToken().getText())
+        );
     }
 }

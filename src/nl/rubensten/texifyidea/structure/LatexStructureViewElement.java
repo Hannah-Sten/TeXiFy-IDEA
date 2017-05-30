@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.impl.PsiModificationTrackerImpl;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -110,6 +111,8 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
                 .map(cmd -> cmd.getRequiredParameters().get(0))
                 .findFirst()
                 .orElse("article");
+
+//        ((PsiModificationTrackerImpl)PsiManager.getInstance(element.getProject()).getModificationTracker()).incOutOfCodeBlockModificationCounter();
 
         // Fetch all commands in the active file.
         SectionNumbering numbering = new SectionNumbering(DocumentClass.getClassByName(docClass));
