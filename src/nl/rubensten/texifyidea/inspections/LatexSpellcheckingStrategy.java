@@ -65,7 +65,7 @@ public class LatexSpellcheckingStrategy extends SpellcheckingStrategy {
 
         List<String> realParams = parent.getRequiredParameters();
         int parameterIndex = realParams.indexOf(leaf.getText());
-        if (parameterIndex == -1) {
+        if (parameterIndex < 0 || parameterIndex >= arguments.length) {
             return null;
         }
 
