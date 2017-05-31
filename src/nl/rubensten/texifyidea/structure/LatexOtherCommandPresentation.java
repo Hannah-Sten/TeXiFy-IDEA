@@ -1,7 +1,8 @@
 package nl.rubensten.texifyidea.structure;
 
+import com.intellij.navigation.ItemPresentation;
 import nl.rubensten.texifyidea.psi.LatexCommands;
-import org.jetbrains.annotations.NotNull;
+import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -9,15 +10,24 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexOtherCommandPresentation implements EditableHintPresentation {
+public class LatexOtherCommandPresentation implements ItemPresentation {
 
     private final String commandName;
     private final Icon icon;
-    private String hint = "";
+    private final String locationString;
 
     public LatexOtherCommandPresentation(LatexCommands command, Icon icon) {
         this.commandName = command.getName();
         this.icon = icon;
+
+        LatexCommands firstNext = TexifyUtil.getNextCommand(command);
+        if (firstNext == null) {
+            locationString = "";
+            return;
+        }
+
+        String lookup = firstNext.getCommandToken().getText();
+        this.locationString = lookup == null ? "" : lookup;
     }
 
     @Nullable
@@ -29,17 +39,12 @@ public class LatexOtherCommandPresentation implements EditableHintPresentation {
     @Nullable
     @Override
     public String getLocationString() {
-        return hint;
+        return locationString;
     }
 
     @Nullable
     @Override
     public Icon getIcon(boolean b) {
         return icon;
-    }
-
-    @Override
-    public void setHint(@NotNull String hint) {
-        this.hint = hint;
     }
 }
