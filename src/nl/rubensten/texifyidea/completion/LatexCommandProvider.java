@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -114,6 +115,10 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             String cmdName = getCommandName(cmd);
             String tailText = getTailText(cmd);
             String typeText = getTypeText(cmd);
+
+            Document document = parameters.getEditor().getDocument();
+            int line = document.getLineNumber(cmd.getTextOffset()) + 1;
+            typeText = typeText + " " + cmd.getContainingFile().getName() + ":" + line;
 
             result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))
                     .withPresentableText(cmdName)
