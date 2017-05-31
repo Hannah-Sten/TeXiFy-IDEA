@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public enum LatexCompiler {
             command.add("-c-style-errors");
             command.add("-max-print-line=10000");
             command.add("-interaction=nonstopmode");
+            command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
 
             if (runConfig.hasAuxiliaryDirectories()) {
@@ -51,5 +53,25 @@ public enum LatexCompiler {
     @Override
     public String toString() {
         return this.displayName;
+    }
+
+    /**
+     * @author Ruben Schellekens
+     */
+    public enum Format {
+
+        PDF,
+        DVI;
+
+        @Nullable
+        public static Format byNameIgnoreCase(@Nullable String name) {
+            for (Format format : values()) {
+                if (format.name().equalsIgnoreCase(name)) {
+                    return format;
+                }
+            }
+
+            return null;
+        }
     }
 }

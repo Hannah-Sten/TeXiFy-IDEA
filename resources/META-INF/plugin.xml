@@ -119,6 +119,9 @@
         <!-- Structure view -->
         <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.LatexStructureViewFactory"/>
 
+        <!-- Project view -->
+        <projectViewNodeDecorator implementation="nl.rubensten.texifyidea.editor.TeXiFyProjectViewNodeDecorator"/>
+
         <!-- Editor -->
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
@@ -147,5 +150,4 @@
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
   </extensions>
-
 </idea-plugin>
