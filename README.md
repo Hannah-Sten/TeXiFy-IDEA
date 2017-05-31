@@ -15,6 +15,7 @@ Please bear in mind that this is just a side project for us.
 * Supported compilers: `pdfLaTeX`
 * Seperate auxiliary files from output (only supported for `MiKTeX`).
 * Dynamically detect what runtime configuration to use based on the active file.
+* Support for `PDF` and `DVI` output.
 
 ### Editor
 * Autocompletion form a predefined list of commands.
@@ -47,6 +48,7 @@ and Stars.
 * Filters to add/remove items from view.
 * Section numbering behind section items that takes `\setcounter` and `\addtocounter` into account.
 * Included files also show their item tree in the overview.
+* Updates automatically during editing.
 
 ### Inspections
 * Integration with the default IntelliJ spell checker. 
