@@ -6,7 +6,11 @@ package nl.rubensten.texifyidea.lang;
 public class RequiredArgument extends Argument {
 
     RequiredArgument(String name) {
-        super(name);
+        this(name, Type.NORMAL);
+    }
+
+    RequiredArgument(String name, Type type) {
+        super(name, type);
     }
 
     @Override

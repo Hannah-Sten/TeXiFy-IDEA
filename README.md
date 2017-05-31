@@ -20,6 +20,7 @@ Please bear in mind that this is just a side project for us.
 * Autocompletion form a predefined list of commands.
 * Commands defined in the project will also be added to the autocompletion list.
 * Autocompletion of defined labels (using `\label`).
+* Autocompletion for file names.
 * Brace matching for `{}`, `[]`, `\[\]` and `$$`.
 * Automatically inserts other half of `{}`, `[]`, `\[\]` and `$$`.
 * Most math commands get replaced by their unicode representation using folding.
@@ -46,6 +47,9 @@ and Stars.
 * Filters to add/remove items from view.
 * Section numbering behind section items that takes `\setcounter` and `\addtocounter` into account.
 * Included files also show their item tree in the overview.
+
+### Inspections
+* Integration with the default IntelliJ spell checker. 
 
 ### Templates
 * Available file templates for `.tex`, `.sty` and `.cls` files. 

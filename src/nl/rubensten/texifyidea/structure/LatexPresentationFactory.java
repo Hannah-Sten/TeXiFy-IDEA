@@ -10,6 +10,10 @@ public class LatexPresentationFactory {
 
     public static ItemPresentation getPresentation(LatexCommands commands) {
         switch (commands.getCommandToken().getText()) {
+            case "\\part":
+                return new LatexPartPresentation(commands);
+            case "\\chapter":
+                return new LatexChapterPresentation(commands);
             case "\\section":
                 return new LatexSectionPresentation(commands);
             case "\\subsection":
@@ -27,6 +31,8 @@ public class LatexPresentationFactory {
             case "\\include":
                 return new LatexIncludePresentation(commands);
             case "\\includeonly":
+                return new LatexIncludePresentation(commands);
+            case "\\input":
                 return new LatexIncludePresentation(commands);
         }
 
