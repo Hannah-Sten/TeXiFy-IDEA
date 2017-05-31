@@ -11,6 +11,9 @@ public class Package {
     public static final Package DEFAULT = new Package("");
     public static final Package FONTENC = new Package("fontenc");
     public static final Package GRAPHICX = new Package("graphicx");
+    public static final Package AMSSYMB = new Package("amssymb");
+    public static final Package AMSMATH = new Package("amsmath");
+    public static final Package MATHABX = new Package("mathabx");
 
     // Members
     private final String name;
