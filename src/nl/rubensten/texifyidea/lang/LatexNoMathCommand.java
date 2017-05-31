@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import static nl.rubensten.texifyidea.lang.Package.DEFAULT;
 import static nl.rubensten.texifyidea.lang.Package.FONTENC;
+import static nl.rubensten.texifyidea.lang.Package.GRAPHICX;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -89,6 +90,7 @@ public enum LatexNoMathCommand {
     I("i", "i (dotless)"),
     INCLUDE("include", new RequiredFileArgument("sourcefile", "tex")),
     INPUT("input", new RequiredFileArgument("sourcefile", "tex")),
+    INCLUDEGRAPHICS("includegraphics", GRAPHICX, optional("key-val-list"), new RequiredFileArgument("imagefile", "pdf", "png", "jpg", "eps")),
     INCLUDEONLY("includeonly", new RequiredFileArgument("sourcefile", "tex")),
     INDEXNAME("indexname", required("name")),
     INDEXSPACE("indexspace"),

@@ -10,6 +10,7 @@ public class Package {
     // Predefined packages.
     public static final Package DEFAULT = new Package("");
     public static final Package FONTENC = new Package("fontenc");
+    public static final Package GRAPHICX = new Package("graphicx");
 
     // Members
     private final String name;
@@ -22,14 +23,6 @@ public class Package {
 
     public Package(String name) {
         this(name, EMPTY_ARRAY);
-    }
-
-    // TODO: Remove.
-    public static void main(String[] args) {
-        for (LatexNoMathCommand cmd : LatexNoMathCommand.values()) {
-            System.out.println("\\" + cmd.getCommand());
-        }
-        System.exit(1);
     }
 
     /**
