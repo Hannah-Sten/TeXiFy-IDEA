@@ -7,15 +7,21 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.ProcessingContext;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.Kindness;
+import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Ruben Schellekens
@@ -32,7 +38,17 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
         Project project = editor.getProject();
         Document document = editor.getDocument();
 
-        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommandsByName("label", project);
+        // Only consider included files.
+        PsiFile file = parameters.getOriginalFile();
+        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFiles(file).stream()
+                .map(PsiFile::getVirtualFile)
+                .collect(Collectors.toSet());
+        searchFiles.add(file.getVirtualFile());
+        GlobalSearchScope scope = GlobalSearchScope.filesScope(project, searchFiles);
+
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommandsByName(
+                "label", project, scope
+        );
 
         for (LatexCommands commands : cmds) {
             int line = document.getLineNumber(commands.getTextOffset()) + 1;
