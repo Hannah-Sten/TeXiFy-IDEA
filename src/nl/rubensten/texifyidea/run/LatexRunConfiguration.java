@@ -11,12 +11,13 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import nl.rubensten.texifyidea.run.LatexCompiler.Format;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexRunConfiguration extends RunConfigurationBase implements LocatableConfiguration {
 
@@ -24,10 +25,12 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private static final String COMPILER = "compiler";
     private static final String MAIN_FILE = "main-file";
     private static final String AUX_DIR = "aux-dir";
+    private static final String OUTPUT_FORMAT = "output-format";
 
     private LatexCompiler compiler;
     private VirtualFile mainFile;
     private boolean auxDir = true;
+    private Format outputFormat = Format.PDF;
 
     protected LatexRunConfiguration(Project project, ConfigurationFactory factory, String name) {
         super(project, factory, name);
@@ -79,6 +82,10 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         // Read auxiliary directories.
         String auxDirBoolean = parent.getChildText(AUX_DIR);
         this.auxDir = Boolean.parseBoolean(auxDirBoolean);
+
+        // Read output format.
+        Format format = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT));
+        this.outputFormat = format == null ? Format.PDF : format;
     }
 
     @Override
@@ -111,6 +118,11 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         final Element auxDirElt = new Element(AUX_DIR);
         auxDirElt.setText(Boolean.toString(auxDir));
         parent.addContent(auxDirElt);
+
+        // Write output format.
+        final Element outputFormatElt = new Element(OUTPUT_FORMAT);
+        outputFormatElt.setText(outputFormat.name());
+        parent.addContent(outputFormatElt);
     }
 
     public LatexCompiler getCompiler() {
@@ -146,12 +158,24 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         this.auxDir = auxDir;
     }
 
+    public Format getOutputFormat() {
+        return outputFormat;
+    }
+
+    public void setOutputFormat(Format format) {
+        this.outputFormat = format;
+    }
+
     public void setDefaultCompiler() {
         setCompiler(LatexCompiler.PDFLATEX);
     }
 
     public void setDefaultAuxiliaryDirectories() {
         setAuxiliaryDirectories(true);
+    }
+
+    public void setDefaultOutputFormat() {
+        setOutputFormat(Format.PDF);
     }
 
     public void setSuggestedName() {
@@ -178,6 +202,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         return "LatexRunConfiguration{" + "compiler=" + compiler +
                 ", mainFile=" + mainFile +
                 ", auxDir=" + auxDir +
+                ", outputFormat=" + outputFormat +
                 '}';
     }
 }

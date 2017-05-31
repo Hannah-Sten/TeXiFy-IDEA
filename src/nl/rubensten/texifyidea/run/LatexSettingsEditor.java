@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.TitledSeparator;
+import nl.rubensten.texifyidea.run.LatexCompiler.Format;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     private LabeledComponent<ComboBox> compiler;
     private LabeledComponent<ComponentWithBrowseButton> mainFile;
     private JCheckBox auxDir;
+    private LabeledComponent<ComboBox> outputFormat;
 
     private Project project;
 
@@ -42,6 +44,9 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         // Reset seperate auxiliary files.
         auxDir.setSelected(runConfiguration.hasAuxiliaryDirectories());
 
+        // Reset output format.
+        outputFormat.getComponent().setSelectedItem(runConfiguration.getOutputFormat());
+
         // Reset project.
         project = runConfiguration.getProject();
     }
@@ -61,6 +66,10 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         // Apply auxiliary files.
         boolean auxDirectories = auxDir.isSelected();
         runConfiguration.setAuxiliaryDirectories(auxDirectories);
+
+        // Apply output format.
+        Format format = (Format)outputFormat.getComponent().getSelectedItem();
+        runConfiguration.setOutputFormat(format);
     }
 
     @NotNull
@@ -73,7 +82,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     private void createUIComponents() {
         // Layout
         panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setLayout(new VerticalFlowLayout(VerticalFlowLayout.TOP));
 
         // Compiler
         ComboBox<LatexCompiler> compilerField = new ComboBox<>(LatexCompiler.values());
@@ -96,5 +105,11 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
         auxDir.setSelected(true);
         panel.add(auxDir);
+
+        // Output format.
+        ComboBox<Format> cboxFormat = new ComboBox<>(Format.values());
+        outputFormat = LabeledComponent.create(cboxFormat, "Output format");
+        outputFormat.setSize(128, outputFormat.getHeight());
+        panel.add(outputFormat);
     }
 }
