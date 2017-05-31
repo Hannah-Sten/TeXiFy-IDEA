@@ -171,6 +171,7 @@ public enum LatexNoMathCommand {
     RIGHTMARK("rightmark"),
     RMFAMILY("rmfamily"),
     ROMAN("roman", required("counter")),
+    ROTATEBOX("rotatebox", optional("key-val-list"), required("degrees"), requiredText("text")),
     CAPITAL_ROBAN("Roman", required("counter")),
     RULE("rule", optional("line"), required("width"), required("thickness")),
     SAMEPAGE("samepage"),
