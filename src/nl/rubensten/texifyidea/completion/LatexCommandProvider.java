@@ -6,6 +6,9 @@ import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
 import nl.rubensten.texifyidea.TexifyIcons;
@@ -23,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Sten Wessel
@@ -41,11 +46,11 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         switch (mode) {
             case NORMAL:
                 addNormalCommands(result);
-                addCustomCommands(parameters.getEditor().getProject(), result);
+                addCustomCommands(parameters, result);
                 break;
             case MATH:
                 addMathCommands(result);
-                addCustomCommands(parameters.getEditor().getProject(), result);
+                addCustomCommands(parameters, result);
                 break;
             case ENVIRONMENT_NAME:
                 addEnvironments(result);
@@ -90,8 +95,16 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         ));
     }
 
-    private void addCustomCommands(Project project, CompletionResultSet result) {
-        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project);
+    private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result) {
+        Project project = parameters.getEditor().getProject();
+        PsiFile file = parameters.getOriginalFile();
+        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFiles(file).stream()
+                .map(PsiFile::getVirtualFile)
+                .collect(Collectors.toSet());
+        searchFiles.add(file.getVirtualFile());
+        GlobalSearchScope scope = GlobalSearchScope.filesScope(project, searchFiles);
+
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project, scope);
 
         for (LatexCommands cmd : cmds) {
             if (!isDefinition(cmd)) {
