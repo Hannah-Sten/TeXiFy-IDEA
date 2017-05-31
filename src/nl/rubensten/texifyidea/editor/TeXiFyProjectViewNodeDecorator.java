@@ -20,6 +20,7 @@ public class TeXiFyProjectViewNodeDecorator implements ProjectViewNodeDecorator 
     private static final Map<String, Icon> FILE_ICONS = new HashMap<>();
     static {
         FILE_ICONS.put("pdf", TexifyIcons.PDF_FILE);
+        FILE_ICONS.put("dvi", TexifyIcons.DVI_FILE);
     }
 
     private void setIcon(ProjectViewNode projectViewNode, PresentationData presentationData) {
