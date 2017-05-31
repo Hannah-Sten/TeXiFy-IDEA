@@ -4,14 +4,17 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
-import nl.rubensten.texifyidea.psi.LatexBeginCommand;
-import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.psi.LatexParameter;
-import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.index.LatexCommandsIndex;
+import nl.rubensten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +27,7 @@ public class TexifyUtil {
     private TexifyUtil() {
     }
 
+    // Roman numerals.
     private static final TreeMap<Integer, String> ROMAN = new TreeMap<>();
     static {
         ROMAN.put(1000, "M");
@@ -33,6 +37,105 @@ public class TexifyUtil {
         ROMAN.put(10, "X");
         ROMAN.put(5, "V");
         ROMAN.put(1, "I");
+    }
+
+    // Referenced files.
+    private static final List<String> INCLUDE_COMMANDS = Arrays.asList("\\includeonly", "\\include", "\\input");
+    private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
+    static {
+        Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls");
+    }
+
+    /**
+     * Scans the whole document (recursively) for all referenced/included files.
+     *
+     * @return A collection containing all the PsiFiles that are referenced from {@code psiFile}.
+     */
+    @NotNull
+    public static Collection<PsiFile> getReferencedFiles(@NotNull PsiFile psiFile) {
+        Set<PsiFile> result = new HashSet<>();
+        getReferencedFiles(psiFile, result);
+        return result;
+    }
+
+    /**
+     * Recursive implementation of {@link TexifyUtil#getReferencedFiles(PsiFile)}.
+     */
+    private static void getReferencedFiles(@NotNull PsiFile file, @NotNull Collection<PsiFile> files) {
+        GlobalSearchScope scope = GlobalSearchScope.fileScope(file);
+        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(file.getProject(), scope);
+
+        for (LatexCommands command : commands) {
+            if (!INCLUDE_COMMANDS.contains(command.getCommandToken().getText())) {
+                continue;
+            }
+
+            List<String> required = command.getRequiredParameters();
+            if (required.isEmpty()) {
+                continue;
+            }
+
+            String fileName = required.get(0);
+            PsiFile included = getFileRelativeTo(file, fileName);
+
+            if (files.contains(included)) {
+                continue;
+            }
+
+            files.add(included);
+            getReferencedFiles(included, files);
+        }
+    }
+
+    /**
+     * Looks up a file relative to the given {@code file}.
+     *
+     * @param file
+     *         The file where the relative path starts.
+     * @param path
+     *         The path relative to {@code file}.
+     * @return The found file.
+     */
+    @Nullable
+    public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path) {
+        // Find file
+        VirtualFile directory = file.getVirtualFile().getParent();
+        Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
+        if (!fileHuh.isPresent()) {
+            return null;
+        }
+
+        PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
+        if (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
+                !StyleFileType.INSTANCE.equals(psiFile.getFileType())) {
+            return null;
+        }
+
+        return psiFile;
+    }
+
+    /**
+     * Looks for the next command relative to the given command.
+     *
+     * @param commands
+     *         The command to start looking from.
+     * @return The next command in the file, or {@code null} when there is no such command.
+     */
+    @Nullable
+    public static LatexCommands getNextCommand(@NotNull LatexCommands commands) {
+        LatexContent content = (LatexContent)commands.getParent().getParent();
+        PsiElement nextPsi = content.getNextSibling();
+        if (!(nextPsi instanceof LatexContent)) {
+            return null;
+        }
+
+        LatexContent siblingContent = (LatexContent)nextPsi;
+        LatexCommands childCommand = PsiTreeUtil.findChildOfType(siblingContent, LatexCommands.class);
+        if (childCommand == null) {
+            return null;
+        }
+
+        return childCommand;
     }
 
     /**

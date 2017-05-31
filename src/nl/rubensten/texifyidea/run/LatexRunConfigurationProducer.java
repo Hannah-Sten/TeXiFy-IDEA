@@ -49,6 +49,7 @@ public class LatexRunConfigurationProducer extends RunConfigurationProducer<Late
         runConfiguration.setMainFile(mainFile);
         runConfiguration.setDefaultAuxiliaryDirectories();
         runConfiguration.setDefaultCompiler();
+        runConfiguration.setDefaultOutputFormat();
         runConfiguration.setSuggestedName();
 
         return true;

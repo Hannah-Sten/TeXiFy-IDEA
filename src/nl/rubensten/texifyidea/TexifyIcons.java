@@ -26,6 +26,13 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon DVI_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dvi-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon BIBLIOGRAPHY_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/bibliography-file.png"
     );

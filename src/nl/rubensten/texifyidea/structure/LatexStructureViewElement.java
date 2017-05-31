@@ -172,6 +172,8 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
         // Add command definitions.
         addFromCommand(treeElements, commands, "\\newcommand");
+        addFromCommand(treeElements, commands, "\\let");
+        addFromCommand(treeElements, commands, "\\def");
 
         // Add label definitions.
         addFromCommand(treeElements, commands, "\\label");
@@ -227,11 +229,14 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             }
 
             List<String> required = cmd.getRequiredParameters();
-            if (required.isEmpty()) {
+            if (commandName.equals("\\newcommand") && required.isEmpty()) {
                 continue;
             }
 
-            treeElements.add(new LatexStructureViewCommandElement(cmd));
+            TreeElement element = LatexStructureViewCommandElement.newCommand(cmd);
+            if (element != null) {
+                treeElements.add(element);
+            }
         }
     }
 
