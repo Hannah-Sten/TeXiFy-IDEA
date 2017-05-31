@@ -10,7 +10,9 @@ import nl.rubensten.texifyidea.lang.Argument;
 import nl.rubensten.texifyidea.lang.Argument.Type;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.psi.LatexBeginCommand;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexEndCommand;
 import nl.rubensten.texifyidea.psi.LatexTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +36,9 @@ public class LatexSpellcheckingStrategy extends SpellcheckingStrategy {
         if (psiElement instanceof LeafPsiElement) {
             LeafPsiElement leaf = (LeafPsiElement)psiElement;
 
-            if (leaf.getElementType().equals(LatexTypes.COMMAND_TOKEN)) {
+            if (leaf.getElementType().equals(LatexTypes.COMMAND_TOKEN) ||
+                    leaf.getElementType().equals(LatexTypes.COMMENT_TOKEN) ||
+                    isBeginEnd(psiElement)) {
                 return EMPTY_TOKENIZER;
             }
 
@@ -50,6 +54,16 @@ public class LatexSpellcheckingStrategy extends SpellcheckingStrategy {
         }
 
         return EMPTY_TOKENIZER;
+    }
+
+    private boolean isBeginEnd(PsiElement element) {
+        PsiElement elt = PsiTreeUtil.getParentOfType(element, LatexBeginCommand.class);
+        if (elt != null) {
+            return true;
+        }
+
+        elt = PsiTreeUtil.getParentOfType(element, LatexEndCommand.class);
+        return elt != null;
     }
 
     private Argument getArgument(LeafPsiElement leaf) {
