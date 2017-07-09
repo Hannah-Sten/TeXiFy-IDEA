@@ -38,6 +38,10 @@ public class LatexEnvironmentFoldingBuilder extends FoldingBuilderEx {
             int start = env.getBeginCommand().getTextRange().getEndOffset();
             int end = env.getEndCommand().getTextRange().getStartOffset();
 
+            if (end <= start) {
+                continue;
+            }
+
             descriptors.add(new FoldingDescriptor(env, new TextRange(start, end)));
         }
 

@@ -44,6 +44,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
     else if (t == ENVIRONMENT) {
       r = environment(b, 0);
     }
+    else if (t == ENVIRONMENT_CONTENT) {
+      r = environment_content(b, 0);
+    }
     else if (t == GROUP) {
       r = group(b, 0);
     }
@@ -55,6 +58,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
     }
     else if (t == NO_MATH_CONTENT) {
       r = no_math_content(b, 0);
+    }
+    else if (t == NORMAL_TEXT) {
+      r = normal_text(b, 0);
     }
     else if (t == OPEN_GROUP) {
       r = open_group(b, 0);
@@ -240,7 +246,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // begin_command content* end_command
+  // begin_command environment_content? end_command
   public static boolean environment(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "environment")) return false;
     if (!nextTokenIs(b, BEGIN_TOKEN)) return false;
@@ -253,16 +259,28 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // content*
+  // environment_content?
   private static boolean environment_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "environment_1")) return false;
+    environment_content(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // content+
+  public static boolean environment_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "environment_content")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ENVIRONMENT_CONTENT, "<environment content>");
+    r = content(b, l + 1);
     int c = current_position_(b);
-    while (true) {
+    while (r) {
       if (!content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "environment_1", c)) break;
+      if (!empty_element_parsed_guard_(b, "environment_content", c)) break;
       c = current_position_(b);
     }
-    return true;
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   /* ********************************************************** */
@@ -356,7 +374,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | NORMAL_TEXT
+  // comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -368,8 +386,26 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = open_group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
-    if (!r) r = consumeToken(b, NORMAL_TEXT);
+    if (!r) r = normal_text(b, l + 1);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // NORMAL_TEXT_WORD+
+  public static boolean normal_text(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "normal_text")) return false;
+    if (!nextTokenIs(b, NORMAL_TEXT_WORD)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, NORMAL_TEXT_WORD);
+    int c = current_position_(b);
+    while (r) {
+      if (!consumeToken(b, NORMAL_TEXT_WORD)) break;
+      if (!empty_element_parsed_guard_(b, "normal_text", c)) break;
+      c = current_position_(b);
+    }
+    exit_section_(b, m, NORMAL_TEXT, r);
     return r;
   }
 

@@ -35,6 +35,10 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitEnvironmentContent(@NotNull LatexEnvironmentContent o) {
+    visitPsiElement(o);
+  }
+
   public void visitGroup(@NotNull LatexGroup o) {
     visitPsiElement(o);
   }
@@ -48,6 +52,10 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitNoMathContent(@NotNull LatexNoMathContent o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNormalText(@NotNull LatexNormalText o) {
     visitPsiElement(o);
   }
 

@@ -11,14 +11,14 @@ import static nl.rubensten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.rubensten.texifyidea.psi.*;
 
-public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexEnvironment {
+public class LatexEnvironmentContentImpl extends ASTWrapperPsiElement implements LatexEnvironmentContent {
 
-  public LatexEnvironmentImpl(ASTNode node) {
+  public LatexEnvironmentContentImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitEnvironment(this);
+    visitor.visitEnvironmentContent(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -28,20 +28,8 @@ public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexE
 
   @Override
   @NotNull
-  public LatexBeginCommand getBeginCommand() {
-    return findNotNullChildByClass(LatexBeginCommand.class);
-  }
-
-  @Override
-  @NotNull
-  public LatexEndCommand getEndCommand() {
-    return findNotNullChildByClass(LatexEndCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public LatexEnvironmentContent getEnvironmentContent() {
-    return findChildByClass(LatexEnvironmentContent.class);
+  public List<LatexContent> getContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexContent.class);
   }
 
 }
