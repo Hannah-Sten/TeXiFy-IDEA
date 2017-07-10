@@ -14,12 +14,14 @@ import java.util.List;
  */
 public enum LatexCompiler {
 
-    PDFLATEX("pdfLaTeX");
+    PDFLATEX("pdfLaTeX", "pdflatex");
 
     private String displayName;
+    private String executableName;
 
-    LatexCompiler(String displayName) {
+    LatexCompiler(String displayName, String executableName) {
         this.displayName = displayName;
+        this.executableName = executableName;
     }
 
     public List<String> getCommand(LatexRunConfiguration runConfig, Project project) {
@@ -31,7 +33,11 @@ public enum LatexCompiler {
         VirtualFile moduleRoot = fileIndex.getContentRootForFile(runConfig.getMainFile());
 
         if (this == PDFLATEX) {
-            command.add("pdflatex");
+            if (runConfig.getCompilerPath() != null) {
+                command.add(runConfig.getCompilerPath());
+            } else {
+                command.add("pdflatex");
+            }
             command.add("-file-line-error");
             command.add("-time-statistics");
             command.add("-c-style-errors");
@@ -48,6 +54,10 @@ public enum LatexCompiler {
         command.add(mainFile.getName());
 
         return command;
+    }
+
+    public String getExecutableName() {
+        return executableName;
     }
 
     @Override

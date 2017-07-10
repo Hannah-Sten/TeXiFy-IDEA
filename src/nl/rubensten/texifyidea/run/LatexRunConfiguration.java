@@ -28,6 +28,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private static final String OUTPUT_FORMAT = "output-format";
 
     private LatexCompiler compiler;
+    private String compilerPath = null;
     private VirtualFile mainFile;
     private boolean auxDir = true;
     private Format outputFormat = Format.PDF;
@@ -180,6 +181,14 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
     public void setSuggestedName() {
         setName(suggestedName());
+    }
+
+    public String getCompilerPath() {
+        return compilerPath;
+    }
+
+    public void setCompilerPath(String compilerPath) {
+        this.compilerPath = compilerPath;
     }
 
     @Override
