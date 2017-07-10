@@ -23,6 +23,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
+    private static final String COMPILER_PATH = "compiler-path";
     private static final String MAIN_FILE = "main-file";
     private static final String AUX_DIR = "aux-dir";
     private static final String OUTPUT_FORMAT = "output-format";
@@ -75,6 +76,10 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
             this.compiler = null;
         }
 
+        // Read compiler custom path.
+        String compilerPathRead = parent.getChildText(COMPILER_PATH);
+        this.compilerPath = compilerPathRead.isEmpty() ? null : compilerPathRead;
+
         // Read main file.
         LocalFileSystem fileSystem = LocalFileSystem.getInstance();
         String filePath = parent.getChildText(MAIN_FILE);
@@ -109,6 +114,11 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         final Element compilerElt = new Element(COMPILER);
         compilerElt.setText(compiler == null ? "" : compiler.name());
         parent.addContent(compilerElt);
+
+        // Write compiler path.
+        final Element compilerPathElt = new Element(COMPILER_PATH);
+        compilerPathElt.setText(compilerPath == null ? "" : compilerPath);
+        parent.addContent(compilerPathElt);
 
         // Write main file.
         final Element mainFileElt = new Element(MAIN_FILE);
@@ -209,6 +219,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     @Override
     public String toString() {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
+                ", compilerPath=" + compilerPath +
                 ", mainFile=" + mainFile +
                 ", auxDir=" + auxDir +
                 ", outputFormat=" + outputFormat +

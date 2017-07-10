@@ -73,9 +73,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         runConfiguration.setCompiler(chosenCompiler);
 
         // Apply custom compiler path if applicable
-        if (enableCompilerPath.isSelected()) {
-            runConfiguration.setCompilerPath(compilerPath.getText());
-        }
+        runConfiguration.setCompilerPath(enableCompilerPath.isSelected() ? compilerPath.getText() : null);
 
         // Apply main file.
         TextFieldWithBrowseButton txtFile = (TextFieldWithBrowseButton)mainFile.getComponent();
@@ -117,7 +115,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
                 new TextBrowseFolderListener(
                         new FileChooserDescriptor(true, false, false, false, false, false)
                             .withFileFilter(virtualFile -> virtualFile.getNameWithoutExtension().equals(((LatexCompiler)compilerField.getSelectedItem()).getExecutableName()))
-                            .withTitle("Choose " + ((LatexCompiler)compilerField.getSelectedItem()) + " executable")
+                            .withTitle("Choose " + compilerField.getSelectedItem() + " executable")
                 )
         );
         compilerPath.setEnabled(false);
