@@ -33,7 +33,7 @@ latexFile ::= content*
 
 content ::= no_math_content | math_environment
 
-no_math_content ::= comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | NORMAL_TEXT
+no_math_content ::= comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | NORMAL_TEXT
 
 environment ::= begin_command content* end_command
 
@@ -57,6 +57,6 @@ comment ::= COMMENT_TOKEN
 
 math_environment ::= inline_math | display_math
 
-inline_math ::= INLINE_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* INLINE_MATH_END
+inline_math ::= INLINE_MATH_START no_math_content* INLINE_MATH_END
 
-display_math ::= DISPLAY_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* DISPLAY_MATH_END
+display_math ::= DISPLAY_MATH_START no_math_content* DISPLAY_MATH_END
