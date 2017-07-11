@@ -169,7 +169,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DISPLAY_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* DISPLAY_MATH_END
+  // DISPLAY_MATH_START no_math_content* DISPLAY_MATH_END
   public static boolean display_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math")) return false;
     if (!nextTokenIs(b, DISPLAY_MATH_START)) return false;
@@ -182,28 +182,16 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)*
+  // no_math_content*
   private static boolean display_math_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math_1")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!display_math_1_0(b, l + 1)) break;
+      if (!no_math_content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "display_math_1", c)) break;
       c = current_position_(b);
     }
     return true;
-  }
-
-  // M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content
-  private static boolean display_math_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "display_math_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, M_OPEN_BRACKET);
-    if (!r) r = consumeToken(b, M_CLOSE_BRACKET);
-    if (!r) r = no_math_content(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   /* ********************************************************** */
@@ -292,7 +280,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // INLINE_MATH_START (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)* INLINE_MATH_END
+  // INLINE_MATH_START no_math_content* INLINE_MATH_END
   public static boolean inline_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math")) return false;
     if (!nextTokenIs(b, INLINE_MATH_START)) return false;
@@ -305,28 +293,16 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content)*
+  // no_math_content*
   private static boolean inline_math_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math_1")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!inline_math_1_0(b, l + 1)) break;
+      if (!no_math_content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "inline_math_1", c)) break;
       c = current_position_(b);
     }
     return true;
-  }
-
-  // M_OPEN_BRACKET | M_CLOSE_BRACKET | no_math_content
-  private static boolean inline_math_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "inline_math_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, M_OPEN_BRACKET);
-    if (!r) r = consumeToken(b, M_CLOSE_BRACKET);
-    if (!r) r = no_math_content(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   /* ********************************************************** */
@@ -356,7 +332,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | NORMAL_TEXT
+  // comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | NORMAL_TEXT
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -368,6 +344,8 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = open_group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
+    if (!r) r = consumeToken(b, M_OPEN_BRACKET);
+    if (!r) r = consumeToken(b, M_CLOSE_BRACKET);
     if (!r) r = consumeToken(b, NORMAL_TEXT);
     exit_section_(b, l, m, r, false, null);
     return r;
