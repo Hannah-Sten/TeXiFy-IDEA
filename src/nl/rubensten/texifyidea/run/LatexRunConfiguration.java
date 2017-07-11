@@ -78,7 +78,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
         // Read compiler custom path.
         String compilerPathRead = parent.getChildText(COMPILER_PATH);
-        this.compilerPath = compilerPathRead.isEmpty() ? null : compilerPathRead;
+        this.compilerPath = (compilerPathRead == null || compilerPathRead.isEmpty()) ? null : compilerPathRead;
 
         // Read main file.
         LocalFileSystem fileSystem = LocalFileSystem.getInstance();
