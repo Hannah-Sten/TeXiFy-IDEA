@@ -25,7 +25,7 @@ public class LatexFormattingModelBuilder implements FormattingModelBuilder {
     private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings) {
         SpacingBuilder spacingBuilder = new SpacingBuilder(settings, LatexLanguage.INSTANCE);
         spacingBuilder.between(LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT_WORD).spaces(1);
-//        spacingBuilder.around(LatexTypes.ENVIRONMENT_CONTENT).lineBreakInCode();
+        spacingBuilder.around(LatexTypes.ENVIRONMENT_CONTENT).lineBreakInCode();
         return spacingBuilder;
     }
 

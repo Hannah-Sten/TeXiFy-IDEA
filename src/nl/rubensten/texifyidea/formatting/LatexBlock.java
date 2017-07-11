@@ -42,7 +42,7 @@ public class LatexBlock extends AbstractBlock {
                 Block block = new LatexBlock(
                         child,
                         Wrap.createWrap(WrapType.NONE, false),
-                        Alignment.createAlignment(),
+                        null,
                         spacingBuilder
                 );
                 blocks.add(block);
@@ -78,10 +78,10 @@ public class LatexBlock extends AbstractBlock {
     public ChildAttributes getChildAttributes(int newChildIndex) {
         IElementType type = myNode.getElementType();
         if (type == LatexTypes.DISPLAY_MATH) {
-            return new ChildAttributes(Indent.getNormalIndent(), null);
+            return new ChildAttributes(Indent.getNormalIndent(true), null);
         }
         else if (type == LatexTypes.ENVIRONMENT) {
-            return new ChildAttributes(Indent.getNormalIndent(), null);
+            return new ChildAttributes(Indent.getNormalIndent(true), null);
         }
 
         return new ChildAttributes(Indent.getNoneIndent(), null);
