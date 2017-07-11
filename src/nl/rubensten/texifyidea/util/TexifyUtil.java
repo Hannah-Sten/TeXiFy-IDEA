@@ -77,6 +77,9 @@ public class TexifyUtil {
 
             String fileName = required.get(0);
             PsiFile included = getFileRelativeTo(file, fileName);
+            if (included == null) {
+                continue;
+            }
 
             if (files.contains(included)) {
                 continue;
@@ -106,8 +109,8 @@ public class TexifyUtil {
         }
 
         PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
-        if (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
-                !StyleFileType.INSTANCE.equals(psiFile.getFileType())) {
+        if (psiFile == null || (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
+                !StyleFileType.INSTANCE.equals(psiFile.getFileType()))) {
             return null;
         }
 
@@ -218,14 +221,8 @@ public class TexifyUtil {
      *         The file extension to get the corresponding FileType instance of without a dot in
      *         front.
      * @return The corresponding FileType instance.
-     * @throws IllegalArgumentException
-     *         When {@code extensionWithoutDot} is {@code null}.
      */
-    public static FileType getFileTypeByExtension(@NotNull String extensionWithoutDot)
-            throws IllegalArgumentException {
-        if (extensionWithoutDot == null) {
-            throw new IllegalArgumentException("extensionWithoutDot cannot be null");
-        }
+    public static FileType getFileTypeByExtension(@NotNull String extensionWithoutDot) {
 
         switch (extensionWithoutDot.toLowerCase()) {
             case "cls":
@@ -249,15 +246,7 @@ public class TexifyUtil {
      * @throws IllegalArgumentException
      *         When {@code path} or {@code extensionWithoutDot} is {@code null}.
      */
-    public static String appendExtension(@NotNull String path, @NotNull String extensionWithoutDot)
-            throws IllegalArgumentException {
-        if (path == null) {
-            throw new IllegalArgumentException("path cannot be null");
-        }
-
-        if (extensionWithoutDot == null) {
-            throw new IllegalArgumentException("extensionWithoutDot cannot be null");
-        }
+    public static String appendExtension(@NotNull String path, @NotNull String extensionWithoutDot) {
 
         if (path.toLowerCase().endsWith("." + extensionWithoutDot.toLowerCase())) {
             return path;
