@@ -19,13 +19,13 @@ import java.net.URLEncoder;
  */
 public class LatexErrorReportSubmitter extends ErrorReportSubmitter {
 
-    private static final String URL = "https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/new?labels[]=bug&title=Crash%20Report:%20";
+    private static final String URL = "https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/new?labels[]=crash-report&title=Crash%20Report:%20";
     private static final String ENCODING = "UTF-8";
 
     @NotNull
     @Override
     public String getReportActionText() {
-        return "Report to TeXiFy-IDEA GitHub";
+        return "Report to TeXiFy-IDEA issue tracker";
     }
 
     @Override
@@ -41,9 +41,7 @@ public class LatexErrorReportSubmitter extends ErrorReportSubmitter {
             builder.append("&body=");
             builder.append(URLEncoder.encode("### Description\n", ENCODING));
             builder.append(URLEncoder.encode(additionalInfo == null ? "\n" : additionalInfo, ENCODING));
-            builder.append(URLEncoder.encode("\n### Stacktrace\n```\n", ENCODING));
-            builder.append(URLEncoder.encode(event.getThrowableText(), ENCODING));
-            builder.append(URLEncoder.encode("\n```", ENCODING));
+            builder.append(URLEncoder.encode("\n### Stacktrace\n```\nPlease paste the full stacktrace from the IDEA error popup\n```", ENCODING));
         }
         catch (UnsupportedEncodingException e) {
             consumer.consume(new SubmittedReportInfo(null, null, SubmittedReportInfo
