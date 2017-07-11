@@ -61,10 +61,4 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                         .withIcon(TexifyIcons.DOT_LABEL)
         ).toArray();
     }
-
-    @NotNull
-    @Override
-    public String getCanonicalText() {
-        return super.getCanonicalText();
-    }
 }
