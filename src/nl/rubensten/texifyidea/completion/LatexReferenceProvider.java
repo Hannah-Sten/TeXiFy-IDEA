@@ -38,6 +38,10 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
         Project project = editor.getProject();
         Document document = editor.getDocument();
 
+        if (project == null) {
+            return;
+        }
+
         // Only consider included files.
         PsiFile file = parameters.getOriginalFile();
         Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFiles(file).stream()
