@@ -8,6 +8,8 @@ import com.intellij.psi.PsiElementResolveResult;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
+import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.TexifyUtil;
@@ -52,8 +54,11 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         Collection<LatexCommands> labels = TexifyUtil.findLabels(project);
 
         return labels.stream().map(
-                l -> LookupElementBuilder.create(l)
-                        .withTypeText(l.getContainingFile().getName())
+                l -> LookupElementBuilder.create(l.getRequiredParameters().get(0))
+                        .bold()
+                        .withInsertHandler(new LatexReferenceInsertHandler())
+                        .withTypeText(l.getContainingFile().getName(),true)
+                        .withIcon(TexifyIcons.DOT_LABEL)
         ).toArray();
     }
 
