@@ -98,6 +98,10 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result) {
         Project project = parameters.getEditor().getProject();
+        if (project == null) {
+            return;
+        }
+
         PsiFile file = parameters.getOriginalFile();
         Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFiles(file).stream()
                 .map(PsiFile::getVirtualFile)
@@ -113,6 +117,10 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             }
 
             String cmdName = getCommandName(cmd);
+            if (cmdName == null) {
+                continue;
+            }
+
             String tailText = getTailText(cmd);
             String typeText = getTypeText(cmd);
 
