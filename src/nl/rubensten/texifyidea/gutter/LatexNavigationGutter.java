@@ -4,7 +4,9 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
@@ -70,7 +72,15 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         fileName = fileName.substring(1, fileName.length() - 1);
 
         // Look up target file.
-        VirtualFile directory = element.getContainingFile().getContainingDirectory().getVirtualFile();
+        PsiFile containingFile = element.getContainingFile();
+        if (containingFile == null) {
+            return;
+        }
+        PsiDirectory containingDirectory = containingFile.getContainingDirectory();
+        if (containingDirectory == null) {
+            return;
+        }
+        VirtualFile directory = containingDirectory.getVirtualFile();
         Optional<VirtualFile> fileHuh = findFile(directory, fileName, argument.getSupportedExtensions());
         if (!fileHuh.isPresent()) {
             return;
