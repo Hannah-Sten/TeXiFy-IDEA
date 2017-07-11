@@ -3,10 +3,15 @@ package nl.rubensten.texifyidea.psi.impl;
 import java.util.List;
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.Computable;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.StubBasedPsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.util.IncorrectOperationException;
 import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
+import nl.rubensten.texifyidea.reference.LatexLabelReference;
+import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -42,6 +47,20 @@ public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub
         else {
             super.accept(visitor);
         }
+    }
+
+    @Override
+    public PsiReference getReference() {
+        LatexRequiredParam firstParam = ApplicationManager.getApplication().runReadAction((Computable<LatexRequiredParam>)() -> {
+            List<LatexRequiredParam> params = TexifyUtil.getRequiredParameters(this);
+            return params.isEmpty() ? null : params.get(0);
+        });
+
+        if (getCommandToken().getText().equals("\\ref") && firstParam != null) {
+            return new LatexLabelReference(this, firstParam);
+        }
+
+        return null;
     }
 
     @Override
