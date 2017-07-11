@@ -17,9 +17,11 @@ public interface LatexTypes {
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");
   IElementType END_COMMAND = new LatexElementType("END_COMMAND");
   IElementType ENVIRONMENT = new LatexElementType("ENVIRONMENT");
+  IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
+  IElementType NORMAL_TEXT = new LatexElementType("NORMAL_TEXT");
   IElementType NO_MATH_CONTENT = new LatexElementType("NO_MATH_CONTENT");
   IElementType OPEN_GROUP = new LatexElementType("OPEN_GROUP");
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
@@ -39,7 +41,7 @@ public interface LatexTypes {
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
   IElementType M_CLOSE_BRACKET = new LatexTokenType("M_CLOSE_BRACKET");
   IElementType M_OPEN_BRACKET = new LatexTokenType("M_OPEN_BRACKET");
-  IElementType NORMAL_TEXT = new LatexTokenType("NORMAL_TEXT");
+  IElementType NORMAL_TEXT_WORD = new LatexTokenType("NORMAL_TEXT_WORD");
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
   IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");
   IElementType OPEN_PAREN = new LatexTokenType("OPEN_PAREN");
@@ -69,6 +71,9 @@ public interface LatexTypes {
       else if (type == ENVIRONMENT) {
         return new LatexEnvironmentImpl(node);
       }
+      else if (type == ENVIRONMENT_CONTENT) {
+        return new LatexEnvironmentContentImpl(node);
+      }
       else if (type == GROUP) {
         return new LatexGroupImpl(node);
       }
@@ -77,6 +82,9 @@ public interface LatexTypes {
       }
       else if (type == MATH_ENVIRONMENT) {
         return new LatexMathEnvironmentImpl(node);
+      }
+      else if (type == NORMAL_TEXT) {
+        return new LatexNormalTextImpl(node);
       }
       else if (type == NO_MATH_CONTENT) {
         return new LatexNoMathContentImpl(node);

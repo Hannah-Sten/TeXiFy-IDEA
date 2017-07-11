@@ -20,9 +20,9 @@ public interface LatexNoMathContent extends PsiElement {
   LatexGroup getGroup();
 
   @Nullable
-  LatexOpenGroup getOpenGroup();
+  LatexNormalText getNormalText();
 
   @Nullable
-  PsiElement getNormalText();
+  LatexOpenGroup getOpenGroup();
 
 }

@@ -5,15 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexEnvironment extends PsiElement {
+public interface LatexEnvironmentContent extends PsiElement {
 
   @NotNull
-  LatexBeginCommand getBeginCommand();
-
-  @NotNull
-  LatexEndCommand getEndCommand();
-
-  @Nullable
-  LatexEnvironmentContent getEnvironmentContent();
+  List<LatexContent> getContentList();
 
 }
