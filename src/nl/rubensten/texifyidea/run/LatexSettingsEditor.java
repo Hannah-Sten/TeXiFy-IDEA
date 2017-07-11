@@ -107,7 +107,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         panel.add(compiler);
 
         // Optional custom path for compiler executable
-        enableCompilerPath = new JCheckBox("Select custom compiler executable path");
+        enableCompilerPath = new JCheckBox("Select custom compiler executable path (required on Mac OS X)");
         panel.add(enableCompilerPath);
 
         compilerPath = new TextFieldWithBrowseButton();

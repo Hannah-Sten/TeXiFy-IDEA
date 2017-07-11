@@ -39,9 +39,6 @@ public enum LatexCompiler {
                 command.add("pdflatex");
             }
             command.add("-file-line-error");
-            command.add("-time-statistics");
-            command.add("-c-style-errors");
-            command.add("-max-print-line=10000");
             command.add("-interaction=nonstopmode");
             command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
