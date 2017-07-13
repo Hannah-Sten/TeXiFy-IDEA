@@ -14,12 +14,14 @@ import java.util.List;
  */
 public enum LatexCompiler {
 
-    PDFLATEX("pdfLaTeX");
+    PDFLATEX("pdfLaTeX", "pdflatex");
 
     private String displayName;
+    private String executableName;
 
-    LatexCompiler(String displayName) {
+    LatexCompiler(String displayName, String executableName) {
         this.displayName = displayName;
+        this.executableName = executableName;
     }
 
     @Nullable
@@ -35,11 +37,12 @@ public enum LatexCompiler {
         }
 
         if (this == PDFLATEX) {
-            command.add("pdflatex");
+            if (runConfig.getCompilerPath() != null) {
+                command.add(runConfig.getCompilerPath());
+            } else {
+                command.add("pdflatex");
+            }
             command.add("-file-line-error");
-            command.add("-time-statistics");
-            command.add("-c-style-errors");
-            command.add("-max-print-line=10000");
             command.add("-interaction=nonstopmode");
             command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
@@ -52,6 +55,10 @@ public enum LatexCompiler {
         command.add(mainFile.getName());
 
         return command;
+    }
+
+    public String getExecutableName() {
+        return executableName;
     }
 
     @Override
