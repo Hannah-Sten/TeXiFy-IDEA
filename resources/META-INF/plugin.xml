@@ -143,6 +143,10 @@
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
 
+        <!-- Blame -->
+        <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>
+  </extensions>
+
         <!-- Stubs -->
         <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
 
