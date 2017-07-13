@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Ruben Schellekens
+ * @deprecated From b0.3 onward. Use {@link nl.rubensten.texifyidea.reference.LatexLabelReference} instead.
  */
 public class LatexReferenceProvider extends CompletionProvider<CompletionParameters> {
 

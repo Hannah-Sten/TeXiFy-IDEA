@@ -1,7 +1,10 @@
 package nl.rubensten.texifyidea.util;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -12,11 +15,24 @@ import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
-import nl.rubensten.texifyidea.psi.*;
+import nl.rubensten.texifyidea.psi.LatexBeginCommand;
+import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexContent;
+import nl.rubensten.texifyidea.psi.LatexParameter;
+import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -377,6 +393,35 @@ public class TexifyUtil {
     public static void logf(String format, Object... objects) {
         Logger logger = Logger.getInstance(Log.class);
         logger.info("TEXIFY-IDEA - " + String.format(format, objects));
+    }
+
+    /**
+     * Finds all defined labels within the project.
+     *
+     * @param project
+     *         Project scope.
+     * @return A list of label commands.
+     */
+    public static Collection<LatexCommands> findLabels(Project project) {
+        return LatexCommandsIndex.getIndexedCommandsByName("label", project);
+    }
+
+    /**
+     * Finds all defined labels within the project matching the key.
+     *
+     * @param project
+     *         Project scope.
+     * @param key
+     *         Key to match the label with.
+     * @return A list of matched label commands.
+     */
+    public static Collection<LatexCommands> findLabels(Project project, String key) {
+        return findLabels(project).parallelStream()
+                .filter(c -> {
+                    List<String> p = ApplicationManager.getApplication().runReadAction((Computable<List<String>>)c::getRequiredParameters);
+                    return p.size() > 0 && p.get(0).equals(key);
+                })
+                .collect(Collectors.toList());
     }
 
     /**
