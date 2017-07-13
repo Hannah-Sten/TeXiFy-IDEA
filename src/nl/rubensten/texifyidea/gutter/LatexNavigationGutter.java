@@ -17,7 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
+import static nl.rubensten.texifyidea.util.TexifyUtil.findFile;
 
 /**
  * @author Ruben Schellekens
@@ -84,37 +85,4 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
 
         result.add(builder.createLineMarkerInfo(element));
     }
-
-    /**
-     * Looks for a certain file.
-     * <p>
-     * First looks if the file including extensions exists, when it doesn't it tries to append
-     * all possible extensions until it finds a good one.
-     *
-     * @param directory
-     *         The directory where the search is rooted from.
-     * @param fileName
-     *         The name of the file relative to the directory.
-     * @param extensions
-     *         Set of all supported extensions to look for.
-     * @return The matching file.
-     */
-    private Optional<VirtualFile> findFile(VirtualFile directory, String fileName,
-                                           Set<String> extensions) {
-        VirtualFile file = directory.findFileByRelativePath(fileName);
-        if (file != null) {
-            return Optional.of(file);
-        }
-
-        for (String extension : extensions) {
-            file = directory.findFileByRelativePath(fileName + "." + extension);
-
-            if (file != null) {
-                return Optional.of(file);
-            }
-        }
-
-        return Optional.empty();
-    }
-
 }

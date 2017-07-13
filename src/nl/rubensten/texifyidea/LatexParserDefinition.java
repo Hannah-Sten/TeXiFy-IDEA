@@ -10,7 +10,7 @@ import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
-import com.intellij.psi.tree.IFileElementType;
+import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.parser.LatexParser;
@@ -26,7 +26,7 @@ public class LatexParserDefinition implements ParserDefinition {
     public static final TokenSet COMMENTS = TokenSet.create(LatexTypes.COMMENT_TOKEN);
     public static final TokenSet NORMAL_TEXT = TokenSet.create(LatexTypes.NORMAL_TEXT);
 
-    public static final IFileElementType FILE = new IFileElementType(
+    public static final IStubFileElementType FILE = new IStubFileElementType(
             Language.findInstance(LatexLanguage.class)
     );
 
@@ -42,7 +42,7 @@ public class LatexParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public IFileElementType getFileNodeType() {
+    public IStubFileElementType getFileNodeType() {
         return FILE;
     }
 

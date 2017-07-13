@@ -30,7 +30,7 @@ public class LatexRunConfigurationType implements ConfigurationType {
 
     @Override
     public Icon getIcon() {
-        return TexifyIcons.LATEX_FILE;
+        return TexifyIcons.BUILD;
     }
 
     @NotNull

@@ -22,13 +22,15 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
      * Create a new required file argument with a given name and a pattern that matches
      * corresponding file names.
      *
+     * Type will be {@link Type#NORMAL}.
+     *
      * @param name
      *         The name of the required argument.
      * @param extensions
      *         All supported extensions.
      */
     protected RequiredFileArgument(String name, String... extensions) {
-        super(name);
+        super(name, Type.FILE);
         setExtensions(extensions);
     }
 

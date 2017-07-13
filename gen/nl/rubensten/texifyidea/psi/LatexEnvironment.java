@@ -11,9 +11,9 @@ public interface LatexEnvironment extends PsiElement {
   LatexBeginCommand getBeginCommand();
 
   @NotNull
-  List<LatexContent> getContentList();
-
-  @NotNull
   LatexEndCommand getEndCommand();
+
+  @Nullable
+  LatexEnvironmentContent getEnvironmentContent();
 
 }
