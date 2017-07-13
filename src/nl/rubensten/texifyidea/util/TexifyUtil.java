@@ -2,6 +2,10 @@ package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -12,11 +16,25 @@ import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
-import nl.rubensten.texifyidea.psi.*;
+import nl.rubensten.texifyidea.psi.LatexBeginCommand;
+import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexContent;
+import nl.rubensten.texifyidea.psi.LatexParameter;
+import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -377,6 +395,41 @@ public class TexifyUtil {
     public static void logf(String format, Object... objects) {
         Logger logger = Logger.getInstance(Log.class);
         logger.info("TEXIFY-IDEA - " + String.format(format, objects));
+    }
+
+    /**
+     * Creates a project directory at {@code path} which will be marked as excluded.
+     *
+     * @param path
+     *         The path to create the directory to.
+     */
+    public static void createExcludedDir(@NotNull String path, @NotNull Module module) {
+        if (new File(path).mkdirs()) {
+            VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
+            if (root != null) {
+                ModuleRootManager.getInstance(module).getModifiableModel().addContentEntry(root)
+                        .addExcludeFolder(root);
+            }
+        }
+    }
+
+    /**
+     * Retrieves the file path relative to the root path, or {@code null} if the file is not a
+     * child of the root.
+     *
+     * @param rootPath
+     *         The path of the root
+     * @param filePath
+     *         The path of the file
+     * @return The relative path of the file to the root, or {@code null} if the file is no child
+     * of the root.
+     */
+    @Nullable
+    public static String getPathRelativeTo(@NotNull String rootPath, @NotNull String filePath) {
+        if (!filePath.startsWith(rootPath)) {
+            return null;
+        }
+        return filePath.substring(rootPath.length());
     }
 
     /**
