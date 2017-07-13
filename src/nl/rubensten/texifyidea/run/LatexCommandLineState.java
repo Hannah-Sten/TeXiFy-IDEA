@@ -6,9 +6,9 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -17,11 +17,8 @@ import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Sten Wessel
@@ -51,27 +48,23 @@ public class LatexCommandLineState extends CommandLineState {
     }
 
     private void createOutDirs() throws ExecutionException {
-        Module module = ProjectRootManager.getInstance(project).getFileIndex().getModuleForFile(runConfig.getMainFile());
-        if (module == null) {
-            throw new ExecutionException("TeX file is not within a LaTeX module.");
+        VirtualFile mainFile = runConfig.getMainFile();
+        ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+
+        String outPath = fileIndex.getContentRootForFile(mainFile).getPath() + "/out";
+        TexifyUtil.createExcludedDir(outPath, fileIndex.getModuleForFile(mainFile));
+
+        Collection<PsiFile> files;
+        try {
+            files = TexifyUtil.getReferencedFiles(PsiManager.getInstance(project).findFile(mainFile));
         }
-        ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-        if (moduleRootManager.getContentRoots().length == 0) {
-            throw new ExecutionException("Module is improperly configured (no content roots available).");
+        catch (IndexNotReadyException e) {
+            throw new ExecutionException("Please wait until the indices are built.");
         }
 
-        String outPath = moduleRootManager.getContentRoots()[0].getPath() + "/out";
-        TexifyUtil.createExcludedDir(outPath, module);
-
-        Collection<PsiFile> files = TexifyUtil.getReferencedFiles(PsiManager.getInstance(project).findFile(runConfig.getMainFile()));
-        VirtualFile[] roots = moduleRootManager.getSourceRoots();
+        VirtualFile root = fileIndex.getSourceRootForFile(mainFile);
         for (PsiFile included : files) {
-            String relPath = Arrays.stream(roots)
-                    .map(r -> TexifyUtil.getPathRelativeTo(r.getPath(), included.getContainingDirectory().getVirtualFile().getPath()))
-                    .filter(Objects::nonNull)
-                    .sorted(Comparator.comparingInt(String::length))
-                    .findFirst().orElse("");
-
+            String relPath = TexifyUtil.getPathRelativeTo(root.getPath(), included.getContainingDirectory().getVirtualFile().getPath());
             new File(outPath + relPath).mkdirs();
         }
     }

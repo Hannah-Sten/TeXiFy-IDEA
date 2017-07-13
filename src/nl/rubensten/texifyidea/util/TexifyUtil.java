@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.util;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -407,8 +408,8 @@ public class TexifyUtil {
         if (new File(path).mkdirs()) {
             VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
             if (root != null) {
-                ModuleRootManager.getInstance(module).getModifiableModel().addContentEntry(root)
-                        .addExcludeFolder(root);
+                ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+                model.addContentEntry(root).addExcludeFolder(root);
             }
         }
     }
