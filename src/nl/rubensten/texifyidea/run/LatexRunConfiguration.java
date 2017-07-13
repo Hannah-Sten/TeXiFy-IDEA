@@ -44,6 +44,9 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
+        if (compiler == null || mainFile == null || outputFormat == null) {
+            throw new RuntimeConfigurationError("Run configuration is invalid.");
+        }
     }
 
     @Nullable

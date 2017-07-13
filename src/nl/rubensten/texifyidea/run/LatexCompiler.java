@@ -22,6 +22,7 @@ public enum LatexCompiler {
         this.displayName = displayName;
     }
 
+    @Nullable
     public List<String> getCommand(LatexRunConfiguration runConfig, Project project) {
         List<String> command = new ArrayList<>();
 
@@ -29,6 +30,9 @@ public enum LatexCompiler {
         ProjectFileIndex fileIndex = rootManager.getFileIndex();
         VirtualFile mainFile = runConfig.getMainFile();
         VirtualFile moduleRoot = fileIndex.getContentRootForFile(runConfig.getMainFile());
+        if (moduleRoot == null || mainFile == null) {
+            return null;
+        }
 
         if (this == PDFLATEX) {
             command.add("pdflatex");

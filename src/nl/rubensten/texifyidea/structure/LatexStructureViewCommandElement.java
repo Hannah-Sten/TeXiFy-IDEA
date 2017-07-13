@@ -64,7 +64,8 @@ public class LatexStructureViewCommandElement implements StructureViewTreeElemen
     @NotNull
     @Override
     public String getAlphaSortKey() {
-        return presentation.getPresentableText();
+        String text = presentation.getPresentableText();
+        return text == null ? "" : text;
     }
 
     @NotNull
