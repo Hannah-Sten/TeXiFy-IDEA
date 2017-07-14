@@ -3,10 +3,6 @@ package nl.rubensten.texifyidea.util;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -405,13 +401,8 @@ public class TexifyUtil {
      *         The path to create the directory to.
      */
     public static void createExcludedDir(@NotNull String path, @NotNull Module module) {
-        if (new File(path).mkdirs()) {
-            VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
-            if (root != null) {
-                ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
-                model.addContentEntry(root).addExcludeFolder(root);
-            }
-        }
+        new File(path).mkdirs();
+        // TODO: actually mark as excluded
     }
 
     /**
