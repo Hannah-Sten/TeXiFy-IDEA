@@ -31,52 +31,47 @@
     <vendor url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
     <description><![CDATA[
-      <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
-      <p>
-          Note to users: all suggestions/requests/bug reports/kudos/critique/(non-)creative ideas/contributions are
-          welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin GitHub page</a>.
-      </p>
-    ]]></description>
+        <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
+        <p>
+            Note to users: all suggestions/requests/bug reports/kudos/critique/(non-)creative ideas/contributions are
+            welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin GitHub page</a>.
+        </p>
+        ]]></description>
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <h1>Beta 0.2</h1>
+        <h1>Beta 0.3</h1>
         <p>
-            Second release of TeXiFy-IDEA, full of improvements and bug fixes. Thanks to all issue reporters for their
+            The third release of TeXiFy IDEA, and we are very proud to introduce a number of great features. We especially have good news
+            for Mac users: compiling now actually works! Thanks to all issue reporters for their
             contributions! All feature requests and bug reports are more than welcome on our Issues page. Pull requests
             are also welcome!
         </p>
-        <p><em>Additions</em></p>
+        <p><em>New features</em></p>
         <ul>
-            <li>
-                UI
-                <ul>
-                    <li>New icons! The new icons designed by Ruben integrate much better within the new IntelliJ design.</li>
-                    <li>More advanced gutter icons, including navigation icons for <code>\include</code>,
-                        <code>\includeonly</code> and <code>\bibliography</code>.</li>
-                </ul>
-            </li>
-            <li>
-                Editor
-                <ul>
-                    <li>Brace matching is now also available for parentheses (<code>()</code>).</li>
-                    <li>For all the hideous code you don't want to see, you can now fold environments.</li>
-                    <li>Caret will now recognize and run over the terminating $ of an inline math environment.</li>
-                </ul>
-            </li>
-            <li>
-                Autocomplete
-                <ul>
-                    <li>Has been extended to environments: <code>\end</code> will be automatically inserted and a list
-                        of standard LaTeX environments is provided to choose from when you select <code>\begin</code> from
-                        autocomplete.</li>
-                </ul>
-            </li>
+            <li>Completion for <code>\label{}</code> references, <code>\newcommand{}</code> commands and included files/directories with fancy icons.</li>
+            <li>Structure view, showing sectioning, inclusions, labels and command definitions, also with nice icons.</li>
+            <li>An improved formatter with does not scatter your code around but aligns it nicely and indented instead.</li>
+            <li><em>Go to declaration</em> (Ctrl+click or Ctrl+B) for label references.</li>
+            <li>Inserting a command with at least one required argument inserts the braces for you.</li>
+            <li>Spell checker.</li>
+            <li>Custom compiler path (for Mac users and adventurous Windows people).</li>
+            <li>Automatic creation of output directories (also for Mac users).</li>
+            <li>PDF and DVI icon, because we need more icons.</li>
+            <li>Easier error reporting when an exception occurs.</li>
         </ul>
 
         <p><em>Bug fixes</em></p>
-        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.2">GitHub release page</a>.</p>
-    ]]>
+        <ul>
+            <li>Inline math after display math is recognized.</li>
+            <li>Smashed a number of ugly exceptions in numerous places.</li>
+            <li>(Unmatched) square brackets in math mode no longer gives syntax errors.</li>
+            <li>Inline math runover trailing <code>$</code> also works when closing the completion dialog.</li>
+        </ul>
+
+        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.3">GitHub
+            release page</a>.</p>
+        ]]>
     </change-notes>
 
     <module-components>
