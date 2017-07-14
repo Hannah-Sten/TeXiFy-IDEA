@@ -53,6 +53,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
     else if (t == INLINE_MATH) {
       r = inline_math(b, 0);
     }
+    else if (t == MATH_CONTENT) {
+      r = math_content(b, 0);
+    }
     else if (t == MATH_ENVIRONMENT) {
       r = math_environment(b, 0);
     }
@@ -175,7 +178,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DISPLAY_MATH_START no_math_content* DISPLAY_MATH_END
+  // DISPLAY_MATH_START math_content? DISPLAY_MATH_END
   public static boolean display_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math")) return false;
     if (!nextTokenIs(b, DISPLAY_MATH_START)) return false;
@@ -188,15 +191,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // no_math_content*
+  // math_content?
   private static boolean display_math_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!no_math_content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "display_math_1", c)) break;
-      c = current_position_(b);
-    }
+    math_content(b, l + 1);
     return true;
   }
 
@@ -298,7 +296,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // INLINE_MATH_START no_math_content* INLINE_MATH_END
+  // INLINE_MATH_START math_content? INLINE_MATH_END
   public static boolean inline_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math")) return false;
     if (!nextTokenIs(b, INLINE_MATH_START)) return false;
@@ -311,15 +309,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // no_math_content*
+  // math_content?
   private static boolean inline_math_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!no_math_content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "inline_math_1", c)) break;
-      c = current_position_(b);
-    }
+    math_content(b, l + 1);
     return true;
   }
 
@@ -334,6 +327,23 @@ public class LatexParser implements PsiParser, LightPsiParser {
       c = current_position_(b);
     }
     return true;
+  }
+
+  /* ********************************************************** */
+  // no_math_content+
+  public static boolean math_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "math_content")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, MATH_CONTENT, "<math content>");
+    r = no_math_content(b, l + 1);
+    int c = current_position_(b);
+    while (r) {
+      if (!no_math_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "math_content", c)) break;
+      c = current_position_(b);
+    }
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   /* ********************************************************** */

@@ -11,14 +11,14 @@ import static nl.rubensten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.rubensten.texifyidea.psi.*;
 
-public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexInlineMath {
+public class LatexMathContentImpl extends ASTWrapperPsiElement implements LatexMathContent {
 
-  public LatexInlineMathImpl(ASTNode node) {
+  public LatexMathContentImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitInlineMath(this);
+    visitor.visitMathContent(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,9 +27,9 @@ public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexIn
   }
 
   @Override
-  @Nullable
-  public LatexMathContent getMathContent() {
-    return findChildByClass(LatexMathContent.class);
+  @NotNull
+  public List<LatexNoMathContent> getNoMathContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexNoMathContent.class);
   }
 
 }

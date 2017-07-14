@@ -104,7 +104,7 @@ public class LatexPsiUtil {
         // LatexDisplayMath
         else if (element instanceof LatexDisplayMath) {
             LatexDisplayMath displayMath = (LatexDisplayMath)element;
-            result.addAll(displayMath.getNoMathContentList());
+            result.add(displayMath.getMathContent());
         }
         // LatexGroup
         else if (element instanceof LatexGroup) {
@@ -114,7 +114,7 @@ public class LatexPsiUtil {
         // LatexInlineMath
         else if (element instanceof LatexInlineMath) {
             LatexInlineMath inlineMath = (LatexInlineMath)element;
-            result.addAll(inlineMath.getNoMathContentList());
+            result.add(inlineMath.getMathContent());
         }
         // LatexMathEnvironment
         else if (element instanceof LatexMathEnvironment) {
@@ -151,6 +151,11 @@ public class LatexPsiUtil {
         else if (element instanceof LatexRequiredParam) {
             LatexRequiredParam requiredParam = (LatexRequiredParam)element;
             result.add(requiredParam.getGroup());
+        }
+        // LatexMathContent
+        else if (element instanceof LatexMathContent) {
+            LatexMathContent mathContent = (LatexMathContent)element;
+            result.addAll(mathContent.getNoMathContentList());
         }
 
         return result;
