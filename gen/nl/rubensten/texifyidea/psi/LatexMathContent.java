@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexInlineMath extends PsiElement {
+public interface LatexMathContent extends PsiElement {
 
-  @Nullable
-  LatexMathContent getMathContent();
+  @NotNull
+  List<LatexNoMathContent> getNoMathContentList();
 
 }

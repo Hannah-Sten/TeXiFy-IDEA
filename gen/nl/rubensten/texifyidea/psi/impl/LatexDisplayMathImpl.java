@@ -27,9 +27,9 @@ public class LatexDisplayMathImpl extends ASTWrapperPsiElement implements LatexD
   }
 
   @Override
-  @NotNull
-  public List<LatexNoMathContent> getNoMathContentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexNoMathContent.class);
+  @Nullable
+  public LatexMathContent getMathContent() {
+    return findChildByClass(LatexMathContent.class);
   }
 
 }

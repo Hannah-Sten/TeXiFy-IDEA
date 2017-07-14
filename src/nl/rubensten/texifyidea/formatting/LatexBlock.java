@@ -56,7 +56,13 @@ public class LatexBlock extends AbstractBlock {
 
     @Override
     public Indent getIndent() {
-        if (myNode.getElementType() == LatexTypes.ENVIRONMENT_CONTENT) {
+        // Fix for leading comments inside an environment, because somehow they are not placed inside environments
+        if (myNode.getElementType() == LatexTypes.ENVIRONMENT_CONTENT || (myNode.getElementType() == LatexTypes.COMMENT_TOKEN && myNode.getTreeParent().getElementType() == LatexTypes.ENVIRONMENT)) {
+            return Indent.getNormalIndent(true);
+        }
+
+        // Displaymath
+        if ((myNode.getElementType() == LatexTypes.MATH_CONTENT || myNode.getElementType() == LatexTypes.COMMENT_TOKEN) && myNode.getTreeParent().getElementType() == LatexTypes.DISPLAY_MATH) {
             return Indent.getNormalIndent(true);
         }
         return Indent.getNoneIndent();
