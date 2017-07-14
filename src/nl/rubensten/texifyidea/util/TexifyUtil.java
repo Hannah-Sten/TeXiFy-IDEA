@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.util;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -23,6 +24,7 @@ import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -411,6 +413,36 @@ public class TexifyUtil {
                     return p.size() > 0 && p.get(0).equals(key);
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Creates a project directory at {@code path} which will be marked as excluded.
+     *
+     * @param path
+     *         The path to create the directory to.
+     */
+    public static void createExcludedDir(@NotNull String path, @NotNull Module module) {
+        new File(path).mkdirs();
+        // TODO: actually mark as excluded
+    }
+
+    /**
+     * Retrieves the file path relative to the root path, or {@code null} if the file is not a
+     * child of the root.
+     *
+     * @param rootPath
+     *         The path of the root
+     * @param filePath
+     *         The path of the file
+     * @return The relative path of the file to the root, or {@code null} if the file is no child
+     * of the root.
+     */
+    @Nullable
+    public static String getPathRelativeTo(@NotNull String rootPath, @NotNull String filePath) {
+        if (!filePath.startsWith(rootPath)) {
+            return null;
+        }
+        return filePath.substring(rootPath.length());
     }
 
     /**
