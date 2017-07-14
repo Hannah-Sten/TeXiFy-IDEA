@@ -40,7 +40,7 @@ public class LatexCompletionContributor extends CompletionContributor {
 
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT)
+                PlatformPatterns.psiElement()
                         .inside(LatexRequiredParam.class)
                         .inside(LatexBeginCommand.class)
                         .withLanguage(LatexLanguage.INSTANCE),
