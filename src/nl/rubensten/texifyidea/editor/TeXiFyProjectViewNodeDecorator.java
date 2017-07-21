@@ -25,6 +25,9 @@ public class TeXiFyProjectViewNodeDecorator implements ProjectViewNodeDecorator 
 
     private void setIcon(ProjectViewNode projectViewNode, PresentationData presentationData) {
         VirtualFile file = projectViewNode.getVirtualFile();
+        if (file == null) {
+            return;
+        }
         if (file.isDirectory()) {
             return;
         }
