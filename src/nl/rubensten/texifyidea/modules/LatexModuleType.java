@@ -40,10 +40,10 @@ public class LatexModuleType extends ModuleType<LatexModuleBuilder> {
         return "LaTeX";
     }
 
-    @Override
-    public Icon getBigIcon() {
-        return TexifyIcons.LATEX_MODULE;
-    }
+//    @Override
+//    public Icon getBigIcon() {
+//        return TexifyIcons.LATEX_MODULE;
+//    }
 
     @Override
     public Icon getNodeIcon(@Deprecated boolean isOpened) {

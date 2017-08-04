@@ -206,7 +206,12 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
     @Override
     public boolean isGeneratedName() {
-        return mainFile.getNameWithoutExtension().equals(getName());
+        if (mainFile == null) {
+            return false;
+        }
+
+        String name = mainFile.getNameWithoutExtension();
+        return name == null || name.equals(getName());
     }
 
     @Nullable
