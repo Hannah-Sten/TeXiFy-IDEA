@@ -211,7 +211,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         }
 
         String name = mainFile.getNameWithoutExtension();
-        return name == null || name.equals(getName());
+        return name != null && name.equals(getName());
     }
 
     @Nullable
