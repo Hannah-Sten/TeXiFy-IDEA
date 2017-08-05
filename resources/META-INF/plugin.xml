@@ -94,6 +94,20 @@
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
         </group>
+
+        <!-- Insert -->
+        <group id="texify.LatexMenu.Insert" class="nl.rubensten.texifyidea.action.group.InsertActionGroup" text="_Insert" description="Insert LaTeX." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="first" />
+        </group>
+
+        <!-- Insert: Sectioning -->
+        <group id="texify.LatexMenu.Insert.Sectioning" class="nl.rubensten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
+            <add-to-group group-id="texify.LatexMenu.Insert" anchor="first"/>
+
+            <!-- Insert: Sectioning: Part -->
+            <action class="nl.rubensten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
+                    text="_Part" description="Inserts the part command." />
+        </group>
     </actions>
 
     <!-- Hooks for plugin functionality -->
