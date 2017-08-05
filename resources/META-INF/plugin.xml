@@ -103,6 +103,21 @@
         <!-- Insert: Sectioning -->
         <group id="texify.LatexMenu.Insert.Sectioning" class="nl.rubensten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
             <add-to-group group-id="texify.LatexMenu.Insert" anchor="first"/>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
+                    text="_Part" description="Insert the part command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertChapterAction" id="texify.insert.sectioning.Chapter"
+                    text="_Chapter" description="Insert the chapter command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSectionAction" id="texify.insert.sectioning.Section"
+                    text="_Section" description="Insert the section command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSectionAction" id="texify.insert.sectioning.Subsection"
+                    text="S_ubsection" description="Insert the subsection command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSubSectionAction" id="texify.insert.sectioning.Subsubsection"
+                    text="Su_bsubsection" description="Insert the subsubsection command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertParagraphAction" id="texify.insert.sectioning.Paragraph"
+                    text="_Paragraph" description="Insert the paragraph command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
+                    text="Subp_aragraph" description="Insert the subparagraph command." />
         </group>
     </actions>
 
