@@ -38,6 +38,13 @@ public class LatexToggleStarAction extends EditorAction {
 
     /**
      * Removes the star from a latex commands or adds it when there was no star in the first place.
+     *
+     * @param editor
+     *         The current editor.
+     * @param psiFile
+     *         The current file.
+     * @param commands
+     *         The latex command to toggle the star of.
      */
     private void toggleStar(Editor editor, PsiFile psiFile, LatexCommands commands) {
         if (removeStar(commands)) {
@@ -73,6 +80,10 @@ public class LatexToggleStarAction extends EditorAction {
     /**
      * Adds a star to a latex command.
      *
+     * @param editor
+     *         The current editor.
+     * @param file
+     *         The current file.
      * @param commands
      *         The latex command to add a star to.
      */
