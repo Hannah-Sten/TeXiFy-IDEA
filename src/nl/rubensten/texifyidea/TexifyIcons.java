@@ -178,6 +178,41 @@ public class TexifyIcons {
     );
 
     /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_BOLD = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-bold.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_ITALICS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-italics.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_UNDERLINE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-underline.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_OVERLINE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-overline.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_SMALLCAPS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-smallcaps.png"
+    );
+
+    /**
      * Get the file icon object that corresponds to the given file extension.
      * <p>
      * This method ignores case.

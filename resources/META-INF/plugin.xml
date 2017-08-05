@@ -95,14 +95,9 @@
             </action>
         </group>
 
-        <!-- Insert -->
-        <group id="texify.LatexMenu.Insert" class="nl.rubensten.texifyidea.action.group.InsertActionGroup" text="_Insert" description="Insert LaTeX." popup="true">
-            <add-to-group group-id="texify.LatexMenu" anchor="first" />
-        </group>
-
         <!-- Insert: Sectioning -->
         <group id="texify.LatexMenu.Insert.Sectioning" class="nl.rubensten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
-            <add-to-group group-id="texify.LatexMenu.Insert" anchor="first"/>
+            <add-to-group group-id="texify.LatexMenu" anchor="first"/>
 
             <action class="nl.rubensten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
                     text="_Part" description="Insert the part command." />
@@ -118,6 +113,51 @@
                     text="_Paragraph" description="Insert the paragraph command." />
             <action class="nl.rubensten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
                     text="Subp_aragraph" description="Insert the subparagraph command." />
+        </group>
+
+        <!-- Insert: Sectioning -->
+        <group id="texify.LatexMenu.Insert.FontStyle" class="nl.rubensten.texifyidea.action.group.InsertFontStyleActionGroup" text="_Font Style" description="Insert font style commands." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning" />
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
+                    text="_Bold" description="Insert the command to make text appear bold.">
+                <keyboard-shortcut first-keystroke="control alt shift B" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertItalicsAction" id="texify.insert.fontstyle.Italics"
+                    text="_Italics" description="Insert the command to make text appear in italics.">
+                <keyboard-shortcut first-keystroke="control alt shift I" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertUnderlineAction" id="texify.insert.fontstyle.Underline"
+                    text="_Underline" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift U" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertOverlineAction" id="texify.insert.fontstyle.Overline"
+                    text="_Overline" description="Insert the command to overline text.">
+                <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSmallCapsAction" id="texify.insert.fontstyle.SmallCaps"
+                    text="Small _capitals" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift C" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertTypewriterAction" id="texify.insert.fontstyle.Typewriter"
+                    text="_Typewriter (monospace)" description="Insert the command to make text monospace.">
+                <keyboard-shortcut first-keystroke="control alt shift T" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertStrikethroughAction" id="texify.insert.fontstyle.Strikethrough"
+                    text="_Strikethrough (ulem package)" description="Insert the command to strikethrough text (inclusion of ulem package required).">
+                <keyboard-shortcut first-keystroke="control alt shift S" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSlantedAction" id="texify.insert.fontstyle.Slanted"
+                    text="S_lanted" description="Insert the command to make text appear slanted.">
+                <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default" />
+            </action>
         </group>
     </actions>
 
