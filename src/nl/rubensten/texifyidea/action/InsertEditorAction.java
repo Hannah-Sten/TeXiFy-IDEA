@@ -13,7 +13,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public abstract class InsertEditorAction extends EditorAction {
+public class InsertEditorAction extends EditorAction {
 
     /**
      * What to insert before the selection.
