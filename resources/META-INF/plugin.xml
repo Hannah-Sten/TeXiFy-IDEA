@@ -83,6 +83,17 @@
         <action id="texify.NewFile" class="nl.rubensten.texifyidea.action.NewLatexFileAction">
             <add-to-group group-id="NewGroup1" anchor="after" relative-to-action="NewModuleInGroup"/>
         </action>
+
+        <!-- LaTeX commands -->
+        <group id="texify.LatexMenu" text="_LaTeX" description="Latex Actions">
+            <add-to-group group-id="MainMenu" anchor="after" relative-to-action="CodeMenu" />
+
+            <!-- Toggle Star -->
+            <action class="nl.rubensten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
+                    description="Adds/removes a star from a LaTeX command.">
+                <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
+            </action>
+        </group>
     </actions>
 
     <!-- Hooks for plugin functionality -->
