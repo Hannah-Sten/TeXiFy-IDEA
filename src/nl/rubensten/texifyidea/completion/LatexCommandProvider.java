@@ -103,8 +103,6 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        System.out.println(TexifyUtil.getReferencedFileSet(file).size());
-
         Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFileSet(file).stream()
                 .map(PsiFile::getVirtualFile)
                 .collect(Collectors.toSet());
