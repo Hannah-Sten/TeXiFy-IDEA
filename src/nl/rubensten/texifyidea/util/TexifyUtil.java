@@ -16,25 +16,13 @@ import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
-import nl.rubensten.texifyidea.psi.LatexBeginCommand;
-import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.psi.LatexContent;
-import nl.rubensten.texifyidea.psi.LatexParameter;
-import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +50,70 @@ public class TexifyUtil {
     private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
         Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls");
+    }
+
+    /**
+     * Finds all the files in the project that are somehow related using includes.
+     * <p>
+     * When A includes B and B includes C then A, B & C will all return a set containing A, B & C.
+     *
+     * @param psiFile
+     *         The file to find the reference set of.
+     * @return All the files that are cross referenced between each other.
+     */
+    public static Set<PsiFile> getReferencedFileSet(@NotNull PsiFile psiFile) {
+        Project project = psiFile.getProject();
+        GlobalSearchScope scope = GlobalSearchScope.allScope(project);
+        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(project, scope);
+
+        // Contains the end result.
+        Set<PsiFile> set = new HashSet<>();
+
+        // Maps each file to the collection of all referenced files.
+        Set<PsiFile> projectFiles = new HashSet<>();
+        Map<PsiFile, Collection<PsiFile>> referenceMap = new HashMap<>();
+
+        // Find all related files.
+        for (LatexCommands command : commands) {
+            String includedName = getIncludedFile(command);
+            if (includedName == null) {
+                continue;
+            }
+
+            PsiFile declaredIn = command.getContainingFile();
+            projectFiles.add(declaredIn);
+
+            PsiFile referenced = getFileRelativeTo(declaredIn, includedName);
+            if (referenced != null) {
+                projectFiles.add(referenced);
+            }
+        }
+
+        // Create an overview of all referenced commands per file.
+        for (PsiFile file : projectFiles) {
+            Collection<PsiFile> referenced = getReferencedFiles(file);
+            referenceMap.put(file, referenced);
+        }
+
+        // Calculate end result.
+        set.add(psiFile);
+        set.addAll(getReferencedFiles(psiFile));
+
+        // Find backward references.
+        for (Entry<PsiFile, Collection<PsiFile>> entry : referenceMap.entrySet()) {
+            PsiFile file = entry.getKey();
+            Collection<PsiFile> referenced = entry.getValue();
+
+            for (PsiFile reference : referenced) {
+                if (reference.equals(psiFile)) {
+                    set.add(file);
+                    set.addAll(referenced);
+                    break;
+                }
+            }
+        }
+
+        return set;
     }
 
     /**
@@ -95,16 +147,11 @@ public class TexifyUtil {
         Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(file.getProject(), scope);
 
         for (LatexCommands command : commands) {
-            if (!INCLUDE_COMMANDS.contains(command.getCommandToken().getText())) {
-                continue;
+            String fileName = getIncludedFile(command);
+            if (fileName == null) {
+                return;
             }
 
-            List<String> required = command.getRequiredParameters();
-            if (required.isEmpty()) {
-                continue;
-            }
-
-            String fileName = required.get(0);
             PsiFile included = getFileRelativeTo(file, fileName);
             if (included == null) {
                 continue;
@@ -117,6 +164,28 @@ public class TexifyUtil {
             files.add(included);
             getReferencedFiles(included, files);
         }
+    }
+
+    /**
+     * If the given command is an include command, the contents of the first argument will be read.
+     *
+     * @param command
+     *         The command to read.
+     * @return The included filename or {@code null} when it's not an include command or when there
+     * are no required parameters.
+     */
+    @Nullable
+    public static String getIncludedFile(@NotNull LatexCommands command) {
+        if (!INCLUDE_COMMANDS.contains(command.getCommandToken().getText())) {
+            return null;
+        }
+
+        List<String> required = command.getRequiredParameters();
+        if (required.isEmpty()) {
+            return null;
+        }
+
+        return required.get(0);
     }
 
     /**
@@ -195,8 +264,8 @@ public class TexifyUtil {
     /**
      * Looks for a certain file.
      * <p>
-     * First looks if the file including extensions exists, when it doesn't it tries to append
-     * all possible extensions until it finds a good one.
+     * First looks if the file including extensions exists, when it doesn't it tries to append all
+     * possible extensions until it finds a good one.
      *
      * @param directory
      *         The directory where the search is rooted from.
@@ -438,15 +507,15 @@ public class TexifyUtil {
     }
 
     /**
-     * Retrieves the file path relative to the root path, or {@code null} if the file is not a
-     * child of the root.
+     * Retrieves the file path relative to the root path, or {@code null} if the file is not a child
+     * of the root.
      *
      * @param rootPath
      *         The path of the root
      * @param filePath
      *         The path of the file
-     * @return The relative path of the file to the root, or {@code null} if the file is no child
-     * of the root.
+     * @return The relative path of the file to the root, or {@code null} if the file is no child of
+     * the root.
      */
     @Nullable
     public static String getPathRelativeTo(@NotNull String rootPath, @NotNull String filePath) {

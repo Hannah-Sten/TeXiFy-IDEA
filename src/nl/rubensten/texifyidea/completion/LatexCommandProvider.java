@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexCommandProvider extends CompletionProvider<CompletionParameters> {
 
@@ -103,7 +103,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFiles(file).stream()
+        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFileSet(file).stream()
                 .map(PsiFile::getVirtualFile)
                 .collect(Collectors.toSet());
         searchFiles.add(file.getVirtualFile());
