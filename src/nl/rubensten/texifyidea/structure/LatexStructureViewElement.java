@@ -210,6 +210,10 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             }
 
             PsiFile psiFile = PsiManager.getInstance(element.getProject()).findFile(fileHuh.get());
+            if (psiFile == null) {
+                continue;
+            }
+
             if (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
                     !StyleFileType.INSTANCE.equals(psiFile.getFileType())) {
                 continue;
