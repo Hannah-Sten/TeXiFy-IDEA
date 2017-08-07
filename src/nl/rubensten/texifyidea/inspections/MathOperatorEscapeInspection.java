@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.inspections.inspections;
+package nl.rubensten.texifyidea.inspections;
 
 import com.google.common.collect.Sets;
 import com.intellij.codeInspection.InspectionManager;

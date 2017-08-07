@@ -228,7 +228,7 @@
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.inspections.MathOperatorEscapeInspection"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MathOperatorEscapeInspection"
                          groupName="TeXiFy" displayName="Non-escaped common math operators"
                          enabledByDefault="true"/>
   </extensions>

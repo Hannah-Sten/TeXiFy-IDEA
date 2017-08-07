@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.inspections.inspections;
+package nl.rubensten.texifyidea.inspections;
 
 import com.intellij.codeInspection.LocalInspectionTool;
 import org.jetbrains.annotations.Nls;
