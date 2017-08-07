@@ -55,7 +55,7 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
             if (c == '$') {
                 IElementType tokenType = getTypedTokenType(editor);
 
-                if (tokenType != LatexTypes.COMMAND_TOKEN) {
+                if (tokenType != LatexTypes.COMMAND_TOKEN && tokenType != LatexTypes.COMMENT_TOKEN) {
                     editor.getDocument().insertString(
                             editor.getCaretModel().getOffset(),
                             String.valueOf(c)
