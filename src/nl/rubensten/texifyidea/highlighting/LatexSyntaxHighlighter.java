@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 import nl.rubensten.texifyidea.LatexLexerAdapter;
 import nl.rubensten.texifyidea.psi.LatexTypes;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
  * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
-
     /*
      * TextAttributesKeys
      */
@@ -21,53 +21,51 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             "LATEX_BRACES",
             DefaultLanguageHighlighterColors.BRACES
     );
-
     public static final TextAttributesKey BRACKETS = TextAttributesKey.createTextAttributesKey(
             "LATEX_BRACKETS",
             DefaultLanguageHighlighterColors.BRACKETS
     );
-
     public static final TextAttributesKey OPTIONAL_PARAM = TextAttributesKey.createTextAttributesKey(
             "LATEX_OPTIONAL_PARAM",
             DefaultLanguageHighlighterColors.PARAMETER
     );
-
     public static final TextAttributesKey COMMAND = TextAttributesKey.createTextAttributesKey(
             "LATEX_COMMAND",
             DefaultLanguageHighlighterColors.KEYWORD
     );
-
     public static final TextAttributesKey COMMAND_MATH_INLINE = TextAttributesKey.createTextAttributesKey(
             "LATEX_COMMAND_MATH_INLINE",
             DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
     );
-
     public static final TextAttributesKey COMMAND_MATH_DISPLAY = TextAttributesKey
             .createTextAttributesKey(
             "LATEX_COMMAND_MATH_DISPLAY",
             DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
     );
-
     public static final TextAttributesKey COMMENT = TextAttributesKey.createTextAttributesKey(
             "LATEX_COMMENT",
             DefaultLanguageHighlighterColors.LINE_COMMENT
     );
-
     public static final TextAttributesKey INLINE_MATH = TextAttributesKey.createTextAttributesKey(
             "LATEX_INLINE_MATH",
             DefaultLanguageHighlighterColors.STRING
     );
-
     public static final TextAttributesKey DISPLAY_MATH = TextAttributesKey.createTextAttributesKey(
             "LATEX_DISPLAY_MATH",
             DefaultLanguageHighlighterColors.STRING
     );
-
     public static final TextAttributesKey STAR = TextAttributesKey.createTextAttributesKey(
             "LATEX_STAR",
             DefaultLanguageHighlighterColors.DOT
     );
-
+    /*
+     * TokenSets
+     */
+    private static final TokenSet COMMAND_TOKENS = TokenSet.create(
+            LatexTypes.COMMAND_TOKEN,
+            LatexTypes.BEGIN_TOKEN,
+            LatexTypes.END_TOKEN
+    );
     /*
      * TextAttributeKey[]s
      */
@@ -125,7 +123,7 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             return COMMENT_KEYS;
         }
         // Commands
-        else if (tokenType.equals(LatexTypes.COMMAND_TOKEN)) {
+        else if (COMMAND_TOKENS.contains(tokenType)) {
             return COMMAND_KEYS;
         }
         // Math environment

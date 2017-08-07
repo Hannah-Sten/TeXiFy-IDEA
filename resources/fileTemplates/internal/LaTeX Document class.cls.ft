@@ -1,0 +1,9 @@
+%%
+%% CLASS_NAME document class
+%% Author: ${USER}
+%% ${DATE}
+%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{CLASS_NAME}[${USER}'s Document Class]
+

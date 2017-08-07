@@ -1,46 +1,234 @@
-<idea-plugin version="2">
-  <id>nl.rubensten.texifyidea</id>
-  <name>TeXiFy IDEA</name>
-  <version>0.1</version>
-  <vendor email="sten.wessel@gmail.com" url="http://ruben-sten.github.io">Ruben-Sten</vendor>
+<!--
+  ~ The MIT License (MIT)
+  ~
+  ~ Copyright (c) 2017 Ruben Schellekens, Sten Wessel
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+<idea-plugin url="https://github.com/Ruben-Sten/TeXiFy-IDEA">
 
-  <description><![CDATA[
-      Plugin for LaTeX support in IntelliJ IDEA.
-    ]]></description>
+    <!-- Plugin information -->
+    <id>nl.rubensten.texifyidea</id>
+    <name>TeXiFy IDEA</name>
+    <version>0.3.1</version>
+    <idea-version since-build="141.0"/>
+    <vendor url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
-  <change-notes><![CDATA[
-      None.
-    ]]>
-  </change-notes>
+    <description><![CDATA[
+        <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
+        <p>
+            Note to users: all suggestions/requests/bug reports/kudos/critique/(non-)creative ideas/contributions are
+            welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin GitHub page</a>.
+        </p>
+        ]]></description>
 
-  <idea-version since-build="141.0"/>
+    <!-- Changelog -->
+    <change-notes><![CDATA[
+        <h1>Beta 0.3</h1>
+        <p>
+            The third release of TeXiFy IDEA, and we are very proud to introduce a number of great features. We especially have good news
+            for Mac users: compiling now actually works! Thanks to all issue reporters for their
+            contributions! All feature requests and bug reports are more than welcome on our Issues page. Pull requests
+            are also welcome!
+        </p>
+        <p><em>New features</em></p>
+        <ul>
+            <li>Completion for <code>\label{}</code> references, <code>\newcommand{}</code> commands and included files/directories with fancy icons.</li>
+            <li>Structure view, showing sectioning, inclusions, labels and command definitions, also with nice icons.</li>
+            <li>An improved formatter with does not scatter your code around but aligns it nicely and indented instead.</li>
+            <li><em>Go to declaration</em> (Ctrl+click or Ctrl+B) for label references.</li>
+            <li>Inserting a command with at least one required argument inserts the braces for you.</li>
+            <li>Spell checker.</li>
+            <li>Custom compiler path (for Mac users and adventurous Windows people).</li>
+            <li>Automatic creation of output directories (also for Mac users).</li>
+            <li>PDF and DVI icon, because we need more icons.</li>
+            <li>Easier error reporting when an exception occurs.</li>
+        </ul>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
-    <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
-    <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
-    <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
-    <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
-    <colorSettingsPage implementation="nl.rubensten.texifyidea.LatexColorSettingsPage"/>
-    <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
-    <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.LatexLineMarkerProvider"/>
+        <p><em>Bug fixes</em></p>
+        <ul>
+            <li>Inline math after display math is recognized.</li>
+            <li>Smashed a number of ugly exceptions in numerous places.</li>
+            <li>(Unmatched) square brackets in math mode no longer gives syntax errors.</li>
+            <li>Inline math runover trailing <code>$</code> also works when closing the completion dialog.</li>
+        </ul>
 
-    <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
+        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.3">GitHub
+            release page</a>.</p>
+        ]]>
+    </change-notes>
 
-    <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
+    <module-components>
+    </module-components>
 
-    <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
+    <!-- Custom actions -->
+    <actions>
+        <!-- New LaTeX file -->
+        <action id="texify.NewFile" class="nl.rubensten.texifyidea.action.NewLatexFileAction">
+            <add-to-group group-id="NewGroup1" anchor="after" relative-to-action="NewModuleInGroup"/>
+        </action>
 
-    <!-- Annotators -->
-    <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
+        <!-- LaTeX commands -->
+        <group id="texify.LatexMenu" text="_LaTeX" description="Latex Actions">
+            <add-to-group group-id="MainMenu" anchor="after" relative-to-action="CodeMenu" />
 
-    <!-- Inspections -->
-    <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspection.ReplaceInlineMathToRobustInspection" groupName="TeXiFy" displayName="Replace inline math to robust"/>
+            <!-- Toggle Star -->
+            <action class="nl.rubensten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
+                    description="Adds/removes a star from a LaTeX command.">
+                <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
+            </action>
+        </group>
+
+        <!-- Insert: Sectioning -->
+        <group id="texify.LatexMenu.Insert.Sectioning" class="nl.rubensten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="first"/>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
+                    text="_Part" description="Insert the part command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertChapterAction" id="texify.insert.sectioning.Chapter"
+                    text="_Chapter" description="Insert the chapter command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSectionAction" id="texify.insert.sectioning.Section"
+                    text="_Section" description="Insert the section command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSectionAction" id="texify.insert.sectioning.Subsection"
+                    text="S_ubsection" description="Insert the subsection command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSubSectionAction" id="texify.insert.sectioning.Subsubsection"
+                    text="Su_bsubsection" description="Insert the subsubsection command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertParagraphAction" id="texify.insert.sectioning.Paragraph"
+                    text="_Paragraph" description="Insert the paragraph command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
+                    text="Subp_aragraph" description="Insert the subparagraph command." />
+        </group>
+
+        <!-- Insert: Sectioning -->
+        <group id="texify.LatexMenu.Insert.FontStyle" class="nl.rubensten.texifyidea.action.group.InsertFontStyleActionGroup" text="_Font Style" description="Insert font style commands." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning" />
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
+                    text="_Bold" description="Insert the command to make text appear bold.">
+                <keyboard-shortcut first-keystroke="control alt shift B" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertItalicsAction" id="texify.insert.fontstyle.Italics"
+                    text="_Italics" description="Insert the command to make text appear in italics.">
+                <keyboard-shortcut first-keystroke="control alt shift I" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertUnderlineAction" id="texify.insert.fontstyle.Underline"
+                    text="_Underline" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift U" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertOverlineAction" id="texify.insert.fontstyle.Overline"
+                    text="_Overline" description="Insert the command to overline text.">
+                <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSmallCapsAction" id="texify.insert.fontstyle.SmallCaps"
+                    text="Small _capitals" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift C" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertTypewriterAction" id="texify.insert.fontstyle.Typewriter"
+                    text="_Typewriter (monospace)" description="Insert the command to make text monospace.">
+                <keyboard-shortcut first-keystroke="control alt shift T" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertStrikethroughAction" id="texify.insert.fontstyle.Strikethrough"
+                    text="_Strikethrough (ulem package)" description="Insert the command to strikethrough text (inclusion of ulem package required).">
+                <keyboard-shortcut first-keystroke="control alt shift S" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSlantedAction" id="texify.insert.fontstyle.Slanted"
+                    text="S_lanted" description="Insert the command to make text appear slanted.">
+                <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default" />
+            </action>
+        </group>
+    </actions>
+
+    <!-- Hooks for plugin functionality -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Files and project -->
+        <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
+        <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
+
+        <!-- Templates -->
+        <internalFileTemplate name="LaTeX Source"/>
+        <internalFileTemplate name="LaTeX Package"/>
+        <internalFileTemplate name="LaTeX Document class"/>
+
+        <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
+
+        <!-- Live templates -->
+        <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.LatexLiveTemplateProvider"/>
+        <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.LatexContext"/>
+
+        <!-- Settings -->
+        <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
+
+        <!-- Languages -->
+        <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
+        <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
+        <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
+
+        <!-- Structure view -->
+        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.LatexStructureViewFactory"/>
+
+        <!-- Project view -->
+        <projectViewNodeDecorator implementation="nl.rubensten.texifyidea.editor.TeXiFyProjectViewNodeDecorator"/>
+
+        <!-- Editor -->
+        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
+        <lang.formatter language="Latex" implementationClass="nl.rubensten.texifyidea.formatting.LatexFormattingModelBuilder"/>
+        <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
+        <enterHandlerDelegate implementation="nl.rubensten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
+        <codeInsight.parameterInfo language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexParameterInfoHandler"/>
+        <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
+        <lookup.charFilter implementation="nl.rubensten.texifyidea.completion.LatexCharFilter" id="latex"/>
+
+        <!-- Line markers -->
+        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexLineMarkerProvider"/>
+        <runLineMarkerContributor language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexCompileGutter"/>
+
+        <!-- Run configurations -->
+        <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
+        <runConfigurationProducer implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationProducer"/>
+
+        <!-- Annotators -->
+        <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
+
+        <!-- Inspections -->
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspection.ReplaceInlineMathToRobustInspection" groupName="TeXiFy" displayName="Replace inline math to robust"/>
+
+        <!-- Blame -->
+        <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>
+
+        <!-- Stubs -->
+        <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
+
+        <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
+
+        <!-- Inspections -->
+        <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
+
+        <!-- Documentation -->
+        <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
   </extensions>
-
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
-
 </idea-plugin>

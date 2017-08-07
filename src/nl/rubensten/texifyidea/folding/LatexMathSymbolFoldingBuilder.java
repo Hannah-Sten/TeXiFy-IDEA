@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.FoldingGroup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import org.jetbrains.annotations.NotNull;
@@ -25,16 +26,15 @@ public class LatexMathSymbolFoldingBuilder extends FoldingBuilderEx {
     @Override
     public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document
             document, boolean quick) {
-        FoldingGroup group = FoldingGroup.newGroup("latexMathSymbol");
-
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         Collection<LatexMathEnvironment> mathEnvs = PsiTreeUtil.findChildrenOfType(root, LatexMathEnvironment.class);
 
         for (LatexMathEnvironment mathEnv : mathEnvs) {
+            FoldingGroup group = FoldingGroup.newGroup("latexMathSymbol");
             Collection<LatexCommands> commands = PsiTreeUtil.findChildrenOfType(mathEnv, LatexCommands.class);
             for (LatexCommands command : commands) {
                 LatexMathCommand c = LatexMathCommand.get(command.getCommandToken().getText().substring(1));
-                if (c != null) {
+                if (c != null && c.getDisplay() != null) {
                     descriptors.add(new FoldingDescriptor(
                             command.getCommandToken().getNode(),
                             command.getCommandToken().getTextRange(),

@@ -18,10 +18,12 @@
         DISPLAY_MATH_END='\]'
         INLINE_MATH_START='$'
         INLINE_MATH_END='$'
+        BEGIN_TOKEN='\begin'
+        END_TOKEN='\end'
         COMMAND_TOKEN='regexp:\\([a-zA-Z]+|.|\n|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
-        NORMAL_TEXT='regexp:[^\\{}%\[\]$]+'
+        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$\(\)]+'
     ]
 }
 
@@ -31,9 +33,19 @@ latexFile ::= content*
 
 content ::= no_math_content | math_environment
 
-no_math_content ::= comment | commands | group | open_group | NORMAL_TEXT
+no_math_content ::= comment | environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
+
+normal_text ::= NORMAL_TEXT_WORD+
+
+environment ::= begin_command environment_content? end_command
+
+environment_content ::= content+
 
 commands ::= COMMAND_TOKEN STAR? parameter*
+
+begin_command ::= BEGIN_TOKEN STAR? parameter*
+
+end_command ::= END_TOKEN STAR? parameter*
 
 parameter ::= optional_param | required_param
 
@@ -49,6 +61,8 @@ comment ::= COMMENT_TOKEN
 
 math_environment ::= inline_math | display_math
 
-inline_math ::= INLINE_MATH_START (no_math_content)* INLINE_MATH_END
+inline_math ::= INLINE_MATH_START math_content? INLINE_MATH_END
 
-display_math ::= DISPLAY_MATH_START (no_math_content)* DISPLAY_MATH_END
+display_math ::= DISPLAY_MATH_START math_content? DISPLAY_MATH_END
+
+math_content ::= no_math_content+

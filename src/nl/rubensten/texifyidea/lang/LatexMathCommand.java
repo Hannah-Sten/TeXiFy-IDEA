@@ -1,7 +1,10 @@
-package nl.rubensten.texifyidea.folding;
+package nl.rubensten.texifyidea.lang;
+
+import nl.rubensten.texifyidea.lang.Argument.Type;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author Sten Wessel
@@ -133,7 +136,94 @@ public enum LatexMathCommand {
     BOXED_MINUS("boxminus", "⊟", false),
     BOXED_TIMES("boxtimes", "⊠", false),
     BOXED_DOT("boxdot", "⊡", false),
-    ;
+
+    /*
+        Generic commands
+     */
+    MATHBF("mathbf", required("text")),
+    MATHCAL("mathcal", required("text")),
+    MATHDS("mathds", required("mathds")),
+    MATHELLIPSIS("mathellipsis"),
+    MATHGROUP("mathgroup"),
+    MATHIT("mathit", required("text")),
+    MATHNORMAL("mathnormal", required("text")),
+    MATHRM("mathrm", required("text")),
+    MATHSCR("mathscr"),
+    MATHSF("mathsf", required("text")),
+    MATHSTERLING("mathsterling"),
+    MATHTT("mathtt", required("text")),
+    MATHUNDERSCORE("mathunderscore"),
+    SQRT("sqrt", optional("root"), required("arg")),
+    ACUTE("acute", required("a")),
+    ALEPH("aleph"),
+    AMALG("amalg"),
+    ARCCOS("arccos"),
+    ARCSIN("arcsin"),
+    ARCTAN("arctan"),
+    ARG("arg"),
+    ARROWVERT("arrowvert"),
+    CAPITAL_ARROWVERT("Arrowvert"),
+    ASYMP("asymp"),
+    BACKSLASH("backslash"),
+    BAR("bar", required("a")),
+    BIGCAP("bigcap"),
+    BIGCIRC("bigcirc"),
+    BIGCUP("bigcup"),
+    BIGODOT("bigodot"),
+    BIGOPLUS("bigoplus"),
+    BIGOTIMES("bigotimes"),
+    BIGSQCUP("bigsqcup"),
+    BIGTRIANGLEDOWN("bigtriangledown"),
+    BIGTRIANGLEUP("bigtriangleup"),
+    BIGUPLUS("biguplus"),
+    BIGVEE("bigvee"),
+    BIGWEDGE("bigwedge"),
+    BOT("bot"),
+    BRACEVERT("bracevert"),
+    BREVE("breve", required("a")),
+    CDOT("cdot"),
+    CDOTS("cdots"),
+    CHECK("check", required("a")),
+    CLUBSUIT("clubsuit"),
+    COLON("colon"),
+    CONG("cong"),
+    COS("cos"),
+    COSH("cosh"),
+    COT("cot"),
+    COTH("coth"),
+    CSC("csc"),
+    DAGGER("dagger"),
+    DASHV("dashv"),
+    DD("dd"),
+    DDAGGER("ddagger"),
+    DDOT("ddot", required("a")),
+    DDOTS("ddots"),
+    DEG("deg"),
+    DET("det"),
+    DFRAC("dfrac", required("num"), required("den")),
+    DIAMOND("diamond"),
+    DIAMONDSUIT("diamondsuit"),
+    DIM("dim"),
+    DIV("div"),
+    DOTEQ("doteq"),
+    DOT("dot", required("a")),
+    DOWNARROW("downarrow"),
+    CAPITAL_DOWNARROW("Downarrow"),
+    ELL("ell"),
+    EXP("exp"),
+    FLAT("flat"),
+    FRAC("frac", required("num"), required("den")),
+    GRAVE("grave", required("a")),
+    HAT("hat", required("a")),
+    MATHRING("mathring", required("a")),
+    OVERBRACE("overbrace", required("text")),
+    OVERLINE("overline", required("text")),
+    TILDE("tilde", required("a")),
+    UNDERBRACE("underbrace", required("text")),
+    UNDERLINE("underline", required("text")),
+    VEC("vec", required("a")),
+    WIDEHAT("widehat", required("text")),
+    WIDETILDE("widetilde", required("text"));
 
     private static final Map<String, LatexMathCommand> lookup = new HashMap<>();
 
@@ -144,21 +234,64 @@ public enum LatexMathCommand {
     }
 
     private String command;
+    private Argument[] arguments;
     private String display;
     private boolean collapse;
 
-    LatexMathCommand(String command, String display, boolean collapse) {
-        this.command = command;
+    LatexMathCommand(String command, String display, boolean collapse, Argument... arguments) {
+        this(command, arguments);
         this.display = display;
         this.collapse = collapse;
+    }
+
+    LatexMathCommand(String command, Argument... arguments) {
+        this.command = command;
+        this.arguments = arguments != null ? arguments : new Argument[] {};
+    }
+
+    LatexMathCommand(String command) {
+        this.command = command;
     }
 
     public static LatexMathCommand get(String command) {
         return lookup.get(command);
     }
 
+    private static RequiredArgument required(String name) {
+        return new RequiredArgument(name);
+    }
+
+    private static RequiredArgument requiredText(String name) {
+        return new RequiredArgument(name, Type.TEXT);
+    }
+
+    private static OptionalArgument optional(String name) {
+        return new OptionalArgument(name);
+    }
+
+    private static OptionalArgument optionalText(String name) {
+        return new OptionalArgument(name, Type.TEXT);
+    }
+
     public String getCommand() {
         return command;
+    }
+
+    public String getCommandDisplay() {
+        return "\\" + command;
+    }
+
+    public Argument[] getArguments() {
+        return arguments != null ? arguments : new Argument[] {};
+    }
+
+    public String getArgumentsDisplay() {
+        StringBuilder sb = new StringBuilder();
+        for (Argument arg : getArguments()) {
+            sb.append(arg.toString());
+        }
+
+        return sb.toString();
     }
 
     public String getDisplay() {
@@ -167,5 +300,14 @@ public enum LatexMathCommand {
 
     public boolean isCollapse() {
         return collapse;
+    }
+
+    /**
+     * Checks whether {@code {}} must be automatically inserted in the auto complete.
+     *
+     * @return {@code true} to insert automatically, {@code false} not to insert.
+     */
+    public boolean autoInsertRequired() {
+        return Stream.of(arguments).filter(arg -> arg instanceof RequiredArgument).count() >= 1;
     }
 }

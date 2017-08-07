@@ -40,20 +40,26 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @Nullable
+  public LatexEnvironment getEnvironment() {
+    return findChildByClass(LatexEnvironment.class);
+  }
+
+  @Override
+  @Nullable
   public LatexGroup getGroup() {
     return findChildByClass(LatexGroup.class);
   }
 
   @Override
   @Nullable
-  public LatexOpenGroup getOpenGroup() {
-    return findChildByClass(LatexOpenGroup.class);
+  public LatexNormalText getNormalText() {
+    return findChildByClass(LatexNormalText.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getNormalText() {
-    return findChildByType(NORMAL_TEXT);
+  public LatexOpenGroup getOpenGroup() {
+    return findChildByClass(LatexOpenGroup.class);
   }
 
 }

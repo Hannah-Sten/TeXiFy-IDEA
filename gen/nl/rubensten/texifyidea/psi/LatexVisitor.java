@@ -7,6 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public class LatexVisitor extends PsiElementVisitor {
 
+  public void visitBeginCommand(@NotNull LatexBeginCommand o) {
+    visitPsiElement(o);
+  }
+
   public void visitCommands(@NotNull LatexCommands o) {
     visitPsiElement(o);
   }
@@ -23,6 +27,18 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitEndCommand(@NotNull LatexEndCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEnvironment(@NotNull LatexEnvironment o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEnvironmentContent(@NotNull LatexEnvironmentContent o) {
+    visitPsiElement(o);
+  }
+
   public void visitGroup(@NotNull LatexGroup o) {
     visitPsiElement(o);
   }
@@ -31,11 +47,19 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitMathContent(@NotNull LatexMathContent o) {
+    visitPsiElement(o);
+  }
+
   public void visitMathEnvironment(@NotNull LatexMathEnvironment o) {
     visitPsiElement(o);
   }
 
   public void visitNoMathContent(@NotNull LatexNoMathContent o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNormalText(@NotNull LatexNormalText o) {
     visitPsiElement(o);
   }
 
