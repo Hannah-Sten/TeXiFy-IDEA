@@ -16,12 +16,10 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
-import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexTypes;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,14 +51,10 @@ public class MathOperatorEscapeInspection extends TexifyInspectionBase {
         return "MathOperatorEscape";
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager
-            manager, boolean isOnTheFly) {
-        if (!(file instanceof LatexFile)) {
-            return null;
-        }
-
+    List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager manager,
+                                        boolean isOnTheFly) {
         List<ProblemDescriptor> descriptors = new SmartList<>();
 
         PsiElementPattern.Capture<PsiElement> pattern = PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT_WORD);
@@ -87,7 +81,7 @@ public class MathOperatorEscapeInspection extends TexifyInspectionBase {
             });
         }
 
-        return descriptors.toArray(new ProblemDescriptor[descriptors.size()]);
+        return descriptors;
     }
 
     private static class EscapeMathOperatorFix implements LocalQuickFix {

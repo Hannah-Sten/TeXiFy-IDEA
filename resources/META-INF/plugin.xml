@@ -231,5 +231,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MathOperatorEscapeInspection"
                          groupName="TeXiFy" displayName="Non-escaped common math operators"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.CommandAlreadyDefinedInspection"
+                         groupName="TeXiFy" displayName="Command is already defined"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

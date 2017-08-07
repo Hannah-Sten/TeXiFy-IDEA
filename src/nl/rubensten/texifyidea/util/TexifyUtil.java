@@ -16,13 +16,30 @@ import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
-import nl.rubensten.texifyidea.psi.*;
+import nl.rubensten.texifyidea.lang.LatexMathCommand;
+import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.psi.LatexBeginCommand;
+import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexContent;
+import nl.rubensten.texifyidea.psi.LatexParameter;
+import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -523,6 +540,45 @@ public class TexifyUtil {
             return null;
         }
         return filePath.substring(rootPath.length());
+    }
+
+    /**
+     * Returns the forced first required parameter of a command as a command.
+     * <p>
+     * This allows both example constructs {@code \\usepackage{\\foo}} and {@code \\usepackage\\foo},
+     * which are equivalent. Note that when the command does not take parameters this method might
+     * return untrue results.
+     *
+     * @param command
+     *         The command to get the parameter for.
+     * @return The forced first required parameter of the command.
+     */
+    public static LatexCommands getForcedFirstRequiredParameterAsCommand(LatexCommands command) {
+        List<LatexRequiredParam> params = getRequiredParameters(command);
+        if (params.size() > 0) {
+            LatexRequiredParam param = params.get(0);
+            Collection<LatexCommands> found = PsiTreeUtil.findChildrenOfType(param, LatexCommands.class);
+            if (found.size() == 1) {
+                return (LatexCommands)(found.toArray()[0]);
+            } else {
+                return null;
+            }
+        }
+
+        LatexContent sibling = PsiTreeUtil.getNextSiblingOfType(command, LatexContent.class);
+        return PsiTreeUtil.findChildOfType(sibling, LatexCommands.class);
+    }
+
+    /**
+     * Checks whether the command is known by TeXiFy.
+     *
+     * @param command
+     *         The command to check.
+     * @return Whether the command is known.
+     */
+    public static boolean isCommandKnown(LatexCommands command) {
+        String commandName = command.getName().substring(1);
+        return LatexNoMathCommand.get(commandName).isPresent() || LatexMathCommand.get(commandName) != null;
     }
 
     /**
