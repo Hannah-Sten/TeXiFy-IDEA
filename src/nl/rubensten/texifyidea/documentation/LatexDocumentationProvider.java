@@ -22,7 +22,10 @@ public class LatexDocumentationProvider implements DocumentationProvider {
             if ("\\label".equals(cmd.getName())) {
                 String label = cmd.getRequiredParameters().get(0);
                 String file = cmd.getContainingFile().getName();
-                int line = StringUtil.offsetToLineNumber(cmd.getContainingFile().getText(), cmd.getTextOffset()) + 1;  // Because line numbers do start at 1
+                int line = 1 + StringUtil.offsetToLineNumber(
+                        cmd.getContainingFile().getText(),
+                        cmd.getTextOffset()
+                );  // Because line numbers do start at 1
                 return String.format("Go to declaration of label '%s' [%s:%d]", label, file, line);
             }
         }
