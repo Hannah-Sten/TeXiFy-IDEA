@@ -13,7 +13,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -55,14 +54,30 @@ public class CommandAlreadyDefinedInspection extends TexifyInspectionBase {
                 }
 
                 if (TexifyUtil.isCommandKnown(newCommand)) {
-                    LatexRequiredParam param = TexifyUtil.getRequiredParameters(command).get(0);
                     descriptors.add(manager.createProblemDescriptor(
                             command,
-                            newCommand.getTextRange().shiftRight(-command.getTextOffset()),
+                            newCommand.getCommandToken().getTextRange().shiftRight(-command.getTextOffset()),
                             "Command is already defined",
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly,
                             new RenewCommandFix()
+                    ));
+                }
+            }
+            // Warning when a builtin command gets overridden
+            else if ("\\def".equals(command.getName())) {
+                LatexCommands newCommand = TexifyUtil.getForcedFirstRequiredParameterAsCommand(command);
+                if (newCommand == null) {
+                    continue;
+                }
+
+                if (TexifyUtil.isCommandKnown(newCommand)) {
+                    descriptors.add(manager.createProblemDescriptor(
+                            command,
+                            newCommand.getCommandToken().getTextRange().shiftRight(-command.getTextOffset()),
+                            "Command is already defined",
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOntheFly
                     ));
                 }
             }

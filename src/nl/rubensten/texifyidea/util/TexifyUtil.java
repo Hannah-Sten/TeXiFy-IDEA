@@ -565,7 +565,7 @@ public class TexifyUtil {
             }
         }
 
-        LatexContent sibling = PsiTreeUtil.getNextSiblingOfType(command, LatexContent.class);
+        LatexContent sibling = PsiTreeUtil.getNextSiblingOfType(PsiTreeUtil.getParentOfType(command, LatexContent.class), LatexContent.class);
         return PsiTreeUtil.findChildOfType(sibling, LatexCommands.class);
     }
 
