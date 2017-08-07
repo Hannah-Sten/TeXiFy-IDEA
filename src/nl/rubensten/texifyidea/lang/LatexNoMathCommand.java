@@ -1,14 +1,18 @@
 package nl.rubensten.texifyidea.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import nl.rubensten.texifyidea.lang.Argument.Type;
 
 import java.util.*;
 import java.util.stream.Stream;
 
+import static nl.rubensten.texifyidea.lang.Package.*;
+
 /**
  * @author Ruben Schellekens, Sten Wessel
  */
-public enum LatexNoMathCommand {
+public enum LatexNoMathCommand implements LatexCommand {
 
     ADDTOCOUNTER("addtocounter", required("countername"), required("value")),
     A_RING("aa", "å"),
@@ -73,6 +77,8 @@ public enum LatexNoMathCommand {
     GLQQ("glqq", "„"),
     GRQ("grq", "‘"),
     GRQQ("grqq", "“"),
+    GUILLEMOTLEFT("guillemotleft", FONTENC.with("T1"), "«"),
+    GUILLEMOTRIGHT("guillemotright", FONTENC.with("T1"), "»"),
     HFILL("hfill"),
     HRULE("hrule"),
     HRULEFILL("hrulefill"),
@@ -85,6 +91,7 @@ public enum LatexNoMathCommand {
     I("i", "i (dotless)"),
     INCLUDE("include", new RequiredFileArgument("sourcefile", "tex")),
     INPUT("input", new RequiredFileArgument("sourcefile", "tex")),
+    INCLUDEGRAPHICS("includegraphics", GRAPHICX, optional("key-val-list"), new RequiredFileArgument("imagefile", "pdf", "png", "jpg", "eps")),
     INCLUDEONLY("includeonly", new RequiredFileArgument("sourcefile", "tex")),
     INDEXNAME("indexname", required("name")),
     INDEXSPACE("indexspace"),
@@ -164,6 +171,7 @@ public enum LatexNoMathCommand {
     RIGHTMARK("rightmark"),
     RMFAMILY("rmfamily"),
     ROMAN("roman", required("counter")),
+    ROTATEBOX("rotatebox", GRAPHICX, optional("key-val-list"), required("degrees"), requiredText("text")),
     CAPITAL_ROBAN("Roman", required("counter")),
     RULE("rule", optional("line"), required("width"), required("thickness")),
     SAMEPAGE("samepage"),
@@ -181,6 +189,7 @@ public enum LatexNoMathCommand {
     SMALL("small"),
     SMALLSKIP("smallskip"),
     SMASH("smash"),
+    SOUT("sout", ULEM, requiredText("strikethroughtext")),
     SPACE("space"),
     STEPCOUNTER("stepcounter", required("counter")),
     STOP("stop"),
@@ -298,25 +307,34 @@ public enum LatexNoMathCommand {
             requiredText("begdef"), requiredText("enddef")),;
 
     private static final Map<String, LatexNoMathCommand> lookup = new HashMap<>();
-
     static {
         for (LatexNoMathCommand command : LatexNoMathCommand.values()) {
             lookup.put(command.getCommand(), command);
         }
     }
 
-    private String command;
-    private Argument[] arguments;
-    private String display;
+    private final String command;
+    private final Package thePackage;
+    private final Argument[] arguments;
+    private final String display;
 
-    LatexNoMathCommand(String command, String display, Argument... arguments) {
-        this(command, arguments);
+    LatexNoMathCommand(String command, Package thePackage, String display, Argument... arguments) {
+        this.command = command;
+        this.thePackage = thePackage;
+        this.arguments = arguments;
         this.display = display;
     }
 
+    LatexNoMathCommand(String command, Package thePackage, Argument... arguments) {
+        this(command, thePackage, null, arguments);
+    }
+
+    LatexNoMathCommand(String command, String display, Argument... arguments) {
+        this(command, DEFAULT, display, arguments);
+    }
+
     LatexNoMathCommand(String command, Argument... arguments) {
-        this.command = command;
-        this.arguments = arguments;
+        this(command, DEFAULT, arguments);
     }
 
     public static Optional<LatexNoMathCommand> get(String command) {
@@ -374,6 +392,11 @@ public enum LatexNoMathCommand {
 
     public String getDisplay() {
         return display;
+    }
+
+    @NotNull
+    public Package getPackage() {
+        return thePackage;
     }
 
     /**

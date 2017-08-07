@@ -14,12 +14,10 @@ import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler;
+import nl.rubensten.texifyidea.completion.handlers.LatexMathInsertHandler;
 import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
-import nl.rubensten.texifyidea.lang.LatexMathCommand;
-import nl.rubensten.texifyidea.lang.LatexMode;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
-import nl.rubensten.texifyidea.lang.LatexNoMathEnvironment;
+import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +65,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
                         .withPresentableText(cmd.getCommandDisplay())
                         .bold()
-                        .withTailText(cmd.getArgumentsDisplay(), true)
+                        .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
                         .withTypeText(cmd.getDisplay())
                         .withInsertHandler(new LatexNoMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
@@ -80,9 +78,9 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
                         .withPresentableText(cmd.getCommandDisplay())
                         .bold()
-                        .withTailText(cmd.getArgumentsDisplay(), true)
+                        .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
                         .withTypeText(cmd.getDisplay())
-                        .withInsertHandler(new LatexCommandArgumentInsertHandler())
+                        .withInsertHandler(new LatexMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
         ));
     }
@@ -94,6 +92,15 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withPresentableText(cmd.getName())
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
+    }
+
+    private String packageName(LatexCommand command) {
+        String name = command.getPackage().getName();
+        if ("".equals(name)) {
+            return "";
+        }
+
+        return "(" + name + ")";
     }
 
     private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result) {

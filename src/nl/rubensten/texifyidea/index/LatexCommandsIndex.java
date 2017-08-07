@@ -1,17 +1,22 @@
 package nl.rubensten.texifyidea.index;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.stubs.StubIndex;
 import com.intellij.psi.stubs.StubIndexKey;
 import com.intellij.util.ArrayUtil;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Ruben Schellekens
@@ -22,6 +27,28 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
             StubIndexKey.createIndexKey("nl.rubensten.texifyidea.commands");
 
     private static final Pattern PRECEDING_SLASH = Pattern.compile("^\\\\");
+
+    /**
+     * Get all the commands in the fileset of the given file. This fileset includes all included
+     * files and indirectly included files (files that include the base file).
+     */
+    public static Collection<LatexCommands> getIndexCommandsInFileSet(@NotNull PsiFile baseFile) {
+        Project project = baseFile.getProject();
+        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFileSet(baseFile).stream()
+                .map(PsiFile::getVirtualFile)
+                .collect(Collectors.toSet());
+        searchFiles.add(baseFile.getVirtualFile());
+        GlobalSearchScope scope = GlobalSearchScope.filesScope(project, searchFiles);
+        return LatexCommandsIndex.getIndexedCommands(project, scope);
+    }
+
+    /**
+     * Get all the index LaTeX commands in the given file.
+     */
+    public static Collection<LatexCommands> getIndexCommands(@NotNull PsiFile file) {
+        GlobalSearchScope scope = GlobalSearchScope.fileScope(file);
+        return getIndexedCommands(file.getProject(), scope);
+    }
 
     /**
      * Get all the indexed LaTeX commands in a given scope.
