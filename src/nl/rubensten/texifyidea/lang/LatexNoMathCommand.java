@@ -298,10 +298,14 @@ public enum LatexNoMathCommand {
             requiredText("begdef"), requiredText("enddef")),;
 
     private static final Map<String, LatexNoMathCommand> lookup = new HashMap<>();
+    private static final Map<String, LatexNoMathCommand> lookupUnicode = new HashMap<>();
 
     static {
         for (LatexNoMathCommand command : LatexNoMathCommand.values()) {
             lookup.put(command.getCommand(), command);
+            if (command.display != null) {
+                lookupUnicode.putIfAbsent(command.display, command);
+            }
         }
     }
 

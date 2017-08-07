@@ -226,10 +226,14 @@ public enum LatexMathCommand {
     WIDETILDE("widetilde", required("text"));
 
     private static final Map<String, LatexMathCommand> lookup = new HashMap<>();
+    private static final Map<String, LatexMathCommand> lookupUnicode = new HashMap<>();
 
     static {
         for (LatexMathCommand command : LatexMathCommand.values()) {
             lookup.put(command.getCommand(), command);
+            if (command.display != null) {
+                lookupUnicode.putIfAbsent(command.display, command);
+            }
         }
     }
 
