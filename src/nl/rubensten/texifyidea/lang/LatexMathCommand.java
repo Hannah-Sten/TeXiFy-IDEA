@@ -7,14 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static nl.rubensten.texifyidea.lang.Package.AMSMATH;
-import static nl.rubensten.texifyidea.lang.Package.AMSSYMB;
-import static nl.rubensten.texifyidea.lang.Package.DEFAULT;
+import static nl.rubensten.texifyidea.lang.Package.*;
 
 /**
  * @author Sten Wessel
  */
-public enum LatexMathCommand {
+public enum LatexMathCommand implements LatexCommand {
     /*
       Greek alphabet
      */

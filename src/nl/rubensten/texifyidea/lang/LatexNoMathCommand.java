@@ -7,14 +7,12 @@ import nl.rubensten.texifyidea.lang.Argument.Type;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static nl.rubensten.texifyidea.lang.Package.DEFAULT;
-import static nl.rubensten.texifyidea.lang.Package.FONTENC;
-import static nl.rubensten.texifyidea.lang.Package.GRAPHICX;
+import static nl.rubensten.texifyidea.lang.Package.*;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
  */
-public enum LatexNoMathCommand {
+public enum LatexNoMathCommand implements LatexCommand {
 
     ADDTOCOUNTER("addtocounter", required("countername"), required("value")),
     A_RING("aa", "å"),
@@ -79,8 +77,8 @@ public enum LatexNoMathCommand {
     GLQQ("glqq", "„"),
     GRQ("grq", "‘"),
     GRQQ("grqq", "“"),
-    GUILLEMOTLEFT("guillemotleft", FONTENC.with("T1"), ""),
-    GUILLEMOTRIGHT("guillemotright", FONTENC.with("T1"), ""),
+    GUILLEMOTLEFT("guillemotleft", FONTENC.with("T1"), "«"),
+    GUILLEMOTRIGHT("guillemotright", FONTENC.with("T1"), "»"),
     HFILL("hfill"),
     HRULE("hrule"),
     HRULEFILL("hrulefill"),
@@ -191,6 +189,7 @@ public enum LatexNoMathCommand {
     SMALL("small"),
     SMALLSKIP("smallskip"),
     SMASH("smash"),
+    SOUT("sout", ULEM, requiredText("strikethroughtext")),
     SPACE("space"),
     STEPCOUNTER("stepcounter", required("counter")),
     STOP("stop"),
