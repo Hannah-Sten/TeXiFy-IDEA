@@ -8,7 +8,6 @@ import nl.rubensten.texifyidea.psi.LatexCommands;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Sten Wessel
@@ -20,7 +19,7 @@ public class LatexDocumentationProvider implements DocumentationProvider {
     public String getQuickNavigateInfo(PsiElement psiElement, PsiElement originalElement) {
         if (psiElement instanceof LatexCommands) {
             LatexCommands cmd = (LatexCommands)psiElement;
-            if (Objects.equals(cmd.getName(), "\\label")) {
+            if ("\\label".equals(cmd.getName())) {
                 String label = cmd.getRequiredParameters().get(0);
                 String file = cmd.getContainingFile().getName();
                 int line = StringUtil.offsetToLineNumber(cmd.getContainingFile().getText(), cmd.getTextOffset()) + 1;  // Because line numbers do start at 1
