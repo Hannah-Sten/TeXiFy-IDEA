@@ -50,7 +50,7 @@ public class LatexCompletionContributor extends CompletionContributor {
         // File names
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT)
+                PlatformPatterns.psiElement().inside(LatexNormalText.class)
                         .inside(LatexRequiredParam.class)
                         .with(new PatternCondition<PsiElement>(null) {
                             @Override
