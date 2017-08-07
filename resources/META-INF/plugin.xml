@@ -214,9 +214,6 @@
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
 
-        <!-- Inspections -->
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspection.ReplaceInlineMathToRobustInspection" groupName="TeXiFy" displayName="Replace inline math to robust"/>
-
         <!-- Blame -->
         <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>
 
@@ -225,10 +222,14 @@
 
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
 
+        <!-- Documentation -->
+        <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
+
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 
-        <!-- Documentation -->
-        <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.inspections.MathOperatorEscapeInspection"
+                         groupName="TeXiFy" displayName="Non-escaped common math operators"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
