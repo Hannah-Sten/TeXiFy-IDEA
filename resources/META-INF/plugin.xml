@@ -237,5 +237,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MightBreakTexifyInspection"
                          groupName="TeXiFy" displayName="Might break TeXiFy functionality"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.UnicodeInspection"
+                         groupName="TeXiFy" displayName="Unsupported Unicode character"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
