@@ -14,6 +14,7 @@ import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler;
+import nl.rubensten.texifyidea.completion.handlers.LatexMathInsertHandler;
 import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
@@ -82,7 +83,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .bold()
                         .withTailText(cmd.getArgumentsDisplay(), true)
                         .withTypeText(cmd.getDisplay())
-                        .withInsertHandler(new LatexCommandArgumentInsertHandler())
+                        .withInsertHandler(new LatexMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
         ));
     }
