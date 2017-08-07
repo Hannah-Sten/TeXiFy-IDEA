@@ -5,8 +5,8 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexCommandProvider extends CompletionProvider<CompletionParameters> {
 
@@ -98,8 +98,12 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result) {
         Project project = parameters.getEditor().getProject();
+        if (project == null) {
+            return;
+        }
+
         PsiFile file = parameters.getOriginalFile();
-        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFiles(file).stream()
+        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFileSet(file).stream()
                 .map(PsiFile::getVirtualFile)
                 .collect(Collectors.toSet());
         searchFiles.add(file.getVirtualFile());
@@ -113,11 +117,14 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             }
 
             String cmdName = getCommandName(cmd);
+            if (cmdName == null) {
+                continue;
+            }
+
             String tailText = getTailText(cmd);
             String typeText = getTypeText(cmd);
 
-            Document document = parameters.getEditor().getDocument();
-            int line = document.getLineNumber(cmd.getTextOffset()) + 1;
+            int line = 1 + StringUtil.offsetToLineNumber(cmd.getContainingFile().getText(), cmd.getTextOffset());
             typeText = typeText + " " + cmd.getContainingFile().getName() + ":" + line;
 
             result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))

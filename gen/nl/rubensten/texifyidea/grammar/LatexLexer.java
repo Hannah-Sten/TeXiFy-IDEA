@@ -37,26 +37,27 @@ public class LatexLexer implements FlexLexer {
 
   /** 
    * Translates characters to character classes
-   * Chosen bits are [9, 6, 6]
-   * Total runtime size is 1568 bytes
+   * Chosen bits are [7, 7, 7]
+   * Total runtime size is 1928 bytes
    */
   public static int ZZ_CMAP(int ch) {
-    return ZZ_CMAP_A[(ZZ_CMAP_Y[ZZ_CMAP_Z[ch>>12]|((ch>>6)&0x3f)]<<6)|(ch&0x3f)];
+    return ZZ_CMAP_A[(ZZ_CMAP_Y[ZZ_CMAP_Z[ch>>14]|((ch>>7)&0x7f)]<<7)|(ch&0x7f)];
   }
 
-  /* The ZZ_CMAP_Z table has 272 entries */
+  /* The ZZ_CMAP_Z table has 68 entries */
   static final char ZZ_CMAP_Z[] = zzUnpackCMap(
-    "\1\0\1\100\1\200\u010d\100");
+    "\1\0\103\200");
 
-  /* The ZZ_CMAP_Y table has 192 entries */
+  /* The ZZ_CMAP_Y table has 256 entries */
   static final char ZZ_CMAP_Y[] = zzUnpackCMap(
-    "\1\0\1\1\1\2\175\3\1\4\77\3");
+    "\1\0\1\1\53\2\1\3\22\2\1\4\37\2\1\3\237\2");
 
-  /* The ZZ_CMAP_A table has 320 entries */
+  /* The ZZ_CMAP_A table has 640 entries */
   static final char ZZ_CMAP_A[] = zzUnpackCMap(
-    "\11\0\1\2\1\1\2\11\1\1\22\0\1\2\3\0\1\24\1\23\2\0\1\7\1\10\1\25\26\0\32\21"+
+    "\11\0\1\2\1\1\2\11\1\1\22\0\1\2\3\0\1\25\1\23\2\0\1\7\1\10\1\26\26\0\32\21"+
     "\1\3\1\12\1\4\3\0\1\21\1\13\1\21\1\20\1\14\1\21\1\15\1\21\1\16\4\21\1\17\14"+
-    "\21\1\5\1\0\1\6\7\0\1\22\242\0\2\22\26\0");
+    "\21\1\5\1\0\1\6\7\0\1\22\32\0\1\24\337\0\1\24\177\0\13\24\35\0\2\22\5\0\1"+
+    "\24\57\0\1\24\40\0");
 
   /** 
    * Translates DFA states to action switch labels.
@@ -65,8 +66,8 @@ public class LatexLexer implements FlexLexer {
 
   private static final String ZZ_ACTION_PACKED_0 =
     "\3\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7"+
-    "\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17"+
-    "\2\11\1\20\1\21\3\20\1\22\3\20\1\23\1\20"+
+    "\1\10\2\11\1\12\1\13\1\14\1\15\1\16\1\17"+
+    "\1\11\1\20\1\21\3\20\1\22\3\20\1\23\1\20"+
     "\1\24";
 
   private static int [] zzUnpackAction() {
@@ -95,10 +96,10 @@ public class LatexLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\26\0\54\0\102\0\130\0\156\0\156\0\156"+
-    "\0\156\0\156\0\156\0\204\0\232\0\156\0\102\0\156"+
-    "\0\156\0\156\0\260\0\156\0\156\0\156\0\306\0\334"+
-    "\0\362\0\156\0\u0108\0\u011e\0\u0134\0\362\0\u014a\0\362";
+    "\0\0\0\27\0\56\0\105\0\134\0\163\0\163\0\163"+
+    "\0\163\0\163\0\163\0\212\0\163\0\241\0\163\0\105"+
+    "\0\163\0\163\0\163\0\270\0\163\0\163\0\317\0\346"+
+    "\0\375\0\163\0\u0114\0\u012b\0\u0142\0\375\0\u0159\0\375";
 
   private static int [] zzUnpackRowMap() {
     int [] result = new int[32];
@@ -125,22 +126,22 @@ public class LatexLexer implements FlexLexer {
 
   private static final String ZZ_TRANS_PACKED_0 =
     "\1\4\2\5\1\6\1\7\1\10\1\11\1\12\1\13"+
-    "\1\5\1\14\10\4\1\15\1\16\1\17\1\4\2\5"+
-    "\1\20\1\21\1\10\1\11\1\12\1\13\1\5\1\14"+
-    "\10\4\1\15\1\22\1\17\1\4\2\5\1\20\1\21"+
-    "\1\10\1\11\1\12\1\13\1\5\1\23\10\4\1\15"+
-    "\1\24\1\17\3\4\6\0\1\4\1\0\10\4\2\0"+
-    "\2\4\2\5\6\0\1\5\1\0\10\4\2\0\1\4"+
-    "\26\0\3\25\1\26\5\25\1\0\1\25\1\27\1\30"+
-    "\5\31\1\0\3\25\1\15\1\0\24\15\3\25\1\26"+
+    "\1\5\1\14\7\4\1\15\1\16\1\15\1\17\1\20"+
+    "\1\4\2\5\1\21\1\22\1\10\1\11\1\12\1\13"+
+    "\1\5\1\14\7\4\1\15\1\16\1\15\1\23\1\20"+
+    "\1\4\2\5\1\21\1\22\1\10\1\11\1\12\1\13"+
+    "\1\5\1\24\7\4\1\15\1\16\2\15\1\20\1\4"+
+    "\12\0\7\4\4\0\1\4\1\0\2\5\6\0\1\5"+
+    "\44\0\3\25\1\26\5\25\1\0\1\25\1\27\1\30"+
+    "\5\31\1\0\4\25\1\16\1\0\25\16\3\25\1\26"+
     "\1\32\4\25\1\0\1\25\1\27\1\30\5\31\1\0"+
-    "\3\25\13\0\1\31\1\33\5\31\17\0\4\31\1\34"+
-    "\2\31\17\0\7\31\17\0\2\31\1\35\4\31\17\0"+
-    "\5\31\1\36\1\31\17\0\3\31\1\37\3\31\17\0"+
-    "\4\31\1\40\2\31\4\0";
+    "\4\25\13\0\1\31\1\33\5\31\20\0\4\31\1\34"+
+    "\2\31\20\0\7\31\20\0\2\31\1\35\4\31\20\0"+
+    "\5\31\1\36\1\31\20\0\3\31\1\37\3\31\20\0"+
+    "\4\31\1\40\2\31\5\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[352];
+    int [] result = new int[368];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -178,8 +179,8 @@ public class LatexLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\3\0\2\1\6\11\2\1\1\11\1\1\3\11\1\1"+
-    "\3\11\3\1\1\11\6\1";
+    "\3\0\2\1\6\11\1\1\1\11\1\1\1\11\1\1"+
+    "\3\11\1\1\2\11\3\1\1\11\6\1";
 
   private static int [] zzUnpackAttribute() {
     int [] result = new int[32];
@@ -490,7 +491,7 @@ public class LatexLexer implements FlexLexer {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { return NORMAL_TEXT;
+            { return NORMAL_TEXT_WORD;
             }
           case 21: break;
           case 2: 

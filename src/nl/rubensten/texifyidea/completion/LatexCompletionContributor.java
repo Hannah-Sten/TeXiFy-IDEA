@@ -40,36 +40,17 @@ public class LatexCompletionContributor extends CompletionContributor {
 
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT)
+                PlatformPatterns.psiElement()
                         .inside(LatexRequiredParam.class)
                         .inside(LatexBeginCommand.class)
                         .withLanguage(LatexLanguage.INSTANCE),
                 new LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
         );
 
-        // References.
-        extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT)
-                        .inside(LatexRequiredParam.class)
-                        .with(new PatternCondition<PsiElement>(null) {
-                            @Override
-                            public boolean accepts(@NotNull PsiElement psiElement, ProcessingContext processingContext) {
-                                LatexCommands command = LatexPsiUtil.getParentOfType(
-                                        psiElement, LatexCommands.class
-                                );
-                                return command != null &&
-                                        command.getCommandToken().getText().equals("\\ref");
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                new LatexReferenceProvider()
-        );
-
         // File names
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT)
+                PlatformPatterns.psiElement().inside(LatexNormalText.class)
                         .inside(LatexRequiredParam.class)
                         .with(new PatternCondition<PsiElement>(null) {
                             @Override

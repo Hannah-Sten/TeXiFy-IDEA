@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Ruben Schellekens
+ * @deprecated From b0.3 onward. Use {@link nl.rubensten.texifyidea.reference.LatexLabelReference} instead.
  */
 public class LatexReferenceProvider extends CompletionProvider<CompletionParameters> {
 
@@ -37,6 +38,10 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
         Editor editor = parameters.getEditor();
         Project project = editor.getProject();
         Document document = editor.getDocument();
+
+        if (project == null) {
+            return;
+        }
 
         // Only consider included files.
         PsiFile file = parameters.getOriginalFile();

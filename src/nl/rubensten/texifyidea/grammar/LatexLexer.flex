@@ -40,7 +40,7 @@ BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
-NORMAL_TEXT=[^\\{}%\[\]$\(\)]+
+NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 
 %states INLINE_MATH DISPLAY_MATH
 %%
@@ -77,6 +77,6 @@ NORMAL_TEXT=[^\\{}%\[\]$\(\)]+
 {END_TOKEN}          { return END_TOKEN; }
 {COMMAND_TOKEN}      { return COMMAND_TOKEN; }
 {COMMENT_TOKEN}      { return COMMENT_TOKEN; }
-{NORMAL_TEXT}        { return NORMAL_TEXT; }
+{NORMAL_TEXT_WORD}   { return NORMAL_TEXT_WORD; }
 
 [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }

@@ -41,11 +41,6 @@ public class LatexModuleType extends ModuleType<LatexModuleBuilder> {
     }
 
     @Override
-    public Icon getBigIcon() {
-        return TexifyIcons.LATEX_MODULE;
-    }
-
-    @Override
     public Icon getNodeIcon(@Deprecated boolean isOpened) {
         return TexifyIcons.LATEX_MODULE;
     }

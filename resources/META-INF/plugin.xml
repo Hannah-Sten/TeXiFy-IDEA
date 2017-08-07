@@ -26,57 +26,52 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.2</version>
+    <version>0.3.1</version>
     <idea-version since-build="141.0"/>
     <vendor url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
     <description><![CDATA[
-      <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
-      <p>
-          Note to users: all suggestions/requests/bug reports/kudos/critique/(non-)creative ideas/contributions are
-          welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin GitHub page</a>.
-      </p>
-    ]]></description>
+        <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
+        <p>
+            Note to users: all suggestions/requests/bug reports/kudos/critique/(non-)creative ideas/contributions are
+            welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin GitHub page</a>.
+        </p>
+        ]]></description>
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <h1>Beta 0.2</h1>
+        <h1>Beta 0.3</h1>
         <p>
-            Second release of TeXiFy-IDEA, full of improvements and bug fixes. Thanks to all issue reporters for their
+            The third release of TeXiFy IDEA, and we are very proud to introduce a number of great features. We especially have good news
+            for Mac users: compiling now actually works! Thanks to all issue reporters for their
             contributions! All feature requests and bug reports are more than welcome on our Issues page. Pull requests
             are also welcome!
         </p>
-        <p><em>Additions</em></p>
+        <p><em>New features</em></p>
         <ul>
-            <li>
-                UI
-                <ul>
-                    <li>New icons! The new icons designed by Ruben integrate much better within the new IntelliJ design.</li>
-                    <li>More advanced gutter icons, including navigation icons for <code>\include</code>,
-                        <code>\includeonly</code> and <code>\bibliography</code>.</li>
-                </ul>
-            </li>
-            <li>
-                Editor
-                <ul>
-                    <li>Brace matching is now also available for parentheses (<code>()</code>).</li>
-                    <li>For all the hideous code you don't want to see, you can now fold environments.</li>
-                    <li>Caret will now recognize and run over the terminating $ of an inline math environment.</li>
-                </ul>
-            </li>
-            <li>
-                Autocomplete
-                <ul>
-                    <li>Has been extended to environments: <code>\end</code> will be automatically inserted and a list
-                        of standard LaTeX environments is provided to choose from when you select <code>\begin</code> from
-                        autocomplete.</li>
-                </ul>
-            </li>
+            <li>Completion for <code>\label{}</code> references, <code>\newcommand{}</code> commands and included files/directories with fancy icons.</li>
+            <li>Structure view, showing sectioning, inclusions, labels and command definitions, also with nice icons.</li>
+            <li>An improved formatter with does not scatter your code around but aligns it nicely and indented instead.</li>
+            <li><em>Go to declaration</em> (Ctrl+click or Ctrl+B) for label references.</li>
+            <li>Inserting a command with at least one required argument inserts the braces for you.</li>
+            <li>Spell checker.</li>
+            <li>Custom compiler path (for Mac users and adventurous Windows people).</li>
+            <li>Automatic creation of output directories (also for Mac users).</li>
+            <li>PDF and DVI icon, because we need more icons.</li>
+            <li>Easier error reporting when an exception occurs.</li>
         </ul>
 
         <p><em>Bug fixes</em></p>
-        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.2">GitHub release page</a>.</p>
-    ]]>
+        <ul>
+            <li>Inline math after display math is recognized.</li>
+            <li>Smashed a number of ugly exceptions in numerous places.</li>
+            <li>(Unmatched) square brackets in math mode no longer gives syntax errors.</li>
+            <li>Inline math runover trailing <code>$</code> also works when closing the completion dialog.</li>
+        </ul>
+
+        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.3">GitHub
+            release page</a>.</p>
+        ]]>
     </change-notes>
 
     <module-components>
@@ -88,6 +83,82 @@
         <action id="texify.NewFile" class="nl.rubensten.texifyidea.action.NewLatexFileAction">
             <add-to-group group-id="NewGroup1" anchor="after" relative-to-action="NewModuleInGroup"/>
         </action>
+
+        <!-- LaTeX commands -->
+        <group id="texify.LatexMenu" text="_LaTeX" description="Latex Actions">
+            <add-to-group group-id="MainMenu" anchor="after" relative-to-action="CodeMenu" />
+
+            <!-- Toggle Star -->
+            <action class="nl.rubensten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
+                    description="Adds/removes a star from a LaTeX command.">
+                <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
+            </action>
+        </group>
+
+        <!-- Insert: Sectioning -->
+        <group id="texify.LatexMenu.Insert.Sectioning" class="nl.rubensten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="first"/>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
+                    text="_Part" description="Insert the part command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertChapterAction" id="texify.insert.sectioning.Chapter"
+                    text="_Chapter" description="Insert the chapter command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSectionAction" id="texify.insert.sectioning.Section"
+                    text="_Section" description="Insert the section command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSectionAction" id="texify.insert.sectioning.Subsection"
+                    text="S_ubsection" description="Insert the subsection command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSubSectionAction" id="texify.insert.sectioning.Subsubsection"
+                    text="Su_bsubsection" description="Insert the subsubsection command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertParagraphAction" id="texify.insert.sectioning.Paragraph"
+                    text="_Paragraph" description="Insert the paragraph command." />
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
+                    text="Subp_aragraph" description="Insert the subparagraph command." />
+        </group>
+
+        <!-- Insert: Sectioning -->
+        <group id="texify.LatexMenu.Insert.FontStyle" class="nl.rubensten.texifyidea.action.group.InsertFontStyleActionGroup" text="_Font Style" description="Insert font style commands." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning" />
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
+                    text="_Bold" description="Insert the command to make text appear bold.">
+                <keyboard-shortcut first-keystroke="control alt shift B" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertItalicsAction" id="texify.insert.fontstyle.Italics"
+                    text="_Italics" description="Insert the command to make text appear in italics.">
+                <keyboard-shortcut first-keystroke="control alt shift I" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertUnderlineAction" id="texify.insert.fontstyle.Underline"
+                    text="_Underline" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift U" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertOverlineAction" id="texify.insert.fontstyle.Overline"
+                    text="_Overline" description="Insert the command to overline text.">
+                <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSmallCapsAction" id="texify.insert.fontstyle.SmallCaps"
+                    text="Small _capitals" description="Insert the command to underline text.">
+                <keyboard-shortcut first-keystroke="control alt shift C" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertTypewriterAction" id="texify.insert.fontstyle.Typewriter"
+                    text="_Typewriter (monospace)" description="Insert the command to make text monospace.">
+                <keyboard-shortcut first-keystroke="control alt shift T" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertStrikethroughAction" id="texify.insert.fontstyle.Strikethrough"
+                    text="_Strikethrough (ulem package)" description="Insert the command to strikethrough text (inclusion of ulem package required).">
+                <keyboard-shortcut first-keystroke="control alt shift S" keymap="$default" />
+            </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertSlantedAction" id="texify.insert.fontstyle.Slanted"
+                    text="S_lanted" description="Insert the command to make text appear slanted.">
+                <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default" />
+            </action>
+        </group>
     </actions>
 
     <!-- Hooks for plugin functionality -->
@@ -130,6 +201,7 @@
         <enterHandlerDelegate implementation="nl.rubensten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexParameterInfoHandler"/>
         <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
+        <lookup.charFilter implementation="nl.rubensten.texifyidea.completion.LatexCharFilter" id="latex"/>
 
         <!-- Line markers -->
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexLineMarkerProvider"/>
@@ -142,6 +214,9 @@
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
 
+        <!-- Blame -->
+        <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>
+
         <!-- Stubs -->
         <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
 
@@ -149,5 +224,8 @@
 
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
+
+        <!-- Documentation -->
+        <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
   </extensions>
 </idea-plugin>
