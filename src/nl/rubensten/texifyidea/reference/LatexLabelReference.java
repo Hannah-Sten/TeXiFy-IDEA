@@ -3,11 +3,8 @@ package nl.rubensten.texifyidea.reference;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementResolveResult;
-import com.intellij.psi.PsiPolyVariantReference;
-import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.ResolveResult;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.psi.*;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.LatexCommands;
@@ -19,9 +16,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexLabelReference extends PsiReferenceBase<LatexCommands> implements PsiPolyVariantReference {
+
     private String key;
 
     public LatexLabelReference(@NotNull LatexCommands element, LatexRequiredParam param) {
@@ -57,7 +55,11 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                 l -> LookupElementBuilder.create(l.getRequiredParameters().get(0))
                         .bold()
                         .withInsertHandler(new LatexReferenceInsertHandler())
-                        .withTypeText(l.getContainingFile().getName(),true)
+                        .withTypeText(
+                                l.getContainingFile().getName() + ":" +
+                                        (1 + StringUtil.offsetToLineNumber(l.getContainingFile().getText(), l.getTextOffset())),
+                                true
+                        )
                         .withIcon(TexifyIcons.DOT_LABEL)
         ).toArray();
     }
