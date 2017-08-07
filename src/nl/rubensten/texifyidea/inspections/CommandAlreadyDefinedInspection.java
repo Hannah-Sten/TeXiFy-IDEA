@@ -65,7 +65,7 @@ public class CommandAlreadyDefinedInspection extends TexifyInspectionBase {
                 }
             }
             // Warning when a builtin command gets overridden
-            else if ("\\def".equals(command.getName())) {
+            else if ("\\def".equals(command.getName()) || "\\let".equals(command.getName())) {
                 LatexCommands newCommand = TexifyUtil.getForcedFirstRequiredParameterAsCommand(command);
                 if (newCommand == null) {
                     continue;

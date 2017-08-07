@@ -234,5 +234,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.CommandAlreadyDefinedInspection"
                          groupName="TeXiFy" displayName="Command is already defined"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MightBreakTexifyInspection"
+                         groupName="TeXiFy" displayName="Might break TeXiFy functionality"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
