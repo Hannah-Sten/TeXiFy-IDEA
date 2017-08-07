@@ -308,6 +308,9 @@ public enum LatexMathCommand {
      * @return {@code true} to insert automatically, {@code false} not to insert.
      */
     public boolean autoInsertRequired() {
-        return Stream.of(arguments).filter(arg -> arg instanceof RequiredArgument).count() >= 1;
+        return arguments != null &&
+                Stream.of(arguments)
+                        .filter(arg -> arg instanceof RequiredArgument)
+                        .count() >= 1;
     }
 }
