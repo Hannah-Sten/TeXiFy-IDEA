@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -18,28 +19,13 @@ import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
-import nl.rubensten.texifyidea.psi.LatexBeginCommand;
-import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.psi.LatexContent;
-import nl.rubensten.texifyidea.psi.LatexParameter;
-import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +53,19 @@ public class TexifyUtil {
     private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
         Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls");
+    }
+
+    /**
+     * Deletes the given element from a document.
+     *
+     * @param document
+     *         The document to remove the element from.
+     * @param element
+     *         The element to remove from the document.
+     */
+    public static void deleteElement(@NotNull Document document, @NotNull PsiElement element) {
+        int offset = element.getTextOffset();
+        document.deleteString(offset, offset + element.getTextLength());
     }
 
     /**
@@ -545,9 +544,9 @@ public class TexifyUtil {
     /**
      * Returns the forced first required parameter of a command as a command.
      * <p>
-     * This allows both example constructs {@code \\usepackage{\\foo}} and {@code \\usepackage\\foo},
-     * which are equivalent. Note that when the command does not take parameters this method might
-     * return untrue results.
+     * This allows both example constructs {@code \\usepackage{\\foo}} and {@code
+     * \\usepackage\\foo}, which are equivalent. Note that when the command does not take parameters
+     * this method might return untrue results.
      *
      * @param command
      *         The command to get the parameter for.
@@ -560,7 +559,8 @@ public class TexifyUtil {
             Collection<LatexCommands> found = PsiTreeUtil.findChildrenOfType(param, LatexCommands.class);
             if (found.size() == 1) {
                 return (LatexCommands)(found.toArray()[0]);
-            } else {
+            }
+            else {
                 return null;
             }
         }

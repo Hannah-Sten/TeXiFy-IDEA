@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,46 @@ import java.util.List;
 public class LatexPsiUtil {
 
     private LatexPsiUtil() {
+    }
+
+    /**
+     * Finds the previous sibling of an element but skips over whitespace.
+     *
+     * @param element
+     *         The element to get the previous sibling of.
+     * @return The previous sibling of the given psi element, or {@code null} when there is no
+     * previous sibling.
+     */
+    @Nullable
+    public static PsiElement getPreviousSiblingIgnoreWhitespace(@NotNull PsiElement element) {
+        PsiElement sibling = element;
+        while ((sibling = sibling.getPrevSibling()) != null) {
+            if (!(sibling instanceof PsiWhiteSpace)) {
+                return sibling;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Finds the next sibling of an element but skips over whitespace.
+     *
+     * @param element
+     *         The element to get the next sibling of.
+     * @return The next sibling of the given psi element, or {@code null} when there is no previous
+     * sibling.
+     */
+    @Nullable
+    public static PsiElement getNextSiblingIgnoreWhitespace(@NotNull PsiElement element) {
+        PsiElement sibling = element;
+        while ((sibling = sibling.getNextSibling()) != null) {
+            if (!(sibling instanceof PsiWhiteSpace)) {
+                return sibling;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -59,8 +100,8 @@ public class LatexPsiUtil {
     }
 
     /**
-     * See {@link LatexPsiUtil#getAllChildren(PsiElement)}, but appends all children to the
-     * given list.
+     * See {@link LatexPsiUtil#getAllChildren(PsiElement)}, but appends all children to the given
+     * list.
      */
     private static List<PsiElement> getAllChildren(List<PsiElement> result, PsiElement element) {
         result.add(element);

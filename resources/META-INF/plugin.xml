@@ -240,5 +240,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.UnicodeInspection"
                          groupName="TeXiFy" displayName="Unsupported Unicode character"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.OverInsteadOfFracInspection"
+                         groupName="TeXiFy" displayName="Use of \over discouraged"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
