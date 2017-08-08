@@ -166,7 +166,7 @@ public class TexifyUtil {
         for (LatexCommands command : commands) {
             String fileName = getIncludedFile(command);
             if (fileName == null) {
-                return;
+                continue;
             }
 
             PsiFile included = getFileRelativeTo(file, fileName);

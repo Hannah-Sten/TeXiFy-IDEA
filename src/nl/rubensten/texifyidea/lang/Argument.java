@@ -5,6 +5,8 @@ package nl.rubensten.texifyidea.lang;
  */
 public abstract class Argument {
 
+    public static final Argument[] EMPTY_ARRAY = new Argument[0];
+
     private String name;
     private Type type;
 

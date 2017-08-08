@@ -5,8 +5,8 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -14,12 +14,10 @@ import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler;
+import nl.rubensten.texifyidea.completion.handlers.LatexMathInsertHandler;
 import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
-import nl.rubensten.texifyidea.lang.LatexMathCommand;
-import nl.rubensten.texifyidea.lang.LatexMode;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
-import nl.rubensten.texifyidea.lang.LatexNoMathEnvironment;
+import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +65,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
                         .withPresentableText(cmd.getCommandDisplay())
                         .bold()
-                        .withTailText(cmd.getArgumentsDisplay(), true)
+                        .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
                         .withTypeText(cmd.getDisplay())
                         .withInsertHandler(new LatexNoMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
@@ -80,9 +78,9 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
                         .withPresentableText(cmd.getCommandDisplay())
                         .bold()
-                        .withTailText(cmd.getArgumentsDisplay(), true)
+                        .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
                         .withTypeText(cmd.getDisplay())
-                        .withInsertHandler(new LatexCommandArgumentInsertHandler())
+                        .withInsertHandler(new LatexMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
         ));
     }
@@ -94,6 +92,15 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withPresentableText(cmd.getName())
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
+    }
+
+    private String packageName(LatexCommand command) {
+        String name = command.getPackage().getName();
+        if ("".equals(name)) {
+            return "";
+        }
+
+        return "(" + name + ")";
     }
 
     private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result) {
@@ -124,8 +131,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             String tailText = getTailText(cmd);
             String typeText = getTypeText(cmd);
 
-            Document document = parameters.getEditor().getDocument();
-            int line = document.getLineNumber(cmd.getTextOffset()) + 1;
+            int line = 1 + StringUtil.offsetToLineNumber(cmd.getContainingFile().getText(), cmd.getTextOffset());
             typeText = typeText + " " + cmd.getContainingFile().getName() + ":" + line;
 
             result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))
