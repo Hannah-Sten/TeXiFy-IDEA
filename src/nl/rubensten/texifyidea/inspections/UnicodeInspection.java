@@ -122,7 +122,7 @@ public class UnicodeInspection extends TexifyInspectionBase {
      *         The file to check support for.
      * @return Whether Unicode support is enabled.
      */
-    private static boolean unicodeEnabled(@NotNull PsiFile file) {
+    static boolean unicodeEnabled(@NotNull PsiFile file) {
         // TODO: check if options are correct as well
         Collection<String> included = PackageUtils.getIncludedPackages(file);
         return UNICODE_PACKAGES.stream().allMatch(p -> included.contains(p.getName()));

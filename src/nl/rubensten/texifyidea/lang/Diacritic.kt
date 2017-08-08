@@ -17,17 +17,18 @@ interface Diacritic {
     val unicode: String
     val command: String
     val needsSpace: Boolean
+    val isTypeable: Boolean
 
     fun buildCommand(param: String): String = command + if (param.length > 1) "{$param}" else if (needsSpace) " $param" else param
 
-    enum class Normal(override val unicode: String, override val command: String, override val needsSpace: Boolean) : Diacritic {
-        GRAVE("\u0300", "\\`", false),
-        ACUTE("\u0301", "\\'", false),
-        CIRCUMFLEX("\u0302", "\\^", false),
-        DIERESIS("\u0308", "\\\"", false),
+    enum class Normal(override val unicode: String, override val command: String, override val needsSpace: Boolean, override val isTypeable: Boolean = false) : Diacritic {
+        GRAVE("\u0300", "\\`", false, isTypeable = true),
+        ACUTE("\u0301", "\\'", false, isTypeable = true),
+        CIRCUMFLEX("\u0302", "\\^", false, isTypeable = true),
+        DIERESIS("\u0308", "\\\"", false, isTypeable = true),
         DOUBLE_ACUTE("\u030B", "\\H", true),
-        TILDE("\u0303", "\\~", false),
-        CEDILLA("\u0327", "\\c", true),
+        TILDE("\u0303", "\\~", false, isTypeable = true),
+        CEDILLA("\u0327", "\\c", true, isTypeable = true),
         OGONEK("\u0328", "\\k", true),
         MACRON("\u0304", "\\=", false),
         MACRON_BELOW("\u0331", "\b", true),
@@ -40,7 +41,8 @@ interface Diacritic {
         DOUBLE_TIE("\u0361", "\\t", true);
 
         companion object {
-            fun fromUnicode(unicode: String): Normal? = Normal.values().find { it.unicode == unicode }
+            fun fromUnicode(unicode: String) = Normal.values().find { it.unicode == unicode }
+            fun fromCommand(command: String) = Normal.values().find { it.command == command }
         }
 
         override fun buildCommand(param: String): String {
@@ -51,7 +53,7 @@ interface Diacritic {
         }
     }
 
-    enum class Math(override val unicode: String, override val command: String, override val needsSpace: Boolean) : Diacritic {
+    enum class Math(override val unicode: String, override val command: String, override val needsSpace: Boolean, override val isTypeable: Boolean = false) : Diacritic {
         HAT("\u0302", "\\hat", true),
         DOUBLE_HAT("\u1DCD", "\\widehat", true),
         CHECK("\u030C", "\\check", true),
@@ -66,7 +68,8 @@ interface Diacritic {
         VEC("\u20D7", "\\vec", true);
 
         companion object {
-            fun fromUnicode(unicode: String): Math? = Math.values().find { it.unicode == unicode }
+            fun fromUnicode(unicode: String) = Math.values().find { it.unicode == unicode }
+            fun fromCommand(command: String) = Math.values().find { it.command == command }
         }
 
         override fun buildCommand(param: String): String {

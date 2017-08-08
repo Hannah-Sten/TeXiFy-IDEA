@@ -243,5 +243,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.OverInsteadOfFracInspection"
                          groupName="TeXiFy" displayName="Use of \over discouraged"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.RedundantEscapeInspection"
+                         groupName="TeXiFy" displayName="Redundant escape when Unicode is enabled"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
