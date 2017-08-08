@@ -39,13 +39,30 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
+ * Checks whether Unicode is enabled in the file and flags illegal characters when they are not
+ * supported.
+ * <p>
+ * Flags non-ASCII characters outside of math mode only when Unicode support packages are not
+ * loaded. Unicode support is assumed when the packages {@code inputenc} and {@code fontenc} are
+ * loaded. The inspection always flags non-ASCII characters in math mode, because Unicode math
+ * has no support package in pdfLaTeX.
+ * <p>
+ * Quick fixes:
+ * <ul>
+ *     <li>Escape the character: see {@link EscapeUnicodeFix}</li>
+ *     <li>(When outside math mode) Insert Unicode support packages: see
+ *     {@link InsertUnicodePackageFix}</li>
+ * </ul>
+ *
  * @author Sten Wessel
  */
 public class UnicodeInspection extends TexifyInspectionBase {
 
     private static final Pattern NONASCII_PATTERN = Pattern.compile("\\P{ASCII}");
     private static final Pattern BASE_PATTERN = Pattern.compile("^\\p{ASCII}*");
-    private static final Set<Package> UNICODE_PACKAGES = Sets.newHashSet(Package.INPUTENC.with("utf8"), Package.FONTENC.with("T1"));
+    private static final Set<Package> UNICODE_PACKAGES = Sets.newHashSet(
+            Package.INPUTENC.with("utf8"), Package.FONTENC.with("T1")
+    );
 
     @Nls
     @NotNull
@@ -76,6 +93,7 @@ public class UnicodeInspection extends TexifyInspectionBase {
                 boolean inMathMode = PsiTreeUtil.getParentOfType(text, LatexMathEnvironment.class) != null;
 
                 if (!inMathMode && hasUnicode) {
+                    // Unicode is supported, characters are legal
                     continue;
                 }
 
@@ -94,11 +112,31 @@ public class UnicodeInspection extends TexifyInspectionBase {
         return descriptors;
     }
 
+    /**
+     * Checks whether Unicode support is enabled for the file.
+     * <p>
+     * Support is assumed when the packages {@code inputenc} and {@code fontenc} are loaded. The
+     * loaded options are not checked.
+     *
+     * @param file
+     *         The file to check support for.
+     * @return Whether Unicode support is enabled.
+     */
     private static boolean unicodeEnabled(@NotNull PsiFile file) {
+        // TODO: check if options are correct as well
         Collection<String> included = PackageUtils.getIncludedPackages(file);
         return UNICODE_PACKAGES.stream().allMatch(p -> included.contains(p.getName()));
     }
 
+    /**
+     * Inserts required packages for Unicode support.
+     * <p>
+     * This is only available for Unicode support outside math mode, since Unicode in math is not
+     * available in pdfLaTeX.
+     * <p>
+     * This fix loads the packages {@code inputenc} with option {@code utf8} and {@code fontenc}
+     * with option {@code T1} when needed to enable unicode support.
+     */
     private static class InsertUnicodePackageFix implements LocalQuickFix {
         @Nls
         @NotNull
@@ -130,6 +168,30 @@ public class UnicodeInspection extends TexifyInspectionBase {
         }
     }
 
+    /**
+     * Attempts to escape the non-ASCII character to avoid encoding issues.
+     * <p>
+     * The following attempts are made, in order, to determine a suitable replacement:
+     * <ol>
+     * <li>
+     * The character is matched against the <em>display</em> attribute of either
+     * {@link LatexNoMathCommand} or {@link LatexMathCommand} (where appropiate). When there is a
+     * match, the corresponding command is used as replacement.
+     * </li>
+     * <li>
+     * The character is decomposed to separate combining marks (see also
+     * <a href="http://unicode.org/reports/tr15/">Unicode</a>). An attempt is made to match the
+     * combining sequence against LaTeX character diacritical commands. See {@link Diacritic} for
+     * a list of supported diacritics for both non-math and math mode. When there is a match
+     * for all combining marks, the sequence of LaTeX commands is used as replacement. Also, when
+     * the letters <em>i</em> or <em>j</em> are used in combination with a diacritic their
+     * dotless versions are substituted.
+     * </li>
+     * </ol>
+     * <p>
+     * When neither of these steps is successful, the character is too exotic to replace and an
+     * appropriate fail message is shown.
+     */
     private static class EscapeUnicodeFix implements LocalQuickFix {
 
         private boolean inMathMode;
@@ -152,7 +214,7 @@ public class UnicodeInspection extends TexifyInspectionBase {
             String c = descriptor.getTextRangeInElement().substring(element.getText());
 
             // Try to find in lookup for special command
-            String replacement = null;
+            String replacement;
             LatexCommand command = inMathMode ? LatexMathCommand.findByDisplay(c) :
                     LatexNoMathCommand.findByDisplay(c);
 
