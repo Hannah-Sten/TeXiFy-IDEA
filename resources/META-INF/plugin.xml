@@ -252,5 +252,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingDocumentEnvironmentInspection"
                          groupName="TeXiFy" displayName="Missing document environment"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.TooLargeSectionInspection"
+                         groupName="TeXiFy" displayName="Too large sections"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

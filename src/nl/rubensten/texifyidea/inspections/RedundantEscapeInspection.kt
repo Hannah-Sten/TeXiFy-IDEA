@@ -26,7 +26,7 @@ import java.text.Normalizer
 class RedundantEscapeInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Redundant escape when Unicode is enabled"
 
-    override fun getShortName() = "Redundant escape"
+    override fun getShortName() = "RedundantEscape"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         if (!UnicodeInspection.unicodeEnabled(file)) {

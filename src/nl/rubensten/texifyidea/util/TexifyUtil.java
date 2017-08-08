@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.rubensten.texifyidea.TeXception;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
@@ -20,10 +21,13 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.*;
+import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -53,6 +57,38 @@ public class TexifyUtil {
     private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
         Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls");
+    }
+
+    /**
+     * Creates a new file with a given name and given content.
+     * <p>
+     * Also checks if the file already exists, and modifies the name accordingly.
+     *
+     * @return The created file.
+     */
+    public static File createFile(String name, String contents) {
+        int count = 0;
+        String fileName = name;
+        while (new File(fileName).exists()) {
+            String ext = "." + FileUtils.getExtension(fileName);
+            String stripped = fileName.substring(0, fileName.length() - ext.length());
+
+            String intString = Integer.toString(count);
+            if (stripped.endsWith(intString)) {
+                stripped = stripped.substring(0, stripped.length() - intString.length());
+            }
+
+            fileName = stripped + (++count) + ext;
+        }
+
+        try (PrintWriter writer = new PrintWriter(fileName, "UTF-8")) {
+            writer.print(contents);
+        }
+        catch (IOException e) {
+            throw new TeXception("Could not write to file " + name, e);
+        }
+
+        return new File(fileName);
     }
 
     /**
