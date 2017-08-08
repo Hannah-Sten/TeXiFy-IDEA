@@ -10,6 +10,7 @@ public class Package {
     // Predefined packages.
     public static final Package DEFAULT = new Package("");
     public static final Package FONTENC = new Package("fontenc");
+    public static final Package INPUTENC = new Package("inputenc");
     public static final Package GRAPHICX = new Package("graphicx");
     public static final Package AMSSYMB = new Package("amssymb");
     public static final Package AMSMATH = new Package("amsmath");

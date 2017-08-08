@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.lang;
 
 import nl.rubensten.texifyidea.lang.Argument.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -229,13 +230,13 @@ public enum LatexMathCommand implements LatexCommand {
     WIDETILDE("widetilde", required("text"));
 
     private static final Map<String, LatexMathCommand> lookup = new HashMap<>();
-    private static final Map<String, LatexMathCommand> lookupUnicode = new HashMap<>();
+    private static final Map<String, LatexMathCommand> lookupDisplay = new HashMap<>();
 
     static {
         for (LatexMathCommand command : LatexMathCommand.values()) {
             lookup.put(command.getCommand(), command);
             if (command.display != null) {
-                lookupUnicode.putIfAbsent(command.display, command);
+                lookupDisplay.putIfAbsent(command.display, command);
             }
         }
     }
@@ -281,6 +282,11 @@ public enum LatexMathCommand implements LatexCommand {
 
     public static LatexMathCommand get(String command) {
         return lookup.get(command);
+    }
+
+    @Nullable
+    public static LatexMathCommand findByDisplay(String display) {
+        return lookupDisplay.get(display);
     }
 
     private static RequiredArgument required(String name) {

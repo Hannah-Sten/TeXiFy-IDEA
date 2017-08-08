@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.lang;
 import org.jetbrains.annotations.NotNull;
 
 import nl.rubensten.texifyidea.lang.Argument.Type;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -307,13 +308,13 @@ public enum LatexNoMathCommand implements LatexCommand {
             requiredText("begdef"), requiredText("enddef")),;
 
     private static final Map<String, LatexNoMathCommand> lookup = new HashMap<>();
-    private static final Map<String, LatexNoMathCommand> lookupUnicode = new HashMap<>();
+    private static final Map<String, LatexNoMathCommand> lookupDisplay = new HashMap<>();
 
     static {
         for (LatexNoMathCommand command : LatexNoMathCommand.values()) {
             lookup.put(command.getCommand(), command);
             if (command.display != null) {
-                lookupUnicode.putIfAbsent(command.display, command);
+                lookupDisplay.putIfAbsent(command.display, command);
             }
         }
     }
@@ -344,6 +345,11 @@ public enum LatexNoMathCommand implements LatexCommand {
 
     public static Optional<LatexNoMathCommand> get(String command) {
         return Optional.ofNullable(lookup.get(command));
+    }
+
+    @Nullable
+    public static LatexNoMathCommand findByDisplay(String display) {
+        return lookupDisplay.get(display);
     }
 
     private static RequiredArgument required(String name) {
