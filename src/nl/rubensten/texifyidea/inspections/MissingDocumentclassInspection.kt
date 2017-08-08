@@ -1,8 +1,11 @@
 package nl.rubensten.texifyidea.inspections
 
 import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -33,7 +36,7 @@ class MissingDocumentclassInspection : TexifyInspectionBase() {
                     manager.createProblemDescriptor(
                             file,
                             "Document doesn't contain a \\documentclass command.",
-                            NoQuickFix.INSTANCE,
+                            InspectionFix(),
                             ProblemHighlightType.ERROR,
                             isOntheFly
                     )
@@ -41,5 +44,20 @@ class MissingDocumentclassInspection : TexifyInspectionBase() {
         }
 
         return descriptors
+    }
+
+    private class InspectionFix : LocalQuickFix {
+
+        override fun getFamilyName(): String {
+            return "Add \\documentclass{article}"
+        }
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val psiElement = descriptor.psiElement
+            val file = psiElement.containingFile
+            val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
+
+            document.insertString(0, "\\documentclass{article}\n")
+        }
     }
 }

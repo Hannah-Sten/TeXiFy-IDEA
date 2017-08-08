@@ -249,5 +249,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingDocumentclassInspection"
                          groupName="TeXiFy" displayName="Missing documentclass"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingDocumentEnvironmentInspection"
+                         groupName="TeXiFy" displayName="Missing document environment"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
