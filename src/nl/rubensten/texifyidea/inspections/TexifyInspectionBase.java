@@ -15,6 +15,7 @@ import java.util.List;
  * @author Sten Wessel
  */
 public abstract class TexifyInspectionBase extends LocalInspectionTool {
+
     private static final String GROUP_DISPLAY_NAME = "TeXiFy";
 
     @Nls

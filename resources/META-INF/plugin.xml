@@ -246,5 +246,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.RedundantEscapeInspection"
                          groupName="TeXiFy" displayName="Redundant escape when Unicode is enabled"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingDocumentclassInspection"
+                         groupName="TeXiFy" displayName="Missing documentclass"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
