@@ -159,6 +159,16 @@
                 <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default" />
             </action>
         </group>
+
+        <!-- SumatraPDF -->
+        <group id="texify.LatexMenu.Sumatra" class="nl.rubensten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF" description="Interact with SumatraPDF." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="before" relative-to-action="texify.ToggleStar"/>
+
+            <action class="nl.rubensten.texifyidea.action.sumatra.ForwardSearchAction" id="texify.sumatra.ForwardSearch"
+                    text="Go to _line in PDF" description="Find the content on cursor in the PDF.">
+                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
+            </action>
+        </group>
     </actions>
 
     <!-- Hooks for plugin functionality -->
