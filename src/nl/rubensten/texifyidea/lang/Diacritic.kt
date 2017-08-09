@@ -5,6 +5,7 @@ package nl.rubensten.texifyidea.lang
  * @author Sten Wessel
  */
 interface Diacritic {
+
     companion object {
         fun buildChain(base: String, diacritics: List<Diacritic?>): String? {
             if (diacritics.contains(null)) {
@@ -21,7 +22,9 @@ interface Diacritic {
 
     fun buildCommand(param: String): String = command + if (param.length > 1) "{$param}" else if (needsSpace) " $param" else param
 
-    enum class Normal(override val unicode: String, override val command: String, override val needsSpace: Boolean, override val isTypeable: Boolean = false) : Diacritic {
+    enum class Normal(override val unicode: String, override val command: String, override val needsSpace: Boolean,
+                      override val isTypeable: Boolean = false) : Diacritic {
+
         GRAVE("\u0300", "\\`", false, isTypeable = true),
         ACUTE("\u0301", "\\'", false, isTypeable = true),
         CIRCUMFLEX("\u0302", "\\^", false, isTypeable = true),
@@ -49,11 +52,14 @@ interface Diacritic {
             if (!param.startsWith("\\")) {
                 return super.buildCommand(param.replace("i", "\\i").replace("j", "\\j"))
             }
+
             return super.buildCommand(param)
         }
     }
 
-    enum class Math(override val unicode: String, override val command: String, override val needsSpace: Boolean, override val isTypeable: Boolean = false) : Diacritic {
+    enum class Math(override val unicode: String, override val command: String, override val needsSpace: Boolean,
+                    override val isTypeable: Boolean = false) : Diacritic {
+
         HAT("\u0302", "\\hat", true),
         DOUBLE_HAT("\u1DCD", "\\widehat", true),
         CHECK("\u030C", "\\check", true),
@@ -76,6 +82,7 @@ interface Diacritic {
             if (!param.startsWith("\\")) {
                 return super.buildCommand(param.replace("i", "\\imath").replace("j", "\\jmath"))
             }
+
             return super.buildCommand(param)
         }
     }
