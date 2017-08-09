@@ -23,7 +23,7 @@ class TooLargeSectionInspection : TexifyInspectionBase() {
         /**
          * All commands that count as inspected sections in order of hierarchy.
          */
-        val SECTION_NAMES = setOf("\\chapter", "\\section")
+        val SECTION_NAMES = listOf("\\chapter", "\\section")
 
         /**
          * The amount of characters it takes before a section is considered 'too long'.
