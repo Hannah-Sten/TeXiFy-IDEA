@@ -17,6 +17,7 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import nl.rubensten.texifyidea.TeXception;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +68,11 @@ public class LatexCommandLineState extends CommandLineState {
             @Override
             public void processTerminated(ProcessEvent processEvent) {
                 if (SystemInfo.isWindows) {
-                    SumatraConversation.INSTANCE.openFile(runConfig.getOutputFilePath(), false, true, false);
+                    try {
+                        SumatraConversation.INSTANCE.openFile(runConfig.getOutputFilePath(), false, true, false);
+                    } catch (TeXception ignored) {
+
+                    }
                 }
             }
 
