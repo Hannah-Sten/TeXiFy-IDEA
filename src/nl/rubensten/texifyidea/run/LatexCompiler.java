@@ -44,6 +44,7 @@ public enum LatexCompiler {
             }
             command.add("-file-line-error");
             command.add("-interaction=nonstopmode");
+            command.add("-synctex=1");
             command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
 
