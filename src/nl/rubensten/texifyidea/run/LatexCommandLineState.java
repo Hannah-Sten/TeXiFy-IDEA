@@ -4,12 +4,16 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessHandler;
+import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -54,7 +58,27 @@ public class LatexCommandLineState extends CommandLineState {
 
         GeneralCommandLine cmdLine = new GeneralCommandLine(command).withWorkDirectory(mainFile.getParent().getPath());
 
-        return new OSProcessHandler(cmdLine);
+        OSProcessHandler handler = new OSProcessHandler(cmdLine);
+
+        handler.addProcessListener(new ProcessListener() {
+            @Override
+            public void startNotified(ProcessEvent processEvent) { }
+
+            @Override
+            public void processTerminated(ProcessEvent processEvent) {
+                if (SystemInfo.isWindows) {
+                    SumatraConversation.INSTANCE.openFile(runConfig.getOutputFilePath(), false, true, false);
+                }
+            }
+
+            @Override
+            public void processWillTerminate(ProcessEvent processEvent, boolean b) { }
+
+            @Override
+            public void onTextAvailable(ProcessEvent processEvent, Key key) { }
+        });
+
+        return handler;
     }
 
     private void createOutDirs() throws ExecutionException {

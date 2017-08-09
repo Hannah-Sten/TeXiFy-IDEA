@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.run
 
-import com.intellij.openapi.vfs.VirtualFile
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
 
@@ -14,26 +13,26 @@ object SumatraConversation {
 
     val conversation: DDEClientConversation = DDEClientConversation()
 
-    fun openFile(pdfFile: VirtualFile, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
-        execute("Open(\"${pdfFile.path}\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+        execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
     }
 
-    fun forwardSearch(pdfFile: VirtualFile? = null, sourceFile: VirtualFile, line: Int, newWindow: Boolean = false, focus: Boolean = false) {
-        val pdfPath = if (pdfFile != null) "\"${pdfFile.path}\", " else ""
-        execute("ForwardSearch($pdfPath\"${sourceFile.path}\", $line, 0, ${newWindow.bit}, ${focus.bit})")
+    fun forwardSearch(pdfFilePath: String? = null, sourceFilePath: String, line: Int, newWindow: Boolean = false, focus: Boolean = false) {
+        val pdfPath = if (pdfFilePath != null) "\"$pdfFilePath\", " else ""
+        execute("ForwardSearch($pdfPath\"$sourceFilePath\", $line, 0, ${newWindow.bit}, ${focus.bit})")
     }
 
-    fun gotoNamedDest(pdfFile: VirtualFile, destinationName: String) {
-        execute("GotoNamedDest(\"${pdfFile.path}\", \"$destinationName\")")
+    fun gotoNamedDest(pdfFilePath: String, destinationName: String) {
+        execute("GotoNamedDest(\"$pdfFilePath\", \"$destinationName\")")
     }
 
-    fun gotoPage(pdfFile: VirtualFile, page: Int) {
-        execute("GotoPage(\"${pdfFile.path}\", $page)")
+    fun gotoPage(pdfFilePath: String, page: Int) {
+        execute("GotoPage(\"$pdfFilePath\", $page)")
     }
 
-    fun setView(pdfFile: VirtualFile, viewMode: ViewMode, zoomLevel: ZoomLevel, scroll: Pair<Int, Int>? = null) {
+    fun setView(pdfFilePath: String, viewMode: ViewMode, zoomLevel: ZoomLevel, scroll: Pair<Int, Int>? = null) {
         val s = if (scroll != null) ", ${scroll.first}, ${scroll.second}" else ""
-        execute("SetView(\"${pdfFile.path}\", \"${viewMode.description}\", ${zoomLevel.percentage}$s)")
+        execute("SetView(\"$pdfFilePath\", \"${viewMode.description}\", ${zoomLevel.percentage}$s)")
     }
 
     private fun execute(vararg commands: String) {
