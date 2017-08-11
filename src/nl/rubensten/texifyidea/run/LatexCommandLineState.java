@@ -3,9 +3,10 @@ package nl.rubensten.texifyidea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.process.KillableProcessHandler;
 import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessHandler;
+import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.IndexNotReadyException;
@@ -59,7 +60,8 @@ public class LatexCommandLineState extends CommandLineState {
 
         GeneralCommandLine cmdLine = new GeneralCommandLine(command).withWorkDirectory(mainFile.getParent().getPath());
 
-        OSProcessHandler handler = new OSProcessHandler(cmdLine);
+        ProcessHandler handler = new KillableProcessHandler(cmdLine);
+        ProcessTerminatedListener.attach(handler, getEnvironment().getProject());
 
         handler.addProcessListener(new ProcessListener() {
             @Override
