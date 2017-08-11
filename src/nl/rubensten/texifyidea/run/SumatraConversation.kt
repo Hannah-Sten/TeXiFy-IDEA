@@ -1,20 +1,29 @@
 package nl.rubensten.texifyidea.run
 
+import com.intellij.openapi.actionSystem.ActionManager
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
 
 /**
+ * Send commands to SumatraPDF.
+ *
+ * This is available on Windows only.
  *
  * @author Sten Wessel
+ * @since b0.4
  */
 object SumatraConversation {
     private val SERVER = "SUMATRA"
     private val TOPIC = "control"
+    private val FORWARD_SEARCH_ACTION = "ForwardSearch"
 
-    val conversation: DDEClientConversation = DDEClientConversation()
+    private val conversation: DDEClientConversation = DDEClientConversation()
 
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, forwardSearch: Boolean = false) {
         execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
+        if (forwardSearch) {
+            val action = ActionManager.getInstance().getAction(FORWARD_SEARCH_ACTION)
+        }
     }
 
     fun forwardSearch(pdfFilePath: String? = null, sourceFilePath: String, line: Int, newWindow: Boolean = false, focus: Boolean = false) {
@@ -39,9 +48,11 @@ object SumatraConversation {
         try {
             conversation.connect(SERVER, TOPIC)
             conversation.execute(commands.joinToString(separator = "") { "[$it]" })
-        } catch (e: Exception) {
-            throw TeXception("Connection to SumatraPDF was disrupted.")
-        } finally {
+        }
+        catch (e: Exception) {
+            throw TeXception("Connection to SumatraPDF was disrupted.", e)
+        }
+        finally {
             conversation.disconnect()
         }
     }

@@ -4,21 +4,17 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.KillableProcessHandler;
-import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
-import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import nl.rubensten.texifyidea.TeXception;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,27 +59,9 @@ public class LatexCommandLineState extends CommandLineState {
         ProcessHandler handler = new KillableProcessHandler(cmdLine);
         ProcessTerminatedListener.attach(handler, getEnvironment().getProject());
 
-        handler.addProcessListener(new ProcessListener() {
-            @Override
-            public void startNotified(ProcessEvent processEvent) { }
-
-            @Override
-            public void processTerminated(ProcessEvent processEvent) {
-                if (SystemInfo.isWindows) {
-                    try {
-                        SumatraConversation.INSTANCE.openFile(runConfig.getOutputFilePath(), false, true, false);
-                    } catch (TeXception ignored) {
-
-                    }
-                }
-            }
-
-            @Override
-            public void processWillTerminate(ProcessEvent processEvent, boolean b) { }
-
-            @Override
-            public void onTextAvailable(ProcessEvent processEvent, Key key) { }
-        });
+        if (SystemInfo.isWindows) {
+            handler.addProcessListener(new OpenSumatraListener(runConfig));
+        }
 
         return handler;
     }
