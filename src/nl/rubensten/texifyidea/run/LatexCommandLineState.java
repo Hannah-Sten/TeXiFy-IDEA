@@ -3,8 +3,9 @@ package nl.rubensten.texifyidea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.process.KillableProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
+import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.project.Project;
@@ -54,7 +55,10 @@ public class LatexCommandLineState extends CommandLineState {
 
         GeneralCommandLine cmdLine = new GeneralCommandLine(command).withWorkDirectory(mainFile.getParent().getPath());
 
-        return new OSProcessHandler(cmdLine);
+        ProcessHandler handler = new KillableProcessHandler(cmdLine);
+        ProcessTerminatedListener.attach(handler, getEnvironment().getProject());
+
+        return handler;
     }
 
     private void createOutDirs() throws ExecutionException {
