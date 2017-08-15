@@ -28,7 +28,7 @@ class TooLargeSectionInspection : TexifyInspectionBase() {
         /**
          * The amount of characters it takes before a section is considered 'too long'.
          */
-        val TOO_LONG_LIMIT = 3000
+        val TOO_LONG_LIMIT = 5000
 
         /**
          * Looks up the section command that comes after the given command.
