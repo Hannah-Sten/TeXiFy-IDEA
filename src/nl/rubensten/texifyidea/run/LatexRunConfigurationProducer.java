@@ -3,7 +3,7 @@ package nl.rubensten.texifyidea.run;
 import com.intellij.execution.Location;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.actions.RunConfigurationProducer;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
@@ -68,7 +68,7 @@ public class LatexRunConfigurationProducer extends RunConfigurationProducer<Late
     public boolean isConfigurationFromContext(LatexRunConfiguration runConfiguration,
                                               ConfigurationContext context) {
         VirtualFile mainFile = runConfiguration.getMainFile();
-        PsiFile psiFile = context.getDataContext().getData(DataKeys.PSI_FILE);
+        PsiFile psiFile = context.getDataContext().getData(PlatformDataKeys.PSI_FILE);
         if (psiFile == null) {
             return false;
         }

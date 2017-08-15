@@ -30,6 +30,9 @@
     <idea-version since-build="141.0"/>
     <vendor url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
+    <!-- Dependencies (must be defined to ensure compatibility with other IDEs -->
+    <depends>com.intellij.modules.lang</depends>
+
     <description><![CDATA[
         <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
         <p>
