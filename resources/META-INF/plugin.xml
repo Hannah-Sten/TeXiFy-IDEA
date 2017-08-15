@@ -255,5 +255,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.TooLargeSectionInspection"
                          groupName="TeXiFy" displayName="Too large sections"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.PrimitiveStyleInspection"
+                         groupName="TeXiFy" displayName="Use of TeX styling primitives discouraged"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
