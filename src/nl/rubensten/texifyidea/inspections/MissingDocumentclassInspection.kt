@@ -13,7 +13,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
 /**
  * @author Ruben Schellekens
  */
-class MissingDocumentclassInspection : TexifyInspectionBase() {
+open class MissingDocumentclassInspection : TexifyInspectionBase() {
 
     override fun getDisplayName(): String {
         return "Missing documentclass"

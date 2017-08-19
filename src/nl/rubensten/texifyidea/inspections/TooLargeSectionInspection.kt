@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
 /**
  * @author Ruben Schellekens
  */
-class TooLargeSectionInspection : TexifyInspectionBase() {
+open class TooLargeSectionInspection : TexifyInspectionBase() {
 
     companion object {
         /**

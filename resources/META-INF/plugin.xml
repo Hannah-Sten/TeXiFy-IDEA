@@ -258,5 +258,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.PrimitiveStyleInspection"
                          groupName="TeXiFy" displayName="Use of TeX styling primitives discouraged"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LineBreakInspection"
+                         groupName="TeXiFy" displayName="Start sentences on a new line"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

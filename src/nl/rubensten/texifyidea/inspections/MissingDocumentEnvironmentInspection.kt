@@ -15,7 +15,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
 /**
  * @author Ruben Schellekens
  */
-class MissingDocumentEnvironmentInspection : TexifyInspectionBase() {
+open class MissingDocumentEnvironmentInspection : TexifyInspectionBase() {
 
     override fun getDisplayName(): String {
         return "Missing document environment"

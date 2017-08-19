@@ -23,7 +23,7 @@ import java.text.Normalizer
  *
  * @author Sten Wessel
  */
-class RedundantEscapeInspection : TexifyInspectionBase() {
+open class RedundantEscapeInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Redundant escape when Unicode is enabled"
 
     override fun getShortName() = "RedundantEscape"
