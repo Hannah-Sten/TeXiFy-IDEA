@@ -28,10 +28,10 @@ open class LineBreakInspection : TexifyInspectionBase() {
          * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
          */
         @Language("RegExp")
-        private val SENTENCE_END = Pattern.compile("([^.][^.][.?!] +)|(^\\. )")
+        private val SENTENCE_END = Pattern.compile("([^.][^.][.?!;;] +)|(^\\. )")
 
         @Language("RegExp")
-        private val SENTENCE_SEPERATOR = Pattern.compile("[.?!]")
+        private val SENTENCE_SEPERATOR = Pattern.compile("[.?!;;]")
     }
 
     override fun getDisplayName(): String {
