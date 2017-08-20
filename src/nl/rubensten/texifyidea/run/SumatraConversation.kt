@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.run
 
-import com.intellij.openapi.actionSystem.ActionManager
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
 
@@ -15,14 +14,14 @@ import nl.rubensten.texifyidea.TeXception
 object SumatraConversation {
     private val SERVER = "SUMATRA"
     private val TOPIC = "control"
-    private val FORWARD_SEARCH_ACTION = "ForwardSearch"
 
     private val conversation: DDEClientConversation = DDEClientConversation()
 
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, forwardSearch: Boolean = false) {
-        execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
-        if (forwardSearch) {
-            val action = ActionManager.getInstance().getAction(FORWARD_SEARCH_ACTION)
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, start: Boolean = false) {
+        if (start) {
+            Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
+        } else {
+            execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
     }
 

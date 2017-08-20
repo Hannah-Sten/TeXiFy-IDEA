@@ -5,6 +5,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.action.EditorAction
 import nl.rubensten.texifyidea.run.SumatraConversation
 
@@ -27,7 +28,11 @@ class ForwardSearchAction : EditorAction("ForwardSearch", null) {
         val document = editor.editor.document
         val line = document.getLineNumber(editor.editor.caretModel.offset) + 1
 
-        SumatraConversation.forwardSearch(sourceFilePath = file.path, line = line)
+        try {
+            SumatraConversation.forwardSearch(sourceFilePath = file.path, line = line)
+        } catch (ignored: TeXception) {
+
+        }
     }
 
     override fun update(e: AnActionEvent?) {

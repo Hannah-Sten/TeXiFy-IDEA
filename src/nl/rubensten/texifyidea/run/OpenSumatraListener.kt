@@ -12,7 +12,7 @@ import com.intellij.openapi.util.SystemInfo
 class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListener {
     override fun processTerminated(e: ProcessEvent?) {
         if (e?.exitCode == 0 && SystemInfo.isWindows) {
-            SumatraConversation.openFile(runConfig.outputFilePath, focus = true)
+            SumatraConversation.openFile(runConfig.outputFilePath, start = true)
         }
     }
 
