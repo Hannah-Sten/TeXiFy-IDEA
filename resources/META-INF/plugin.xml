@@ -270,5 +270,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingLabelInspection"
                          groupName="TeXiFy" displayName="Missing labels"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.DuplicateLabelInspection"
+                         groupName="TeXiFy" displayName="Duplicate labels"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
