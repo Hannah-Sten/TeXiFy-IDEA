@@ -273,5 +273,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.DuplicateLabelInspection"
                          groupName="TeXiFy" displayName="Duplicate labels"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LabelConventionInspection"
+                         groupName="TeXiFy" displayName="Label conventions"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

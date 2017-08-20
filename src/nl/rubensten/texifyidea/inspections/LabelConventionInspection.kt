@@ -7,7 +7,10 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.*
+import org.intellij.lang.annotations.Language
+import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -17,7 +20,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
  *
  * @author Ruben Schellekens
  */
-open class MissingLabelInspection : TexifyInspectionBase() {
+open class LabelConventionInspection : TexifyInspectionBase() {
 
     companion object {
 
@@ -31,14 +34,28 @@ open class MissingLabelInspection : TexifyInspectionBase() {
                 Pair("\\section", "sec"),
                 Pair("\\subsection", "subsec")
         )
+
+        @Language("RegExp")
+        private val LABEL_PREFIX = Pattern.compile(".*:")
+
+        /**
+         * Looks for the command that the label is a definition for.
+         */
+        private fun findContextCommand(label: LatexCommands): LatexCommands? {
+            val grandparent = label.parent.parent
+            val sibling = LatexPsiUtil.getPreviousSiblingIgnoreWhitespace(grandparent) ?: return null
+
+            val commands = sibling.childrenOfType(LatexCommands::class)
+            return if (commands.isEmpty()) null else commands.first()
+        }
     }
 
     override fun getDisplayName(): String {
-        return "Missing labels"
+        return "Label conventions"
     }
 
     override fun getShortName(): String {
-        return "MissingLabel"
+        return "LabelConvention"
     }
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
@@ -46,15 +63,26 @@ open class MissingLabelInspection : TexifyInspectionBase() {
 
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (!LABELED_COMMANDS.containsKey(cmd.name)) {
+            if (cmd.name != "\\label") {
                 continue
             }
 
-            if (!cmd.hasLabel()) {
+            val required = cmd.requiredParameters
+            if (required.isEmpty()) {
+                continue
+            }
+
+            val context = findContextCommand(cmd) ?: continue
+            if (!LABELED_COMMANDS.containsKey(context.name)) {
+                continue
+            }
+
+            val prefix = LABELED_COMMANDS[context.name]!!
+            if (!required[0].startsWith("$prefix:")) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
-                        "Missing label",
-                        InsertLabelFix(),
+                        "Unconventional label prefix",
+                        LabelPreFix(),
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly
                 ))
@@ -67,14 +95,15 @@ open class MissingLabelInspection : TexifyInspectionBase() {
     /**
      * @author Ruben Schellekens
      */
-    private class InsertLabelFix : LocalQuickFix {
+    private class LabelPreFix : LocalQuickFix {
 
         override fun getFamilyName(): String {
-            return "Insert label"
+            return "Fix label name"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
+            val context = findContextCommand(command) ?: return
             val file = command.containingFile
             val document = file.document() ?: return
             val required = command.requiredParameters
@@ -83,15 +112,21 @@ open class MissingLabelInspection : TexifyInspectionBase() {
             }
 
             // Determine label name.
-            val prefix = LABELED_COMMANDS[command.name]
+            val prefix: String = LABELED_COMMANDS[context.name] ?: return
             val labelName = required[0].camelCase()
-            val createdLabelBase = "$prefix:$labelName"
+            val createdLabelBase = if (labelName.contains(":")) {
+                LABEL_PREFIX.matcher(labelName).replaceAll("$prefix:")
+            }
+            else {
+                "$prefix:$labelName"
+            }
 
-            val allLabels = TexifyUtil.findLabelsInFileSet(file)
-            val createdLabel = appendCounter(createdLabelBase, allLabels)
+            val createdLabel = appendCounter(createdLabelBase, TexifyUtil.findLabelsInFileSet(file))
 
-            // Insert label.
-            document.insertString(command.endOffset(), "\\label{$createdLabel}")
+            // Replace in document.
+            val offset = command.textOffset + 7
+            val length = required[0].length
+            document.replaceString(offset, offset + length, createdLabel)
         }
 
         /**
