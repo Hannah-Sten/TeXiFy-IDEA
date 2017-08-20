@@ -279,5 +279,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingImportInspection"
                          groupName="TeXiFy" displayName="Missing imports"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.UnresolvedReferenceInspection"
+                         groupName="TeXiFy" displayName="Unresolved references"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

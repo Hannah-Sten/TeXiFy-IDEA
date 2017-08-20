@@ -28,7 +28,7 @@ open class NonBreakingSpaceInspection : TexifyInspectionBase() {
         /**
          * All the commands that require a non-breaking space in front.
          */
-        private val NBS_COMMANDS = setOf("\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref")
+        val REFERENCE_COMMANDS = setOf("\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref")
 
         /**
          * Matches when a string doesn't end with a non-breaking space (`~`).
@@ -47,11 +47,10 @@ open class NonBreakingSpaceInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
-        val document = file.document() ?: return descriptors
 
         val commands = LatexCommandsIndex.getIndexCommands(file)
         for (cmd in commands) {
-            if (!NBS_COMMANDS.contains(cmd.name)) {
+            if (!REFERENCE_COMMANDS.contains(cmd.name)) {
                 continue
             }
 
