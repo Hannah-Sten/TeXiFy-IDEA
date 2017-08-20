@@ -5,8 +5,15 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexMathContent
 import kotlin.reflect.KClass
+
+/**
+ * Get the offset where the psi element ends.
+ */
+fun PsiElement.endOffset(): Int = textOffset + textLength
 
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
@@ -34,3 +41,13 @@ fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class)
  * Get the corresponding document of the PsiFile.
  */
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
+
+/**
+ * @see [LatexCommandsIndex.getIndexCommands]
+ */
+fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommands(this)
+
+/**
+ * @see [LatexCommandsIndex.getIndexCommandsInFileSet]
+ */
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommandsInFileSet(this)

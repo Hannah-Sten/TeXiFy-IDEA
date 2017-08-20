@@ -267,5 +267,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.DiscouragedUseOfDefInspection"
                          groupName="TeXiFy" displayName="Discouraged use of \def and \let"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingLabelInspection"
+                         groupName="TeXiFy" displayName="Missing labels"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

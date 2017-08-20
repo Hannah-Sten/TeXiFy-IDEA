@@ -519,6 +519,22 @@ public class TexifyUtil {
     }
 
     /**
+     * Finds all the defined labels in the fileset of the given file.
+     *
+     * @param file
+     *         The file to get all the labels from.
+     * @return A set containing all labels that are defined in the fileset of the given file.
+     */
+    public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
+        return LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
+                .filter(cmd -> cmd.getName().equals("\\label"))
+                .map(LatexCommands::getRequiredParameters)
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.get(0))
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * Finds all defined labels within the project.
      *
      * @param project
