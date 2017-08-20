@@ -7,6 +7,8 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexContent
+import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
@@ -29,10 +31,23 @@ open class LabelConventionInspection : TexifyInspectionBase() {
          *
          * command name `=>` label prefix without colon
          */
-        private val LABELED_COMMANDS = mapOf(
-                Pair("\\chapter", "ch"),
-                Pair("\\section", "sec"),
-                Pair("\\subsection", "subsec")
+        val LABELED_COMMANDS = mapOfVarargs(
+                "\\chapter", "ch",
+                "\\section", "sec",
+                "\\subsection", "subsec"
+        )
+
+        /**
+         * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
+         *
+         * environment name `=>` label prefix without colon
+         */
+        val LABELED_ENVIRONMENTS = mapOfVarargs(
+                "figure", "fig",
+                "table", "tab",
+                "tabular", "tab",
+                "equation", "eq",
+                "algorithm", "alg"
         )
 
         @Language("RegExp")
@@ -61,6 +76,14 @@ open class LabelConventionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
 
+        checkCommands(file, manager, isOntheFly, descriptors)
+        // checkEnvironments(file, manager, isOntheFly, descriptors)
+
+        return descriptors
+    }
+
+    private fun checkCommands(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
+                              descriptors: MutableList<ProblemDescriptor>) {
         val commands = file.commandsInFile()
         for (cmd in commands) {
             if (cmd.name != "\\label") {
@@ -88,8 +111,29 @@ open class LabelConventionInspection : TexifyInspectionBase() {
                 ))
             }
         }
+    }
 
-        return descriptors
+    private fun checkEnvironments(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
+                                  descriptors: MutableList<ProblemDescriptor>) {
+        val environments = file.childrenOfType(LatexEnvironment::class)
+        for (env in environments) {
+            val parameters = env.beginCommand.parameterList
+            if (parameters.isEmpty()) {
+                continue
+            }
+
+            val environmentName = parameters[0].requiredParam?.group?.contentList!![0].text ?: continue
+            if (!LABELED_ENVIRONMENTS.containsKey(environmentName)) {
+                continue
+            }
+
+            val labelMaybe = env.childrenOfType(LatexContent::class).stream()
+                    .filter { it.childrenOfType(LatexEnvironment::class).isEmpty() }
+                    .flatMap { it.childrenOfType(LatexCommands::class).stream() }
+                    .filter { it.name == "\\label" }
+        }
+
+        // TODO: make this work. but it's a bit dodgy..
     }
 
     /**

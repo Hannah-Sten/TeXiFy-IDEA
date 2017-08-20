@@ -28,7 +28,7 @@ open class NonBreakingSpaceInspection : TexifyInspectionBase() {
         /**
          * All the commands that require a non-breaking space in front.
          */
-        private val NBS_COMMANDS = setOf("\\ref", "\\cite")
+        private val NBS_COMMANDS = setOf("\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref")
 
         /**
          * Matches when a string doesn't end with a non-breaking space (`~`).

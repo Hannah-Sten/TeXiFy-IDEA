@@ -19,20 +19,6 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
  */
 open class MissingLabelInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        /**
-         * Map that maps all commands that are expected to have a label to the label prefix they have by convention.
-         *
-         * command name `=>` label prefix without colon
-         */
-        private val LABELED_COMMANDS = mapOf(
-                Pair("\\chapter", "ch"),
-                Pair("\\section", "sec"),
-                Pair("\\subsection", "subsec")
-        )
-    }
-
     override fun getDisplayName(): String {
         return "Missing labels"
     }
@@ -46,22 +32,36 @@ open class MissingLabelInspection : TexifyInspectionBase() {
 
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (!LABELED_COMMANDS.containsKey(cmd.name)) {
+            if (!LabelConventionInspection.LABELED_COMMANDS.containsKey(cmd.name)) {
                 continue
             }
 
-            if (!cmd.hasLabel()) {
-                descriptors.add(manager.createProblemDescriptor(
-                        cmd,
-                        "Missing label",
-                        InsertLabelFix(),
-                        ProblemHighlightType.WEAK_WARNING,
-                        isOntheFly
-                ))
-            }
+            addCommandDescriptor(cmd, descriptors, manager, isOntheFly)
         }
 
         return descriptors
+    }
+
+    /**
+     * Adds a command descriptor to the given command if there is a label missing.
+     *
+     * @return `true` when a descriptor was added, or `false` when no descriptor was added.
+     */
+    private fun addCommandDescriptor(command: LatexCommands, descriptors: MutableList<ProblemDescriptor>,
+                                     manager: InspectionManager, isOntheFly: Boolean): Boolean {
+        if (command.hasLabel()) {
+            return false
+        }
+
+        descriptors.add(manager.createProblemDescriptor(
+                command,
+                "Missing label",
+                InsertLabelFix(),
+                ProblemHighlightType.WEAK_WARNING,
+                isOntheFly
+        ))
+
+        return true
     }
 
     /**
@@ -83,7 +83,7 @@ open class MissingLabelInspection : TexifyInspectionBase() {
             }
 
             // Determine label name.
-            val prefix = LABELED_COMMANDS[command.name]
+            val prefix = LabelConventionInspection.LABELED_COMMANDS[command.name]
             val labelName = required[0].camelCase()
             val createdLabelBase = "$prefix:$labelName"
 

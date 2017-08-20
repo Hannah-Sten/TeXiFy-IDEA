@@ -51,6 +51,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     EMPH("emph", requiredText("text")),
     ENLARGETHISPAGE("enlargethispage", required("size")),
     ENLARGETHISPAGE_STAR("enlargethispage*", required("size")),
+    EQREF("eqref", AMSMATH, requiredText("eqLabel")),
     EVENSIDEMARGIN("evensidemargin"),
     FAMILY("family"),
     FBOX("fbox", requiredText("text")),
