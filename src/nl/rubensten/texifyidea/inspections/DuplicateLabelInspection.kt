@@ -5,7 +5,7 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.util.commandsInFile
+import nl.rubensten.texifyidea.util.commandsInFileSet
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -29,7 +29,7 @@ open class DuplicateLabelInspection : TexifyInspectionBase() {
         val descriptors = SmartList<ProblemDescriptor>()
 
         val labels: MutableSet<String> = HashSet()
-        val commands = file.commandsInFile()
+        val commands = file.commandsInFileSet()
         for (cmd in commands) {
             if (cmd.name != "\\label") {
                 continue
