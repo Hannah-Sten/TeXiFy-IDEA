@@ -262,7 +262,10 @@
                          groupName="TeXiFy" displayName="Start sentences on a new line"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection"
-                         groupName="TeXiFy" displayName="Non-breaking spaces"
+                         groupName="TeXiFy" displayName="Non-breaking spaces before references"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.DiscouragedUseOfDefInspection"
+                         groupName="TeXiFy" displayName="Discouraged use of \def and \let"
                          enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

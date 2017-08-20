@@ -1,0 +1,22 @@
+<html>
+<body>
+<tt>\def</tt> and <tt>\let</tt> are TeX primitves and their use is discouraged.
+<!-- tooltip end -->
+<p>
+    The usage of TeX primitives will often result in unwanted behaviour, especially when the exact workings are not known.
+</p>
+<p>
+    <tt>\def</tt> is a TeX primitive, <tt>\newcommand</tt> is a LaTeX overlay on top of <tt>\def</tt>.
+    The most obvious benefits of <tt>\newcommand</tt> over <tt>\def</tt> are:
+</p>
+<ol>
+    <li><tt>\newcommand</tt> checks whether or not the command already exists</li>
+    <li><tt>\newcommand</tt> allows you to define an optional argument</li>
+</ol>
+<p>
+    In general, anything that <tt>\newcommand</tt> does can be done by <tt>\def</tt>,
+    but it usually involves a little trickery and unless you want something that <tt>\newcommand</tt> can't do,
+    there's no point in reinventing the wheel.
+</p>
+</body>
+</html>

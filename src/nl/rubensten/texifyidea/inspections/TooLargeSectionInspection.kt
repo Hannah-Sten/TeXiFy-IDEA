@@ -28,7 +28,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
         /**
          * The amount of characters it takes before a section is considered 'too long'.
          */
-        val TOO_LONG_LIMIT = 5000
+        val TOO_LONG_LIMIT = 4000
 
         /**
          * Looks up the section command that comes after the given command.
@@ -39,7 +39,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
         fun findNextSection(command: LatexCommands): LatexCommands? {
             val commands = LatexCommandsIndex.getIndexCommands(command.containingFile).toList()
 
-            for (i in 0..commands.size - 1) {
+            for (i in 0 until commands.size) {
                 val cmd = commands[i]
 
                 val indexOfCurrent = SECTION_NAMES.indexOf(cmd.name)
@@ -79,7 +79,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        for (i in 0..commands.size - 1) {
+        for (i in 0 until commands.size) {
             if (!isTooLong(commands[i], findNextSection(commands[i]))) {
                 continue
             }
