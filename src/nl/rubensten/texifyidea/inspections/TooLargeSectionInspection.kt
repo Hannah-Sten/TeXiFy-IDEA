@@ -11,7 +11,12 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.TexifyUtil
+import nl.rubensten.texifyidea.util.childrenOfType
+import nl.rubensten.texifyidea.util.endOffset
+import org.intellij.lang.annotations.Language
+import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -20,15 +25,19 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
 open class TooLargeSectionInspection : TexifyInspectionBase() {
 
     companion object {
+
+        @Language("RegExp")
+        private val SECTION_COMMAND = Pattern.compile("\\\\(section|chapter)\\{[^{}]+}")
+
         /**
          * All commands that count as inspected sections in order of hierarchy.
          */
-        val SECTION_NAMES = listOf("\\chapter", "\\section")
+        private val SECTION_NAMES = listOf("\\chapter", "\\section")
 
         /**
          * The amount of characters it takes before a section is considered 'too long'.
          */
-        val TOO_LONG_LIMIT = 4000
+        private val TOO_LONG_LIMIT = 4000
 
         /**
          * Looks up the section command that comes after the given command.
@@ -103,7 +112,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
      *
      * Not the best way perhaps, but it does the job.
      */
-    private fun isAlreadySplit(file: PsiFile, commands: Collection<LatexCommands>) : Boolean {
+    private fun isAlreadySplit(file: PsiFile, commands: Collection<LatexCommands>): Boolean {
         val smallestIndex = commands.map { cmd -> SECTION_NAMES.indexOf(cmd.name) }.min() ?: return false
 
         // Just check if \section or \chapter occur only once.
@@ -150,10 +159,11 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands
             val nextCmd = findNextSection(cmd)
+            val label = findLabel(cmd)
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file)
 
-            val startIndex = cmd.textOffset
+            val startIndex = label?.endOffset() ?: cmd.endOffset()
             val endIndex = nextCmd?.textOffset ?: document?.textLength ?: return
             val text = document?.getText(TextRange(startIndex, endIndex)) ?: return
 
@@ -165,7 +175,22 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
             LocalFileSystem.getInstance().refresh(true)
 
             val createdFileName = createdFile.name.subSequence(0, createdFile.name.length - 4)
-            document.insertString(startIndex, "\\input{$createdFileName}\n\n")
+            document.insertString(startIndex, "\n\\input{$createdFileName}\n\n")
+        }
+
+        /**
+         * Finds the label command of the given command.
+         */
+        private fun findLabel(cmd: LatexCommands): LatexCommands? {
+            val grandparent = cmd.parent.parent
+            val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return null
+            val children = sibling.childrenOfType(LatexCommands::class)
+            if (children.isEmpty()) {
+                return null
+            }
+
+            val found = children.first()
+            return if (found.name == "\\label") found else null
         }
     }
 }
