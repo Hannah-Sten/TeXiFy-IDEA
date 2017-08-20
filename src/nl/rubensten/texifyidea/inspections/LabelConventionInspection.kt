@@ -34,7 +34,8 @@ open class LabelConventionInspection : TexifyInspectionBase() {
         val LABELED_COMMANDS = mapOfVarargs(
                 "\\chapter", "ch",
                 "\\section", "sec",
-                "\\subsection", "subsec"
+                "\\subsection", "subsec",
+                "\\item", "itm"
         )
 
         /**
