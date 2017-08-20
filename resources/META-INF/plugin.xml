@@ -256,10 +256,13 @@
                          groupName="TeXiFy" displayName="Too large sections"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.PrimitiveStyleInspection"
-                         groupName="TeXiFy" displayName="Use of TeX styling primitives discouraged"
+                         groupName="TeXiFy" displayName="TeX styling primitives usage is discouraged"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LineBreakInspection"
                          groupName="TeXiFy" displayName="Start sentences on a new line"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection"
+                         groupName="TeXiFy" displayName="Non-breaking spaces"
                          enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

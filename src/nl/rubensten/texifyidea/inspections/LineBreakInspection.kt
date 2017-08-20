@@ -46,7 +46,6 @@ open class LineBreakInspection : TexifyInspectionBase() {
         val descriptors = SmartList<ProblemDescriptor>()
         val document = file.document() ?: return descriptors
 
-        // Psi version
         val texts = file.childrenOfType(LatexNormalText::class)
         for (text: LatexNormalText in texts) {
             if (text.inMathMode()) {
