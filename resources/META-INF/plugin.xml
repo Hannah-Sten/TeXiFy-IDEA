@@ -276,5 +276,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LabelConventionInspection"
                          groupName="TeXiFy" displayName="Label conventions"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingImportInspection"
+                         groupName="TeXiFy" displayName="Missing imports"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
