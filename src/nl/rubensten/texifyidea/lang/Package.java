@@ -16,6 +16,7 @@ public class Package {
     public static final Package AMSMATH = new Package("amsmath");
     public static final Package MATHABX = new Package("mathabx");
     public static final Package ULEM = new Package("ulem");
+    public static final Package HYPERREF = new Package("hyperref");
 
     // Members
     private final String name;

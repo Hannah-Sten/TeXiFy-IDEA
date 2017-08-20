@@ -28,7 +28,10 @@ open class NonBreakingSpaceInspection : TexifyInspectionBase() {
         /**
          * All the commands that require a non-breaking space in front.
          */
-        val REFERENCE_COMMANDS = setOf("\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref")
+        @JvmStatic val REFERENCE_COMMANDS = setOf(
+                "\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref",
+                "\\fullref", "\\pageref"
+        )
 
         /**
          * Matches when a string doesn't end with a non-breaking space (`~`).
