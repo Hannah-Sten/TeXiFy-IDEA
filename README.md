@@ -89,18 +89,6 @@ Most inspections come with quick fixes.
 * Available file templates for `.tex`, `.sty` and `.cls` files. 
 * Many fancy icons with the look and feel of the IntelliJ platform.
 
-## In the works
-* Jumping to source code of packages [[TeXiFy-IDEA-2](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/TeXiFy-IDEA-2)].
-* Bibtex support [[bibtex](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/bibtex)].
-* PDF viewer [[pdf-viewer](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/pdf-viewer)].
-* Inspections [[inspection](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/inspection)].
-
-## Planned
-* Bibliography file (`.bib`) support.
-* Support for more LaTeX compilers.
-* Menu items to insert LaTeX commands/templates for the forgetful.
-* Easter eggs.
-
 ## How to build the project using IntelliJ
 * Clone or download the project.
 * Make a new project from existing sources, even if you used the option 'new project from version control'.
