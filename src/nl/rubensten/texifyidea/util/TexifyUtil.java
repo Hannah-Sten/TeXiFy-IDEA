@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -12,15 +13,21 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.rubensten.texifyidea.TeXception;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
+import nl.rubensten.texifyidea.lang.LatexMathCommand;
+import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.*;
+import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -50,6 +57,51 @@ public class TexifyUtil {
     private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
         Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls");
+    }
+
+    /**
+     * Creates a new file with a given name and given content.
+     * <p>
+     * Also checks if the file already exists, and modifies the name accordingly.
+     *
+     * @return The created file.
+     */
+    public static File createFile(String name, String contents) {
+        int count = 0;
+        String fileName = name;
+        while (new File(fileName).exists()) {
+            String ext = "." + FileUtils.getExtension(fileName);
+            String stripped = fileName.substring(0, fileName.length() - ext.length());
+
+            String intString = Integer.toString(count);
+            if (stripped.endsWith(intString)) {
+                stripped = stripped.substring(0, stripped.length() - intString.length());
+            }
+
+            fileName = stripped + (++count) + ext;
+        }
+
+        try (PrintWriter writer = new PrintWriter(fileName, "UTF-8")) {
+            writer.print(contents);
+        }
+        catch (IOException e) {
+            throw new TeXception("Could not write to file " + name, e);
+        }
+
+        return new File(fileName);
+    }
+
+    /**
+     * Deletes the given element from a document.
+     *
+     * @param document
+     *         The document to remove the element from.
+     * @param element
+     *         The element to remove from the document.
+     */
+    public static void deleteElement(@NotNull Document document, @NotNull PsiElement element) {
+        int offset = element.getTextOffset();
+        document.deleteString(offset, offset + element.getTextLength());
     }
 
     /**
@@ -467,6 +519,22 @@ public class TexifyUtil {
     }
 
     /**
+     * Finds all the defined labels in the fileset of the given file.
+     *
+     * @param file
+     *         The file to get all the labels from.
+     * @return A set containing all labels that are defined in the fileset of the given file.
+     */
+    public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
+        return LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
+                .filter(cmd -> cmd.getName().equals("\\label"))
+                .map(LatexCommands::getRequiredParameters)
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.get(0))
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * Finds all defined labels within the project.
      *
      * @param project
@@ -523,6 +591,46 @@ public class TexifyUtil {
             return null;
         }
         return filePath.substring(rootPath.length());
+    }
+
+    /**
+     * Returns the forced first required parameter of a command as a command.
+     * <p>
+     * This allows both example constructs {@code \\usepackage{\\foo}} and {@code
+     * \\usepackage\\foo}, which are equivalent. Note that when the command does not take parameters
+     * this method might return untrue results.
+     *
+     * @param command
+     *         The command to get the parameter for.
+     * @return The forced first required parameter of the command.
+     */
+    public static LatexCommands getForcedFirstRequiredParameterAsCommand(LatexCommands command) {
+        List<LatexRequiredParam> params = getRequiredParameters(command);
+        if (params.size() > 0) {
+            LatexRequiredParam param = params.get(0);
+            Collection<LatexCommands> found = PsiTreeUtil.findChildrenOfType(param, LatexCommands.class);
+            if (found.size() == 1) {
+                return (LatexCommands)(found.toArray()[0]);
+            }
+            else {
+                return null;
+            }
+        }
+
+        LatexContent sibling = PsiTreeUtil.getNextSiblingOfType(PsiTreeUtil.getParentOfType(command, LatexContent.class), LatexContent.class);
+        return PsiTreeUtil.findChildOfType(sibling, LatexCommands.class);
+    }
+
+    /**
+     * Checks whether the command is known by TeXiFy.
+     *
+     * @param command
+     *         The command to check.
+     * @return Whether the command is known.
+     */
+    public static boolean isCommandKnown(LatexCommands command) {
+        String commandName = command.getName().substring(1);
+        return LatexNoMathCommand.get(commandName).isPresent() || LatexMathCommand.get(commandName) != null;
     }
 
     /**

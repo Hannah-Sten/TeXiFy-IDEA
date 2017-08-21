@@ -4,16 +4,16 @@ package nl.rubensten.texifyidea.psi;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.Stream.Builder;
 
 public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, PsiNamedElement {
 
@@ -87,5 +87,24 @@ public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, P
                             .collect(Collectors.toList()));
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks if the command is followed by a label.
+     */
+    default boolean hasLabel() {
+        PsiElement grandparent = getParent().getParent();
+        PsiElement sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent);
+        if (sibling == null) {
+            return false;
+        }
+
+        Collection<LatexCommands> children = PsiTreeUtil.findChildrenOfType(sibling, LatexCommands.class);
+        if (children.isEmpty()) {
+            return false;
+        }
+
+        LatexCommands labelMaybe = children.iterator().next();
+        return "\\label".equals(labelMaybe.getName());
     }
 }

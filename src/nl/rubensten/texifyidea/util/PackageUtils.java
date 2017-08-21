@@ -1,8 +1,10 @@
 package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
+import nl.rubensten.texifyidea.lang.Package;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +63,29 @@ public interface PackageUtils {
         command += "{" + packageName + "}";
 
         document.insertString(insertLocation, command);
+    }
+
+    /**
+     * Inserts a usepackage statement for the given package in a certain file.
+     *
+     * @param file
+     *         The file to add the usepackage statement to.
+     * @param pack
+     *         The package to include.
+     */
+    static void insertUsepackage(@NotNull PsiFile file, @NotNull Package pack) {
+        if (pack.isDefault()) {
+            return;
+        }
+
+        Document document = PsiUtilKt.document(file);
+        if (document == null) {
+            return;
+        }
+
+        String[] params = pack.getParameters();
+        String parameterString = StringUtil.join(params, ",");
+        insertUsepackage(document, file, pack.getName(), parameterString);
     }
 
     /**

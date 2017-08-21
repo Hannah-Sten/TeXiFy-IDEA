@@ -1,0 +1,15 @@
+<html>
+<body>
+This statement redefines standard behavior of LaTeX commands that TeXiFy relies on.
+<!-- tooltip end -->
+<p>
+    LaTeX is a powerful language and therefore it is not too complicated to tweak things without us knowing what is really going on.
+    This intention flags redefinitions of standard LaTeX commands as <tt>\section</tt> or <tt>\def</tt> that TeXiFy uses for some of its magic.
+    When their definitions change, we cannot guarantee that TeXiFy will function properly.
+    It can be however that the new definition is harmless and everything works as expected, but you have to check this yourself as these definitions are too complicated to analyze automatically in general.
+</p>
+<p>
+    Bottom line: be careful with these statements and use a different command name where possible, unless you are very certain of what you are doing.
+</p>
+</body>
+</html>

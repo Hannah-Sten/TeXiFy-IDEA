@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.lang;
 import org.jetbrains.annotations.NotNull;
 
 import nl.rubensten.texifyidea.lang.Argument.Type;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -21,6 +22,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     CAPITAL_AE("AE", "Æ"),
     APPENDIX("appendix"),
     AUTHOR("author", requiredText("name")),
+    AUTOREF("autoref", Package.HYPERREF, requiredText("label")),
     BEGIN("begin", required("environment")),
     END("end", required("environment")),
     ENSUREMATH("ensuremath", required("text")),
@@ -50,6 +52,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     EMPH("emph", requiredText("text")),
     ENLARGETHISPAGE("enlargethispage", required("size")),
     ENLARGETHISPAGE_STAR("enlargethispage*", required("size")),
+    EQREF("eqref", AMSMATH, requiredText("eqLabel")),
     EVENSIDEMARGIN("evensidemargin"),
     FAMILY("family"),
     FBOX("fbox", requiredText("text")),
@@ -71,6 +74,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     FRAME("frame", requiredText("text")),
     FRQ("frq", "›"),
     FRQQ("frqq", "»"),
+    FULLREF("fullref", Package.HYPERREF, requiredText("label")),
     GLOSSARYENTRY("glossaryentry", requiredText("text"), required("pagenum")),
     GLOSSARY("glossary", requiredText("text")),
     GLQ("glq", ","),
@@ -87,6 +91,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     HSS("hss"),
     HUGE("huge"),
     CAPITAL_HUGE("Huge"),
+    HYPERREF("hyperref", Package.HYPERREF, optional("options"), requiredText("label")),
     HYPHENATION("hyphenation", requiredText("words")),
     I("i", "i (dotless)"),
     INCLUDE("include", new RequiredFileArgument("sourcefile", "tex")),
@@ -128,6 +133,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     MDSERIES("mdseries"),
     MEDSKIP("medskip"),
     MULTICOLUMN("multicolumn", required("cols"), required("pos"), requiredText("text")),
+    NAMEREF("nameref", Package.HYPERREF, requiredText("label")),
     NEWLABEL("newlabel"),
     NEWLENGTH("newlength", required("length")),
     NEWLINE("newline"),
@@ -312,9 +318,14 @@ public enum LatexNoMathCommand implements LatexCommand {
             requiredText("begdef"), requiredText("enddef")),;
 
     private static final Map<String, LatexNoMathCommand> lookup = new HashMap<>();
+    private static final Map<String, LatexNoMathCommand> lookupDisplay = new HashMap<>();
+
     static {
         for (LatexNoMathCommand command : LatexNoMathCommand.values()) {
             lookup.put(command.getCommand(), command);
+            if (command.display != null) {
+                lookupDisplay.putIfAbsent(command.display, command);
+            }
         }
     }
 
@@ -344,6 +355,11 @@ public enum LatexNoMathCommand implements LatexCommand {
 
     public static Optional<LatexNoMathCommand> get(String command) {
         return Optional.ofNullable(lookup.get(command));
+    }
+
+    @Nullable
+    public static LatexNoMathCommand findByDisplay(String display) {
+        return lookupDisplay.get(display);
     }
 
     private static RequiredArgument required(String name) {
