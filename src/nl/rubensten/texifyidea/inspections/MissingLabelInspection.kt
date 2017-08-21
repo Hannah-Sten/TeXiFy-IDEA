@@ -32,7 +32,7 @@ open class MissingLabelInspection : TexifyInspectionBase() {
 
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (!LabelConventionInspection.LABELED_COMMANDS.containsKey(cmd.name)) {
+            if (!LabelConventionInspection.LABELED_COMMANDS.containsKey(cmd.name) || cmd.name == "\\item") {
                 continue
             }
 
