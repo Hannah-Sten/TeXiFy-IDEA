@@ -63,6 +63,38 @@ fun PsiElement.allChildren(): List<PsiElement> = LatexPsiUtil.getAllChildren(thi
  */
 fun PsiElement.allLatexChildren(): List<PsiElement> = LatexPsiUtil.getChildren(this)
 
+/**
+ * Finds the `generations`th parent of the psi element.
+ */
+fun PsiElement.grandparent(generations: Int): PsiElement? {
+    var parent: PsiElement = this
+    for (i in 1..generations) {
+        parent = parent.parent ?: return null
+    }
+    return parent
+}
+
+/**
+ * Checks if the psi element has a (grand) parent that matches the given predicate.
+ */
+fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
+    var count = 0
+    var parent = this.parent
+    while (parent != null && parent !is PsiFile) {
+        if (predicate(parent)) {
+            return true
+        }
+
+        parent = parent.parent
+
+        if (count++ > maxDepth) {
+            return false
+        }
+    }
+
+    return false
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// PSI FILE //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +123,11 @@ fun PsiFile.fileRelativeTo(path: String): PsiFile? = TexifyUtil.getFileRelativeT
  * @see TexifyUtil.findLabelsInFileSet
  */
 fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this)
+
+/**
+ * @see TexifyUtil.getReferencedFileSet
+ */
+fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////

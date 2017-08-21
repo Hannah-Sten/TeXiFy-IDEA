@@ -118,7 +118,7 @@
                     text="Subp_aragraph" description="Insert the subparagraph command." />
         </group>
 
-        <!-- Insert: Sectioning -->
+        <!-- Insert: Font Style -->
         <group id="texify.LatexMenu.Insert.FontStyle" class="nl.rubensten.texifyidea.action.group.InsertFontStyleActionGroup" text="_Font Style" description="Insert font style commands." popup="true">
             <add-to-group group-id="texify.LatexMenu" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning" />
 
@@ -163,8 +163,19 @@
             </action>
         </group>
 
+        <!-- Analysis -->
+        <group id="texify.LatexMenu.Analysis" class="nl.rubensten.texifyidea.action.group.AnalysisActionGroup" text="_Analysis" description="Analyse your documents." popup="true">
+            <add-to-group group-id="texify.LatexMenu" anchor="before" relative-to-action="texify.LatexMenu.Sumatra"/>
+
+            <action class="nl.rubensten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
+                    text="_Word count" description="Estimate the word count of the currently active .tex file and inclusions.">
+                <keyboard-shortcut first-keystroke="control alt W" keymap="$default" />
+            </action>
+        </group>
+
         <!-- SumatraPDF -->
-        <group id="texify.LatexMenu.Sumatra" class="nl.rubensten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF" description="Interact with SumatraPDF." popup="true">
+        <group id="texify.LatexMenu.Sumatra" class="nl.rubensten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF"
+               description="Interact with SumatraPDF." popup="true" icon="/nl/rubensten/texifyidea/icons/sumatra.pdf">
             <add-to-group group-id="texify.LatexMenu" anchor="before" relative-to-action="texify.ToggleStar"/>
 
             <action class="nl.rubensten.texifyidea.action.sumatra.ForwardSearchAction" id="texify.sumatra.ForwardSearch"

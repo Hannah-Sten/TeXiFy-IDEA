@@ -18,7 +18,7 @@ import nl.rubensten.texifyidea.run.SumatraConversation
  * @author Sten Wessel
  * @since b0.4
  */
-class ForwardSearchAction : EditorAction("ForwardSearch", null) {
+open class ForwardSearchAction : EditorAction("ForwardSearch", null) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
         if (!SystemInfo.isWindows) {
