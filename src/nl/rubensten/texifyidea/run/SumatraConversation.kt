@@ -15,7 +15,15 @@ object SumatraConversation {
     private val SERVER = "SUMATRA"
     private val TOPIC = "control"
 
-    private val conversation: DDEClientConversation = DDEClientConversation()
+    private val conversation: DDEClientConversation
+
+    init {
+        try {
+            conversation = DDEClientConversation()
+        } catch (e: NoClassDefFoundError) {
+            throw TeXception("Native library DLLs could not be found.", e)
+        }
+    }
 
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, start: Boolean = false) {
         if (start) {
