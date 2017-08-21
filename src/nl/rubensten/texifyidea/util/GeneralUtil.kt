@@ -19,3 +19,9 @@ infix fun Any.debug(message: String) = print("$message: $this")
  * Prints `message: OBJECT` to the console including line feed.
  */
 infix fun Any.debugln(message: String) = println("$message: $this")
+
+/**
+ * @see TexifyUtil.toRoman
+ */
+@Throws(IllegalArgumentException::class)
+fun Int.toRoman(): String = TexifyUtil.toRoman(this)

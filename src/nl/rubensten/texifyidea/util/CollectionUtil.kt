@@ -1,5 +1,7 @@
 package nl.rubensten.texifyidea.util
 
+import java.util.*
+
 /**
  * Puts all the elements of an array into a mutable map.
  *
@@ -48,3 +50,8 @@ fun <T> mutableMapOfVarargs(vararg args: T): MutableMap<T, T> = mutableMapOfArra
  * @throws IllegalArgumentException When there is an odd amount of elements in the array.
  */
 fun <T> mapOfVarargs(vararg args: T): Map<T, T> = mutableMapOfArray(args)
+
+/**
+ * Gets a random element from the list using the given random object.
+ */
+fun <T> List<T>.randomElement(random: Random): T = this[random.nextInt(this.size)]

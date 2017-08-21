@@ -86,7 +86,7 @@ public class LatexFileProvider extends CompletionProvider<CompletionParameters> 
             );
         }
 
-        result.addLookupAdvertisement(Kindness.getKindWords());
+        result.addLookupAdvertisement(Kindness.INSTANCE.getKindWords());
     }
 
     private String noBack(String stuff) {

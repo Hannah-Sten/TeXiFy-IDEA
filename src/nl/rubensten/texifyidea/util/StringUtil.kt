@@ -21,3 +21,12 @@ fun String.camelCase(): String {
 
     return sb.toString()
 }
+
+/**
+ * Repeats the given string `count` amount of times.
+ */
+fun String.repeat(count: Int): String = TexifyUtil.fill(this, count)
+
+fun main(args: Array<String>) {
+
+}

@@ -181,17 +181,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Capitalises the first letter of the string.
-     */
-    public static String capitaliseFirst(@NotNull String text) {
-        if (text.length() == 0) {
-            return "";
-        }
-
-        return text.substring(0, 1).toUpperCase() + text.substring(1, text.length());
-    }
-
-    /**
      * Recursive implementation of {@link TexifyUtil#getReferencedFiles(PsiFile)}.
      */
     private static void getReferencedFiles(@NotNull PsiFile file, @NotNull Collection<PsiFile> files) {
@@ -472,11 +461,7 @@ public class TexifyUtil {
     public static boolean isEntryPoint(LatexBeginCommand command) {
         // Currently: only allowing '\begin{document}'
         List<LatexRequiredParam> requiredParams = getRequiredParameters(command);
-        if (requiredParams.size() != 1) {
-            return false;
-        }
-
-        return requiredParams.get(0).getText().equals("{document}");
+        return requiredParams.size() == 1 && requiredParams.get(0).getText().equals("{document}");
     }
 
     /**

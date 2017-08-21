@@ -6,9 +6,15 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexMathContent
+import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import kotlin.reflect.KClass
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// PSI ELEMENT ///////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Get the offset where the psi element ends.
@@ -38,6 +44,30 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
 fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class)
 
 /**
+ * @see LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
+ */
+fun PsiElement.previousSiblingIgnoreWhitespace() = LatexPsiUtil.getPreviousSiblingIgnoreWhitespace(this)
+
+/**
+ * @see LatexPsiUtil.getNextSiblingIgnoreWhitespace
+ */
+fun PsiElement.nextSiblingIgnoreWhitespace() = LatexPsiUtil.getNextSiblingIgnoreWhitespace(this)
+
+/**
+ * @see LatexPsiUtil.getAllChildren
+ */
+fun PsiElement.allChildren(): List<PsiElement> = LatexPsiUtil.getAllChildren(this)
+
+/**
+ * @see LatexPsiUtil.getChildren
+ */
+fun PsiElement.allLatexChildren(): List<PsiElement> = LatexPsiUtil.getChildren(this)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// PSI FILE //////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
  * Get the corresponding document of the PsiFile.
  */
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
@@ -51,3 +81,37 @@ fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.get
  * @see [LatexCommandsIndex.getIndexCommandsInFileSet]
  */
 fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommandsInFileSet(this)
+
+/**
+ * @see TexifyUtil.getFileRelativeTo
+ */
+fun PsiFile.fileRelativeTo(path: String): PsiFile? = TexifyUtil.getFileRelativeTo(this, path)
+
+/**
+ * @see TexifyUtil.findLabelsInFileSet
+ */
+fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @see TexifyUtil.getNextCommand
+ */
+fun LatexCommands.nextCommand(): LatexCommands? = TexifyUtil.getNextCommand(this)
+
+/**
+ * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
+ */
+fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+
+/**
+ * @see TexifyUtil.isCommandKnown
+ */
+fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
+
+/**
+ * @see TexifyUtil.isEntryPoint
+ */
+fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
