@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.3.1</version>
+    <version>0.4</version>
     <idea-version since-build="141.0"/>
     <vendor url="http://ruben-sten.github.io">Ruben-Sten</vendor>
 
@@ -43,36 +43,37 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <h1>Beta 0.3</h1>
+        <h1>Beta 0.4</h1>
         <p>
-            The third release of TeXiFy IDEA, and we are very proud to introduce a number of great features. We especially have good news
-            for Mac users: compiling now actually works! Thanks to all issue reporters for their
-            contributions! All feature requests and bug reports are more than welcome on our Issues page. Pull requests
-            are also welcome!
+            The fifth installment of the TeXiFy IDEA plugin with as main feature: <em>inspections</em>!
         </p>
-        <p><em>New features</em></p>
+        <p><em>Changes</em></p>
         <ul>
-            <li>Completion for <code>\label{}</code> references, <code>\newcommand{}</code> commands and included files/directories with fancy icons.</li>
-            <li>Structure view, showing sectioning, inclusions, labels and command definitions, also with nice icons.</li>
-            <li>An improved formatter with does not scatter your code around but aligns it nicely and indented instead.</li>
-            <li><em>Go to declaration</em> (Ctrl+click or Ctrl+B) for label references.</li>
-            <li>Inserting a command with at least one required argument inserts the braces for you.</li>
-            <li>Spell checker.</li>
-            <li>Custom compiler path (for Mac users and adventurous Windows people).</li>
-            <li>Automatic creation of output directories (also for Mac users).</li>
-            <li>PDF and DVI icon, because we need more icons.</li>
-            <li>Easier error reporting when an exception occurs.</li>
+            <li>Added heaps of inspections (and quick fixes)</li>
+            <li>Added document navigation support for SumatraPDF (Windows only)</li>
+            <li>Added quick navigation for labels</li>
+            <li>Added word count tool</li>
+            <li>Added several insertion actions</li>
+            <li>Added toggle star action</li>
+            <li>Packages of registered commands get included automatically</li>
+            <li>Packages that are required for commands show up in autocomplete</li>
+            <li>More math symbols show up in preview of autocomplete</li>
+            <li>Extended the default list of commands</li>
         </ul>
 
         <p><em>Bug fixes</em></p>
         <ul>
-            <li>Inline math after display math is recognized.</li>
-            <li>Smashed a number of ugly exceptions in numerous places.</li>
-            <li>(Unmatched) square brackets in math mode no longer gives syntax errors.</li>
-            <li>Inline math runover trailing <code>$</code> also works when closing the completion dialog.</li>
+            <li>Fixed autocomplete for files not showing up (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/87">#87</a>)</li>
+            <li>Fixed autocomplete not working backward (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/86">#86</a>)</li>
+            <li>Fixed NPE related to custom commands in autocomplete (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/89">#89</a>)</li>
+            <li>Fixed 2nd dollar sign being inserted in comments (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/41">#41</a>)</li>
+            <li>Fixed failed build in IJ 2017.2 (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/80">#80</a>)</li>
+            <li>Fixed NPE in run configurations (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/82">#82</a>)</li>
+            <li>Fixed pdfLaTeX not ending with code 0 (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/100">#100</a>)</li>
+            <li>Fixed more NPEs</li>
         </ul>
 
-        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.3">GitHub
+        <p>Full list available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.4">GitHub
             release page</a>.</p>
         ]]>
     </change-notes>

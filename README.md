@@ -29,6 +29,9 @@ Please bear in mind that this is just a side project for us.
 * Gutter icon to automatically compile the active file.
 * Comment out lines.
 * Code folding for environments.
+* Go to declaration of labels.
+* Toggle star in commands.
+* Automatically includes packages for registered commands (in TeXiFy, e.g. `ulem` for `\sout`)
 
 ### Syntax highlighting
 Braces, 
@@ -51,15 +54,39 @@ and Stars.
 * Updates automatically during editing.
 
 ### Inspections
-* Integration with the default IntelliJ spell checker. 
+Most inspections come with quick fixes.
 
-### Templates
-* Available file templates for `.tex`, `.sty` and `.cls` files. 
+* Integration with the default IntelliJ spell checker. 
+* Already defined commands
+* Discouraged use of `\def` and `\let`
+* Duplicate labels
+* Label conventions (`sec:`, `fig:` etc.)
+* Breaking TeXiFy IDEA functionality
+* Missing document environment
+* Missing `\documentclass`
+* Missing imports
+* Missing labels on `\section`, `\subsection` and `\chapter`
+* Non-breaking spaces before references
+* Non-escaped common math operators
+* Redundant escapes when unicode is enabled
+* Start sentences on a new line
+* Discouraged TeX styling primitive usage
+* Too large sections: move to another file
+* Unresolved references
+* Unsupported Unicode characters
+* Use of `\over` encouraged
+
+### PDF Viewer
+* Offical support for SumatraPDF on Windows
+* Supports forward and backward search (Windows only)
 
 ### User Interface
 * Create new `.tex`, `.sty` and `.cls` files from the new file menu.
+* Some insertion actions from the LaTeX menu for styling and sections.
 
 ### Other
+* Word- and character counting tool
+* Available file templates for `.tex`, `.sty` and `.cls` files. 
 * Many fancy icons with the look and feel of the IntelliJ platform.
 
 ## In the works
@@ -69,8 +96,6 @@ and Stars.
 * Inspections [[inspection](https://github.com/Ruben-Sten/TeXiFy-IDEA/tree/inspection)].
 
 ## Planned
-* Embedded (automatically updating) PDF viewer.
-* Inspections.
 * Bibliography file (`.bib`) support.
 * Support for more LaTeX compilers.
 * Menu items to insert LaTeX commands/templates for the forgetful.
