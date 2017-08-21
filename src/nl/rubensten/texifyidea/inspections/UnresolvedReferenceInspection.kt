@@ -46,7 +46,7 @@ open class UnresolvedReferenceInspection : TexifyInspectionBase() {
                         cmd,
                         "Unresolved reference",
                         NO_FIX,
-                        ProblemHighlightType.ERROR,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                 ))
             }
