@@ -5,5 +5,5 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 /**
  * @author Ruben Schellekens
  */
-class AnalysisActionGroup : DefaultActionGroup() {
+open class AnalysisActionGroup : DefaultActionGroup() {
 }

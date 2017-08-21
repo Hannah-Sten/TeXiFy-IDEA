@@ -18,7 +18,7 @@ import javax.swing.SwingConstants
  * @author Sten Wessel
  * @since b0.4
  */
-class ConfigureInverseSearchAction : AnAction("ConfigureInverseSearch") {
+open class ConfigureInverseSearchAction : AnAction("ConfigureInverseSearch") {
 
     override fun actionPerformed(e: AnActionEvent?) {
         DialogBuilder().apply {

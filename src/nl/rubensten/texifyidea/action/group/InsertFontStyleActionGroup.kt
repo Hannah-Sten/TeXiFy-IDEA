@@ -7,7 +7,7 @@ import nl.rubensten.texifyidea.TexifyIcons
 /**
  * @author Ruben Schellekens
  */
-class InsertFontStyleActionGroup : DefaultActionGroup() {
+open class InsertFontStyleActionGroup : DefaultActionGroup() {
 
     override fun update(event: AnActionEvent?) {
         super.update(event)

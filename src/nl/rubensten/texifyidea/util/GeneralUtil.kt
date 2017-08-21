@@ -13,12 +13,12 @@ fun Any.println() = println(this)
 /**
  * Prints `message: OBJECT` to the console.
  */
-infix fun Any.debug(message: String) = print("$message: $this")
+infix fun Any.debug(message: Any) = print("$message: $this")
 
 /**
  * Prints `message: OBJECT` to the console including line feed.
  */
-infix fun Any.debugln(message: String) = println("$message: $this")
+infix fun Any.debugln(message: Any) = println("$message: $this")
 
 /**
  * @see TexifyUtil.toRoman

@@ -7,7 +7,7 @@ import nl.rubensten.texifyidea.TexifyIcons
 /**
  * @author Ruben Schellekens
  */
-class InsertSectioningActionGroup : DefaultActionGroup() {
+open class InsertSectioningActionGroup : DefaultActionGroup() {
 
     override fun update(event: AnActionEvent?) {
         super.update(event)
