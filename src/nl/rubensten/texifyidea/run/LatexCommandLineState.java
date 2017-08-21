@@ -11,6 +11,7 @@ import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -57,6 +58,10 @@ public class LatexCommandLineState extends CommandLineState {
 
         ProcessHandler handler = new KillableProcessHandler(cmdLine);
         ProcessTerminatedListener.attach(handler, getEnvironment().getProject());
+
+        if (SystemInfo.isWindows) {
+            handler.addProcessListener(new OpenSumatraListener(runConfig));
+        }
 
         return handler;
     }
