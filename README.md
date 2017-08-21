@@ -74,7 +74,7 @@ Most inspections come with quick fixes.
 * Too large sections: move to another file
 * Unresolved references
 * Unsupported Unicode characters
-* Use of `\over` encouraged
+* Use of `\over` discouraged
 
 ### PDF Viewer
 * Offical support for SumatraPDF on Windows
