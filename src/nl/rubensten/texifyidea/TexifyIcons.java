@@ -213,6 +213,13 @@ public class TexifyIcons {
     );
 
     /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon SUMATRA = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/sumatra.png"
+    );
+
+    /**
      * Get the file icon object that corresponds to the given file extension.
      * <p>
      * This method ignores case.
