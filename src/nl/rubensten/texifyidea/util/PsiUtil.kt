@@ -51,6 +51,44 @@ fun PsiElement.previousSiblingIgnoreWhitespace() = LatexPsiUtil.getPreviousSibli
 fun PsiElement.nextSiblingIgnoreWhitespace() = LatexPsiUtil.getNextSiblingIgnoreWhitespace(this)
 
 /**
+ * Finds the next sibling of the element that has the given type.
+ *
+ * @return The first following sibling of the given type, or `null` when the sibling couldn't be found.
+ */
+fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? {
+    var sibling: PsiElement? = this
+    while (sibling != null) {
+        if (clazz.java.isAssignableFrom(sibling::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return sibling as T
+        }
+
+        sibling = sibling.nextSibling
+    }
+
+    return null
+}
+
+/**
+ * Finds the previous sibling of the element that has the given type.
+ *
+ * @return The first previous sibling of the given type, or `null` when the sibling couldn't be found.
+ */
+fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
+    var sibling: PsiElement? = this
+    while (sibling != null) {
+        if (clazz.java.isAssignableFrom(sibling::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return sibling as T
+        }
+
+        sibling = sibling.prevSibling
+    }
+
+    return null
+}
+
+/**
  * @see LatexPsiUtil.getAllChildren
  */
 fun PsiElement.allChildren(): List<PsiElement> = LatexPsiUtil.getAllChildren(this)
@@ -173,7 +211,7 @@ fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(thi
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
  */
-fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingIgnoreWhitespace() as? LatexEndCommand
+fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEndCommand::class)
 
 /**
  * Get the environment name of the end command.
@@ -183,4 +221,4 @@ fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
 /**
  * Finds the [LatexBeginCommand] that matches the end command.
  */
-fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingIgnoreWhitespace() as? LatexBeginCommand
+fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(LatexBeginCommand::class)
