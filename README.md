@@ -1,3 +1,5 @@
+[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/TeXiFy-IDEA/Lobby)
+
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
@@ -5,8 +7,6 @@ Create the most beautiful LaTeX documents with the user friendliness of the Inte
 This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin.
 Feel free to share your ideas and contributions with us.
 Please bear in mind that this is just a side project for us.
-
-For live chat, visit the [gitter.im chat room](https://gitter.im/TeXiFy-IDEA/Lobby).
 
 # Features
 
