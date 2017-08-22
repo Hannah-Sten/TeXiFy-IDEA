@@ -28,7 +28,7 @@
     <name>TeXiFy IDEA</name>
     <version>0.4</version>
     <idea-version since-build="141.0"/>
-    <vendor url="http://ruben-sten.github.io">Ruben-Sten</vendor>
+    <vendor url="https://ruben-sten.github.io/home/index.html">Ruben-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs -->
     <depends>com.intellij.modules.lang</depends>
