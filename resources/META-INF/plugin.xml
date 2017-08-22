@@ -309,5 +309,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.UnresolvedReferenceInspection"
                          groupName="TeXiFy" displayName="Unresolved references"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonMatchingEnvironmentInspection"
+                         groupName="TeXiFy" displayName="Non matching environment commands"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

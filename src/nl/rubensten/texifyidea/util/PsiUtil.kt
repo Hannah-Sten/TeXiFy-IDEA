@@ -6,10 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.psi.LatexBeginCommand
-import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.psi.LatexMathContent
-import nl.rubensten.texifyidea.psi.LatexPsiUtil
+import nl.rubensten.texifyidea.psi.*
 import kotlin.reflect.KClass
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,6 +146,41 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands = Texif
 fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
 
 /**
+ * Get the environment name of a begin/end command.
+ *
+ * @param element
+ *              Either a [LatexBeginCommand] or a [LatexEndCommand]
+ */
+private fun beginOrEndEnvironmentName(element: PsiElement): String? {
+    val children = element.childrenOfType(LatexNormalText::class)
+    if (children.isEmpty()) {
+        return null
+    }
+
+    return children.first().text
+}
+
+/**
  * @see TexifyUtil.isEntryPoint
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
+
+/**
+ * Get the environment name of the begin command.
+ */
+fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
+
+/**
+ * Finds the [LatexEndCommand] that matches the begin command.
+ */
+fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingIgnoreWhitespace() as? LatexEndCommand
+
+/**
+ * Get the environment name of the end command.
+ */
+fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
+
+/**
+ * Finds the [LatexBeginCommand] that matches the end command.
+ */
+fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingIgnoreWhitespace() as? LatexBeginCommand
