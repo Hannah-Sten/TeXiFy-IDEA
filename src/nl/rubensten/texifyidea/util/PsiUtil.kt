@@ -6,10 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.psi.LatexBeginCommand
-import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.psi.LatexMathContent
-import nl.rubensten.texifyidea.psi.LatexPsiUtil
+import nl.rubensten.texifyidea.psi.*
 import kotlin.reflect.KClass
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,6 +92,38 @@ fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boole
     return false
 }
 
+/**
+ * Checks if the element is in a direct environment.
+ *
+ * This method does not take nested environments into account. Meaning that only the first parent environment counts.
+ */
+fun PsiElement.inDirectEnvironment(environmentName: String): Boolean = inDirectEnvironment(listOf(environmentName))
+
+/**
+ * Checks if the element is one of certain direct environments.
+ *
+ * This method does not take nested environments into account. Meaning that only the first parent environment counts.
+ */
+fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
+    val environment = parentOfType(LatexEnvironment::class) ?: return false
+    val nameText = environment.name() ?: return false
+    return validNames.contains(nameText.text)
+}
+
+/**
+ * Checks if the psi element is a child of `parent`.
+ *
+ * @return `true` when the element is a child of `parent`, `false` when the element is not a child of `parent` or when
+ *          `parent` is `null`
+ */
+fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
+    if (parent == null) {
+        return false
+    }
+
+    return hasParentMatching(1000) { it == parent }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// PSI FILE //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,3 +181,21 @@ fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
  * @see TexifyUtil.isEntryPoint
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
+
+/**
+ * Looks up the name of the environment in the required parameter.
+ */
+fun LatexEnvironment.name(): LatexNormalText? {
+    val parameters = childrenOfType(LatexParameter::class)
+    if (parameters.isEmpty()) {
+        return null
+    }
+
+    val parameter = parameters.first()
+    val texts = parameter.childrenOfType(LatexNormalText::class)
+    if (texts.isEmpty()) {
+        return null
+    }
+
+    return texts.first()
+}

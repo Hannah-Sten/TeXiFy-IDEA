@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 
 /**
@@ -27,4 +28,18 @@ fun Document.lineIndentation(lineNumber: Int): String {
     }
 
     return result.toString()
+}
+
+/**
+ * Inserts a string into the document and moves the caret to the end of the inserted string.
+ *
+ * @param offset
+ *              Where to insert the string.
+ * @param string
+ *              The string to insert.
+ */
+fun Editor.insertAndMove(offset: Int, string: String) {
+    val document = this.document
+    document.insertString(offset, string)
+    caretModel.moveToOffset(caretModel.offset + string.length)
 }
