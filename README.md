@@ -6,6 +6,8 @@ This plugin adds the tools to make creating LaTeX documents a breeze. We are cur
 Feel free to share your ideas and contributions with us.
 Please bear in mind that this is just a side project for us.
 
+For live chat, visit the [gitter.im chat room](https://gitter.im/TeXiFy-IDEA/Lobby).
+
 # Features
 
 ## Currently supported
