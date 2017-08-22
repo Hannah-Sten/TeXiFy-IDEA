@@ -1,3 +1,5 @@
+[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/TeXiFy-IDEA/Lobby)
+
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
@@ -99,12 +101,30 @@ Most inspections come with quick fixes.
 * Under Project Structure - Modules - Plugin Deployment change the resources path to the correct path, `\path\to\TeXiFy-IDEA\resources`.
 * Add a new run configuration of type Plugin (if you cannot make a new run configuration, restart some stuff or wait a bit).
 * Mark the `resources` folder as resources root by right-clicking on it and selecting Mark Directory As - Resources, otherwise it won't find the great icons.
+* Go to Project Structure - Libraries and hit the plus icon in the middle column. Select `Java`. Select `lib/pretty-tools-JDDE-2.1.0.jar`.
+* Install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html) if you want to use Go To Line in PDF/Source. 
+
 #### To run directly from source
+* Note: sometimes this way will not work and will generate strange errors. In that case, see below to build the plugin to use it directly in IntelliJ.
+* Find out the location of your IntelliJ Sandbox by going to Project Structure - SDKs - IntelliJ IDEA ... - Sandbox Home, and copy the two `.dll`s from `path/to/TeXiFy/project/lib/` to `path/to/sandbox/plugins/TeXiFy-IDEA/lib/`.
 * Run in debug mode, normal run may not work.
+* The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
+* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
 * To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
 * Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
-* After running the pdf is in the folder `out`.
-* Pro tip: until there is an embedded pdf viewer use SumatraPDF which allows you to keep the file open while recompiling.
 #### To build the plugin for use in IntelliJ
 * Use Build - Prepare Plugin Module ...
+* Add the two `.dll`s from `lib/pretty-tools-JDDE-2.1.0/` to the compiled plugin by unzipping, copying the files to the `lib` directory and zipping.
 * Add the plugin to IntelliJ using Settings - Plugins - Install plugin from disk.
+* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
+
+## FAQ
+
+#### `Error: java: package com.google.common.base does not exist`
+
+* Update IntelliJ (help - check for updates).
+* Update your IntelliJ SDK: go to Project Structure - SDKs.
+* Hit the plus in the middle column and select IntelliJ Platform Plugin SDK.
+* Select your IntelliJ installation directory (e.g. `C:\Program Files (x86)\JetBrains\IntelliJ IDEA xxxx.x`). 
+* Remove your old SDK. It is called 'IntelliJ IDEA IU-xxx' where `xxx` is anything but the highest number. 
+* Go to Project Structure - Project and select the new SDK.
