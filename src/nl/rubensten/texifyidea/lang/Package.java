@@ -17,6 +17,7 @@ public class Package {
     public static final Package MATHABX = new Package("mathabx");
     public static final Package ULEM = new Package("ulem");
     public static final Package HYPERREF = new Package("hyperref");
+    public static final Package LATEXSYMB = new Package("latexsymb");
 
     // Members
     private final String name;
