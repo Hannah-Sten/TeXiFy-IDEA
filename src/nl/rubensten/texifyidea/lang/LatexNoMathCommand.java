@@ -417,7 +417,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     }
 
     @NotNull
-    public Package getPackage() {
+    public Package getDependency() {
         return thePackage;
     }
 

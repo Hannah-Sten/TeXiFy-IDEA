@@ -440,7 +440,7 @@ public enum LatexMathCommand implements LatexCommand {
     }
 
     @NotNull
-    public Package getPackage() {
+    public Package getDependency() {
         return thePackage;
     }
 

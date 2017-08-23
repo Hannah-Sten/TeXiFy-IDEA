@@ -88,14 +88,16 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
     private void addEnvironments(CompletionResultSet result) {
         result.addAllElements(ContainerUtil.map2List(
                 Environment.values(),
-                cmd -> LookupElementBuilder.create(cmd, cmd.getEnvName())
-                        .withPresentableText(cmd.getEnvName())
+                env -> LookupElementBuilder.create(env, env.getEnvName())
+                        .withPresentableText(env.getEnvName())
+                        .bold()
+                        .withTailText(packageName(env), true)
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
     }
 
-    private String packageName(LatexCommand command) {
-        String name = command.getPackage().getName();
+    private String packageName(Dependend dependend) {
+        String name = dependend.getDependency().getName();
         if ("".equals(name)) {
             return "";
         }

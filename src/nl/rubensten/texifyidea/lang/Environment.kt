@@ -13,7 +13,7 @@ enum class Environment(
         val initialContents: String = "",
         val context: Context = Context.NORMAL,
         val `package`: Package = Package.DEFAULT
-) {
+) : Dependend {
 
     // Vanilla LaTeX
     ABSTRACT(envName = "abstract"),
@@ -104,6 +104,8 @@ enum class Environment(
          */
         operator fun get(name: String): Environment? = lookup[name]
     }
+
+    override fun getDependency(): Package = `package`
 
     /**
      * @author Ruben Schellekens

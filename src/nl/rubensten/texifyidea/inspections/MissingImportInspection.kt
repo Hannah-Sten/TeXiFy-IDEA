@@ -35,7 +35,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
         val commands = file.commandsInFileSet()
         for (cmd in commands) {
             val latexCommand = LatexCommand.lookup(cmd.name) ?: continue
-            val pack = latexCommand.`package`
+            val pack = latexCommand.getDependency()
 
             if (pack.isDefault) {
                 continue
@@ -69,7 +69,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
             val latexCommand = LatexCommand.lookup(command.name) ?: return
             val file = command.containingFile
 
-            PackageUtils.insertUsepackage(file, latexCommand.`package`)
+            PackageUtils.insertUsepackage(file, latexCommand.getDependency())
         }
     }
 }

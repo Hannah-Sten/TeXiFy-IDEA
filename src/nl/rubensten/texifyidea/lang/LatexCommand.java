@@ -1,12 +1,11 @@
 package nl.rubensten.texifyidea.lang;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Ruben Schellekens
  */
-public interface LatexCommand {
+public interface LatexCommand extends Dependend {
 
     /**
      * Looks up the given command name in all {@link LatexMathCommand}s and {@link
@@ -44,12 +43,4 @@ public interface LatexCommand {
      * Get all the command arguments.
      */
     Argument[] getArguments();
-
-    /**
-     * Get the package that is required for the command to work.
-     *
-     * @return The package object, or {@link Package#DEFAULT} when no package is needed.
-     */
-    @NotNull
-    Package getPackage();
 }
