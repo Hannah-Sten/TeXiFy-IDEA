@@ -4,6 +4,7 @@ import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import nl.rubensten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -28,14 +29,18 @@ public class LatexAnnotator implements Annotator {
         else if (psiElement instanceof LatexOptionalParam) {
             annotateOptionalParameters((LatexOptionalParam)psiElement, annotationHolder);
         }
+        // Comment
+        else if (psiElement instanceof PsiComment) {
+            annotateComment((PsiComment)psiElement, annotationHolder);
+        }
     }
 
     /**
      * Annotates an inline math element and its children.
      * <p>
-     * All elements will  be coloured accoding to {@link LatexSyntaxHighlighter#INLINE_MATH} and
-     * all commands that are contained in the math environment get styled with
-     * {@link LatexSyntaxHighlighter#COMMAND_MATH_INLINE}.
+     * All elements will  be coloured accoding to {@link LatexSyntaxHighlighter#INLINE_MATH} and all
+     * commands that are contained in the math environment get styled with {@link
+     * LatexSyntaxHighlighter#COMMAND_MATH_INLINE}.
      */
     private void annotateInlineMath(@NotNull LatexInlineMath inlineMathElement,
                                     @NotNull AnnotationHolder annotationHolder) {
@@ -50,16 +55,26 @@ public class LatexAnnotator implements Annotator {
      * Annotates a display math element and its children.
      * <p>
      * All elements will  be coloured accoding to {@link LatexSyntaxHighlighter#DISPLAY_MATH} and
-     * all commands that are contained in the math environment get styled with
-     * {@link LatexSyntaxHighlighter#COMMAND_MATH_DISPLAY}.
+     * all commands that are contained in the math environment get styled with {@link
+     * LatexSyntaxHighlighter#COMMAND_MATH_DISPLAY}.
      */
     private void annotateDisplayMath(@NotNull LatexDisplayMath displayMathElement,
                                      @NotNull AnnotationHolder annotationHolder) {
         Annotation annotation = annotationHolder.createInfoAnnotation(displayMathElement, null);
         annotation.setTextAttributes(LatexSyntaxHighlighter.DISPLAY_MATH);
 
-        annotateMathCommands(LatexPsiUtil.getAllChildren(displayMathElement), annotationHolder,
-                LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY);
+        List<PsiElement> children = LatexPsiUtil.getAllChildren(displayMathElement);
+        annotateMathCommands(children, annotationHolder, LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY);
+    }
+
+    /**
+     * Annotates the given comment.
+     * @param comment The comment to annotate.
+     */
+    private void annotateComment(@NotNull PsiComment comment,
+                                 @NotNull AnnotationHolder annotationHolder) {
+        Annotation annotation = annotationHolder.createInfoAnnotation(comment, null);
+        annotation.setTextAttributes(LatexSyntaxHighlighter.COMMENT);
     }
 
     /**
