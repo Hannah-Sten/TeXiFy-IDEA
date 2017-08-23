@@ -114,8 +114,7 @@ open class LabelConventionInspection : TexifyInspectionBase() {
         }
     }
 
-    private fun checkEnvironments(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
-                                  descriptors: MutableList<ProblemDescriptor>) {
+    private fun checkEnvironments(file: PsiFile) {
         val environments = file.childrenOfType(LatexEnvironment::class)
         for (env in environments) {
             val parameters = env.beginCommand.parameterList

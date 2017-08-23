@@ -65,7 +65,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         }
         // Middle of the list => Find previous \item.
         else {
-            getPreviousLabel(environment, element)
+            getPreviousLabel(element)
         } ?: return null // when no label could befound.
 
         // Extract optional parameters.
@@ -98,7 +98,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      *
      * @return The previous label, or `null` when it couldn't be found.
      */
-    private fun getPreviousLabel(environment: LatexEnvironment, element: PsiElement): LatexCommands? {
+    private fun getPreviousLabel(element: PsiElement): LatexCommands? {
         var sibling: PsiElement? = element.previousSiblingIgnoreWhitespace()
 
         while (sibling != null) {
