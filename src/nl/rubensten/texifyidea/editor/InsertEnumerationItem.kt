@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.*
@@ -27,8 +28,11 @@ class InsertEnumerationItem : EnterHandlerDelegate {
 
     override fun postProcessEnter(file: PsiFile, editor: Editor, context: DataContext): EnterHandlerDelegate.Result {
         ShiftTracker.setup(editor.contentComponent)
-        val caret = editor.caretModel
+        if (file.fileType != LatexFileType.INSTANCE) {
+            return Result.Continue
+        }
 
+        val caret = editor.caretModel
         val element = file.findElementAt(caret.offset)
         if (hasValidContext(element)) {
             editor.insertAndMove(caret.offset, getInsertionString(element!!))
