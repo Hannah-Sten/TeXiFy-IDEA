@@ -6,10 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.psi.LatexBeginCommand
-import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.psi.LatexMathContent
-import nl.rubensten.texifyidea.psi.LatexPsiUtil
+import nl.rubensten.texifyidea.psi.*
 import kotlin.reflect.KClass
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,6 +49,44 @@ fun PsiElement.previousSiblingIgnoreWhitespace() = LatexPsiUtil.getPreviousSibli
  * @see LatexPsiUtil.getNextSiblingIgnoreWhitespace
  */
 fun PsiElement.nextSiblingIgnoreWhitespace() = LatexPsiUtil.getNextSiblingIgnoreWhitespace(this)
+
+/**
+ * Finds the next sibling of the element that has the given type.
+ *
+ * @return The first following sibling of the given type, or `null` when the sibling couldn't be found.
+ */
+fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? {
+    var sibling: PsiElement? = this
+    while (sibling != null) {
+        if (clazz.java.isAssignableFrom(sibling::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return sibling as T
+        }
+
+        sibling = sibling.nextSibling
+    }
+
+    return null
+}
+
+/**
+ * Finds the previous sibling of the element that has the given type.
+ *
+ * @return The first previous sibling of the given type, or `null` when the sibling couldn't be found.
+ */
+fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
+    var sibling: PsiElement? = this
+    while (sibling != null) {
+        if (clazz.java.isAssignableFrom(sibling::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return sibling as T
+        }
+
+        sibling = sibling.prevSibling
+    }
+
+    return null
+}
 
 /**
  * @see LatexPsiUtil.getAllChildren
@@ -149,6 +184,41 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands = Texif
 fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
 
 /**
+ * Get the environment name of a begin/end command.
+ *
+ * @param element
+ *              Either a [LatexBeginCommand] or a [LatexEndCommand]
+ */
+private fun beginOrEndEnvironmentName(element: PsiElement): String? {
+    val children = element.childrenOfType(LatexNormalText::class)
+    if (children.isEmpty()) {
+        return null
+    }
+
+    return children.first().text
+}
+
+/**
  * @see TexifyUtil.isEntryPoint
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
+
+/**
+ * Get the environment name of the begin command.
+ */
+fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
+
+/**
+ * Finds the [LatexEndCommand] that matches the begin command.
+ */
+fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEndCommand::class)
+
+/**
+ * Get the environment name of the end command.
+ */
+fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
+
+/**
+ * Finds the [LatexBeginCommand] that matches the end command.
+ */
+fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(LatexBeginCommand::class)
