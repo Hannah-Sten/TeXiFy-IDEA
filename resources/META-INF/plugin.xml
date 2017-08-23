@@ -315,5 +315,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonMatchingEnvironmentInspection"
                          groupName="TeXiFy" displayName="Non matching environment commands"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.EllipsisInspection"
+                         groupName="TeXiFy" displayName="Ellipsis with ... instead of \ldots or \dots"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
