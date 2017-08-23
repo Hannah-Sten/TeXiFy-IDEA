@@ -31,9 +31,9 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         val INSERT_SYMBOLS = setOf("_", "^")
 
         /**
-         * Matches the suffix that denotes that braces may be inserted.
+         * Matches the suffix that denotes that braces may not be inserted.
          */
-        val INSERT_REQUIREMENT = Pattern.compile("^[a-zA-Z0-9]$")!!
+        val INSERT_FORBIDDEN = Pattern.compile("^\\s+$")!!
     }
 
     override fun charTyped(c: Char, project: Project?, editor: Editor, file: PsiFile): Result {
@@ -47,12 +47,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
         // Insert squiggly brackets.
         if (element is LatexNormalText) {
-            handleNormalText(element, editor)
+            handleNormalText(element, editor, c)
         }
         else {
             val normalText = findNormalText(element)
             if (normalText != null) {
-                handleNormalText(normalText, editor)
+                handleNormalText(normalText, editor, c)
             }
         }
 
@@ -78,14 +78,14 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
             }
             is LeafPsiElement -> {
                 // Whenever a character is inserted just before the close brace of a group/inline math end.
-                val content = element.prevSibling?: return@exit null
+                val content = element.prevSibling ?: return@exit null
                 return@exit content.firstChildOfType(LatexNormalText::class)
             }
             else -> null
         }
     }
 
-    private fun handleNormalText(normalText: LatexNormalText, editor: Editor) {
+    private fun handleNormalText(normalText: LatexNormalText, editor: Editor, char: Char) {
         // Check if in math environment.
         if (!normalText.hasParent(LatexMathEnvironment::class)) {
             return
@@ -101,8 +101,8 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         }
 
         // Only insert when a valid symbol has been typed.
-        val afterSymbol = text.substring(relative - 2, relative - 1)
-        if (!INSERT_REQUIREMENT.matcher(afterSymbol).matches()) {
+        val afterSymbol = char.toString()
+        if (INSERT_FORBIDDEN.matcher(afterSymbol).matches()) {
             return
         }
 
