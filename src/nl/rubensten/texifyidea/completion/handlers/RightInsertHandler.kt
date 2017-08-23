@@ -40,6 +40,7 @@ open class RightInsertHandler : InsertHandler<LookupElement> {
     private fun insertRight(commandName: String, editor: Editor) {
         val char = commandName.substring(4)
         val opposite = OPPOSITES[char] ?: return
-        editor.document.insertString(editor.caretModel.offset, "\\right$opposite")
+        editor.document.insertString(editor.caretModel.offset, "  \\right$opposite")
+        editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
     }
 }

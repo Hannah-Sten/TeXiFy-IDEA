@@ -27,6 +27,17 @@ fun String.camelCase(): String {
  */
 fun String.repeat(count: Int): String = TexifyUtil.fill(this, count)
 
-fun main(args: Array<String>) {
+/**
+ * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
+ */
+fun String.substringEnd(startIndex: Int): String = substring(0, length - startIndex)
 
-}
+/**
+ * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
+ */
+fun String.substringEnd(startIndex: Int, endIndex: Int): String = substring(length - endIndex, length - startIndex)
+
+/**
+ * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
+ */
+fun String.substringEnd(range: IntRange): String = substringEnd(range.start, range.endInclusive + 1)
