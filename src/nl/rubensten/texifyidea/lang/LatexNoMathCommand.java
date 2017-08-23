@@ -70,6 +70,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     FOOTNOTESIZE("footnotesize"),
     FOOTNOTETEXT("footnotetext", optional("number"), requiredText("text")),
     FOOTNOTE("footnote", optional("number"), requiredText("text")),
+    FOOTNOTEMARK("footnotemark"),
     FRAMEBOX("framebox", optional("width"), optional("pos"), optionalText("text")),
     FRAME("frame", requiredText("text")),
     FRQ("frq", "›"),
