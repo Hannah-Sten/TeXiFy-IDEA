@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.editor
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
@@ -12,6 +13,7 @@ import nl.rubensten.texifyidea.psi.LatexMathContent
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment
 import nl.rubensten.texifyidea.psi.LatexNoMathContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
+import nl.rubensten.texifyidea.psi.LatexTypes.*
 import nl.rubensten.texifyidea.util.firstChildOfType
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.lastChildOfType
@@ -33,7 +35,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         /**
          * Matches the suffix that denotes that braces may not be inserted.
          */
-        val INSERT_FORBIDDEN = Pattern.compile("^\\s+$")!!
+        val INSERT_FORBIDDEN = Pattern.compile("^[\\s^_,.;%]$")!!
     }
 
     override fun charTyped(c: Char, project: Project?, editor: Editor, file: PsiFile): Result {
@@ -62,7 +64,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
     private fun findNormalText(element: PsiElement): LatexNormalText? {
         return exit@ when (element) {
             is PsiWhiteSpace -> {
-                // Whenever the whitespace is the end of a math environment.
+                // When the whitespace is the end of a math environment.
                 val sibling = element.previousSiblingIgnoreWhitespace()
                 if (sibling != null) {
                     if (sibling is LatexMathContent) {
@@ -76,10 +78,25 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
                 return@exit null
             }
+            is PsiComment -> {
+                // When for some reason people want to insert it directly before a comment.
+                val mother = element.previousSiblingIgnoreWhitespace() ?: return@exit null
+                return@exit mother.lastChildOfType(LatexNormalText::class)
+            }
             is LeafPsiElement -> {
-                // Whenever a character is inserted just before the close brace of a group/inline math end.
-                val content = element.prevSibling ?: return@exit null
-                return@exit content.firstChildOfType(LatexNormalText::class)
+                when (element.elementType) {
+                    END_COMMAND, BEGIN_COMMAND, COMMAND_TOKEN -> {
+                        // When it is followed by a LatexCommands or comment tokens.
+                        val noMathContent = element.parent.parent ?: return@exit null
+                        val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return@exit null
+                        return@exit sibling.firstChildOfType(LatexNormalText::class)
+                    }
+                    else -> {
+                        // When a character is inserted just before the close brace of a group/inline math end.
+                        val content = element.prevSibling ?: return@exit null
+                        return@exit content.firstChildOfType(LatexNormalText::class)
+                    }
+                }
             }
             else -> null
         }
