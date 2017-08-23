@@ -25,3 +25,8 @@ infix fun Any.debugln(message: Any) = println("$message: $this")
  */
 @Throws(IllegalArgumentException::class)
 fun Int.toRoman(): String = TexifyUtil.toRoman(this)
+
+/**
+ * @see Integer.toHexString
+ */
+fun Int.toHex(): String = Integer.toHexString(this)
