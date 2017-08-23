@@ -24,6 +24,30 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> = PsiTreeUtil.findChildrenOfType(this, clazz.java)
 
 /**
+ * See method name.
+ */
+fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
+    val children = childrenOfType(clazz)
+    if (children.isEmpty()) {
+        return null
+    }
+
+    return children.first()
+}
+
+/**
+ * See method name.
+ */
+fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
+    val children = childrenOfType(clazz)
+    if (children.isEmpty()) {
+        return null
+    }
+
+    return children.last()
+}
+
+/**
  * @see [PsiTreeUtil.getParentOfType]
  */
 fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil.getParentOfType(this, clazz.java)
