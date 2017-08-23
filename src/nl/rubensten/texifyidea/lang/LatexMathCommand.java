@@ -144,6 +144,22 @@ public enum LatexMathCommand implements LatexCommand {
     BOXED_DOT("boxdot", AMSSYMB, "⊡", false),
 
     /*
+     *  Left/Right
+     */
+    LEFT_PARENTH("left(", "(", false),
+    RIGHT_PARENTH("right)", ")", false),
+    LEFT_BRACKET("left[", "[", false),
+    RIGHT_BRACKET("right]", "]", false),
+    LEFT_BRACE("left\\{", "{", false),
+    RIGHT_BRACE("right\\}", "}", false),
+    LEFT_ANGULAR("left<", "<", false),
+    RIGHT_ANGULAR("right>", ">", false),
+    LEFT_PIPE("left|", "|", false),
+    RIGHT_PIPE("right|", "|", false),
+    LEFT_DOUBLE_PIPE("left\\|", "||", false),
+    RIGHT_DOUBLE_PIPE("right\\|", "||", false),
+
+    /*
         Generic commands
      */
     MATHBF("mathbf", required("text")),

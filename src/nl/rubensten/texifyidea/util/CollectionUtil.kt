@@ -1,6 +1,8 @@
 package nl.rubensten.texifyidea.util
 
 import java.util.*
+import java.util.stream.Collectors
+import java.util.stream.Stream
 
 /**
  * Puts all the elements of an array into a mutable map.
@@ -55,3 +57,35 @@ fun <T> mapOfVarargs(vararg args: T): Map<T, T> = mutableMapOfArray(args)
  * Gets a random element from the list using the given random object.
  */
 fun <T> List<T>.randomElement(random: Random): T = this[random.nextInt(this.size)]
+
+/**
+ * Looks up keys in the map that has the given `value`.
+ *
+ * @return All keys with the given value.
+ */
+fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
+    return entries.stream()
+            .filter { (_, v) -> v == value }
+            .map { it.key }
+            .set()
+}
+
+/**
+ * Collects stream to [List].
+ */
+fun <T> Stream<T>.list(): List<T> = this.mutableList()
+
+/**
+ * Collects stream to [MutableList].
+ */
+fun <T> Stream<T>.mutableList(): MutableList<T> = this.collect(Collectors.toList())
+
+/**
+ * Collects stream to [Set].
+ */
+fun <T> Stream<T>.set(): Set<T> = this.mutableSet()
+
+/**
+ * Collects stream to [MutableSet]
+ */
+fun <T> Stream<T>.mutableSet(): MutableSet<T> = this.collect(Collectors.toSet())

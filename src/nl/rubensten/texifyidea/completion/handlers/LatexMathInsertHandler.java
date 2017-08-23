@@ -13,5 +13,6 @@ public class LatexMathInsertHandler implements InsertHandler<LookupElement> {
     public void handleInsert(InsertionContext context, LookupElement item) {
         new LatexCommandArgumentInsertHandler().handleInsert(context, item);
         new LatexCommandPackageIncludeHandler().handleInsert(context, item);
+        new RightInsertHandler().handleInsert(context, item);
     }
 }
