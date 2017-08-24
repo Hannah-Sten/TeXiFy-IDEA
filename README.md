@@ -1,4 +1,4 @@
-[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/TeXiFy-IDEA/Lobby)
+[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/TeXiFy-IDEA)
 
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
@@ -8,18 +8,18 @@ This plugin adds the tools to make creating LaTeX documents a breeze. We are cur
 Feel free to share your ideas and contributions with us.
 Please bear in mind that this is just a side project for us.
 
-# Features
+## Features
 
-## Currently supported
+### Currently supported
 
-### Run configurations
+#### Run configurations
 * Multiple 'compile' (run) configurations.
 * Supported compilers: `pdfLaTeX`
 * Seperate auxiliary files from output (only supported for `MiKTeX`).
 * Dynamically detect what runtime configuration to use based on the active file.
 * Support for `PDF` and `DVI` output.
 
-### Editor
+#### Editor
 * Autocompletion form a predefined list of commands.
 * Commands defined in the project will also be added to the autocompletion list.
 * Autocompletion of defined labels (using `\label`).
@@ -35,7 +35,7 @@ Please bear in mind that this is just a side project for us.
 * Toggle star in commands.
 * Automatically includes packages for registered commands (in TeXiFy, e.g. `ulem` for `\sout`)
 
-### Syntax highlighting
+#### Syntax highlighting
 Braces, 
 Brackets, 
 Optional parameters, 
@@ -47,7 +47,7 @@ Inline math,
 Display math, 
 and Stars.
 
-### Structure view
+#### Structure view
 * Shows sectioning, inclusions, labels and command definitions.
 * Items can be sorted.
 * Filters to add/remove items from view.
@@ -55,7 +55,7 @@ and Stars.
 * Included files also show their item tree in the overview.
 * Updates automatically during editing.
 
-### Inspections
+#### Inspections
 Most inspections come with quick fixes.
 
 * Integration with the default IntelliJ spell checker. 
@@ -78,15 +78,15 @@ Most inspections come with quick fixes.
 * Unsupported Unicode characters
 * Use of `\over` discouraged
 
-### PDF Viewer
+#### PDF Viewer
 * Offical support for SumatraPDF on Windows
 * Supports forward and backward search (Windows only)
 
-### User Interface
+#### User Interface
 * Create new `.tex`, `.sty` and `.cls` files from the new file menu.
 * Some insertion actions from the LaTeX menu for styling and sections.
 
-### Other
+#### Other
 * Word- and character counting tool
 * Available file templates for `.tex`, `.sty` and `.cls` files. 
 * Many fancy icons with the look and feel of the IntelliJ platform.
