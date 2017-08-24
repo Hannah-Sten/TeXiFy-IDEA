@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -153,6 +154,13 @@ fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boole
     }
 
     return false
+}
+
+/**
+ * Checks whether the psi element is part of a comment or not.
+ */
+fun PsiElement.isComment(): Boolean {
+    return this is PsiComment || inDirectEnvironmentContext(Environment.Context.COMMENT)
 }
 
 /**
