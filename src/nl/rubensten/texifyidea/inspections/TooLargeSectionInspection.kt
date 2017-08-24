@@ -84,7 +84,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
         val commands = LatexCommandsIndex.getIndexCommands(file)
                 .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
 
-        if (isAlreadySplit(file, commands)) {
+        if (isAlreadySplit(commands)) {
             return descriptors
         }
 
@@ -112,7 +112,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
      *
      * Not the best way perhaps, but it does the job.
      */
-    private fun isAlreadySplit(file: PsiFile, commands: Collection<LatexCommands>): Boolean {
+    private fun isAlreadySplit(commands: Collection<LatexCommands>): Boolean {
         val smallestIndex = commands.map { cmd -> SECTION_NAMES.indexOf(cmd.name) }.min() ?: return false
 
         // Just check if \section or \chapter occur only once.
