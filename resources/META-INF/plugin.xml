@@ -211,7 +211,7 @@
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
-        <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.LatexCommenter"/>
+        <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
 
         <!-- Structure view -->
