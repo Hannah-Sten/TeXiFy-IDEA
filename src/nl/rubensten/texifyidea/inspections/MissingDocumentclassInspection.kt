@@ -43,7 +43,7 @@ open class MissingDocumentclassInspection : TexifyInspectionBase() {
                             file,
                             "Document doesn't contain a \\documentclass command.",
                             InspectionFix(),
-                            ProblemHighlightType.ERROR,
+                            ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly
                     )
             )

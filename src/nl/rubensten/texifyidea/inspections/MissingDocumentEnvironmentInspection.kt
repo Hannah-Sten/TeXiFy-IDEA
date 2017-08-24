@@ -58,7 +58,7 @@ open class MissingDocumentEnvironmentInspection : TexifyInspectionBase() {
                         file,
                         "Document doesn't contain a document environment.",
                         InspectionFix(),
-                        ProblemHighlightType.ERROR,
+                        ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
                 )
         )

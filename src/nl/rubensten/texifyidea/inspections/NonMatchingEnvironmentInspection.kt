@@ -41,7 +41,7 @@ open class NonMatchingEnvironmentInspection : TexifyInspectionBase() {
                     begin,
                     "Environment name does not match with the name in \\end.",
                     MatchBeginFix(beginEnvironment),
-                    ProblemHighlightType.ERROR,
+                    ProblemHighlightType.GENERIC_ERROR,
                     isOntheFly
             ))
 
@@ -50,7 +50,7 @@ open class NonMatchingEnvironmentInspection : TexifyInspectionBase() {
                     end,
                     "Environment name does not match with the name in \\begin.",
                     MatchEndFix(endEnvironment),
-                    ProblemHighlightType.ERROR,
+                    ProblemHighlightType.GENERIC_ERROR,
                     isOntheFly
             ))
         }

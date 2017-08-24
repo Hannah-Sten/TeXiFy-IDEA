@@ -45,7 +45,7 @@ open class DuplicateLabelInspection : TexifyInspectionBase() {
                         cmd,
                         "Duplicate label",
                         NO_FIX,
-                        ProblemHighlightType.ERROR,
+                        ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
                 ))
             }

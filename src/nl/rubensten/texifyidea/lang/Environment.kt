@@ -25,7 +25,6 @@ enum class Environment(
     ENUMERATE(envName = "enumerate", initialContents = "\\item "),
     EQUATION(envName = "equation", context = Context.MATH),
     EQUATION_STAR(envName = "equation*", context = Context.MATH),
-    EQNARRAY(envName = "eqnarray"),
     FIGURE(envName = "figure", arguments = OptionalArgument("placement")),
     FIGURE_STAR(envName = "figure*", arguments = OptionalArgument("placement")),
     FILECONTENTS(envName = "filecontents"),

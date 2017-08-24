@@ -65,16 +65,20 @@ object PackageUtils {
     }
 
     /**
-     * Inserts a usepackage statement for the given package in a certain file.
+     * Inserts a usepackage statement for the given package in a certain file when the package hasn't been included yet.
      *
      * @param file
-     * The file to add the usepackage statement to.
+     *          The file to add the usepackage statement to.
      * @param pack
-     * The package to include.
+     *          The package to include.
      */
     @JvmStatic
     fun insertUsepackage(file: PsiFile, pack: Package) {
         if (pack.isDefault) {
+            return
+        }
+
+        if (file.includedPackages().contains(pack.name)) {
             return
         }
 

@@ -318,5 +318,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.EllipsisInspection"
                          groupName="TeXiFy" displayName="Ellipsis with ... instead of \ldots or \dots"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.AvoidEqnarrayInspection"
+                         groupName="TeXiFy" displayName="Avoid eqnarray"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

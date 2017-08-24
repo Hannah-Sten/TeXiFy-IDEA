@@ -24,7 +24,6 @@ import java.util.Optional;
  */
 public class LatexSpellcheckingStrategy extends SpellcheckingStrategy {
 
-
     @Override
     public boolean isMyContext(@NotNull PsiElement psiElement) {
         return psiElement.getLanguage().equals(LatexLanguage.INSTANCE);

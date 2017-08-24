@@ -316,6 +316,7 @@ public enum LatexMathCommand implements LatexCommand {
     DIVIDEONTIMES("divideontimes", AMSSYMB, "⋇", true),
     DOTEQ("doteq"),
     DOT("dot", required("a")),
+    DOTS("dots", AMSMATH, "⋯", true),
     ELL("ell"),
     EXP("exp"),
     FLAT("flat", "♭", true),
