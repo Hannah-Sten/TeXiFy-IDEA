@@ -76,7 +76,10 @@ enum class Environment(
     MULTLINE_STAR(envName = "multline*", context = Context.MATH, `package` = Package.AMSMATH),
     SPLIT(envName = "split", context = Context.MATH, `package` = Package.AMSMATH),
     SPLIT_STAR(envName = "split*", context = Context.MATH, `package` = Package.AMSMATH),
-    CASES(envName = "cases", context = Context.MATH, `package` = Package.AMSMATH);
+    CASES(envName = "cases", context = Context.MATH, `package` = Package.AMSMATH),
+
+    // comment
+    COMMENT(envName = "comment", context = Context.COMMENT, `package` = Package.COMMENT);
 
     companion object {
 
@@ -111,6 +114,6 @@ enum class Environment(
      * @author Ruben Schellekens
      */
     enum class Context {
-        NORMAL, MATH
+        NORMAL, MATH, COMMENT
     }
 }

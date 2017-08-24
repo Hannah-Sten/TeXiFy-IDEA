@@ -3,11 +3,12 @@ package nl.rubensten.texifyidea.highlighting
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.inDirectEnvironmentMatching
+import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
 
 /**
  * @author Ruben Schellekens
@@ -15,16 +16,21 @@ import nl.rubensten.texifyidea.util.inDirectEnvironmentMatching
 open class LatexAnnotator : Annotator {
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
+        // Comments
+        if (psiElement is PsiComment) {
+            annotateComment(psiElement, annotationHolder)
+        }
+        else if (psiElement.inDirectEnvironmentContext(Environment.Context.COMMENT)) {
+            annotateComment(psiElement, annotationHolder)
+        }
         // Math display
-        if (psiElement is LatexInlineMath) {
+        else if (psiElement is LatexInlineMath) {
             annotateInlineMath(psiElement, annotationHolder)
         }
         else if (psiElement is LatexDisplayMath) {
             annotateDisplayMath(psiElement, annotationHolder)
         }
-        else if (psiElement.inDirectEnvironmentMatching {
-            Environment.fromPsi(it)?.context == Environment.Context.MATH
-        }) {
+        else if (psiElement.inDirectEnvironmentContext(Environment.Context.MATH)) {
             annotateDisplayMath(psiElement, annotationHolder)
         }
         // Optional parameters
@@ -63,6 +69,14 @@ open class LatexAnnotator : Annotator {
 
         annotateMathCommands(displayMathElement.childrenOfType(LatexCommands::class), annotationHolder,
                 LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+    }
+
+    /**
+     * Annotates the given comment.
+     */
+    private fun annotateComment(comment: PsiElement, annotationHolder: AnnotationHolder) {
+        val annotation = annotationHolder.createInfoAnnotation(comment, null)
+        annotation.textAttributes = LatexSyntaxHighlighter.COMMENT
     }
 
     /**

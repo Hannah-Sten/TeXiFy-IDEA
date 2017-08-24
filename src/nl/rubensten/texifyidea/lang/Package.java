@@ -18,6 +18,7 @@ public class Package {
     public static final Package ULEM = new Package("ulem");
     public static final Package HYPERREF = new Package("hyperref");
     public static final Package LATEXSYMB = new Package("latexsymb");
+    public static final Package COMMENT = new Package("comment");
 
     // Members
     private final String name;
