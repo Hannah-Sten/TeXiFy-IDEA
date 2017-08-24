@@ -7,6 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -25,6 +26,11 @@ open class MissingDocumentclassInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
+
+        // Workaround, because .sty files also return LatexFileType.INSTANCE
+        if (file.virtualFile.extension != LatexFileType.INSTANCE.defaultExtension) {
+            return descriptors
+        }
 
         val commands = LatexCommandsIndex.getIndexCommandsInFileSet(file)
         val hasDocumentclass = commands.stream()

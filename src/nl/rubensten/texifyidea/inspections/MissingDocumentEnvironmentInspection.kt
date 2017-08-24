@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.util.TexifyUtil
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -27,6 +28,11 @@ open class MissingDocumentEnvironmentInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
+
+        // Workaround, because .sty files also return LatexFileType.INSTANCE
+        if (file.virtualFile.extension != LatexFileType.INSTANCE.defaultExtension) {
+            return descriptors
+        }
 
         val fileSet = TexifyUtil.getReferencedFileSet(file)
         val commandSet: MutableSet<LatexBeginCommand> = HashSet()
