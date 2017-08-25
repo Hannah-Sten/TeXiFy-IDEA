@@ -336,5 +336,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.XInsteadOfTimesInspection"
                          groupName="TeXiFy" displayName="Use of x instead of \times"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.GroupedSubSupScriptInspection"
+                         groupName="TeXiFy" displayName="Grouped superscript and subscript"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

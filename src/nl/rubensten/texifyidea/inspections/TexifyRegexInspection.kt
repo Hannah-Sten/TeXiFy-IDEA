@@ -29,19 +29,19 @@ abstract class TexifyRegexInspection(
         val inspectionShortName: String,
 
         /**
-         * The error message that shows up when you hover over the problem descriptor.
-         */
-        val errorMessage: String,
-
-        /**
          * The regex pattern that targets the text for the inspection.
          */
         val pattern: Pattern,
 
         /**
+         * The error message that shows up when you hover over the problem descriptor.
+         */
+        val errorMessage: (Matcher) -> String,
+
+        /**
          * What to replace in the document.
          */
-        val replacement: String = "",
+        val replacement: (Matcher) -> String = { "" },
 
         /**
          * Fetches different groups from a matcher.
@@ -61,7 +61,7 @@ abstract class TexifyRegexInspection(
         /**
          * Name of the quick fix.
          */
-        val quickFixName: String? = null,
+        val quickFixName: (Matcher) -> String = { "Do fix pls" },
 
         /**
          * `true` when the inspection is in mathmode, `false` (default) when not in math mode.
@@ -106,6 +106,9 @@ abstract class TexifyRegexInspection(
             val groups = groupFetcher(matcher)
             val textRange = textRange(matcher)
             val range = replacementRange(matcher)
+            val error = errorMessage(matcher)
+            val quickFix = quickFixName(matcher)
+            val replacementContent = replacement(matcher)
 
             // Correct context.
             val element = file.findElementAt(matcher.start()) ?: continue
@@ -116,12 +119,12 @@ abstract class TexifyRegexInspection(
             descriptors.add(manager.createProblemDescriptor(
                     file,
                     textRange,
-                    errorMessage,
+                    error,
                     highlight,
                     isOntheFly,
                     RegexFix(
-                            quickFixName ?: "",
-                            replacement,
+                            quickFix,
+                            replacementContent,
                             range,
                             groups,
                             this::applyFix

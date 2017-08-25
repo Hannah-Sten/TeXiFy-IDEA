@@ -8,10 +8,10 @@ import java.util.regex.Pattern
 open class CdotInspection : TexifyRegexInspection(
         inspectionDisplayName = "Use of . instead of \\cdot",
         inspectionShortName = "Cdot",
-        errorMessage = "\\cdot expected",
+        errorMessage = { "\\cdot expected" },
         pattern = Pattern.compile("\\s+(\\.)\\s+"),
         mathMode = true,
-        replacement = "\\cdot",
+        replacement = { "\\cdot" },
         replacementRange = { it.groupRange(1) },
-        quickFixName = "Change to \\cdot"
+        quickFixName = { "Change to \\cdot" }
 )
