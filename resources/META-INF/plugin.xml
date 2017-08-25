@@ -321,5 +321,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.AvoidEqnarrayInspection"
                          groupName="TeXiFy" displayName="Avoid eqnarray"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.SpaceAfterAbbreviationInspection"
+                         groupName="TeXiFy" displayName="Normal space after abbreviation"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

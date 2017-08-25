@@ -7,9 +7,11 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.LatexNormalText
-import nl.rubensten.texifyidea.util.*
+import nl.rubensten.texifyidea.util.childrenOfType
+import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.inMathContext
+import nl.rubensten.texifyidea.util.lineIndentation
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -20,6 +22,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
 open class LineBreakInspection : TexifyInspectionBase() {
 
     companion object {
+
         /**
          * Matches the end of a sentence.
          *
@@ -46,7 +49,7 @@ open class LineBreakInspection : TexifyInspectionBase() {
 
         val texts = file.childrenOfType(LatexNormalText::class)
         for (text: LatexNormalText in texts) {
-            if (text.inMathMode() || text.inDirectEnvironmentContext(Environment.Context.MATH)) {
+            if (text.inMathContext()) {
                 continue
             }
 

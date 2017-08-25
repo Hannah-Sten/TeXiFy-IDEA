@@ -44,7 +44,7 @@ open class EllipsisInspection : TexifyInspectionBase() {
                         "Ellipsis with ... instead of command",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
-                        InsertEllipsisCommandFix(text.inMathMode())
+                        InsertEllipsisCommandFix(text.inMathContext())
                 ))
             }
         }

@@ -26,6 +26,11 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> = PsiTreeUtil.findChildrenOfType(this, clazz.java)
 
 /**
+ * @see [PsiTreeUtil.getChildrenOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
+
+/**
  * See method name.
  */
 fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
@@ -36,6 +41,11 @@ fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
 
     return children.first()
 }
+
+/**
+ * @see [firstChildOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.firstChildOfType(): T? = firstChildOfType(T::class)
 
 /**
  * See method name.
@@ -50,9 +60,19 @@ fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
 }
 
 /**
+ * @see [lastChildOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.lastChildOfType(): T? = lastChildOfType(T::class)
+
+/**
  * @see [PsiTreeUtil.getParentOfType]
  */
 fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil.getParentOfType(this, clazz.java)
+
+/**
+ * @see [PsiTreeUtil.getParentOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.parentOfType(): T? = parentOfType(T::class)
 
 /**
  * Checks if the psi element has a parent of a given class.
@@ -60,11 +80,18 @@ fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil
 fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfType(clazz) != null
 
 /**
+ * @see [hasParent]
+ */
+inline fun <reified T : PsiElement> PsiElement.hasParent(): Boolean = hasParent(T::class)
+
+/**
  * Checks if the psi element is in math mode or not.
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
-fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class)
+fun PsiElement.inMathContext(): Boolean {
+    return hasParent(LatexMathContent::class) || inDirectEnvironmentContext(Environment.Context.MATH)
+}
 
 /**
  * @see LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
@@ -96,6 +123,11 @@ fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? {
 }
 
 /**
+ * @see [nextSiblingOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.nextSiblingOfType(): T? = nextSiblingOfType(T::class)
+
+/**
  * Finds the previous sibling of the element that has the given type.
  *
  * @return The first previous sibling of the given type, or `null` when the sibling couldn't be found.
@@ -113,6 +145,11 @@ fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
 
     return null
 }
+
+/**
+ * @see [previousSiblingOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.previousSiblingOfType(): T? = previousSiblingOfType(T::class)
 
 /**
  * @see LatexPsiUtil.getAllChildren
@@ -138,7 +175,7 @@ fun PsiElement.grandparent(generations: Int): PsiElement? {
 /**
  * Checks if the psi element has a (grand) parent that matches the given predicate.
  */
-fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
+inline fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
     var count = 0
     var parent = this.parent
     while (parent != null && parent !is PsiFile) {
@@ -187,7 +224,7 @@ fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
  * @return `true` when the predicate tests `true`, or `false` when there is no direct environment or when the
  *              predicate failed.
  */
-fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
+inline fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     return predicate(environment)
 }
