@@ -65,7 +65,7 @@ open class EllipsisInspection : TexifyInspectionBase() {
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
             val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
 
-            document.replaceString(range.startOffset, range.endOffset, if (inMathMode) "\\dots " else "\\ldots ")
+            document.replaceString(range.startOffset, range.endOffset, if (inMathMode) "\\dots" else "\\ldots")
 
             if (inMathMode && Package.AMSMATH.name !in file.includedPackages()) {
                 file.insertUsepackage(Package.AMSMATH)
