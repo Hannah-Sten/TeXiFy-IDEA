@@ -6,8 +6,8 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
+import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.Nls;
@@ -52,7 +52,7 @@ public class MightBreakTexifyInspection extends TexifyInspectionBase {
             manager, boolean isOntheFly) {
         List<ProblemDescriptor> descriptors = new SmartList<>();
 
-        Collection<LatexCommands> commands = PsiTreeUtil.findChildrenOfType(file, LatexCommands.class);
+        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexCommands(file);
         for (LatexCommands command : commands) {
             // Error when \newcommand is used on existing command
             if (REDEFINE_COMMANDS.contains(command.getName())) {

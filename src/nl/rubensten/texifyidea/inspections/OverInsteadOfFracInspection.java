@@ -10,8 +10,8 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
+import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexPsiUtil;
@@ -46,7 +46,7 @@ public class OverInsteadOfFracInspection extends TexifyInspectionBase {
             manager, boolean isOntheFly) {
         List<ProblemDescriptor> descriptors = new SmartList<>();
 
-        Collection<LatexCommands> commands = PsiTreeUtil.findChildrenOfType(file, LatexCommands.class);
+        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexCommands(file);
         for (LatexCommands command : commands) {
             if ("\\over".equals(command.getName())) {
                 descriptors.add(manager.createProblemDescriptor(
