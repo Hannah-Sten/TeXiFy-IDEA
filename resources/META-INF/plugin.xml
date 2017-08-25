@@ -330,5 +330,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.SentenceEndWithCapitalInspection"
                          groupName="TeXiFy" displayName="End-of-sentence space after sentences ending with capitals"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.CdotInspection"
+                         groupName="TeXiFy" displayName="Use of . instead of \cdot"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
