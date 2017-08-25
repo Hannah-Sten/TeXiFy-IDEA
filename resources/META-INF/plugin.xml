@@ -333,5 +333,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.CdotInspection"
                          groupName="TeXiFy" displayName="Use of . instead of \cdot"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.XInsteadOfTimesInspection"
+                         groupName="TeXiFy" displayName="Use of x instead of \times"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

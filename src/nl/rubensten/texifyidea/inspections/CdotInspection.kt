@@ -12,6 +12,6 @@ open class CdotInspection : TexifyRegexInspection(
         pattern = Pattern.compile("\\s+(\\.)\\s+"),
         mathMode = true,
         replacement = "\\cdot",
-        replacementRange = { it.start(1)..it.start(1) + 1 },
+        replacementRange = { it.groupRange(1) },
         quickFixName = "Change to \\cdot"
 )

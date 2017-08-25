@@ -80,6 +80,14 @@ abstract class TexifyRegexInspection(
 
 ) : TexifyInspectionBase() {
 
+    companion object {
+
+        /**
+         * Get the IntRange that spans the group with the given id.
+         */
+        fun Matcher.groupRange(groupId: Int): IntRange = start(groupId)..end(groupId)
+    }
+
     override fun getDisplayName() = inspectionDisplayName
     override fun getShortName() = inspectionShortName
 

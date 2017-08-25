@@ -159,6 +159,7 @@ public enum LatexMathCommand implements LatexCommand {
     TRIANGLERIGHTEQ("trianglerighteq", AMSSYMB, "⊵", true),
     LTIMES("ltimes", AMSSYMB, "⋉", true),
     RTIMES("rtimes", AMSSYMB, "⋊", true),
+    TIMES("times", "×", true),
 
     /*
      *  Left/Right
