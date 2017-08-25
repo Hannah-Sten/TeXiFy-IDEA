@@ -327,5 +327,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.EnDashInspection"
                          groupName="TeXiFy" displayName="En dash in number ranges"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.SentenceEndWithCapitalInspection"
+                         groupName="TeXiFy" displayName="End-of-sentence space after sentences ending with capitals"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
