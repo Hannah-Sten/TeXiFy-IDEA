@@ -46,7 +46,7 @@ abstract class TexifyRegexInspection(
         /**
          * Fetches different groups from a matcher.
          */
-        val groupFetcher: (Matcher) -> List<String> = { listOf(it.group()) },
+        val groupFetcher: (Matcher) -> List<String> = { listOf() },
 
         /**
          * The range in the found pattern that must be replaced.
