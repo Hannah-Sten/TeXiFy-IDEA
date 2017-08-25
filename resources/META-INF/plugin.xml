@@ -324,5 +324,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.SpaceAfterAbbreviationInspection"
                          groupName="TeXiFy" displayName="Normal space after abbreviation"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.EnDashInspection"
+                         groupName="TeXiFy" displayName="En dash in number ranges"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
