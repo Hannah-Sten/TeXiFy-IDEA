@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.inspections
 
+import nl.rubensten.texifyidea.psi.LatexCommands
 import java.util.regex.Pattern
 
 /**
@@ -12,5 +13,6 @@ open class SentenceEndWithCapitalInspection : TexifyRegexInspection(
         pattern = Pattern.compile("[A-ZÀ-Ý](\\.)[ \\t]*\\n"),
         replacement = { "\\@." },
         replacementRange = { it.start(1)..it.start(1) + 1 },
-        quickFixName = { "Add an end-of-sentence space" }
+        quickFixName = { "Add an end-of-sentence space" },
+        cancelIf = { matcher, file -> TexifyRegexInspection.isInElement<LatexCommands>(matcher, file) }
 )

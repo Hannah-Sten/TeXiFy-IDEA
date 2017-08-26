@@ -6,8 +6,10 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inMathContext
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -71,7 +73,7 @@ abstract class TexifyRegexInspection(
         /**
          * Predicate that if `true`, cancels the inspection.
          */
-        val cancelIf: (Matcher) -> Boolean = { false },
+        val cancelIf: (Matcher, PsiFile) -> Boolean = { _,_ -> false },
 
         /**
          * Provides the text ranges that mark the squiggly warning thingies.
@@ -86,6 +88,14 @@ abstract class TexifyRegexInspection(
          * Get the IntRange that spans the group with the given id.
          */
         fun Matcher.groupRange(groupId: Int): IntRange = start(groupId)..end(groupId)
+
+        /**
+         * Checks if the matched element is a child of a certain PsiElement.
+         */
+        inline fun <reified T : PsiElement> isInElement(matcher: Matcher, file: PsiFile): Boolean {
+            val element = file.findElementAt(matcher.start()) ?: return false
+            return element.hasParent(T::class)
+        }
     }
 
     override fun getDisplayName() = inspectionDisplayName
@@ -99,7 +109,7 @@ abstract class TexifyRegexInspection(
         val matcher = pattern.matcher(text)
         while (matcher.find()) {
             // Pre-checks.
-            if (cancelIf(matcher)) {
+            if (cancelIf(matcher, file)) {
                 continue
             }
 

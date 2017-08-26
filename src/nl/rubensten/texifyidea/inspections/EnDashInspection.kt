@@ -16,7 +16,7 @@ open class EnDashInspection : TexifyRegexInspection(
         errorMessage = { "En dash expected" },
         pattern = Pattern.compile("(?<![0-9\\-])([0-9]+)\\s*[\\- ]+\\s*([0-9]+)(?=[^0-9\\-])")!!,
         quickFixName = { "Convert to en dash" },
-        cancelIf = { CORRECT_EN_DASH.matcher(it.group()).matches() },
+        cancelIf = { matcher, _ -> CORRECT_EN_DASH.matcher(matcher.group()).matches() },
         groupFetcher = { listOf(it.group(1), it.group(2)) }
 ) {
 
