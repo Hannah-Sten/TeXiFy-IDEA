@@ -342,5 +342,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.RedundantParInspection"
                          groupName="TeXiFy" displayName="Redundant use of \par"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonMatchingIfInspection"
+                         groupName="TeXiFy" displayName="Open if-then-else control sequence"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

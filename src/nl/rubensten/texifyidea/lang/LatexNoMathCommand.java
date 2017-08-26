@@ -161,6 +161,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     PAGETOTAL("pagetotal"),
     PAPERWIDTH("paperwidth"),
     PAPERHEIGHT("paperheight"),
+    PAR("par"),
     PARAGRAPH("paragraph", optionalText("shorttitle"), requiredText("title")),
     PARAGRAPH_STAR("paragraph*", requiredText("title")),
     PARAGRAPHMARK("paragraphmark"),
