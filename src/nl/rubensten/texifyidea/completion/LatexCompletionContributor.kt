@@ -12,6 +12,7 @@ import nl.rubensten.texifyidea.lang.LatexMode
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
+import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
 
 /**
@@ -50,7 +51,8 @@ open class LatexCompletionContributor : CompletionContributor() {
                                 .inside(LatexMathEnvironment::class.java))
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                return psiElement.inDirectEnvironmentContext(Environment.Context.NORMAL)
+                                return psiElement.inDirectEnvironmentContext(Environment.Context.NORMAL) ||
+                                        !psiElement.hasParent(LatexEnvironment::class)
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
