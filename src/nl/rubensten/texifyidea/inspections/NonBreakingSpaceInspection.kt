@@ -12,6 +12,7 @@ import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.firstChildOfType
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -73,13 +74,8 @@ open class NonBreakingSpaceInspection : TexifyInspectionBase() {
             }
 
             // Otherwise, it's CONTENT - so check the underlying normal text if it ends with whitespace.
-            val texts = sibling.childrenOfType(LatexNormalText::class)
-            if (texts.isEmpty()) {
-                continue
-            }
-
-            val text = texts.reversed().iterator().next()
-            val matcher = ENDS_WITH_NON_BREAKING_SPACE.matcher(text.text)
+            val text = sibling.firstChildOfType(LatexNormalText::class)?.text ?: continue
+            val matcher = ENDS_WITH_NON_BREAKING_SPACE.matcher(text)
             if (!matcher.find()) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,

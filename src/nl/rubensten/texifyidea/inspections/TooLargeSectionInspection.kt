@@ -13,8 +13,8 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.TexifyUtil
-import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.endOffset
+import nl.rubensten.texifyidea.util.firstChildOfType
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -184,13 +184,8 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
         private fun findLabel(cmd: LatexCommands): LatexCommands? {
             val grandparent = cmd.parent.parent
             val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return null
-            val children = sibling.childrenOfType(LatexCommands::class)
-            if (children.isEmpty()) {
-                return null
-            }
-
-            val found = children.first()
-            return if (found.name == "\\label") found else null
+            val child = sibling.firstChildOfType(LatexCommands::class) ?: return null
+            return if (child.name == "\\label") child else null
         }
     }
 }

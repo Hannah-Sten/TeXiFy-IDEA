@@ -328,14 +328,7 @@ fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
  * @param element
  *              Either a [LatexBeginCommand] or a [LatexEndCommand]
  */
-private fun beginOrEndEnvironmentName(element: PsiElement): String? {
-    val children = element.childrenOfType(LatexNormalText::class)
-    if (children.isEmpty()) {
-        return null
-    }
-
-    return children.first().text
-}
+private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexNormalText::class)?.text
 
 /**
  * @see TexifyUtil.isEntryPoint

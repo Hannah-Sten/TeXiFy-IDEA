@@ -57,9 +57,7 @@ open class LabelConventionInspection : TexifyInspectionBase() {
         private fun findContextCommand(label: LatexCommands): LatexCommands? {
             val grandparent = label.parent.parent
             val sibling = LatexPsiUtil.getPreviousSiblingIgnoreWhitespace(grandparent) ?: return null
-
-            val commands = sibling.childrenOfType(LatexCommands::class)
-            return if (commands.isEmpty()) null else commands.first()
+            return sibling.firstChildOfType(LatexCommands::class)
         }
     }
 
