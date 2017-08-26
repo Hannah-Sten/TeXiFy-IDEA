@@ -6,10 +6,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.psi.LatexContent
-import nl.rubensten.texifyidea.psi.LatexEnvironment
-import nl.rubensten.texifyidea.psi.LatexPsiUtil
+import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
@@ -150,14 +147,12 @@ open class LabelConventionInspection : TexifyInspectionBase() {
             val context = findContextCommand(command) ?: return
             val file = command.containingFile
             val document = file.document() ?: return
-            val required = command.requiredParameters
-            if (required.isEmpty()) {
-                return
-            }
+            val required = command.firstChildOfType(LatexRequiredParam::class) ?: return
+            val oldLabel = required.firstChildOfType(LatexNormalText::class)?.text ?: return
 
             // Determine label name.
             val prefix: String = LABELED_COMMANDS[context.name] ?: return
-            val labelName = required[0].camelCase()
+            val labelName = oldLabel.camelCase()
             val createdLabelBase = if (labelName.contains(":")) {
                 LABEL_PREFIX.matcher(labelName).replaceAll("$prefix:")
             }
@@ -168,9 +163,32 @@ open class LabelConventionInspection : TexifyInspectionBase() {
             val createdLabel = appendCounter(createdLabelBase, TexifyUtil.findLabelsInFileSet(file))
 
             // Replace in document.
-            val offset = command.textOffset + 7
-            val length = required[0].length
-            document.replaceString(offset, offset + length, createdLabel)
+            val references = findReferences(file, oldLabel)
+            references.add(required)
+            references.sortWith(Comparator { obj, anotherInteger -> anotherInteger.endOffset().compareTo(obj.endOffset()) })
+
+            for (reference in references) {
+                document.replaceString(reference.textRange, "{$createdLabel}")
+            }
+        }
+
+        /**
+         * Find all references to label `labelName`.
+         */
+        private fun findReferences(file: PsiFile, labelName: String): MutableList<LatexRequiredParam> {
+            val resultList = ArrayList<LatexRequiredParam>()
+
+            val commands = file.commandsInFileSet().filter { it.name == "\\ref" || it.name == "\\cite" }.reversed()
+            for (ref in commands) {
+                val parameter = ref.firstChildOfType(LatexRequiredParam::class) ?: continue
+                val name = parameter.firstChildOfType(LatexNormalText::class)?.text ?: continue
+
+                if (name == labelName) {
+                    resultList.add(parameter)
+                }
+            }
+
+            return resultList
         }
 
         /**

@@ -31,6 +31,11 @@ fun Document.lineIndentation(lineNumber: Int): String {
 }
 
 /**
+ * Places the given string into the document over the given range.
+ */
+fun Document.replaceString(range: TextRange, string: String) = replaceString(range.startOffset, range.endOffset, string)
+
+/**
  * Inserts a string into the document and moves the caret to the end of the inserted string.
  *
  * @param offset

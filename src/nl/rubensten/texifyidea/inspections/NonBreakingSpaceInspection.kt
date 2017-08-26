@@ -58,7 +58,7 @@ open class NonBreakingSpaceInspection : TexifyInspectionBase() {
             }
 
             // Get the NORMAL_TEXT in front of the command.
-            val sibling = cmd.parent.parent.prevSibling
+            val sibling = cmd.parent.parent.prevSibling ?: continue
 
             // When sibling is whitespace, it's obviously bad news.
             if (sibling is PsiWhiteSpace) {
