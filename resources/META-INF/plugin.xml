@@ -339,5 +339,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.GroupedSubSupScriptInspection"
                          groupName="TeXiFy" displayName="Grouped superscript and subscript"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.RedundantParInspection"
+                         groupName="TeXiFy" displayName="Redundant use of \par"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>

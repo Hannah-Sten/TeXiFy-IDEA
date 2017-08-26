@@ -76,7 +76,7 @@ abstract class TexifyRegexInspection(
         /**
          * Provides the text ranges that mark the squiggly warning thingies.
          */
-        val textRange: (Matcher) -> TextRange = { TextRange(it.start(), it.end()) }
+        val highlightRange: (Matcher) -> TextRange = { TextRange(it.start(), it.end()) }
 
 ) : TexifyInspectionBase() {
 
@@ -104,7 +104,7 @@ abstract class TexifyRegexInspection(
             }
 
             val groups = groupFetcher(matcher)
-            val textRange = textRange(matcher)
+            val textRange = highlightRange(matcher)
             val range = replacementRange(matcher)
             val error = errorMessage(matcher)
             val quickFix = quickFixName(matcher)

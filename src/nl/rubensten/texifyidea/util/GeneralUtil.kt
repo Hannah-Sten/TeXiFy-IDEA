@@ -37,3 +37,8 @@ fun Int.toHex(): String = Integer.toHexString(this)
  * Converts an [IntRange] to [TextRange].
  */
 fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
+
+/**
+ * Converts a [TextRange] to [IntRange].
+ */
+fun TextRange.toIntRange() = startOffset..endOffset
