@@ -25,7 +25,7 @@ open class QedHereInspection : TexifyInspectionBase() {
         return "Insert \\qedhere in trailing displaymath environment"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "QedHere"
     }
 

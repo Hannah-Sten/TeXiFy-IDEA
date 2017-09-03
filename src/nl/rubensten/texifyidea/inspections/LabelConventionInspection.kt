@@ -65,7 +65,7 @@ open class LabelConventionInspection : TexifyInspectionBase() {
         return "Label conventions"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "LabelConvention"
     }
 

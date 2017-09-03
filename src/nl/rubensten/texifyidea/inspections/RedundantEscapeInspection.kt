@@ -20,13 +20,13 @@ import nl.rubensten.texifyidea.util.TexifyUtil
 import java.text.Normalizer
 
 /**
- *
  * @author Sten Wessel
  */
 open class RedundantEscapeInspection : TexifyInspectionBase() {
+
     override fun getDisplayName() = "Redundant escape when Unicode is enabled"
 
-    override fun getShortName() = "RedundantEscape"
+    override fun getInspectionId() = "RedundantEscape"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         if (!UnicodeInspection.unicodeEnabled(file)) {

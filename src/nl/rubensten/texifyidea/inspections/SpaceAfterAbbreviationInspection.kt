@@ -36,7 +36,7 @@ open class SpaceAfterAbbreviationInspection : TexifyInspectionBase() {
     }
 
     override fun getDisplayName(): String = "Normal space after abbreviation"
-    override fun getShortName(): String = "SpaceAfterAbbreviation"
+    override fun getInspectionId(): String = "SpaceAfterAbbreviation"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()

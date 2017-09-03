@@ -19,7 +19,6 @@ import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -47,7 +46,7 @@ public class PrimitiveStyleInspection extends TexifyInspectionBase {
 
     @NotNull
     @Override
-    public String getShortName() {
+    public String getInspectionId() {
         return "PrimitiveStyle";
     }
 

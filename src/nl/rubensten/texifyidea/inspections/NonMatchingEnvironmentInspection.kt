@@ -20,7 +20,7 @@ open class NonMatchingEnvironmentInspection : TexifyInspectionBase() {
         return "Non matching environment commands"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "NonMatchingEnvironment"
     }
 

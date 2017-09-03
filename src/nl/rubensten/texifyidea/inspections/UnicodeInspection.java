@@ -73,7 +73,7 @@ public class UnicodeInspection extends TexifyInspectionBase {
 
     @NotNull
     @Override
-    public String getShortName() {
+    public String getInspectionId() {
         return "Unicode";
     }
 

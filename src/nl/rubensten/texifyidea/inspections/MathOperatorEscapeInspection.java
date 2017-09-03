@@ -47,7 +47,7 @@ public class MathOperatorEscapeInspection extends TexifyInspectionBase {
 
     @NotNull
     @Override
-    public String getShortName() {
+    public String getInspectionId() {
         return "MathOperatorEscape";
     }
 

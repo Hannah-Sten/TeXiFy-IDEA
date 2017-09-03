@@ -25,7 +25,7 @@ open class DiscouragedUseOfDefInspection : TexifyInspectionBase() {
         return "Use \\(re)newcommand instead of \\let and \\def"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "DiscouragedUseOfDef"
     }
 

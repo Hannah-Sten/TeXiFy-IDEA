@@ -22,7 +22,7 @@ open class UnresolvedReferenceInspection : TexifyInspectionBase() {
         return "Unresolved reference"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "UnresolvedReference"
     }
 

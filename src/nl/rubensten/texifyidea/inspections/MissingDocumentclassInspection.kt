@@ -20,7 +20,7 @@ open class MissingDocumentclassInspection : TexifyInspectionBase() {
         return "Missing documentclass"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "MissingDocumentclass"
     }
 

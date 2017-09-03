@@ -30,7 +30,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
         return "Missing imports"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "MissingImport"
     }
 

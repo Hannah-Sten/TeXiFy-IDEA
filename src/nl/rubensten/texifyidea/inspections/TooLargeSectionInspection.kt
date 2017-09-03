@@ -74,7 +74,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
         return "Too large sections"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "TooLargeSection"
     }
 

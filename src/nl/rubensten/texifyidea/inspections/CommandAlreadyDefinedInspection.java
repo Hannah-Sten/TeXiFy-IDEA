@@ -34,7 +34,7 @@ public class CommandAlreadyDefinedInspection extends TexifyInspectionBase {
 
     @NotNull
     @Override
-    public String getShortName() {
+    public String getInspectionId() {
         return "CommandAlreadyDefined";
     }
 

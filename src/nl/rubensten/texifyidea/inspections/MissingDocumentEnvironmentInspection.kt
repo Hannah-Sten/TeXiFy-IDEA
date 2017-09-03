@@ -22,7 +22,7 @@ open class MissingDocumentEnvironmentInspection : TexifyInspectionBase() {
         return "Missing document environment"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "MissingDocumentEnvironment"
     }
 

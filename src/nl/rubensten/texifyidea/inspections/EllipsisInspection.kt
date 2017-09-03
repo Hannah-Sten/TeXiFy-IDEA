@@ -26,7 +26,7 @@ open class EllipsisInspection : TexifyInspectionBase() {
         return "Ellipsis with ... instead of \\ldots or \\dots"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "Ellipsis"
     }
 

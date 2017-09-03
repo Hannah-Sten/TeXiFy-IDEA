@@ -39,7 +39,7 @@ open class LineBreakInspection : TexifyInspectionBase() {
         return "Start sentences on a new line"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "LineBreak"
     }
 

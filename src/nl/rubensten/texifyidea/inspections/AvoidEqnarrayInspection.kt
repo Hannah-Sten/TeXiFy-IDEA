@@ -21,7 +21,7 @@ open class AvoidEqnarrayInspection : TexifyInspectionBase() {
         return "Avoid eqnarray"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "AvoidEqnarray"
     }
 

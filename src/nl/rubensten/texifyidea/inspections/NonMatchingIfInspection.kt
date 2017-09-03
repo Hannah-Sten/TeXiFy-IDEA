@@ -31,7 +31,7 @@ open class NonMatchingIfInspection : TexifyInspectionBase() {
         return "Open if-then-else control sequence"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "NonMatchingIf"
     }
 

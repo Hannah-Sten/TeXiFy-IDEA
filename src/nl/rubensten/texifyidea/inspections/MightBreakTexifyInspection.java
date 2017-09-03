@@ -42,7 +42,7 @@ public class MightBreakTexifyInspection extends TexifyInspectionBase {
 
     @NotNull
     @Override
-    public String getShortName() {
+    public String getInspectionId() {
         return "MightBreakTexify";
     }
 

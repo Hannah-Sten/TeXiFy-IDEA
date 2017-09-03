@@ -99,7 +99,7 @@ abstract class TexifyRegexInspection(
     }
 
     override fun getDisplayName() = inspectionDisplayName
-    override fun getShortName() = inspectionShortName
+    override fun getInspectionId() = inspectionShortName
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()

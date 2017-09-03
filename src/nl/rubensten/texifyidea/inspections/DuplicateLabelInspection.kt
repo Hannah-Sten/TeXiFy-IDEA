@@ -21,7 +21,7 @@ open class DuplicateLabelInspection : TexifyInspectionBase() {
         return "Duplicate labels"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "DuplicateLabel"
     }
 

@@ -23,7 +23,7 @@ open class MissingLabelInspection : TexifyInspectionBase() {
         return "Missing labels"
     }
 
-    override fun getShortName(): String {
+    override fun getInspectionId(): String {
         return "MissingLabel"
     }
 
