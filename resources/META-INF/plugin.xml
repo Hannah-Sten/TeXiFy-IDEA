@@ -217,6 +217,9 @@
         <!-- Structure view -->
         <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.LatexStructureViewFactory"/>
 
+        <!-- Breadcrumbs -->
+        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.LatexBreadcrumbsInfo"/>
+
         <!-- Project view -->
         <projectViewNodeDecorator implementation="nl.rubensten.texifyidea.project.TeXiFyProjectViewNodeDecorator"/>
 
