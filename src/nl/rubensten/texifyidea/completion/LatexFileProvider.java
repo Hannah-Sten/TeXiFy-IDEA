@@ -9,6 +9,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.PlatformIcons;
 import com.intellij.util.ProcessingContext;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.completion.handlers.CompositeHandler;
+import nl.rubensten.texifyidea.completion.handlers.FileNameInsertionHandler;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.util.Kindness;
 import org.jetbrains.annotations.NotNull;
@@ -81,12 +83,15 @@ public class LatexFileProvider extends CompletionProvider<CompletionParameters> 
             result.addElement(
                     LookupElementBuilder.create(noBack(autocompleteText) + file.getName())
                             .withPresentableText(fileName)
-                            .withInsertHandler(new LatexReferenceInsertHandler())
+                            .withInsertHandler(new CompositeHandler<>(
+                                    new LatexReferenceInsertHandler(),
+                                    new FileNameInsertionHandler()
+                            ))
                             .withIcon(icon)
             );
         }
 
-        result.addLookupAdvertisement(Kindness.INSTANCE.getKindWords());
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 
     private String noBack(String stuff) {
