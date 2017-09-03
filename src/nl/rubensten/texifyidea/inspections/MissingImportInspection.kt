@@ -73,7 +73,10 @@ open class MissingImportInspection : TexifyInspectionBase() {
                                 isOntheFly: Boolean) {
         val commands = file.commandsInFileSet()
         for (cmd in commands) {
-            val latexCommand = LatexCommand.lookup(cmd.name) ?: continue
+            if (cmd.name == null) {
+                continue
+            }
+            val latexCommand = LatexCommand.lookup(cmd.name!!) ?: continue
             val pack = latexCommand.getDependency()
 
             if (pack.isDefault) {
@@ -83,7 +86,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
             if (!includedPackages.contains(pack.name)) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
-                        TextRange(0, latexCommand.command.length + 1),
+                        TextRange(0, latexCommand.getCommand().length + 1),
                         "Command requires ${pack.name} package",
                         ProblemHighlightType.ERROR,
                         isOntheFly,
@@ -104,7 +107,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val latexCommand = LatexCommand.lookup(command.name) ?: return
+            val latexCommand = LatexCommand.lookup(command.name!!) ?: return
             val file = command.containingFile
 
             PackageUtils.insertUsepackage(file, latexCommand.getDependency())
