@@ -348,5 +348,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.QedHereInspection"
                          groupName="TeXiFy" displayName="Insert \qedhere in trailing displaymath environment"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.ExtremeInequalityInspection"
+                         groupName="TeXiFy" displayName="Use the matching amssymb symbol for extreme inequalities"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
