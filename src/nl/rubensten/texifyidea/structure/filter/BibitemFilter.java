@@ -12,7 +12,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexLabelFilter implements Filter {
+public class BibitemFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {
@@ -21,7 +21,7 @@ public class LatexLabelFilter implements Filter {
         }
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !element.getCommandName().equals("\\label");
+        return !element.getCommandName().equals("\\bibitem");
     }
 
     @Override
@@ -32,36 +32,36 @@ public class LatexLabelFilter implements Filter {
     @NotNull
     @Override
     public ActionPresentation getPresentation() {
-        return LatexLabelFilterPresentation.INSTANCE;
+        return BibitemFilterPresentation.INSTANCE;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "latex.texify.filter.label";
+        return "latex.texify.filter.bibitem";
     }
 
     /**
      * @author Ruben Schellekens
      */
-    private static class LatexLabelFilterPresentation implements ActionPresentation {
+    private static class BibitemFilterPresentation implements ActionPresentation {
 
-        private static final LatexLabelFilterPresentation INSTANCE = new LatexLabelFilterPresentation();
+        private static final BibitemFilterPresentation INSTANCE = new BibitemFilterPresentation();
 
         @NotNull
         @Override
         public String getText() {
-            return "Show Labels";
+            return "Show Bibliography Items";
         }
 
         @Override
         public String getDescription() {
-            return "Show Labels";
+            return "Show Bibliography Items";
         }
 
         @Override
         public Icon getIcon() {
-            return TexifyIcons.DOT_LABEL;
+            return TexifyIcons.DOT_BIB;
         }
     }
 }

@@ -18,10 +18,11 @@ public class LatexStructureViewModel extends StructureViewModelBase implements E
 
     public static final Sorter[] SORTERS = new Sorter[] { Sorter.ALPHA_SORTER };
     public static final Filter[] FILTERS = new Filter[] {
-            new LatexIncludesFilter(),
-            new LatexSectionFilter(),
-            new LatexNewCommandFilter(),
-            new LatexLabelFilter()
+            new IncludesFilter(),
+            new SectionFilter(),
+            new CommandDefinitionFilter(),
+            new LabelFilter(),
+            new BibitemFilter()
     };
 
     public LatexStructureViewModel(@NotNull PsiFile psiFile, @Nullable Editor editor) {
