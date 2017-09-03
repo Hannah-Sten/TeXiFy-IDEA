@@ -512,7 +512,7 @@ public class TexifyUtil {
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
         return LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
-                .filter(cmd -> cmd.getName().equals("\\label"))
+                .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.get(0))
