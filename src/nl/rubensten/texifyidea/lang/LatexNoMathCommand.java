@@ -45,6 +45,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     CONTENTSLINE("contentsline", required("type"), requiredText("text"), required("page")),
     CONTENTSNAME("contentsname", required("name")),
     DATE("date", requiredText("text")),
+    DECLARE_MATH_OPERATOR("DeclareMathOperator", required("command"), requiredText("operator")),
     DEF("def"),
     DOCUMENTCLASS("documentclass", optional("options"), required("class")),
     DOTFILL("dotfill"),
