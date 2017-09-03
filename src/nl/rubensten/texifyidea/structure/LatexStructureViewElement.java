@@ -172,6 +172,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
         // Add command definitions.
         addFromCommand(treeElements, commands, "\\newcommand");
+        addFromCommand(treeElements, commands, "\\DeclareMathOperator");
         addFromCommand(treeElements, commands, "\\let");
         addFromCommand(treeElements, commands, "\\def");
 

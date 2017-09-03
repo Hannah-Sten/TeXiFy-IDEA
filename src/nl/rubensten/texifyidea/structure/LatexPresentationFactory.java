@@ -26,6 +26,7 @@ public class LatexPresentationFactory {
             case "\\subparagraph":
                 return new LatexSubParagraphPresentation(commands);
             case "\\newcommand":
+            case "\\DeclareMathOperator":
                 return new LatexNewCommandPresentation(commands);
             case "\\label":
                 return new LatexLabelPresentation(commands);

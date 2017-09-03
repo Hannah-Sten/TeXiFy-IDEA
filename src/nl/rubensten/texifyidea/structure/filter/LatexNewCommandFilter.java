@@ -23,6 +23,7 @@ public class LatexNewCommandFilter implements Filter {
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
         return !(element.getCommandName().equals("\\newcommand") ||
+                element.getCommandName().equals("\\DeclareMathOperator") ||
                 element.getPresentation() instanceof LatexOtherCommandPresentation);
     }
 
