@@ -527,7 +527,12 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<LatexCommands> findLabels(Project project) {
-        return LatexCommandsIndex.getIndexedCommandsByName("label", project);
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project);
+        cmds.removeIf(cmd -> {
+            String name = cmd.getName();
+            return !"\\label".equals(name) && !"\\bibitem".equals(name);
+        });
+        return cmds;
     }
 
     /**
