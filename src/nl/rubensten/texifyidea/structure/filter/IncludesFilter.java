@@ -12,7 +12,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexIncludesFilter implements Filter {
+public class IncludesFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {

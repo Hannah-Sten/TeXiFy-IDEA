@@ -7,6 +7,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
+import nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.TexifyUtil;
@@ -56,7 +57,8 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         labels.removeIf(label -> {
             String name = label.getName();
             return ("\\cite".equals(token) && "\\label".equals(name)) ||
-                    ("\\ref".equals(token) && "\\bibitem".equals(name));
+                    (NonBreakingSpaceInspection.getREFERENCE_COMMANDS().contains(token) &&
+                            "\\bibitem".equals(name));
         });
 
         return labels.stream().map(
