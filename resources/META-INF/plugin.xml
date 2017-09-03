@@ -345,5 +345,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonMatchingIfInspection"
                          groupName="TeXiFy" displayName="Open if-then-else control sequence"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.QedHereInspection"
+                         groupName="TeXiFy" displayName="Insert \qedhere in trailing displaymath environment"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
