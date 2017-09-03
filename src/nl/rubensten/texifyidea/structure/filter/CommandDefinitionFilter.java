@@ -13,7 +13,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexNewCommandFilter implements Filter {
+public class CommandDefinitionFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {

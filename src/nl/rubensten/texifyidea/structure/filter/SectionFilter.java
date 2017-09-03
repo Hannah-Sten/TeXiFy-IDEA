@@ -13,7 +13,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexSectionFilter implements Filter {
+public class SectionFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {
