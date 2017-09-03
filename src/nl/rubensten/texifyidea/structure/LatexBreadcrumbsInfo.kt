@@ -1,7 +1,7 @@
 package nl.rubensten.texifyidea.structure
 
 import com.intellij.psi.PsiElement
-import com.intellij.xml.breadcrumbs.BreadcrumbsInfoProvider
+import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 import nl.rubensten.texifyidea.LatexLanguage
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
@@ -10,7 +10,7 @@ import nl.rubensten.texifyidea.util.name
 /**
  * @author Ruben Schellekens
  */
-open class LatexBreadcrumbsInfo : BreadcrumbsInfoProvider() {
+open class LatexBreadcrumbsInfo : BreadcrumbsProvider {
 
     override fun getLanguages() = arrayOf(LatexLanguage.INSTANCE)
 
