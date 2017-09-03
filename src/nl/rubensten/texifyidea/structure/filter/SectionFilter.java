@@ -5,6 +5,7 @@ import com.intellij.ide.util.treeView.smartTree.Filter;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.structure.LatexStructureViewCommandElement;
+import nl.rubensten.texifyidea.structure.LatexStructureViewElement;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexLabelFilter implements Filter {
+public class SectionFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {
@@ -21,7 +22,7 @@ public class LatexLabelFilter implements Filter {
         }
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !element.getCommandName().equals("\\label");
+        return !LatexStructureViewElement.SECTION_MARKERS.contains(element.getCommandName());
     }
 
     @Override
@@ -32,36 +33,36 @@ public class LatexLabelFilter implements Filter {
     @NotNull
     @Override
     public ActionPresentation getPresentation() {
-        return LatexLabelFilterPresentation.INSTANCE;
+        return LatexSectionFilterPresentation.INSTANCE;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "latex.texify.filter.label";
+        return "latex.texify.filter.section";
     }
 
     /**
      * @author Ruben Schellekens
      */
-    private static class LatexLabelFilterPresentation implements ActionPresentation {
+    private static class LatexSectionFilterPresentation implements ActionPresentation {
 
-        private static final LatexLabelFilterPresentation INSTANCE = new LatexLabelFilterPresentation();
+        private static final LatexSectionFilterPresentation INSTANCE = new LatexSectionFilterPresentation();
 
         @NotNull
         @Override
         public String getText() {
-            return "Show Labels";
+            return "Show Sectioning";
         }
 
         @Override
         public String getDescription() {
-            return "Show Labels";
+            return "Show Sectioning";
         }
 
         @Override
         public Icon getIcon() {
-            return TexifyIcons.DOT_LABEL;
+            return TexifyIcons.DOT_SECTION;
         }
     }
 }

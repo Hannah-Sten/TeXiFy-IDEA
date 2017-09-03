@@ -512,7 +512,7 @@ public class TexifyUtil {
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
         return LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
-                .filter(cmd -> cmd.getName().equals("\\label"))
+                .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.get(0))
@@ -527,7 +527,12 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<LatexCommands> findLabels(Project project) {
-        return LatexCommandsIndex.getIndexedCommandsByName("label", project);
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project);
+        cmds.removeIf(cmd -> {
+            String name = cmd.getName();
+            return !"\\label".equals(name) && !"\\bibitem".equals(name);
+        });
+        return cmds;
     }
 
     /**

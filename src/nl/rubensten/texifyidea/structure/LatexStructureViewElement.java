@@ -179,6 +179,9 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
         // Add label definitions.
         addFromCommand(treeElements, commands, "\\label");
 
+        // Add bibitem definitions.
+        addFromCommand(treeElements, commands, "\\bibitem");
+
         return treeElements.toArray(new TreeElement[treeElements.size()]);
     }
 

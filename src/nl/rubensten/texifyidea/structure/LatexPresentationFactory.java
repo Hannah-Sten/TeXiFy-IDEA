@@ -30,6 +30,8 @@ public class LatexPresentationFactory {
                 return new LatexNewCommandPresentation(commands);
             case "\\label":
                 return new LatexLabelPresentation(commands);
+            case "\\bibitem":
+                return new BibitemPresentation(commands);
             case "\\include":
                 return new LatexIncludePresentation(commands);
             case "\\includeonly":

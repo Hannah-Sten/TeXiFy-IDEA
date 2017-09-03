@@ -4,8 +4,8 @@ import com.intellij.ide.util.treeView.smartTree.ActionPresentation;
 import com.intellij.ide.util.treeView.smartTree.Filter;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.structure.LatexOtherCommandPresentation;
 import nl.rubensten.texifyidea.structure.LatexStructureViewCommandElement;
-import nl.rubensten.texifyidea.structure.LatexStructureViewElement;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -13,7 +13,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexSectionFilter implements Filter {
+public class CommandDefinitionFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {
@@ -22,7 +22,9 @@ public class LatexSectionFilter implements Filter {
         }
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !LatexStructureViewElement.SECTION_MARKERS.contains(element.getCommandName());
+        return !(element.getCommandName().equals("\\newcommand") ||
+                element.getCommandName().equals("\\DeclareMathOperator") ||
+                element.getPresentation() instanceof LatexOtherCommandPresentation);
     }
 
     @Override
@@ -33,36 +35,36 @@ public class LatexSectionFilter implements Filter {
     @NotNull
     @Override
     public ActionPresentation getPresentation() {
-        return LatexSectionFilterPresentation.INSTANCE;
+        return LatexNewCommandFilterPresentation.INSTANCE;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "latex.texify.filter.section";
+        return "latex.texify.filter.newcommand";
     }
 
     /**
      * @author Ruben Schellekens
      */
-    private static class LatexSectionFilterPresentation implements ActionPresentation {
+    private static class LatexNewCommandFilterPresentation implements ActionPresentation {
 
-        private static final LatexSectionFilterPresentation INSTANCE = new LatexSectionFilterPresentation();
+        private static final LatexNewCommandFilterPresentation INSTANCE = new LatexNewCommandFilterPresentation();
 
         @NotNull
         @Override
         public String getText() {
-            return "Show Sectioning";
+            return "Show Command Definitions";
         }
 
         @Override
         public String getDescription() {
-            return "Show Sectioning";
+            return "Show Command Definitions";
         }
 
         @Override
         public Icon getIcon() {
-            return TexifyIcons.DOT_SECTION;
+            return TexifyIcons.DOT_COMMAND;
         }
     }
 }
