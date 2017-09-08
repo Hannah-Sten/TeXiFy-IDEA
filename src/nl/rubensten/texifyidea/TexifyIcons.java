@@ -13,49 +13,49 @@ public class TexifyIcons {
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/latex-file.png"
+            "/nl/rubensten/texifyidea/icons/latex-file-new.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon PDF_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/pdf-file.png"
+            "/nl/rubensten/texifyidea/icons/pdf-file-new.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DVI_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dvi-file.png"
+            "/nl/rubensten/texifyidea/icons/dvi-file-new.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BIBLIOGRAPHY_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/bibliography-file.png"
+            "/nl/rubensten/texifyidea/icons/bibliography-file-new.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon CLASS_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/class-file.png"
+            "/nl/rubensten/texifyidea/icons/class-file-new.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOCUMENTED_LATEX_SOURCE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/doc-latex-file.png"
+            "/nl/rubensten/texifyidea/icons/doc-latex-file-new.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon STYLE_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/style-file.png"
+            "/nl/rubensten/texifyidea/icons/style-file-new.png"
     );
 
     /**
@@ -63,6 +63,13 @@ public class TexifyIcons {
      */
     public static final Icon FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon TEMP_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/temp.png"
     );
 
     /**
