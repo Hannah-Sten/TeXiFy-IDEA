@@ -90,7 +90,7 @@ public class TexifyIcons {
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_MODULE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/latex-module.png"
+            "/nl/rubensten/texifyidea/icons/latex-module-new.png"
     );
 
     /**
@@ -229,8 +229,64 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon FONT_TYPEWRITER = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-mono.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_STRIKETHROUGH = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-strike.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_SLANTED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-slanted.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon SUMATRA = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/sumatra.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon WORD_COUNT = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/word-count.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon TOGGLE_STAR = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/toggle-star.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon STATS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/stats.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon RIGHT = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/right.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon SETTINGS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/settings.png"
     );
 
     /**

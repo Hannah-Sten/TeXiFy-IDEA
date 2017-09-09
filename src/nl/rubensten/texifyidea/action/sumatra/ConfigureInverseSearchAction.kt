@@ -7,6 +7,7 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.util.SystemInfo
+import nl.rubensten.texifyidea.TexifyIcons
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -18,7 +19,11 @@ import javax.swing.SwingConstants
  * @author Sten Wessel
  * @since b0.4
  */
-open class ConfigureInverseSearchAction : AnAction("ConfigureInverseSearch") {
+open class ConfigureInverseSearchAction : AnAction(
+        "ConfigureInverseSearch",
+        "Setup inverse search integration with SumatraPDF and TeXiFy IDEA.",
+        TexifyIcons.SETTINGS
+) {
 
     override fun actionPerformed(e: AnActionEvent?) {
         DialogBuilder().apply {

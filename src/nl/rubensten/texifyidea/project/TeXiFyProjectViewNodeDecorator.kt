@@ -17,7 +17,7 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         private val FILE_ICONS = mapOf(
                 "pdf" to TexifyIcons.PDF_FILE,
                 "dvi" to TexifyIcons.DVI_FILE,
-                "gz" to TexifyIcons.FILE
+                "gz" to TexifyIcons.TEMP_FILE
         )
     }
 
