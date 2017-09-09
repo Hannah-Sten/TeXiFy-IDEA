@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -249,6 +250,11 @@ fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this
  * @see TexifyUtil.getReferencedFileSet
  */
 fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
+
+/**
+ * Get the editor of the file if it is currently opened.
+ */
+fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
