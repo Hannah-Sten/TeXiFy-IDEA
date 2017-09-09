@@ -211,7 +211,7 @@ fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
  * Checks if the psi element has a direct environment with the given context.
  */
 fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean {
-    val environment = parentOfType(LatexEnvironment::class) ?: return false
+    val environment = parentOfType(LatexEnvironment::class) ?: return context == Environment.Context.NORMAL
     return inDirectEnvironmentMatching {
         Environment.fromPsi(environment)?.context == context
     }
