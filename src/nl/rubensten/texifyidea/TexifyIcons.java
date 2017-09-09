@@ -13,49 +13,49 @@ public class TexifyIcons {
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/latex-file-new.png"
+            "/nl/rubensten/texifyidea/icons/latex-file.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon PDF_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/pdf-file-new.png"
+            "/nl/rubensten/texifyidea/icons/pdf-file.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DVI_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dvi-file-new.png"
+            "/nl/rubensten/texifyidea/icons/dvi-file.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BIBLIOGRAPHY_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/bibliography-file-new.png"
+            "/nl/rubensten/texifyidea/icons/bibliography-file.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon CLASS_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/class-file-new.png"
+            "/nl/rubensten/texifyidea/icons/class-file.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOCUMENTED_LATEX_SOURCE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/doc-latex-file-new.png"
+            "/nl/rubensten/texifyidea/icons/doc-latex-file.png"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon STYLE_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/style-file-new.png"
+            "/nl/rubensten/texifyidea/icons/style-file.png"
     );
 
     /**
@@ -90,7 +90,7 @@ public class TexifyIcons {
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_MODULE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/latex-module-new.png"
+            "/nl/rubensten/texifyidea/icons/latex-module.png"
     );
 
     /**
@@ -322,6 +322,8 @@ public class TexifyIcons {
                 return TEXT_FILE;
             case "pdf":
                 return PDF_FILE;
+            case "gz":
+                return TEMP_FILE;
             default:
                 return FILE;
         }
