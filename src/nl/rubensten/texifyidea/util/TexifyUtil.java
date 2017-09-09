@@ -256,6 +256,23 @@ public class TexifyUtil {
         return psiFile;
     }
 
+    public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
+        // Find file
+        VirtualFile directory = file.getVirtualFile().getParent();
+        Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
+        if (!fileHuh.isPresent()) {
+            return null;
+        }
+
+        PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
+        if (psiFile == null || (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
+                !StyleFileType.INSTANCE.equals(psiFile.getFileType()))) {
+            return null;
+        }
+
+        return psiFile;
+    }
+
     /**
      * Looks for the next command relative to the given command.
      *
@@ -324,7 +341,8 @@ public class TexifyUtil {
         }
 
         for (String extension : extensions) {
-            file = directory.findFileByRelativePath(fileName + "." + extension);
+            String lookFor = fileName.endsWith(extension) ? fileName : fileName + "." + extension;
+            file = directory.findFileByRelativePath(lookFor);
 
             if (file != null) {
                 return Optional.of(file);
