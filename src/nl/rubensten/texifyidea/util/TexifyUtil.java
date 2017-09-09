@@ -134,8 +134,9 @@ public class TexifyUtil {
 
             PsiFile declaredIn = command.getContainingFile();
             projectFiles.add(declaredIn);
+            PsiFile rootFile = FileUtilKt.findRootFile(declaredIn);
 
-            PsiFile referenced = getFileRelativeTo(declaredIn, includedName);
+            PsiFile referenced = getFileRelativeTo(rootFile, includedName);
             if (referenced != null) {
                 projectFiles.add(referenced);
             }
@@ -193,7 +194,8 @@ public class TexifyUtil {
                 continue;
             }
 
-            PsiFile included = getFileRelativeTo(file, fileName);
+            PsiFile root = FileUtilKt.findRootFile(file);
+            PsiFile included = getFileRelativeTo(root, fileName);
             if (included == null) {
                 continue;
             }
@@ -240,6 +242,23 @@ public class TexifyUtil {
      */
     @Nullable
     public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path) {
+        // Find file
+        VirtualFile directory = file.getContainingDirectory().getVirtualFile();
+        Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
+        if (!fileHuh.isPresent()) {
+            return null;
+        }
+
+        PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
+        if (psiFile == null || (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
+                !StyleFileType.INSTANCE.equals(psiFile.getFileType()))) {
+            return null;
+        }
+
+        return psiFile;
+    }
+
+    public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
         // Find file
         VirtualFile directory = file.getVirtualFile().getParent();
         Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
@@ -324,7 +343,8 @@ public class TexifyUtil {
         }
 
         for (String extension : extensions) {
-            file = directory.findFileByRelativePath(fileName + "." + extension);
+            String lookFor = fileName.endsWith(extension) ? fileName : fileName + "." + extension;
+            file = directory.findFileByRelativePath(lookFor);
 
             if (file != null) {
                 return Optional.of(file);

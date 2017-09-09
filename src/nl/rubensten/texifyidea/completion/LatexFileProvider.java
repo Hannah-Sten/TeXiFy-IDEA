@@ -126,6 +126,10 @@ public class LatexFileProvider extends CompletionProvider<CompletionParameters> 
     private List<VirtualFile> getContents(VirtualFile base, boolean directory) {
         List<VirtualFile> contents = new ArrayList<>();
 
+        if (base == null) {
+            return contents;
+        }
+
         for (VirtualFile file : base.getChildren()) {
             if (file.isDirectory() == directory) {
                 contents.add(file);
