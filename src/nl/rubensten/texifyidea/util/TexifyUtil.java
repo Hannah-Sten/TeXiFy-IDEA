@@ -134,8 +134,9 @@ public class TexifyUtil {
 
             PsiFile declaredIn = command.getContainingFile();
             projectFiles.add(declaredIn);
+            PsiFile rootFile = FileUtilKt.findRootFile(declaredIn);
 
-            PsiFile referenced = getFileRelativeTo(declaredIn, includedName);
+            PsiFile referenced = getFileRelativeTo(rootFile, includedName);
             if (referenced != null) {
                 projectFiles.add(referenced);
             }
@@ -193,7 +194,8 @@ public class TexifyUtil {
                 continue;
             }
 
-            PsiFile included = getFileRelativeTo(file, fileName);
+            PsiFile root = FileUtilKt.findRootFile(file);
+            PsiFile included = getFileRelativeTo(root, fileName);
             if (included == null) {
                 continue;
             }
@@ -241,7 +243,7 @@ public class TexifyUtil {
     @Nullable
     public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path) {
         // Find file
-        VirtualFile directory = file.getVirtualFile().getParent();
+        VirtualFile directory = file.getContainingDirectory().getVirtualFile();
         Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
         if (!fileHuh.isPresent()) {
             return null;

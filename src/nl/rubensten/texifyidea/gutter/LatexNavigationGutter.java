@@ -83,13 +83,9 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         }
 
         PsiFile rootFile = FileUtilKt.findRootFile(containingFile);
-        System.out.println("Root file: " + rootFile.getVirtualFile().getPath());
         VirtualFile rootDirectory = rootFile.getContainingDirectory().getVirtualFile();
 
-        System.out.println("Root: " + rootDirectory);
-        System.out.println("Name: " + fileName);
         Optional<VirtualFile> fileHuh = findFile(rootDirectory, fileName, argument.getSupportedExtensions());
-        System.out.println("Present: " + fileHuh.isPresent());
         if (!fileHuh.isPresent()) {
             return;
         }
