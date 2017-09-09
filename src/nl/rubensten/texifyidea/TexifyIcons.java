@@ -75,6 +75,27 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon SYNCTEX_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/synctex-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon AUX_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/aux-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon BBL_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/bbl-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon TEXT_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/text-file.png"
     );
@@ -322,8 +343,8 @@ public class TexifyIcons {
                 return TEXT_FILE;
             case "pdf":
                 return PDF_FILE;
-            case "gz":
-                return TEMP_FILE;
+            case "synctex.gz":
+                return SYNCTEX_FILE;
             default:
                 return FILE;
         }

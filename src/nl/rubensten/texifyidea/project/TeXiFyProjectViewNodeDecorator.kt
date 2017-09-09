@@ -17,7 +17,10 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         private val FILE_ICONS = mapOf(
                 "pdf" to TexifyIcons.PDF_FILE,
                 "dvi" to TexifyIcons.DVI_FILE,
-                "gz" to TexifyIcons.TEMP_FILE
+                "synctex.gz" to TexifyIcons.SYNCTEX_FILE,
+                "bbl" to TexifyIcons.BBL_FILE,
+                "aux" to TexifyIcons.AUX_FILE,
+                "tmp" to TexifyIcons.TEMP_FILE
         )
     }
 
@@ -27,7 +30,15 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
             return
         }
 
-        val extension = file.extension ?: return
+        var extension = file.extension ?: return
+        if (extension == "gz") {
+            extension = "synctex.gz"
+
+            if (!file.name.toLowerCase().endsWith("synctex.gz")) {
+                return
+            }
+        }
+
         val icon = FILE_ICONS[extension.toLowerCase()] ?: return
 
         presentationData.setIcon(icon)
