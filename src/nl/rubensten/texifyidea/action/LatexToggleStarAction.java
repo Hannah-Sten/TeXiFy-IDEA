@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexPsiUtil;
 import nl.rubensten.texifyidea.psi.LatexTypes;
@@ -19,7 +20,7 @@ import nl.rubensten.texifyidea.psi.LatexTypes;
 public class LatexToggleStarAction extends EditorAction {
 
     public LatexToggleStarAction() {
-        super("Toggle Star", null);
+        super("Toggle Star", TexifyIcons.TOGGLE_STAR);
     }
 
     @Override
