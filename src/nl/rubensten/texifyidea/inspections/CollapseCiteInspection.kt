@@ -38,7 +38,7 @@ open class CollapseCiteInspection : TexifyInspectionBase() {
 
             descriptors.add(manager.createProblemDescriptor(
                     cmd,
-                    "Citations can be collapsed.",
+                    "Citations can be collapsed",
                     InspectionFix(bundle),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -110,9 +110,10 @@ open class CollapseCiteInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val file = descriptor.psiElement.containingFile ?: return
             val document = file.document() ?: return
-            val offsetRange = citeBundle.first().textOffset until citeBundle.last().endOffset()
+            val sortedBundle = citeBundle.sortedBy { it.textOffset }
+            val offsetRange = sortedBundle.first().textOffset until sortedBundle.last().endOffset()
 
-            val bundle = citeBundle
+            val bundle = sortedBundle
                     .flatMap { it.requiredParameters }
                     .joinToString(",")
 
