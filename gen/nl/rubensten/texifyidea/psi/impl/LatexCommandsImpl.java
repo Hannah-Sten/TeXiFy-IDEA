@@ -1,30 +1,34 @@
 package nl.rubensten.texifyidea.psi.impl;
 
-import java.util.List;
-
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Computable;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.StubBasedPsiElement;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.util.IncorrectOperationException;
-import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
-import nl.rubensten.texifyidea.reference.LatexLabelReference;
-import nl.rubensten.texifyidea.util.TexifyUtil;
-import org.jetbrains.annotations.*;
-import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
+import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
+import nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection;
+import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexParameter;
+import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.psi.LatexVisitor;
+import nl.rubensten.texifyidea.reference.LatexLabelReference;
+import nl.rubensten.texifyidea.util.TexifyUtil;
+import org.jetbrains.annotations.NotNull;
 
-import static nl.rubensten.texifyidea.psi.LatexTypes.*;
+import java.util.List;
+import java.util.Set;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import nl.rubensten.texifyidea.psi.*;
+import static nl.rubensten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
 
 public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub>
         implements LatexCommands {
+
+    private static final Set<String> REFERENCE_COMMANDS = NonBreakingSpaceInspection.getREFERENCE_COMMANDS();
 
     private String name;
 
@@ -56,7 +60,7 @@ public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub
             return params.isEmpty() ? null : params.get(0);
         });
 
-        if (getCommandToken().getText().equals("\\ref") && firstParam != null) {
+        if (REFERENCE_COMMANDS.contains(getCommandToken().getText()) && firstParam != null) {
             return new LatexLabelReference(this, firstParam);
         }
 

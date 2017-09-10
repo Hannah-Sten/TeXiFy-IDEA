@@ -10,11 +10,15 @@ public class Package {
     // Predefined packages.
     public static final Package DEFAULT = new Package("");
     public static final Package FONTENC = new Package("fontenc");
+    public static final Package INPUTENC = new Package("inputenc");
     public static final Package GRAPHICX = new Package("graphicx");
     public static final Package AMSSYMB = new Package("amssymb");
     public static final Package AMSMATH = new Package("amsmath");
     public static final Package MATHABX = new Package("mathabx");
     public static final Package ULEM = new Package("ulem");
+    public static final Package HYPERREF = new Package("hyperref");
+    public static final Package LATEXSYMB = new Package("latexsymb");
+    public static final Package COMMENT = new Package("comment");
 
     // Members
     private final String name;

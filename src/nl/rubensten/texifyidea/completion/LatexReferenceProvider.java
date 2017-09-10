@@ -70,6 +70,6 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
             }
         }
 
-        result.addLookupAdvertisement(Kindness.getKindWords());
+        result.addLookupAdvertisement(Kindness.INSTANCE.getKindWords());
     }
 }

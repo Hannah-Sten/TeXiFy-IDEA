@@ -31,7 +31,7 @@ public class LatexCommandPackageIncludeHandler implements InsertHandler<LookupEl
             return;
         }
 
-        Package pack = command.getPackage();
+        Package pack = command.getDependency();
         if (Package.DEFAULT.equals(pack)) {
             return;
         }

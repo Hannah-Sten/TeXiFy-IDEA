@@ -49,7 +49,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 break;
             case MATH:
                 addMathCommands(result);
-                addCustomCommands(parameters, result);
+                addCustomCommands(parameters, result, LatexMode.MATH);
                 break;
             case ENVIRONMENT_NAME:
                 addEnvironments(result);
@@ -87,15 +87,17 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     private void addEnvironments(CompletionResultSet result) {
         result.addAllElements(ContainerUtil.map2List(
-                LatexNoMathEnvironment.values(),
-                cmd -> LookupElementBuilder.create(cmd, cmd.getName())
-                        .withPresentableText(cmd.getName())
+                Environment.values(),
+                env -> LookupElementBuilder.create(env, env.getEnvName())
+                        .withPresentableText(env.getEnvName())
+                        .bold()
+                        .withTailText(packageName(env), true)
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
     }
 
-    private String packageName(LatexCommand command) {
-        String name = command.getPackage().getName();
+    private String packageName(Dependend dependend) {
+        String name = dependend.getDependency().getName();
         if ("".equals(name)) {
             return "";
         }
@@ -104,6 +106,11 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
     }
 
     private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result) {
+        addCustomCommands(parameters, result, null);
+    }
+
+    private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result,
+                                   @Nullable LatexMode mode) {
         Project project = parameters.getEditor().getProject();
         if (project == null) {
             return;
@@ -121,6 +128,10 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         for (LatexCommands cmd : cmds) {
             if (!isDefinition(cmd)) {
                 continue;
+            }
+
+            if (mode != LatexMode.MATH && "\\DeclareMathOperator".equals(cmd.getName())) {
+               continue;
             }
 
             String cmdName = getCommandName(cmd);
@@ -193,11 +204,11 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     @Nullable
     private String getCommandName(@NotNull LatexCommands commands) {
-        if ("\\newcommand".equals(commands.getCommandToken().getText())) {
-            return getNewCommandName(commands);
+        switch (commands.getName()) {
+            case "\\DeclareMathOperator":
+            case "\\newcommand": return getNewCommandName(commands);
+            default: return getDefinitionName(commands);
         }
-
-        return getDefinitionName(commands);
     }
 
     @Nullable
@@ -224,7 +235,8 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         return commands != null && (
                 "\\newcommand".equals(commands.getCommandToken().getText()) ||
                         "\\let".equals(commands.getCommandToken().getText()) ||
-                        "\\def".equals(commands.getCommandToken().getText())
+                        "\\def".equals(commands.getCommandToken().getText()) ||
+                        "\\DeclareMathOperator".equals(commands.getCommandToken().getText())
         );
     }
 }

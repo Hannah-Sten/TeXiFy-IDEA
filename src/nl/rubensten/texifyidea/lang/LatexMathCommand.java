@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.lang;
 
 import nl.rubensten.texifyidea.lang.Argument.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,11 +11,12 @@ import java.util.stream.Stream;
 import static nl.rubensten.texifyidea.lang.Package.*;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public enum LatexMathCommand implements LatexCommand {
+
     /*
-      Greek alphabet
+     *  Greek alphabet
      */
     ALPHA("alpha", "α", true),
     BETA("beta", "β", true),
@@ -57,7 +59,7 @@ public enum LatexMathCommand implements LatexCommand {
     CAPITAL_OMEGA("Omega", "Ω", true),
 
     /*
-      Operators
+     *  Operators
      */
     FORALL("forall", "∀", true),
     PARTIAL("partial", "∂", true),
@@ -84,12 +86,12 @@ public enum LatexMathCommand implements LatexCommand {
     PROPORTIONAL_TO_SYMBOL("varpropto", AMSSYMB, "∝", true),
     INFINITY("infty", "∞", true),
     ANGLE("angle", "∠", true),
-    MEASURED_ANGLE("measuredangle", AMSSYMB, "∡", false),
-    SPHERICAL_ANGLE("sphericalangle", AMSSYMB, "∢", false),
+    MEASURED_ANGLE("measuredangle", AMSSYMB, "∡", true),
+    SPHERICAL_ANGLE("sphericalangle", AMSSYMB, "∢", true),
     MID("mid", "∣", true),
     MID_SHORT("shortmid", AMSSYMB, "∣", true),
-    PARALLEL("parallel", "∥", false),
-    NOT_PARALLEL("nparallel", AMSSYMB, "∦", false),
+    PARALLEL("parallel", "∥", true),
+    NOT_PARALLEL("nparallel", AMSSYMB, "∦", true),
     LOGICAL_AND("land", "∧", true),
     LOGICAL_OR("lor", "∨", true),
     INTERSECTION("cap", "∩", true),
@@ -110,45 +112,149 @@ public enum LatexMathCommand implements LatexCommand {
     LESS_THAN_EQUALL("leqq", AMSSYMB, "≦", true),
     GREATER_THAN_EQUAL("geq", "≥", true),
     GREATER_THAN_EQUALL("geqq", AMSSYMB, "≧", true),
-    NOT_LESS_THAN("nless", AMSSYMB, "≮", false),
-    NOT_GREATER_THAN("ngtr", AMSSYMB, "≯", false),
-    NOT_LESS_THAN_EQUAL("nleq", AMSSYMB, "≰", false),
+    NOT_LESS_THAN("nless", AMSSYMB, "≮", true),
+    NOT_GREATER_THAN("ngtr", AMSSYMB, "≯", true),
+    NOT_LESS_THAN_EQUAL("nleq", AMSSYMB, "≰", true),
     NOT_LESS_THAN_EQUALL("nleqq", AMSSYMB, "≦\u200D\u0338", false),
-    NOT_GREATER_THAN_EQUAL("ngeq", AMSSYMB, "≱", false),
+    NOT_GREATER_THAN_EQUAL("ngeq", AMSSYMB, "≱", true),
     NOT_GREATER_THAN_EQUALL("ngeqq", AMSSYMB, "≧\u200D\u0338", false),
+    LESSER_LESSER("ll", AMSSYMB, "≪", true),
+    LESSER_LESSER_LESSER("lll", AMSSYMB, "⋘", true),
+    LESSER_NOT_EQUAL("lneqq", AMSSYMB, "≨", true),
+    GREATER_NOT_EQUAL("gneqq", AMSSYMB, "≩", true),
+    GREATER_GREATER("gg", AMSSYMB, "≫", true),
+    GREATER_GREATER_GREATER("ggg", AMSSYMB, "⋙", true),
     SUBSET("subset", "⊂", true),
     SUPSET("supset", "⊃", true),
-    SUBSET_EQ("subseteq", "⊆", false),
-    SUBSET_EQQ("subseteqq", AMSSYMB, "⊆", false),
-    SUPSET_EQ("supseteq", "⊇", false),
-    SUPSET_EQQ("supseteqq", AMSSYMB, "⊇", false),
-    NOT_SUBSET_EQ("nsubseteq", AMSSYMB, "⊈", false),
-    NOT_SUBSET_EQQ("nsubseteqq", AMSSYMB, "⊈", false),
-    NOT_SUPSET_EQ("nsupseteq", AMSSYMB, "⊉", false),
-    NOT_SUPSET_EQQ("nsupseteqq", AMSSYMB, "⊉", false),
-    SQUARE_SUBSET("sqsubset", AMSSYMB, "⊏", false),
-    SQUARE_SUPSET("sqsupset", AMSSYMB, "⊐", false),
+    SUBSET_EQ("subseteq", "⊆", true),
+    SUBSET_EQQ("subseteqq", AMSSYMB, "⊆", true),
+    SUPSET_EQ("supseteq", "⊇", true),
+    SUPSET_EQQ("supseteqq", AMSSYMB, "⊇", true),
+    NOT_SUBSET_EQ("nsubseteq", AMSSYMB, "⊈", true),
+    NOT_SUBSET_EQQ("nsubseteqq", AMSSYMB, "⊈", true),
+    NOT_SUPSET_EQ("nsupseteq", AMSSYMB, "⊉", true),
+    NOT_SUPSET_EQQ("nsupseteqq", AMSSYMB, "⊉", true),
+    SQUARE_SUBSET("sqsubset", AMSSYMB, "⊏", true),
+    SQUARE_SUPSET("sqsupset", AMSSYMB, "⊐", true),
     SQUARE_SUBSET_EQ("sqsubseteq", AMSSYMB, "⊑", true),
     SQUARE_SUPSET_EQ("sqsupseteq", AMSSYMB, "⊒", true),
-    SQUARE_CAP("sqcap", "⊓", false),
-    SQUARE_CUP("sqcup", "⊔", false),
-    CIRCLED_PLUS("oplus", "⊕", false),
-    CIRCLED_MINUS("ominus", "⊖", false),
-    CIRCLED_TIMES("otimes", "⊗", false),
-    CIRCLED_SLASH("oslash", "⊘", false),
-    CIRCLED_DOT("odot", "⊙", false),
-    BOXED_PLUS("boxplus", AMSSYMB, "⊞", false),
-    BOXED_MINUS("boxminus", AMSSYMB, "⊟", false),
-    BOXED_TIMES("boxtimes", AMSSYMB, "⊠", false),
-    BOXED_DOT("boxdot", AMSSYMB, "⊡", false),
+    SQUARE_CAP("sqcap", "⊓", true),
+    SQUARE_CUP("sqcup", "⊔", true),
+    CIRCLED_PLUS("oplus", "⊕", true),
+    CIRCLED_MINUS("ominus", "⊖", true),
+    CIRCLED_TIMES("otimes", "⊗", true),
+    CIRCLED_SLASH("oslash", "⊘", true),
+    CIRCLED_DOT("odot", "⊙", true),
+    BOXED_PLUS("boxplus", AMSSYMB, "⊞", true),
+    BOXED_MINUS("boxminus", AMSSYMB, "⊟", true),
+    BOXED_TIMES("boxtimes", AMSSYMB, "⊠", true),
+    BOXED_DOT("boxdot", AMSSYMB, "⊡", true),
+    BOWTIE("bowtie", "⋈", true),
+    JOIN("Join", AMSSYMB, "⨝", true),
+    TRIANGLERIGHT("triangleright", AMSSYMB, "▷", true),
+    TRIANGLELEFT("triangleleft", AMSSYMB, "◁", true),
+    VARTRIANGLERIGHT("vartriangleright", AMSSYMB, "⊳", true),
+    VARTRIANGLELEFT("vartriangleleft", AMSSYMB, "⊲", true),
+    TRIANGLELEFTEQ("tranglelefteq", AMSSYMB, "⊴", true),
+    TRIANGLERIGHTEQ("trianglerighteq", AMSSYMB, "⊵", true),
+    LTIMES("ltimes", AMSSYMB, "⋉", true),
+    RTIMES("rtimes", AMSSYMB, "⋊", true),
 
     /*
-        Generic commands
+     *  Left/Right
      */
+    LEFT_PARENTH("left(", "(", false),
+    RIGHT_PARENTH("right)", ")", false),
+    LEFT_BRACKET("left[", "[", false),
+    RIGHT_BRACKET("right]", "]", false),
+    LEFT_BRACE("left\\{", "{", false),
+    RIGHT_BRACE("right\\}", "}", false),
+    LEFT_ANGULAR("left<", "<", false),
+    RIGHT_ANGULAR("right>", ">", false),
+    LEFT_PIPE("left|", "|", false),
+    RIGHT_PIPE("right|", "|", false),
+    LEFT_DOUBLE_PIPE("left\\|", "||", false),
+    RIGHT_DOUBLE_PIPE("right\\|", "||", false),
+
+    /*
+     *  Arrows
+     */
+    NRIGHTARROW("nrightarrow", AMSSYMB, "↛", true),LEFTARROW("leftarrow", "←", true),
+    L_EFTARROW("Leftarrow", "⇐", true),
+    RIGHTARROW("rightarrow", "→", true),
+    R_IGHTARROW("Rightarrow", "⇒", true),
+    LEFTRIGHTARROW("leftrightarrow", "↔", true),
+    L_EFTRIGHTARROW("Leftrightarrow", "⇔", true),
+    LONGLEFTARROW("longleftarrow", "⟵", true),
+    L_ONGLEFTARROW("Longleftarrow", "⟸", true),
+    LONGRIGHTARROW("longrightarrow", "⟶", true),
+    L_ONGRIGHTARROW("Longrightarrow", "⟹", true),
+    LONGLEFTRIGHTARROW("longleftrightarrow", "⟷", true),
+    L_ONGLEFTRIGHTARROW("Longleftrightarrow", "⟺", true),
+    UPARROW("uparrow", "↑", true),
+    U_PARROW("Uparrow", "⇑", true),
+    DOWNARROW("downarrow", "↓", true),
+    D_OWNARROW("Downarrow", "⇓", true),
+    UPDOWNARROW("updownarrow", "↕", true),
+    U_PDOWNARROW("Updownarrow", "⇕", true),
+    MAPSTO("mapsto", "↦", true),
+    HOOKLEFTARROW("hookleftarrow", "↩", true),
+    LEFTHARPOONUP("leftharpoonup", "↼", true),
+    LEFTHARPOONDOWN("leftharpoondown", "↽", true),
+    RIGHTLEFTHARPOONS("rightleftharpoons", "⇌", true),
+    LONGMAPSTO("longmapsto", "⟼", true),
+    HOOKRIGHTARROW("hookrightarrow", "↪", true),
+    RIGHTHARPOONUP("rightharpoonup", "⇀", true),
+    RIGHTHARPOONDOWN("rightharpoondown", "⇁", true),
+    LEADSTO("leadsto", LATEXSYMB, "⤳", true),
+    NEARROW("nearrow", "↗", true),
+    SEARROW("searrow", "↘", true),
+    SWARROW("swarrow", "↙", true),
+    NWARROW("nwarrow", "↖", true),
+    DASHRIGHTARROW("dashrightarrow", AMSSYMB, "⤍", true),
+    LEFTRIGHTARROWS("leftrightarrows", AMSSYMB, "⇆", true),
+    LEFTARROWTAIL("leftarrowtail", AMSSYMB, "↢", true),
+    CURVEARROWLEFT("curvearrowleft", AMSSYMB, "↶", true),
+    UPUPARROWS("upuparrows", AMSSYMB, "⇈", true),
+    MULTIMAP("multimap", AMSSYMB, "⊸", true),
+    RIGHTLEFTARROWS("rightleftarrows", AMSSYMB, "⇄", true),
+    TWOHEADRIGHTARROW("twoheadrightarrow", AMSSYMB, "↠", true),
+    RSH("Rsh", AMSSYMB, "↱", true),
+    DOWNHARPOONRIGHT("downharpoonright", AMSSYMB, "⇂", true),
+    DASHLEFTARROW("dashleftarrow", AMSSYMB, "⇠", true),
+    L_LEFTARROW("Lleftarrow", AMSSYMB, "⇚", true),
+    LOOPARROWLEFT("looparrowleft", AMSSYMB, "↫", true),
+    CIRCLEARROWLEFT("circlearrowleft", AMSSYMB, "↺", true),
+    UPHARPOONLEFT("upharpoonleft", AMSSYMB, "↿", true),
+    LEFTRIGHTSQUIGARROW("leftrightsquigarrow", AMSSYMB, "↭", true),
+    RIGHTRIGHTARROWS("rightrightarrows", AMSSYMB, "⇉", true),
+    RIGHTARROWTAIL("rightarrowtail", AMSSYMB, "↣", true),
+    CURVEARROWRIGHT("curvearrowright", AMSSYMB, "↷", true),
+    DOWNDOWNARROWS("downdownarrows", AMSSYMB, "⇊", true),
+    RIGHTSQUIGARROW("rightsquigarrow", AMSSYMB, "⇝", true),
+    LEFTLEFTARROWS("leftleftarrows", AMSSYMB, "⇇", true),
+    TWOHEADLEFTARROW("twoheadleftarrow", AMSSYMB, "↞", true),
+    LEFTRIGHTHARPOONS("leftrightharpoons", AMSSYMB, "↰", true),
+    LSH("Lsh", AMSSYMB, "↿", true),
+    DOWNHARPOONLEFT("downharpoonleft", AMSSYMB, "⇃", true),
+    LOOPARROWRIGHT("looparrowright", AMSSYMB, "↬", true),
+    CIRCLEARROWRIGHT("circlearrowright", AMSSYMB, "↻", true),
+    UPHARPOONRIGHT("rightsquigarrow", AMSSYMB, "↾", true),
+    NLEFTARROW("nleftarrow", AMSSYMB, "↚", true),
+    NL_EFTARROW("nLeftarrow", AMSSYMB, "⇍", true),
+    NR_IGHTARROW("nRightarrow", AMSSYMB, "⇏", true),
+    NLEFTRIGHTARROW("nleftrightarrow", AMSSYMB, "↮", true),
+    NL_EFTRIGHTARROW("nLeftrightarrow", AMSSYMB, "⇎", true),
+
+    /*
+     *  Generic commands
+     */
+    MATHBB("mathbb", AMSSYMB, requiredText("text")),
     MATHBF("mathbf", required("text")),
     MATHCAL("mathcal", required("text")),
     MATHDS("mathds", required("mathds")),
     MATHELLIPSIS("mathellipsis"),
+    MATHFRAK("mathfrak", AMSSYMB, requiredText("text")),
     MATHGROUP("mathgroup"),
     MATHIT("mathit", required("text")),
     MATHNORMAL("mathnormal", required("text")),
@@ -207,10 +313,9 @@ public enum LatexMathCommand implements LatexCommand {
     DIAMONDSUIT("diamondsuit", "♢", true),
     DIM("dim"),
     DIV("div", "÷", true),
+    DIVIDEONTIMES("divideontimes", AMSSYMB, "⋇", true),
     DOTEQ("doteq"),
     DOT("dot", required("a")),
-    DOWNARROW("downarrow"),
-    CAPITAL_DOWNARROW("Downarrow"),
     ELL("ell"),
     EXP("exp"),
     FLAT("flat", "♭", true),
@@ -221,6 +326,7 @@ public enum LatexMathCommand implements LatexCommand {
     MATHRING("mathring", required("a")),
     OVERBRACE("overbrace", required("text")),
     OVERLINE("overline", required("text")),
+    TEXT("text", AMSMATH, required("text")),
     TILDE("tilde", required("a")),
     UNDERBRACE("underbrace", required("text")),
     UNDERLINE("underline", required("text")),
@@ -229,9 +335,14 @@ public enum LatexMathCommand implements LatexCommand {
     WIDETILDE("widetilde", required("text"));
 
     private static final Map<String, LatexMathCommand> lookup = new HashMap<>();
+    private static final Map<String, LatexMathCommand> lookupDisplay = new HashMap<>();
+
     static {
         for (LatexMathCommand command : LatexMathCommand.values()) {
             lookup.put(command.getCommand(), command);
+            if (command.display != null) {
+                lookupDisplay.putIfAbsent(command.display, command);
+            }
         }
     }
 
@@ -276,6 +387,11 @@ public enum LatexMathCommand implements LatexCommand {
 
     public static LatexMathCommand get(String command) {
         return lookup.get(command);
+    }
+
+    @Nullable
+    public static LatexMathCommand findByDisplay(String display) {
+        return lookupDisplay.get(display);
     }
 
     private static RequiredArgument required(String name) {
@@ -324,7 +440,7 @@ public enum LatexMathCommand implements LatexCommand {
     }
 
     @NotNull
-    public Package getPackage() {
+    public Package getDependency() {
         return thePackage;
     }
 

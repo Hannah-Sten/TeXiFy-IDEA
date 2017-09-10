@@ -7,12 +7,14 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
+import nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.Collection;
 
 /**
@@ -49,18 +51,31 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
+        String token = myElement.getCommandToken().getText();
+
         Collection<LatexCommands> labels = TexifyUtil.findLabels(project);
+        labels.removeIf(label -> {
+            String name = label.getName();
+            return ("\\cite".equals(token) && "\\label".equals(name)) ||
+                    (NonBreakingSpaceInspection.getREFERENCE_COMMANDS().contains(token) &&
+                            "\\bibitem".equals(name));
+        });
 
         return labels.stream().map(
-                l -> LookupElementBuilder.create(l.getRequiredParameters().get(0))
-                        .bold()
-                        .withInsertHandler(new LatexReferenceInsertHandler())
-                        .withTypeText(
-                                l.getContainingFile().getName() + ":" +
-                                        (1 + StringUtil.offsetToLineNumber(l.getContainingFile().getText(), l.getTextOffset())),
-                                true
-                        )
-                        .withIcon(TexifyIcons.DOT_LABEL)
+                l -> {
+                    Icon icon = "\\bibitem".equals(l.getName()) ? TexifyIcons.DOT_BIB :
+                            TexifyIcons.DOT_LABEL;
+
+                    return LookupElementBuilder.create(l.getRequiredParameters().get(0))
+                            .bold()
+                            .withInsertHandler(new LatexReferenceInsertHandler())
+                            .withTypeText(
+                                    l.getContainingFile().getName() + ":" +
+                                            (1 + StringUtil.offsetToLineNumber(l.getContainingFile().getText(), l.getTextOffset())),
+                                    true
+                            )
+                            .withIcon(icon);
+                }
         ).toArray();
     }
 }

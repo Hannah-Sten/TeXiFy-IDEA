@@ -43,7 +43,7 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
     }
 
     /**
-     * Get all the index LaTeX commands in the given file.
+     * Get all the indexed LaTeX commands in the given file.
      */
     public static Collection<LatexCommands> getIndexCommands(@NotNull PsiFile file) {
         GlobalSearchScope scope = GlobalSearchScope.fileScope(file);

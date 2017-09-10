@@ -17,10 +17,6 @@ public class LatexNewCommandPresentation implements ItemPresentation {
     private final String locationString;
 
     public LatexNewCommandPresentation(LatexCommands newCommand) {
-        if (!newCommand.getCommandToken().getText().equals("\\newcommand")) {
-            throw new IllegalArgumentException("command is no \\newcommand-command");
-        }
-
         // Fetch parameter amount.
         List<String> optional = newCommand.getOptionalParameters();
         int params = -1;

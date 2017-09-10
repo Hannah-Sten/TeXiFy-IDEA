@@ -68,6 +68,34 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon TEMP_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/temp.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon SYNCTEX_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/synctex-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon AUX_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/aux-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon BBL_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/bbl-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon TEXT_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/text-file.png"
     );
@@ -105,6 +133,13 @@ public class TexifyIcons {
      */
     public static final Icon DOT_LABEL = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/dot-lbl.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon DOT_BIB = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-bib.png"
     );
 
     /**
@@ -213,6 +248,69 @@ public class TexifyIcons {
     );
 
     /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_TYPEWRITER = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-mono.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_STRIKETHROUGH = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-strike.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_SLANTED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-slanted.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon SUMATRA = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/sumatra.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon WORD_COUNT = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/word-count.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon TOGGLE_STAR = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/toggle-star.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon STATS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/stats.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon RIGHT = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/right.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon SETTINGS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/settings.png"
+    );
+
+    /**
      * Get the file icon object that corresponds to the given file extension.
      * <p>
      * This method ignores case.
@@ -245,6 +343,8 @@ public class TexifyIcons {
                 return TEXT_FILE;
             case "pdf":
                 return PDF_FILE;
+            case "synctex.gz":
+                return SYNCTEX_FILE;
             default:
                 return FILE;
         }
