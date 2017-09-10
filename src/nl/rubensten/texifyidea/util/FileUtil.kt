@@ -120,3 +120,8 @@ fun PsiFile.isRoot(): Boolean {
 
     return commandsInFile().filter { it.name.equals("\\documentclass") }.any()
 }
+
+/**
+ * @see [TexifyUtil.getFileRelativeTo]
+ */
+fun PsiFile.findRelativeFile(filePath: String) = TexifyUtil.getFileRelativeTo(this, filePath)

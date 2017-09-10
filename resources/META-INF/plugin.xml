@@ -354,5 +354,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.ExtremeInequalityInspection"
                          groupName="TeXiFy" displayName="Use the matching amssymb symbol for extreme inequalities"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.FileNotFoundInspection"
+                         groupName="TeXiFy" displayName="File not found"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
