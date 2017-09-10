@@ -40,7 +40,7 @@ public interface LatexCommand extends Dependend {
     String getCommandDisplay();
 
     /**
-     * Get all the command arguments.
+     * Get all the command myArguments.
      */
     Argument[] getArguments();
 }
