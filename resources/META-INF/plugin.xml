@@ -363,6 +363,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.PrimitiveEquationInspection"
                          groupName="TeXiFy" displayName="Discouraged use of primitive TeX display math"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.CollapseCiteInspection"
+                         groupName="TeXiFy" displayName="Collapse cite commands"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
