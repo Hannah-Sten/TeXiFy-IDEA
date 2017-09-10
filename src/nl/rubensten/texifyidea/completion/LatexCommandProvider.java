@@ -91,7 +91,9 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
         LatexCommandsIndex.getIndexCommandsInFileSet(parameters.getOriginalFile()).stream()
                 .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
-                .map(cmd -> new SimpleEnvironment(PsiUtilKt.requiredParameter(cmd, 0)))
+                .map(cmd -> PsiUtilKt.requiredParameter(cmd, 0))
+                .filter(Objects::nonNull)
+                .map(SimpleEnvironment::new)
                 .forEach(environments::add);
 
         // Create autocomplete elements.
