@@ -19,13 +19,12 @@ import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.util.PsiUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +51,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 addCustomCommands(parameters, result, LatexMode.MATH);
                 break;
             case ENVIRONMENT_NAME:
-                addEnvironments(result);
+                addEnvironments(result, parameters);
                 break;
         }
 
@@ -85,9 +84,19 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         ));
     }
 
-    private void addEnvironments(CompletionResultSet result) {
+    private void addEnvironments(CompletionResultSet result, CompletionParameters parameters) {
+        // Find all environments.
+        List<Environment> environments = new ArrayList<>();
+        Collections.addAll(environments, DefaultEnvironment.values());
+
+        LatexCommandsIndex.getIndexCommandsInFileSet(parameters.getOriginalFile()).stream()
+                .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
+                .map(cmd -> new SimpleEnvironment(PsiUtilKt.requiredParameter(cmd, 0)))
+                .forEach(environments::add);
+
+        // Create autocomplete elements.
         result.addAllElements(ContainerUtil.map2List(
-                DefaultEnvironment.values(),
+                environments,
                 env -> LookupElementBuilder.create(env, env.getEnvironmentName())
                         .withPresentableText(env.getEnvironmentName())
                         .bold()
@@ -131,7 +140,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             }
 
             if (mode != LatexMode.MATH && "\\DeclareMathOperator".equals(cmd.getName())) {
-               continue;
+                continue;
             }
 
             String cmdName = getCommandName(cmd);
@@ -206,8 +215,10 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
     private String getCommandName(@NotNull LatexCommands commands) {
         switch (commands.getName()) {
             case "\\DeclareMathOperator":
-            case "\\newcommand": return getNewCommandName(commands);
-            default: return getDefinitionName(commands);
+            case "\\newcommand":
+                return getNewCommandName(commands);
+            default:
+                return getDefinitionName(commands);
         }
     }
 
