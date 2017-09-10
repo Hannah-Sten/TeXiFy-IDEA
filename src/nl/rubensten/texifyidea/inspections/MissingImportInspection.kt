@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.lang.Environment
+import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
@@ -50,7 +50,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
         val environments = file.childrenOfType(LatexEnvironment::class)
         for (env in environments) {
             val name = env.name()?.text ?: continue
-            val environment = Environment[name] ?: continue
+            val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.getDependency()
 
             if (pack == Package.DEFAULT || includedPackages.contains(pack.name)) {
@@ -60,7 +60,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
             descriptors.add(manager.createProblemDescriptor(
                     env,
                     TextRange(7, 7 + name.length),
-                    "Environment requires ${pack.name} package",
+                    "DefaultEnvironment requires ${pack.name} myPackage",
                     ProblemHighlightType.ERROR,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)
@@ -84,7 +84,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
                         TextRange(0, latexCommand.command.length + 1),
-                        "Command requires ${pack.name} package",
+                        "Command requires ${pack.name} myPackage",
                         ProblemHighlightType.ERROR,
                         isOntheFly,
                         ImportCommandFix(pack.name)
@@ -99,7 +99,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
     private class ImportCommandFix(val import: String) : LocalQuickFix {
 
         override fun getFamilyName(): String {
-            return "Add import for package '$import'"
+            return "Add import for myPackage '$import'"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
@@ -117,12 +117,12 @@ open class MissingImportInspection : TexifyInspectionBase() {
     private class ImportEnvironmentFix(val import: String) : LocalQuickFix {
 
         override fun getFamilyName(): String {
-            return "Add import for package '$import'"
+            return "Add import for myPackage '$import'"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val environment = descriptor.psiElement as? LatexEnvironment ?: return
-            val thingy = Environment.fromPsi(environment) ?: return
+            val thingy = DefaultEnvironment.fromPsi(environment) ?: return
             val file = environment.containingFile
 
             PackageUtils.insertUsepackage(file, thingy.getDependency())

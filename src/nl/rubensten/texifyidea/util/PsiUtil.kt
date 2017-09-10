@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
 import kotlin.reflect.KClass
@@ -208,12 +209,12 @@ fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
 }
 
 /**
- * Checks if the psi element has a direct environment with the given context.
+ * Checks if the psi element has a direct environment with the given myContext.
  */
 fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return context == Environment.Context.NORMAL
     return inDirectEnvironmentMatching {
-        Environment.fromPsi(environment)?.context == context
+        DefaultEnvironment.fromPsi(environment)?.context == context
     }
 }
 

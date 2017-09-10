@@ -6,9 +6,9 @@ package nl.rubensten.texifyidea.lang
 interface Dependend {
 
     /**
-     * Get the package that is required for the object to work.
+     * Get the myPackage that is required for the object to work.
      *
-     * @return The package object, or [Package.DEFAULT] when no package is needed.
+     * @return The myPackage object, or [Package.DEFAULT] when no myPackage is needed.
      */
     fun getDependency(): Package
 }

@@ -87,9 +87,9 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     private void addEnvironments(CompletionResultSet result) {
         result.addAllElements(ContainerUtil.map2List(
-                Environment.values(),
-                env -> LookupElementBuilder.create(env, env.getEnvName())
-                        .withPresentableText(env.getEnvName())
+                DefaultEnvironment.values(),
+                env -> LookupElementBuilder.create(env, env.getEnvironmentName())
+                        .withPresentableText(env.getEnvironmentName())
                         .bold()
                         .withTailText(packageName(env), true)
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)

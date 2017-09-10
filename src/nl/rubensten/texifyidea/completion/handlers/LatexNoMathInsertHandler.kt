@@ -9,7 +9,7 @@ import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateSettings
 import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.lang.Environment
+import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand
 import nl.rubensten.texifyidea.util.PackageUtils
 import nl.rubensten.texifyidea.util.insertUsepackage
@@ -53,7 +53,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
 
         override fun beforeTemplateFinished(templateState: TemplateState, template: Template) {
             val envName = templateState.getVariableValue("ENVNAME")?.text ?: return
-            val environment = Environment[envName] ?: return
+            val environment = DefaultEnvironment[envName] ?: return
             val pack = environment.getDependency()
 
             if (!PackageUtils.getIncludedPackages(file).contains(pack.name)) {
