@@ -24,30 +24,50 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
-fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> = PsiTreeUtil.findChildrenOfType(this, clazz.java)
-
-/**
- * See method name.
- */
-fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    val children = childrenOfType(clazz)
-    if (children.isEmpty()) {
-        return null
-    }
-
-    return children.first()
+fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
+    return PsiTreeUtil.findChildrenOfType(this, clazz.java)
 }
 
 /**
- * See method name.
+ * @see [PsiTreeUtil.getChildrenOfType]
  */
-fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
-    val children = childrenOfType(clazz)
-    if (children.isEmpty()) {
-        return null
+inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
+
+/**
+ * Finds the first child of a certain type.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
+    for (child in this.children) {
+        if (clazz.java.isAssignableFrom(child.javaClass)) {
+            return child as? T
+        }
+
+        val first = child.firstChildOfType(clazz)
+        if (first != null) {
+            return first
+        }
     }
 
-    return children.last()
+    return null
+}
+
+/**
+ * Finds the last child of a certain type.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
+    val children = this.children
+    for (i in children.size - 1 downTo 0) {
+        val child = children[i]
+        if (child.javaClass.isAssignableFrom(clazz.java)) {
+            return child as? T
+        }
+
+        return child.firstChildOfType(clazz)
+    }
+
+    return null
 }
 
 /**
@@ -65,7 +85,9 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
-fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class)
+fun PsiElement.inMathContext(): Boolean {
+    return hasParent(LatexMathContent::class) || inDirectEnvironmentContext(Environment.Context.MATH)
+}
 
 /**
  * @see LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
@@ -139,7 +161,7 @@ fun PsiElement.grandparent(generations: Int): PsiElement? {
 /**
  * Checks if the psi element has a (grand) parent that matches the given predicate.
  */
-fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
+inline fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
     var count = 0
     var parent = this.parent
     while (parent != null && parent !is PsiFile) {
@@ -188,7 +210,7 @@ fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
  * @return `true` when the predicate tests `true`, or `false` when there is no direct environment or when the
  *              predicate failed.
  */
-fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
+inline fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     return predicate(environment)
 }
@@ -299,18 +321,7 @@ fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
  * Looks up the name of the environment in the required parameter.
  */
 fun LatexEnvironment.name(): LatexNormalText? {
-    val parameters = childrenOfType(LatexParameter::class)
-    if (parameters.isEmpty()) {
-        return null
-    }
-
-    val parameter = parameters.first()
-    val texts = parameter.childrenOfType(LatexNormalText::class)
-    if (texts.isEmpty()) {
-        return null
-    }
-
-    return texts.first()
+    return firstChildOfType(LatexNormalText::class)
 }
 
 /**
