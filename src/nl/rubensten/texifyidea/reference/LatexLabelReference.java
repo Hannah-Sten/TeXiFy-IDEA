@@ -50,15 +50,15 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     @NotNull
     @Override
     public Object[] getVariants() {
-        Project project = myElement.getProject();
         String token = myElement.getCommandToken().getText();
+        PsiFile file = myElement.getContainingFile().getOriginalFile();
+        Collection<LatexCommands> labels = TexifyUtil.findLabels(file);
 
-        Collection<LatexCommands> labels = TexifyUtil.findLabels(project);
         labels.removeIf(label -> {
             String name = label.getName();
             return ("\\cite".equals(token) && "\\label".equals(name)) ||
                     (NonBreakingSpaceInspection.getREFERENCE_COMMANDS().contains(token) &&
-                            "\\bibitem".equals(name));
+                            "\\bibitem".equals(name) && !"\\cite".equals(token));
         });
 
         return labels.stream().map(

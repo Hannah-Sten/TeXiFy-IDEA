@@ -318,7 +318,7 @@ public enum LatexNoMathCommand implements LatexCommand {
             requiredText("begdef"), requiredText("enddef")),
     RENEWENVIRONMENT("renewenvironment", required("name"),
             optional("args"), optional("default"),
-            requiredText("begdef"), requiredText("enddef")),;
+            requiredText("begdef"), requiredText("enddef"));
 
     private static final Map<String, LatexNoMathCommand> lookup = new HashMap<>();
     private static final Map<String, LatexNoMathCommand> lookupDisplay = new HashMap<>();

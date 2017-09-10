@@ -18,11 +18,11 @@ object PackageUtils {
      * Inserts a usepackage statement for the given package in a certain file.
      *
      * @param file
-     * The file to add the usepackage statement to.
+     *          The file to add the usepackage statement to.
      * @param packageName
-     * The name of the package to insert.
+     *          The name of the package to insert.
      * @param parameters
-     * Parameters to add to the statement, `null` or empty string for no parameters.
+     *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
     @JvmStatic
     fun insertUsepackage(document: Document, file: PsiFile, packageName: String,
@@ -65,10 +65,10 @@ object PackageUtils {
     }
 
     /**
-     * Inserts a usepackage statement for the given package in a certain file when the package hasn't been included yet.
+     * Inserts a usepackage statement for the given package in a certain file.
      *
      * @param file
-     *          The file to add the usepackage statement to.
+     *         The file to add the usepackage statement to.
      * @param pack
      *          The package to include.
      */

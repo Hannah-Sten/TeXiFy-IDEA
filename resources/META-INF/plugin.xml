@@ -85,7 +85,7 @@
     <actions>
         <!-- New LaTeX file -->
         <action id="texify.NewFile" class="nl.rubensten.texifyidea.action.NewLatexFileAction">
-            <add-to-group group-id="NewGroup1" anchor="after" relative-to-action="NewModuleInGroup"/>
+            <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile" />
         </action>
 
         <!-- LaTeX commands -->

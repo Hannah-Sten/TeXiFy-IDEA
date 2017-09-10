@@ -546,8 +546,29 @@ public class TexifyUtil {
      *         Project scope.
      * @return A list of label commands.
      */
-    public static Collection<LatexCommands> findLabels(Project project) {
-        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project);
+    public static Collection<LatexCommands> findLabels(@NotNull Project project) {
+        return findLabels(LatexCommandsIndex.getIndexedCommands(project));
+    }
+
+    /**
+     * Finds all defined labels within the fileset of a given file.
+     *
+     * @param file
+     *         The file to analyse the file set of.
+     * @return A list of label commands.
+     */
+    public static Collection<LatexCommands> findLabels(@NotNull PsiFile file) {
+        return findLabels(LatexCommandsIndex.getIndexCommandsInFileSet(file));
+    }
+
+    /**
+     * Finds all the label within the collection of commands.
+     *
+     * @param cmds
+     *         The commands to select all labels from.
+     * @return A collection of all label commands.
+     */
+    public static Collection<LatexCommands> findLabels(@NotNull Collection<LatexCommands> cmds) {
         cmds.removeIf(cmd -> {
             String name = cmd.getName();
             return !"\\label".equals(name) && !"\\bibitem".equals(name);
