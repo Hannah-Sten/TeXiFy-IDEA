@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.rubensten.texifyidea.TeXception
+import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.action.EditorAction
 import nl.rubensten.texifyidea.run.SumatraConversation
 
@@ -18,7 +19,10 @@ import nl.rubensten.texifyidea.run.SumatraConversation
  * @author Sten Wessel
  * @since b0.4
  */
-open class ForwardSearchAction : EditorAction("ForwardSearch", null) {
+open class ForwardSearchAction : EditorAction(
+        "ForwardSearch",
+        TexifyIcons.RIGHT
+) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
         if (!SystemInfo.isWindows) {

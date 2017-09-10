@@ -134,8 +134,9 @@ public class TexifyUtil {
 
             PsiFile declaredIn = command.getContainingFile();
             projectFiles.add(declaredIn);
+            PsiFile rootFile = FileUtilKt.findRootFile(declaredIn);
 
-            PsiFile referenced = getFileRelativeTo(declaredIn, includedName);
+            PsiFile referenced = getFileRelativeTo(rootFile, includedName);
             if (referenced != null) {
                 projectFiles.add(referenced);
             }
@@ -193,7 +194,8 @@ public class TexifyUtil {
                 continue;
             }
 
-            PsiFile included = getFileRelativeTo(file, fileName);
+            PsiFile root = FileUtilKt.findRootFile(file);
+            PsiFile included = getFileRelativeTo(root, fileName);
             if (included == null) {
                 continue;
             }
@@ -240,6 +242,23 @@ public class TexifyUtil {
      */
     @Nullable
     public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path) {
+        // Find file
+        VirtualFile directory = file.getContainingDirectory().getVirtualFile();
+        Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
+        if (!fileHuh.isPresent()) {
+            return null;
+        }
+
+        PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
+        if (psiFile == null || (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
+                !StyleFileType.INSTANCE.equals(psiFile.getFileType()))) {
+            return null;
+        }
+
+        return psiFile;
+    }
+
+    public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
         // Find file
         VirtualFile directory = file.getVirtualFile().getParent();
         Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
@@ -324,7 +343,8 @@ public class TexifyUtil {
         }
 
         for (String extension : extensions) {
-            file = directory.findFileByRelativePath(fileName + "." + extension);
+            String lookFor = fileName.endsWith(extension) ? fileName : fileName + "." + extension;
+            file = directory.findFileByRelativePath(lookFor);
 
             if (file != null) {
                 return Optional.of(file);
@@ -512,7 +532,7 @@ public class TexifyUtil {
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
         return LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
-                .filter(cmd -> cmd.getName().equals("\\label"))
+                .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.get(0))
@@ -527,7 +547,12 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<LatexCommands> findLabels(Project project) {
-        return LatexCommandsIndex.getIndexedCommandsByName("label", project);
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project);
+        cmds.removeIf(cmd -> {
+            String name = cmd.getName();
+            return !"\\label".equals(name) && !"\\bibitem".equals(name);
+        });
+        return cmds;
     }
 
     /**

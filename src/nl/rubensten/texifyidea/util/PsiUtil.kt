@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -23,61 +24,31 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
-fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
-    return PsiTreeUtil.findChildrenOfType(this, clazz.java)
-}
+fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> = PsiTreeUtil.findChildrenOfType(this, clazz.java)
 
 /**
- * @see [PsiTreeUtil.getChildrenOfType]
+ * See method name.
  */
-inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
-
-/**
- * Finds the first child of a certain type.
- */
-@Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    for (child in this.children) {
-        if (clazz.java.isAssignableFrom(child.javaClass)) {
-            return child as? T
-        }
-
-        val first = child.firstChildOfType(clazz)
-        if (first != null) {
-            return first
-        }
+    val children = childrenOfType(clazz)
+    if (children.isEmpty()) {
+        return null
     }
 
-    return null
+    return children.first()
 }
 
 /**
- * @see [firstChildOfType]
+ * See method name.
  */
-inline fun <reified T : PsiElement> PsiElement.firstChildOfType(): T? = firstChildOfType(T::class)
-
-/**
- * Finds the last child of a certain type.
- */
-@Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
-    val children = this.children
-    for (i in children.size - 1 downTo 0) {
-        val child = children[i]
-        if (child.javaClass.isAssignableFrom(clazz.java)) {
-            return child as? T
-        }
-
-        return child.firstChildOfType(clazz)
+    val children = childrenOfType(clazz)
+    if (children.isEmpty()) {
+        return null
     }
 
-    return null
+    return children.last()
 }
-
-/**
- * @see [lastChildOfType]
- */
-inline fun <reified T : PsiElement> PsiElement.lastChildOfType(): T? = lastChildOfType(T::class)
 
 /**
  * @see [PsiTreeUtil.getParentOfType]
@@ -85,28 +56,16 @@ inline fun <reified T : PsiElement> PsiElement.lastChildOfType(): T? = lastChild
 fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil.getParentOfType(this, clazz.java)
 
 /**
- * @see [PsiTreeUtil.getParentOfType]
- */
-inline fun <reified T : PsiElement> PsiElement.parentOfType(): T? = parentOfType(T::class)
-
-/**
  * Checks if the psi element has a parent of a given class.
  */
 fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfType(clazz) != null
-
-/**
- * @see [hasParent]
- */
-inline fun <reified T : PsiElement> PsiElement.hasParent(): Boolean = hasParent(T::class)
 
 /**
  * Checks if the psi element is in math mode or not.
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
-fun PsiElement.inMathContext(): Boolean {
-    return hasParent(LatexMathContent::class) || inDirectEnvironmentContext(Environment.Context.MATH)
-}
+fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class)
 
 /**
  * @see LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
@@ -138,11 +97,6 @@ fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? {
 }
 
 /**
- * @see [nextSiblingOfType]
- */
-inline fun <reified T : PsiElement> PsiElement.nextSiblingOfType(): T? = nextSiblingOfType(T::class)
-
-/**
  * Finds the previous sibling of the element that has the given type.
  *
  * @return The first previous sibling of the given type, or `null` when the sibling couldn't be found.
@@ -160,11 +114,6 @@ fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
 
     return null
 }
-
-/**
- * @see [previousSiblingOfType]
- */
-inline fun <reified T : PsiElement> PsiElement.previousSiblingOfType(): T? = previousSiblingOfType(T::class)
 
 /**
  * @see LatexPsiUtil.getAllChildren
@@ -190,7 +139,7 @@ fun PsiElement.grandparent(generations: Int): PsiElement? {
 /**
  * Checks if the psi element has a (grand) parent that matches the given predicate.
  */
-inline fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
+fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
     var count = 0
     var parent = this.parent
     while (parent != null && parent !is PsiFile) {
@@ -239,7 +188,7 @@ fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
  * @return `true` when the predicate tests `true`, or `false` when there is no direct environment or when the
  *              predicate failed.
  */
-inline fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
+fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     return predicate(environment)
 }
@@ -262,8 +211,7 @@ fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
  * Checks if the psi element has a direct environment with the given context.
  */
 fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean {
-    val environment = parentOfType(LatexEnvironment::class) ?: return false
-
+    val environment = parentOfType(LatexEnvironment::class) ?: return context == Environment.Context.NORMAL
     return inDirectEnvironmentMatching {
         Environment.fromPsi(environment)?.context == context
     }
@@ -303,6 +251,11 @@ fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this
  */
 fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
 
+/**
+ * Get the editor of the file if it is currently opened.
+ */
+fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,7 +281,14 @@ fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
  * @param element
  *              Either a [LatexBeginCommand] or a [LatexEndCommand]
  */
-private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexNormalText::class)?.text
+private fun beginOrEndEnvironmentName(element: PsiElement): String? {
+    val children = element.childrenOfType(LatexNormalText::class)
+    if (children.isEmpty()) {
+        return null
+    }
+
+    return children.first().text
+}
 
 /**
  * @see TexifyUtil.isEntryPoint
@@ -339,7 +299,18 @@ fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
  * Looks up the name of the environment in the required parameter.
  */
 fun LatexEnvironment.name(): LatexNormalText? {
-    return firstChildOfType<LatexNormalText>()
+    val parameters = childrenOfType(LatexParameter::class)
+    if (parameters.isEmpty()) {
+        return null
+    }
+
+    val parameter = parameters.first()
+    val texts = parameter.childrenOfType(LatexNormalText::class)
+    if (texts.isEmpty()) {
+        return null
+    }
+
+    return texts.first()
 }
 
 /**

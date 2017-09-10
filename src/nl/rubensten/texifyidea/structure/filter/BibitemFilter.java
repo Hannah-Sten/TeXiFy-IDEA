@@ -12,7 +12,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexIncludesFilter implements Filter {
+public class BibitemFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {
@@ -21,9 +21,7 @@ public class LatexIncludesFilter implements Filter {
         }
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !element.getCommandName().equals("\\include") &&
-                !element.getCommandName().equals("\\includeonly") &&
-                !element.getCommandName().equals("\\input");
+        return !element.getCommandName().equals("\\bibitem");
     }
 
     @Override
@@ -34,36 +32,36 @@ public class LatexIncludesFilter implements Filter {
     @NotNull
     @Override
     public ActionPresentation getPresentation() {
-        return LatexIncludesFilterPresentation.INSTANCE;
+        return BibitemFilterPresentation.INSTANCE;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "latex.texify.filter.includes";
+        return "latex.texify.filter.bibitem";
     }
 
     /**
      * @author Ruben Schellekens
      */
-    private static class LatexIncludesFilterPresentation implements ActionPresentation {
+    private static class BibitemFilterPresentation implements ActionPresentation {
 
-        private static final LatexIncludesFilterPresentation INSTANCE = new LatexIncludesFilterPresentation();
+        private static final BibitemFilterPresentation INSTANCE = new BibitemFilterPresentation();
 
         @NotNull
         @Override
         public String getText() {
-            return "Show Includes";
+            return "Show Bibliography Items";
         }
 
         @Override
         public String getDescription() {
-            return "Show Includes";
+            return "Show Bibliography Items";
         }
 
         @Override
         public Icon getIcon() {
-            return TexifyIcons.DOT_INCLUDE;
+            return TexifyIcons.DOT_BIB;
         }
     }
 }

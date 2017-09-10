@@ -12,7 +12,7 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexLabelFilter implements Filter {
+public class IncludesFilter implements Filter {
 
     @Override
     public boolean isVisible(TreeElement treeElement) {
@@ -21,7 +21,9 @@ public class LatexLabelFilter implements Filter {
         }
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !element.getCommandName().equals("\\label");
+        return !element.getCommandName().equals("\\include") &&
+                !element.getCommandName().equals("\\includeonly") &&
+                !element.getCommandName().equals("\\input");
     }
 
     @Override
@@ -32,36 +34,36 @@ public class LatexLabelFilter implements Filter {
     @NotNull
     @Override
     public ActionPresentation getPresentation() {
-        return LatexLabelFilterPresentation.INSTANCE;
+        return LatexIncludesFilterPresentation.INSTANCE;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "latex.texify.filter.label";
+        return "latex.texify.filter.includes";
     }
 
     /**
      * @author Ruben Schellekens
      */
-    private static class LatexLabelFilterPresentation implements ActionPresentation {
+    private static class LatexIncludesFilterPresentation implements ActionPresentation {
 
-        private static final LatexLabelFilterPresentation INSTANCE = new LatexLabelFilterPresentation();
+        private static final LatexIncludesFilterPresentation INSTANCE = new LatexIncludesFilterPresentation();
 
         @NotNull
         @Override
         public String getText() {
-            return "Show Labels";
+            return "Show Includes";
         }
 
         @Override
         public String getDescription() {
-            return "Show Labels";
+            return "Show Includes";
         }
 
         @Override
         public Icon getIcon() {
-            return TexifyIcons.DOT_LABEL;
+            return TexifyIcons.DOT_INCLUDE;
         }
     }
 }

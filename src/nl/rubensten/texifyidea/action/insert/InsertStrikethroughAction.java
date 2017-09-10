@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.action.InsertEditorAction;
 import nl.rubensten.texifyidea.util.PackageUtils;
 
@@ -15,7 +16,7 @@ import nl.rubensten.texifyidea.util.PackageUtils;
 public class InsertStrikethroughAction extends InsertEditorAction {
 
     public InsertStrikethroughAction() {
-        super("Strikethrough (ulem package)", null, "\\sout{", "}");
+        super("Strikethrough (ulem package)", TexifyIcons.FONT_STRIKETHROUGH, "\\sout{", "}");
     }
 
     @Override

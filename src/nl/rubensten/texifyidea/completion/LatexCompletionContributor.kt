@@ -76,9 +76,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                val command = LatexPsiUtil.getParentOfType(
-                                        psiElement, LatexCommands::class.java
-                                ) ?: return false
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
 
                                 val name = command.commandToken.text
                                 val cmd = LatexNoMathCommand.get(name.substring(1)).orElse(null) ?: return false

@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.grandparent
@@ -23,7 +24,7 @@ import javax.swing.SwingConstants
 open class WordCountAction : AnAction(
         "Word Count",
         "Estimate the word count of the currently active .tex file and inclusions.",
-        null
+        TexifyIcons.WORD_COUNT
 ) {
 
     companion object {

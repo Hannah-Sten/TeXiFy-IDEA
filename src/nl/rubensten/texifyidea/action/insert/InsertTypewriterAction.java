@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.action.insert;
 
+import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.action.InsertEditorAction;
 
 /**
@@ -8,6 +9,6 @@ import nl.rubensten.texifyidea.action.InsertEditorAction;
 public class InsertTypewriterAction extends InsertEditorAction {
 
     public InsertTypewriterAction() {
-        super("Typewriter (monospace)", null, "\\texttt{", "}");
+        super("Typewriter (monospace)", TexifyIcons.FONT_TYPEWRITER, "\\texttt{", "}");
     }
 }

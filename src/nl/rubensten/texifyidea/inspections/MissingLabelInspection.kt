@@ -91,7 +91,13 @@ open class MissingLabelInspection : TexifyInspectionBase() {
             val createdLabel = appendCounter(createdLabelBase, allLabels)
 
             // Insert label.
-            document.insertString(command.endOffset(), "\\label{$createdLabel}")
+            val labelText = "\\label{$createdLabel}"
+            document.insertString(command.endOffset(), labelText)
+
+            // Adjust caret offset.
+            val editor = file.openedEditor() ?: return
+            val caret = editor.caretModel
+            caret.moveToOffset(command.endOffset() + labelText.length)
         }
 
         /**

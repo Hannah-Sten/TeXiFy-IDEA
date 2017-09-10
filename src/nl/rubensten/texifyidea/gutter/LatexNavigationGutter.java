@@ -13,6 +13,7 @@ import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -80,8 +81,11 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         if (containingDirectory == null) {
             return;
         }
-        VirtualFile directory = containingDirectory.getVirtualFile();
-        Optional<VirtualFile> fileHuh = findFile(directory, fileName, argument.getSupportedExtensions());
+
+        PsiFile rootFile = FileUtilKt.findRootFile(containingFile);
+        VirtualFile rootDirectory = rootFile.getContainingDirectory().getVirtualFile();
+
+        Optional<VirtualFile> fileHuh = findFile(rootDirectory, fileName, argument.getSupportedExtensions());
         if (!fileHuh.isPresent()) {
             return;
         }

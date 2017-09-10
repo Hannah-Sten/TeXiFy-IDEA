@@ -80,13 +80,7 @@ open class DiscouragedUseOfDefInspection : TexifyInspectionBase() {
             val parent = command.parent.parent
             val firstSib = LatexPsiUtil.getNextSiblingIgnoreWhitespace(parent) ?: return null
             val secondSib = LatexPsiUtil.getNextSiblingIgnoreWhitespace(firstSib) ?: return null
-
-            return if (command.name == "\\def") {
-                Pair(firstSib, secondSib)
-            }
-            else {
-                Pair(secondSib, firstSib)
-            }
+            return Pair(firstSib, secondSib)
         }
     }
 }
