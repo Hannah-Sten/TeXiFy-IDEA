@@ -120,8 +120,3 @@ fun PsiFile.isRoot(): Boolean {
 
     return commandsInFile().filter { it.name.equals("\\documentclass") }.any()
 }
-
-/**
- * Get the PsiFile-instace that is managed by the `PsiManager`.
- */
-fun PsiFile.managedFile() = PsiManager.getInstance(project).findFile(virtualFile)
