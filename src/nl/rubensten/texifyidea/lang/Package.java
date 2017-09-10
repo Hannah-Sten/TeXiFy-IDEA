@@ -34,16 +34,16 @@ public class Package {
     }
 
     /**
-     * Creates a new myPackage object with the same name and with the given parameters.
+     * Creates a new package object with the same name and with the given parameters.
      */
     public Package with(String... parameters) {
         return new Package(name, parameters);
     }
 
     /**
-     * Checks if this myPackage is the default myPackage ('no myPackage').
+     * Checks if this package is the default package ('no package').
      *
-     * @return {@code true} when is the default myPackage, {@code false} if it is any other myPackage.
+     * @return {@code true} when is the default package, {@code false} if it is any other package.
      */
     public boolean isDefault() {
         return equals(DEFAULT);

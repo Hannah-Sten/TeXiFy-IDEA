@@ -16,7 +16,7 @@ import nl.rubensten.texifyidea.util.PackageUtils;
 public class InsertStrikethroughAction extends InsertEditorAction {
 
     public InsertStrikethroughAction() {
-        super("Strikethrough (ulem myPackage)", TexifyIcons.FONT_STRIKETHROUGH, "\\sout{", "}");
+        super("Strikethrough (ulem package)", TexifyIcons.FONT_STRIKETHROUGH, "\\sout{", "}");
     }
 
     @Override

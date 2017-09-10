@@ -46,7 +46,7 @@ open class DiscouragedUseOfDefInspection : TexifyInspectionBase() {
                         NewcommandFix("\\renewcommand")
                 ))
 
-                // TODO: Determine new/renew based on myContext.
+                // TODO: Determine new/renew based on context.
             }
         }
 

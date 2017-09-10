@@ -60,7 +60,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
             descriptors.add(manager.createProblemDescriptor(
                     env,
                     TextRange(7, 7 + name.length),
-                    "DefaultEnvironment requires ${pack.name} myPackage",
+                    "DefaultEnvironment requires ${pack.name} package",
                     ProblemHighlightType.ERROR,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)
@@ -84,7 +84,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
                         TextRange(0, latexCommand.command.length + 1),
-                        "Command requires ${pack.name} myPackage",
+                        "Command requires ${pack.name} package",
                         ProblemHighlightType.ERROR,
                         isOntheFly,
                         ImportCommandFix(pack.name)
@@ -99,7 +99,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
     private class ImportCommandFix(val import: String) : LocalQuickFix {
 
         override fun getFamilyName(): String {
-            return "Add import for myPackage '$import'"
+            return "Add import for package '$import'"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
@@ -117,7 +117,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
     private class ImportEnvironmentFix(val import: String) : LocalQuickFix {
 
         override fun getFamilyName(): String {
-            return "Add import for myPackage '$import'"
+            return "Add import for package '$import'"
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

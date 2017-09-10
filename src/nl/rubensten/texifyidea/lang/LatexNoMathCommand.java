@@ -284,7 +284,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     UNITLENGTH("unitlength"),
     UPPERCASE("uppercase", requiredText("text")),
     UPSHAPE("upshape"),
-    USEPACKAGE("usepackage", optional("options"), required("myPackage")),
+    USEPACKAGE("usepackage", optional("options"), required("package")),
     VDOTS("vdots", "⋮"),
     VLINE("vline"),
     VSPACE("vspace", required("length")),

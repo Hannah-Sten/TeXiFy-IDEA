@@ -9,78 +9,78 @@ import java.util.*
  * @author Ruben Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-        private vararg val myArguments: Argument = emptyArray(),
-        private val myEnvName: String,
-        private val myInitialContents: String = "",
-        private val myContext: Context = Context.NORMAL,
-        private val myPackage: Package = Package.DEFAULT
+        vararg override val arguments: Argument,
+        override val environmentName: String,
+        override val initialContents: String = "",
+        override val context: Context = Context.NORMAL,
+        val `package`: Package = Package.DEFAULT
 ) : Environment {
 
     // Vanilla LaTeX
-    ABSTRACT(myEnvName = "abstract"),
-    ALLTT(myEnvName = "alltt"),
-    CENTER(myEnvName = "center"),
-    DESCRIPTION(myEnvName = "description", myInitialContents = "\\item"),
-    DISPLAYMATH(myEnvName = "displaymath"),
-    DOCUMENT(myEnvName = "document"),
-    ENUMERATE(myEnvName = "enumerate", myInitialContents = "\\item "),
-    EQUATION(myEnvName = "equation", myContext = Context.MATH),
-    EQUATION_STAR(myEnvName = "equation*", myContext = Context.MATH),
-    EQNARRAY(myEnvName = "eqnarray"),
-    FIGURE(myEnvName = "figure", myArguments = OptionalArgument("placement")),
-    FIGURE_STAR(myEnvName = "figure*", myArguments = OptionalArgument("placement")),
-    FILECONTENTS(myEnvName = "filecontents"),
-    FILECONTENTS_STAR(myEnvName = "filecontents*"),
-    FLUSHLEFT(myEnvName = "flushleft"),
-    FLUSHRIGHT(myEnvName = "flushright"),
-    FOOTNOTESIZE(myEnvName = "footnotesize"),
-    HUGE(myEnvName = "huge"),
-    CAPITAL_HUGE(myEnvName = "Huge"),
-    ITEMIZE(myEnvName = "itemize", myInitialContents = "\\item "),
-    LARGE(myEnvName = "large"),
-    CAPITAL_LARGE(myEnvName = "Large"),
-    SCREAMING_LARGE(myEnvName = "LARGE"),
-    LIST(RequiredArgument("label"), RequiredArgument("spacing"), myEnvName = "list"),
-    LRBOX(myEnvName = "lrbox"),
-    MATH(myEnvName = "math"),
-    MINIPAGE(OptionalArgument("position"), RequiredArgument("width"), myEnvName = "minipage"),
-    NORMALSIZE(myEnvName = "normalsize"),
-    QUOTATION(myEnvName = "quotation"),
-    QUOTE(myEnvName = "quote"),
-    SCRIPTSIZE(myEnvName = "scriptsize"),
-    SMALL(myEnvName = "small"),
-    TABBING(myEnvName = "tabbing"),
-    TABLE(myEnvName = "table", myArguments = OptionalArgument("placement")),
-    TABLE_STAR(myEnvName = "table*", myArguments = OptionalArgument("placement")),
-    TABULAR(OptionalArgument("pos"), RequiredArgument("cols"), myEnvName = "tabular"),
-    TABULAR_STAR(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"), myEnvName = "tabular*"),
-    THEBIBLIOGRAPHY(myEnvName = "thebibliography", myArguments = RequiredArgument("widestlabel")),
-    THEINDEX(myEnvName = "theindex"),
-    THEOREM(myEnvName = "theorem", myArguments = OptionalArgument("optional")),
-    TINY(myEnvName = "tiny"),
-    TITLEPAGE(myEnvName = "titlepage"),
-    TRIVLIST(myEnvName = "trivlist"),
-    VERBATIM(myEnvName = "verbatim"),
-    VERBATIM_STAR(myEnvName = "verbatim*"),
-    VERSE(myEnvName = "verse"),
+    ABSTRACT(environmentName = "abstract"),
+    ALLTT(environmentName = "alltt"),
+    CENTER(environmentName = "center"),
+    DESCRIPTION(environmentName = "description", initialContents = "\\item "),
+    DISPLAYMATH(environmentName = "displaymath"),
+    DOCUMENT(environmentName = "document"),
+    ENUMERATE(environmentName = "enumerate", initialContents = "\\item "),
+    EQUATION(environmentName = "equation", context = Context.MATH),
+    EQUATION_STAR(environmentName = "equation*", context = Context.MATH),
+    EQNARRAY(environmentName = "eqnarray"),
+    FIGURE(environmentName = "figure", arguments = OptionalArgument("placement")),
+    FIGURE_STAR(environmentName = "figure*", arguments = OptionalArgument("placement")),
+    FILECONTENTS(environmentName = "filecontents"),
+    FILECONTENTS_STAR(environmentName = "filecontents*"),
+    FLUSHLEFT(environmentName = "flushleft"),
+    FLUSHRIGHT(environmentName = "flushright"),
+    FOOTNOTESIZE(environmentName = "footnotesize"),
+    HUGE(environmentName = "huge"),
+    CAPITAL_HUGE(environmentName = "Huge"),
+    ITEMIZE(environmentName = "itemize", initialContents = "\\item "),
+    LARGE(environmentName = "large"),
+    CAPITAL_LARGE(environmentName = "Large"),
+    SCREAMING_LARGE(environmentName = "LARGE"),
+    LIST(RequiredArgument("label"), RequiredArgument("spacing"), environmentName = "list"),
+    LRBOX(environmentName = "lrbox"),
+    MATH(environmentName = "math"),
+    MINIPAGE(OptionalArgument("position"), RequiredArgument("width"), environmentName = "minipage"),
+    NORMALSIZE(environmentName = "normalsize"),
+    QUOTATION(environmentName = "quotation"),
+    QUOTE(environmentName = "quote"),
+    SCRIPTSIZE(environmentName = "scriptsize"),
+    SMALL(environmentName = "small"),
+    TABBING(environmentName = "tabbing"),
+    TABLE(environmentName = "table", arguments = OptionalArgument("placement")),
+    TABLE_STAR(environmentName = "table*", arguments = OptionalArgument("placement")),
+    TABULAR(OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular"),
+    TABULAR_STAR(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular*"),
+    THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = RequiredArgument("widestlabel")),
+    THEINDEX(environmentName = "theindex"),
+    THEOREM(environmentName = "theorem", arguments = OptionalArgument("optional")),
+    TINY(environmentName = "tiny"),
+    TITLEPAGE(environmentName = "titlepage"),
+    TRIVLIST(environmentName = "trivlist"),
+    VERBATIM(environmentName = "verbatim"),
+    VERBATIM_STAR(environmentName = "verbatim*"),
+    VERSE(environmentName = "verse"),
 
     // amsmath
-    ALIGN(myEnvName = "align", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    ALIGN_STAR(myEnvName = "align*", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    ALIGNAT(myEnvName = "alignat", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    ALIGNAT_STAR(myEnvName = "alignat*", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    FLALIGN(myEnvName = "flalign", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    FLALIGN_STAR(myEnvName = "flalign*", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    GATHER(myEnvName = "gather", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    GATHER_STAR(myEnvName = "gather*", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    MULTLINE(myEnvName = "multline", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    MULTLINE_STAR(myEnvName = "multline*", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    SPLIT(myEnvName = "split", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    SPLIT_STAR(myEnvName = "split*", myContext = Context.MATH, myPackage = Package.AMSMATH),
-    CASES(myEnvName = "cases", myContext = Context.MATH, myPackage = Package.AMSMATH),
+    ALIGN(environmentName = "align", context = Context.MATH, `package` = Package.AMSMATH),
+    ALIGN_STAR(environmentName = "align*", context = Context.MATH, `package` = Package.AMSMATH),
+    ALIGNAT(environmentName = "alignat", context = Context.MATH, `package` = Package.AMSMATH),
+    ALIGNAT_STAR(environmentName = "alignat*", context = Context.MATH, `package` = Package.AMSMATH),
+    FLALIGN(environmentName = "flalign", context = Context.MATH, `package` = Package.AMSMATH),
+    FLALIGN_STAR(environmentName = "flalign*", context = Context.MATH, `package` = Package.AMSMATH),
+    GATHER(environmentName = "gather", context = Context.MATH, `package` = Package.AMSMATH),
+    GATHER_STAR(environmentName = "gather*", context = Context.MATH, `package` = Package.AMSMATH),
+    MULTLINE(environmentName = "multline", context = Context.MATH, `package` = Package.AMSMATH),
+    MULTLINE_STAR(environmentName = "multline*", context = Context.MATH, `package` = Package.AMSMATH),
+    SPLIT(environmentName = "split", context = Context.MATH, `package` = Package.AMSMATH),
+    SPLIT_STAR(environmentName = "split*", context = Context.MATH, `package` = Package.AMSMATH),
+    CASES(environmentName = "cases", context = Context.MATH, `package` = Package.AMSMATH),
 
     // comment
-    COMMENT(myEnvName = "comment", myContext = Context.COMMENT, myPackage = Package.COMMENT);
+    COMMENT(environmentName = "comment", context = Context.COMMENT, `package` = Package.COMMENT);
 
     companion object {
 
@@ -91,7 +91,7 @@ enum class DefaultEnvironment(
 
         init {
             for (environment in DefaultEnvironment.values()) {
-                lookup.put(environment.myEnvName, environment)
+                lookup.put(environment.environmentName, environment)
             }
         }
 
@@ -111,9 +111,5 @@ enum class DefaultEnvironment(
         operator fun get(name: String): DefaultEnvironment? = lookup[name]
     }
 
-    override fun getArguments() = myArguments
-    override fun getEnvironmentName() = myEnvName
-    override fun getInitialContents() = myInitialContents
-    override fun getContext() = myContext
-    override fun getDependency(): Package = myPackage
+    override fun getDependency(): Package = `package`
 }

@@ -15,14 +15,14 @@ import java.util.*
 object PackageUtils {
 
     /**
-     * Inserts a usepackage statement for the given myPackage in a certain file.
+     * Inserts a usepackage statement for the given package in a certain file.
      *
      * @param file
-     * The file to add the usepackage statement to.
+     *              The file to add the usepackage statement to.
      * @param packageName
-     * The name of the myPackage to insert.
+     *              The name of the package to insert.
      * @param parameters
-     * Parameters to add to the statement, `null` or empty string for no parameters.
+     *              Parameters to add to the statement, `null` or empty string for no parameters.
      */
     @JvmStatic
     fun insertUsepackage(document: Document, file: PsiFile, packageName: String,
@@ -65,12 +65,12 @@ object PackageUtils {
     }
 
     /**
-     * Inserts a usepackage statement for the given myPackage in a certain file.
+     * Inserts a usepackage statement for the given package in a certain file.
      *
      * @param file
-     * The file to add the usepackage statement to.
+     *              The file to add the usepackage statement to.
      * @param pack
-     * The myPackage to include.
+     *              The package to include.
      */
     @JvmStatic
     fun insertUsepackage(file: PsiFile, pack: Package) {
@@ -88,7 +88,7 @@ object PackageUtils {
     /**
      * Analyses the given file to find all the used packages in the included file set.
      *
-     * @return All used myPackage names.
+     * @return All used package names.
      */
     @JvmStatic
     fun getIncludedPackages(baseFile: PsiFile): Collection<String> {
