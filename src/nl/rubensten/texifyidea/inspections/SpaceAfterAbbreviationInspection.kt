@@ -12,7 +12,7 @@ import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.inMathMode
+import nl.rubensten.texifyidea.util.inMathContext
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -43,7 +43,7 @@ open class SpaceAfterAbbreviationInspection : TexifyInspectionBase() {
 
         val texts = file.childrenOfType(LatexNormalText::class)
         for (text in texts) {
-            if (text.inMathMode()) {
+            if (text.inMathContext()) {
                 continue
             }
 

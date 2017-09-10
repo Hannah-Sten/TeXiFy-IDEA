@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.hasParent
-import nl.rubensten.texifyidea.util.inMathMode
+import nl.rubensten.texifyidea.util.inMathContext
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -122,7 +122,7 @@ abstract class TexifyRegexInspection(
 
             // Correct context.
             val element = file.findElementAt(matcher.start()) ?: continue
-            if (element.inMathMode() != mathMode) {
+            if (element.inMathContext() != mathMode) {
                 continue
             }
 

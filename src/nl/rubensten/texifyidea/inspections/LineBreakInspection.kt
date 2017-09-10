@@ -10,7 +10,7 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.inMathMode
+import nl.rubensten.texifyidea.util.inMathContext
 import nl.rubensten.texifyidea.util.lineIndentation
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
@@ -49,7 +49,7 @@ open class LineBreakInspection : TexifyInspectionBase() {
 
         val texts = file.childrenOfType(LatexNormalText::class)
         for (text: LatexNormalText in texts) {
-            if (text.inMathMode()) {
+            if (text.inMathContext()) {
                 continue
             }
 
