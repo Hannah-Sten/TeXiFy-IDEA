@@ -61,9 +61,9 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
             }
         }
 
-        override fun templateFinished(template: Template, b: Boolean) {}
-        override fun templateCancelled(template: Template) {}
-        override fun currentVariableChanged(templateState: TemplateState, template: Template, i: Int, i1: Int) {}
-        override fun waitingForInput(template: Template) {}
+        override fun templateFinished(template: Template?, b: Boolean) {}
+        override fun templateCancelled(template: Template?) {}
+        override fun currentVariableChanged(templateState: TemplateState, template: Template?, i: Int, i1: Int) {}
+        override fun waitingForInput(template: Template?) {}
     }
 }

@@ -65,7 +65,7 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
-fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class)
+fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class) || inDirectEnvironmentContext(Environment.Context.MATH)
 
 /**
  * @see LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
