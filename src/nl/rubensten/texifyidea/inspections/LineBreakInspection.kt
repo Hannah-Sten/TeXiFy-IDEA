@@ -46,7 +46,7 @@ open class LineBreakInspection : TexifyInspectionBase() {
 
         val texts = file.childrenOfType(LatexNormalText::class)
         for (text: LatexNormalText in texts) {
-            if (text.inMathMode() || text.inDirectEnvironmentContext(Environment.Context.MATH)) {
+            if (text.inMathContext() || text.inDirectEnvironmentContext(Environment.Context.MATH)) {
                 continue
             }
 

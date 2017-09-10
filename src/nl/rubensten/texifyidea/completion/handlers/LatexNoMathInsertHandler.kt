@@ -9,7 +9,7 @@ import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateSettings
 import com.intellij.codeInsight.template.impl.TemplateState
 import nl.rubensten.texifyidea.lang.Environment
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.util.PackageUtils
 import nl.rubensten.texifyidea.util.insertAndMove
 import nl.rubensten.texifyidea.util.insertUsepackage
@@ -20,9 +20,9 @@ import nl.rubensten.texifyidea.util.insertUsepackage
 class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
-        val command = item.`object` as LatexNoMathCommand
+        val command = item.`object` as LatexCommand
 
-        if (command == LatexNoMathCommand.BEGIN) {
+        if (command.command == "begin") {
             insertBegin(context)
         }
         else {

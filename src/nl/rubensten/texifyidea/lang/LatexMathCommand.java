@@ -422,15 +422,6 @@ public enum LatexMathCommand implements LatexCommand {
         return arguments != null ? arguments : Argument.EMPTY_ARRAY;
     }
 
-    public String getArgumentsDisplay() {
-        StringBuilder sb = new StringBuilder();
-        for (Argument arg : getArguments()) {
-            sb.append(arg.toString());
-        }
-
-        return sb.toString();
-    }
-
     public String getDisplay() {
         return display;
     }

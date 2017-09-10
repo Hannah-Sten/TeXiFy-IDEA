@@ -40,7 +40,26 @@ public interface LatexCommand extends Dependend {
     String getCommandDisplay();
 
     /**
+     * Get the display value of the command.
+     */
+    String getDisplay();
+
+    /**
      * Get all the command myArguments.
      */
     Argument[] getArguments();
+
+    /**
+     * Concatenates all arguments to each other.
+     *
+     * @return e.g. {@code {ARG1}{ARG2}[ARG3]...}
+     */
+    default String getArgumentsDisplay() {
+        StringBuilder sb = new StringBuilder();
+        for (Argument arg : getArguments()) {
+            sb.append(arg.toString());
+        }
+
+        return sb.toString();
+    }
 }

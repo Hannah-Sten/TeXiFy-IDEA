@@ -404,15 +404,6 @@ public enum LatexNoMathCommand implements LatexCommand {
         return requiredArguments;
     }
 
-    public String getArgumentsDisplay() {
-        StringBuilder sb = new StringBuilder();
-        for (Argument arg : arguments) {
-            sb.append(arg.toString());
-        }
-
-        return sb.toString();
-    }
-
     public String getDisplay() {
         return display;
     }

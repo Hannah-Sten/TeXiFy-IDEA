@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.InsertHandler;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -72,15 +74,27 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
     }
 
     private void addMathCommands(CompletionResultSet result) {
+        // Find all commands.
+        List<LatexCommand> commands = new ArrayList<>();
+        Collections.addAll(commands, LatexMathCommand.values());
+        commands.add(LatexNoMathCommand.BEGIN);
+
+        // Create autocomplete elements.
         result.addAllElements(ContainerUtil.map2List(
-                LatexMathCommand.values(),
-                cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
-                        .withPresentableText(cmd.getCommandDisplay())
-                        .bold()
-                        .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
-                        .withTypeText(cmd.getDisplay())
-                        .withInsertHandler(new LatexMathInsertHandler())
-                        .withIcon(TexifyIcons.DOT_COMMAND)
+                commands,
+                cmd -> {
+                    InsertHandler<LookupElement> handler = cmd instanceof LatexNoMathCommand ?
+                            new LatexNoMathInsertHandler() :
+                            new LatexMathInsertHandler();
+
+                    return LookupElementBuilder.create(cmd, cmd.getCommand())
+                            .withPresentableText(cmd.getCommandDisplay())
+                            .bold()
+                            .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
+                            .withTypeText(cmd.getDisplay())
+                            .withInsertHandler(handler)
+                            .withIcon(TexifyIcons.DOT_COMMAND);
+                }
         ));
     }
 
