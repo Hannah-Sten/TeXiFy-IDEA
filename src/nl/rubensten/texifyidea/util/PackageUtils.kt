@@ -61,7 +61,9 @@ object PackageUtils {
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
         command += "{$packageName}"
 
-        document.insertString(insertLocation, command)
+        runWriteAction {
+            document.insertString(insertLocation, command)
+        }
     }
 
     /**

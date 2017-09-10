@@ -127,7 +127,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             return "";
         }
 
-        return "(" + name + ")";
+        return " (" + name + ")";
     }
 
     private void addCustomCommands(CompletionParameters parameters, CompletionResultSet result) {
