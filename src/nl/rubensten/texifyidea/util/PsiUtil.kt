@@ -291,6 +291,23 @@ private fun beginOrEndEnvironmentName(element: PsiElement): String? {
 }
 
 /**
+ * Get the `index+1`th required parameter of the command.
+ *
+ * @throws IllegalArgumentException When the index is negative.
+ */
+@Throws(IllegalArgumentException::class)
+fun LatexCommands.requiredParameter(index: Int): String? {
+    require(index >= 0, { "Index must not be negative" })
+
+    val parameters = requiredParameters
+    if (parameters.isEmpty() || index >= parameters.size) {
+        return null
+    }
+
+    return parameters[index]
+}
+
+/**
  * @see TexifyUtil.isEntryPoint
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)

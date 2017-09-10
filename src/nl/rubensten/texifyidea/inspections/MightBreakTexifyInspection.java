@@ -30,7 +30,8 @@ public class MightBreakTexifyInspection extends TexifyInspectionBase {
             "\\include", "\\includeonly", "\\input", "\\label", "\\let", "\\newcommand",
             "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
             "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
-            "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]"
+            "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
+            "\\newenvironment", "\\bibitem"
     );
 
     @Nls

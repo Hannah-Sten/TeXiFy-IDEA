@@ -125,3 +125,19 @@ fun PsiFile.isRoot(): Boolean {
  * @see [TexifyUtil.getFileRelativeTo]
  */
 fun PsiFile.findRelativeFile(filePath: String) = TexifyUtil.getFileRelativeTo(this, filePath)
+
+/**
+ * Looks for all file inclusions in a given file.
+ *
+ * @return A list containing all included files.
+ */
+fun PsiFile.findInclusions(): List<PsiFile> {
+    val root = findRootFile()
+    return commandsInFile()
+            .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
+            .map { it.requiredParameter(0) }
+            .filter(Objects::nonNull)
+            .map { root.findRelativeFile(it!!) }
+            .filter(Objects::nonNull)
+            .map { it!! }
+}

@@ -357,5 +357,8 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.FileNotFoundInspection"
                          groupName="TeXiFy" displayName="File not found"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.InclusionLoopInspection"
+                         groupName="TeXiFy" displayName="Inclusion loops"
+                         enabledByDefault="true"/>
   </extensions>
 </idea-plugin>
