@@ -22,6 +22,7 @@ import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexTypes;
 import nl.rubensten.texifyidea.structure.SectionNumbering.DocumentClass;
+import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -207,7 +208,9 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
                     .get(0);
 
             String fileName = required.get(0);
-            VirtualFile directory = element.getContainingFile().getContainingDirectory().getVirtualFile();
+            PsiFile containingFile = element.getContainingFile();
+            VirtualFile directory = FileUtilKt.findRootFile(containingFile)
+                    .getContainingDirectory().getVirtualFile();
             Optional<VirtualFile> fileHuh = findFile(directory, fileName, argument.getSupportedExtensions());
             if (!fileHuh.isPresent()) {
                 continue;
