@@ -39,7 +39,7 @@ open class NonMatchingEnvironmentInspection : TexifyInspectionBase() {
             // Add descriptor to begin.
             descriptors.add(manager.createProblemDescriptor(
                     begin,
-                    "Environment name does not match with the name in \\end.",
+                    "DefaultEnvironment name does not match with the name in \\end.",
                     MatchBeginFix(beginEnvironment),
                     ProblemHighlightType.ERROR,
                     isOntheFly
@@ -48,7 +48,7 @@ open class NonMatchingEnvironmentInspection : TexifyInspectionBase() {
             // Add descriptor to end.
             descriptors.add(manager.createProblemDescriptor(
                     end,
-                    "Environment name does not match with the name in \\begin.",
+                    "DefaultEnvironment name does not match with the name in \\begin.",
                     MatchEndFix(endEnvironment),
                     ProblemHighlightType.ERROR,
                     isOntheFly

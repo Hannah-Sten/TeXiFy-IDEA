@@ -57,7 +57,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 LatexCommandProvider(LatexMode.NORMAL)
         )
 
-        // Environment names
+        // DefaultEnvironment names
         extend(
                 CompletionType.BASIC,
                 PlatformPatterns.psiElement()

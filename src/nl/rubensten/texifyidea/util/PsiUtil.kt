@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
 import kotlin.reflect.KClass
@@ -213,7 +214,7 @@ fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
 fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return context == Environment.Context.NORMAL
     return inDirectEnvironmentMatching {
-        Environment.fromPsi(environment)?.context == context
+        DefaultEnvironment.fromPsi(environment)?.context == context
     }
 }
 
@@ -288,6 +289,23 @@ private fun beginOrEndEnvironmentName(element: PsiElement): String? {
     }
 
     return children.first().text
+}
+
+/**
+ * Get the `index+1`th required parameter of the command.
+ *
+ * @throws IllegalArgumentException When the index is negative.
+ */
+@Throws(IllegalArgumentException::class)
+fun LatexCommands.requiredParameter(index: Int): String? {
+    require(index >= 0, { "Index must not be negative" })
+
+    val parameters = requiredParameters
+    if (parameters.isEmpty() || index >= parameters.size) {
+        return null
+    }
+
+    return parameters[index]
 }
 
 /**

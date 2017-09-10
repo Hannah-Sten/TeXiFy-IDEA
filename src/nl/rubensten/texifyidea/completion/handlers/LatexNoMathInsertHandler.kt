@@ -8,10 +8,10 @@ import com.intellij.codeInsight.template.TemplateEditingListener
 import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateSettings
 import com.intellij.codeInsight.template.impl.TemplateState
-import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand
 import nl.rubensten.texifyidea.util.PackageUtils
+import nl.rubensten.texifyidea.util.insertAndMove
 import nl.rubensten.texifyidea.util.insertUsepackage
 
 /**
@@ -41,7 +41,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
 
         val editor = context.editor
         val templateManager = TemplateManager.getInstance(context.project)
-        templateManager.startTemplate(editor, template, EnvironmentInsertImports(context.file))
+        templateManager.startTemplate(editor, template, EnvironmentInsertImports(context))
     }
 
     /**
@@ -49,16 +49,23 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
      *
      * @author Ruben Schellekens
      */
-    private inner class EnvironmentInsertImports(val file: PsiFile) : TemplateEditingListener {
+    private inner class EnvironmentInsertImports(val context: InsertionContext) : TemplateEditingListener {
 
         override fun beforeTemplateFinished(templateState: TemplateState, template: Template) {
             val envName = templateState.getVariableValue("ENVNAME")?.text ?: return
             val environment = Environment[envName] ?: return
             val pack = environment.getDependency()
+            val file = context.file
+            val editor = context.editor
 
+            // Include packages.
             if (!PackageUtils.getIncludedPackages(file).contains(pack.name)) {
                 file.insertUsepackage(pack)
             }
+
+            // Add initial contents.
+            val initial = environment.initialContents
+            editor.insertAndMove(editor.caretModel.offset, initial)
         }
 
         override fun templateFinished(template: Template, b: Boolean) {}
