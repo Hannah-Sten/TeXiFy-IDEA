@@ -363,5 +363,11 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.PrimitiveEquationInspection"
                          groupName="TeXiFy" displayName="Discouraged use of primitive TeX display math"
                          enabledByDefault="true"/>
+
+        <!-- Intentions -->
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.DisplayMathIntention</className>
+            <category>TeXiFy</category>
+        </intentionAction>
   </extensions>
 </idea-plugin>

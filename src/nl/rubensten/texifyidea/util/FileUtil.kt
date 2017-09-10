@@ -7,7 +7,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import nl.rubensten.texifyidea.algorithm.IsChildDFS
+import nl.rubensten.texifyidea.file.ClassFileType
 import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.file.StyleFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import java.util.*
 import java.util.regex.Pattern
@@ -141,3 +143,9 @@ fun PsiFile.findInclusions(): List<PsiFile> {
             .filter(Objects::nonNull)
             .map { it!! }
 }
+
+/**
+ * Checks if the file has LaTeX syntax.
+ */
+fun PsiFile.isLatexFile() = fileType == LatexFileType.INSTANCE ||
+        fileType == StyleFileType.INSTANCE || fileType == ClassFileType.INSTANCE
