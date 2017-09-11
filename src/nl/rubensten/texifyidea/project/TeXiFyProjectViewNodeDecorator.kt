@@ -20,7 +20,9 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
                 "synctex.gz" to TexifyIcons.SYNCTEX_FILE,
                 "bbl" to TexifyIcons.BBL_FILE,
                 "aux" to TexifyIcons.AUX_FILE,
-                "tmp" to TexifyIcons.TEMP_FILE
+                "tmp" to TexifyIcons.TEMP_FILE,
+                "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
+                "bib" to TexifyIcons.BIBLIOGRAPHY_FILE
         )
     }
 
