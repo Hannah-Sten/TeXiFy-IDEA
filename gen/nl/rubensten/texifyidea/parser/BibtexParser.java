@@ -56,6 +56,9 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     else if (t == TAG) {
       r = tag(b, 0);
     }
+    else if (t == TYPE) {
+      r = type(b, 0);
+    }
     else {
       r = parse_root_(t, b, 0);
     }
@@ -215,14 +218,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SEPARATOR? TYPE_TOKEN OPEN_BRACE ((id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE)
+  // SEPARATOR? type OPEN_BRACE ((id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE)
   public static boolean entry(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry")) return false;
     if (!nextTokenIs(b, "<entry>", SEPARATOR, TYPE_TOKEN)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENTRY, "<entry>");
     r = entry_0(b, l + 1);
-    r = r && consumeTokens(b, 0, TYPE_TOKEN, OPEN_BRACE);
+    r = r && type(b, l + 1);
+    r = r && consumeToken(b, OPEN_BRACE);
     r = r && entry_3(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -492,6 +496,18 @@ public class BibtexParser implements PsiParser, LightPsiParser {
       c = current_position_(b);
     }
     return true;
+  }
+
+  /* ********************************************************** */
+  // TYPE_TOKEN
+  public static boolean type(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type")) return false;
+    if (!nextTokenIs(b, TYPE_TOKEN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, TYPE_TOKEN);
+    exit_section_(b, m, TYPE, r);
+    return r;
   }
 
 }

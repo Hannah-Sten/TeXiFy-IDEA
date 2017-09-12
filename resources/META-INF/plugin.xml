@@ -207,12 +207,15 @@
 
         <!-- Settings -->
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
+        <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.BibtexColorSettingsPage"/>
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
         <lang.parserDefinition language="Bibtex" implementationClass="nl.rubensten.texifyidea.BibtexParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexSyntaxHighlighterFactory"/>
         <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
+        <lang.commenter language="Bibtex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
 
         <!-- Structure view -->
@@ -247,6 +250,7 @@
 
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
+        <annotator language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexAnnotator"/>
 
         <!-- Blame -->
         <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>

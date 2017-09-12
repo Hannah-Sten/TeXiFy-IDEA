@@ -11,43 +11,19 @@ import static nl.rubensten.texifyidea.psi.BibtexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.rubensten.texifyidea.psi.*;
 
-public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry {
+public class BibtexTypeImpl extends ASTWrapperPsiElement implements BibtexType {
 
-  public BibtexEntryImpl(ASTNode node) {
+  public BibtexTypeImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {
-    visitor.visitEntry(this);
+    visitor.visitType(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public BibtexId getId() {
-    return findChildByClass(BibtexId.class);
-  }
-
-  @Override
-  @Nullable
-  public BibtexPreamble getPreamble() {
-    return findChildByClass(BibtexPreamble.class);
-  }
-
-  @Override
-  @NotNull
-  public List<BibtexTag> getTagList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexTag.class);
-  }
-
-  @Override
-  @NotNull
-  public BibtexType getType() {
-    return findNotNullChildByClass(BibtexType.class);
   }
 
 }

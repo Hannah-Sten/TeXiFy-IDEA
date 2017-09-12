@@ -35,22 +35,29 @@ fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> 
 inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
 
 /**
- * Finds the first child of a certain type.
+ * Finds the fierst element that matches a given predicate.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    for (child in this.children) {
-        if (clazz.java.isAssignableFrom(child.javaClass)) {
+fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
+    for (child in children) {
+        if (predicate(this)) {
             return child as? T
         }
 
-        val first = child.firstChildOfType(clazz)
+        val first = child.findFirstChild<T>(predicate)
         if (first != null) {
             return first
         }
     }
 
     return null
+}
+
+/**
+ * Finds the first child of a certain type.
+ */
+fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>) = findFirstChild<T> {
+    clazz.java.isAssignableFrom(it.javaClass)
 }
 
 /**

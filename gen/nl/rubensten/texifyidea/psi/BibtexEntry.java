@@ -16,4 +16,7 @@ public interface BibtexEntry extends PsiElement {
   @NotNull
   List<BibtexTag> getTagList();
 
+  @NotNull
+  BibtexType getType();
+
 }

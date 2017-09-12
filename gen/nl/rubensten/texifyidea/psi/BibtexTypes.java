@@ -19,6 +19,7 @@ public interface BibtexTypes {
   IElementType QUOTED_STRING = new BibtexElementType("QUOTED_STRING");
   IElementType STRING = new BibtexElementType("STRING");
   IElementType TAG = new BibtexElementType("TAG");
+  IElementType TYPE = new BibtexElementType("TYPE");
 
   IElementType ASSIGNMENT = new BibtexTokenType("ASSIGNMENT");
   IElementType CLOSE_BRACE = new BibtexTokenType("CLOSE_BRACE");
@@ -68,6 +69,9 @@ public interface BibtexTypes {
       }
       else if (type == TAG) {
         return new BibtexTagImpl(node);
+      }
+      else if (type == TYPE) {
+        return new BibtexTypeImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

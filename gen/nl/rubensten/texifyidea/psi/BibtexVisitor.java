@@ -51,6 +51,10 @@ public class BibtexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitType(@NotNull BibtexType o) {
+    visitPsiElement(o);
+  }
+
   public void visitPsiElement(@NotNull PsiElement o) {
     visitElement(o);
   }
