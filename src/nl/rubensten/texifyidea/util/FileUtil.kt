@@ -128,3 +128,12 @@ fun PsiFile.isRoot(): Boolean {
  */
 fun PsiFile.isLatexFile() = fileType == LatexFileType.INSTANCE ||
         fileType == StyleFileType.INSTANCE || fileType == ClassFileType.INSTANCE
+
+/**
+ * Looks up the the that is in the documentclass command.
+ */
+fun PsiFile.documentClassFile(): PsiFile? {
+    val command = commandsInFile().filter { it.name == "\\documentclass" }.getOrNull(0) ?: return null
+    val argument = command.requiredParameter(0) ?: return null
+    return fileRelativeTo("$argument.cls")
+}
