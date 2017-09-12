@@ -34,7 +34,7 @@ WHITE_SPACE=[ \t\n\x0B\f\r]+
 TYPE_TOKEN=@[a-zA-Z]+
 COMMENT_TOKEN=%[^\r\n]*
 IDENTIFIER=[a-zA-Z0-9:+_-]+
-NUMBER=[0-9]+
+NUMBER=[0-9-]+
 NORMAL_TEXT=([^\"]|\\\")+
 NORMAL_TEXT_BRACED_STRING=[^{} ]+
 ENDTRY=,?\s*{CLOSE_BRACE}
@@ -58,10 +58,10 @@ ENDTRY=,?\s*{CLOSE_BRACE}
                                     yybegin(XXPREAMBLE);
                                   }
                                   return TYPE_TOKEN; }
-    {OPEN_BRACE}                { return OPEN_BRACE; }
+    {OPEN_BRACE}                { yybegin(XXENTRY); return OPEN_BRACE; }
     {ASSIGNMENT}                { return ASSIGNMENT; }
     {IDENTIFIER}                { return IDENTIFIER; }
-    {SEPARATOR}                 { yybegin(XXENTRY); return SEPARATOR; }
+    {SEPARATOR}                 { return SEPARATOR; }
 }
 
 <XXPREAMBLE> {
