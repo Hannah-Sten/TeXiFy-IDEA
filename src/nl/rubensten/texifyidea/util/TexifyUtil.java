@@ -14,6 +14,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.TeXception;
+import nl.rubensten.texifyidea.file.BibtexFileType;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
@@ -388,6 +389,8 @@ public class TexifyUtil {
                 return ClassFileType.INSTANCE;
             case "sty":
                 return StyleFileType.INSTANCE;
+            case "bib":
+                return BibtexFileType.INSTANCE;
             default:
                 return LatexFileType.INSTANCE;
         }

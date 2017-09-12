@@ -198,6 +198,7 @@
         <internalFileTemplate name="LaTeX Source"/>
         <internalFileTemplate name="LaTeX Package"/>
         <internalFileTemplate name="LaTeX Document class"/>
+        <internalFileTemplate name="BibTeX Bibliography"/>
 
         <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
 

@@ -25,6 +25,7 @@ public class LatexTemplatesFactory implements FileTemplateGroupDescriptorFactory
     public static final String FILE_TEMPLATE_TEX = "LaTeX Source.tex";
     public static final String FILE_TEMPLATE_STY = "LaTeX Package.sty";
     public static final String FILE_TEMPLATE_CLS = "LaTeX Document class.cls";
+    public static final String FILE_TEMPLATE_BIB = "BibTeX Bibliography.bib";
 
     public static PsiFile createFromTemplate(PsiDirectory directory, String fileName,
                                              String templateName, FileType fileType) {
@@ -75,6 +76,7 @@ public class LatexTemplatesFactory implements FileTemplateGroupDescriptorFactory
         descriptor.addTemplate(new FileTemplateDescriptor(FILE_TEMPLATE_TEX, TexifyIcons.LATEX_FILE));
         descriptor.addTemplate(new FileTemplateDescriptor(FILE_TEMPLATE_STY, TexifyIcons.STYLE_FILE));
         descriptor.addTemplate(new FileTemplateDescriptor(FILE_TEMPLATE_CLS, TexifyIcons.CLASS_FILE));
+        descriptor.addTemplate(new FileTemplateDescriptor(FILE_TEMPLATE_BIB, TexifyIcons.BIBLIOGRAPHY_FILE));
 
         return descriptor;
     }
