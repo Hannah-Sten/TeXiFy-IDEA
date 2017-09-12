@@ -408,13 +408,13 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // QUOTES NORMAL_TEXT QUOTES
+  // QUOTES NORMAL_TEXT END_QUOTES
   public static boolean quoted_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "quoted_string")) return false;
     if (!nextTokenIs(b, QUOTES)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, QUOTES, NORMAL_TEXT, QUOTES);
+    r = consumeTokens(b, 0, QUOTES, NORMAL_TEXT, END_QUOTES);
     exit_section_(b, m, QUOTED_STRING, r);
     return r;
   }

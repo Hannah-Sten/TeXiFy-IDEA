@@ -92,12 +92,12 @@ ENDTRY=,?\s*{CLOSE_BRACE}
 }
 
 <XXPREAMBLE_STRING> {
-    {QUOTES}                    { yybegin(XXPREAMBLE); return QUOTES; }
+    {QUOTES}                    { yybegin(XXPREAMBLE); return END_QUOTES; }
     {NORMAL_TEXT}               { return NORMAL_TEXT; }
 }
 
 <XXQUOTED_STRING> {
-    {QUOTES}                    { yybegin(XXENTRY); return QUOTES; }
+    {QUOTES}                    { yybegin(XXENTRY); return END_QUOTES; }
     {NORMAL_TEXT}               { return NORMAL_TEXT; }
 }
 

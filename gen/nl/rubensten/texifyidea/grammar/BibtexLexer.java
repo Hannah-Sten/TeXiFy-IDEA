@@ -570,7 +570,7 @@ public class BibtexLexer implements FlexLexer {
             }
           case 35: break;
           case 15: 
-            { yybegin(XXENTRY); return QUOTES;
+            { yybegin(XXENTRY); return END_QUOTES;
             }
           case 36: break;
           case 16: 
@@ -596,7 +596,7 @@ public class BibtexLexer implements FlexLexer {
             }
           case 40: break;
           case 20: 
-            { yybegin(XXPREAMBLE); return QUOTES;
+            { yybegin(XXPREAMBLE); return END_QUOTES;
             }
           case 41: break;
           case 21: 

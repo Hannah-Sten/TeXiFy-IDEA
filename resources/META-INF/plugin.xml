@@ -217,6 +217,7 @@
         <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
         <lang.commenter language="Bibtex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
+        <lang.braceMatcher language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
 
         <!-- Structure view -->
         <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.LatexStructureViewFactory"/>

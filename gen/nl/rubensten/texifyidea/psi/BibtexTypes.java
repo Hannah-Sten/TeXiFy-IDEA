@@ -26,6 +26,7 @@ public interface BibtexTypes {
   IElementType COMMENT_TOKEN = new BibtexTokenType("COMMENT_TOKEN");
   IElementType CONCATENATE = new BibtexTokenType("CONCATENATE");
   IElementType ENDTRY = new BibtexTokenType("ENDTRY");
+  IElementType END_QUOTES = new BibtexTokenType("END_QUOTES");
   IElementType IDENTIFIER = new BibtexTokenType("IDENTIFIER");
   IElementType NORMAL_TEXT = new BibtexTokenType("NORMAL_TEXT");
   IElementType NUMBER = new BibtexTokenType("NUMBER");
