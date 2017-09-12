@@ -13,9 +13,11 @@
     tokenTypeClass="nl.rubensten.texifyidea.psi.BibtexTokenType"
 }
 
-bibtexFile ::= (entry | comment)*
+bibtexFile ::= (entry SEPARATOR? | comment)*
 
-entry ::= TYPE_TOKEN OPEN_BRACE id? (tag SEPARATOR)* tag ENDTRY
+entry ::= TYPE_TOKEN OPEN_BRACE ((id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE)
+
+preamble ::= (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
 
 id ::= comment* IDENTIFIER comment* SEPARATOR
 

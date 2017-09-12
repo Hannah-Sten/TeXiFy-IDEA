@@ -33,6 +33,12 @@ public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry
   }
 
   @Override
+  @Nullable
+  public BibtexPreamble getPreamble() {
+    return findChildByClass(BibtexPreamble.class);
+  }
+
+  @Override
   @NotNull
   public List<BibtexTag> getTagList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexTag.class);

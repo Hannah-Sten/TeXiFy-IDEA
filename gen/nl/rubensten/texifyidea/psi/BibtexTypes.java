@@ -15,6 +15,7 @@ public interface BibtexTypes {
   IElementType ENTRY = new BibtexElementType("ENTRY");
   IElementType ID = new BibtexElementType("ID");
   IElementType KEY = new BibtexElementType("KEY");
+  IElementType PREAMBLE = new BibtexElementType("PREAMBLE");
   IElementType QUOTED_STRING = new BibtexElementType("QUOTED_STRING");
   IElementType STRING = new BibtexElementType("STRING");
   IElementType TAG = new BibtexElementType("TAG");
@@ -55,6 +56,9 @@ public interface BibtexTypes {
       }
       else if (type == KEY) {
         return new BibtexKeyImpl(node);
+      }
+      else if (type == PREAMBLE) {
+        return new BibtexPreambleImpl(node);
       }
       else if (type == QUOTED_STRING) {
         return new BibtexQuotedStringImpl(node);

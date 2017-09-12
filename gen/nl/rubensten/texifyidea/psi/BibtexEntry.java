@@ -10,6 +10,9 @@ public interface BibtexEntry extends PsiElement {
   @Nullable
   BibtexId getId();
 
+  @Nullable
+  BibtexPreamble getPreamble();
+
   @NotNull
   List<BibtexTag> getTagList();
 

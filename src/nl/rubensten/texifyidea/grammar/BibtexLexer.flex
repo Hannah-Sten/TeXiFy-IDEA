@@ -43,6 +43,8 @@ ENDTRY=,?\s*{CLOSE_BRACE}
 %state XXSTRINGDEF
 %state XXQUOTED_STRING
 %state XXBRACED_STRING
+%state XXPREAMBLE
+%state XXPREAMBLE_STRING
 
 %%
 {COMMENT_TOKEN}                 { return COMMENT_TOKEN; }
@@ -52,11 +54,23 @@ ENDTRY=,?\s*{CLOSE_BRACE}
                                   if ("@string".equalsIgnoreCase(sequence)) {
                                     yybegin(XXSTRINGDEF);
                                   }
+                                  else if ("@preamble".equalsIgnoreCase(sequence)) {
+                                    yybegin(XXPREAMBLE);
+                                  }
                                   return TYPE_TOKEN; }
     {OPEN_BRACE}                { return OPEN_BRACE; }
     {ASSIGNMENT}                { return ASSIGNMENT; }
     {IDENTIFIER}                { return IDENTIFIER; }
     {SEPARATOR}                 { yybegin(XXENTRY); return SEPARATOR; }
+}
+
+<XXPREAMBLE> {
+    {OPEN_BRACE}                { return OPEN_BRACE; }
+    {QUOTES}                    { yybegin(XXPREAMBLE_STRING); return QUOTES; }
+    {NUMBER}                    { return NUMBER; }
+    {CONCATENATE}               { return CONCATENATE; }
+    {IDENTIFIER}                { return IDENTIFIER; }
+    {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
 }
 
 <XXSTRINGDEF> {
@@ -75,6 +89,11 @@ ENDTRY=,?\s*{CLOSE_BRACE}
     {CONCATENATE}               { return CONCATENATE; }
     {SEPARATOR}                 { return SEPARATOR; }
     {ENDTRY}                    { yybegin(YYINITIAL); return ENDTRY; }
+}
+
+<XXPREAMBLE_STRING> {
+    {QUOTES}                    { yybegin(XXPREAMBLE); return QUOTES; }
+    {NORMAL_TEXT}               { return NORMAL_TEXT; }
 }
 
 <XXQUOTED_STRING> {
