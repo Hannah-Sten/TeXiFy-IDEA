@@ -192,7 +192,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
-        <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
+        <fileTypeFactory implementation="nl.rubensten.texifyidea.file.TexifyFileTypeFactory"/>
 
         <!-- Templates -->
         <internalFileTemplate name="LaTeX Source"/>
@@ -210,6 +210,7 @@
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
+        <lang.parserDefinition language="Bibtex" implementationClass="nl.rubensten.texifyidea.BibtexParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
         <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
