@@ -25,6 +25,8 @@ import static nl.rubensten.texifyidea.psi.BibtexTypes.*;
 WHITE_SPACE=([\ \t\f]|"\r"|"\n"|"\r\n")+
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
+OPEN_PARENTHESIS="("
+CLOSE_PARENTHESIS=")"
 SEPARATOR=","
 ASSIGNMENT="="
 CONCATENATE="#"
@@ -37,11 +39,12 @@ IDENTIFIER=[a-zA-Z0-9:+_-]+
 NUMBER=[0-9-]+
 NORMAL_TEXT=([^\"]|\\\")+
 NORMAL_TEXT_BRACED_STRING=[^{} ]+
-ENDTRY=,?\s*{CLOSE_BRACE}
+ENDTRY=,?\s*[}\)]
 
 %state XXENTRY
 %state XXSTRINGDEF
 %state XXQUOTED_STRING
+%state XXQUOTED_STRINGDEF
 %state XXBRACED_STRING
 %state XXPREAMBLE
 %state XXPREAMBLE_STRING
@@ -75,9 +78,17 @@ ENDTRY=,?\s*{CLOSE_BRACE}
 
 <XXSTRINGDEF> {
     {OPEN_BRACE}                { return OPEN_BRACE; }
+    {OPEN_PARENTHESIS}          { return OPEN_PARENTHESIS; }
     {IDENTIFIER}                { return IDENTIFIER; }
     {ASSIGNMENT}                { return ASSIGNMENT; }
-    {QUOTES}                    { yybegin(XXQUOTED_STRING); return QUOTES; }
+    {QUOTES}                    { yybegin(XXQUOTED_STRINGDEF); return QUOTES; }
+    {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
+    {ENDTRY}                    { yybegin(YYINITIAL); return ENDTRY; }
+}
+
+<XXQUOTED_STRINGDEF> {
+    {QUOTES}                    { yybegin(XXSTRINGDEF); return END_QUOTES; }
+    {NORMAL_TEXT}               { return NORMAL_TEXT; }
 }
 
 <XXENTRY> {

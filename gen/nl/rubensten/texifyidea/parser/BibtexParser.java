@@ -218,7 +218,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SEPARATOR? type OPEN_BRACE ((id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE)
+  // SEPARATOR? type (OPEN_BRACE | OPEN_PARENTHESIS) ((id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE)
   public static boolean entry(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry")) return false;
     if (!nextTokenIs(b, "<entry>", SEPARATOR, TYPE_TOKEN)) return false;
@@ -226,7 +226,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, ENTRY, "<entry>");
     r = entry_0(b, l + 1);
     r = r && type(b, l + 1);
-    r = r && consumeToken(b, OPEN_BRACE);
+    r = r && entry_2(b, l + 1);
     r = r && entry_3(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -237,6 +237,17 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "entry_0")) return false;
     consumeToken(b, SEPARATOR);
     return true;
+  }
+
+  // OPEN_BRACE | OPEN_PARENTHESIS
+  private static boolean entry_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_2")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, OPEN_BRACE);
+    if (!r) r = consumeToken(b, OPEN_PARENTHESIS);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   // (id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE

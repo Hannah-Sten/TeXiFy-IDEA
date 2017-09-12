@@ -44,7 +44,7 @@ open class BibtexSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType?) = when(tokenType) {
         BibtexTypes.ASSIGNMENT -> ASSIGNMENT_KEYS
-        BibtexTypes.OPEN_BRACE, BibtexTypes.CLOSE_BRACE -> BRACES_KEYS
+        BibtexTypes.OPEN_BRACE, BibtexTypes.CLOSE_BRACE, BibtexTypes.OPEN_PARENTHESIS -> BRACES_KEYS
         BibtexTypes.COMMENT, BibtexTypes.COMMENT_TOKEN -> COMMENT_KEYS
         BibtexTypes.CONCATENATE -> CONCATENATION_KEYS
         BibtexTypes.IDENTIFIER -> IDENTIFIER_KEYS

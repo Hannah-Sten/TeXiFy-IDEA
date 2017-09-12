@@ -15,7 +15,7 @@
 
 bibtexFile ::= (entry | comment)* SEPARATOR?
 
-entry ::= SEPARATOR? type OPEN_BRACE ((id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE)
+entry ::= SEPARATOR? type (OPEN_BRACE | OPEN_PARENTHESIS) ((id? (tag SEPARATOR)* tag ENDTRY) | preamble CLOSE_BRACE)
 
 type ::= TYPE_TOKEN
 

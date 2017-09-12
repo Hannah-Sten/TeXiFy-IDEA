@@ -31,6 +31,7 @@ public interface BibtexTypes {
   IElementType NORMAL_TEXT = new BibtexTokenType("NORMAL_TEXT");
   IElementType NUMBER = new BibtexTokenType("NUMBER");
   IElementType OPEN_BRACE = new BibtexTokenType("OPEN_BRACE");
+  IElementType OPEN_PARENTHESIS = new BibtexTokenType("OPEN_PARENTHESIS");
   IElementType QUOTES = new BibtexTokenType("QUOTES");
   IElementType SEPARATOR = new BibtexTokenType("SEPARATOR");
   IElementType TYPE_TOKEN = new BibtexTokenType("TYPE_TOKEN");
