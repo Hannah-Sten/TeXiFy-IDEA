@@ -33,10 +33,9 @@ public class LatexPresentationFactory {
             case "\\bibitem":
                 return new BibitemPresentation(commands);
             case "\\include":
-                return new LatexIncludePresentation(commands);
             case "\\includeonly":
-                return new LatexIncludePresentation(commands);
             case "\\input":
+            case "\\documentclass":
                 return new LatexIncludePresentation(commands);
             default:
                 return new LatexOtherCommandPresentation(commands, TexifyIcons.DOT_COMMAND);

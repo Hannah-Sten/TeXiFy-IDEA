@@ -21,6 +21,7 @@ import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.PsiUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -142,7 +143,14 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFileSet(file).stream()
+        Set<PsiFile> files = TexifyUtil.getReferencedFileSet(file);
+        PsiFile root = FileUtilKt.findRootFile(file);
+        PsiFile documentClass = FileUtilKt.documentClassFile(root);
+        if (documentClass != null) {
+            files.add(documentClass);
+        }
+
+        Set<VirtualFile> searchFiles = files.stream()
                 .map(PsiFile::getVirtualFile)
                 .collect(Collectors.toSet());
         searchFiles.add(file.getVirtualFile());
