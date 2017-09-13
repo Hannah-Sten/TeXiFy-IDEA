@@ -15,6 +15,7 @@ public interface BibtexTypes {
   IElementType ENTRY = new BibtexElementType("ENTRY");
   IElementType ID = new BibtexElementType("ID");
   IElementType KEY = new BibtexElementType("KEY");
+  IElementType NORMAL_TEXT = new BibtexElementType("NORMAL_TEXT");
   IElementType PREAMBLE = new BibtexElementType("PREAMBLE");
   IElementType QUOTED_STRING = new BibtexElementType("QUOTED_STRING");
   IElementType STRING = new BibtexElementType("STRING");
@@ -28,7 +29,7 @@ public interface BibtexTypes {
   IElementType ENDTRY = new BibtexTokenType("ENDTRY");
   IElementType END_QUOTES = new BibtexTokenType("END_QUOTES");
   IElementType IDENTIFIER = new BibtexTokenType("IDENTIFIER");
-  IElementType NORMAL_TEXT = new BibtexTokenType("NORMAL_TEXT");
+  IElementType NORMAL_TEXT_WORD = new BibtexTokenType("NORMAL_TEXT_WORD");
   IElementType NUMBER = new BibtexTokenType("NUMBER");
   IElementType OPEN_BRACE = new BibtexTokenType("OPEN_BRACE");
   IElementType OPEN_PARENTHESIS = new BibtexTokenType("OPEN_PARENTHESIS");
@@ -59,6 +60,9 @@ public interface BibtexTypes {
       }
       else if (type == KEY) {
         return new BibtexKeyImpl(node);
+      }
+      else if (type == NORMAL_TEXT) {
+        return new BibtexNormalTextImpl(node);
       }
       else if (type == PREAMBLE) {
         return new BibtexPreambleImpl(node);

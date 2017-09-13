@@ -26,7 +26,6 @@ WHITE_SPACE=([\ \t\f]|"\r"|"\n"|"\r\n")+
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
 OPEN_PARENTHESIS="("
-CLOSE_PARENTHESIS=")"
 SEPARATOR=","
 ASSIGNMENT="="
 CONCATENATE="#"
@@ -37,7 +36,7 @@ TYPE_TOKEN=@[a-zA-Z]+
 COMMENT_TOKEN=%[^\r\n]*
 IDENTIFIER=[a-zA-Z0-9:+_-]+
 NUMBER=[0-9-]+
-NORMAL_TEXT=([^\"]|\\\")+
+NORMAL_TEXT_WORD=([^\"]|\\\" )+
 NORMAL_TEXT_BRACED_STRING=[^{} ]+
 ENDTRY=,?\s*[}\)]
 
@@ -88,7 +87,7 @@ ENDTRY=,?\s*[}\)]
 
 <XXQUOTED_STRINGDEF> {
     {QUOTES}                    { yybegin(XXSTRINGDEF); return END_QUOTES; }
-    {NORMAL_TEXT}               { return NORMAL_TEXT; }
+    {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
 }
 
 <XXENTRY> {
@@ -104,24 +103,24 @@ ENDTRY=,?\s*[}\)]
 
 <XXPREAMBLE_STRING> {
     {QUOTES}                    { yybegin(XXPREAMBLE); return END_QUOTES; }
-    {NORMAL_TEXT}               { return NORMAL_TEXT; }
+    {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
 }
 
 <XXQUOTED_STRING> {
     {QUOTES}                    { yybegin(XXENTRY); return END_QUOTES; }
-    {NORMAL_TEXT}               { return NORMAL_TEXT; }
+    {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
 }
 
 <XXBRACED_STRING> {
-    {OPEN_BRACE}                { braceCount++; return NORMAL_TEXT; }
+    {OPEN_BRACE}                { braceCount++; return NORMAL_TEXT_WORD; }
     {CLOSE_BRACE}               { if (braceCount > 0) {
                                     braceCount--;
-                                    return NORMAL_TEXT;
+                                    return NORMAL_TEXT_WORD;
                                   }
 
                                   yybegin(XXENTRY);
                                   return CLOSE_BRACE; }
-    {NORMAL_TEXT_BRACED_STRING} { return NORMAL_TEXT; }
+    {NORMAL_TEXT_BRACED_STRING} { return NORMAL_TEXT_WORD; }
 }
 
 {WHITE_SPACE}                   { return WHITE_SPACE; }

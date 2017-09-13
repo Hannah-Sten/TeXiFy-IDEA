@@ -11,25 +11,19 @@ import static nl.rubensten.texifyidea.psi.BibtexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.rubensten.texifyidea.psi.*;
 
-public class BibtexQuotedStringImpl extends ASTWrapperPsiElement implements BibtexQuotedString {
+public class BibtexNormalTextImpl extends ASTWrapperPsiElement implements BibtexNormalText {
 
-  public BibtexQuotedStringImpl(ASTNode node) {
+  public BibtexNormalTextImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {
-    visitor.visitQuotedString(this);
+    visitor.visitNormalText(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public BibtexNormalText getNormalText() {
-    return findNotNullChildByClass(BibtexNormalText.class);
   }
 
 }

@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BibtexBracedString extends PsiElement {
-
-  @NotNull
-  List<BibtexNormalText> getNormalTextList();
+public interface BibtexNormalText extends PsiElement {
 
 }

@@ -44,6 +44,9 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     else if (t == KEY) {
       r = key(b, 0);
     }
+    else if (t == NORMAL_TEXT) {
+      r = normal_text(b, 0);
+    }
     else if (t == PREAMBLE) {
       r = preamble(b, 0);
     }
@@ -112,7 +115,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACE NORMAL_TEXT+ CLOSE_BRACE
+  // OPEN_BRACE normal_text+ CLOSE_BRACE
   public static boolean braced_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "braced_string")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
@@ -125,15 +128,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT+
+  // normal_text+
   private static boolean braced_string_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "braced_string_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, NORMAL_TEXT);
+    r = normal_text(b, l + 1);
     int c = current_position_(b);
     while (r) {
-      if (!consumeToken(b, NORMAL_TEXT)) break;
+      if (!normal_text(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "braced_string_1", c)) break;
       c = current_position_(b);
     }
@@ -367,6 +370,24 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // NORMAL_TEXT_WORD+
+  public static boolean normal_text(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "normal_text")) return false;
+    if (!nextTokenIs(b, NORMAL_TEXT_WORD)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, NORMAL_TEXT_WORD);
+    int c = current_position_(b);
+    while (r) {
+      if (!consumeToken(b, NORMAL_TEXT_WORD)) break;
+      if (!empty_element_parsed_guard_(b, "normal_text", c)) break;
+      c = current_position_(b);
+    }
+    exit_section_(b, m, NORMAL_TEXT, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
   public static boolean preamble(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "preamble")) return false;
@@ -419,13 +440,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // QUOTES NORMAL_TEXT END_QUOTES
+  // QUOTES normal_text END_QUOTES
   public static boolean quoted_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "quoted_string")) return false;
     if (!nextTokenIs(b, QUOTES)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, QUOTES, NORMAL_TEXT, END_QUOTES);
+    r = consumeToken(b, QUOTES);
+    r = r && normal_text(b, l + 1);
+    r = r && consumeToken(b, END_QUOTES);
     exit_section_(b, m, QUOTED_STRING, r);
     return r;
   }

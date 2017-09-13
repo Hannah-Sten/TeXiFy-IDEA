@@ -35,6 +35,10 @@ public class BibtexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitNormalText(@NotNull BibtexNormalText o) {
+    visitPsiElement(o);
+  }
+
   public void visitPreamble(@NotNull BibtexPreamble o) {
     visitPsiElement(o);
   }

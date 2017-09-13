@@ -26,4 +26,10 @@ public class BibtexBracedStringImpl extends ASTWrapperPsiElement implements Bibt
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public List<BibtexNormalText> getNormalTextList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexNormalText.class);
+  }
+
 }
