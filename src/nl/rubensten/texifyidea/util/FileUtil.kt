@@ -130,6 +130,16 @@ fun PsiFile.isLatexFile() = fileType == LatexFileType.INSTANCE ||
         fileType == StyleFileType.INSTANCE || fileType == ClassFileType.INSTANCE
 
 /**
+ * Checks if the file has a `.sty` extention. This is a workaround for file type checking.
+ */
+fun PsiFile.isStyleFile() = virtualFile.extension == "sty"
+
+/**
+ * Checks if the file has a `.cls` extention. This is a workaround for file type checking.
+ */
+fun PsiFile.isClassFile() = virtualFile.extension == "cls"
+
+/**
  * Looks up the the that is in the documentclass command.
  */
 fun PsiFile.documentClassFile(): PsiFile? {

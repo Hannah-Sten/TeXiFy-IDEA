@@ -36,7 +36,7 @@ open class WordCountAction : AnAction(
                 "\\usepackage", "\\documentclass", "\\label", "\\linespread", "\\ref", "\\cite", "\\eqref", "\\nameref",
                 "\\autoref", "\\fullref", "\\pageref", "\\newcounter", "\\newcommand", "\\renewcommand",
                 "\\setcounter", "\\resizebox", "\\includegraphics", "\\include", "\\input", "\\refstepcounter",
-                "\\counterwithins"
+                "\\counterwithins", "\\RequirePackage"
         )
 
         /**
