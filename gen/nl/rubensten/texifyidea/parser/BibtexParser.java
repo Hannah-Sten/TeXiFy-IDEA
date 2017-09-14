@@ -506,17 +506,24 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // QUOTES normal_text END_QUOTES
+  // QUOTES normal_text? END_QUOTES
   public static boolean quoted_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "quoted_string")) return false;
     if (!nextTokenIs(b, QUOTES)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, QUOTES);
-    r = r && normal_text(b, l + 1);
+    r = r && quoted_string_1(b, l + 1);
     r = r && consumeToken(b, END_QUOTES);
     exit_section_(b, m, QUOTED_STRING, r);
     return r;
+  }
+
+  // normal_text?
+  private static boolean quoted_string_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "quoted_string_1")) return false;
+    normal_text(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */

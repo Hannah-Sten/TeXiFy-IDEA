@@ -37,7 +37,7 @@ string ::= defined_string | quoted_string | braced_string
 
 defined_string ::= IDENTIFIER
 
-quoted_string ::= QUOTES normal_text END_QUOTES
+quoted_string ::= QUOTES normal_text? END_QUOTES
 
 braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE
 

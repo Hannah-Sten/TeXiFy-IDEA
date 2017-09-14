@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface BibtexQuotedString extends PsiElement {
 
-  @NotNull
+  @Nullable
   BibtexNormalText getNormalText();
 
 }

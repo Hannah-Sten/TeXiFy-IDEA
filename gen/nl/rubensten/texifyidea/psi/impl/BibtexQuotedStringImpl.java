@@ -27,9 +27,9 @@ public class BibtexQuotedStringImpl extends ASTWrapperPsiElement implements Bibt
   }
 
   @Override
-  @NotNull
+  @Nullable
   public BibtexNormalText getNormalText() {
-    return findNotNullChildByClass(BibtexNormalText.class);
+    return findChildByClass(BibtexNormalText.class);
   }
 
 }
