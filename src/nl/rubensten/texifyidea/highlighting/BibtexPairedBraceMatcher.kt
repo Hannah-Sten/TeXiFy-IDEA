@@ -15,9 +15,8 @@ open class BibtexPairedBraceMatcher : PairedBraceMatcher {
 
         val PAIRS = arrayOf(
                 BracePair(BibtexTypes.OPEN_BRACE, BibtexTypes.CLOSE_BRACE, false),
-                BracePair(BibtexTypes.OPEN_BRACE, BibtexTypes.ENDTRY, false),
-                BracePair(BibtexTypes.QUOTES, BibtexTypes.END_QUOTES, false),
-                BracePair(BibtexTypes.OPEN_PARENTHESIS, BibtexTypes.ENDTRY, false)
+                BracePair(BibtexTypes.OPEN_PARENTHESIS, BibtexTypes.CLOSE_PARENTHESIS, false),
+                BracePair(BibtexTypes.QUOTES, BibtexTypes.END_QUOTES, false)
         )
     }
 
