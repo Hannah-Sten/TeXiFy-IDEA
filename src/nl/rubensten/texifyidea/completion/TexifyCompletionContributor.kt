@@ -6,7 +6,9 @@ import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
+import nl.rubensten.texifyidea.BibtexLanguage
 import nl.rubensten.texifyidea.LatexLanguage
+import nl.rubensten.texifyidea.completion.handlers.BibtexStringProvider
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.lang.LatexMode
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand
@@ -17,9 +19,13 @@ import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
 /**
  * @author Sten Wessel, Ruben Schellekens
  */
-open class LatexCompletionContributor : CompletionContributor() {
+open class TexifyCompletionContributor : CompletionContributor() {
 
     init {
+        //%
+        //% LATEX
+        //%
+
         // Math mode
         extend(
                 CompletionType.BASIC,
@@ -85,6 +91,28 @@ open class LatexCompletionContributor : CompletionContributor() {
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexFileProvider()
+        )
+
+        //%
+        //% BIBTEX
+        //%
+
+        // Outer scope: types.
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement(BibtexTypes.TYPE_TOKEN)
+                        .andNot(PlatformPatterns.psiElement().inside(BibtexEntry::class.java))
+                        .withLanguage(BibtexLanguage),
+                BibtexTypeTokenProvider
+        )
+
+        // Strings
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement(BibtexTypes.IDENTIFIER)
+                        .inside(BibtexTag::class.java)
+                        .withLanguage(BibtexLanguage),
+                BibtexStringProvider
         )
     }
 }

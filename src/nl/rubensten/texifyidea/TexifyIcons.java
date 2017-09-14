@@ -310,6 +310,11 @@ public class TexifyIcons {
             "/nl/rubensten/texifyidea/icons/settings.png"
     );
 
+    // From IntelliJ
+    public static final Icon STRING = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/string.png"
+    );
+
     /**
      * Get the file icon object that corresponds to the given file extension.
      * <p>

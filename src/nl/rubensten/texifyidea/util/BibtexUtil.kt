@@ -5,4 +5,4 @@ import nl.rubensten.texifyidea.psi.BibtexEntry
 /**
  * @author Ruben Schellekens
  */
-fun BibtexEntry.tokenType(): String? = type.text
+fun BibtexEntry.tokenType(): String? = type.text.toLowerCase()
