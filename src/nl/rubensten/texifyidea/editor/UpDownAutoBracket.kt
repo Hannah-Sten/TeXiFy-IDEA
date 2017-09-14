@@ -68,8 +68,8 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                 val sibling = element.previousSiblingIgnoreWhitespace()
                 if (sibling != null) {
                     if (sibling is LatexMathContent) {
-                        return@exit sibling.lastChildOfType(LatexNoMathContent::class)
-                                ?.firstChildOfType(LatexNormalText::class)
+                        val last = sibling.lastChildOfType(LatexNoMathContent::class)
+                        return@exit last?.normalText ?: last?.firstChildOfType(LatexNormalText::class)
                     }
                     else {
                         return@exit sibling.firstChildOfType(LatexNormalText::class)

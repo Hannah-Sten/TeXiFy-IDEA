@@ -56,7 +56,9 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 .inside(LatexMathEnvironment::class.java))
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                return psiElement.inDirectEnvironmentContext(Environment.Context.NORMAL)
+                                val test = psiElement.inDirectEnvironmentContext(Environment.Context.NORMAL)
+                                println(test)
+                                return test
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),

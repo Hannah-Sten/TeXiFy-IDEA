@@ -10,6 +10,7 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.BibtexEntry
 import nl.rubensten.texifyidea.psi.BibtexTag
 import nl.rubensten.texifyidea.util.childrenOfType
+import nl.rubensten.texifyidea.util.firstChildOfType
 import nl.rubensten.texifyidea.util.tokenType
 
 /**
@@ -22,7 +23,7 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
         val strings: List<Pair<String, String>?> = psiFile.childrenOfType(BibtexEntry::class)
                 .filter { it.tokenType() == "@string" }
                 .map {
-                    val tag = it.childrenOfType(BibtexTag::class).firstOrNull() ?: return@map null
+                    val tag = it.firstChildOfType(BibtexTag::class) ?: return@map null
                     val key = tag.key
                     val content = tag.content
                     Pair(key.text, content.text)

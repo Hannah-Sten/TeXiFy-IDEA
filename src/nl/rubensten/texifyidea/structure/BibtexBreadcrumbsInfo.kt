@@ -7,7 +7,6 @@ import nl.rubensten.texifyidea.psi.BibtexEntry
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.BibtexKey
 import nl.rubensten.texifyidea.psi.BibtexTag
-import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.firstChildOfType
 import nl.rubensten.texifyidea.util.substringEnd
 import nl.rubensten.texifyidea.util.tokenType
@@ -25,7 +24,7 @@ open class BibtexBreadcrumbsInfo : BreadcrumbsProvider {
             val identifier = when (token?.toLowerCase()) {
                 "@preamble" -> ""
                 "@string" -> element.firstChildOfType(BibtexKey::class)?.text
-                else -> element.childrenOfType(BibtexId::class).firstOrNull()?.text?.substringEnd(1)
+                else -> element.firstChildOfType(BibtexId::class)?.text?.substringEnd(1)
             } ?: ""
 
             if (identifier.isEmpty()) {

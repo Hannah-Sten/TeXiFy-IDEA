@@ -101,7 +101,7 @@ enum class DefaultEnvironment(
         @JvmStatic
         fun fromPsi(latexEnvironment: LatexEnvironment): DefaultEnvironment? {
             val text: String = latexEnvironment.name()?.text ?: return null
-            return get(text)
+            return get(text.toLowerCase())
         }
 
         /**

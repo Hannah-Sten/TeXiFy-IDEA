@@ -56,8 +56,20 @@ fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolea
 /**
  * Finds the first child of a certain type.
  */
-fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>) = findFirstChild<T> {
-    clazz.java.isAssignableFrom(it.javaClass)
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
+    for (child in this.children) {
+        if (clazz.java.isAssignableFrom(child.javaClass)) {
+            return child as? T
+        }
+
+        val first = child.firstChildOfType(clazz)
+        if (first != null) {
+            return first
+        }
+    }
+
+    return null
 }
 
 /**
@@ -68,7 +80,7 @@ fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
     val children = this.children
     for (i in children.size - 1 downTo 0) {
         val child = children[i]
-        if (child.javaClass.isAssignableFrom(clazz.java)) {
+        if (clazz.java.isAssignableFrom(child.javaClass)) {
             return child as? T
         }
 
