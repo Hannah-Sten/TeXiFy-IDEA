@@ -14,6 +14,8 @@ import java.util.*
  */
 object PackageUtils {
 
+    private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
+
     /**
      * Inserts a usepackage statement for the given package in a certain file.
      *
@@ -106,7 +108,7 @@ object PackageUtils {
         val packages = HashSet<String>()
 
         for (cmd in commands) {
-            if ("\\usepackage" != cmd.commandToken.text) {
+            if (cmd.commandToken.text !in PACKAGE_COMMANDS) {
                 continue
             }
 
