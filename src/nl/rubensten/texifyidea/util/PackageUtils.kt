@@ -6,7 +6,6 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
-
 import java.util.*
 
 /**
@@ -31,27 +30,34 @@ object PackageUtils {
                          parameters: String?) {
         val commands = LatexCommandsIndex.getIndexCommands(file)
 
+        val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
+
         var last: LatexCommands? = null
         for (cmd in commands) {
-            if ("\\usepackage" == cmd.commandToken.text) {
+            if (commandName == cmd.commandToken.text) {
                 last = cmd
             }
         }
 
-        val newlines: String?
+        val newlines: String
         val insertLocation: Int
+        var postNewlines: String? = null
 
         // When there are no usepackage commands: insert below documentclass.
         if (last == null) {
             val classHuh = commands.stream()
-                    .filter { cmd -> "\\documentclass" == cmd.commandToken.text }
+                    .filter { cmd -> "\\documentclass" == cmd.commandToken.text || "\\LoadClass" == cmd.commandToken.text }
                     .findFirst()
-            if (!classHuh.isPresent) {
-                return
+            if (classHuh.isPresent) {
+                insertLocation = classHuh.get().textOffset + classHuh.get().textLength
+                newlines = "\n\n"
+            } else {
+                // No other sensible location can be found
+                insertLocation = 0
+                newlines = ""
+                postNewlines = "\n\n"
             }
 
-            insertLocation = classHuh.get().textOffset + classHuh.get().textLength
-            newlines = "\n\n"
         }
         // Otherwise, insert below the lowest usepackage.
         else {
@@ -59,9 +65,13 @@ object PackageUtils {
             newlines = "\n"
         }
 
-        var command = newlines + "\\usepackage"
+        var command = newlines + commandName
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
         command += "{$packageName}"
+
+        if (postNewlines != null) {
+            command += postNewlines
+        }
 
         runWriteAction {
             document.insertString(insertLocation, command)
