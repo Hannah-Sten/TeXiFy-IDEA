@@ -2,6 +2,9 @@
 
 package nl.rubensten.texifyidea.grammar;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
 
@@ -130,15 +133,15 @@ public class LatexLexer implements FlexLexer {
     "\1\4\2\5\1\21\1\22\1\10\1\11\1\12\1\13"+
     "\1\5\1\14\7\4\1\15\1\16\1\15\1\23\1\20"+
     "\1\4\2\5\1\21\1\22\1\10\1\11\1\12\1\13"+
-    "\1\5\1\24\7\4\1\15\1\16\2\15\1\20\1\4"+
-    "\12\0\7\4\4\0\1\4\1\0\2\5\6\0\1\5"+
-    "\44\0\3\25\1\26\5\25\1\0\1\25\1\27\1\30"+
-    "\5\31\1\0\4\25\1\16\1\0\25\16\3\25\1\26"+
-    "\1\32\4\25\1\0\1\25\1\27\1\30\5\31\1\0"+
-    "\4\25\13\0\1\31\1\33\5\31\20\0\4\31\1\34"+
-    "\2\31\20\0\7\31\20\0\2\31\1\35\4\31\20\0"+
-    "\5\31\1\36\1\31\20\0\3\31\1\37\3\31\20\0"+
-    "\4\31\1\40\2\31\5\0";
+    "\1\5\1\24\7\4\1\15\1\16\1\15\1\17\1\20"+
+    "\1\4\12\0\7\4\4\0\1\4\1\0\2\5\6\0"+
+    "\1\5\44\0\3\25\1\26\5\25\1\0\1\25\1\27"+
+    "\1\30\5\31\1\0\4\25\1\16\1\0\25\16\3\25"+
+    "\1\26\1\32\4\25\1\0\1\25\1\27\1\30\5\31"+
+    "\1\0\4\25\13\0\1\31\1\33\5\31\20\0\4\31"+
+    "\1\34\2\31\20\0\7\31\20\0\2\31\1\35\4\31"+
+    "\20\0\5\31\1\36\1\31\20\0\3\31\1\37\3\31"+
+    "\20\0\4\31\1\40\2\31\5\0";
 
   private static int [] zzUnpackTrans() {
     int [] result = new int[368];
@@ -239,7 +242,17 @@ public class LatexLexer implements FlexLexer {
   private boolean zzEOFDone;
 
   /* user code: */
-  private boolean startedInlineMath = false;
+  private Deque<Integer> stack = new ArrayDeque<>();
+
+  public void yypushState(int newState) {
+    stack.push(yystate());
+    yybegin(newState);
+  }
+
+  public void yypopState() {
+    yybegin(stack.pop());
+  }
+
 
   public LatexLexer() {
     this((java.io.Reader)null);
@@ -531,7 +544,7 @@ public class LatexLexer implements FlexLexer {
             }
           case 30: break;
           case 11: 
-            { yybegin(INLINE_MATH); return INLINE_MATH_START;
+            { yypushState(INLINE_MATH); return INLINE_MATH_START;
             }
           case 31: break;
           case 12: 
@@ -547,7 +560,7 @@ public class LatexLexer implements FlexLexer {
             }
           case 34: break;
           case 15: 
-            { yybegin(YYINITIAL); return INLINE_MATH_END;
+            { yypopState(); return INLINE_MATH_END;
             }
           case 35: break;
           case 16: 
@@ -555,11 +568,11 @@ public class LatexLexer implements FlexLexer {
             }
           case 36: break;
           case 17: 
-            { yybegin(DISPLAY_MATH); return DISPLAY_MATH_START;
+            { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START;
             }
           case 37: break;
           case 18: 
-            { yybegin(YYINITIAL); return DISPLAY_MATH_END;
+            { yypopState(); return DISPLAY_MATH_END;
             }
           case 38: break;
           case 19: 

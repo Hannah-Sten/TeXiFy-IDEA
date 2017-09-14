@@ -52,6 +52,12 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @Nullable
+  public LatexMathEnvironment getMathEnvironment() {
+    return findChildByClass(LatexMathEnvironment.class);
+  }
+
+  @Override
+  @Nullable
   public LatexNormalText getNormalText() {
     return findChildByClass(LatexNormalText.class);
   }

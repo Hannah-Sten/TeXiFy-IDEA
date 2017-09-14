@@ -1,5 +1,8 @@
 package nl.rubensten.texifyidea.grammar;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
 
@@ -7,7 +10,17 @@ import static nl.rubensten.texifyidea.psi.LatexTypes.*;
 %%
 
 %{
-  private boolean startedInlineMath = false;
+  private Deque<Integer> stack = new ArrayDeque<>();
+
+  public void yypushState(int newState) {
+    stack.push(yystate());
+    yybegin(newState);
+  }
+
+  public void yypopState() {
+    yybegin(stack.pop());
+  }
+
 
   public LatexLexer() {
     this((java.io.Reader)null);
@@ -46,22 +59,22 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
-"\\["                { yybegin(DISPLAY_MATH); return DISPLAY_MATH_START; }
+"\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
-<YYINITIAL> {
-    "$"                { yybegin(INLINE_MATH); return INLINE_MATH_START; }
+<YYINITIAL,DISPLAY_MATH> {
+    "$"                { yypushState(INLINE_MATH); return INLINE_MATH_START; }
 }
 
 <INLINE_MATH> {
     {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
     {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
-    "$"                { yybegin(YYINITIAL); return INLINE_MATH_END; }
+    "$"                { yypopState(); return INLINE_MATH_END; }
 }
 
 <DISPLAY_MATH> {
     {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
     {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
-    "\\]"              { yybegin(YYINITIAL); return DISPLAY_MATH_END; }
+    "\\]"              { yypopState(); return DISPLAY_MATH_END; }
 }
 
 "*"                  { return STAR; }
