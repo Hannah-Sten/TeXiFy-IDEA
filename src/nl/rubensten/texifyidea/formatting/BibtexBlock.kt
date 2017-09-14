@@ -4,11 +4,7 @@ import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
-import nl.rubensten.texifyidea.psi.BibtexId
-import nl.rubensten.texifyidea.psi.BibtexPreamble
 import nl.rubensten.texifyidea.psi.BibtexTypes
-import nl.rubensten.texifyidea.util.hasParent
-import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
 
 /**
  * @author Ruben Schellekens
@@ -47,15 +43,14 @@ open class BibtexBlock(
 
     override fun getIndent(): Indent? {
         val type = myNode.elementType
-        val psi = myNode.psi
 
-        // Indent tags.
-        if (type == BibtexTypes.TAG) {
-            return Indent.getNormalIndent(false)
-        }
         // Prevent close brace indent.
         if (type == BibtexTypes.PREAMBLE) {
             return Indent.getNormalIndent(false)
+        }
+        // Indents in entries.
+        if (myNode.elementType == BibtexTypes.ENTRY_CONTENT) {
+            return Indent.getNormalIndent(true)
         }
 
         return Indent.getNoneIndent()
@@ -63,12 +58,8 @@ open class BibtexBlock(
 
     override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
         val type = myNode.elementType
-        val psi = myNode.psi
 
-        if (psi.previousSiblingIgnoreWhitespace() is BibtexId) {
-            return ChildAttributes(Indent.getNormalIndent(true), null)
-        }
-        if (psi.hasParent(BibtexPreamble::class)) {
+        if (type == BibtexTypes.ENTRY) {
             return ChildAttributes(Indent.getNormalIndent(true), null)
         }
 

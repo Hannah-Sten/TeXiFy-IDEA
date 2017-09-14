@@ -8,10 +8,16 @@ import com.intellij.psi.PsiElement;
 public interface BibtexEntry extends PsiElement {
 
   @NotNull
+  List<BibtexComment> getCommentList();
+
+  @NotNull
   BibtexEndtry getEndtry();
 
   @Nullable
   BibtexEntryContent getEntryContent();
+
+  @Nullable
+  BibtexId getId();
 
   @Nullable
   BibtexPreamble getPreamble();

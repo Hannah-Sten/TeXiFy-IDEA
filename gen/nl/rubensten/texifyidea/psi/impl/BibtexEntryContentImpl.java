@@ -27,12 +27,6 @@ public class BibtexEntryContentImpl extends ASTWrapperPsiElement implements Bibt
   }
 
   @Override
-  @Nullable
-  public BibtexId getId() {
-    return findChildByClass(BibtexId.class);
-  }
-
-  @Override
   @NotNull
   public List<BibtexTag> getTagList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexTag.class);

@@ -7,9 +7,6 @@ import com.intellij.psi.PsiElement;
 
 public interface BibtexEntryContent extends PsiElement {
 
-  @Nullable
-  BibtexId getId();
-
   @NotNull
   List<BibtexTag> getTagList();
 

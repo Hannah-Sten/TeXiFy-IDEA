@@ -79,45 +79,27 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (entry | comment)* SEPARATOR?
+  // (entry | comment)*
   static boolean bibtexFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bibtexFile")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = bibtexFile_0(b, l + 1);
-    r = r && bibtexFile_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (entry | comment)*
-  private static boolean bibtexFile_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "bibtexFile_0")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!bibtexFile_0_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "bibtexFile_0", c)) break;
+      if (!bibtexFile_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "bibtexFile", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // entry | comment
-  private static boolean bibtexFile_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "bibtexFile_0_0")) return false;
+  private static boolean bibtexFile_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bibtexFile_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = entry(b, l + 1);
     if (!r) r = comment(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
-  }
-
-  // SEPARATOR?
-  private static boolean bibtexFile_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "bibtexFile_1")) return false;
-    consumeToken(b, SEPARATOR);
-    return true;
   }
 
   /* ********************************************************** */
@@ -270,31 +252,26 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SEPARATOR? type (OPEN_BRACE | OPEN_PARENTHESIS) (entry_content | preamble) endtry
+  // type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?
   public static boolean entry(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry")) return false;
-    if (!nextTokenIs(b, "<entry>", SEPARATOR, TYPE_TOKEN)) return false;
+    if (!nextTokenIs(b, TYPE_TOKEN)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, ENTRY, "<entry>");
-    r = entry_0(b, l + 1);
-    r = r && type(b, l + 1);
+    Marker m = enter_section_(b);
+    r = type(b, l + 1);
+    r = r && entry_1(b, l + 1);
     r = r && entry_2(b, l + 1);
     r = r && entry_3(b, l + 1);
     r = r && endtry(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
+    r = r && entry_5(b, l + 1);
+    r = r && entry_6(b, l + 1);
+    exit_section_(b, m, ENTRY, r);
     return r;
   }
 
-  // SEPARATOR?
-  private static boolean entry_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_0")) return false;
-    consumeToken(b, SEPARATOR);
-    return true;
-  }
-
   // OPEN_BRACE | OPEN_PARENTHESIS
-  private static boolean entry_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_2")) return false;
+  private static boolean entry_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, OPEN_BRACE);
@@ -303,54 +280,95 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // entry_content | preamble
-  private static boolean entry_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_3")) return false;
+  // id? entry_content | preamble
+  private static boolean entry_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = entry_content(b, l + 1);
+    r = entry_2_0(b, l + 1);
     if (!r) r = preamble(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // id? entry_content
+  private static boolean entry_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = entry_2_0_0(b, l + 1);
+    r = r && entry_content(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // id?
+  private static boolean entry_2_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_2_0_0")) return false;
+    id(b, l + 1);
+    return true;
+  }
+
+  // comment*
+  private static boolean entry_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_3")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!comment(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "entry_3", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // comment*
+  private static boolean entry_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_5")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!comment(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "entry_5", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // SEPARATOR?
+  private static boolean entry_6(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_6")) return false;
+    consumeToken(b, SEPARATOR);
+    return true;
+  }
+
   /* ********************************************************** */
-  // id? tag (SEPARATOR tag)* SEPARATOR?
+  // tag (SEPARATOR tag)* SEPARATOR?
   public static boolean entry_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_content")) return false;
     if (!nextTokenIs(b, "<entry content>", COMMENT_TOKEN, IDENTIFIER)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENTRY_CONTENT, "<entry content>");
-    r = entry_content_0(b, l + 1);
-    r = r && tag(b, l + 1);
+    r = tag(b, l + 1);
+    r = r && entry_content_1(b, l + 1);
     r = r && entry_content_2(b, l + 1);
-    r = r && entry_content_3(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // id?
-  private static boolean entry_content_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_content_0")) return false;
-    id(b, l + 1);
-    return true;
-  }
-
   // (SEPARATOR tag)*
-  private static boolean entry_content_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_content_2")) return false;
+  private static boolean entry_content_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_content_1")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!entry_content_2_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "entry_content_2", c)) break;
+      if (!entry_content_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "entry_content_1", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // SEPARATOR tag
-  private static boolean entry_content_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_content_2_0")) return false;
+  private static boolean entry_content_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_content_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, SEPARATOR);
@@ -360,8 +378,8 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   // SEPARATOR?
-  private static boolean entry_content_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_content_3")) return false;
+  private static boolean entry_content_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "entry_content_2")) return false;
     consumeToken(b, SEPARATOR);
     return true;
   }

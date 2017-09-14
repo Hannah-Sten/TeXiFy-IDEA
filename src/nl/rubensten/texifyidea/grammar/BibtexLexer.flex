@@ -52,6 +52,7 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 {COMMENT_TOKEN}                 { return COMMENT_TOKEN; }
 
 <YYINITIAL> {
+    {SEPARATOR}                 { return SEPARATOR; }
     {TYPE_TOKEN}                { String sequence = yytext().toString();
                                   if ("@string".equalsIgnoreCase(sequence)) {
                                     yybegin(XXSTRINGDEF);
@@ -63,7 +64,6 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
     {OPEN_BRACE}                { yybegin(XXENTRY); return OPEN_BRACE; }
     {ASSIGNMENT}                { return ASSIGNMENT; }
     {IDENTIFIER}                { return IDENTIFIER; }
-    {SEPARATOR}                 { return SEPARATOR; }
 }
 
 // Preamble: @preamble{ "some string" }

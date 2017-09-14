@@ -28,6 +28,12 @@ public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry
 
   @Override
   @NotNull
+  public List<BibtexComment> getCommentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexComment.class);
+  }
+
+  @Override
+  @NotNull
   public BibtexEndtry getEndtry() {
     return findNotNullChildByClass(BibtexEndtry.class);
   }
@@ -36,6 +42,12 @@ public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry
   @Nullable
   public BibtexEntryContent getEntryContent() {
     return findChildByClass(BibtexEntryContent.class);
+  }
+
+  @Override
+  @Nullable
+  public BibtexId getId() {
+    return findChildByClass(BibtexId.class);
   }
 
   @Override
