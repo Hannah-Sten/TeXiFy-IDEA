@@ -315,7 +315,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // id? tag (SEPARATOR? tag)* SEPARATOR?
+  // id? tag (SEPARATOR tag)* SEPARATOR?
   public static boolean entry_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_content")) return false;
     if (!nextTokenIs(b, "<entry content>", COMMENT_TOKEN, IDENTIFIER)) return false;
@@ -336,7 +336,7 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (SEPARATOR? tag)*
+  // (SEPARATOR tag)*
   private static boolean entry_content_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_content_2")) return false;
     int c = current_position_(b);
@@ -348,22 +348,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // SEPARATOR? tag
+  // SEPARATOR tag
   private static boolean entry_content_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_content_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = entry_content_2_0_0(b, l + 1);
+    r = consumeToken(b, SEPARATOR);
     r = r && tag(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
-  }
-
-  // SEPARATOR?
-  private static boolean entry_content_2_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "entry_content_2_0_0")) return false;
-    consumeToken(b, SEPARATOR);
-    return true;
   }
 
   // SEPARATOR?
