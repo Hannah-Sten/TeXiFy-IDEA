@@ -22,11 +22,11 @@ open class FileNameInsertionHandler : InsertHandler<LookupElement> {
         val normalTextWord = file.findElementAt(offset) ?: return
         val command = normalTextWord.parentOfType(LatexCommands::class) ?: return
 
-        if (command.name != "\\include") {
+        if (command.name != "\\include" && command.name != "\\bibliography") {
             return
         }
 
         val extensionless = text.toString().removeFileExtension()
-        document.replaceString(command.textOffset, command.endOffset(), "\\include{$extensionless}")
+        document.replaceString(command.textOffset, command.endOffset(), "${command.name}{$extensionless}")
     }
 }

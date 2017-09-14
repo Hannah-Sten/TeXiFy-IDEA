@@ -8,6 +8,7 @@ import com.intellij.psi.*;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection;
+import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.TexifyUtil;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -52,30 +54,53 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     public Object[] getVariants() {
         String token = myElement.getCommandToken().getText();
         PsiFile file = myElement.getContainingFile().getOriginalFile();
-        Collection<LatexCommands> labels = TexifyUtil.findLabels(file);
+        Collection<? extends PsiElement> labels = TexifyUtil.findLabels(file);
 
         labels.removeIf(label -> {
-            String name = label.getName();
-            return ("\\cite".equals(token) && "\\label".equals(name)) ||
-                    (NonBreakingSpaceInspection.getREFERENCE_COMMANDS().contains(token) &&
-                            "\\bibitem".equals(name) && !"\\cite".equals(token));
+            if (label instanceof LatexCommands) {
+                String name = ((LatexCommands)label).getName();
+                return ("\\cite".equals(token) && "\\label".equals(name)) ||
+                        (NonBreakingSpaceInspection.getREFERENCE_COMMANDS().contains(token) &&
+                                "\\bibitem".equals(name) && !"\\cite".equals(token));
+            }
+
+            return false;
         });
 
         return labels.stream().map(
                 l -> {
-                    Icon icon = "\\bibitem".equals(l.getName()) ? TexifyIcons.DOT_BIB :
-                            TexifyIcons.DOT_LABEL;
+                    if (l instanceof LatexCommands) {
+                        LatexCommands cmd = (LatexCommands)l;
+                        Icon icon = "\\bibitem".equals(cmd.getName()) ?
+                                TexifyIcons.DOT_BIB :
+                                TexifyIcons.DOT_LABEL;
 
-                    return LookupElementBuilder.create(l.getRequiredParameters().get(0))
-                            .bold()
-                            .withInsertHandler(new LatexReferenceInsertHandler())
-                            .withTypeText(
-                                    l.getContainingFile().getName() + ":" +
-                                            (1 + StringUtil.offsetToLineNumber(l.getContainingFile().getText(), l.getTextOffset())),
-                                    true
-                            )
-                            .withIcon(icon);
+                        return LookupElementBuilder.create(cmd.getRequiredParameters().get(0))
+                                .bold()
+                                .withInsertHandler(new LatexReferenceInsertHandler())
+                                .withTypeText(
+                                        l.getContainingFile().getName() + ":" +
+                                                (1 + StringUtil.offsetToLineNumber(l.getContainingFile().getText(), l.getTextOffset())),
+                                        true
+                                )
+                                .withIcon(icon);
+                    }
+                    else if ("\\cite".equals(token)) {
+                        BibtexId id = (BibtexId)l;
+                        PsiFile containing = id.getContainingFile();
+                        return LookupElementBuilder.create(id.getText())
+                                .bold()
+                                .withInsertHandler(new LatexReferenceInsertHandler())
+                                .withTypeText(
+                                        containing.getName() + ":" +
+                                                (1 + StringUtil.offsetToLineNumber(
+                                                        containing.getText(), id.getTextOffset()
+                                                )), true)
+                                .withIcon(TexifyIcons.DOT_BIB);
+                    }
+
+                    return null;
                 }
-        ).toArray();
+        ).filter(Objects::nonNull).toArray();
     }
 }

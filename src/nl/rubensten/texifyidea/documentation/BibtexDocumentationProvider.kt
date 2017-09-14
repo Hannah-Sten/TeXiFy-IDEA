@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.documentation
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.lang.BibtexEntryType
 
 /**
@@ -23,6 +24,11 @@ open class BibtexDocumentationProvider : DocumentationProvider {
     override fun getDocumentationElementForLookupItem(manager: PsiManager?, obj: Any?, element: PsiElement?): PsiElement? {
         if (obj is BibtexEntryType) {
             entryType = obj
+        }
+
+        val file = element?.containingFile
+        if (file != null) {
+            BibtexIdIndex.getIndexedIds(file).map(PsiElement::getText).forEach(::println)
         }
 
         return element
