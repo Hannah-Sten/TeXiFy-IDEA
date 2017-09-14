@@ -244,6 +244,7 @@
         <enterHandlerDelegate implementation="nl.rubensten.texifyidea.editor.InsertEnumerationItem" />
         <typedHandler implementation="nl.rubensten.texifyidea.editor.ShiftTracker" />
         <typedHandler implementation="nl.rubensten.texifyidea.editor.UpDownAutoBracket" />
+        <typedHandler implementation="nl.rubensten.texifyidea.editor.BibtexQuoteInsertHandler"/>
 
         <!-- Line markers -->
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexLineMarkerProvider"/>

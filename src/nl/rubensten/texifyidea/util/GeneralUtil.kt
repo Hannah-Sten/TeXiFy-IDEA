@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.util.TextRange
 
 /**
  * Prints the object in default string presentation to the console.
@@ -39,3 +40,8 @@ fun Int.toHex(): String = Integer.toHexString(this)
 fun runWriteAction(writeAction: () -> Unit) {
     ApplicationManager.getApplication().runWriteAction(writeAction)
 }
+
+/**
+ * Converts the int range to a text range.
+ */
+fun IntRange.toTextRange() = TextRange(start, endInclusive)
