@@ -55,6 +55,10 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
             }
         }
 
+        if (searchDirectory == null) {
+            return
+        }
+
         if (autocompleteText.isNotEmpty() && !autocompleteText.endsWith("/")) {
             return
         }
