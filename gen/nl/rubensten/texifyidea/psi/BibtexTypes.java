@@ -12,7 +12,9 @@ public interface BibtexTypes {
   IElementType COMMENT = new BibtexElementType("COMMENT");
   IElementType CONTENT = new BibtexElementType("CONTENT");
   IElementType DEFINED_STRING = new BibtexElementType("DEFINED_STRING");
+  IElementType ENDTRY = new BibtexElementType("ENDTRY");
   IElementType ENTRY = new BibtexElementType("ENTRY");
+  IElementType ENTRY_CONTENT = new BibtexElementType("ENTRY_CONTENT");
   IElementType ID = new BibtexElementType("ID");
   IElementType KEY = new BibtexElementType("KEY");
   IElementType NORMAL_TEXT = new BibtexElementType("NORMAL_TEXT");
@@ -24,9 +26,9 @@ public interface BibtexTypes {
 
   IElementType ASSIGNMENT = new BibtexTokenType("ASSIGNMENT");
   IElementType CLOSE_BRACE = new BibtexTokenType("CLOSE_BRACE");
+  IElementType CLOSE_PARENTHESIS = new BibtexTokenType("CLOSE_PARENTHESIS");
   IElementType COMMENT_TOKEN = new BibtexTokenType("COMMENT_TOKEN");
   IElementType CONCATENATE = new BibtexTokenType("CONCATENATE");
-  IElementType ENDTRY = new BibtexTokenType("ENDTRY");
   IElementType END_QUOTES = new BibtexTokenType("END_QUOTES");
   IElementType IDENTIFIER = new BibtexTokenType("IDENTIFIER");
   IElementType NORMAL_TEXT_WORD = new BibtexTokenType("NORMAL_TEXT_WORD");
@@ -52,8 +54,14 @@ public interface BibtexTypes {
       else if (type == DEFINED_STRING) {
         return new BibtexDefinedStringImpl(node);
       }
+      else if (type == ENDTRY) {
+        return new BibtexEndtryImpl(node);
+      }
       else if (type == ENTRY) {
         return new BibtexEntryImpl(node);
+      }
+      else if (type == ENTRY_CONTENT) {
+        return new BibtexEntryContentImpl(node);
       }
       else if (type == ID) {
         return new BibtexIdImpl(node);

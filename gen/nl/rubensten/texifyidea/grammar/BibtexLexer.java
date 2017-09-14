@@ -45,27 +45,26 @@ public class BibtexLexer implements FlexLexer {
 
   /** 
    * Translates characters to character classes
-   * Chosen bits are [7, 7, 7]
-   * Total runtime size is 1928 bytes
+   * Chosen bits are [8, 6, 7]
+   * Total runtime size is 1040 bytes
    */
   public static int ZZ_CMAP(int ch) {
-    return ZZ_CMAP_A[(ZZ_CMAP_Y[ZZ_CMAP_Z[ch>>14]|((ch>>7)&0x7f)]<<7)|(ch&0x7f)];
+    return ZZ_CMAP_A[ZZ_CMAP_Y[ZZ_CMAP_Z[ch>>13]|((ch>>7)&0x3f)]|(ch&0x7f)];
   }
 
-  /* The ZZ_CMAP_Z table has 68 entries */
+  /* The ZZ_CMAP_Z table has 136 entries */
   static final char ZZ_CMAP_Z[] = zzUnpackCMap(
-    "\1\0\103\200");
+    "\1\0\207\100");
 
-  /* The ZZ_CMAP_Y table has 256 entries */
+  /* The ZZ_CMAP_Y table has 128 entries */
   static final char ZZ_CMAP_Y[] = zzUnpackCMap(
-    "\1\0\1\1\53\2\1\3\22\2\1\4\37\2\1\3\237\2");
+    "\1\0\177\200");
 
-  /* The ZZ_CMAP_A table has 640 entries */
+  /* The ZZ_CMAP_A table has 256 entries */
   static final char ZZ_CMAP_A[] = zzUnpackCMap(
-    "\11\0\1\1\1\2\2\1\1\2\22\0\1\20\1\0\1\11\1\10\1\0\1\14\2\0\1\5\1\22\1\0\1"+
-    "\15\1\6\1\16\2\0\12\16\1\15\2\0\1\7\2\0\1\12\32\13\1\0\1\17\2\0\1\15\1\0\32"+
-    "\13\1\3\1\0\1\4\7\0\1\21\32\0\1\21\337\0\1\21\177\0\13\21\35\0\2\21\5\0\1"+
-    "\21\57\0\1\21\40\0");
+    "\11\0\1\1\1\2\2\1\1\2\22\0\1\21\1\0\1\12\1\11\1\0\1\15\2\0\1\5\1\6\1\0\1\16"+
+    "\1\7\1\17\2\0\12\17\1\16\2\0\1\10\2\0\1\13\32\14\1\0\1\20\2\0\1\16\1\0\32"+
+    "\14\1\3\1\0\1\4\202\0");
 
   /** 
    * Translates DFA states to action switch labels.
@@ -74,13 +73,12 @@ public class BibtexLexer implements FlexLexer {
 
   private static final String ZZ_ACTION_PACKED_0 =
     "\10\0\1\1\1\2\1\3\1\4\1\5\1\1\1\6"+
-    "\1\7\1\2\1\10\1\11\1\4\1\12\1\13\1\14"+
-    "\1\1\1\15\1\16\1\17\1\20\1\21\1\22\1\7"+
-    "\1\21\1\23\2\21\1\24\1\25\1\7\1\26\1\27"+
-    "\1\30\1\0\1\7";
+    "\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16"+
+    "\1\17\1\20\1\21\1\22\1\7\1\21\1\23\2\21"+
+    "\1\24\1\25\1\7\1\26\1\27\1\30\1\7";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[43];
+    int [] result = new int[39];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -105,15 +103,14 @@ public class BibtexLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\23\0\46\0\71\0\114\0\137\0\162\0\205"+
-    "\0\230\0\253\0\230\0\230\0\230\0\276\0\321\0\344"+
-    "\0\367\0\230\0\230\0\u010a\0\230\0\230\0\u011d\0\u010a"+
-    "\0\230\0\230\0\230\0\230\0\u0130\0\230\0\u0143\0\u0156"+
-    "\0\230\0\u0169\0\u017c\0\230\0\230\0\u018f\0\230\0\230"+
-    "\0\276\0\u010a\0\u01a2";
+    "\0\0\0\22\0\44\0\66\0\110\0\132\0\154\0\176"+
+    "\0\220\0\242\0\220\0\220\0\220\0\264\0\306\0\330"+
+    "\0\220\0\220\0\220\0\220\0\220\0\352\0\220\0\220"+
+    "\0\220\0\374\0\220\0\u010e\0\u0120\0\220\0\u0132\0\u0144"+
+    "\0\220\0\220\0\u0156\0\220\0\220\0\264\0\u0168";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[43];
+    int [] result = new int[39];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -136,30 +133,27 @@ public class BibtexLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\11\2\12\1\13\2\11\1\14\1\15\2\11\1\16"+
-    "\1\17\1\20\2\17\1\11\1\12\3\11\2\21\1\22"+
-    "\1\23\1\11\1\24\1\15\1\25\1\26\1\11\1\17"+
-    "\1\20\1\17\1\27\1\11\1\21\1\30\1\23\1\11"+
-    "\2\21\1\31\1\32\1\33\1\30\1\15\1\11\1\34"+
-    "\1\11\1\17\1\20\2\17\1\11\1\21\1\30\1\23"+
-    "\11\35\1\36\2\35\1\37\2\35\1\40\14\35\1\41"+
-    "\2\35\1\37\2\35\1\40\3\35\1\42\2\43\1\44"+
-    "\1\45\7\42\1\46\3\42\1\12\2\42\1\11\2\12"+
-    "\1\31\1\32\3\11\1\25\1\47\1\11\1\17\1\20"+
-    "\1\17\1\27\1\11\1\12\2\11\11\35\1\50\2\35"+
-    "\1\37\2\35\1\40\3\35\24\0\2\12\15\0\1\12"+
-    "\15\0\1\51\22\0\1\17\1\0\2\17\4\0\2\20"+
-    "\1\0\20\20\1\0\2\21\1\0\1\23\13\0\1\21"+
-    "\1\52\1\23\1\0\2\52\1\0\1\23\13\0\2\52"+
-    "\1\23\13\0\1\17\1\0\1\17\1\27\4\0\11\35"+
-    "\1\0\5\35\1\40\3\35\2\37\1\35\6\37\1\20"+
-    "\5\37\1\53\3\37\17\35\1\40\3\35\3\42\2\0"+
-    "\13\42\1\0\3\42\2\43\2\0\13\42\1\12\2\42"+
-    "\2\46\1\42\2\20\13\46\1\20\2\46\2\37\1\35"+
-    "\14\37\1\53\3\37";
+    "\1\11\2\12\1\13\3\11\1\14\1\15\2\11\1\16"+
+    "\1\17\1\20\2\17\1\11\1\12\1\11\2\12\1\21"+
+    "\1\22\1\11\1\23\1\14\1\15\1\24\1\25\1\11"+
+    "\1\17\1\20\1\17\1\26\1\11\1\12\1\11\2\12"+
+    "\1\27\1\22\1\30\1\23\1\11\1\15\1\11\1\31"+
+    "\1\11\1\17\1\20\2\17\1\11\1\12\12\32\1\33"+
+    "\2\32\1\34\2\32\1\35\13\32\1\36\2\32\1\34"+
+    "\2\32\1\35\1\32\1\37\2\40\1\41\1\42\10\37"+
+    "\1\43\3\37\1\12\1\11\2\12\1\27\1\22\4\11"+
+    "\1\24\1\44\1\11\1\17\1\20\1\17\1\26\1\11"+
+    "\1\12\12\32\1\45\2\32\1\34\2\32\1\35\1\32"+
+    "\23\0\2\12\16\0\1\12\14\0\1\46\21\0\1\17"+
+    "\1\0\2\17\2\0\2\20\1\0\17\20\14\0\1\17"+
+    "\1\0\1\17\1\26\2\0\12\32\1\0\5\32\1\35"+
+    "\1\32\2\34\1\32\7\34\1\20\5\34\1\47\1\34"+
+    "\20\32\1\35\1\32\3\37\2\0\14\37\1\0\1\37"+
+    "\2\40\2\0\14\37\1\12\2\43\1\37\2\20\14\43"+
+    "\1\20\2\34\1\32\15\34\1\47\1\34";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[437];
+    int [] result = new int[378];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -197,12 +191,12 @@ public class BibtexLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\10\0\1\11\1\1\3\11\4\1\2\11\1\1\2\11"+
-    "\2\1\4\11\1\1\1\11\2\1\1\11\2\1\2\11"+
-    "\1\1\2\11\1\1\1\0\1\1";
+    "\10\0\1\11\1\1\3\11\3\1\5\11\1\1\3\11"+
+    "\1\1\1\11\2\1\1\11\2\1\2\11\1\1\2\11"+
+    "\2\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[43];
+    int [] result = new int[39];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -551,27 +545,27 @@ public class BibtexLexer implements FlexLexer {
             }
           case 32: break;
           case 9: 
-            { yybegin(YYINITIAL); return ENDTRY;
+            { yybegin(YYINITIAL); return CLOSE_BRACE;
             }
           case 33: break;
           case 10: 
-            { return CONCATENATE;
+            { yybegin(YYINITIAL); return CLOSE_PARENTHESIS;
             }
           case 34: break;
           case 11: 
-            { yybegin(XXQUOTED_STRING); return QUOTES;
+            { return CONCATENATE;
             }
           case 35: break;
           case 12: 
-            { return NUMBER;
+            { yybegin(XXQUOTED_STRING); return QUOTES;
             }
           case 36: break;
           case 13: 
-            { return OPEN_BRACE;
+            { return NUMBER;
             }
           case 37: break;
           case 14: 
-            { yybegin(YYINITIAL); return CLOSE_BRACE;
+            { return OPEN_BRACE;
             }
           case 38: break;
           case 15: 

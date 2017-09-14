@@ -5,18 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BibtexEntry extends PsiElement {
-
-  @NotNull
-  BibtexEndtry getEndtry();
+public interface BibtexEntryContent extends PsiElement {
 
   @Nullable
-  BibtexEntryContent getEntryContent();
-
-  @Nullable
-  BibtexPreamble getPreamble();
+  BibtexId getId();
 
   @NotNull
-  BibtexType getType();
+  List<BibtexTag> getTagList();
 
 }

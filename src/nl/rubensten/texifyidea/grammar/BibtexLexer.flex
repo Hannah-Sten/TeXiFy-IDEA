@@ -26,6 +26,7 @@ WHITE_SPACE=([\ \t\f]|"\r"|"\n"|"\r\n")+
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
 OPEN_PARENTHESIS="("
+CLOSE_PARENTHESIS=")"
 SEPARATOR=","
 ASSIGNMENT="="
 CONCATENATE="#"
@@ -38,7 +39,6 @@ IDENTIFIER=[a-zA-Z0-9:+_-]+
 NUMBER=[0-9-]+
 NORMAL_TEXT_WORD=([^\"]|\\\" )+
 NORMAL_TEXT_BRACED_STRING=[^{} ]+
-ENDTRY=,?\s*[}\)]
 
 %state XXENTRY
 %state XXSTRINGDEF
@@ -66,6 +66,7 @@ ENDTRY=,?\s*[}\)]
     {SEPARATOR}                 { return SEPARATOR; }
 }
 
+// Preamble: @preamble{ "some string" }
 <XXPREAMBLE> {
     {OPEN_BRACE}                { return OPEN_BRACE; }
     {QUOTES}                    { yybegin(XXPREAMBLE_STRING); return QUOTES; }
@@ -75,6 +76,13 @@ ENDTRY=,?\s*[}\)]
     {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
 }
 
+// String in the preamble.
+<XXPREAMBLE_STRING> {
+    {QUOTES}                    { yybegin(XXPREAMBLE); return END_QUOTES; }
+    {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
+}
+
+// String definition: @string { name = "value" }
 <XXSTRINGDEF> {
     {OPEN_BRACE}                { return OPEN_BRACE; }
     {OPEN_PARENTHESIS}          { return OPEN_PARENTHESIS; }
@@ -82,14 +90,16 @@ ENDTRY=,?\s*[}\)]
     {ASSIGNMENT}                { return ASSIGNMENT; }
     {QUOTES}                    { yybegin(XXQUOTED_STRINGDEF); return QUOTES; }
     {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
-    {ENDTRY}                    { yybegin(YYINITIAL); return ENDTRY; }
+    {CLOSE_PARENTHESIS}         { yybegin(YYINITIAL); return CLOSE_PARENTHESIS; }
 }
 
+// String in string definition.
 <XXQUOTED_STRINGDEF> {
     {QUOTES}                    { yybegin(XXSTRINGDEF); return END_QUOTES; }
     {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
 }
 
+// Complete entry.
 <XXENTRY> {
     {NUMBER}                    { return NUMBER; }
     {IDENTIFIER}                { return IDENTIFIER; }
@@ -98,19 +108,17 @@ ENDTRY=,?\s*[}\)]
     {QUOTES}                    { yybegin(XXQUOTED_STRING); return QUOTES; }
     {CONCATENATE}               { return CONCATENATE; }
     {SEPARATOR}                 { return SEPARATOR; }
-    {ENDTRY}                    { yybegin(YYINITIAL); return ENDTRY; }
+    {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
+    {CLOSE_PARENTHESIS}         { yybegin(YYINITIAL); return CLOSE_PARENTHESIS; }
 }
 
-<XXPREAMBLE_STRING> {
-    {QUOTES}                    { yybegin(XXPREAMBLE); return END_QUOTES; }
-    {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
-}
-
+// "Quoted string" in an entry.
 <XXQUOTED_STRING> {
     {QUOTES}                    { yybegin(XXENTRY); return END_QUOTES; }
     {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
 }
 
+// { Braced String }  in an entry.
 <XXBRACED_STRING> {
     {OPEN_BRACE}                { braceCount++; return NORMAL_TEXT_WORD; }
     {CLOSE_BRACE}               { if (braceCount > 0) {

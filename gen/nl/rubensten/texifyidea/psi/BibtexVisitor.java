@@ -23,7 +23,15 @@ public class BibtexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitEndtry(@NotNull BibtexEndtry o) {
+    visitPsiElement(o);
+  }
+
   public void visitEntry(@NotNull BibtexEntry o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEntryContent(@NotNull BibtexEntryContent o) {
     visitPsiElement(o);
   }
 
