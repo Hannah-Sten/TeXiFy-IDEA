@@ -225,6 +225,7 @@
 
         <!-- Breadcrumbs -->
         <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.LatexBreadcrumbsInfo"/>
+        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.BibtexBreadcrumbsInfo"/>
 
         <!-- Project view -->
         <projectViewNodeDecorator implementation="nl.rubensten.texifyidea.project.TeXiFyProjectViewNodeDecorator"/>
@@ -260,8 +261,10 @@
 
         <!-- Stubs -->
         <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
+        <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.BibtexTypes"/>
 
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
+        <stubIndex implementation="nl.rubensten.texifyidea.index.BibtexIdIndex"/>
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
