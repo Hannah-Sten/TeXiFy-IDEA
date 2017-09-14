@@ -270,6 +270,7 @@
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
+        <lang.documentationProvider language="Bibtex" implementationClass="nl.rubensten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>

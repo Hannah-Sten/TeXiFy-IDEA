@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.completion.handlers
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
+import nl.rubensten.texifyidea.lang.BibtexEntryType
 
 /**
  * @author Ruben Schellekens
@@ -14,15 +15,15 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
             return
         }
 
-        val inserted = item?.`object` as? String ?: return
-        when (inserted) {
+        val inserted = item?.`object` as? BibtexEntryType ?: return
+        when (inserted.token) {
             "string" -> insertString(inserted, context)
             "preamble" -> insertPreamble(inserted, context)
             else -> insertType(inserted, context)
         }
     }
 
-    private fun insertType(inserted: String, context: InsertionContext) {
+    private fun insertType(inserted: BibtexEntryType, context: InsertionContext) {
         val editor = context.editor
         val document = editor.document
         val caret = editor.caretModel
@@ -32,7 +33,7 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
         caret.moveToOffset(offset + 1)
     }
 
-    private fun insertString(inserted: String, context: InsertionContext) {
+    private fun insertString(inserted: BibtexEntryType, context: InsertionContext) {
         val editor = context.editor
         val document = editor.document
         val caret = editor.caretModel
@@ -42,7 +43,7 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
         caret.moveToOffset(offset + 2)
     }
 
-    private fun insertPreamble(inserted: String, context: InsertionContext) {
+    private fun insertPreamble(inserted: BibtexEntryType, context: InsertionContext) {
         val editor = context.editor
         val document = editor.document
         val caret = editor.caretModel

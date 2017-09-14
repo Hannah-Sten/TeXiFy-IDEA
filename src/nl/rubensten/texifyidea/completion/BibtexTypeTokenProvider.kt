@@ -8,25 +8,17 @@ import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.rubensten.texifyidea.completion.handlers.TokenTypeInsertHandler
+import nl.rubensten.texifyidea.lang.BibtexDefaultEntry
 
 /**
  * @author Ruben Schellekens
  */
 object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
 
-    /**
-     * List of all supported entry types in BibTeX.
-     */
-    private val TOKEN_TYPES = listOf(
-            "article", "book", "booklet", "conference", "inbook", "incollection", "inproceedings",
-            "manual", "masterthesis", "misc", "phdthesis", "proceedings", "techreport", "unpublished",
-            "string", "preamble"
-    )
-
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
-        result.addAllElements(ContainerUtil.map2List(TOKEN_TYPES, {
-            LookupElementBuilder.create(it, it)
-                    .withPresentableText(it)
+        result.addAllElements(ContainerUtil.map2List(BibtexDefaultEntry.values(), {
+            LookupElementBuilder.create(it, it.token)
+                    .withPresentableText(it.token)
                     .bold()
                     .withIcon(PlatformIcons.ANNOTATION_TYPE_ICON)
                     .withInsertHandler(TokenTypeInsertHandler)

@@ -116,5 +116,13 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .withLanguage(BibtexLanguage),
                 BibtexStringProvider
         )
+
+        // Keys
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement(BibtexTypes.ASSIGNMENT)
+                        .withLanguage(BibtexLanguage),
+                BibtexKeyProvider
+        )
     }
 }
