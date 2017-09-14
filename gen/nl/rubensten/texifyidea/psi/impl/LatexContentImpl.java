@@ -27,15 +27,9 @@ public class LatexContentImpl extends ASTWrapperPsiElement implements LatexConte
   }
 
   @Override
-  @Nullable
-  public LatexMathEnvironment getMathEnvironment() {
-    return findChildByClass(LatexMathEnvironment.class);
-  }
-
-  @Override
-  @Nullable
+  @NotNull
   public LatexNoMathContent getNoMathContent() {
-    return findChildByClass(LatexNoMathContent.class);
+    return findNotNullChildByClass(LatexNoMathContent.class);
   }
 
 }
