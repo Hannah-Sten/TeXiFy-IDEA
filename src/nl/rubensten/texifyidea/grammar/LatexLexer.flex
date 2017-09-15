@@ -51,7 +51,7 @@ CLOSE_PAREN=")"
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z]+|.|\n|\r)
+COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 

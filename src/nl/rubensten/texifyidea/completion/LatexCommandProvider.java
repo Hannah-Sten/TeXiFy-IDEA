@@ -172,6 +172,13 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 continue;
             }
 
+            // Skip over 'private' commands containing @ symbol in normal tex source files.
+            if (!FileUtilKt.isClassFile(file) && !FileUtilKt.isStyleFile(file)) {
+                if (cmdName.contains("@")) {
+                    continue;
+                }
+            }
+
             String tailText = getTailText(cmd);
             String typeText = getTypeText(cmd);
 
