@@ -15,8 +15,8 @@ enum class BibtexDefaultEntry(
     // Regular entry types.
     ARTICLE("article",
             "An article from a journal or magazine.",
-            arrayOf(AUTHOR, TITLE, JOURNAL, YEAR, VOLUME),
-            arrayOf(NUMBER, PAGES, MONTH, NOTE, KEY)
+            arrayOf(AUTHOR, TITLE, JOURNAL, YEAR),
+            arrayOf(NUMBER, PAGES, MONTH, NOTE, VOLUME, KEY)
     ),
     BOOK("book",
             "A book with an explicit publisher.",

@@ -69,7 +69,9 @@ object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
 
     @JvmStatic
     fun getKeys(project: Project): Array<String> {
-        return ArrayUtil.toStringArray(StubIndex.getInstance().getAllKeys(KEY, project))
+        val index = StubIndex.getInstance()
+        val keys = index.getAllKeys(KEY, project)
+        return ArrayUtil.toStringArray(keys)
     }
 
     override fun getKey() = KEY

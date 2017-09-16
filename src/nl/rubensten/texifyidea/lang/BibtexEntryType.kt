@@ -6,7 +6,7 @@ package nl.rubensten.texifyidea.lang
 interface BibtexEntryType {
 
     /**
-     * The token used to identify the BibTeX token.
+     * The token used to identify the BibTeX token _without_ `@` prefix.
      */
     val token: String
 

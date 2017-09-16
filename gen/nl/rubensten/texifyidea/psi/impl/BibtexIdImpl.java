@@ -59,4 +59,9 @@ public class BibtexIdImpl extends StubBasedPsiElementBase<BibtexIdStub> implemen
         this.identifier = s;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "BibtexId{" + getName() + "}";
+    }
 }

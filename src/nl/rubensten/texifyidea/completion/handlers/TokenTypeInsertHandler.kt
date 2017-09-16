@@ -3,6 +3,8 @@ package nl.rubensten.texifyidea.completion.handlers
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.template.TemplateManager
+import com.intellij.codeInsight.template.impl.TemplateSettings
 import nl.rubensten.texifyidea.lang.BibtexEntryType
 
 /**
@@ -23,16 +25,6 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
         }
     }
 
-    private fun insertType(inserted: BibtexEntryType, context: InsertionContext) {
-        val editor = context.editor
-        val document = editor.document
-        val caret = editor.caretModel
-        val offset = caret.offset
-
-        document.insertString(offset, "{\n}")
-        caret.moveToOffset(offset + 1)
-    }
-
     private fun insertString(inserted: BibtexEntryType, context: InsertionContext) {
         val editor = context.editor
         val document = editor.document
@@ -51,5 +43,14 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
 
         document.insertString(offset, "{\n    \"\"\n}")
         caret.moveToOffset(offset + 7)
+    }
+
+    private fun insertType(inserted: BibtexEntryType, context: InsertionContext) {
+        val templateSettings = TemplateSettings.getInstance()
+        val template = templateSettings.getTemplateById("BIBTEX.type.${inserted.token}")
+
+        val editor = context.editor
+        val templateManager = TemplateManager.getInstance(context.project)
+        templateManager.startTemplate(editor, template)
     }
 }

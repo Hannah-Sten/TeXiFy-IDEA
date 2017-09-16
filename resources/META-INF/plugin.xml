@@ -204,7 +204,9 @@
 
         <!-- Live templates -->
         <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.LatexLiveTemplateProvider"/>
+        <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.BibtexLiveTemplateProvider"/>
         <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.LatexContext"/>
+        <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.BibtexContext"/>
 
         <!-- Settings -->
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
