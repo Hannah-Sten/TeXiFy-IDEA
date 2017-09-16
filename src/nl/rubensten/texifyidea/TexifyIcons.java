@@ -89,6 +89,13 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon TABLE_OF_CONTENTS_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/toc-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon BBL_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/bbl-file.png"
     );
