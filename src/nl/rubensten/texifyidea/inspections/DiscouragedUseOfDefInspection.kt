@@ -32,7 +32,7 @@ open class DiscouragedUseOfDefInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
 
-        val commands = LatexCommandsIndex.getIndexCommands(file)
+        val commands = LatexCommandsIndex.getIndexedCommands(file)
         for (cmd in commands) {
             // Only consider \let and \def.
             if (cmd.name == "\\let" || cmd.name == "\\def") {

@@ -19,6 +19,7 @@ public class Package {
     public static final Package HYPERREF = new Package("hyperref");
     public static final Package LATEXSYMB = new Package("latexsymb");
     public static final Package COMMENT = new Package("comment");
+    public static final Package BIBLATEX = new Package("biblatex", "backend=bibtex");
 
     // Members
     private final String name;

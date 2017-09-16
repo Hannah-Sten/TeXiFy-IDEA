@@ -57,7 +57,6 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
                                 val test = psiElement.inDirectEnvironmentContext(Environment.Context.NORMAL)
-                                println(test)
                                 return test
                             }
                         })

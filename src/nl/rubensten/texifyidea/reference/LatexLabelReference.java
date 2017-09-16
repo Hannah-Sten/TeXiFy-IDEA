@@ -11,11 +11,13 @@ import nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.util.StringUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -54,7 +56,10 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     public Object[] getVariants() {
         String token = myElement.getCommandToken().getText();
         PsiFile file = myElement.getContainingFile().getOriginalFile();
-        Collection<? extends PsiElement> labels = TexifyUtil.findLabels(file);
+        Collection<PsiElement> labels = new ArrayList<>();
+        for (PsiFile referenced : TexifyUtil.getReferencedFileSet(file)) {
+             labels.addAll(TexifyUtil.findLabels(referenced));
+        }
 
         labels.removeIf(label -> {
             if (label instanceof LatexCommands) {
@@ -88,7 +93,8 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                     else if ("\\cite".equals(token)) {
                         BibtexId id = (BibtexId)l;
                         PsiFile containing = id.getContainingFile();
-                        return LookupElementBuilder.create(id.getText())
+                        String text = StringUtilKt.substringEnd(id.getText(), 1);
+                        return LookupElementBuilder.create(text)
                                 .bold()
                                 .withInsertHandler(new LatexReferenceInsertHandler())
                                 .withTypeText(

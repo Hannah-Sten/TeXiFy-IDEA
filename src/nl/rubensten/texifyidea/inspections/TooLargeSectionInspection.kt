@@ -46,7 +46,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
          * meaning that a \section will stop only  on \section and higher.
          */
         fun findNextSection(command: LatexCommands): LatexCommands? {
-            val commands = LatexCommandsIndex.getIndexCommands(command.containingFile).toList()
+            val commands = LatexCommandsIndex.getIndexedCommands(command.containingFile).toList()
 
             for (i in 0 until commands.size) {
                 val cmd = commands[i]
@@ -81,7 +81,7 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
 
-        val commands = LatexCommandsIndex.getIndexCommands(file)
+        val commands = LatexCommandsIndex.getIndexedCommands(file)
                 .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
 
         if (isAlreadySplit(commands)) {

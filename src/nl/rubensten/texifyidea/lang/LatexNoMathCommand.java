@@ -15,6 +15,7 @@ import static nl.rubensten.texifyidea.lang.Package.*;
  */
 public enum LatexNoMathCommand implements LatexCommand {
 
+    ADDLIBRESOURCE("addbibresource", BIBLATEX, new RequiredFileArgument("bibliographyfile", "bib")),
     ADDTOCOUNTER("addtocounter", required("countername"), required("value")),
     A_RING("aa", "å"),
     CAPITAL_A_RING("AA", "Å"),
@@ -173,6 +174,7 @@ public enum LatexNoMathCommand implements LatexCommand {
     PARTNAME("partname", requiredText("name")),
     PDFINFO("pdfinfo", requiredText("info")),
     POUNDS("pounds", "£"),
+    PRINTBIBLIOGRAPHY("printbibliography", BIBLATEX),
     PRINTINDEX("printindex"),
     R("r", "˚ (accent)"),
     REF("ref", required("label")),

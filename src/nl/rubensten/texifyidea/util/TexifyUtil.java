@@ -563,7 +563,11 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<? extends PsiElement> findLabels(@NotNull Project project) {
-        return findLabels(LatexCommandsIndex.getIndexedCommands(project));
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project);
+        Collection<BibtexId> bibIds = BibtexIdIndex.getIndexedIds(project);
+        List<PsiElement> result = new ArrayList<>(cmds);
+        result.addAll(bibIds);
+        return findLabels(result);
     }
 
     /**
@@ -574,7 +578,11 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<? extends PsiElement> findLabels(@NotNull PsiFile file) {
-        return findLabels(LatexCommandsIndex.getIndexCommandsInFileSet(file));
+        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(file);
+        Collection<BibtexId> bibIds = BibtexIdIndex.getIndexedIds(file);
+        List<PsiElement> result = new ArrayList<>(cmds);
+        result.addAll(bibIds);
+        return findLabels(result);
     }
 
     /**
@@ -588,10 +596,11 @@ public class TexifyUtil {
         cmds.removeIf(cmd -> {
             if (cmd instanceof LatexCommands) {
                 String name = ((LatexCommands)cmd).getName();
-                return !"\\label".equals(name) && !"\\bibitem".equals(name);
+                return !("\\bibitem".equals(name) || "\\label".equals(name));
             }
             return false;
         });
+
         return cmds;
     }
 
