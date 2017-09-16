@@ -117,6 +117,13 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon BUILD_BIB = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/bib-build.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon LATEX_MODULE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/latex-module.png"
     );
