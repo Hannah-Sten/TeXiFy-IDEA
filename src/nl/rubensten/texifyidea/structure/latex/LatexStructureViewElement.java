@@ -13,6 +13,7 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.rubensten.texifyidea.file.BibtexFileType;
 import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
@@ -21,6 +22,7 @@ import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexTypes;
+import nl.rubensten.texifyidea.structure.bibtex.BibtexStructureViewElement;
 import nl.rubensten.texifyidea.structure.latex.SectionNumbering.DocumentClass;
 import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
@@ -189,7 +191,8 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     private void addIncludes(List<TreeElement> treeElements, List<LatexCommands> commands) {
         for (LatexCommands cmd : commands) {
             String name = cmd.getCommandToken().getText();
-            if (!name.equals("\\include") && !name.equals("\\includeonly") && !name.equals("\\input")) {
+            if (!name.equals("\\include") && !name.equals("\\includeonly") && !name.equals("\\input")
+                    && !name.equals("\\bibliography")) {
                 continue;
             }
 
@@ -221,14 +224,17 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
                 continue;
             }
 
-            if (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
-                    !StyleFileType.INSTANCE.equals(psiFile.getFileType())) {
-                continue;
+            if (BibtexFileType.INSTANCE.equals(psiFile.getFileType())) {
+                LatexStructureViewCommandElement elt = new LatexStructureViewCommandElement(cmd);
+                elt.addChild(new BibtexStructureViewElement(psiFile));
+                treeElements.add(elt);
             }
-
-            LatexStructureViewCommandElement elt = new LatexStructureViewCommandElement(cmd);
-            elt.addChild(new LatexStructureViewElement(psiFile));
-            treeElements.add(elt);
+            else if (LatexFileType.INSTANCE.equals(psiFile.getFileType()) ||
+                    StyleFileType.INSTANCE.equals(psiFile.getFileType())) {
+                LatexStructureViewCommandElement elt = new LatexStructureViewCommandElement(cmd);
+                elt.addChild(new LatexStructureViewElement(psiFile));
+                treeElements.add(elt);
+            }
         }
     }
 
