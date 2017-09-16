@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.structure;
+package nl.rubensten.texifyidea.structure.latex;
 
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.editor.Document;
@@ -13,22 +13,22 @@ import java.util.List;
 /**
  * @author Ruben Schellekens
  */
-public class LatexLabelPresentation implements ItemPresentation {
+public class BibitemPresentation implements ItemPresentation {
 
-    private final String labelName;
+    private final String bibitemName;
     private final String locationString;
 
-    public LatexLabelPresentation(LatexCommands labelCommand) {
-        if (!labelCommand.getCommandToken().getText().equals("\\label")) {
-            throw new IllegalArgumentException("command is no \\label-command");
+    public BibitemPresentation(LatexCommands labelCommand) {
+        if (!labelCommand.getCommandToken().getText().equals("\\bibitem")) {
+            throw new IllegalArgumentException("command is no \\bibitem-command");
         }
 
         // Get label name.
         List<String> required = labelCommand.getRequiredParameters();
         if (required.isEmpty()) {
-            throw new IllegalArgumentException("\\label has no label name");
+            throw new IllegalArgumentException("\\bibitem has no label name");
         }
-        this.labelName = required.get(0);
+        this.bibitemName = required.get(0);
 
         // Location string.
         FileDocumentManager manager = FileDocumentManager.getInstance();
@@ -40,7 +40,7 @@ public class LatexLabelPresentation implements ItemPresentation {
     @Nullable
     @Override
     public String getPresentableText() {
-        return labelName;
+        return bibitemName;
     }
 
     @Nullable
@@ -52,6 +52,6 @@ public class LatexLabelPresentation implements ItemPresentation {
     @Nullable
     @Override
     public Icon getIcon(boolean b) {
-        return TexifyIcons.DOT_LABEL;
+        return TexifyIcons.DOT_BIB;
     }
 }

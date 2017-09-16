@@ -1,7 +1,8 @@
-package nl.rubensten.texifyidea.structure;
+package nl.rubensten.texifyidea.structure.latex;
 
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.structure.EditableHintPresentation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,23 +11,23 @@ import javax.swing.*;
 /**
  * @author Ruben Schellekens
  */
-public class LatexSubSectionPresentation implements EditableHintPresentation {
+public class LatexPartPresentation implements EditableHintPresentation {
 
-    private final String subSectionName;
+    private final String partName;
     private String hint = "";
 
-    public LatexSubSectionPresentation(LatexCommands sectionCommand) {
-        if (!sectionCommand.getCommandToken().getText().equals("\\subsection")) {
-            throw new IllegalArgumentException("command is no \\subsection-command");
+    public LatexPartPresentation(LatexCommands partCommand) {
+        if (!partCommand.getCommandToken().getText().equals("\\part")) {
+            throw new IllegalArgumentException("command is no \\part-command");
         }
 
-        this.subSectionName = sectionCommand.getRequiredParameters().get(0);
+        this.partName = partCommand.getRequiredParameters().get(0);
     }
 
     @Nullable
     @Override
     public String getPresentableText() {
-        return subSectionName;
+        return partName;
     }
 
     @Nullable
@@ -38,7 +39,7 @@ public class LatexSubSectionPresentation implements EditableHintPresentation {
     @Nullable
     @Override
     public Icon getIcon(boolean b) {
-        return TexifyIcons.DOT_SUBSECTION;
+        return TexifyIcons.DOT_PART;
     }
 
     @Override

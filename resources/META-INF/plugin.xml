@@ -223,11 +223,12 @@
         <lang.braceMatcher language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
 
         <!-- Structure view -->
-        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.LatexStructureViewFactory"/>
+        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.latex.LatexStructureViewFactory"/>
+        <lang.psiStructureViewFactory language="Bibtex" implementationClass="nl.rubensten.texifyidea.structure.bibtex.BibtexStructureViewFactory"/>
 
         <!-- Breadcrumbs -->
-        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.LatexBreadcrumbsInfo"/>
-        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.BibtexBreadcrumbsInfo"/>
+        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.latex.LatexBreadcrumbsInfo"/>
+        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.bibtex.BibtexBreadcrumbsInfo"/>
 
         <!-- Project view -->
         <projectViewNodeDecorator implementation="nl.rubensten.texifyidea.project.TeXiFyProjectViewNodeDecorator"/>

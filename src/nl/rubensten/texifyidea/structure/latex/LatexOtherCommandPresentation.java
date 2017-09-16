@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.structure;
+package nl.rubensten.texifyidea.structure.latex;
 
 import com.intellij.navigation.ItemPresentation;
 import nl.rubensten.texifyidea.psi.LatexCommands;

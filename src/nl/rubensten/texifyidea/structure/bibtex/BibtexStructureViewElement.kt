@@ -1,0 +1,59 @@
+package nl.rubensten.texifyidea.structure.bibtex
+
+import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
+import com.intellij.ide.util.treeView.smartTree.TreeElement
+import com.intellij.navigation.ItemPresentation
+import com.intellij.navigation.NavigationItem
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.file.BibtexFile
+import nl.rubensten.texifyidea.psi.BibtexEntry
+import nl.rubensten.texifyidea.util.childrenOfType
+
+/**
+ * @author Ruben Schellekens
+ */
+open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTreeElement, SortableTreeElement {
+
+    override fun getValue() = element
+
+    override fun navigate(requestFocus: Boolean) {
+        if (element is NavigationItem) {
+            element.navigate(requestFocus)
+        }
+    }
+
+    override fun canNavigate(): Boolean {
+        return element is NavigationItem && element.canNavigate()
+    }
+
+    override fun canNavigateToSource(): Boolean {
+        return element is NavigationItem && element.canNavigateToSource()
+    }
+
+    override fun getAlphaSortKey() = when (element) {
+        is PsiFile -> element.name.toLowerCase()
+        else -> element.text.toLowerCase()
+    } ?: ""
+
+    override fun getPresentation(): ItemPresentation {
+        if (element is BibtexFile) {
+            return BibtexFilePresentation(element)
+        }
+
+        throw AssertionError("Should not happen: element !is BibtexFile.")
+    }
+
+    override fun getChildren(): Array<TreeElement> {
+        if (element !is BibtexFile) {
+            return emptyArray()
+        }
+
+        val file = element as BibtexFile
+        val entries = file.childrenOfType(BibtexEntry::class)
+        return entries
+                .map { BibtexStructureViewEntryElement(it) }
+                .toTypedArray()
+    }
+}

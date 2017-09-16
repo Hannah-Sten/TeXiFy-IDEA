@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.structure
+package nl.rubensten.texifyidea.structure.latex
 
 import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider

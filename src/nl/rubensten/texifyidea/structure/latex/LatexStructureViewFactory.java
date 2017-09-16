@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.structure;
+package nl.rubensten.texifyidea.structure.latex;
 
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;
@@ -8,7 +8,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import nl.rubensten.texifyidea.psi.LatexPsiChangeListener;
+import nl.rubensten.texifyidea.psi.StructurePsiChangeListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,7 @@ public class LatexStructureViewFactory implements PsiStructureViewFactory {
             public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
                 Project project = editor.getProject();
                 PsiManager manager = PsiManager.getInstance(project);
-                manager.addPsiTreeChangeListener(new LatexPsiChangeListener(project));
+                manager.addPsiTreeChangeListener(new StructurePsiChangeListener(project));
 
                 return new LatexStructureViewModel(psiFile, editor);
             }

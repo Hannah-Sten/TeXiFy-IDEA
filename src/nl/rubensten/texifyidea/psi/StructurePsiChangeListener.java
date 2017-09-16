@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Ruben Schellekens
  */
-public class LatexPsiChangeListener implements PsiTreeChangeListener {
+public class StructurePsiChangeListener implements PsiTreeChangeListener {
 
     private PsiModificationTrackerImpl psiModificationTracker;
 
-    public LatexPsiChangeListener(@NotNull Project project) {
+    public StructurePsiChangeListener(@NotNull Project project) {
         this.psiModificationTracker = (PsiModificationTrackerImpl)PsiManager
                 .getInstance(project)
                 .getModificationTracker();

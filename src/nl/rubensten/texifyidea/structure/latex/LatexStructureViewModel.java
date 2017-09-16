@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.structure;
+package nl.rubensten.texifyidea.structure.latex;
 
 import com.intellij.ide.structureView.StructureViewModel.ElementInfoProvider;
 import com.intellij.ide.structureView.StructureViewModelBase;
