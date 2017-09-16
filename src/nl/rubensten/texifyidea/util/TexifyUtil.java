@@ -549,7 +549,7 @@ public class TexifyUtil {
 
         // BibTeX
         BibtexIdIndex.getIndexedIdsInFileSet(file).stream()
-                .map(PsiElement::getText)
+                .map(elt -> StringUtilKt.substringEnd(elt.getText(), 1))
                 .forEach(labels::add);
 
         return labels;
