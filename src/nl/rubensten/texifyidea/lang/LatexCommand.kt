@@ -37,7 +37,7 @@ interface LatexCommand : Dependend {
             return if (command.inMathMode()) {
                 LatexMathCommand.get(commandName)
             } else {
-                LatexNoMathCommand.get(commandName).orElseGet(null)
+                LatexNoMathCommand.get(commandName).orElse(null)
             }
         }
     }

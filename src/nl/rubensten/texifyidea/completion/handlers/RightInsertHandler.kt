@@ -30,7 +30,7 @@ open class RightInsertHandler : InsertHandler<LookupElement> {
     override fun handleInsert(context: InsertionContext?, element: LookupElement?) {
         val editor = context?.editor ?: return
         val command = element?.`object` as? LatexMathCommand ?: return
-        val name = command.command
+        val name = command.getCommand()
 
         if (name.startsWith("left")) {
             insertRight(name, editor)
