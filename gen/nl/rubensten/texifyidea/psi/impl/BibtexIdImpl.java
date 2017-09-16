@@ -1,22 +1,21 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi.impl;
 
-import java.util.List;
-
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.util.IncorrectOperationException;
-import nl.rubensten.texifyidea.index.stub.BibtexIdStub;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
+import nl.rubensten.texifyidea.index.stub.BibtexIdStub;
+import nl.rubensten.texifyidea.psi.BibtexComment;
+import nl.rubensten.texifyidea.psi.BibtexId;
+import nl.rubensten.texifyidea.psi.BibtexVisitor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import static nl.rubensten.texifyidea.psi.BibtexTypes.*;
-
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import nl.rubensten.texifyidea.psi.*;
+import java.util.List;
 
 public class BibtexIdImpl extends StubBasedPsiElementBase<BibtexIdStub> implements BibtexId {
 
@@ -43,6 +42,10 @@ public class BibtexIdImpl extends StubBasedPsiElementBase<BibtexIdStub> implemen
         }
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
     @Override
     @NotNull
     public List<BibtexComment> getCommentList() {
@@ -51,7 +54,7 @@ public class BibtexIdImpl extends StubBasedPsiElementBase<BibtexIdStub> implemen
 
     @Override
     public String getName() {
-        return identifier;
+        return getIdentifier();
     }
 
     @Override

@@ -11,5 +11,14 @@ import nl.rubensten.texifyidea.psi.BibtexId
 data class BibtexIdStubImpl(
         val parent: StubElement<*>?,
         val elementType: IStubElementType<BibtexIdStub, BibtexId>,
-        override val identifier: String
-) : NamedStubBase<BibtexId>(parent, elementType, identifier), BibtexIdStub
+        val myIdentifier: String
+) : NamedStubBase<BibtexId>(parent, elementType, myIdentifier), BibtexIdStub {
+
+    override fun getIdentifier() = myIdentifier
+
+    override fun getName() = identifier
+
+    override fun toString(): String {
+        return "BibtexIdStubImpl(parent=$parent, elementType=$elementType, identifier='$identifier')"
+    }
+}

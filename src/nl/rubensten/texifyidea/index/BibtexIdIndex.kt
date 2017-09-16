@@ -1,12 +1,12 @@
 package nl.rubensten.texifyidea.index
 
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
-import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.ArrayUtil
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.util.referencedFiles
@@ -15,9 +15,6 @@ import nl.rubensten.texifyidea.util.referencedFiles
  * @author Ruben Schellekens
  */
 object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
-
-    @JvmStatic
-    val KEY = StubIndexKey.createIndexKey<String, BibtexId>("nl.rubensten.texifyidea.bibtex.id")
 
     /**
      * Get all the indexed [BibtexId]s in the project.
@@ -64,15 +61,19 @@ object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
 
     @JvmStatic
     fun getIdByName(name: String, project: Project, scope: GlobalSearchScope): Collection<BibtexId> {
-        return StubIndex.getElements(KEY, name, project, scope, BibtexId::class.java)
+        return StubIndex.getElements(key, name, project, scope, BibtexId::class.java)
     }
 
     @JvmStatic
     fun getKeys(project: Project): Array<String> {
+        if (DumbService.isDumb(project)) {
+            return emptyArray()
+        }
+
         val index = StubIndex.getInstance()
-        val keys = index.getAllKeys(KEY, project)
+        val keys = index.getAllKeys(key, project)
         return ArrayUtil.toStringArray(keys)
     }
 
-    override fun getKey() = KEY
+    override fun getKey() = BibtexIdIndexKey.KEY!!
 }
