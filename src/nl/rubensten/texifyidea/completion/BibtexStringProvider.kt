@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.completion.handlers
+package nl.rubensten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
@@ -7,11 +7,11 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.rubensten.texifyidea.TexifyIcons
+import nl.rubensten.texifyidea.lang.Described
+import nl.rubensten.texifyidea.psi.BibtexComment
 import nl.rubensten.texifyidea.psi.BibtexEntry
 import nl.rubensten.texifyidea.psi.BibtexTag
-import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.firstChildOfType
-import nl.rubensten.texifyidea.util.tokenType
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Ruben Schellekens
@@ -20,21 +20,33 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
         val psiFile = parameters.originalFile
-        val strings: List<Pair<String, String>?> = psiFile.childrenOfType(BibtexEntry::class)
+        val element = psiFile.findElementAt(parameters.offset)
+        val strings: List<Triple<String, String, BibtexEntry>?> = psiFile.childrenOfType(BibtexEntry::class)
                 .filter { it.tokenType() == "@string" }
                 .map {
                     val tag = it.firstChildOfType(BibtexTag::class) ?: return@map null
                     val key = tag.key
                     val content = tag.content
-                    Pair(key.text, content.text)
+                    Triple(key.text, content.text, it)
                 }
 
         result.addAllElements(ContainerUtil.map2List(strings, {
-            LookupElementBuilder.create(it!!.first, it.first)
+            LookupElementBuilder.create(StringDescription(it!!.first, it.third), it.first)
                     .withPresentableText(it.first)
                     .bold()
                     .withTypeText(it.second, true)
                     .withIcon(TexifyIcons.STRING)
         }))
+    }
+
+    class StringDescription(description: String, entry: BibtexEntry?) : Described {
+
+        override val description: String
+
+        init {
+            val previous = entry?.previousSiblingIgnoreWhitespace()
+            val comment = previous?.lastChildOfType(BibtexComment::class) ?: entry?.previousSiblingIgnoreWhitespace()
+            this.description = comment?.text?.replace(Regex("^%\\s?"), "") ?: "User defined string."
+        }
     }
 }

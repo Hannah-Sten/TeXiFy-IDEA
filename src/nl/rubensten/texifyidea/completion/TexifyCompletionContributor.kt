@@ -8,7 +8,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
 import nl.rubensten.texifyidea.BibtexLanguage
 import nl.rubensten.texifyidea.LatexLanguage
-import nl.rubensten.texifyidea.completion.handlers.BibtexStringProvider
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.lang.LatexMode
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand

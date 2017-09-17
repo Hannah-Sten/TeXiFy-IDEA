@@ -3,7 +3,7 @@ package nl.rubensten.texifyidea.util
 import nl.rubensten.texifyidea.psi.*
 
 /**
- * Get the token type (including `@`) of the BibTeX entry (e.g. `@article`).
+ * Get the lowercase token type (including `@`) of the BibTeX entry (e.g. `@article`).
  */
 fun BibtexEntry.tokenType(): String? = type.text.toLowerCase()
 
@@ -26,6 +26,17 @@ fun BibtexEntry.tags(): Collection<BibtexTag> = childrenOfType(BibtexTag::class)
  * Get all the key objects in the entry.
  */
 fun BibtexEntry.keys(): Collection<BibtexKey> = childrenOfType(BibtexKey::class)
+
+/**
+ * Get the first key in the entry, or `null` when there are no keys in the entry.
+ */
+fun BibtexEntry.firstKey(): BibtexKey? {
+    val keys = keys()
+    if (keys.isEmpty()) {
+        return null
+    }
+    return keys.first()
+}
 
 /**
  * Get all the names of all entry's keys.
