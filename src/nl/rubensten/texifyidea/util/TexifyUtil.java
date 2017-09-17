@@ -661,7 +661,7 @@ public class TexifyUtil {
      */
     public static boolean isCommandKnown(LatexCommands command) {
         String commandName = command.getName().substring(1);
-        return LatexNoMathCommand.get(commandName).isPresent() || LatexMathCommand.get(commandName) != null;
+        return LatexNoMathCommand.get(commandName) != null || LatexMathCommand.get(commandName) != null;
     }
 
     /**

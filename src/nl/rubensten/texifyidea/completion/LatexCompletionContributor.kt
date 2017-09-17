@@ -77,9 +77,9 @@ open class LatexCompletionContributor : CompletionContributor() {
                                 val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
 
                                 val name = command.commandToken.text
-                                val cmd = LatexNoMathCommand.get(name.substring(1)).orElse(null) ?: return false
+                                val cmd = LatexNoMathCommand.get(name.substring(1)) ?: return false
 
-                                val args = cmd.getArgumentsOf(RequiredFileArgument::class.java)
+                                val args = cmd.getArgumentsOf(RequiredFileArgument::class)
                                 return !args.isEmpty()
                             }
                         })

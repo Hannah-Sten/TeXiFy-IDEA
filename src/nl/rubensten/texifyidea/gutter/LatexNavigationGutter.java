@@ -49,13 +49,12 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
 
         // Fetch the corresponding LatexNoMathCommand object.
         String commandName = fullCommand.substring(1);
-        Optional<LatexNoMathCommand> commandHuh = LatexNoMathCommand.get(commandName);
-        if (!commandHuh.isPresent()) {
+        LatexNoMathCommand commandHuh = LatexNoMathCommand.get(commandName);
+        if (commandHuh == null) {
             return;
         }
 
-        LatexNoMathCommand command = commandHuh.get();
-        List<RequiredFileArgument> arguments = command.getArgumentsOf(RequiredFileArgument.class);
+        List<RequiredFileArgument> arguments = commandHuh.getArgumentsOf(RequiredFileArgument.class);
 
         if (arguments.isEmpty()) {
             return;

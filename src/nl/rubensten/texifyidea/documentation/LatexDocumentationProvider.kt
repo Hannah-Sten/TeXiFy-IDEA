@@ -45,7 +45,7 @@ open class LatexDocumentationProvider : AbstractDocumentationProvider() {
 
         val command: LatexCommand = LatexCommand.lookup(element) ?: return null
 
-        return runTexdoc(command.getDependency())
+        return runTexdoc(command.dependency)
     }
 
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {

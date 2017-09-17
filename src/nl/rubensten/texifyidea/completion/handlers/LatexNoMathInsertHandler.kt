@@ -54,7 +54,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
         override fun beforeTemplateFinished(templateState: TemplateState, template: Template) {
             val envName = templateState.getVariableValue("ENVNAME")?.text ?: return
             val environment = Environment[envName] ?: return
-            val pack = environment.getDependency()
+            val pack = environment.dependency
             val file = context.file
             val editor = context.editor
 

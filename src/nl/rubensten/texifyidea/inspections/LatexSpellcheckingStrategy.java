@@ -17,7 +17,6 @@ import nl.rubensten.texifyidea.psi.LatexTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Ruben Schellekens
@@ -87,9 +86,9 @@ public class LatexSpellcheckingStrategy extends SpellcheckingStrategy {
     }
 
     private Argument[] getArguments(String commandName) {
-        Optional<LatexNoMathCommand> cmdHuh = LatexNoMathCommand.get(commandName);
-        if (cmdHuh.isPresent()) {
-            return cmdHuh.get().getArguments();
+        LatexNoMathCommand cmdHuh = LatexNoMathCommand.get(commandName);
+        if (cmdHuh != null) {
+            return cmdHuh.getArguments();
         }
 
         LatexMathCommand mathCmdHuh = LatexMathCommand.get(commandName);

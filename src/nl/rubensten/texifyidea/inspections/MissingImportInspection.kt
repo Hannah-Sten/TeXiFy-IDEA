@@ -51,7 +51,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
         for (env in environments) {
             val name = env.name()?.text ?: continue
             val environment = DefaultEnvironment[name] ?: continue
-            val pack = environment.getDependency()
+            val pack = environment.dependency
 
             if (pack == Package.DEFAULT || includedPackages.contains(pack.name)) {
                 continue
@@ -77,7 +77,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
                 continue
             }
             val latexCommand = LatexCommand.lookup(cmd.name!!) ?: continue
-            val pack = latexCommand.getDependency()
+            val pack = latexCommand.dependency
 
             if (pack.isDefault) {
                 continue
@@ -86,7 +86,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
             if (!includedPackages.contains(pack.name)) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
-                        TextRange(0, latexCommand.getCommand().length + 1),
+                        TextRange(0, latexCommand.command.length + 1),
                         "Command requires ${pack.name} package",
                         ProblemHighlightType.ERROR,
                         isOntheFly,
@@ -110,7 +110,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
             val latexCommand = LatexCommand.lookup(command.name!!) ?: return
             val file = command.containingFile
 
-            PackageUtils.insertUsepackage(file, latexCommand.getDependency())
+            PackageUtils.insertUsepackage(file, latexCommand.dependency)
         }
     }
 
@@ -128,7 +128,7 @@ open class MissingImportInspection : TexifyInspectionBase() {
             val thingy = DefaultEnvironment.fromPsi(environment) ?: return
             val file = environment.containingFile
 
-            PackageUtils.insertUsepackage(file, thingy.getDependency())
+            PackageUtils.insertUsepackage(file, thingy.dependency)
         }
     }
 }

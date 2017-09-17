@@ -216,11 +216,11 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             }
 
             // Find file
-            Optional<LatexNoMathCommand> latexCommandHuh = LatexNoMathCommand.get(name.substring(1));
-            if (!latexCommandHuh.isPresent()) {
+            LatexNoMathCommand latexCommandHuh = LatexNoMathCommand.get(name.substring(1));
+            if (latexCommandHuh == null) {
                 continue;
             }
-            RequiredFileArgument argument = latexCommandHuh.get()
+            RequiredFileArgument argument = latexCommandHuh
                     .getArgumentsOf(RequiredFileArgument.class)
                     .get(0);
 
