@@ -23,6 +23,7 @@ open class BibtexFormattingModelBuilder : FormattingModelBuilder {
         spacing.after(BibtexTypes.OPEN_PARENTHESIS).spaces(1)
         spacing.around(BibtexTypes.CONCATENATE).spaces(1)
         spacing.between(BibtexTypes.NORMAL_TEXT_WORD, BibtexTypes.NORMAL_TEXT_WORD).spaces(1)
+        spacing.between(BibtexTypes.ENTRY_CONTENT, BibtexTypes.ENDTRY).spaces(1)
         return spacing
     }
 
