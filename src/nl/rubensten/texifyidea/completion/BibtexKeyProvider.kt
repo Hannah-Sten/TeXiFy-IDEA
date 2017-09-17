@@ -7,9 +7,12 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
+import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.rubensten.texifyidea.lang.BibtexDefaultEntry
 import nl.rubensten.texifyidea.psi.BibtexEntry
+import nl.rubensten.texifyidea.util.and
+import nl.rubensten.texifyidea.util.keyNames
 import nl.rubensten.texifyidea.util.parentOfType
 import nl.rubensten.texifyidea.util.tokenType
 
@@ -23,21 +26,27 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         val entry = psiElement.parentOfType(BibtexEntry::class) ?: return
         val token = entry.tokenType() ?: return
         val entryType = BibtexDefaultEntry[token] ?: return
-        val optional = entryType.optional.toSet()
-        val required = entryType.required.toSet()
+        val optional = entryType.optional.map { it.fieldName }.toSet()
+        val required = entryType.required.map { it.fieldName }.toSet()
 
-        result.addAllElements(ContainerUtil.map2List(entryType.allFields(), {
-            val message = when (it) {
-                in required -> "required"
-                in optional -> "optional"
-                else -> ""
+        // Removed already present items.
+        val fields = entryType.allFields().map { it.fieldName }
+        val keys = entry.keyNames()
+        val notPresent = fields - keys
+
+        // Add lookup elements.
+        result.addAllElements(ContainerUtil.map2List(notPresent, {
+            val (message, icon) = when (it) {
+                in required -> " required" and TexifyIcons.KEY_REQUIRED
+                in optional -> " optional" and PlatformIcons.PROTECTED_ICON
+                else -> "" and PlatformIcons.PROTECTED_ICON
             }
 
-            LookupElementBuilder.create(it, it.fieldName)
-                    .withPresentableText(it.fieldName)
+            LookupElementBuilder.create(it, it)
+                    .withPresentableText(it)
                     .bold()
-                    .withTailText(message, true)
-                    .withIcon(PlatformIcons.PROTECTED_ICON)
+                    .withTypeText(message, true)
+                    .withIcon(icon)
                     .withInsertHandler(TokenTypeInsertHandler)
         }))
     }

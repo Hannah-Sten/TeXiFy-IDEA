@@ -25,14 +25,15 @@ fun main(args: Array<String>) {
             |<template id="BIBTEX.type.$token" name="$token"
             |        value="{${'$'}IDENTIFIER${'$'},&#10;&#32;&#32;&#32;&#32;$tags${'$'}END${'$'}&#10;}"
             |        description="Starts a new @$token entry." toReformat="false" toShortenFQNames="false">
-            |    <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true" />
+            |    <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true" />
             |
         """.trimMargin())
 
         // Add variables.
         for (field in entry.required) {
             val upper = field.fieldName.toUpperCase()
-            result.append("    <variable name=\"$upper\" expression=\"\" defaultValue=\"\" alwaysStopAt=\"true\" />\n")
+            val lower = upper.toLowerCase()
+            result.append("    <variable name=\"$upper\" expression=\"\" defaultValue=\"&quot;$lower&quot;\" alwaysStopAt=\"true\" />\n")
         }
 
         // Finish up & context.

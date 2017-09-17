@@ -4,6 +4,11 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.TextRange
 
 /**
+ * Creates a pair of two objects, analogous to [to].
+ */
+infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
+
+/**
  * Prints the object in default string presentation to the console.
  */
 fun Any.print() = print(this)

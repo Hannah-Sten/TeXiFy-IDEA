@@ -1,14 +1,48 @@
 <templateSet>
+    <!-- INSERT NEW TAG -->
+    <template id="BIBTEX.tag" name="tag"
+              value="$KEY$ = $CONTENT$,$END$"
+              description="Inserts a new tag in the entry." toReformat="false" toShortenFQNames="false">
+        <variable name="KEY" expression="" defaultValue="&quot;key&quot;" alwaysStopAt="true"/>
+        <variable name="CONTENT" expression="complete()" defaultValue="&quot;content&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="BIBTEX" value="true"/>
+        </context>
+    </template>
+
+    <!-- @STRING -->
+    <template id="BIBTEX.type.string" name="string"
+              value="{ $IDENTIFIER$ = &quot;$VALUE$&quot; }$END$"
+              description="Inserts a new string definition." toReformat="false" toShortenFQNames="false">
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="VALUE" expression="complete()" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="BIBTEX" value="true"/>
+        </context>
+    </template>
+
+    <!-- @PREAMBLE -->
+    <template id="BIBTEX.type.preamble" name="preamble"
+              value="{&#10;&#32;&#32;&#32;&#32;&quot;$PREAMBLE$&quot;&#10;}$END$"
+              description="Inserts a new tag in the entry." toReformat="false" toShortenFQNames="false">
+        <variable name="PREAMBLE" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+
+        <context>
+            <option name="BIBTEX" value="true"/>
+        </context>
+    </template>
+
     <!-- @ARTICLE -->
     <template id="BIBTEX.type.article" name="article"
-              value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;journal = {$JOURNAL$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},&#10;&#32;&#32;&#32;&#32;volume = {$VOLUME$},$END$&#10;}"
+              value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;journal = {$JOURNAL$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @article entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="JOURNAL" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="VOLUME" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="JOURNAL" expression="" defaultValue="&quot;journal&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -19,11 +53,11 @@
     <template id="BIBTEX.type.book" name="book"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;publisher = {$PUBLISHER$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @book entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="PUBLISHER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="PUBLISHER" expression="" defaultValue="&quot;publisher&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -34,8 +68,8 @@
     <template id="BIBTEX.type.booklet" name="booklet"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},$END$&#10;}"
               description="Starts a new @booklet entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -46,11 +80,11 @@
     <template id="BIBTEX.type.conference" name="conference"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;booktitle = {$BOOKTITLE$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @conference entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="BOOKTITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="BOOKTITLE" expression="" defaultValue="&quot;booktitle&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -61,12 +95,12 @@
     <template id="BIBTEX.type.inbook" name="inbook"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;pages = {$PAGES$},&#10;&#32;&#32;&#32;&#32;publisher = {$PUBLISHER$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @inbook entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="PAGES" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="PUBLISHER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="PAGES" expression="" defaultValue="&quot;pages&quot;" alwaysStopAt="true"/>
+        <variable name="PUBLISHER" expression="" defaultValue="&quot;publisher&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -77,12 +111,12 @@
     <template id="BIBTEX.type.incollection" name="incollection"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;booktitle = {$BOOKTITLE$},&#10;&#32;&#32;&#32;&#32;publisher = {$PUBLISHER$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @incollection entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="BOOKTITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="PUBLISHER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="BOOKTITLE" expression="" defaultValue="&quot;booktitle&quot;" alwaysStopAt="true"/>
+        <variable name="PUBLISHER" expression="" defaultValue="&quot;publisher&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -93,11 +127,11 @@
     <template id="BIBTEX.type.inproceedings" name="inproceedings"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;booktitle = {$BOOKTITLE$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @inproceedings entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="BOOKTITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="BOOKTITLE" expression="" defaultValue="&quot;booktitle&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -108,8 +142,8 @@
     <template id="BIBTEX.type.manual" name="manual"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},$END$&#10;}"
               description="Starts a new @manual entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -120,11 +154,11 @@
     <template id="BIBTEX.type.masterthesis" name="masterthesis"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;school = {$SCHOOL$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @masterthesis entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="SCHOOL" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="SCHOOL" expression="" defaultValue="&quot;school&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -135,7 +169,7 @@
     <template id="BIBTEX.type.misc" name="misc"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;$END$&#10;}"
               description="Starts a new @misc entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -146,11 +180,11 @@
     <template id="BIBTEX.type.phdthesis" name="phdthesis"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;school = {$SCHOOL$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @phdthesis entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="SCHOOL" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="SCHOOL" expression="" defaultValue="&quot;school&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -161,9 +195,9 @@
     <template id="BIBTEX.type.proceedings" name="proceedings"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @proceedings entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -174,11 +208,11 @@
     <template id="BIBTEX.type.techreport" name="techreport"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;institution = {$INSTITUTION$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
               description="Starts a new @techreport entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="INSTITUTION" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="YEAR" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="INSTITUTION" expression="" defaultValue="&quot;institution&quot;" alwaysStopAt="true"/>
+        <variable name="YEAR" expression="" defaultValue="&quot;year&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>
@@ -189,10 +223,10 @@
     <template id="BIBTEX.type.unpublished" name="unpublished"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;note = {$NOTE$},$END$&#10;}"
               description="Starts a new @unpublished entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="NOTE" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="NOTE" expression="" defaultValue="&quot;note&quot;" alwaysStopAt="true"/>
 
         <context>
             <option name="BIBTEX" value="true"/>

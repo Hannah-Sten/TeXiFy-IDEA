@@ -14,6 +14,7 @@ import nl.rubensten.texifyidea.lang.LatexMode
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
+import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
 
 /**
@@ -107,21 +108,28 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 BibtexTypeTokenProvider
         )
 
+        // Keys
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement(BibtexTypes.IDENTIFIER)
+                        .inside(BibtexEntry::class.java)
+                        .with(object : PatternCondition<PsiElement>(null) {
+                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
+                                return psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class);
+                            }
+                        })
+                        .withLanguage(BibtexLanguage),
+                BibtexKeyProvider
+        )
+
         // Strings
         extend(
                 CompletionType.BASIC,
                 PlatformPatterns.psiElement(BibtexTypes.IDENTIFIER)
-                        .inside(BibtexTag::class.java)
+                        .inside(BibtexEntry::class.java)
+                        .inside(BibtexContent::class.java)
                         .withLanguage(BibtexLanguage),
                 BibtexStringProvider
-        )
-
-        // Keys
-        extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(BibtexTypes.ASSIGNMENT)
-                        .withLanguage(BibtexLanguage),
-                BibtexKeyProvider
         )
     }
 }

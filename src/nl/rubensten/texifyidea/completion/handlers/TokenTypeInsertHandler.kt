@@ -18,11 +18,7 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
         }
 
         val inserted = item?.`object` as? BibtexEntryType ?: return
-        when (inserted.token) {
-            "string" -> insertString(inserted, context)
-            "preamble" -> insertPreamble(inserted, context)
-            else -> insertType(inserted, context)
-        }
+        insertType(inserted, context)
     }
 
     private fun insertString(inserted: BibtexEntryType, context: InsertionContext) {

@@ -23,6 +23,16 @@ fun BibtexEntry.identifier(): String? = firstChildOfType(BibtexId::class)?.text?
 fun BibtexEntry.tags(): Collection<BibtexTag> = childrenOfType(BibtexTag::class)
 
 /**
+ * Get all the key objects in the entry.
+ */
+fun BibtexEntry.keys(): Collection<BibtexKey> = childrenOfType(BibtexKey::class)
+
+/**
+ * Get all the names of all entry's keys.
+ */
+fun BibtexEntry.keyNames(): Collection<String> = keys().map { it.text }
+
+/**
  * Get the key of the BibTeX tag.
  */
 fun BibtexTag.key(): BibtexKey? = firstChildOfType(BibtexKey::class)
