@@ -51,8 +51,8 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
      */
     private inner class EnvironmentInsertImports(val context: InsertionContext) : TemplateEditingListener {
 
-        override fun beforeTemplateFinished(templateState: TemplateState, template: Template) {
-            val envName = templateState.getVariableValue("ENVNAME")?.text ?: return
+        override fun beforeTemplateFinished(templateState: TemplateState?, template: Template?) {
+            val envName = templateState?.getVariableValue("ENVNAME")?.text ?: return
             val environment = Environment[envName] ?: return
             val pack = environment.dependency
             val file = context.file
@@ -68,9 +68,9 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
             editor.insertAndMove(editor.caretModel.offset, initial)
         }
 
-        override fun templateFinished(template: Template, b: Boolean) {}
-        override fun templateCancelled(template: Template) {}
-        override fun currentVariableChanged(templateState: TemplateState, template: Template, i: Int, i1: Int) {}
-        override fun waitingForInput(template: Template) {}
+        override fun templateFinished(template: Template?, b: Boolean) {}
+        override fun templateCancelled(template: Template?) {}
+        override fun currentVariableChanged(templateState: TemplateState?, template: Template?, i: Int, i1: Int) {}
+        override fun waitingForInput(template: Template?) {}
     }
 }
