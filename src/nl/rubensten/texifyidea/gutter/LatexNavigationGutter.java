@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.gutter;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
@@ -17,9 +18,7 @@ import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static nl.rubensten.texifyidea.util.TexifyUtil.findFile;
 
@@ -81,16 +80,26 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
             return;
         }
 
+        List<VirtualFile> roots = new ArrayList<>();
         PsiFile rootFile = FileUtilKt.findRootFile(containingFile);
-        VirtualFile rootDirectory = rootFile.getContainingDirectory().getVirtualFile();
+        roots.add(rootFile.getContainingDirectory().getVirtualFile());
+        ProjectRootManager rootManager = ProjectRootManager.getInstance(element.getProject());
+        Collections.addAll(roots, rootManager.getContentSourceRoots());
 
-        Optional<VirtualFile> fileHuh = findFile(rootDirectory, fileName, argument.getSupportedExtensions());
-        if (!fileHuh.isPresent()) {
+        VirtualFile file = null;
+        for (VirtualFile root : roots) {
+            Optional<VirtualFile> fileHuh = findFile(root, fileName, argument.getSupportedExtensions());
+            if (fileHuh.isPresent()) {
+                file = fileHuh.get();
+                break;
+            }
+        }
+
+        if (file == null) {
             return;
         }
 
         // Build gutter icon.
-        VirtualFile file = fileHuh.get();
         NavigationGutterIconBuilder<PsiElement> builder = NavigationGutterIconBuilder
                 .create(TexifyIcons.getIconFromExtension(file.getExtension()))
                 .setTarget(PsiManager.getInstance(element.getProject()).findFile(file))
