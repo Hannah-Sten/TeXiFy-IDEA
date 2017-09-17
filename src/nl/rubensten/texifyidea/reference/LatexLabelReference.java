@@ -40,7 +40,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     @Override
     public ResolveResult[] multiResolve(boolean b) {
         Project project = myElement.getProject();
-        final Collection<LatexCommands> labels = TexifyUtil.findLabels(project, key);
+        final Collection<PsiElement> labels = TexifyUtil.findLabels(project, key);
         return labels.stream().map(PsiElementResolveResult::new).toArray(ResolveResult[]::new);
     }
 

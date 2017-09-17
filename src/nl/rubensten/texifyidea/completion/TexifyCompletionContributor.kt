@@ -23,10 +23,11 @@ import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
 open class TexifyCompletionContributor : CompletionContributor() {
 
     init {
-        //%
-        //% LATEX
-        //%
+        registerLatexCompletion()
+        registerBibtexCompletion()
+    }
 
+    private fun registerLatexCompletion() {
         // Math mode
         extend(
                 CompletionType.BASIC,
@@ -94,11 +95,9 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexFileProvider()
         )
+    }
 
-        //%
-        //% BIBTEX
-        //%
-
+    private fun registerBibtexCompletion() {
         // Outer scope: types.
         extend(
                 CompletionType.BASIC,

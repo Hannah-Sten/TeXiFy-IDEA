@@ -613,14 +613,21 @@ public class TexifyUtil {
      *         Key to match the label with.
      * @return A list of matched label commands.
      */
-    public static Collection<LatexCommands> findLabels(Project project, String key) {
+    public static Collection<PsiElement> findLabels(Project project, String key) {
         return findLabels(project).parallelStream()
-                .filter(element -> element instanceof LatexCommands)
-                .map(c -> (LatexCommands)c)
                 .filter(c -> {
-                    List<String> p = ApplicationManager.getApplication().runReadAction(
-                            (Computable<List<String>>)c::getRequiredParameters);
-                    return p.size() > 0 && p.get(0).equals(key);
+                    if (c instanceof LatexCommands) {
+                        LatexCommands cmd = (LatexCommands)c;
+                        List<String> p = ApplicationManager.getApplication().runReadAction(
+                                (Computable<List<String>>)cmd::getRequiredParameters
+                        );
+                        return p.size() > 0 && p.get(0).equals(key);
+                    }
+                    else if (c instanceof BibtexId) {
+                        return ((BibtexId)c).getName().equals(key);
+                    }
+
+                    return false;
                 })
                 .collect(Collectors.toList());
     }
