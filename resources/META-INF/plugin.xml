@@ -366,6 +366,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.CollapseCiteInspection"
                          groupName="TeXiFy" displayName="Collapse cite commands"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.DiacriticIJInspection"
+                         groupName="TeXiFy" displayName="Dotless versions of i and j must be used with diacritics"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>

@@ -11,7 +11,7 @@ open class SentenceEndWithCapitalInspection : TexifyRegexInspection(
         inspectionShortName = "SentenceEndWithCapital",
         errorMessage = { "Sentences ending with a capital letter should end with an end-of-sentence space" },
         pattern = Pattern.compile("[A-ZÀ-Ý](\\.)[ \\t]*\\n"),
-        replacement = { "\\@." },
+        replacement = { _, _ -> "\\@." },
         replacementRange = { it.start(1)..it.start(1) + 1 },
         quickFixName = { "Add an end-of-sentence space" },
         cancelIf = { matcher, file -> TexifyRegexInspection.isInElement<LatexCommands>(matcher, file) }

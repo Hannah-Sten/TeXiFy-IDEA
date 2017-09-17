@@ -12,7 +12,7 @@ open class RedundantParInspection : TexifyRegexInspection(
         inspectionShortName = "RedundantPar",
         errorMessage = { "Use of \\par is redundant here" },
         pattern = Pattern.compile("((\\s*\\n\\s*\\n\\s*(\\\\par))|(\\n\\s*(\\\\par)\\s*\\n)|((\\\\par)\\s*\\n\\s*\\n))"),
-        replacement = { "" },
+        replacement = { _, _ -> "" },
         replacementRange = this::parRange,
         quickFixName = { "Remove \\par" },
         highlightRange = { parRange(it).toTextRange() }

@@ -16,7 +16,7 @@ open class GroupedSubSupScriptInspection : TexifyRegexInspection(
         pattern = Pattern.compile("([_^])([a-zA-Z0-9][a-zA-Z0-9]+)"),
         mathMode = true,
         highlightRange = { TextRange(it.start() - 1, it.end()) },
-        replacement = { "{${it.group(2)}}" },
+        replacement = { it, _ -> "{${it.group(2)}}" },
         replacementRange = { it.groupRange(2) },
         quickFixName = { "Insert curly braces" }
 )

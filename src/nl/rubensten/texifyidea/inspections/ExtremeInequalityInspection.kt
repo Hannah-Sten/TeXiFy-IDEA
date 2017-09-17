@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.inspections
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.util.insertUsepackage
 import java.util.regex.Matcher
@@ -26,7 +27,7 @@ open class ExtremeInequalityInspection : TexifyRegexInspection(
         /**
          * Determines what the replacement for the quick fix must be.
          */
-        fun replacement(it: Matcher) = if (it.group(1) != null) {
+        fun replacement(it: Matcher, file: PsiFile) = if (it.group(1) != null) {
             "\\ll"
         }
         else if (it.group(2) != null) {

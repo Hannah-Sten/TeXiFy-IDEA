@@ -18,7 +18,7 @@ open class PrimitiveEquationInspection : TexifyRegexInspection(
         errorMessage = { "Use '\\[..\\]' instead of primitive TeX display math." },
         pattern = Pattern.compile("(\\\$\\\$)[^\$]*\\\$?[^\$]*(\\\$\\\$)"),
         mathMode = false,
-        replacement = { "" },
+        replacement = { _, _ -> "" },
         replacementRange = this::replaceRange,
         highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
         highlightRange = { replaceRange(it).toTextRange() },

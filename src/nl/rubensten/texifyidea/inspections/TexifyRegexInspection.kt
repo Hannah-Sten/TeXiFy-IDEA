@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.psi.LatexComment
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inMathContext
@@ -43,7 +44,7 @@ abstract class TexifyRegexInspection(
         /**
          * What to replace in the document.
          */
-        val replacement: (Matcher) -> String = { "" },
+        val replacement: (Matcher, PsiFile) -> String = { _, _ -> "" },
 
         /**
          * Fetches different groups from a matcher.
@@ -118,11 +119,11 @@ abstract class TexifyRegexInspection(
             val range = replacementRange(matcher)
             val error = errorMessage(matcher)
             val quickFix = quickFixName(matcher)
-            val replacementContent = replacement(matcher)
+            val replacementContent = replacement(matcher, file)
 
             // Correct context.
             val element = file.findElementAt(matcher.start()) ?: continue
-            if (element.inMathContext() != mathMode) {
+            if (element is LatexComment || !checkContext(matcher, element)) {
                 continue
             }
 
@@ -144,6 +145,15 @@ abstract class TexifyRegexInspection(
 
         return descriptors
     }
+
+    /**
+     * Checks if the element is in the correct context.
+     *
+     * By default checks for math mode.
+     *
+     * @return `true` if the inspection is allowed in the context, `false` otherwise.
+     */
+    open fun checkContext(matcher: Matcher, element: PsiElement): Boolean = mathMode == element.inMathContext()
 
     /**
      * Replaces all text in the replacementRange by the correct replacement.

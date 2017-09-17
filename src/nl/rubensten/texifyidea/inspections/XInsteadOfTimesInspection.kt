@@ -11,7 +11,7 @@ open class XInsteadOfTimesInspection : TexifyRegexInspection(
         errorMessage = { "\\times expected" },
         pattern = Pattern.compile("[0-9]\\s+(x)\\s+[0-9]"),
         mathMode = true,
-        replacement = { "\\times" },
+        replacement = { _, _ -> "\\times" },
         replacementRange = { it.groupRange(1) },
         quickFixName = { "Change to \\times" }
 )
