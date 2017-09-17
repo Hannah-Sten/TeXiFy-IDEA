@@ -31,5 +31,5 @@ enum class BibtexDefaultEntryType(
     TITLE("title", "The title of the work"),
     TYPE("type", "The field overriding the default type of publication (e.g. \"Research Note\" for techreport, \"{PhD} dissertation\" for phdthesis, \"Section\" for inbook/incollection)"),
     VOLUME("volume", "The volume of a journal or multi-volume book"),
-    YEAR("year", "The year of publication (or, if unpublished, the year of creation)"),
+    YEAR("year", "The year of publication (or, if unpublished, the year of creation)");
 }

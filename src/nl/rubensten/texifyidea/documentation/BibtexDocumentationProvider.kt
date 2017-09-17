@@ -3,9 +3,7 @@ package nl.rubensten.texifyidea.documentation
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import nl.rubensten.texifyidea.index.BibtexIdIndex
-import nl.rubensten.texifyidea.lang.BibtexEntryType
-import nl.rubensten.texifyidea.psi.BibtexDefinedString
+import nl.rubensten.texifyidea.lang.Described
 import nl.rubensten.texifyidea.psi.BibtexKey
 
 /**
@@ -13,7 +11,10 @@ import nl.rubensten.texifyidea.psi.BibtexKey
  */
 open class BibtexDocumentationProvider : DocumentationProvider {
 
-    private var entryType: BibtexEntryType? = null
+    /**
+     * The currently active lookup item.
+     */
+    private var lookup: Described? = null
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String> {
         return ArrayList()
@@ -27,20 +28,16 @@ open class BibtexDocumentationProvider : DocumentationProvider {
     }
 
     override fun getDocumentationElementForLookupItem(manager: PsiManager?, obj: Any?, element: PsiElement?): PsiElement? {
-        if (obj is BibtexEntryType) {
-            entryType = obj
+        if (obj == null || obj !is Described) {
+            return null
         }
 
-        val file = element?.containingFile
-        if (file != null) {
-            BibtexIdIndex.getIndexedIds(file).map(PsiElement::getText).forEach(::println)
-        }
-
+        lookup = obj
         return element
     }
 
     override fun generateDoc(element: PsiElement, element2: PsiElement?): String? {
-        return entryType?.description
+        return lookup?.description
     }
 
     override fun getDocumentationElementForLink(manager: PsiManager, string: String, element: PsiElement): PsiElement? {

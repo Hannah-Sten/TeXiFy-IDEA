@@ -11,6 +11,8 @@ import com.intellij.util.containers.ContainerUtil
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.rubensten.texifyidea.lang.BibtexDefaultEntry
+import nl.rubensten.texifyidea.lang.BibtexEntryField
+import nl.rubensten.texifyidea.lang.SimpleBibtexEntryField
 import nl.rubensten.texifyidea.psi.BibtexEntry
 import nl.rubensten.texifyidea.psi.BibtexKey
 import nl.rubensten.texifyidea.util.*
@@ -25,18 +27,18 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         val entry = psiElement.parentOfType(BibtexEntry::class) ?: return
         val token = entry.tokenType() ?: return
         val entryType = BibtexDefaultEntry[token] ?: return
-        val optional = entryType.optional.map { it.fieldName }.toSet()
-        val required = entryType.required.map { it.fieldName }.toSet()
+        val optional: Set<BibtexEntryField> = entryType.optional.toSet()
+        val required: Set<BibtexEntryField> = entryType.required.toSet()
 
         // Removed already present items.
-        val allFields = entryType.allFields().map { it.fieldName }
-        val userDefined = findUserDefinedKeys(entry.containingFile, allFields)
-        val fields = allFields + userDefined
+        val allFields: Set<BibtexEntryField> = entryType.allFields().toSet()
+        val userDefined: Set<BibtexEntryField> = findUserDefinedKeys(entry.containingFile, allFields)
         val keys = entry.keyNames()
-        val notPresent = fields - keys
+        val fields = (allFields + userDefined).toMutableSet()
+        fields.removeIf { it.fieldName in keys }
 
         // Add lookup elements.
-        result.addAllElements(ContainerUtil.map2List(notPresent, {
+        result.addAllElements(ContainerUtil.map2List(fields, {
             val (message, icon) = when (it) {
                 in required -> " required" and TexifyIcons.KEY_REQUIRED
                 in optional -> " optional" and PlatformIcons.PROTECTED_ICON
@@ -44,8 +46,8 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
                 else -> "" and PlatformIcons.PROTECTED_ICON
             }
 
-            LookupElementBuilder.create(it, it)
-                    .withPresentableText(it)
+            LookupElementBuilder.create(it, it.fieldName)
+                    .withPresentableText(it.fieldName)
                     .bold()
                     .withTypeText(message, true)
                     .withIcon(icon)
@@ -62,15 +64,15 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
      *          All fields that are already in the autocomplete.
      * @return A list containing all user defined keys.
      */
-    private fun findUserDefinedKeys(file: PsiFile, allFields: List<String>): Set<String> {
-        val result = HashSet<String>()
-        val presentFieldSet = allFields.toMutableSet()
+    private fun findUserDefinedKeys(file: PsiFile, allFields: Collection<BibtexEntryField>): Set<BibtexEntryField> {
+        val result = HashSet<BibtexEntryField>()
+        val presentFieldSet: MutableSet<String> = allFields.map { it.fieldName }.toMutableSet()
 
         for (key in file.childrenOfType(BibtexKey::class)) {
             val name = key.text
             if (name !in presentFieldSet) {
                 presentFieldSet.add(name)
-                result.add(name)
+                result.add(SimpleBibtexEntryField(name, "User defined string."))
             }
         }
 

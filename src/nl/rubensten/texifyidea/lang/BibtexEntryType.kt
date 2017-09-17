@@ -3,17 +3,12 @@ package nl.rubensten.texifyidea.lang
 /**
  * @author Ruben Schellekens
  */
-interface BibtexEntryType {
+interface BibtexEntryType : Described{
 
     /**
      * The token used to identify the BibTeX token _without_ `@` prefix.
      */
     val token: String
-
-    /**
-     * A short description of what the entry type is for.
-     */
-    val description: String
 
     /**
      * All required fields/keys. Empty array when no fields are required.
