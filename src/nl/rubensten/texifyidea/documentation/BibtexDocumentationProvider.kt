@@ -5,6 +5,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.lang.BibtexEntryType
+import nl.rubensten.texifyidea.psi.BibtexDefinedString
+import nl.rubensten.texifyidea.psi.BibtexKey
 
 /**
  * @author Ruben Schellekens
@@ -17,8 +19,11 @@ open class BibtexDocumentationProvider : DocumentationProvider {
         return ArrayList()
     }
 
-    override fun getQuickNavigateInfo(p0: PsiElement?, p1: PsiElement?): String? {
-        return null
+    override fun getQuickNavigateInfo(element: PsiElement, originalPsiElement: PsiElement): String? {
+        return when (element) {
+            is BibtexKey -> StringDeclarationLabel(element).makeLabel()
+            else -> null
+        }
     }
 
     override fun getDocumentationElementForLookupItem(manager: PsiManager?, obj: Any?, element: PsiElement?): PsiElement? {
