@@ -24,6 +24,12 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
                 AttributesDescriptor("Type token", BibtexSyntaxHighlighter.TYPE_TOKEN),
                 AttributesDescriptor("Value", BibtexSyntaxHighlighter.VALUE)
         )
+
+        val DEMO_TAGS = mapOf(
+                "key" to BibtexSyntaxHighlighter.KEY,
+                "string" to BibtexSyntaxHighlighter.STRING,
+                "value" to BibtexSyntaxHighlighter.VALUE
+        )
     }
 
     override fun getIcon() = TexifyIcons.BIBLIOGRAPHY_FILE!!
@@ -35,27 +41,27 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
                 |%  Comments are amazing
                 |%
                 |
-                |@Preamble{"Fancy
+                |@Preamble{<string>"Fancy
                 |    \newcommand{\peanutbutter}{Jelly Time!}
-                |"}
+                |"</string>}
                 |
-                |@string{ test = "String definition" }
-                |@string{ identifier = "Identifier" }
+                |@string{ <key>test</key> = <string>"String definition"</string> }
+                |@string{ <key>identifier</key> = <string>"Identifier"</string> }
                 |
                 |@tokentype{
-                |    key = "String" # {Braced string} # identifier
+                |    <key>key</key> = <string>"String"</string> # <value>{Braced string}</value> # identifier
                 |},
                 |
                 |@article{small,
-                |    author = {Henry} # test,
-                |    title = {A small paper},
-                |    journal = "The journal of smiles",
-                |    year = 1997,
-                |    volume = -1,
-                |    note = {to appear},
+                |    <key>author</key> = <value>{Henry}</value> # test,
+                |    <key>title</key> = <value>{A small paper}</value>,
+                |    <key>journal</key> = <string>"The journal of smiles"</string>,
+                |    <key>year</key> = 1997,
+                |    <key>volume</key> = -1,
+                |    <key>note</key> = <value>{to appear}</value>,
                 |}""".trimMargin()
 
-    override fun getAdditionalHighlightingTagToDescriptorMap() = null
+    override fun getAdditionalHighlightingTagToDescriptorMap() = DEMO_TAGS
 
     override fun getAttributeDescriptors() = DESCRIPTORS
 
