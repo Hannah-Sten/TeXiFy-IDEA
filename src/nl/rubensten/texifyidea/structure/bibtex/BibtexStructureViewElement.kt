@@ -8,8 +8,6 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.BibtexFile
-import nl.rubensten.texifyidea.psi.BibtexEntry
-import nl.rubensten.texifyidea.util.childrenOfType
 
 /**
  * @author Ruben Schellekens
@@ -50,10 +48,6 @@ open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTr
             return emptyArray()
         }
 
-        val file = element as BibtexFile
-        val entries = file.childrenOfType(BibtexEntry::class)
-        return entries
-                .map { BibtexStructureViewEntryElement(it) }
-                .toTypedArray()
+        return arrayOf(BibtexStructureViewEntriesElement(element))
     }
 }

@@ -8,10 +8,7 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.util.PlatformIcons
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.BibtexEntry
-import nl.rubensten.texifyidea.util.identifier
-import nl.rubensten.texifyidea.util.keyName
-import nl.rubensten.texifyidea.util.tags
-import nl.rubensten.texifyidea.util.tokenName
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Ruben Schellekens
@@ -63,5 +60,11 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
 
     override fun getPresentation() = entryPresentation
 
-    override fun getChildren(): Array<TreeElement> = emptyArray()
+    override fun getChildren(): Array<TreeElement> {
+        if (entry.isString() || entry.isPreamble()) {
+            return emptyArray()
+        }
+
+        return entry.tags().map { BibtexStructureViewTagElement(it) }.toTypedArray()
+    }
 }
