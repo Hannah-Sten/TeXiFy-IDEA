@@ -334,6 +334,11 @@ public class TexifyIcons {
             "/nl/rubensten/texifyidea/icons/key-required.png"
     );
 
+    // From IntelliJ (modified)
+    public static final Icon KEY_USER_DEFINED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/key-user.png"
+    );
+
     /**
      * Get the file icon object that corresponds to the given file extension.
      * <p>

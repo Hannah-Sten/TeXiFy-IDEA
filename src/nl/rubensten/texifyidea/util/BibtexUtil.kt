@@ -99,6 +99,10 @@ fun BibtexDefinedString.evaluate(): String {
     val file = containingFile
     val stringName = text
 
+    if (file == null) {
+        return ""
+    }
+
     // Look up all string entries.
     for (entry in file.childrenOfType(BibtexEntry::class)) {
         val token = entry.tokenName()?.toLowerCase()
