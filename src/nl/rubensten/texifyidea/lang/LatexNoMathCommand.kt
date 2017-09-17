@@ -4,7 +4,6 @@ import nl.rubensten.texifyidea.lang.Argument.Type
 import nl.rubensten.texifyidea.lang.Package.*
 
 /**
- *
  * @author Sten Wessel
  */
 enum class LatexNoMathCommand(
@@ -176,6 +175,7 @@ enum class LatexNoMathCommand(
     R("r", display = "˚ (accent)"),
     REF("ref", "label".asRequired()),
     REFNAME("refname", "name".asRequired(Type.TEXT)),
+    REQUIREPACKAGE("RequirePackage", "options".asOptional(), "package".asRequired()),
     RIGHTHYPHENMIN("righthyphenmin"),
     RIGHTMARGIN("rightmargin"),
     RIGHTMARK("rightmark"),
