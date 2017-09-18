@@ -20,6 +20,7 @@ import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
+import nl.rubensten.texifyidea.index.LatexIncludesIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.*;
@@ -55,8 +56,12 @@ public class TexifyUtil {
     }
 
     // Referenced files.
-    private static final List<String> INCLUDE_COMMANDS = Arrays.asList("\\includeonly", "\\include", "\\input");
-    private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
+    public static final Set<String> INCLUDE_COMMANDS = new HashSet<>();
+    static {
+        Collections.addAll(INCLUDE_COMMANDS, "\\includeonly", "\\include", "\\input", "\\usepackage", "\\RequirePackage");
+    }
+
+    public static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
         Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls");
     }
@@ -117,8 +122,7 @@ public class TexifyUtil {
      */
     public static Set<PsiFile> getReferencedFileSet(@NotNull PsiFile psiFile) {
         Project project = psiFile.getProject();
-        GlobalSearchScope scope = GlobalSearchScope.allScope(project);
-        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(project, scope);
+        Collection<LatexCommands> commands = LatexIncludesIndex.getIncludes(project);
 
         // Contains the end result.
         Set<PsiFile> set = new HashSet<>();

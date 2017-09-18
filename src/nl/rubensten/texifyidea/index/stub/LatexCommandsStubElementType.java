@@ -3,8 +3,10 @@ package nl.rubensten.texifyidea.index.stub;
 import com.intellij.psi.stubs.*;
 import nl.rubensten.texifyidea.LatexLanguage;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
+import nl.rubensten.texifyidea.index.LatexIncludesIndex;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.impl.LatexCommandsImpl;
+import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -78,6 +80,10 @@ public class LatexCommandsStubElementType extends IStubElementType<LatexCommands
     @Override
     public void indexStub(@NotNull LatexCommandsStub latexCommandsStub, @NotNull IndexSink indexSink) {
         indexSink.occurrence(LatexCommandsIndex.KEY, latexCommandsStub.getCommandToken());
+
+        if (TexifyUtil.INCLUDE_COMMANDS.contains(latexCommandsStub.getCommandToken())) {
+            indexSink.occurrence(LatexIncludesIndex.KEY, latexCommandsStub.getCommandToken());
+        }
     }
 
     @NotNull

@@ -254,6 +254,7 @@
         <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
 
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
+        <stubIndex implementation="nl.rubensten.texifyidea.index.LatexIncludesIndex"/>
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>

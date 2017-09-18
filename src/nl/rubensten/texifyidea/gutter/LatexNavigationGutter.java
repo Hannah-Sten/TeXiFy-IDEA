@@ -46,21 +46,31 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
             return;
         }
 
+        // True when it doesnt have a required file argument, but must be handled.
+        boolean ignoreFileArgument = "\\RequirePackage".equals(fullCommand) ||
+                "\\usepackage".equals(fullCommand);
+
         // Fetch the corresponding LatexNoMathCommand object.
         String commandName = fullCommand.substring(1);
         LatexNoMathCommand commandHuh = LatexNoMathCommand.get(commandName);
-        if (commandHuh == null) {
+        if (commandHuh == null && !ignoreFileArgument) {
             return;
         }
 
         List<RequiredFileArgument> arguments = commandHuh.getArgumentsOf(RequiredFileArgument.class);
-
-        if (arguments.isEmpty()) {
+        if (arguments.isEmpty() && !ignoreFileArgument) {
             return;
         }
 
         // Get the required file arguments.
-        RequiredFileArgument argument = arguments.get(0);
+        RequiredFileArgument argument;
+        if (ignoreFileArgument) {
+            argument = new RequiredFileArgument("", "sty");
+        }
+        else {
+            argument = arguments.get(0);
+        }
+
         List<LatexRequiredParam> requiredParams = TexifyUtil.getRequiredParameters(commands);
         if (requiredParams.isEmpty()) {
             return;

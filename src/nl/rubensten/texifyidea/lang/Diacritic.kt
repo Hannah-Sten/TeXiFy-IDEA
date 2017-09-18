@@ -1,7 +1,6 @@
 package nl.rubensten.texifyidea.lang
 
 /**
- *
  * @author Sten Wessel
  */
 interface Diacritic {
