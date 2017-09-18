@@ -6,8 +6,10 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -244,18 +246,45 @@ public class TexifyUtil {
     public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path) {
         // Find file
         VirtualFile directory = file.getContainingDirectory().getVirtualFile();
+        String dirPath = directory.getPath();
+
         Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
         if (!fileHuh.isPresent()) {
-            return null;
+            return scanRoots(file, path);
         }
 
         PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
         if (psiFile == null || (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
                 !StyleFileType.INSTANCE.equals(psiFile.getFileType()))) {
-            return null;
+            return scanRoots(file, path);
         }
 
         return psiFile;
+    }
+
+    /**
+     * {@link TexifyUtil#getFileRelativeTo(PsiFile, String)} but then it scans all content roots.
+     *
+     * @param original
+     *         The file where the relative path starts.
+     * @param path
+     *         The path relative to {@code original}.
+     * @return The found file.
+     */
+    public static PsiFile scanRoots(@NotNull PsiFile original, @NotNull String path) {
+        Project project = original.getProject();
+        ProjectRootManager rootManager = ProjectRootManager.getInstance(project);
+        VirtualFile[] roots = rootManager.getContentSourceRoots();
+        VirtualFileManager fileManager = VirtualFileManager.getInstance();
+
+        for (VirtualFile root : roots) {
+            Optional<VirtualFile> fileHuh = findFile(root, path, INCLUDE_EXTENSIONS);
+            if (fileHuh.isPresent()) {
+                return FileUtilKt.psiFile(fileHuh.get(), project);
+            }
+        }
+
+        return null;
     }
 
     public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
