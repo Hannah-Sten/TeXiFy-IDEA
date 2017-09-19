@@ -5,6 +5,7 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.file.LatexFile;
+import nl.rubensten.texifyidea.insight.InsightGroup;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ import java.util.List;
 public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
     @NotNull
-    public abstract InspectionGroup getInspectionGroup();
+    public abstract InsightGroup getInspectionGroup();
 
     @NotNull
     public abstract String getInspectionId();

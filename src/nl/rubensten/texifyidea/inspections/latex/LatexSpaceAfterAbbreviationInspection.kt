@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import nl.rubensten.texifyidea.inspections.InspectionGroup
+import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.childrenOfType
@@ -37,7 +37,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
         val ABBREVIATION = Pattern.compile("[0-9A-Za-z.]+\\.[0-9A-Za-z].")!!
     }
 
-    override fun getInspectionGroup() = InspectionGroup.LATEX
+    override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName(): String = "Normal space after abbreviation"
 

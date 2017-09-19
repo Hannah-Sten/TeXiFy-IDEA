@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.inspections.InspectionGroup
+import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.childrenOfType
@@ -37,7 +37,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
         private val SENTENCE_SEPERATOR = Pattern.compile("[.?!;;]")
     }
 
-    override fun getInspectionGroup() = InspectionGroup.LATEX
+    override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Start sentences on a new line"
 

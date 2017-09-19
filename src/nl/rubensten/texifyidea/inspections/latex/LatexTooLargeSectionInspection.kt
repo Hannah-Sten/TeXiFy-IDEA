@@ -10,7 +10,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.inspections.InspectionGroup
+import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
@@ -70,7 +70,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         }
     }
 
-    override fun getInspectionGroup() = InspectionGroup.LATEX
+    override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Too large sections"
 

@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.psi.LatexComment
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.hasParent
@@ -84,7 +85,7 @@ abstract class TexifyRegexInspection(
         /**
          * In which inspection group the inspection lies.
          */
-        val group: InspectionGroup = InspectionGroup.LATEX
+        val group: InsightGroup = InsightGroup.LATEX
 
 ) : TexifyInspectionBase() {
 

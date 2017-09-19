@@ -8,7 +8,7 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.psi.PsiFile;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
-import nl.rubensten.texifyidea.inspections.InspectionGroup;
+import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.TexifyUtil;
@@ -39,8 +39,8 @@ public class LatexMightBreakTexifyInspection extends TexifyInspectionBase {
 
     @NotNull
     @Override
-    public InspectionGroup getInspectionGroup() {
-        return InspectionGroup.LATEX;
+    public InsightGroup getInspectionGroup() {
+        return InsightGroup.LATEX;
     }
 
     @Nls

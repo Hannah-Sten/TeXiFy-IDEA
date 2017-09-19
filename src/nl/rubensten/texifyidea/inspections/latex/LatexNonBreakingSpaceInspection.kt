@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.inspections.InspectionGroup
+import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexNormalText
@@ -43,7 +43,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         private val ENDS_WITH_NON_BREAKING_SPACE = Pattern.compile("~$")
     }
 
-    override fun getInspectionGroup() = InspectionGroup.LATEX
+    override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Start sentences on a new line"
 

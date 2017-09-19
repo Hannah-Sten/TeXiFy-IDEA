@@ -9,7 +9,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.file.LatexFileType
-import nl.rubensten.texifyidea.inspections.InspectionGroup
+import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.util.TexifyUtil
@@ -20,7 +20,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
  */
 open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InspectionGroup.LATEX
+    override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Missing document environment"
 

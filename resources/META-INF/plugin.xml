@@ -371,9 +371,10 @@
                          enabledByDefault="true"/>
 
         <!-- Intentions -->
-        <!--<intentionAction>-->
-            <!--<className>nl.rubensten.texifyidea.intentions.DisplayMathIntention</className>-->
-            <!--<category>LaTeX</category>-->
-        <!--</intentionAction>-->
-  </extensions>
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexDisplayMathIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexDisplayMath</descriptionDirectoryName>
+        </intentionAction>
+    </extensions>
 </idea-plugin>

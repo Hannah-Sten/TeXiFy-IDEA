@@ -1,9 +1,9 @@
-package nl.rubensten.texifyidea.inspections
+package nl.rubensten.texifyidea.insight
 
 /**
  * @author Ruben Schellekens
  */
-enum class InspectionGroup(
+enum class InsightGroup(
 
         /**
          * The name that gets displayed in the inspection settings.

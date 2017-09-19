@@ -1,12 +1,11 @@
 package nl.rubensten.texifyidea.inspections.latex
 
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.inspections.InspectionGroup
+import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.util.commandsInFile
 import nl.rubensten.texifyidea.util.commandsInFileSet
@@ -18,11 +17,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
  */
 open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
-    companion object {
-        val NO_FIX: LocalQuickFix? = null
-    }
-
-    override fun getInspectionGroup() = InspectionGroup.LATEX
+    override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Duplicate labels"
 

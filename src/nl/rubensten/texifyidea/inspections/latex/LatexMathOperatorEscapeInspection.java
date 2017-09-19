@@ -16,7 +16,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
-import nl.rubensten.texifyidea.inspections.InspectionGroup;
+import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexTypes;
@@ -43,8 +43,8 @@ public class LatexMathOperatorEscapeInspection extends TexifyInspectionBase {
 
     @NotNull
     @Override
-    public InspectionGroup getInspectionGroup() {
-        return InspectionGroup.LATEX;
+    public InsightGroup getInspectionGroup() {
+        return InsightGroup.LATEX;
     }
 
     @Nls

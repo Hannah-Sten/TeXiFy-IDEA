@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.intentions
 
 import com.intellij.codeInsight.intention.IntentionAction
+import nl.rubensten.texifyidea.insight.InsightGroup
 
 /**
  * @author Ruben Schellekens
@@ -10,18 +11,18 @@ abstract class TexifyIntentionBase(
         /**
          * The name of the intention that shows up in the intention overview.
          */
-        val name: String
+        val name: String,
+
+        /**
+         * The group to which the intention belongs (duh).
+         */
+        val insightGroup: InsightGroup = InsightGroup.LATEX
 
 ) : IntentionAction {
 
-    companion object {
-
-        private val FAMILY_NAME = "TeXiFy"
-    }
+    override fun startInWriteAction() = false
 
     override fun getText() = name
 
-    override fun startInWriteAction() = false
-
-    override fun getFamilyName() = FAMILY_NAME
+    override fun getFamilyName() = name
 }

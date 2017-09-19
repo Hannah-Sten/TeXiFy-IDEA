@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.intentions
 
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
@@ -9,7 +10,7 @@ import nl.rubensten.texifyidea.util.*
 /**
  * @author Ruben Schellekens
  */
-open class DisplayMathIntention : TexifyIntentionBase("Change to '\\[..\\]'") {
+open class LatexDisplayMathIntention : TexifyIntentionBase("Change equation*/displaymath environment to '\\[..\\]'") {
 
     companion object {
 
@@ -38,7 +39,9 @@ open class DisplayMathIntention : TexifyIntentionBase("Change to '\\[..\\]'") {
         val end = begin.endCommand() ?: return
 
         val document = editor.document
-        document.replaceString(end.textRange, "\\]")
-        document.replaceString(begin.textRange, "\\[")
+        runWriteAction {
+            document.replaceString(end.textRange, "\\]")
+            document.replaceString(begin.textRange, "\\[")
+        }
     }
 }
