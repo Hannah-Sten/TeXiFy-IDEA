@@ -6,8 +6,9 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
-
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 /**
  * @author Ruben Schellekens
@@ -90,23 +91,54 @@ object PackageUtils {
     }
 
     /**
-     * Analyses the given file to find all the used packages in the included file set.
+     * Analyses the given file to finds all the used packages in the included file set.
      *
-     * @return All used package names.
+     * @return A set containing all used package names.
      */
     @JvmStatic
-    fun getIncludedPackages(baseFile: PsiFile): Collection<String> {
+    fun getIncludedPackages(baseFile: PsiFile): Set<String> {
         val commands = LatexCommandsIndex.getIndexedCommandsInFileSet(baseFile)
-        return getIncludedPackages(commands)
+        return getIncludedPackages(commands, HashSet()) as Set<String>
+    }
+
+    /**
+     * Analyses the given file and finds all the used packages in the included file set.
+     *
+     * @return A list containing all used package names (including duplicates).
+     */
+    @JvmStatic
+    fun getIncludedPackagesList(baseFile: PsiFile): List<String> {
+        val commands = LatexCommandsIndex.getIndexedCommandsInFileSet(baseFile)
+        return getIncludedPackages(commands, ArrayList()) as List<String>
+    }
+
+    /**
+     * Analyses the given file and finds all packages included in that file only (not the file set!)
+     *
+     * @return A set containing all used packages in the given file.
+     */
+    @JvmStatic
+    fun getIncludedPackagesOfSingleFile(baseFile: PsiFile): Set<String> {
+        val commands = LatexCommandsIndex.getIndexedCommands(baseFile)
+        return getIncludedPackages(commands, HashSet()) as Set<String>
+    }
+
+    /**
+     * Analyses the given file and finds all packages included in that file only (not the file set!)
+     *
+     * @return A list containing all used package names (including duplicates).
+     */
+    @JvmStatic
+    fun getIncludedPackagesOfSingleFileList(baseFile: PsiFile): List<String> {
+        val commands = LatexCommandsIndex.getIndexedCommands(baseFile)
+        return getIncludedPackages(commands, ArrayList()) as List<String>
     }
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
      */
     @JvmStatic
-    fun getIncludedPackages(commands: Collection<LatexCommands>): Collection<String> {
-        val packages = HashSet<String>()
-
+    fun getIncludedPackages(commands: Collection<LatexCommands>, result: MutableCollection<String>): Collection<String> {
         for (cmd in commands) {
             if ("\\usepackage" != cmd.commandToken.text) {
                 continue
@@ -121,15 +153,15 @@ object PackageUtils {
 
             // Multiple includes.
             if (packageName.contains(",")) {
-                Collections.addAll(packages, *packageName.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+                Collections.addAll(result, *packageName.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
             }
             // Single include.
             else {
-                packages.add(packageName)
+                result.add(packageName)
             }
         }
 
-        return packages
+        return result
     }
 }
 

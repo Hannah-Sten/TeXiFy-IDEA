@@ -369,6 +369,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDiacriticIJInspection"
                          groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
+                         groupName="LaTeX" displayName="Package has been imported multiple times"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
