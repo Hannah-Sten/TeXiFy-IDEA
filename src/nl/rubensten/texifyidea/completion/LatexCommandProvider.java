@@ -89,7 +89,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         List<Environment> environments = new ArrayList<>();
         Collections.addAll(environments, DefaultEnvironment.values());
 
-        LatexCommandsIndex.getIndexCommandsInFileSet(parameters.getOriginalFile()).stream()
+        LatexCommandsIndex.getIndexedCommandsInFileSet(parameters.getOriginalFile()).stream()
                 .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
                 .map(cmd -> PsiUtilKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)

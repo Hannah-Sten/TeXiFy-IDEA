@@ -16,31 +16,31 @@ import java.util.List;
  */
 public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
-    private static final String GROUP_DISPLAY_NAME = "TeXiFy";
-    private static final String INSPECTION_PREFIX = "Texify";
+    @NotNull
+    public abstract InspectionGroup getInspectionGroup();
+
+    @NotNull
+    public abstract String getInspectionId();
 
     @Nls
     @NotNull
     @Override
-    abstract public String getDisplayName();
+    public abstract String getDisplayName();
 
     @NotNull
-    abstract List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOntheFly);
-
-    @NotNull
-    abstract public String getInspectionId();
+    public abstract List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOntheFly);
 
     @NotNull
     @Override
     public String getShortName() {
-        return INSPECTION_PREFIX + getInspectionId();
+        return getInspectionGroup().getPrefix() + getInspectionId();
     }
 
     @Nls
     @NotNull
     @Override
     public String getGroupDisplayName() {
-        return GROUP_DISPLAY_NAME;
+        return getInspectionGroup().getDisplayName();
     }
 
     @Nullable

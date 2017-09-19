@@ -79,7 +79,12 @@ abstract class TexifyRegexInspection(
         /**
          * Provides the text ranges that mark the squiggly warning thingies.
          */
-        val highlightRange: (Matcher) -> TextRange = { TextRange(it.start(), it.end()) }
+        val highlightRange: (Matcher) -> TextRange = { TextRange(it.start(), it.end()) },
+
+        /**
+         * In which inspection group the inspection lies.
+         */
+        val group: InspectionGroup = InspectionGroup.LATEX
 
 ) : TexifyInspectionBase() {
 
@@ -101,6 +106,7 @@ abstract class TexifyRegexInspection(
 
     override fun getDisplayName() = inspectionDisplayName
     override fun getInspectionId() = inspectionShortName
+    override fun getInspectionGroup() = group
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()

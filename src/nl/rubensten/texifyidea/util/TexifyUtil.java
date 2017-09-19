@@ -531,7 +531,7 @@ public class TexifyUtil {
      * @return A set containing all labels that are defined in the fileset of the given file.
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
-        return LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
+        return LatexCommandsIndex.getIndexedCommandsInFileSet(file).stream()
                 .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
@@ -558,7 +558,7 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<LatexCommands> findLabels(@NotNull PsiFile file) {
-        return findLabels(LatexCommandsIndex.getIndexCommandsInFileSet(file));
+        return findLabels(LatexCommandsIndex.getIndexedCommandsInFileSet(file));
     }
 
     /**

@@ -27,7 +27,7 @@ object PackageUtils {
     @JvmStatic
     fun insertUsepackage(document: Document, file: PsiFile, packageName: String,
                          parameters: String?) {
-        val commands = LatexCommandsIndex.getIndexCommands(file)
+        val commands = LatexCommandsIndex.getIndexedCommands(file)
 
         var last: LatexCommands? = null
         for (cmd in commands) {
@@ -96,7 +96,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackages(baseFile: PsiFile): Collection<String> {
-        val commands = LatexCommandsIndex.getIndexCommandsInFileSet(baseFile)
+        val commands = LatexCommandsIndex.getIndexedCommandsInFileSet(baseFile)
         return getIncludedPackages(commands)
     }
 

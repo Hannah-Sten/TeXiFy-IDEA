@@ -244,14 +244,14 @@ fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexCommands]
+ * @see [LatexCommandsIndex.getIndexedCommands]
  */
-fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommands(this)
+fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommands(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexCommandsInFileSet]
+ * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommandsInFileSet(this)
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommandsInFileSet(this)
 
 /**
  * @see TexifyUtil.getFileRelativeTo
