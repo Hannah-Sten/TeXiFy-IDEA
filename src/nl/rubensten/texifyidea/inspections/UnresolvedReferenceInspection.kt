@@ -7,7 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.util.TexifyUtil
-import nl.rubensten.texifyidea.util.commandsInFileSet
+import nl.rubensten.texifyidea.util.commandsInFile
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -31,7 +31,7 @@ open class UnresolvedReferenceInspection : TexifyInspectionBase() {
         val descriptors = SmartList<ProblemDescriptor>()
 
         val labels = TexifyUtil.findLabelsInFileSet(file)
-        val commands = file.commandsInFileSet()
+        val commands = file.commandsInFile()
         for (cmd in commands) {
             if (!NonBreakingSpaceInspection.REFERENCE_COMMANDS.contains(cmd.name)) {
                 continue
