@@ -9,11 +9,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.psi.LatexComment
 import nl.rubensten.texifyidea.psi.LatexNormalText
-import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.inMathContext
-import nl.rubensten.texifyidea.util.lineIndentation
+import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -49,7 +47,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
 
         val texts = file.childrenOfType(LatexNormalText::class)
         for (text: LatexNormalText in texts) {
-            if (text.inMathContext()) {
+            if (text.inMathContext() || text.hasParent(LatexComment::class)) {
                 continue
             }
 

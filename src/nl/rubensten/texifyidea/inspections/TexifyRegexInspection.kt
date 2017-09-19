@@ -8,8 +8,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.insight.InsightGroup
-import nl.rubensten.texifyidea.psi.LatexComment
+import nl.rubensten.texifyidea.psi.LatexTypes
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inMathContext
@@ -75,7 +76,7 @@ abstract class TexifyRegexInspection(
         /**
          * Predicate that if `true`, cancels the inspection.
          */
-        val cancelIf: (Matcher, PsiFile) -> Boolean = { _,_ -> false },
+        val cancelIf: (Matcher, PsiFile) -> Boolean = { _, _ -> false },
 
         /**
          * Provides the text ranges that mark the squiggly warning thingies.
@@ -130,7 +131,7 @@ abstract class TexifyRegexInspection(
 
             // Correct context.
             val element = file.findElementAt(matcher.start()) ?: continue
-            if (element is LatexComment || !checkContext(matcher, element)) {
+            if (!checkContext(matcher, element)) {
                 continue
             }
 
@@ -160,7 +161,13 @@ abstract class TexifyRegexInspection(
      *
      * @return `true` if the inspection is allowed in the context, `false` otherwise.
      */
-    open fun checkContext(matcher: Matcher, element: PsiElement): Boolean = mathMode == element.inMathContext()
+    open fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
+        if (element is LeafPsiElement && element.elementType == LatexTypes.COMMENT_TOKEN) {
+            return false
+        }
+
+        return mathMode == element.inMathContext()
+    }
 
     /**
      * Replaces all text in the replacementRange by the correct replacement.
