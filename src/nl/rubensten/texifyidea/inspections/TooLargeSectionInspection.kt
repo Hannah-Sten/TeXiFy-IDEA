@@ -12,9 +12,7 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
-import nl.rubensten.texifyidea.util.TexifyUtil
-import nl.rubensten.texifyidea.util.endOffset
-import nl.rubensten.texifyidea.util.firstChildOfType
+import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -165,17 +163,28 @@ open class TooLargeSectionInspection : TexifyInspectionBase() {
 
             val startIndex = label?.endOffset() ?: cmd.endOffset()
             val endIndex = nextCmd?.textOffset ?: document?.textLength ?: return
-            val text = document?.getText(TextRange(startIndex, endIndex)) ?: return
+            val text = document?.getText(TextRange(startIndex, endIndex))?.trimEnd()?.removeIndents() ?: return
 
             document.deleteString(startIndex, endIndex)
 
             val fileNameBraces = if (cmd.parameterList.size > 0) cmd.parameterList[0].text else return
             val fileName = fileNameBraces.replace("}", "").replace("{", "")
-            val createdFile = TexifyUtil.createFile(file.containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
+            val createdFile = TexifyUtil.createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
             LocalFileSystem.getInstance().refresh(true)
 
             val createdFileName = createdFile.name.subSequence(0, createdFile.name.length - 4)
-            document.insertString(startIndex, "\n\\input{$createdFileName}\n\n")
+            val indent = cmd.findIndentation()
+            document.insertString(startIndex, "\n$indent\\input{$createdFileName}\n\n")
+        }
+
+        /**
+         * Finds the indentation of the line where the section command starts.
+         */
+        private fun LatexCommands.findIndentation(): String {
+            val file = containingFile
+            val document = file.document() ?: return ""
+            val lineNumber = document.getLineNumber(textOffset)
+            return document.lineIndentation(lineNumber)
         }
 
         /**

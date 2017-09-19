@@ -50,6 +50,10 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
+    if (LatexCommandsIndex.getIndexCommands(this).any { "\\documentclass" == it.name }) {
+        return this
+    }
+
     val inclusions = project.allFileinclusions()
     inclusions.forEach { (file, _) ->
         // For each root, IsChildDFS until found.
