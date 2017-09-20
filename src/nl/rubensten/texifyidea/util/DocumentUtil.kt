@@ -48,3 +48,8 @@ fun Editor.insertAndMove(offset: Int, string: String) {
     document.insertString(offset, string)
     caretModel.moveToOffset(caretModel.offset + string.length)
 }
+
+/**
+ * @see [CaretModel.offset]
+ */
+fun Editor.caretOffset() = caretModel.offset

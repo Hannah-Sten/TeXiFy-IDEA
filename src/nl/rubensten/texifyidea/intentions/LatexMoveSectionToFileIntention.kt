@@ -3,7 +3,6 @@ package nl.rubensten.texifyidea.intentions
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection.Companion.findNextSection
 import nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection.InspectionFix.Companion.findLabel
@@ -46,7 +45,8 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
         // Find text.
         val start = label?.endOffset() ?: sectionCommand.endOffset()
-        val end = (nextCmd?.textOffset ?: document.textLength ?: return)
+        val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
+        val end = (nextCmd?.textOffset ?: document.textLength ?: return) - cmdIndent.length
         val text = document.getText(TextRange(start, end)).trimEnd().removeIndents()
 
         // Create new file.
@@ -55,7 +55,6 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
 
         // Execute write actions.
-        val fileSystem = LocalFileSystem.getInstance()
         val filePath = "$root/$fileName.tex";
         val createdFile = TexifyUtil.createFile(filePath, text)
         document.deleteString(start, end);

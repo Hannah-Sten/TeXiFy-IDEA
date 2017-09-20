@@ -385,5 +385,11 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMoveSectionToFile</descriptionDirectoryName>
         </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexMoveSelectionToFileIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexMoveSelectionToFile</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 </idea-plugin>

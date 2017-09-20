@@ -47,6 +47,7 @@ fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
 
     return null
 }
+
 /**
  * Finds the last child of a certain type.
  */
