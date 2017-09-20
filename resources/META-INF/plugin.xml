@@ -372,6 +372,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
                          groupName="LaTeX" displayName="Package has been imported multiple times"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
+                         groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>

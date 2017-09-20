@@ -54,6 +54,11 @@ fun String.substringEnd(startIndex: Int, endIndex: Int): String = substring(leng
 fun String.substringEnd(range: IntRange): String = substringEnd(range.start, range.endInclusive + 1)
 
 /**
+ * Trims `startTrim` characters from the front, and `endTrim` characters from the end.
+ */
+fun String.trimRange(startTrim: Int, endTrim: Int): String = substring(startTrim).substringEnd(endTrim)
+
+/**
  * Returns the leading whitespace of a string.
  */
 fun String.getIndent(): String {
