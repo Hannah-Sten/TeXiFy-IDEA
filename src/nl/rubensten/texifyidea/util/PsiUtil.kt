@@ -318,6 +318,16 @@ fun LatexCommands.requiredParameter(index: Int): String? {
 }
 
 /**
+ * Finds the indentation of the line where the section command starts.
+ */
+fun LatexCommands.findIndentation(): String {
+    val file = containingFile
+    val document = file.document() ?: return ""
+    val lineNumber = document.getLineNumber(textOffset)
+    return document.lineIndentation(lineNumber)
+}
+
+/**
  * @see TexifyUtil.isEntryPoint
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)

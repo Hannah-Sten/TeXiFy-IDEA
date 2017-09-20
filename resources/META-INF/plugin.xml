@@ -379,5 +379,11 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexDisplayMath</descriptionDirectoryName>
         </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexMoveSectionToFile</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 </idea-plugin>

@@ -8,11 +8,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexEndCommand
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
@@ -45,7 +47,8 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
          * The next commands has the same or higher level as the given one,
          * meaning that a \section will stop only  on \section and higher.
          */
-        fun findNextSection(command: LatexCommands): LatexCommands? {
+        fun findNextSection(command: LatexCommands): PsiElement? {
+            // Scan all commands.
             val commands = LatexCommandsIndex.getIndexedCommands(command.containingFile).toList()
 
             for (i in 0 until commands.size) {
@@ -66,7 +69,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 }
             }
 
-            return null
+            // If no command was found, find the end of the document.
+            val children = command.containingFile.childrenOfType(LatexEndCommand::class)
+            return if (children.isEmpty()) null else children.last()
         }
     }
 
@@ -136,7 +141,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      *         The section command after the `command` one, or `null` when there is no such command.
      * @return `true` when the command starts a section that is too long (see [TOO_LONG_LIMIT])
      */
-    private fun isTooLong(command: LatexCommands, nextCommand: LatexCommands?): Boolean {
+    private fun isTooLong(command: LatexCommands, nextCommand: PsiElement?): Boolean {
         if (!SECTION_NAMES.contains(command.name)) {
             return false
         }
@@ -148,22 +153,34 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         return (endIndex - startIndex) >= TOO_LONG_LIMIT
     }
 
-    private class InspectionFix : LocalQuickFix {
+    class InspectionFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Move section to another file"
+        companion object {
+
+            /**
+             * Finds the label command of the given command.
+             */
+            fun findLabel(cmd: LatexCommands): LatexCommands? {
+                val grandparent = cmd.parent.parent
+                val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return null
+                val child = sibling.firstChildOfType(LatexCommands::class) ?: return null
+                return if (child.name == "\\label") child else null
+            }
         }
+
+        override fun getFamilyName() = "Move section to another file"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands
             val nextCmd = findNextSection(cmd)
-            val label = findLabel(cmd)
+            val label = Companion.findLabel(cmd)
             val file = cmd.containingFile
-            val document = PsiDocumentManager.getInstance(project).getDocument(file)
+            val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
             val startIndex = label?.endOffset() ?: cmd.endOffset()
-            val endIndex = nextCmd?.textOffset ?: document?.textLength ?: return
-            val text = document?.getText(TextRange(startIndex, endIndex))?.trimEnd()?.removeIndents() ?: return
+            val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
+            val endIndex = (nextCmd?.textOffset ?: document.textLength ?: return) - cmdIndent.length
+            val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
 
             document.deleteString(startIndex, endIndex)
 
@@ -175,26 +192,6 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val createdFileName = createdFile.name.subSequence(0, createdFile.name.length - 4)
             val indent = cmd.findIndentation()
             document.insertString(startIndex, "\n$indent\\input{$createdFileName}\n\n")
-        }
-
-        /**
-         * Finds the indentation of the line where the section command starts.
-         */
-        private fun LatexCommands.findIndentation(): String {
-            val file = containingFile
-            val document = file.document() ?: return ""
-            val lineNumber = document.getLineNumber(textOffset)
-            return document.lineIndentation(lineNumber)
-        }
-
-        /**
-         * Finds the label command of the given command.
-         */
-        private fun findLabel(cmd: LatexCommands): LatexCommands? {
-            val grandparent = cmd.parent.parent
-            val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return null
-            val child = sibling.firstChildOfType(LatexCommands::class) ?: return null
-            return if (child.name == "\\label") child else null
         }
     }
 }

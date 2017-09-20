@@ -19,7 +19,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
     override fun getInspectionGroup() = InsightGroup.LATEX
 
-    override fun getInspectionId() = "MultipleIncludesInspection"
+    override fun getInspectionId() = "MultipleIncludes"
 
     override fun getDisplayName() = "Package has been imported multiple times"
 
