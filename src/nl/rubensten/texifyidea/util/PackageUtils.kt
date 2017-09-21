@@ -13,6 +13,18 @@ import java.util.*
  */
 object PackageUtils {
 
+    /**
+     * List containing all the packages that are available on CTAN.
+     *
+     * This is a static list for now, will be made dynamic (index CTAN programatically) in the future.
+     */
+    val CTAN_PACKAGE_NAMES: List<String> = javaClass
+            .getResourceAsStream("/nl/rubensten/texifyidea/packages/package.list")
+            .bufferedReader()
+            .readLine()
+            .split(";")
+            .toList()
+
     private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
 
     /**
