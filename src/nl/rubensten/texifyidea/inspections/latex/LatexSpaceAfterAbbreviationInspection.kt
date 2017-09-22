@@ -34,7 +34,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
          * at the end of the sentece (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
         @Language("RegExp")
-        val ABBREVIATION = Pattern.compile("[0-9A-Za-z.]+\\.[0-9A-Za-z].")!!
+        val ABBREVIATION = Pattern.compile("[0-9A-Za-z.]+\\.[0-9A-Za-z](\\.|\\s)")!!
     }
 
     override fun getInspectionGroup() = InsightGroup.LATEX

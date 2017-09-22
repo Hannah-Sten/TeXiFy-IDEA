@@ -4,6 +4,7 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.psi.PsiFile;
+import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.insight.InsightGroup;
 import org.jetbrains.annotations.Nls;
@@ -53,5 +54,12 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
         List<ProblemDescriptor> descriptors = inspectFile(file, manager, isOnTheFly);
         return descriptors.toArray(new ProblemDescriptor[descriptors.size()]);
+    }
+
+    /**
+     * Creates an empty list to store problem descriptors in.
+     */
+    protected List<ProblemDescriptor> descriptorList() {
+        return new SmartList<>();
     }
 }
