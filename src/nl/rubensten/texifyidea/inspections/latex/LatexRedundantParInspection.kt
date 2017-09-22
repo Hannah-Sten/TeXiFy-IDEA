@@ -1,6 +1,9 @@
 package nl.rubensten.texifyidea.inspections.latex
 
+import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
+import nl.rubensten.texifyidea.psi.LatexTypes
 import nl.rubensten.texifyidea.util.toTextRange
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -30,5 +33,10 @@ open class LatexRedundantParInspection : TexifyRegexInspection(
         else {
             it.groupRange(7)
         }
+    }
+
+    override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
+        val elt = element.containingFile.findElementAt(matcher.end()) as? LeafPsiElement
+        return super.checkContext(matcher, element) && elt?.elementType != LatexTypes.COMMAND_TOKEN ?: true
     }
 }
