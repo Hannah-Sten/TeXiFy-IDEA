@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 
 /**
- * Gets all the indentation characters of the given lineNumber.
+ * Gets all the indentation characters of the line of the given lineNumber.
  *
  * @param lineNumber
  *              The line number of the line to get the indentation of.
@@ -29,6 +29,15 @@ fun Document.lineIndentation(lineNumber: Int): String {
 
     return result.toString()
 }
+
+/**
+ * Gets all the indentation characters of the line at the given offset.
+ *
+ * @param lineNumber
+ *              The offset of the line to get the indentation of.
+ * @return A string containing all the indentation characters. `empty string` when problems arise.
+ */
+fun Document.lineIndentationByOffset(offset: Int) = lineIndentation(getLineNumber(offset))
 
 /**
  * Places the given string into the document over the given range.
