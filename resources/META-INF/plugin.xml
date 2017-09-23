@@ -400,5 +400,11 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
         </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 </idea-plugin>

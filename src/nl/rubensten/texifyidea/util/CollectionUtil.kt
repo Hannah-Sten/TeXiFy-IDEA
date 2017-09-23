@@ -71,6 +71,11 @@ fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
 }
 
 /**
+ * Checks if the map contains the given value as either a key or value.
+ */
+fun <T> Map<T, T>.containsKeyOrValue(value: T) = containsKey(value) || containsValue(value)
+
+/**
  * Collects stream to [List].
  */
 fun <T> Stream<T>.list(): List<T> = this.mutableList()
