@@ -10,9 +10,7 @@ import com.intellij.codeInsight.template.impl.TemplateSettings
 import com.intellij.codeInsight.template.impl.TemplateState
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.lang.LatexCommand
-import nl.rubensten.texifyidea.util.PackageUtils
-import nl.rubensten.texifyidea.util.insertAndMove
-import nl.rubensten.texifyidea.util.insertUsepackage
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -57,9 +55,12 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
             val pack = environment.dependency
             val file = context.file
             val editor = context.editor
+            val envDefinitions = file.definitionsAndRedefinitions()
+                    .filter { it.isEnvironmentDefinition() }
+                    .mapNotNull { it.requiredParameter(0) }.toSet()
 
             // Include packages.
-            if (!PackageUtils.getIncludedPackages(file).contains(pack.name)) {
+            if (!PackageUtils.getIncludedPackages(file).contains(pack.name) && envName !in envDefinitions) {
                 file.insertUsepackage(pack)
             }
 
