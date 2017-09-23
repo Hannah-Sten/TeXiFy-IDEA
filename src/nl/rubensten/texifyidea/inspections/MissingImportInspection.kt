@@ -12,10 +12,7 @@ import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
-import nl.rubensten.texifyidea.util.PackageUtils
-import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.commandsInFileSet
-import nl.rubensten.texifyidea.util.name
+import nl.rubensten.texifyidea.util.*
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -48,7 +45,15 @@ open class MissingImportInspection : TexifyInspectionBase() {
                                 descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
                                 isOntheFly: Boolean) {
         val environments = file.childrenOfType(LatexEnvironment::class)
+        val defined = file.definitionsAndRedefinitions()
+                .filter { it.isEnvironmentDefinition() }
+                .mapNotNull { it.requiredParameter(0) }.toSet()
         for (env in environments) {
+            // Don't consider environments that have been defined.
+            if (env.name()?.text in defined) {
+                continue
+            }
+
             val name = env.name()?.text ?: continue
             val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.dependency
