@@ -394,5 +394,11 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMoveSelectionToFile</descriptionDirectoryName>
         </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 </idea-plugin>
