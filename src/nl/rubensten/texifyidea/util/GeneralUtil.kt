@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.application.ApplicationManager
 
 /**
  * Prints the object in default string presentation to the console.
@@ -32,6 +33,13 @@ fun Int.toRoman(): String = TexifyUtil.toRoman(this)
  * @see Integer.toHexString
  */
 fun Int.toHex(): String = Integer.toHexString(this)
+
+/**
+ * Executes the given run write action.
+ */
+fun runWriteAction(writeAction: () -> Unit) {
+    ApplicationManager.getApplication().runWriteAction(writeAction)
+}
 
 /**
  * Converts an [IntRange] to [TextRange].

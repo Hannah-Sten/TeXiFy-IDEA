@@ -10,5 +10,5 @@ interface Dependend {
      *
      * @return The package object, or [Package.DEFAULT] when no package is needed.
      */
-    fun getDependency(): Package
+    val dependency: Package
 }

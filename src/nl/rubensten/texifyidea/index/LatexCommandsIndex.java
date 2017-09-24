@@ -9,6 +9,7 @@ import com.intellij.psi.stubs.StubIndex;
 import com.intellij.psi.stubs.StubIndexKey;
 import com.intellij.util.ArrayUtil;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +39,14 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
                 .map(PsiFile::getVirtualFile)
                 .collect(Collectors.toSet());
         searchFiles.add(baseFile.getVirtualFile());
+
+        // Add document class
+        PsiFile root = FileUtilKt.findRootFile(baseFile);
+        PsiFile documentClass = FileUtilKt.documentClassFile(root);
+        if (documentClass != null) {
+            searchFiles.add(documentClass.getVirtualFile());
+        }
+
         GlobalSearchScope scope = GlobalSearchScope.filesScope(project, searchFiles);
         return LatexCommandsIndex.getIndexedCommands(project, scope);
     }

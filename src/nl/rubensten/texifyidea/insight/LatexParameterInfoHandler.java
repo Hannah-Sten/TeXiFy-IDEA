@@ -1,7 +1,11 @@
 package nl.rubensten.texifyidea.insight;
 
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.lang.parameterInfo.*;
+import com.intellij.lang.parameterInfo.CreateParameterInfoContext;
+import com.intellij.lang.parameterInfo.ParameterInfoContext;
+import com.intellij.lang.parameterInfo.ParameterInfoHandler;
+import com.intellij.lang.parameterInfo.ParameterInfoUIContext;
+import com.intellij.lang.parameterInfo.UpdateParameterInfoContext;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -11,8 +15,6 @@ import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 /**
  * @author Sten Wessel
@@ -50,13 +52,13 @@ public class LatexParameterInfoHandler implements ParameterInfoHandler<LatexComm
 
     @Override
     public void showParameterInfo(@NotNull LatexCommands element, @NotNull CreateParameterInfoContext context) {
-        Optional<LatexNoMathCommand> commandHuh =
+        LatexNoMathCommand commandHuh =
                 LatexNoMathCommand.get(element.getCommandToken().getText().substring(1));
-        if (!commandHuh.isPresent()) {
+        if (commandHuh == null) {
             return;
         }
 
-        context.setItemsToShow(new Object[] { commandHuh.get() });
+        context.setItemsToShow(new Object[] { commandHuh });
         context.showHint(element, element.getTextOffset(), this);
     }
 

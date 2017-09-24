@@ -14,6 +14,7 @@ import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
+import nl.rubensten.texifyidea.util.parentOfType
 
 /**
  * @author Sten Wessel, Ruben Schellekens
@@ -79,14 +80,30 @@ open class LatexCompletionContributor : CompletionContributor() {
                                 val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
 
                                 val name = command.commandToken.text
-                                val cmd = LatexNoMathCommand.get(name.substring(1)).orElse(null) ?: return false
+                                val cmd = LatexNoMathCommand.get(name.substring(1)) ?: return false
 
-                                val args = cmd.getArgumentsOf(RequiredFileArgument::class.java)
+                                val args = cmd.getArgumentsOf(RequiredFileArgument::class)
                                 return !args.isEmpty()
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexFileProvider()
+        )
+
+        // Package names
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                        .inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>(null) {
+                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                                val command = psiElement.parentOfType(LatexCommands::class) ?: return false
+                                val text = command.text
+                                return text.startsWith("\\usepackage") || text.startsWith("\\RequirePackage")
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexPackageNameProvider
         )
     }
 }

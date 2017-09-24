@@ -8,10 +8,9 @@ class SimpleEnvironment(
         override val context: Environment.Context = Environment.Context.NORMAL,
         override val initialContents: String = "",
         override val arguments: Array<out Argument> = emptyArray(),
-        val `package`: Package = Package.DEFAULT
+        override val dependency: Package = Package.DEFAULT
 ) : Environment {
 
     constructor(environmentName: String) : this(environmentName, context = Environment.Context.NORMAL)
 
-    override fun getDependency() = `package`
 }

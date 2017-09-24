@@ -16,6 +16,20 @@ import kotlin.collections.HashSet
 object PackageUtils {
 
     /**
+     * List containing all the packages that are available on CTAN.
+     *
+     * This is a static list for now, will be made dynamic (index CTAN programatically) in the future.
+     */
+    val CTAN_PACKAGE_NAMES: List<String> = javaClass
+            .getResourceAsStream("/nl/rubensten/texifyidea/packages/package.list")
+            .bufferedReader()
+            .readLine()
+            .split(";")
+            .toList()
+
+    private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
+
+    /**
      * Inserts a usepackage statement for the given package in a certain file.
      *
      * @param file
@@ -30,27 +44,34 @@ object PackageUtils {
                          parameters: String?) {
         val commands = LatexCommandsIndex.getIndexedCommands(file)
 
+        val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
+
         var last: LatexCommands? = null
         for (cmd in commands) {
-            if ("\\usepackage" == cmd.commandToken.text) {
+            if (commandName == cmd.commandToken.text) {
                 last = cmd
             }
         }
 
-        val newlines: String?
+        val newlines: String
         val insertLocation: Int
+        var postNewlines: String? = null
 
         // When there are no usepackage commands: insert below documentclass.
         if (last == null) {
             val classHuh = commands.stream()
-                    .filter { cmd -> "\\documentclass" == cmd.commandToken.text }
+                    .filter { cmd -> "\\documentclass" == cmd.commandToken.text || "\\LoadClass" == cmd.commandToken.text }
                     .findFirst()
-            if (!classHuh.isPresent) {
-                return
+            if (classHuh.isPresent) {
+                insertLocation = classHuh.get().textOffset + classHuh.get().textLength
+                newlines = "\n\n"
+            } else {
+                // No other sensible location can be found
+                insertLocation = 0
+                newlines = ""
+                postNewlines = "\n\n"
             }
 
-            insertLocation = classHuh.get().textOffset + classHuh.get().textLength
-            newlines = "\n\n"
         }
         // Otherwise, insert below the lowest usepackage.
         else {
@@ -58,11 +79,17 @@ object PackageUtils {
             newlines = "\n"
         }
 
-        var command = newlines + "\\usepackage"
+        var command = newlines + commandName
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
         command += "{$packageName}"
 
-        document.insertString(insertLocation, command)
+        if (postNewlines != null) {
+            command += postNewlines
+        }
+
+        runWriteAction {
+            document.insertString(insertLocation, command)
+        }
     }
 
     /**
@@ -140,7 +167,7 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedPackages(commands: Collection<LatexCommands>, result: MutableCollection<String>): Collection<String> {
         for (cmd in commands) {
-            if ("\\usepackage" != cmd.commandToken.text) {
+            if (cmd.commandToken.text !in PACKAGE_COMMANDS) {
                 continue
             }
 

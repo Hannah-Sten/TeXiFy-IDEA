@@ -50,7 +50,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         for (env in environments) {
             val name = env.name()?.text ?: continue
             val environment = DefaultEnvironment[name] ?: continue
-            val pack = environment.getDependency()
+            val pack = environment.dependency
 
             if (pack == Package.DEFAULT || includedPackages.contains(pack.name)) {
                 continue
@@ -72,8 +72,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                                 isOntheFly: Boolean) {
         val commands = file.commandsInFileSet()
         for (cmd in commands) {
-            val latexCommand = LatexCommand.lookup(cmd.name) ?: continue
-            val pack = latexCommand.getDependency()
+            if (cmd.name == null) {
+                continue
+            }
+            val latexCommand = LatexCommand.lookup(cmd.name!!) ?: continue
+            val pack = latexCommand.dependency
 
             if (pack.isDefault) {
                 continue
@@ -103,10 +106,10 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val latexCommand = LatexCommand.lookup(command.name) ?: return
+            val latexCommand = LatexCommand.lookup(command.name!!) ?: return
             val file = command.containingFile
 
-            PackageUtils.insertUsepackage(file, latexCommand.getDependency())
+            PackageUtils.insertUsepackage(file, latexCommand.dependency)
         }
     }
 
@@ -124,7 +127,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             val thingy = DefaultEnvironment.fromPsi(environment) ?: return
             val file = environment.containingFile
 
-            PackageUtils.insertUsepackage(file, thingy.getDependency())
+            PackageUtils.insertUsepackage(file, thingy.dependency)
         }
     }
 }

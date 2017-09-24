@@ -153,3 +153,22 @@ fun PsiFile.findInclusions(): List<PsiFile> {
  */
 fun PsiFile.isLatexFile() = fileType == LatexFileType.INSTANCE ||
         fileType == StyleFileType.INSTANCE || fileType == ClassFileType.INSTANCE
+
+/**
+ * Checks if the file has a `.sty` extention. This is a workaround for file type checking.
+ */
+fun PsiFile.isStyleFile() = virtualFile.extension == "sty"
+
+/**
+ * Checks if the file has a `.cls` extention. This is a workaround for file type checking.
+ */
+fun PsiFile.isClassFile() = virtualFile.extension == "cls"
+
+/**
+ * Looks up the the that is in the documentclass command.
+ */
+fun PsiFile.documentClassFile(): PsiFile? {
+    val command = commandsInFile().filter { it.name == "\\documentclass" }.getOrNull(0) ?: return null
+    val argument = command.requiredParameter(0) ?: return null
+    return fileRelativeTo("$argument.cls")
+}

@@ -9,7 +9,7 @@ import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateSettings
 import com.intellij.codeInsight.template.impl.TemplateState
 import nl.rubensten.texifyidea.lang.Environment
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.util.PackageUtils
 import nl.rubensten.texifyidea.util.insertAndMove
 import nl.rubensten.texifyidea.util.insertUsepackage
@@ -20,9 +20,9 @@ import nl.rubensten.texifyidea.util.insertUsepackage
 class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
-        val command = item.`object` as LatexNoMathCommand
+        val command = item.`object` as LatexCommand
 
-        if (command == LatexNoMathCommand.BEGIN) {
+        if (command.command == "begin") {
             insertBegin(context)
         }
         else {
@@ -51,10 +51,10 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
      */
     private inner class EnvironmentInsertImports(val context: InsertionContext) : TemplateEditingListener {
 
-        override fun beforeTemplateFinished(templateState: TemplateState, template: Template) {
-            val envName = templateState.getVariableValue("ENVNAME")?.text ?: return
+        override fun beforeTemplateFinished(templateState: TemplateState?, template: Template?) {
+            val envName = templateState?.getVariableValue("ENVNAME")?.text ?: return
             val environment = Environment[envName] ?: return
-            val pack = environment.getDependency()
+            val pack = environment.dependency
             val file = context.file
             val editor = context.editor
 
@@ -70,7 +70,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
 
         override fun templateFinished(template: Template?, b: Boolean) {}
         override fun templateCancelled(template: Template?) {}
-        override fun currentVariableChanged(templateState: TemplateState, template: Template?, i: Int, i1: Int) {}
+        override fun currentVariableChanged(templateState: TemplateState?, template: Template?, i: Int, i1: Int) {}
         override fun waitingForInput(template: Template?) {}
     }
 }
