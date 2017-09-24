@@ -45,6 +45,28 @@ fun Document.lineIndentationByOffset(offset: Int) = lineIndentation(getLineNumbe
 fun Document.replaceString(range: TextRange, string: String) = replaceString(range.startOffset, range.endOffset, string)
 
 /**
+ * Get the text in the document at range `offset..1`.
+ */
+operator fun Document.get(offset: Int) = getText(TextRange.from(offset, 1))
+
+/**
+ * Get the text in the given range.
+ */
+operator fun Document.get(range: IntRange) = getText(range.toTextRange())
+
+/**
+ * Replaces a single character in the document.
+ *
+ * @see [Document.replaceString]
+ */
+operator fun Document.set(offset: Int, value: CharSequence) = replaceString(offset, offset + 1, value)
+
+/**
+ * @see [Document.replaceString]
+ */
+operator fun Document.set(range: IntRange, value: CharSequence) = replaceString(range.start, range.endInclusive, value)
+
+/**
  * Inserts a string into the document and moves the caret to the end of the inserted string.
  *
  * @param offset
