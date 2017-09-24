@@ -274,9 +274,84 @@ fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(th
  */
 fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
 
+/**
+ * Get all the definitions in the file set.
+ */
+fun PsiFile.definitions(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexCommandsInFileSet(this)
+            .filter { it.isDefinition() }
+}
+
+/**
+ * Get all the definitions and redefinitions in the file set.
+ */
+fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexCommandsInFileSet(this)
+            .filter { it.isDefinitionOrRedefinition() }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Checks whether the given LaTeX commands is a (re)definition or not.
+ *
+ * This is either a command definition or an environment (re)definition.
+ *
+ * @return `true` if the command is an environment (re)definition or a command (re)definition, `false` when the command is
+ *         `null` or otherwise.
+ */
+fun LatexCommands?.isDefinitionOrRedefinition(): Boolean {
+    return this != null && ("\\newcommand" == name ||
+            "\\let" == name ||
+            "\\def" == name ||
+            "\\DeclareMathOperator" == name ||
+            "\\newenvironment" == name ||
+            "\\renewcommand" == name ||
+            "\\renewenvironment" == name)
+}
+
+/**
+ * Checks whether the given LaTeX commands is a definition or not.
+ *
+ * This is either a command definition or an environment definition. Does not count redefinitions.
+ *
+ * @return `true` if the command is an environment definition or a command definition, `false` when the command is
+ *         `null` or otherwise.
+ */
+fun LatexCommands?.isDefinition(): Boolean {
+    return this != null && ("\\newcommand" == name ||
+            "\\let" == name ||
+            "\\def" == name ||
+            "\\DeclareMathOperator" == name ||
+            "\\newenvironment" == name)
+}
+
+/**
+ * Checks whether the given LaTeX commands is a command definition or not.
+ *
+ * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
+ */
+fun LatexCommands?.isCommandDefinition(): Boolean {
+    return this != null && ("\\newcommand" == name ||
+            "\\let" == name ||
+            "\\def" == name ||
+            "\\DeclareMathOperator" == name ||
+            "\\renewcommand" == name)
+}
+
+/**
+ * Checks whether the given LaTeX commands is an environment definition or not.
+ *
+ * @return `true` if the command is an environment definition, `false` when the command is `null` or otherwise.
+ */
+fun LatexCommands?.isEnvironmentDefinition(): Boolean {
+    return this != null && ("\\newenvironment" == name ||
+            "\\renewenvironment" == name)
+}
 
 /**
  * @see TexifyUtil.getNextCommand

@@ -5,15 +5,59 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
-import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Ruben Schellekens
  */
 open class LatexAnnotator : Annotator {
+
+    companion object {
+
+        /**
+         * The maximum amount of times the cache may be used before doing another lookup.
+         */
+        private val MAX_CACHE_COUNT = 40
+    }
+
+    // Cache to prevent many PsiFile#isUsed and PsiFile#definitions() lookups.
+    private var definitionCache: Collection<LatexCommands>? = null
+    private var definitionCacheFile: PsiFile? = null
+    private var definitionCacheCount: Int = 0
+
+    /**
+     * Looks up all the definitions in the file set.
+     *
+     * It does cache all the definitions for [MAX_CACHE_COUNT] lookups.
+     * See also members [definitionCache], [definitionCacheFile], and [definitionCacheCount]
+     */
+    private fun PsiFile.definitionCache(): Collection<LatexCommands> {
+        // Initialise.
+        if (definitionCache == null) {
+            definitionCache = definitionsAndRedefinitions().filter { it.isEnvironmentDefinition() }
+            definitionCacheFile = this
+            definitionCacheCount = 0
+            return definitionCache!!
+        }
+
+        // Check if the file is the same.
+        if (definitionCacheFile != this) {
+            definitionCache = definitionsAndRedefinitions().filter { it.isEnvironmentDefinition() }
+            definitionCacheCount = 0
+            definitionCacheFile = this
+        }
+
+        // Re-evaluate after the count has been reached times.
+        if (++definitionCacheCount > MAX_CACHE_COUNT) {
+            definitionCache = definitionsAndRedefinitions().filter { it.isEnvironmentDefinition() }
+            definitionCacheCount = 0
+        }
+
+        return definitionCache!!
+    }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
         // Comments
@@ -75,6 +119,12 @@ open class LatexAnnotator : Annotator {
      * Annotates the given comment.
      */
     private fun annotateComment(comment: PsiElement, annotationHolder: AnnotationHolder) {
+        val file = comment.containingFile
+        val hasDefinition = file.definitionCache().any { it.requiredParameter(0) == "comment" }
+        if (hasDefinition) {
+            return
+        }
+
         val annotation = annotationHolder.createInfoAnnotation(comment, null)
         annotation.textAttributes = LatexSyntaxHighlighter.COMMENT
     }

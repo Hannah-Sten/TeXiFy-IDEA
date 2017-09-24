@@ -159,7 +159,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project, scope);
 
         for (LatexCommands cmd : cmds) {
-            if (!isDefinition(cmd)) {
+            if (!PsiUtilKt.isDefinition(cmd) && !PsiUtilKt.isEnvironmentDefinition(cmd)) {
                 continue;
             }
 
@@ -271,14 +271,5 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         return next.getCommandToken().getText();
-    }
-
-    private boolean isDefinition(@Nullable LatexCommands commands) {
-        return commands != null && (
-                "\\newcommand".equals(commands.getCommandToken().getText()) ||
-                        "\\let".equals(commands.getCommandToken().getText()) ||
-                        "\\def".equals(commands.getCommandToken().getText()) ||
-                        "\\DeclareMathOperator".equals(commands.getCommandToken().getText())
-        );
     }
 }

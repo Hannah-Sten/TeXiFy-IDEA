@@ -11,6 +11,7 @@ import nl.rubensten.texifyidea.file.ClassFileType
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.file.StyleFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.lang.Package
 import java.util.*
 import java.util.regex.Pattern
 
@@ -172,3 +173,21 @@ fun PsiFile.documentClassFile(): PsiFile? {
     val argument = command.requiredParameter(0) ?: return null
     return fileRelativeTo("$argument.cls")
 }
+
+/**
+ * Checks if the given package is included in the file set.
+ *
+ * @param packageName
+ *          The name of the package to check for.
+ * @return `true` when there is a package with name `packageName` in the file set, `false` otherwise.
+ */
+fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this).contains(packageName)
+
+/**
+ * Checks if the given package is included into the file set.
+ *
+ * @param `package`
+ *          The package to check for.
+ * @return `true` when there is a package `package` included in the file set, `false` otherwise.
+ */
+fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
