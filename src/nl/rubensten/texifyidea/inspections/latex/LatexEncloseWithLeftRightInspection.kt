@@ -11,7 +11,7 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.insight.InsightGroup
-import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.inspections.TexifyLineOptionsInspection
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.util.*
@@ -20,7 +20,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
 /**
  * @author Ruben Schellekens
  */
-open class LatexEncloseWithLeftRightInspection : TexifyInspectionBase() {
+open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Custom commands") {
 
     companion object {
 
@@ -33,13 +33,11 @@ open class LatexEncloseWithLeftRightInspection : TexifyInspectionBase() {
                 "(" to ")",
                 "[" to "]"
         )
-
-        fun affectedCommands() = AFFECTED_COMMANDS
     }
 
     override fun getInspectionGroup() = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Enclose high commands with \\leftX..\\rightX"
+    override fun getDisplayName() = "Enclose high lines with \\leftX..\\rightX"
 
     override fun getInspectionId() = "EncloseWithLeftRight"
 
@@ -167,6 +165,10 @@ open class LatexEncloseWithLeftRightInspection : TexifyInspectionBase() {
         }
 
         return closeOffset
+    }
+
+    private fun affectedCommands(): Set<String> {
+        return AFFECTED_COMMANDS + lines
     }
 
     /**
