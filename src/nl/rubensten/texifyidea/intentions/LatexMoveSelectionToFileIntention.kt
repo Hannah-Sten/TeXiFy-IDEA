@@ -48,7 +48,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         val document = editor.document
         val selection = selectionOffsets(editor).first()
         val default = document.getText(TextRange(selection.first, selection.second)).split(Regex("\\s+"))[0]
-        val dialogResult = (promptName(project, default) ?: return) + ".tex"
+        val dialogResult = (promptName(default) ?: return) + ".tex"
         if (".tex".equals(dialogResult, true)) {
             return
         }
@@ -88,7 +88,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
     /**
      * @return `null` when the dialog was cancelled.
      */
-    private fun promptName(project: Project, default: String = ""): String? {
+    private fun promptName(default: String = ""): String? {
         var result: String? = null
         DialogBuilder().apply {
             setTitle("Move selection to new file")

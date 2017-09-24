@@ -279,7 +279,7 @@ fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedText
  */
 fun PsiFile.definitions(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexCommandsInFileSet(this)
+    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
             .filter { it.isDefinition() }
 }
 
@@ -288,7 +288,7 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
  */
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexCommandsInFileSet(this)
+    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
             .filter { it.isDefinitionOrRedefinition() }
 }
 

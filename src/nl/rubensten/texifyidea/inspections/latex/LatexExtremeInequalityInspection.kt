@@ -2,7 +2,6 @@ package nl.rubensten.texifyidea.inspections.latex
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.util.insertUsepackage
@@ -18,7 +17,7 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         errorMessage = { "Use the amssymb symbol instead." },
         pattern = Pattern.compile("(<\\s*<(?!\\s*<))|(<\\s*<\\s*<)|(>\\s*>(?!\\s*>))|(>\\s*>\\s*>)"),
         mathMode = true,
-        replacement = this::replacement,
+        replacement = { it, _ -> replacement(it) },
         replacementRange = this::replaceRange,
         quickFixName = { "Insert amssymb symbol." }
 ) {
@@ -28,7 +27,7 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         /**
          * Determines what the replacement for the quick fix must be.
          */
-        fun replacement(it: Matcher, file: PsiFile) = if (it.group(1) != null) {
+        fun replacement(it: Matcher) = if (it.group(1) != null) {
             "\\ll"
         }
         else if (it.group(2) != null) {

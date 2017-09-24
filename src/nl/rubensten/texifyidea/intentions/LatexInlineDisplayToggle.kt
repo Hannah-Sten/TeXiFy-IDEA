@@ -31,14 +31,14 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
         val element = file.findElementAt(editor.caretModel.offset) ?: return
         val inline = element.parentOfType(LatexInlineMath::class)
         if (inline != null) {
-            applyForInlineMath(editor, file, inline)
+            applyForInlineMath(editor, inline)
         }
         else {
-            applyForDisplayMath(editor, file, element.parentOfType(LatexDisplayMath::class) ?: return)
+            applyForDisplayMath(editor, element.parentOfType(LatexDisplayMath::class) ?: return)
         }
     }
 
-    fun applyForInlineMath(editor: Editor, file: PsiFile, inline: LatexInlineMath) {
+    fun applyForInlineMath(editor: Editor, inline: LatexInlineMath) {
         val document = editor.document
         val indent = document.lineIndentationByOffset(inline.textOffset)
         val text = inline.text.trimRange(1, 1).trim()
@@ -57,7 +57,7 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
         }
     }
 
-    fun applyForDisplayMath(editor: Editor, file: PsiFile, display: LatexDisplayMath) {
+    fun applyForDisplayMath(editor: Editor, display: LatexDisplayMath) {
         val document = editor.document
         val indent = document.lineIndentationByOffset(display.textOffset)
         val whitespace = indent.length + 1

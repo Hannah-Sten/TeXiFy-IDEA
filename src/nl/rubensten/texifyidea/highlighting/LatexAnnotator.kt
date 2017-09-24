@@ -161,7 +161,7 @@ open class LatexAnnotator : Annotator {
                 continue
             }
 
-            val noMathContent = element.noMathContent ?: continue
+            val noMathContent = element.noMathContent
             val toStyle = noMathContent.normalText ?: continue
             val annotation = annotationHolder.createInfoAnnotation(toStyle, null)
             annotation.textAttributes = LatexSyntaxHighlighter.OPTIONAL_PARAM
