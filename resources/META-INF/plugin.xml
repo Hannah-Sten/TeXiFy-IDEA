@@ -378,6 +378,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEncloseWithLeftRightInspection"
                          groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
+                         groupName="LaTeX" displayName="Citations must be placed before interpunction"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
