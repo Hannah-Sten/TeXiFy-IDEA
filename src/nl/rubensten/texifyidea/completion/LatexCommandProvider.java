@@ -255,17 +255,13 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     @Nullable
     private String getNewCommandName(@NotNull LatexCommands commands) {
-        List<String> required = commands.getRequiredParameters();
-        if (required.isEmpty()) {
-            return null;
-        }
-
-        return required.get(0);
+        LatexCommands cmd = PsiUtilKt.firstRequiredParamAsCommand(commands);
+        return cmd == null ? null : cmd.getName();
     }
 
     @Nullable
     private String getDefinitionName(@NotNull LatexCommands commands) {
-        LatexCommands next = TexifyUtil.getNextCommand(commands);
+        LatexCommands next = PsiUtilKt.definitionCommand(commands);
         if (next == null) {
             return null;
         }

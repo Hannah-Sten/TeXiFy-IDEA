@@ -44,7 +44,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                                 descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
                                 isOntheFly: Boolean) {
         val environments = file.childrenOfType(LatexEnvironment::class)
-        val defined = file.definitionsAndRedefinitions()
+        val defined = file.definitionsAndRedefinitionsInFileSet()
                 .filter { it.isEnvironmentDefinition() }
                 .mapNotNull { it.requiredParameter(0) }.toSet()
         for (env in environments) {

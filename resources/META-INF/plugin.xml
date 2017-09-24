@@ -382,6 +382,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
                          groupName="LaTeX" displayName="Citations must be placed before interpunction"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
+                         groupName="LaTeX" displayName="Duplicate command definitions"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>

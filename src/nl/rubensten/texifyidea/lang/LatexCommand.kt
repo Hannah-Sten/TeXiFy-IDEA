@@ -9,6 +9,7 @@ import kotlin.reflect.KClass
  * @author Ruben Schellekens, Sten Wessel
  */
 interface LatexCommand : Dependend {
+
     companion object {
 
         /**

@@ -55,7 +55,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
             val pack = environment.dependency
             val file = context.file
             val editor = context.editor
-            val envDefinitions = file.definitionsAndRedefinitions()
+            val envDefinitions = file.definitionsAndRedefinitionsInFileSet()
                     .filter { it.isEnvironmentDefinition() }
                     .mapNotNull { it.requiredParameter(0) }.toSet()
 

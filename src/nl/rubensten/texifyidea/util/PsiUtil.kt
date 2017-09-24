@@ -275,9 +275,27 @@ fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(th
 fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
 
 /**
- * Get all the definitions in the file set.
+ * Get all the definitions in the file.
  */
 fun PsiFile.definitions(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexedCommands(this)
+            .filter { it.isDefinition() }
+}
+
+/**
+ * Get all the definitions and redefinitions in the file.
+ */
+fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexedCommands(this)
+            .filter { it.isDefinitionOrRedefinition() }
+}
+
+/**
+ * Get all the definitions in the file set.
+ */
+fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
     return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
             .filter { it.isDefinition() }
@@ -286,7 +304,7 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
 /**
  * Get all the definitions and redefinitions in the file set.
  */
-fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
+fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
     return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
             .filter { it.isDefinitionOrRedefinition() }
@@ -354,6 +372,16 @@ fun LatexCommands?.isEnvironmentDefinition(): Boolean {
 }
 
 /**
+ * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
+ */
+fun LatexCommands.firstRequiredParamAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+
+/**
+ * Get the command that gets defined by a definition (`\let` or `\def` command).
+ */
+fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
+
+/**
  * @see TexifyUtil.getNextCommand
  */
 fun LatexCommands.nextCommand(): LatexCommands? = TexifyUtil.getNextCommand(this)
@@ -361,7 +389,15 @@ fun LatexCommands.nextCommand(): LatexCommands? = TexifyUtil.getNextCommand(this
 /**
  * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
  */
-fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+
+/**
+ * Get the name of the command that is defined by `this` command.
+ */
+fun LatexCommands.definedCommandName() = when (name) {
+    "\\DeclareMathOperator", "\\newcommand" -> forcedFirstRequiredParameterAsCommand()?.name
+    else -> definitionCommand()?.name
+}
 
 /**
  * @see TexifyUtil.isCommandKnown

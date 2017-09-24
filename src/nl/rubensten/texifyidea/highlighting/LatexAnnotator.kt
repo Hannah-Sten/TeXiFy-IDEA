@@ -37,7 +37,7 @@ open class LatexAnnotator : Annotator {
     private fun PsiFile.definitionCache(): Collection<LatexCommands> {
         // Initialise.
         if (definitionCache == null) {
-            definitionCache = definitionsAndRedefinitions().filter { it.isEnvironmentDefinition() }
+            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
             definitionCacheFile = this
             definitionCacheCount = 0
             return definitionCache!!
@@ -45,14 +45,14 @@ open class LatexAnnotator : Annotator {
 
         // Check if the file is the same.
         if (definitionCacheFile != this) {
-            definitionCache = definitionsAndRedefinitions().filter { it.isEnvironmentDefinition() }
+            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
             definitionCacheCount = 0
             definitionCacheFile = this
         }
 
         // Re-evaluate after the count has been reached times.
         if (++definitionCacheCount > MAX_CACHE_COUNT) {
-            definitionCache = definitionsAndRedefinitions().filter { it.isEnvironmentDefinition() }
+            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
             definitionCacheCount = 0
         }
 
