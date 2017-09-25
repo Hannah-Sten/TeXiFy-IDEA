@@ -16,10 +16,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
-import nl.rubensten.texifyidea.lang.Diacritic;
-import nl.rubensten.texifyidea.lang.LatexCommand;
-import nl.rubensten.texifyidea.lang.LatexMathCommand;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.lang.Package;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import nl.rubensten.texifyidea.psi.LatexNormalText;
@@ -44,15 +41,11 @@ import java.util.stream.IntStream;
  * <p>
  * Flags non-ASCII characters outside of math mode only when Unicode support packages are not
  * loaded. Unicode support is assumed when the packages {@code inputenc} and {@code fontenc} are
- * loaded. The inspection always flags non-ASCII characters in math mode, because Unicode math
- * has no support package in pdfLaTeX.
+ * loaded. The inspection always flags non-ASCII characters in math mode, because Unicode math has
+ * no support package in pdfLaTeX.
  * <p>
- * Quick fixes:
- * <ul>
- *     <li>Escape the character: see {@link EscapeUnicodeFix}</li>
- *     <li>(When outside math mode) Insert Unicode support packages: see
- *     {@link InsertUnicodePackageFix}</li>
- * </ul>
+ * Quick fixes: <ul> <li>Escape the character: see {@link EscapeUnicodeFix}</li> <li>(When outside
+ * math mode) Insert Unicode support packages: see {@link InsertUnicodePackageFix}</li> </ul>
  *
  * @author Sten Wessel
  */
@@ -138,6 +131,7 @@ public class UnicodeInspection extends TexifyInspectionBase {
      * with option {@code T1} when needed to enable unicode support.
      */
     private static class InsertUnicodePackageFix implements LocalQuickFix {
+
         @Nls
         @NotNull
         @Override
@@ -152,42 +146,36 @@ public class UnicodeInspection extends TexifyInspectionBase {
             Document document = PsiDocumentManager.getInstance(project).getDocument(file);
             Collection<String> included = PackageUtils.getIncludedPackages(file);
 
-            if (document != null) {
-                UNICODE_PACKAGES.forEach(p -> {
-                    if (!included.contains(p.getName())) {
-                         PackageUtils.insertUsepackage(
-                                 document,
-                                 file,
-                                 p.getName(),
-                                 String.join(",", p.getParameters())
-                         );
-                    }
-                });
+            if (document == null) {
+                return;
             }
 
+            UNICODE_PACKAGES.forEach(p -> {
+                if (included.contains(p.getName())) {
+                    return;
+                }
+
+                PackageUtils.insertUsepackage(
+                        document, file, p.getName(),
+                        String.join(",", p.getParameters())
+                );
+            });
         }
     }
 
     /**
      * Attempts to escape the non-ASCII character to avoid encoding issues.
      * <p>
-     * The following attempts are made, in order, to determine a suitable replacement:
-     * <ol>
-     * <li>
-     * The character is matched against the <em>display</em> attribute of either
-     * {@link LatexNoMathCommand} or {@link LatexMathCommand} (where appropiate). When there is a
-     * match, the corresponding command is used as replacement.
-     * </li>
-     * <li>
-     * The character is decomposed to separate combining marks (see also
-     * <a href="http://unicode.org/reports/tr15/">Unicode</a>). An attempt is made to match the
-     * combining sequence against LaTeX character diacritical commands. See {@link Diacritic} for
-     * a list of supported diacritics for both non-math and math mode. When there is a match
-     * for all combining marks, the sequence of LaTeX commands is used as replacement. Also, when
-     * the letters <em>i</em> or <em>j</em> are used in combination with a diacritic their
-     * dotless versions are substituted.
-     * </li>
-     * </ol>
+     * The following attempts are made, in order, to determine a suitable replacement: <ol> <li> The
+     * character is matched against the <em>display</em> attribute of either {@link
+     * LatexNoMathCommand} or {@link LatexMathCommand} (where appropiate). When there is a match,
+     * the corresponding command is used as replacement. </li> <li> The character is decomposed to
+     * separate combining marks (see also <a href="http://unicode.org/reports/tr15/">Unicode</a>).
+     * An attempt is made to match the combining sequence against LaTeX character diacritical
+     * commands. See {@link Diacritic} for a list of supported diacritics for both non-math and math
+     * mode. When there is a match for all combining marks, the sequence of LaTeX commands is used
+     * as replacement. Also, when the letters <em>i</em> or <em>j</em> are used in combination with
+     * a diacritic their dotless versions are substituted. </li> </ol>
      * <p>
      * When neither of these steps is successful, the character is too exotic to replace and an
      * appropriate fail message is shown.
@@ -221,7 +209,8 @@ public class UnicodeInspection extends TexifyInspectionBase {
             // Replace with found command or with standard substitution
             if (command != null) {
                 replacement = "\\" + command.getCommand();
-            } else {
+            }
+            else {
                 replacement = findReplacement(c);
             }
 
