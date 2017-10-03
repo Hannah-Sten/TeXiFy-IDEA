@@ -40,8 +40,7 @@ object PackageUtils {
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
     @JvmStatic
-    fun insertUsepackage(document: Document, file: PsiFile, packageName: String,
-                         parameters: String?) {
+    fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
         val commands = LatexCommandsIndex.getIndexedCommands(file)
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
@@ -53,6 +52,7 @@ object PackageUtils {
             }
         }
 
+        val preNew: String
         val newlines: String
         val insertLocation: Int
         var postNewlines: String? = null
@@ -64,8 +64,9 @@ object PackageUtils {
                     .findFirst()
             if (classHuh.isPresent) {
                 insertLocation = classHuh.get().textOffset + classHuh.get().textLength
-                newlines = "\n\n"
-            } else {
+                newlines = "\n"
+            }
+            else {
                 // No other sensible location can be found
                 insertLocation = 0
                 newlines = ""
@@ -87,9 +88,7 @@ object PackageUtils {
             command += postNewlines
         }
 
-        runWriteAction {
-            document.insertString(insertLocation, command)
-        }
+        document.insertString(insertLocation, command)
     }
 
     /**
