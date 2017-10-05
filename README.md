@@ -11,7 +11,7 @@ This plugin adds the tools to make creating LaTeX documents a breeze. We are cur
 
 ## Feedback and support
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
-1. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) live chat (you can login with your GitHub account). Gitter also has a nice app, we use it to get notified of new activity.
+1. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account). Gitter also has a nice app, we use it to get notified of new activity.
 2. [Issues](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, user support, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advice using the gitter.
 
 Please bear in mind that this is just a side project for us. It might take a while to fully process your feedback. We try our best :3
