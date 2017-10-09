@@ -10,14 +10,10 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.psi.LatexMathContent
-import nl.rubensten.texifyidea.psi.LatexMathEnvironment
 import nl.rubensten.texifyidea.psi.LatexNoMathContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.psi.LatexTypes.*
-import nl.rubensten.texifyidea.util.firstChildOfType
-import nl.rubensten.texifyidea.util.hasParent
-import nl.rubensten.texifyidea.util.lastChildOfType
-import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
+import nl.rubensten.texifyidea.util.*
 import java.util.regex.Pattern
 
 /**
@@ -82,7 +78,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                     }
                 }
 
-                return@exit null
+                return@exit element.parentOfType(LatexNormalText::class)
             }
             is PsiComment -> {
                 // When for some reason people want to insert it directly before a comment.
@@ -116,7 +112,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
     private fun handleNormalText(normalText: LatexNormalText, editor: Editor, char: Char) {
         // Check if in math environment.
-        if (!normalText.hasParent(LatexMathEnvironment::class)) {
+        if (!normalText.inMathContext()) {
             return
         }
 
