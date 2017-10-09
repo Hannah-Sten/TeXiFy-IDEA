@@ -418,6 +418,15 @@ fun LatexEnvironment.name(): LatexNormalText? {
 }
 
 /**
+ * Checks if the environment contains the given context.
+ */
+fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
+    val name = name()?.text ?: return false
+    val environment = Environment[name] ?: return false
+    return environment.context == context
+}
+
+/**
  * Get the environment name of the begin command.
  */
 fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(this)

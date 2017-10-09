@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.highlighting
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -71,11 +72,17 @@ open class LatexAnnotator : Annotator {
         else if (psiElement is LatexInlineMath) {
             annotateInlineMath(psiElement, annotationHolder)
         }
-        else if (psiElement is LatexDisplayMath) {
+        else if (psiElement is LatexDisplayMath ||
+                (psiElement is LatexEnvironment && psiElement.isContext(Environment.Context.MATH))) {
             annotateDisplayMath(psiElement, annotationHolder)
-        }
-        else if (psiElement.inDirectEnvironmentContext(Environment.Context.MATH)) {
-            annotateDisplayMath(psiElement, annotationHolder)
+
+            // Begin/End commands
+            if (psiElement is LatexEnvironment) {
+                val ann1 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.beginCommand.textOffset, 6), null)
+                ann1.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
+                val ann2 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.endCommand.textOffset, 4), null)
+                ann2.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
+            }
         }
         // Optional parameters
         else if (psiElement is LatexOptionalParam) {
@@ -161,7 +168,7 @@ open class LatexAnnotator : Annotator {
                 continue
             }
 
-            val noMathContent = element.noMathContent ?: continue
+            val noMathContent = element.noMathContent
             val toStyle = noMathContent.normalText ?: continue
             val annotation = annotationHolder.createInfoAnnotation(toStyle, null)
             annotation.textAttributes = LatexSyntaxHighlighter.OPTIONAL_PARAM
