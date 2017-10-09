@@ -34,8 +34,8 @@ open class ForwardSearchAction : EditorAction(
 
         try {
             SumatraConversation.forwardSearch(sourceFilePath = file.path, line = line)
-        } catch (ignored: TeXception) {
-
+        }
+        catch (ignored: TeXception) {
         }
     }
 
