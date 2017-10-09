@@ -47,12 +47,18 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset - 1) ?: return Result.CONTINUE
 
+        println("Element ${element.javaClass}, with text '${element.text}'")
+        if (element is LeafPsiElement) {
+            println("> ${element.elementType}")
+        }
+
         // Insert squiggly brackets.
         if (element is LatexNormalText) {
             handleNormalText(element, editor, c)
         }
         else {
             val normalText = findNormalText(element)
+            println("> Found normal text: ${normalText?.text}")
             if (normalText != null) {
                 handleNormalText(normalText, editor, c)
             }
@@ -90,6 +96,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                         val noMathContent = element.parent.parent ?: return@exit null
                         val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return@exit null
                         return@exit sibling.firstChildOfType(LatexNormalText::class)
+                    }
+                    INLINE_MATH_END -> {
+                        // At the end of inline math.
+                        val mathContent = element.previousSiblingIgnoreWhitespace() as? LatexMathContent ?: return@exit null
+                        val noMathContent = mathContent.lastChildOfType(LatexNoMathContent::class) ?: return@exit null
+                        return@exit noMathContent.firstChildOfType(LatexNormalText::class)
                     }
                     else -> {
                         // When a character is inserted just before the close brace of a group/inline math end.
