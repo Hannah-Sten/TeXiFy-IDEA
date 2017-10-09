@@ -385,6 +385,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
                          groupName="LaTeX" displayName="Duplicate command definitions"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
+                         groupName="LaTeX" displayName="Gather equations"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>

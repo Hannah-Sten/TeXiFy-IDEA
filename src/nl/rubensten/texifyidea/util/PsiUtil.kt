@@ -470,3 +470,8 @@ fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
  * Finds the [LatexBeginCommand] that matches the end command.
  */
 fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(LatexBeginCommand::class)
+
+/**
+ * Checks if the latex content objects is a display math environment.
+ */
+fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null
