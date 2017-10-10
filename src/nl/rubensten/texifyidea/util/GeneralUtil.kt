@@ -1,7 +1,7 @@
 package nl.rubensten.texifyidea.util
 
-import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.util.TextRange
 
 /**
  * Prints the object in default string presentation to the console.

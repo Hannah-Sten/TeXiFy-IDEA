@@ -53,8 +53,8 @@ open class LatexUnpackUsepackageIntention : TexifyIntentionBase("Split into mult
 
         runWriteAction {
             document.deleteString(offset, command.endOffset())
-            for (i in 0 until packages.size) {
-                val newline = if (i < packages.size - 1) "\n" else ""
+            for (i in packages.size - 1 downTo 0) {
+                val newline = if (i > 0) "\n" else ""
                 val pack = packages[i]
                 document.insertString(offset, "$newline\\usepackage{$pack}")
             }
