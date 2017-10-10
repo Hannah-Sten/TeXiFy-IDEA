@@ -159,6 +159,7 @@ enum class LatexMathCommand(
     TRIANGLERIGHTEQ("trianglerighteq", dependency = AMSSYMB, display = "⊵", collapse = true),
     LTIMES("ltimes", dependency = AMSSYMB, display = "⋉", collapse = true),
     RTIMES("rtimes", dependency = AMSSYMB, display = "⋊", collapse = true),
+    TIMES("times", display = "×", collapse = true),
 
     /*
      *  Left/Right
@@ -317,6 +318,7 @@ enum class LatexMathCommand(
     DIVIDEONTIMES("divideontimes", dependency = AMSSYMB, display = "⋇", collapse = true),
     DOTEQ("doteq"),
     DOT("dot", "a".asRequired()),
+    DOTS("dots", dependency = AMSMATH, display = "⋯", collapse = true),
     ELL("ell"),
     EXP("exp"),
     FLAT("flat", display = "♭", collapse = true),

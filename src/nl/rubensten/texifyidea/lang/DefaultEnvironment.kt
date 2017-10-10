@@ -21,7 +21,7 @@ enum class DefaultEnvironment(
     ALLTT(environmentName = "alltt"),
     CENTER(environmentName = "center"),
     DESCRIPTION(environmentName = "description", initialContents = "\\item "),
-    DISPLAYMATH(environmentName = "displaymath"),
+    DISPLAYMATH(environmentName = "displaymath", context = Context.MATH),
     DOCUMENT(environmentName = "document"),
     ENUMERATE(environmentName = "enumerate", initialContents = "\\item "),
     EQUATION(environmentName = "equation", context = Context.MATH),

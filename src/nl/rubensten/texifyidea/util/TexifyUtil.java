@@ -8,6 +8,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiElement;
@@ -89,6 +90,8 @@ public class TexifyUtil {
         }
 
         try (PrintWriter writer = new PrintWriter(fileName, "UTF-8")) {
+            new File(fileName).createNewFile();
+            LocalFileSystem.getInstance().refresh(true);
             writer.print(contents);
         }
         catch (IOException e) {
@@ -564,7 +567,7 @@ public class TexifyUtil {
      * @return A set containing all labels that are defined in the fileset of the given file.
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
-        return LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
+        return LatexCommandsIndex.getIndexedCommandsInFileSet(file).stream()
                 .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
@@ -591,7 +594,7 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<LatexCommands> findLabels(@NotNull PsiFile file) {
-        return findLabels(LatexCommandsIndex.getIndexCommandsInFileSet(file));
+        return findLabels(LatexCommandsIndex.getIndexedCommandsInFileSet(file));
     }
 
     /**

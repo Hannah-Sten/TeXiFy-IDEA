@@ -260,64 +260,173 @@
         <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
 
         <!-- Inspections -->
-        <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
+        <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexSpellcheckingStrategy"/>
 
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MathOperatorEscapeInspection"
-                         groupName="TeXiFy" displayName="Non-escaped common math operators"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
+                         groupName="LaTeX" displayName="Non-escaped common math operators"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.CommandAlreadyDefinedInspection"
-                         groupName="TeXiFy" displayName="Command is already defined"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCommandAlreadyDefinedInspection"
+                         groupName="LaTeX" displayName="Command is already defined"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MightBreakTexifyInspection"
-                         groupName="TeXiFy" displayName="Might break TeXiFy functionality"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
+                         groupName="LaTeX" displayName="Might break TeXiFy functionality"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.UnicodeInspection"
-                         groupName="TeXiFy" displayName="Unsupported Unicode character"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexUnicodeInspection"
+                         groupName="LaTeX" displayName="Unsupported Unicode character"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.OverInsteadOfFracInspection"
-                         groupName="TeXiFy" displayName="Use of \over discouraged"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexOverInsteadOfFracInspection"
+                         groupName="LaTeX" displayName="Use of \over discouraged"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.RedundantEscapeInspection"
-                         groupName="TeXiFy" displayName="Redundant escape when Unicode is enabled"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
+                         groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingDocumentclassInspection"
-                         groupName="TeXiFy" displayName="Missing documentclass"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
+                         groupName="LaTeX" displayName="Missing documentclass"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingDocumentEnvironmentInspection"
-                         groupName="TeXiFy" displayName="Missing document environment"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingDocumentEnvironmentInspection"
+                         groupName="LaTeX" displayName="Missing document environment"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.TooLargeSectionInspection"
-                         groupName="TeXiFy" displayName="Too large sections"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection"
+                         groupName="LaTeX" displayName="Too large sections"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.PrimitiveStyleInspection"
-                         groupName="TeXiFy" displayName="TeX styling primitives usage is discouraged"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexPrimitiveStyleInspection"
+                         groupName="LaTeX" displayName="TeX styling primitives usage is discouraged"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LineBreakInspection"
-                         groupName="TeXiFy" displayName="Start sentences on a new line"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexLineBreakInspection"
+                         groupName="LaTeX" displayName="Start sentences on a new line"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection"
-                         groupName="TeXiFy" displayName="Non-breaking spaces before references"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection"
+                         groupName="LaTeX" displayName="Non-breaking spaces before references"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.DiscouragedUseOfDefInspection"
-                         groupName="TeXiFy" displayName="Discouraged use of \def and \let"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDiscouragedUseOfDefInspection"
+                         groupName="LaTeX" displayName="Discouraged use of \def and \let"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingLabelInspection"
-                         groupName="TeXiFy" displayName="Missing labels"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingLabelInspection"
+                         groupName="LaTeX" displayName="Missing labels"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.DuplicateLabelInspection"
-                         groupName="TeXiFy" displayName="Duplicate labels"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
+                         groupName="LaTeX" displayName="Duplicate labels"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LabelConventionInspection"
-                         groupName="TeXiFy" displayName="Label conventions"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexLabelConventionInspection"
+                         groupName="LaTeX" displayName="Label conventions"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.MissingImportInspection"
-                         groupName="TeXiFy" displayName="Missing imports"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingImportInspection"
+                         groupName="LaTeX" displayName="Missing imports"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.UnresolvedReferenceInspection"
-                         groupName="TeXiFy" displayName="Unresolved references"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexUnresolvedReferenceInspection"
+                         groupName="LaTeX" displayName="Unresolved references"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.NonMatchingEnvironmentInspection"
-                         groupName="TeXiFy" displayName="Non matching environment commands"
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNonMatchingEnvironmentInspection"
+                         groupName="LaTeX" displayName="Non matching environment commands"
                          enabledByDefault="true"/>
-  </extensions>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEllipsisInspection"
+                         groupName="LaTeX" displayName="Ellipsis with ... instead of \ldots or \dots"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexAvoidEqnarrayInspection"
+                         groupName="LaTeX" displayName="Avoid eqnarray"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexSpaceAfterAbbreviationInspection"
+                         groupName="LaTeX" displayName="Normal space after abbreviation"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEnDashInspection"
+                         groupName="LaTeX" displayName="En dash in number ranges"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexSentenceEndWithCapitalInspection"
+                         groupName="LaTeX" displayName="End-of-sentence space after sentences ending with capitals"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCdotInspection"
+                         groupName="LaTeX" displayName="Use of . instead of \cdot"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexXInsteadOfTimesInspection"
+                         groupName="LaTeX" displayName="Use of x instead of \times"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexGroupedSubSupScriptInspection"
+                         groupName="LaTeX" displayName="Grouped superscript and subscript"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexRedundantParInspection"
+                         groupName="LaTeX" displayName="Redundant use of \par"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNonMatchingIfInspection"
+                         groupName="LaTeX" displayName="Open if-then-else control sequence"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexQedHereInspection"
+                         groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexExtremeInequalityInspection"
+                         groupName="LaTeX" displayName="Use the matching amssymb symbol for extreme inequalities"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexFileNotFoundInspection"
+                         groupName="LaTeX" displayName="File not found"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexInclusionLoopInspection"
+                         groupName="LaTeX" displayName="Inclusion loops"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexPrimitiveEquationInspection"
+                         groupName="LaTeX" displayName="Discouraged use of primitive TeX display math"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCollapseCiteInspection"
+                         groupName="LaTeX" displayName="Collapse cite commands"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDiacriticIJInspection"
+                         groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
+                         groupName="LaTeX" displayName="Package has been imported multiple times"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
+                         groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEncloseWithLeftRightInspection"
+                         groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
+                         groupName="LaTeX" displayName="Citations must be placed before interpunction"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
+                         groupName="LaTeX" displayName="Duplicate command definitions"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
+                         groupName="LaTeX" displayName="Gather equations"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMakeatletterInspection"
+                         groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
+                         enabledByDefault="true"/>
+
+        <!-- Intentions -->
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexDisplayMathIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexDisplayMath</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexMoveSectionToFile</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexMoveSelectionToFileIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexMoveSelectionToFile</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexInlineDisplayToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
+        </intentionAction>
+    </extensions>
 </idea-plugin>

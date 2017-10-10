@@ -192,7 +192,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             PsiFile root = FileUtilKt.findRootFile(baseFile);
             PsiFile documentClass = FileUtilKt.documentClassFile(root);
             if (documentClass != null) {
-                LatexCommands command = LatexCommandsIndex.getIndexCommands(baseFile).stream()
+                LatexCommands command = LatexCommandsIndex.getIndexedCommands(baseFile).stream()
                         .filter(cmd -> "\\documentclass".equals(cmd.getName()))
                         .findFirst().orElse(null);
                 if (command != null) {

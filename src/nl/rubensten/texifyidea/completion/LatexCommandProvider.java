@@ -104,7 +104,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         List<Environment> environments = new ArrayList<>();
         Collections.addAll(environments, DefaultEnvironment.values());
 
-        LatexCommandsIndex.getIndexCommandsInFileSet(parameters.getOriginalFile()).stream()
+        LatexCommandsIndex.getIndexedCommandsInFileSet(parameters.getOriginalFile()).stream()
                 .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
                 .map(cmd -> PsiUtilKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)
@@ -255,17 +255,13 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     @Nullable
     private String getNewCommandName(@NotNull LatexCommands commands) {
-        List<String> required = commands.getRequiredParameters();
-        if (required.isEmpty()) {
-            return null;
-        }
-
-        return required.get(0);
+        LatexCommands cmd = PsiUtilKt.firstRequiredParamAsCommand(commands);
+        return cmd == null ? null : cmd.getName();
     }
 
     @Nullable
     private String getDefinitionName(@NotNull LatexCommands commands) {
-        LatexCommands next = TexifyUtil.getNextCommand(commands);
+        LatexCommands next = PsiUtilKt.definitionCommand(commands);
         if (next == null) {
             return null;
         }

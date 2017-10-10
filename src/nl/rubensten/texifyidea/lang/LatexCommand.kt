@@ -9,6 +9,7 @@ import kotlin.reflect.KClass
  * @author Ruben Schellekens, Sten Wessel
  */
 interface LatexCommand : Dependend {
+
     companion object {
 
         /**
@@ -17,13 +18,13 @@ interface LatexCommand : Dependend {
          * @param commandName The command name to look up. Can start with or without `\`
          * @return The found command, or `null` when the command doesn't exist.
          */
-        fun lookup(commandName: String): LatexCommand? {
-            var commandName = commandName
-            if (commandName.startsWith("\\")) {
-                commandName = commandName.substring(1)
+        fun lookup(commandName: String?): LatexCommand? {
+            var result = commandName ?: return null
+            if (result.startsWith("\\")) {
+                result = result.substring(1)
             }
 
-            return LatexMathCommand.get(commandName) ?: LatexNoMathCommand.get(commandName)
+            return LatexMathCommand.get(result) ?: LatexNoMathCommand.get(result)
         }
 
         /**

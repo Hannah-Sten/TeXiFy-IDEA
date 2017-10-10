@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.util
 
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.application.ApplicationManager
 
 /**
@@ -39,3 +40,13 @@ fun Int.toHex(): String = Integer.toHexString(this)
 fun runWriteAction(writeAction: () -> Unit) {
     ApplicationManager.getApplication().runWriteAction(writeAction)
 }
+
+/**
+ * Converts an [IntRange] to [TextRange].
+ */
+fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
+
+/**
+ * Converts a [TextRange] to [IntRange].
+ */
+fun TextRange.toIntRange() = startOffset..endOffset

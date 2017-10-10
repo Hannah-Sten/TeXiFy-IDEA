@@ -33,7 +33,7 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
      * Get all the commands in the fileset of the given file. This fileset includes all included
      * files and indirectly included files (files that include the base file).
      */
-    public static Collection<LatexCommands> getIndexCommandsInFileSet(@NotNull PsiFile baseFile) {
+    public static Collection<LatexCommands> getIndexedCommandsInFileSet(@NotNull PsiFile baseFile) {
         Project project = baseFile.getProject();
         Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFileSet(baseFile).stream()
                 .map(PsiFile::getVirtualFile)
@@ -54,7 +54,7 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
     /**
      * Get all the indexed LaTeX commands in the given file.
      */
-    public static Collection<LatexCommands> getIndexCommands(@NotNull PsiFile file) {
+    public static Collection<LatexCommands> getIndexedCommands(@NotNull PsiFile file) {
         GlobalSearchScope scope = GlobalSearchScope.fileScope(file);
         return getIndexedCommands(file.getProject(), scope);
     }
