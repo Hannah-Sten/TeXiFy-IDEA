@@ -4,7 +4,9 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.psi.PsiFile;
+import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.file.LatexFile;
+import nl.rubensten.texifyidea.insight.InsightGroup;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,25 +18,31 @@ import java.util.List;
  */
 public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
-    private static final String GROUP_DISPLAY_NAME = "TeXiFy";
+    @NotNull
+    public abstract InsightGroup getInspectionGroup();
+
+    @NotNull
+    public abstract String getInspectionId();
 
     @Nls
     @NotNull
     @Override
-    abstract public String getDisplayName();
+    public abstract String getDisplayName();
+
+    @NotNull
+    public abstract List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOntheFly);
 
     @NotNull
     @Override
-    abstract public String getShortName();
-
-    @NotNull
-    abstract List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOntheFly);
+    public String getShortName() {
+        return getInspectionGroup().getPrefix() + getInspectionId();
+    }
 
     @Nls
     @NotNull
     @Override
     public String getGroupDisplayName() {
-        return GROUP_DISPLAY_NAME;
+        return getInspectionGroup().getDisplayName();
     }
 
     @Nullable
@@ -46,5 +54,12 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
         List<ProblemDescriptor> descriptors = inspectFile(file, manager, isOnTheFly);
         return descriptors.toArray(new ProblemDescriptor[descriptors.size()]);
+    }
+
+    /**
+     * Creates an empty list to store problem descriptors in.
+     */
+    protected List<ProblemDescriptor> descriptorList() {
+        return new SmartList<>();
     }
 }

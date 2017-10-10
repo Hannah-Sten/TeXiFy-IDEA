@@ -11,6 +11,7 @@ import nl.rubensten.texifyidea.file.ClassFileType
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.file.StyleFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.lang.Package
 import java.util.*
 import java.util.regex.Pattern
 
@@ -50,6 +51,10 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
+    if (LatexCommandsIndex.getIndexedCommands(this).any { "\\documentclass" == it.name }) {
+        return this
+    }
+
     val inclusions = project.allFileinclusions()
     inclusions.forEach { (file, _) ->
         // For each root, IsChildDFS until found.
@@ -124,7 +129,65 @@ fun PsiFile.isRoot(): Boolean {
 }
 
 /**
+ * @see [TexifyUtil.getFileRelativeTo]
+ */
+fun PsiFile.findRelativeFile(filePath: String) = TexifyUtil.getFileRelativeTo(this, filePath)
+
+/**
+ * Looks for all file inclusions in a given file.
+ *
+ * @return A list containing all included files.
+ */
+fun PsiFile.findInclusions(): List<PsiFile> {
+    val root = findRootFile()
+    return commandsInFile()
+            .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
+            .map { it.requiredParameter(0) }
+            .filter(Objects::nonNull)
+            .map { root.findRelativeFile(it!!) }
+            .filter(Objects::nonNull)
+            .map { it!! }
+}
+
+/**
  * Checks if the file has LaTeX syntax.
  */
 fun PsiFile.isLatexFile() = fileType == LatexFileType.INSTANCE ||
         fileType == StyleFileType.INSTANCE || fileType == ClassFileType.INSTANCE
+
+/**
+ * Checks if the file has a `.sty` extention. This is a workaround for file type checking.
+ */
+fun PsiFile.isStyleFile() = virtualFile.extension == "sty"
+
+/**
+ * Checks if the file has a `.cls` extention. This is a workaround for file type checking.
+ */
+fun PsiFile.isClassFile() = virtualFile.extension == "cls"
+
+/**
+ * Looks up the the that is in the documentclass command.
+ */
+fun PsiFile.documentClassFile(): PsiFile? {
+    val command = commandsInFile().filter { it.name == "\\documentclass" }.getOrNull(0) ?: return null
+    val argument = command.requiredParameter(0) ?: return null
+    return fileRelativeTo("$argument.cls")
+}
+
+/**
+ * Checks if the given package is included in the file set.
+ *
+ * @param packageName
+ *          The name of the package to check for.
+ * @return `true` when there is a package with name `packageName` in the file set, `false` otherwise.
+ */
+fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this).contains(packageName)
+
+/**
+ * Checks if the given package is included into the file set.
+ *
+ * @param `package`
+ *          The package to check for.
+ * @return `true` when there is a package `package` included in the file set, `false` otherwise.
+ */
+fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)

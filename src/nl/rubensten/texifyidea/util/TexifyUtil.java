@@ -6,8 +6,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -20,6 +23,7 @@ import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.index.BibtexIdIndex;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
+import nl.rubensten.texifyidea.index.LatexIncludesIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.*;
@@ -56,7 +60,7 @@ public class TexifyUtil {
 
     // Referenced files.
     private static final List<String> INCLUDE_COMMANDS = Arrays.asList(
-            "\\includeonly", "\\include", "\\input", "\\bibliography"
+            "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage"
     );
     private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
@@ -86,6 +90,8 @@ public class TexifyUtil {
         }
 
         try (PrintWriter writer = new PrintWriter(fileName, "UTF-8")) {
+            new File(fileName).createNewFile();
+            LocalFileSystem.getInstance().refresh(true);
             writer.print(contents);
         }
         catch (IOException e) {
@@ -119,8 +125,7 @@ public class TexifyUtil {
      */
     public static Set<PsiFile> getReferencedFileSet(@NotNull PsiFile psiFile) {
         Project project = psiFile.getProject();
-        GlobalSearchScope scope = GlobalSearchScope.allScope(project);
-        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(project, scope);
+        Collection<LatexCommands> commands = LatexIncludesIndex.getIncludes(project);
 
         // Contains the end result.
         Set<PsiFile> set = new HashSet<>();
@@ -248,9 +253,11 @@ public class TexifyUtil {
     public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path) {
         // Find file
         VirtualFile directory = file.getContainingDirectory().getVirtualFile();
+        String dirPath = directory.getPath();
+
         Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
         if (!fileHuh.isPresent()) {
-            return null;
+            return scanRoots(file, path);
         }
 
         PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
@@ -258,10 +265,35 @@ public class TexifyUtil {
                 (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
                         !StyleFileType.INSTANCE.equals(psiFile.getFileType()) &&
                         !BibtexFileType.INSTANCE.equals(psiFile.getFileType()))) {
-            return null;
+            return scanRoots(file, path);
         }
 
         return psiFile;
+    }
+
+    /**
+     * {@link TexifyUtil#getFileRelativeTo(PsiFile, String)} but then it scans all content roots.
+     *
+     * @param original
+     *         The file where the relative path starts.
+     * @param path
+     *         The path relative to {@code original}.
+     * @return The found file.
+     */
+    public static PsiFile scanRoots(@NotNull PsiFile original, @NotNull String path) {
+        Project project = original.getProject();
+        ProjectRootManager rootManager = ProjectRootManager.getInstance(project);
+        VirtualFile[] roots = rootManager.getContentSourceRoots();
+        VirtualFileManager fileManager = VirtualFileManager.getInstance();
+
+        for (VirtualFile root : roots) {
+            Optional<VirtualFile> fileHuh = findFile(root, path, INCLUDE_EXTENSIONS);
+            if (fileHuh.isPresent()) {
+                return FileUtilKt.psiFile(fileHuh.get(), project);
+            }
+        }
+
+        return null;
     }
 
     public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
@@ -540,7 +572,7 @@ public class TexifyUtil {
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
         // LaTeX
-        Set<String> labels = LatexCommandsIndex.getIndexCommandsInFileSet(file).stream()
+        Set<String> labels = LatexCommandsIndex.getIndexedCommandsInFileSet(file).stream()
                 .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
@@ -699,7 +731,7 @@ public class TexifyUtil {
      */
     public static boolean isCommandKnown(LatexCommands command) {
         String commandName = command.getName().substring(1);
-        return LatexNoMathCommand.get(commandName).isPresent() || LatexMathCommand.get(commandName) != null;
+        return LatexNoMathCommand.get(commandName) != null || LatexMathCommand.get(commandName) != null;
     }
 
     /**

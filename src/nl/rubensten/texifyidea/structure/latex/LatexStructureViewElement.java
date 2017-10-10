@@ -14,9 +14,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.file.BibtexFileType;
-import nl.rubensten.texifyidea.file.LatexFile;
-import nl.rubensten.texifyidea.file.LatexFileType;
-import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
@@ -100,7 +98,8 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     @NotNull
     @Override
     public TreeElement[] getChildren() {
-        if (!(element instanceof LatexFile)) {
+        if (!(element instanceof LatexFile) && !(element instanceof StyleFile) &&
+                !(element instanceof ClassFile)) {
             return EMPTY_ARRAY;
         }
 
@@ -189,6 +188,24 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
     }
 
     private void addIncludes(List<TreeElement> treeElements, List<LatexCommands> commands) {
+        // Include documentclass.
+        if (!commands.isEmpty()) {
+            PsiFile baseFile = commands.get(0).getContainingFile();
+            PsiFile root = FileUtilKt.findRootFile(baseFile);
+            PsiFile documentClass = FileUtilKt.documentClassFile(root);
+            if (documentClass != null) {
+                LatexCommands command = LatexCommandsIndex.getIndexedCommands(baseFile).stream()
+                        .filter(cmd -> "\\documentclass".equals(cmd.getName()))
+                        .findFirst().orElse(null);
+                if (command != null) {
+                    LatexStructureViewCommandElement elt = new LatexStructureViewCommandElement(command);
+                    elt.addChild(new LatexStructureViewElement(documentClass));
+                    treeElements.add(elt);
+                }
+            }
+        }
+
+        // Scan for normal includes.
         for (LatexCommands cmd : commands) {
             String name = cmd.getCommandToken().getText();
             if (!name.equals("\\include") && !name.equals("\\includeonly") && !name.equals("\\input")
@@ -202,11 +219,11 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             }
 
             // Find file
-            Optional<LatexNoMathCommand> latexCommandHuh = LatexNoMathCommand.get(name.substring(1));
-            if (!latexCommandHuh.isPresent()) {
+            LatexNoMathCommand latexCommandHuh = LatexNoMathCommand.get(name.substring(1));
+            if (latexCommandHuh == null) {
                 continue;
             }
-            RequiredFileArgument argument = latexCommandHuh.get()
+            RequiredFileArgument argument = latexCommandHuh
                     .getArgumentsOf(RequiredFileArgument.class)
                     .get(0);
 

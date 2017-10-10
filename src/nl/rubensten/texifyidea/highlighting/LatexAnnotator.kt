@@ -3,17 +3,62 @@ package nl.rubensten.texifyidea.highlighting
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
-import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.inDirectEnvironmentContext
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Ruben Schellekens
  */
 open class LatexAnnotator : Annotator {
+
+    companion object {
+
+        /**
+         * The maximum amount of times the cache may be used before doing another lookup.
+         */
+        private val MAX_CACHE_COUNT = 40
+    }
+
+    // Cache to prevent many PsiFile#isUsed and PsiFile#definitions() lookups.
+    private var definitionCache: Collection<LatexCommands>? = null
+    private var definitionCacheFile: PsiFile? = null
+    private var definitionCacheCount: Int = 0
+
+    /**
+     * Looks up all the definitions in the file set.
+     *
+     * It does cache all the definitions for [MAX_CACHE_COUNT] lookups.
+     * See also members [definitionCache], [definitionCacheFile], and [definitionCacheCount]
+     */
+    private fun PsiFile.definitionCache(): Collection<LatexCommands> {
+        // Initialise.
+        if (definitionCache == null) {
+            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
+            definitionCacheFile = this
+            definitionCacheCount = 0
+            return definitionCache!!
+        }
+
+        // Check if the file is the same.
+        if (definitionCacheFile != this) {
+            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
+            definitionCacheCount = 0
+            definitionCacheFile = this
+        }
+
+        // Re-evaluate after the count has been reached times.
+        if (++definitionCacheCount > MAX_CACHE_COUNT) {
+            definitionCache = definitionsAndRedefinitionsInFileSet().filter { it.isEnvironmentDefinition() }
+            definitionCacheCount = 0
+        }
+
+        return definitionCache!!
+    }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
         // Comments
@@ -27,11 +72,17 @@ open class LatexAnnotator : Annotator {
         else if (psiElement is LatexInlineMath) {
             annotateInlineMath(psiElement, annotationHolder)
         }
-        else if (psiElement is LatexDisplayMath) {
+        else if (psiElement is LatexDisplayMath ||
+                (psiElement is LatexEnvironment && psiElement.isContext(Environment.Context.MATH))) {
             annotateDisplayMath(psiElement, annotationHolder)
-        }
-        else if (psiElement.inDirectEnvironmentContext(Environment.Context.MATH)) {
-            annotateDisplayMath(psiElement, annotationHolder)
+
+            // Begin/End commands
+            if (psiElement is LatexEnvironment) {
+                val ann1 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.beginCommand.textOffset, 6), null)
+                ann1.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
+                val ann2 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.endCommand.textOffset, 4), null)
+                ann2.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
+            }
         }
         // Optional parameters
         else if (psiElement is LatexOptionalParam) {
@@ -75,6 +126,12 @@ open class LatexAnnotator : Annotator {
      * Annotates the given comment.
      */
     private fun annotateComment(comment: PsiElement, annotationHolder: AnnotationHolder) {
+        val file = comment.containingFile
+        val hasDefinition = file.definitionCache().any { it.requiredParameter(0) == "comment" }
+        if (hasDefinition) {
+            return
+        }
+
         val annotation = annotationHolder.createInfoAnnotation(comment, null)
         annotation.textAttributes = LatexSyntaxHighlighter.COMMENT
     }
@@ -111,7 +168,7 @@ open class LatexAnnotator : Annotator {
                 continue
             }
 
-            val noMathContent = element.noMathContent ?: continue
+            val noMathContent = element.noMathContent
             val toStyle = noMathContent.normalText ?: continue
             val annotation = annotationHolder.createInfoAnnotation(toStyle, null)
             annotation.textAttributes = LatexSyntaxHighlighter.OPTIONAL_PARAM

@@ -9,15 +9,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.psi.LatexEnvironmentContent
 import nl.rubensten.texifyidea.psi.LatexMathContent
-import nl.rubensten.texifyidea.psi.LatexMathEnvironment
 import nl.rubensten.texifyidea.psi.LatexNoMathContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.psi.LatexTypes.*
-import nl.rubensten.texifyidea.util.firstChildOfType
-import nl.rubensten.texifyidea.util.hasParent
-import nl.rubensten.texifyidea.util.lastChildOfType
-import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
+import nl.rubensten.texifyidea.util.*
 import java.util.regex.Pattern
 
 /**
@@ -65,18 +62,19 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         return exit@ when (element) {
             is PsiWhiteSpace -> {
                 // When the whitespace is the end of a math environment.
-                val sibling = element.previousSiblingIgnoreWhitespace()
-                if (sibling != null) {
-                    if (sibling is LatexMathContent) {
-                        val last = sibling.lastChildOfType(LatexNoMathContent::class)
-                        return@exit last?.normalText ?: last?.firstChildOfType(LatexNormalText::class)
+                val sibling = element.previousSiblingIgnoreWhitespace() ?: return@exit element.parentOfType(LatexNormalText::class)
+                when (sibling) {
+                    is LatexMathContent, is LatexEnvironmentContent -> {
+                        return@exit sibling.lastChildOfType(LatexNoMathContent::class)
+                                ?.firstChildOfType(LatexNormalText::class)
                     }
-                    else {
+                    is LeafPsiElement -> {
+                        return@exit sibling.parentOfType(LatexNormalText::class)
+                    }
+                    else -> {
                         return@exit sibling.firstChildOfType(LatexNormalText::class)
                     }
                 }
-
-                return@exit null
             }
             is PsiComment -> {
                 // When for some reason people want to insert it directly before a comment.
@@ -91,6 +89,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                         val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return@exit null
                         return@exit sibling.firstChildOfType(LatexNormalText::class)
                     }
+                    INLINE_MATH_END -> {
+                        // At the end of inline math.
+                        val mathContent = element.previousSiblingIgnoreWhitespace() as? LatexMathContent ?: return@exit null
+                        val noMathContent = mathContent.lastChildOfType(LatexNoMathContent::class) ?: return@exit null
+                        return@exit noMathContent.firstChildOfType(LatexNormalText::class)
+                    }
                     else -> {
                         // When a character is inserted just before the close brace of a group/inline math end.
                         val content = element.prevSibling ?: return@exit null
@@ -104,7 +108,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
     private fun handleNormalText(normalText: LatexNormalText, editor: Editor, char: Char) {
         // Check if in math environment.
-        if (!normalText.hasParent(LatexMathEnvironment::class)) {
+        if (!normalText.inMathContext()) {
             return
         }
 

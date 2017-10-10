@@ -17,12 +17,12 @@ open class IsChildDFS<Node>(
         /**
          * Function that gets all the children of a certain node.
          */
-        val children: (Node) -> Collection<Node>,
+        inline val children: (Node) -> Collection<Node>,
 
         /**
          * Function that tests of the given node is the end node.
          */
-        val isGoal: (Node) -> Boolean
+        inline val isGoal: (Node) -> Boolean
 ) {
 
     open fun execute(): Boolean {

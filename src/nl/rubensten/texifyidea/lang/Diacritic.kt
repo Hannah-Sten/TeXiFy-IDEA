@@ -1,17 +1,24 @@
 package nl.rubensten.texifyidea.lang
 
 /**
- *
  * @author Sten Wessel
  */
 interface Diacritic {
 
     companion object {
+
         fun buildChain(base: String, diacritics: List<Diacritic?>): String? {
             if (diacritics.contains(null)) {
                 return null
             }
             return diacritics.fold(base, { s, d -> d!!.buildCommand(s) })
+        }
+
+        fun allValues(): List<Diacritic> {
+            val list: MutableList<Diacritic> = ArrayList()
+            list.addAll(Normal.values())
+            list.addAll(Math.values())
+            return list
         }
     }
 
@@ -44,7 +51,9 @@ interface Diacritic {
         DOUBLE_TIE("\u0361", "\\t", true);
 
         companion object {
+
             fun fromUnicode(unicode: String) = Normal.values().find { it.unicode == unicode }
+
             fun fromCommand(command: String) = Normal.values().find { it.command == command }
         }
 

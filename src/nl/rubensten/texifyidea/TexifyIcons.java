@@ -12,6 +12,13 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon LATEX_FILE_BIG = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/latex-file-big.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon LATEX_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/latex-file.png"
     );

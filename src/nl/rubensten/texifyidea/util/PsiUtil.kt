@@ -77,14 +77,15 @@ fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
-    val children = this.children
-    for (i in children.size - 1 downTo 0) {
-        val child = children[i]
+    for (child in children.reversedArray()) {
         if (clazz.java.isAssignableFrom(child.javaClass)) {
             return child as? T
         }
 
-        return child.firstChildOfType(clazz)
+        val last = child.lastChildOfType(clazz)
+        if (last != null) {
+            return last
+        }
     }
 
     return null
@@ -274,9 +275,9 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommands(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexCommandsInFileSet]
+ * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommandsInFileSet(this)
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommandsInFileSet(this)
 
 /**
  * @see TexifyUtil.getFileRelativeTo
@@ -298,9 +299,112 @@ fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(th
  */
 fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
 
+/**
+ * Get all the definitions in the file.
+ */
+fun PsiFile.definitions(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexedCommands(this)
+            .filter { it.isDefinition() }
+}
+
+/**
+ * Get all the definitions and redefinitions in the file.
+ */
+fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexedCommands(this)
+            .filter { it.isDefinitionOrRedefinition() }
+}
+
+/**
+ * Get all the definitions in the file set.
+ */
+fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
+            .filter { it.isDefinition() }
+}
+
+/**
+ * Get all the definitions and redefinitions in the file set.
+ */
+fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
+    // TODO: To be replaced with a call to future definition index.
+    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
+            .filter { it.isDefinitionOrRedefinition() }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Checks whether the given LaTeX commands is a (re)definition or not.
+ *
+ * This is either a command definition or an environment (re)definition.
+ *
+ * @return `true` if the command is an environment (re)definition or a command (re)definition, `false` when the command is
+ *         `null` or otherwise.
+ */
+fun LatexCommands?.isDefinitionOrRedefinition(): Boolean {
+    return this != null && ("\\newcommand" == name ||
+            "\\let" == name ||
+            "\\def" == name ||
+            "\\DeclareMathOperator" == name ||
+            "\\newenvironment" == name ||
+            "\\renewcommand" == name ||
+            "\\renewenvironment" == name)
+}
+
+/**
+ * Checks whether the given LaTeX commands is a definition or not.
+ *
+ * This is either a command definition or an environment definition. Does not count redefinitions.
+ *
+ * @return `true` if the command is an environment definition or a command definition, `false` when the command is
+ *         `null` or otherwise.
+ */
+fun LatexCommands?.isDefinition(): Boolean {
+    return this != null && ("\\newcommand" == name ||
+            "\\let" == name ||
+            "\\def" == name ||
+            "\\DeclareMathOperator" == name ||
+            "\\newenvironment" == name)
+}
+
+/**
+ * Checks whether the given LaTeX commands is a command definition or not.
+ *
+ * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
+ */
+fun LatexCommands?.isCommandDefinition(): Boolean {
+    return this != null && ("\\newcommand" == name ||
+            "\\let" == name ||
+            "\\def" == name ||
+            "\\DeclareMathOperator" == name ||
+            "\\renewcommand" == name)
+}
+
+/**
+ * Checks whether the given LaTeX commands is an environment definition or not.
+ *
+ * @return `true` if the command is an environment definition, `false` when the command is `null` or otherwise.
+ */
+fun LatexCommands?.isEnvironmentDefinition(): Boolean {
+    return this != null && ("\\newenvironment" == name ||
+            "\\renewenvironment" == name)
+}
+
+/**
+ * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
+ */
+fun LatexCommands.firstRequiredParamAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+
+/**
+ * Get the command that gets defined by a definition (`\let` or `\def` command).
+ */
+fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
 
 /**
  * @see TexifyUtil.getNextCommand
@@ -310,7 +414,15 @@ fun LatexCommands.nextCommand(): LatexCommands? = TexifyUtil.getNextCommand(this
 /**
  * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
  */
-fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+
+/**
+ * Get the name of the command that is defined by `this` command.
+ */
+fun LatexCommands.definedCommandName() = when (name) {
+    "\\DeclareMathOperator", "\\newcommand" -> forcedFirstRequiredParameterAsCommand()?.name
+    else -> definitionCommand()?.name
+}
 
 /**
  * @see TexifyUtil.isCommandKnown
@@ -323,14 +435,7 @@ fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
  * @param element
  *              Either a [LatexBeginCommand] or a [LatexEndCommand]
  */
-private fun beginOrEndEnvironmentName(element: PsiElement): String? {
-    val children = element.childrenOfType(LatexNormalText::class)
-    if (children.isEmpty()) {
-        return null
-    }
-
-    return children.first().text
-}
+private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexNormalText::class)?.text
 
 /**
  * Get the `index+1`th required parameter of the command.
@@ -350,6 +455,16 @@ fun LatexCommands.requiredParameter(index: Int): String? {
 }
 
 /**
+ * Finds the indentation of the line where the section command starts.
+ */
+fun LatexCommands.findIndentation(): String {
+    val file = containingFile
+    val document = file.document() ?: return ""
+    val lineNumber = document.getLineNumber(textOffset)
+    return document.lineIndentation(lineNumber)
+}
+
+/**
  * @see TexifyUtil.isEntryPoint
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
@@ -359,6 +474,15 @@ fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
  */
 fun LatexEnvironment.name(): LatexNormalText? {
     return firstChildOfType(LatexNormalText::class)
+}
+
+/**
+ * Checks if the environment contains the given context.
+ */
+fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
+    val name = name()?.text ?: return false
+    val environment = Environment[name] ?: return false
+    return environment.context == context
 }
 
 /**
@@ -380,3 +504,8 @@ fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
  * Finds the [LatexBeginCommand] that matches the end command.
  */
 fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(LatexBeginCommand::class)
+
+/**
+ * Checks if the latex content objects is a display math environment.
+ */
+fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null

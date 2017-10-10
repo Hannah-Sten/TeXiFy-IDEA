@@ -10,10 +10,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.*
-import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.grandparent
-import nl.rubensten.texifyidea.util.psiFile
-import nl.rubensten.texifyidea.util.referencedFiles
+import nl.rubensten.texifyidea.util.*
 import java.util.regex.Pattern
 import javax.swing.JLabel
 import javax.swing.SwingConstants
@@ -32,11 +29,18 @@ open class WordCountAction : AnAction(
         /**
          * Commands that should be ignored by the word counter.
          */
-        private val IGNORE_COMMANDS = listOf(
+        private val IGNORE_COMMANDS = setOf(
                 "\\usepackage", "\\documentclass", "\\label", "\\linespread", "\\ref", "\\cite", "\\eqref", "\\nameref",
                 "\\autoref", "\\fullref", "\\pageref", "\\newcounter", "\\newcommand", "\\renewcommand",
                 "\\setcounter", "\\resizebox", "\\includegraphics", "\\include", "\\input", "\\refstepcounter",
-                "\\counterwithins"
+                "\\counterwithins", "\\RequirePackage"
+        )
+
+        /**
+         * List of all environments that must be ignored.
+         */
+        private val IGNORE_ENVIRONMENTS = setOf(
+                "tikzpicture", "thebibliography"
         )
 
         /**
@@ -165,7 +169,8 @@ open class WordCountAction : AnAction(
         val set: MutableSet<PsiElement> = HashSet()
 
         for (word in words) {
-            if (isWrongCommand(word) || isOptionalParameter(word) || isEnvironmentMarker(word) || isPunctuation(word)) {
+            if (isWrongCommand(word) || isOptionalParameter(word) || isEnvironmentMarker(word) || isPunctuation(word)
+                    || isInWrongEnvironment(word) || isInMath(word)) {
                 continue
             }
 
@@ -173,6 +178,20 @@ open class WordCountAction : AnAction(
         }
 
         return set
+    }
+
+    /**
+     * Checks if the word is in inline math mode or not.
+     */
+    private fun isInMath(word: PsiElement): Boolean {
+        return word.inMathContext()
+    }
+
+    /**
+     * Checks if the given word is in an environment that must be ignored.
+     */
+    private fun isInWrongEnvironment(word: PsiElement): Boolean {
+        return word.inDirectEnvironment(IGNORE_ENVIRONMENTS)
     }
 
     /**

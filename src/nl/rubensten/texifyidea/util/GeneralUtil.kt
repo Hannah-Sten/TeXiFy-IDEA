@@ -47,6 +47,11 @@ fun runWriteAction(writeAction: () -> Unit) {
 }
 
 /**
- * Converts the int range to a text range.
+ * Converts an [IntRange] to [TextRange].
  */
-fun IntRange.toTextRange() = TextRange(start, endInclusive)
+fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
+
+/**
+ * Converts a [TextRange] to [IntRange].
+ */
+fun TextRange.toIntRange() = startOffset..endOffset

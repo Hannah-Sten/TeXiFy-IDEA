@@ -13,7 +13,7 @@ enum class DefaultEnvironment(
         override val environmentName: String,
         override val initialContents: String = "",
         override val context: Context = Context.NORMAL,
-        val `package`: Package = Package.DEFAULT
+        override val dependency: Package = Package.DEFAULT
 ) : Environment {
 
     // Vanilla LaTeX
@@ -21,7 +21,7 @@ enum class DefaultEnvironment(
     ALLTT(environmentName = "alltt"),
     CENTER(environmentName = "center"),
     DESCRIPTION(environmentName = "description", initialContents = "\\item "),
-    DISPLAYMATH(environmentName = "displaymath"),
+    DISPLAYMATH(environmentName = "displaymath", context = Context.MATH),
     DOCUMENT(environmentName = "document"),
     ENUMERATE(environmentName = "enumerate", initialContents = "\\item "),
     EQUATION(environmentName = "equation", context = Context.MATH),
@@ -65,22 +65,22 @@ enum class DefaultEnvironment(
     VERSE(environmentName = "verse"),
 
     // amsmath
-    ALIGN(environmentName = "align", context = Context.MATH, `package` = Package.AMSMATH),
-    ALIGN_STAR(environmentName = "align*", context = Context.MATH, `package` = Package.AMSMATH),
-    ALIGNAT(environmentName = "alignat", context = Context.MATH, `package` = Package.AMSMATH),
-    ALIGNAT_STAR(environmentName = "alignat*", context = Context.MATH, `package` = Package.AMSMATH),
-    FLALIGN(environmentName = "flalign", context = Context.MATH, `package` = Package.AMSMATH),
-    FLALIGN_STAR(environmentName = "flalign*", context = Context.MATH, `package` = Package.AMSMATH),
-    GATHER(environmentName = "gather", context = Context.MATH, `package` = Package.AMSMATH),
-    GATHER_STAR(environmentName = "gather*", context = Context.MATH, `package` = Package.AMSMATH),
-    MULTLINE(environmentName = "multline", context = Context.MATH, `package` = Package.AMSMATH),
-    MULTLINE_STAR(environmentName = "multline*", context = Context.MATH, `package` = Package.AMSMATH),
-    SPLIT(environmentName = "split", context = Context.MATH, `package` = Package.AMSMATH),
-    SPLIT_STAR(environmentName = "split*", context = Context.MATH, `package` = Package.AMSMATH),
-    CASES(environmentName = "cases", context = Context.MATH, `package` = Package.AMSMATH),
+    ALIGN(environmentName = "align", context = Context.MATH, dependency = Package.AMSMATH),
+    ALIGN_STAR(environmentName = "align*", context = Context.MATH, dependency = Package.AMSMATH),
+    ALIGNAT(environmentName = "alignat", context = Context.MATH, dependency = Package.AMSMATH),
+    ALIGNAT_STAR(environmentName = "alignat*", context = Context.MATH, dependency = Package.AMSMATH),
+    FLALIGN(environmentName = "flalign", context = Context.MATH, dependency = Package.AMSMATH),
+    FLALIGN_STAR(environmentName = "flalign*", context = Context.MATH, dependency = Package.AMSMATH),
+    GATHER(environmentName = "gather", context = Context.MATH, dependency = Package.AMSMATH),
+    GATHER_STAR(environmentName = "gather*", context = Context.MATH, dependency = Package.AMSMATH),
+    MULTLINE(environmentName = "multline", context = Context.MATH, dependency = Package.AMSMATH),
+    MULTLINE_STAR(environmentName = "multline*", context = Context.MATH, dependency = Package.AMSMATH),
+    SPLIT(environmentName = "split", context = Context.MATH, dependency = Package.AMSMATH),
+    SPLIT_STAR(environmentName = "split*", context = Context.MATH, dependency = Package.AMSMATH),
+    CASES(environmentName = "cases", context = Context.MATH, dependency = Package.AMSMATH),
 
     // comment
-    COMMENT(environmentName = "comment", context = Context.COMMENT, `package` = Package.COMMENT);
+    COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT);
 
     companion object {
 
@@ -111,5 +111,4 @@ enum class DefaultEnvironment(
         operator fun get(name: String): DefaultEnvironment? = lookup[name]
     }
 
-    override fun getDependency(): Package = `package`
 }

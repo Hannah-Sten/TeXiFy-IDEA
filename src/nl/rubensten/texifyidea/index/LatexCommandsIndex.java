@@ -9,6 +9,7 @@ import com.intellij.psi.stubs.StubIndex;
 import com.intellij.psi.stubs.StubIndexKey;
 import com.intellij.util.ArrayUtil;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,12 +33,20 @@ public class LatexCommandsIndex extends StringStubIndexExtension<LatexCommands> 
      * Get all the commands in the fileset of the given file. This fileset includes all included
      * files and indirectly included files (files that include the base file).
      */
-    public static Collection<LatexCommands> getIndexCommandsInFileSet(@NotNull PsiFile baseFile) {
+    public static Collection<LatexCommands> getIndexedCommandsInFileSet(@NotNull PsiFile baseFile) {
         Project project = baseFile.getProject();
         Set<VirtualFile> searchFiles = TexifyUtil.getReferencedFileSet(baseFile).stream()
                 .map(PsiFile::getVirtualFile)
                 .collect(Collectors.toSet());
         searchFiles.add(baseFile.getVirtualFile());
+
+        // Add document class
+        PsiFile root = FileUtilKt.findRootFile(baseFile);
+        PsiFile documentClass = FileUtilKt.documentClassFile(root);
+        if (documentClass != null) {
+            searchFiles.add(documentClass.getVirtualFile());
+        }
+
         GlobalSearchScope scope = GlobalSearchScope.filesScope(project, searchFiles);
         return LatexCommandsIndex.getIndexedCommands(project, scope);
     }

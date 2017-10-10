@@ -1,0 +1,82 @@
+package nl.rubensten.texifyidea.inspections.latex
+
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.insight.InsightGroup
+import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexRequiredParam
+import nl.rubensten.texifyidea.structure.LatexStructureViewElement
+import nl.rubensten.texifyidea.util.*
+import java.util.regex.Pattern
+import kotlin.reflect.jvm.internal.impl.utils.SmartList
+
+/**
+ * @author Ruben Schellekens
+ */
+open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
+
+    companion object {
+
+        val LEADING_TRAILING_WHITESPACE = Pattern.compile("(^(\\s+).*(\\s*)\$)|(^(\\s*).*(\\s+)\$)")!!
+    }
+
+    override fun getInspectionGroup() = InsightGroup.LATEX
+
+    override fun getInspectionId() = "TrimWhitespace"
+
+    override fun getDisplayName() = "Unnecessary whitespace in section commands"
+
+    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
+        val descriptors = SmartList<ProblemDescriptor>()
+
+        val commands = file.commandsInFile()
+        for (cmd in commands) {
+            if (cmd.name !in LatexStructureViewElement.SECTION_MARKERS) {
+                continue
+            }
+
+            val sectionName = cmd.firstChildOfType(LatexRequiredParam::class)?.group?.text?.trimRange(1, 1) ?: continue
+            if (!LEADING_TRAILING_WHITESPACE.matcher(sectionName).matches()) {
+                continue
+            }
+
+            val name = cmd.name ?: cmd.commandToken.text
+            descriptors.add(manager.createProblemDescriptor(
+                    cmd,
+                    TextRange.from(name.length + 1, sectionName.length),
+                    "Unnecessary whitespace",
+                    ProblemHighlightType.WEAK_WARNING,
+                    isOntheFly,
+                    TrimFix()
+            ))
+        }
+
+        return descriptors
+    }
+
+    /**
+     * @author Ruben SChellekens
+     */
+    private class TrimFix : LocalQuickFix {
+
+        override fun getFamilyName() = "Trim whitespace"
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val command = descriptor.psiElement as LatexCommands
+            val document = command.containingFile.document() ?: return
+            val param = command.firstChildOfType(LatexRequiredParam::class) ?: return
+
+            val start = param.textOffset + 1
+            val end = param.endOffset() - 1
+
+            val newString = document.getText(TextRange(start, end)).trim()
+            document.replaceString(start, end, newString)
+        }
+    }
+}
