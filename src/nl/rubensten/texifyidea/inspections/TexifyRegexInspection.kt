@@ -31,7 +31,7 @@ abstract class TexifyRegexInspection(
         /**
          * The short name of the inspection (same name as the html info file.
          */
-        val inspectionShortName: String,
+        val myInspectionId: String,
 
         /**
          * The regex pattern that targets the text for the inspection.
@@ -107,7 +107,7 @@ abstract class TexifyRegexInspection(
     }
 
     override fun getDisplayName() = inspectionDisplayName
-    override fun getInspectionId() = inspectionShortName
+    override fun getInspectionId() = myInspectionId
     override fun getInspectionGroup() = group
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {

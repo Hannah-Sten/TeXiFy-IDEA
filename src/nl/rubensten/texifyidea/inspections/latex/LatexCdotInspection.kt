@@ -8,7 +8,7 @@ import java.util.regex.Pattern
  */
 open class LatexCdotInspection : TexifyRegexInspection(
         inspectionDisplayName = "Use of . instead of \\cdot",
-        inspectionShortName = "Cdot",
+        myInspectionId = "Cdot",
         errorMessage = { "\\cdot expected" },
         pattern = Pattern.compile("\\s+(\\.)\\s+"),
         mathMode = true,

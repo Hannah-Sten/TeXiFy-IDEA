@@ -388,6 +388,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
                          groupName="LaTeX" displayName="Gather equations"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMakeatletterInspection"
+                         groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>

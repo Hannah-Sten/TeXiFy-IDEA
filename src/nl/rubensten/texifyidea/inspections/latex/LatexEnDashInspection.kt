@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  */
 open class LatexEnDashInspection : TexifyRegexInspection(
         inspectionDisplayName = "En dash in number ranges",
-        inspectionShortName = "EnDash",
+        myInspectionId = "EnDash",
         errorMessage = { "En dash expected" },
         pattern = Pattern.compile("(?<![0-9\\-])([0-9]+)\\s*[\\- ]+\\s*([0-9]+)(?=[^0-9\\-])")!!,
         quickFixName = { "Convert to en dash" },

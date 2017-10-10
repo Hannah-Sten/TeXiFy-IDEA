@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  */
 open class LatexRedundantParInspection : TexifyRegexInspection(
         inspectionDisplayName = "Redundant use of \\par",
-        inspectionShortName = "RedundantPar",
+        myInspectionId = "RedundantPar",
         errorMessage = { "Use of \\par is redundant here" },
         pattern = Pattern.compile("((\\s*\\n\\s*\\n\\s*(\\\\par))|(\\n\\s*(\\\\par)\\s*\\n)|((\\\\par)\\s*\\n\\s*\\n))"),
         replacement = { _, _ -> "" },

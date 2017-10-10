@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  */
 open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         inspectionDisplayName = "Use the matching amssymb symbol for inequalities",
-        inspectionShortName = "ExtremeInequality",
+        myInspectionId = "ExtremeInequality",
         errorMessage = { "Use the amssymb symbol instead." },
         pattern = Pattern.compile("(<\\s*<(?!\\s*<))|(<\\s*<\\s*<)|(>\\s*>(?!\\s*>))|(>\\s*>\\s*>)"),
         mathMode = true,

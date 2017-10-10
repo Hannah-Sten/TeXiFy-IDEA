@@ -8,7 +8,7 @@ import java.util.regex.Pattern
  */
 open class LatexXInsteadOfTimesInspection : TexifyRegexInspection(
         inspectionDisplayName = "Use of x instead of \\times",
-        inspectionShortName = "XInsteadOfTimes",
+        myInspectionId = "XInsteadOfTimes",
         errorMessage = { "\\times expected" },
         pattern = Pattern.compile("[0-9]\\s+(x)\\s+[0-9]"),
         mathMode = true,

@@ -19,7 +19,7 @@ import java.util.regex.Pattern
  */
 open class LatexDiacriticIJInspection : TexifyRegexInspection(
         inspectionDisplayName = "Dotless versions of i and j should be used with diacritics",
-        inspectionShortName = "DiacriticIJ",
+        myInspectionId = "DiacriticIJ",
         highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
         errorMessage = { "Diacritic must be placed upon a dotless ${letter(it)}" },
         pattern = Pattern.compile("(${Diacritic.allValues().joinToString("|") {
