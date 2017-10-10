@@ -380,20 +380,31 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NORMAL_TEXT_WORD+
+  // (NORMAL_TEXT_WORD | STAR)+
   public static boolean normal_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text")) return false;
-    if (!nextTokenIs(b, NORMAL_TEXT_WORD)) return false;
+    if (!nextTokenIs(b, "<normal text>", NORMAL_TEXT_WORD, STAR)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, NORMAL_TEXT_WORD);
+    Marker m = enter_section_(b, l, _NONE_, NORMAL_TEXT, "<normal text>");
+    r = normal_text_0(b, l + 1);
     int c = current_position_(b);
     while (r) {
-      if (!consumeToken(b, NORMAL_TEXT_WORD)) break;
+      if (!normal_text_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "normal_text", c)) break;
       c = current_position_(b);
     }
-    exit_section_(b, m, NORMAL_TEXT, r);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // NORMAL_TEXT_WORD | STAR
+  private static boolean normal_text_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "normal_text_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, NORMAL_TEXT_WORD);
+    if (!r) r = consumeToken(b, STAR);
+    exit_section_(b, m, null, r);
     return r;
   }
 
