@@ -12,10 +12,9 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.util.TexifyUtil
-import nl.rubensten.texifyidea.util.createExcludedDir
-import nl.rubensten.texifyidea.util.psiFile
-import nl.rubensten.texifyidea.util.referencedFiles
+import nl.rubensten.texifyidea.TeXception
+import nl.rubensten.texifyidea.util.*
+import org.jetbrains.concurrency.runAsync
 import java.io.File
 
 /**
@@ -28,7 +27,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, val runConfi
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
-        val command: List<String>  = compiler.getCommand(runConfig, environment.project) ?: throw ExecutionException("Compile command could not be created.")
+        val command: List<String> = compiler.getCommand(runConfig, environment.project) ?: throw ExecutionException("Compile command could not be created.")
 
         createOutDirs(mainFile)
 
@@ -38,9 +37,28 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, val runConfi
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
 
-        // Open Sumatra after compilation
+        // Open Sumatra after compilation & execute inverse search.
         if (SystemInfo.isWindows) {
             handler.addProcessListener(OpenSumatraListener(runConfig))
+
+            // Inverse search.
+            run {
+                val psiFile = runConfig.mainFile.psiFile(environment.project) ?: return@run
+                val document = psiFile.document() ?: return@run
+                val editor = psiFile.openedEditor() ?: return@run
+                val line = document.getLineNumber(editor.caretModel.offset) + 1
+
+                runAsync {
+                    try {
+                        // Wait for sumatra pdf to start. 500ms should be plenty.
+                        // Otherwise the person is out of luck ¯\_(ツ)_/¯
+                        Thread.sleep(500)
+                        SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line)
+                    }
+                    catch (ignored: TeXception) {
+                    }
+                }
+            }
         }
 
         return handler
@@ -64,7 +82,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, val runConfi
         val files: Set<PsiFile>
         try {
             files = mainFile.psiFile(environment.project)?.referencedFiles() ?: emptySet()
-        } catch (e: IndexNotReadyException) {
+        }
+        catch (e: IndexNotReadyException) {
             throw ExecutionException("Please wait until the indices are built.", e)
         }
 
