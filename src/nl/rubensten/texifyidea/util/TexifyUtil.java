@@ -59,10 +59,10 @@ public class TexifyUtil {
     }
 
     // Referenced files.
-    private static final List<String> INCLUDE_COMMANDS = Arrays.asList(
+    public static final List<String> INCLUDE_COMMANDS = Arrays.asList(
             "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage"
     );
-    private static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
+    public static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
         Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls", "bib");
     }
