@@ -122,7 +122,6 @@ enum class LatexNoMathCommand(
     LISTOFTABLES("listoftables"),
     LISTTABLENAME("listtablename", "name".asRequired(Type.TEXT)),
     LOWERCASE("lowercase", "text".asRequired(Type.TEXT)),
-    MAKEATOTHER("makeatother"),
     MAKEGLOSSARY("makeglossary"),
     MAKEINDEX("makeindex"),
     MAKELABEL("makelabel"),

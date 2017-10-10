@@ -52,7 +52,6 @@ object PackageUtils {
             }
         }
 
-        val preNew: String
         val newlines: String
         val insertLocation: Int
         var postNewlines: String? = null
