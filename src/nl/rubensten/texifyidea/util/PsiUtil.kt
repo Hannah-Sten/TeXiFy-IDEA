@@ -58,14 +58,15 @@ fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
-    val children = this.children
-    for (i in children.size - 1 downTo 0) {
-        val child = children[i]
-        if (child.javaClass.isAssignableFrom(clazz.java)) {
+    for (child in children.reversedArray()) {
+        if (clazz.java.isAssignableFrom(child.javaClass)) {
             return child as? T
         }
 
-        return child.firstChildOfType(clazz)
+        val last = child.lastChildOfType(clazz)
+        if (last != null) {
+            return last
+        }
     }
 
     return null
