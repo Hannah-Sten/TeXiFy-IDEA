@@ -12,6 +12,7 @@ import nl.rubensten.texifyidea.lang.LatexMode
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
+import nl.rubensten.texifyidea.util.firstChildOfType
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inMathContext
 import nl.rubensten.texifyidea.util.parentOfType
@@ -128,6 +129,12 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .inside(BibtexEntry::class.java)
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
+                                val entry = psiElement.parentOfType(BibtexEntry::class)
+                                val type = entry?.firstChildOfType(BibtexType::class)
+                                if (type?.text?.toLowerCase() == "@string") {
+                                    return false
+                                }
+
                                 return psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class);
                             }
                         })
