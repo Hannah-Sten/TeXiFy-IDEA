@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
@@ -279,8 +280,7 @@ fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedText
  * Get all the definitions in the file.
  */
 fun PsiFile.definitions(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getItems(this)
+    return LatexDefinitionIndex.getItems(this)
             .filter { it.isDefinition() }
 }
 
@@ -288,17 +288,14 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
  * Get all the definitions and redefinitions in the file.
  */
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getItems(this)
-            .filter { it.isDefinitionOrRedefinition() }
+    return LatexDefinitionIndex.getItems(this)
 }
 
 /**
  * Get all the definitions in the file set.
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getItemsInFileSet(this)
+    return LatexDefinitionIndex.getItemsInFileSet(this)
             .filter { it.isDefinition() }
 }
 
@@ -306,9 +303,7 @@ fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
  * Get all the definitions and redefinitions in the file set.
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getItemsInFileSet(this)
-            .filter { it.isDefinitionOrRedefinition() }
+    return LatexDefinitionIndex.getItemsInFileSet(this)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

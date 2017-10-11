@@ -19,6 +19,7 @@ import nl.rubensten.texifyidea.completion.handlers.LatexCommandArgumentInsertHan
 import nl.rubensten.texifyidea.completion.handlers.LatexMathInsertHandler;
 import nl.rubensten.texifyidea.completion.handlers.LatexNoMathInsertHandler;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
+import nl.rubensten.texifyidea.index.LatexDefinitionIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.FileUtilKt;
@@ -104,7 +105,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         List<Environment> environments = new ArrayList<>();
         Collections.addAll(environments, DefaultEnvironment.values());
 
-        LatexCommandsIndex.Companion.getItemsInFileSet(parameters.getOriginalFile()).stream()
+        LatexDefinitionIndex.Companion.getItemsInFileSet(parameters.getOriginalFile()).stream()
                 .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
                 .map(cmd -> PsiUtilKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)
