@@ -8,7 +8,7 @@ import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import nl.rubensten.texifyidea.util.documentClassFile
 import nl.rubensten.texifyidea.util.findRootFile
-import nl.rubensten.texifyidea.util.referencedFiles
+import nl.rubensten.texifyidea.util.referencedFileSet
 
 /**
  * @author Ruben Schellekens
@@ -35,7 +35,7 @@ abstract class IndexUtilBase<T : PsiElement>(
     fun getItemsInFileSet(baseFile: PsiFile): Collection<T> {
         // Setup search set.
         val project = baseFile.project
-        val searchFiles = baseFile.referencedFiles()
+        val searchFiles = baseFile.referencedFileSet()
                 .map { it.virtualFile }
                 .toMutableSet()
         searchFiles.add(baseFile.virtualFile)

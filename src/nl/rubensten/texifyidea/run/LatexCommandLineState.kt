@@ -81,7 +81,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, val runConfi
 
         val files: Set<PsiFile>
         try {
-            files = mainFile.psiFile(environment.project)?.referencedFiles() ?: emptySet()
+            files = mainFile.psiFile(environment.project)?.referencedFileSet() ?: emptySet()
         }
         catch (e: IndexNotReadyException) {
             throw ExecutionException("Please wait until the indices are built.", e)

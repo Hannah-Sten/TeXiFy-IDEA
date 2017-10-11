@@ -269,7 +269,7 @@ fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this
 /**
  * @see TexifyUtil.getReferencedFileSet
  */
-fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
+fun PsiFile.referencedFileSet(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
 
 /**
  * Get the editor of the file if it is currently opened.
