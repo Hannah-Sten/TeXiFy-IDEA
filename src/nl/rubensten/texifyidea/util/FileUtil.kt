@@ -51,7 +51,7 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
-    if (LatexCommandsIndex.getIndexedCommands(this).any { "\\documentclass" == it.name }) {
+    if (LatexCommandsIndex.getItems(this).any { "\\documentclass" == it.name }) {
         return this
     }
 
@@ -94,7 +94,7 @@ private fun PsiFile.isIncludedBy(childMaybe: PsiFile, mapping: Map<PsiFile, Set<
  * when `A`↦{`B`,`C`}. Then the files `B` and `C` get included by `A`.
  */
 fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
-    val commands = LatexCommandsIndex.getIndexedCommands(this)
+    val commands = LatexCommandsIndex.getItems(this)
 
     // Maps every file to all the files it includes.
     val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()

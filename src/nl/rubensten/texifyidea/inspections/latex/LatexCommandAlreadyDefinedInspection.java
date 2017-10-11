@@ -52,7 +52,7 @@ public class LatexCommandAlreadyDefinedInspection extends TexifyInspectionBase {
             manager, boolean isOntheFly) {
         List<ProblemDescriptor> descriptors = new SmartList<>();
 
-        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(file);
+        Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
         for (LatexCommands command : commands) {
             // Error when \newcommand is used on existing command
             if ("\\newcommand".equals(command.getName())) {

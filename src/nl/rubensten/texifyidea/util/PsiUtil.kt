@@ -248,12 +248,12 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
 /**
  * @see [LatexCommandsIndex.getIndexedCommands]
  */
-fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommands(this)
+fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 
 /**
  * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommandsInFileSet(this)
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
 
 /**
  * @see TexifyUtil.getFileRelativeTo
@@ -280,7 +280,7 @@ fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedText
  */
 fun PsiFile.definitions(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommands(this)
+    return LatexCommandsIndex.getItems(this)
             .filter { it.isDefinition() }
 }
 
@@ -289,7 +289,7 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
  */
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommands(this)
+    return LatexCommandsIndex.getItems(this)
             .filter { it.isDefinitionOrRedefinition() }
 }
 
@@ -298,7 +298,7 @@ fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
+    return LatexCommandsIndex.getItemsInFileSet(this)
             .filter { it.isDefinition() }
 }
 
@@ -307,7 +307,7 @@ fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
     // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
+    return LatexCommandsIndex.getItemsInFileSet(this)
             .filter { it.isDefinitionOrRedefinition() }
 }
 

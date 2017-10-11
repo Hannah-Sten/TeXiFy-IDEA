@@ -79,10 +79,10 @@ public class LatexCommandsStubElementType extends IStubElementType<LatexCommands
 
     @Override
     public void indexStub(@NotNull LatexCommandsStub latexCommandsStub, @NotNull IndexSink indexSink) {
-        indexSink.occurrence(LatexCommandsIndex.KEY, latexCommandsStub.getCommandToken());
+        indexSink.occurrence(LatexCommandsIndex.Companion.key(), latexCommandsStub.getCommandToken());
 
         if (TexifyUtil.INCLUDE_COMMANDS.contains(latexCommandsStub.getCommandToken())) {
-            indexSink.occurrence(LatexIncludesIndex.KEY, latexCommandsStub.getCommandToken());
+            indexSink.occurrence(LatexIncludesIndex.Companion.key(), latexCommandsStub.getCommandToken());
         }
     }
 

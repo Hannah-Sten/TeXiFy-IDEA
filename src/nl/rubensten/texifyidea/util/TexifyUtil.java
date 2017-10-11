@@ -125,7 +125,7 @@ public class TexifyUtil {
      */
     public static Set<PsiFile> getReferencedFileSet(@NotNull PsiFile psiFile) {
         Project project = psiFile.getProject();
-        Collection<LatexCommands> commands = LatexIncludesIndex.getIncludes(project);
+        Collection<LatexCommands> commands = LatexIncludesIndex.Companion.getItems(project);
 
         // Contains the end result.
         Set<PsiFile> set = new HashSet<>();
@@ -195,7 +195,7 @@ public class TexifyUtil {
      */
     private static void getReferencedFiles(@NotNull PsiFile file, @NotNull Collection<PsiFile> files) {
         GlobalSearchScope scope = GlobalSearchScope.fileScope(file);
-        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(file.getProject(), scope);
+        Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file.getProject(), scope);
 
         for (LatexCommands command : commands) {
             String fileName = getIncludedFile(command);
@@ -567,7 +567,7 @@ public class TexifyUtil {
      * @return A set containing all labels that are defined in the fileset of the given file.
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
-        return LatexCommandsIndex.getIndexedCommandsInFileSet(file).stream()
+        return LatexCommandsIndex.Companion.getItemsInFileSet(file).stream()
                 .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
@@ -583,7 +583,7 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<LatexCommands> findLabels(@NotNull Project project) {
-        return findLabels(LatexCommandsIndex.getIndexedCommands(project));
+        return findLabels(LatexCommandsIndex.Companion.getItems(project));
     }
 
     /**
@@ -594,7 +594,7 @@ public class TexifyUtil {
      * @return A list of label commands.
      */
     public static Collection<LatexCommands> findLabels(@NotNull PsiFile file) {
-        return findLabels(LatexCommandsIndex.getIndexedCommandsInFileSet(file));
+        return findLabels(LatexCommandsIndex.Companion.getItemsInFileSet(file));
     }
 
     /**

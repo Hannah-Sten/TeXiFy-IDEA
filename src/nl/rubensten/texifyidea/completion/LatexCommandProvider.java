@@ -104,7 +104,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         List<Environment> environments = new ArrayList<>();
         Collections.addAll(environments, DefaultEnvironment.values());
 
-        LatexCommandsIndex.getIndexedCommandsInFileSet(parameters.getOriginalFile()).stream()
+        LatexCommandsIndex.Companion.getItemsInFileSet(parameters.getOriginalFile()).stream()
                 .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
                 .map(cmd -> PsiUtilKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)
@@ -156,7 +156,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         searchFiles.add(file.getVirtualFile());
         GlobalSearchScope scope = GlobalSearchScope.filesScope(project, searchFiles);
 
-        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommands(project, scope);
+        Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getItems(project, scope);
 
         for (LatexCommands cmd : cmds) {
             if (!PsiUtilKt.isDefinition(cmd) && !PsiUtilKt.isEnvironmentDefinition(cmd)) {

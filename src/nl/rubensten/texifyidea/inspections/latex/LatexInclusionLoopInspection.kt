@@ -48,7 +48,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
         bfs.execute()
 
         // Look through all commands to see if they include duplicates.
-        val commands = LatexCommandsIndex.getIndexedCommands(file)
+        val commands = LatexCommandsIndex.getItems(file)
         for (cmd in commands) {
             val name = cmd.name
             if ("\\input" != name && "\\include" != name && "\\includeonly" != name) {

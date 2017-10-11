@@ -64,7 +64,7 @@ public class LatexPrimitiveStyleInspection extends TexifyInspectionBase {
             manager, boolean isOntheFly) {
         List<ProblemDescriptor> descriptors = new SmartList<>();
 
-        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(file);
+        Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
         for (LatexCommands command : commands) {
             int index = PRIMITIVES.indexOf(command.getName());
             if (index < 0) {
