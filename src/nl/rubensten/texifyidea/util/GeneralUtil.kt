@@ -4,6 +4,25 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.TextRange
 
 /**
+ * Set containing all commands that redefine functionality.
+ */
+val REDEFINITIONS = setOf(
+        "\\renewcommand",
+        "\\renewenvironment"
+)
+
+/**
+ * Set containing all commands that define functionality.
+ */
+val DEFINITIONS = setOf(
+        "\\newcommand",
+        "\\let",
+        "\\def",
+        "\\DeclareMathOperator",
+        "\\newenvironment"
+)
+
+/**
  * Prints the object in default string presentation to the console.
  */
 fun Any.print() = print(this)

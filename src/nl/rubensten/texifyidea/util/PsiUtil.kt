@@ -323,15 +323,7 @@ fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
  * @return `true` if the command is an environment (re)definition or a command (re)definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinitionOrRedefinition(): Boolean {
-    return this != null && ("\\newcommand" == name ||
-            "\\let" == name ||
-            "\\def" == name ||
-            "\\DeclareMathOperator" == name ||
-            "\\newenvironment" == name ||
-            "\\renewcommand" == name ||
-            "\\renewenvironment" == name)
-}
+fun LatexCommands?.isDefinitionOrRedefinition() = this != null && (DEFINITIONS.contains(this.name) || REDEFINITIONS.contains(this.name))
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
@@ -341,13 +333,7 @@ fun LatexCommands?.isDefinitionOrRedefinition(): Boolean {
  * @return `true` if the command is an environment definition or a command definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinition(): Boolean {
-    return this != null && ("\\newcommand" == name ||
-            "\\let" == name ||
-            "\\def" == name ||
-            "\\DeclareMathOperator" == name ||
-            "\\newenvironment" == name)
-}
+fun LatexCommands?.isDefinition() = this != null && DEFINITIONS.contains(this.name)
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
