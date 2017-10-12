@@ -30,7 +30,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
 
-        val commands = LatexCommandsIndex.getIndexedCommands(file)
+        val commands = LatexCommandsIndex.getItems(file)
         for (cmd in commands) {
             // Only consider default commands with a file argument.
             val default = LatexCommand.lookup(cmd.name) ?: continue

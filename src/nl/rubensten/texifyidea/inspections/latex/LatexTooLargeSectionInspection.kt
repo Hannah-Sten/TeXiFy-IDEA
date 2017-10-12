@@ -49,7 +49,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
          */
         fun findNextSection(command: LatexCommands): PsiElement? {
             // Scan all commands.
-            val commands = LatexCommandsIndex.getIndexedCommands(command.containingFile).toList()
+            val commands = LatexCommandsIndex.getItems(command.containingFile).toList()
 
             for (i in 0 until commands.size) {
                 val cmd = commands[i]
@@ -84,7 +84,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
 
-        val commands = LatexCommandsIndex.getIndexedCommands(file)
+        val commands = LatexCommandsIndex.getItems(file)
                 .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
 
         if (isAlreadySplit(commands)) {

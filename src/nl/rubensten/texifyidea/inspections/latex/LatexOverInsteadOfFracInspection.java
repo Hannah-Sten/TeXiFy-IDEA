@@ -54,7 +54,7 @@ public class LatexOverInsteadOfFracInspection extends TexifyInspectionBase {
             manager, boolean isOntheFly) {
         List<ProblemDescriptor> descriptors = new SmartList<>();
 
-        Collection<LatexCommands> commands = LatexCommandsIndex.getIndexedCommands(file);
+        Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
         for (LatexCommands command : commands) {
             if ("\\over".equals(command.getName())) {
                 descriptors.add(manager.createProblemDescriptor(

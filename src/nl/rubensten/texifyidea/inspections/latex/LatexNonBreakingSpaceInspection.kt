@@ -52,7 +52,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
 
-        val commands = LatexCommandsIndex.getIndexedCommands(file)
+        val commands = LatexCommandsIndex.getItems(file)
         for (cmd in commands) {
             if (!REFERENCE_COMMANDS.contains(cmd.name)) {
                 continue
