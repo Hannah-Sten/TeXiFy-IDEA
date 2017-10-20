@@ -22,6 +22,6 @@ open class LatexMakeatletterInspection : TexifyRegexInspection(
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         val file = element.containingFile
         val extension = file.virtualFile.extension
-        return extension?.toLowerCase() == "tex"
+        return extension?.toLowerCase() == "tex" && super.checkContext(matcher, element)
     }
 }

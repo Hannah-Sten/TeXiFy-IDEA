@@ -28,13 +28,16 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
         // Fill up a set of labels.
         val labels: MutableSet<String> = HashSet()
+        val firstPass: MutableSet<String> = HashSet()
         for (cmd in file.commandsInFileSet()) {
-            if (cmd.containingFile == file) {
+            val labelName = cmd.requiredParameter(0) ?: continue
+
+            if (labelName in firstPass) {
+                labels.add(labelName)
                 continue
             }
-
             if (cmd.name == "\\label" || cmd.name == "\\bibitem") {
-                labels.add(cmd.requiredParameter(0) ?: continue)
+                firstPass.add(labelName)
             }
         }
 
