@@ -3,6 +3,7 @@
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 
 # TeXiFy-IDEA
+## This fork aims to provide nightly builds, available on the [releases](https://github.com/PHPirates/TeXiFy-IDEA/releases) page 
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
 No idea where to start? Have a look at the [installation instructions](#installation-instructions). Otherwise, take a look at the [tips](#tips) instead.

@@ -72,39 +72,15 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.1</strong></p>
+        <h1>Beta 0.6 nightly release</h1>
         <p>
-            <em>Finally</em>, a new release of TeXiFy IDEA,
-            with a few changing and a few fixes for some annoying crashes.
+            This is a nightly build with the very latest features, available before the official Beta 0.6 release.
         </p>
         <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
+            For changes, see the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/milestone/7?closed=1">milestone page</a>.
         </p>
-        <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li>Removed 'a4wide' from the template file. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/642">#642</a>)</li>
-            <li>Recognises that amsfonts is included in amssymb and mathtools is included in amsmath. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/646">#646</a>)</li>
-            <li>Increased performance.</li>
-            <li>Supported Intellij 2018.2. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/638">#638</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Bug fixes</em>
-        </p>
-        <ul>
-            <li>Fixed `\item` being inserted when the cursor is just before `\begin{enumerate}`. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/584">#584</a>)</li>
-            <li>Fixed UnresolvedReference inspection not ignoring whitespace for multiple references. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/696">#696</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/493">#493</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/551">#551</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/586">#586</a>)</li>
-        </ul>
-        <br>
-        <p>
-            Full list of releases available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
-        </p>
-    ]]></change-notes>
+        ]]>
+    </change-notes>
 
     <project-components>
         <component>
