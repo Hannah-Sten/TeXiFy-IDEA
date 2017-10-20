@@ -8,12 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.insight.InsightGroup
-import nl.rubensten.texifyidea.psi.LatexTypes
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inMathContext
+import nl.rubensten.texifyidea.util.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -109,6 +108,7 @@ abstract class TexifyRegexInspection(
     override fun getDisplayName() = inspectionDisplayName
     override fun getInspectionId() = myInspectionId
     override fun getInspectionGroup() = group
+    override fun checkContext(element: PsiElement) = true
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
@@ -162,7 +162,7 @@ abstract class TexifyRegexInspection(
      * @return `true` if the inspection is allowed in the context, `false` otherwise.
      */
     open fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-        if (element is LeafPsiElement && element.elementType == LatexTypes.COMMENT_TOKEN) {
+        if (element.isComment()) {
             return false
         }
 
