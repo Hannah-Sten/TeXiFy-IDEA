@@ -144,7 +144,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        Set<PsiFile> files = TexifyUtil.getReferencedFileSet(file);
+        Set<PsiFile> files = new HashSet<>(TexifyUtil.getReferencedFileSet(file));
         PsiFile root = FileUtilKt.findRootFile(file);
         PsiFile documentClass = FileUtilKt.documentClassFile(root);
         if (documentClass != null) {
