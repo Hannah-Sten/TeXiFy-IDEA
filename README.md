@@ -4,6 +4,7 @@
 [![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png)](https://www.paypal.me/RubenSchellekens)
 
 # TeXiFy-IDEA
+## This fork aims to provide nightly builds, available on the [releases](https://github.com/PHPirates/TeXiFy-IDEA/releases) page 
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
 No idea where to start? Have a look at the [installation instructions](#installation-instructions). Otherwise, take a look at the [tips](#tips) instead.
