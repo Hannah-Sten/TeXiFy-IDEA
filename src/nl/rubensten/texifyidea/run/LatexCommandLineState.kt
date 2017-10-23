@@ -46,6 +46,11 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, val runConfi
                 val psiFile = runConfig.mainFile.psiFile(environment.project) ?: return@run
                 val document = psiFile.document() ?: return@run
                 val editor = psiFile.openedEditor() ?: return@run
+
+                if (document != editor.document) {
+                    return@run
+                }
+
                 val line = document.getLineNumber(editor.caretModel.offset) + 1
 
                 runAsync {

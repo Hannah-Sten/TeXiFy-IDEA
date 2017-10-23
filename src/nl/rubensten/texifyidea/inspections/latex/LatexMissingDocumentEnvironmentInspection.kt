@@ -34,7 +34,6 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        println("Checks out files: ${file.referencedFileSet().joinToString(", ") { it.name }}")
         for (referencedFile in file.referencedFileSet()) {
             val beginCommands = referencedFile.childrenOfType(LatexBeginCommand::class)
             if (beginCommands.any { it.text == "\\begin{document}" }) {
