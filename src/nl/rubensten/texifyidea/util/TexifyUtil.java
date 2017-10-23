@@ -571,7 +571,7 @@ public class TexifyUtil {
      *         The commands to select all labels from.
      * @return A collection of all label commands.
      */
-    public static Collection<? extends PsiElement> findLabels(@NotNull Collection<? extends PsiElement> cmds) {
+    public static Collection<PsiElement> findLabels(@NotNull Collection<PsiElement> cmds) {
         cmds.removeIf(cmd -> {
             if (cmd instanceof LatexCommands) {
                 String name = ((LatexCommands)cmd).getName();

@@ -9,7 +9,7 @@ import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.util.ArrayUtil
 import nl.rubensten.texifyidea.psi.BibtexId
-import nl.rubensten.texifyidea.util.referencedFiles
+import nl.rubensten.texifyidea.util.referencedFileSet
 
 /**
  * @author Ruben Schellekens
@@ -37,7 +37,7 @@ object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
     @JvmStatic
     fun getIndexedIdsInFileSet(baseFile: PsiFile): Collection<BibtexId> {
         val project = baseFile.project
-        val searchFiles: MutableSet<VirtualFile> = baseFile.referencedFiles()
+        val searchFiles: MutableSet<VirtualFile> = baseFile.referencedFileSet()
                 .map(PsiFile::getVirtualFile)
                 .toMutableSet()
         searchFiles.add(baseFile.virtualFile)
