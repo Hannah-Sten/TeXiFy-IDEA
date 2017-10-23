@@ -6,8 +6,10 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
@@ -108,6 +110,14 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  */
 fun PsiElement.inMathContext(): Boolean {
     return hasParent(LatexMathContent::class) || inDirectEnvironmentContext(Environment.Context.MATH)
+}
+
+/**
+ * Check if the element is in a comment or not.
+ */
+fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMMENT) || when (this) {
+    is PsiComment -> true
+    else -> this is LeafPsiElement && elementType == LatexTypes.COMMAND_TOKEN
 }
 
 /**
@@ -272,12 +282,12 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
 /**
  * @see [LatexCommandsIndex.getIndexedCommands]
  */
-fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommands(this)
+fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 
 /**
  * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexedCommandsInFileSet(this)
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
 
 /**
  * @see TexifyUtil.getFileRelativeTo
@@ -292,7 +302,7 @@ fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this
 /**
  * @see TexifyUtil.getReferencedFileSet
  */
-fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
+fun PsiFile.referencedFileSet(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
 
 /**
  * Get the editor of the file if it is currently opened.
@@ -303,8 +313,7 @@ fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedText
  * Get all the definitions in the file.
  */
 fun PsiFile.definitions(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommands(this)
+    return LatexDefinitionIndex.getItems(this)
             .filter { it.isDefinition() }
 }
 
@@ -312,17 +321,14 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
  * Get all the definitions and redefinitions in the file.
  */
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommands(this)
-            .filter { it.isDefinitionOrRedefinition() }
+    return LatexDefinitionIndex.getItems(this)
 }
 
 /**
  * Get all the definitions in the file set.
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
+    return LatexDefinitionIndex.getItemsInFileSet(this)
             .filter { it.isDefinition() }
 }
 
@@ -330,9 +336,7 @@ fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
  * Get all the definitions and redefinitions in the file set.
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
-    // TODO: To be replaced with a call to future definition index.
-    return LatexCommandsIndex.getIndexedCommandsInFileSet(this)
-            .filter { it.isDefinitionOrRedefinition() }
+    return LatexDefinitionIndex.getItemsInFileSet(this)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,15 +351,7 @@ fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
  * @return `true` if the command is an environment (re)definition or a command (re)definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinitionOrRedefinition(): Boolean {
-    return this != null && ("\\newcommand" == name ||
-            "\\let" == name ||
-            "\\def" == name ||
-            "\\DeclareMathOperator" == name ||
-            "\\newenvironment" == name ||
-            "\\renewcommand" == name ||
-            "\\renewenvironment" == name)
-}
+fun LatexCommands?.isDefinitionOrRedefinition() = this != null && (DEFINITIONS.contains(this.name) || REDEFINITIONS.contains(this.name))
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
@@ -365,13 +361,7 @@ fun LatexCommands?.isDefinitionOrRedefinition(): Boolean {
  * @return `true` if the command is an environment definition or a command definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinition(): Boolean {
-    return this != null && ("\\newcommand" == name ||
-            "\\let" == name ||
-            "\\def" == name ||
-            "\\DeclareMathOperator" == name ||
-            "\\newenvironment" == name)
-}
+fun LatexCommands?.isDefinition() = this != null && DEFINITIONS.contains(this.name)
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
@@ -508,4 +498,4 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
 /**
  * Checks if the latex content objects is a display math environment.
  */
-fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null
+fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null

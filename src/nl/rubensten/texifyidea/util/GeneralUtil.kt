@@ -4,6 +4,25 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.TextRange
 
 /**
+ * Set containing all commands that redefine functionality.
+ */
+val REDEFINITIONS = setOf(
+        "\\renewcommand",
+        "\\renewenvironment"
+)
+
+/**
+ * Set containing all commands that define functionality.
+ */
+val DEFINITIONS = setOf(
+        "\\newcommand",
+        "\\let",
+        "\\def",
+        "\\DeclareMathOperator",
+        "\\newenvironment"
+)
+
+/**
  * Creates a pair of two objects, analogous to [to].
  */
 infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
@@ -49,7 +68,7 @@ fun runWriteAction(writeAction: () -> Unit) {
 /**
  * Converts an [IntRange] to [TextRange].
  */
-fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
+fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive)
 
 /**
  * Converts a [TextRange] to [IntRange].

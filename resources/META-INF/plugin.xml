@@ -272,13 +272,14 @@
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
         <stubIndex implementation="nl.rubensten.texifyidea.index.BibtexIdIndex"/>
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexIncludesIndex"/>
+        <stubIndex implementation="nl.rubensten.texifyidea.index.LatexDefinitionIndex"/>
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
         <lang.documentationProvider language="Bibtex" implementationClass="nl.rubensten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Inspections -->
-        <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexSpellcheckingStrategy"/>
+        <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
                          groupName="LaTeX" displayName="Non-escaped common math operators"

@@ -32,7 +32,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        val commands = LatexCommandsIndex.getIndexedCommandsInFileSet(file)
+        val commands = LatexCommandsIndex.getItemsInFileSet(file)
         val hasDocumentclass = commands.stream()
                 .filter { cmd -> cmd.name == "\\documentclass" }
                 .count() > 0

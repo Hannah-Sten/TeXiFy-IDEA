@@ -102,7 +102,7 @@ open class WordCountAction : AnAction(
      * Counts all the words in the given base file.
      */
     private fun countWords(baseFile: PsiFile): Pair<Int, Int> {
-        val fileSet = baseFile.referencedFiles()
+        val fileSet = baseFile.referencedFileSet()
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)

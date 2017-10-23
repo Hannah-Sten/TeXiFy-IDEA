@@ -41,7 +41,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
-        val commands = LatexCommandsIndex.getIndexedCommands(file)
+        val commands = LatexCommandsIndex.getItems(file)
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
 
@@ -122,7 +122,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackages(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getIndexedCommandsInFileSet(baseFile)
+        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
         return getIncludedPackages(commands, HashSet()) as Set<String>
     }
 
@@ -133,7 +133,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesList(baseFile: PsiFile): List<String> {
-        val commands = LatexCommandsIndex.getIndexedCommandsInFileSet(baseFile)
+        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
         return getIncludedPackages(commands, ArrayList()) as List<String>
     }
 
@@ -144,7 +144,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesOfSingleFile(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getIndexedCommands(baseFile)
+        val commands = LatexCommandsIndex.getItems(baseFile)
         return getIncludedPackages(commands, HashSet()) as Set<String>
     }
 
@@ -155,7 +155,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesOfSingleFileList(baseFile: PsiFile): List<String> {
-        val commands = LatexCommandsIndex.getIndexedCommands(baseFile)
+        val commands = LatexCommandsIndex.getItems(baseFile)
         return getIncludedPackages(commands, ArrayList()) as List<String>
     }
 

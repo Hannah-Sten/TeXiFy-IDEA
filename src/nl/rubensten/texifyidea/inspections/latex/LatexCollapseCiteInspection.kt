@@ -29,7 +29,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()
 
-        val commands = LatexCommandsIndex.getIndexedCommands(file).toList()
+        val commands = LatexCommandsIndex.getItems(file).toList()
         for (cmd in commands) {
             if (cmd.name != "\\cite") {
                 continue

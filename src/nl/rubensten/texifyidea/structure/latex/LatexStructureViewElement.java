@@ -105,7 +105,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
         // Get document class.
         GlobalSearchScope scope = GlobalSearchScope.fileScope((PsiFile)element);
-        String docClass = LatexCommandsIndex.getIndexedCommands(element.getProject(), scope)
+        String docClass = LatexCommandsIndex.Companion.getItems(element.getProject(), scope)
                 .stream()
                 .filter(cmd -> cmd.getCommandToken().getText().equals("\\documentclass") &&
                         !cmd.getRequiredParameters().isEmpty())
@@ -194,7 +194,7 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
             PsiFile root = FileUtilKt.findRootFile(baseFile);
             PsiFile documentClass = FileUtilKt.documentClassFile(root);
             if (documentClass != null) {
-                LatexCommands command = LatexCommandsIndex.getIndexedCommands(baseFile).stream()
+                LatexCommands command = LatexCommandsIndex.Companion.getItems(baseFile).stream()
                         .filter(cmd -> "\\documentclass".equals(cmd.getName()))
                         .findFirst().orElse(null);
                 if (command != null) {

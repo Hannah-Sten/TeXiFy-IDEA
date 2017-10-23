@@ -28,14 +28,20 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
         // Fill up a set of labels.
         val labels: MutableSet<String> = HashSet()
+        val firstPass: MutableSet<String> = HashSet()
         for (cmd in file.commandsInFileSet()) {
-            if (cmd.containingFile == file) {
+            val labelName = cmd.requiredParameter(0) ?: continue
+
+            if (cmd.name != "\\label" && cmd.name != "\\bibitem") {
                 continue
             }
 
-            if (cmd.name == "\\label" || cmd.name == "\\bibitem") {
-                labels.add(cmd.requiredParameter(0) ?: continue)
+            if (labelName in firstPass) {
+                labels.add(labelName)
+                continue
             }
+
+            firstPass.add(labelName)
         }
 
         // Check labels in file.
@@ -49,7 +55,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
                         TextRange.from(cmd.commandToken.textLength + 1, labelName.length),
-                        "Duplicate label",
+                        "Duplicate label '$labelName'",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
                 ))

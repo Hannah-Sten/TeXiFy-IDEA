@@ -64,7 +64,6 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
         val text = display.text.trimRange(2, 2).trim()
 
         runWriteAction {
-            println(document.getText(TextRange.from(display.textOffset - whitespace - 1, 1)))
             val leading = if (document.getText(TextRange.from(display.textOffset - whitespace - 1, 1)) != " ") " " else ""
             val trailing = if (document.getText(TextRange.from(display.endOffset() + whitespace, 1)) != " ") " " else ""
 

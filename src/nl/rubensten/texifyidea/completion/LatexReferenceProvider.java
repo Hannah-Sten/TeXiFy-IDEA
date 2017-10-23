@@ -51,7 +51,7 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
         searchFiles.add(file.getVirtualFile());
         GlobalSearchScope scope = GlobalSearchScope.filesScope(project, searchFiles);
 
-        Collection<LatexCommands> cmds = LatexCommandsIndex.getIndexedCommandsByName(
+        Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getCommandsByName(
                 "label", project, scope
         );
 
@@ -70,6 +70,6 @@ public class LatexReferenceProvider extends CompletionProvider<CompletionParamet
             }
         }
 
-        result.addLookupAdvertisement(Kindness.INSTANCE.getKindWords());
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 }

@@ -1,10 +1,10 @@
-[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/TeXiFy-IDEA)
+[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
 
-No idea where to start? Have a look at the [installation instructions](#installation-instructions).
+No idea where to start? Have a look at the [installation instructions](#installation-instructions). Otherwise, take a look at the [tips](#tips) instead.
 
 Create the most beautiful LaTeX documents with the user friendliness of the IntelliJ platform.
 This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin
@@ -127,7 +127,7 @@ Most inspections come with quick fixes.
 * Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
 
 
-## <a name="installation-instructions"></a>Installation instructions
+## <a name="installation-instructions">Installation instructions</a>
 ### Installing IntelliJ and the TeXiFy-IDEA plugin
 * It is probably a good idea to keep these instructions open as a reference while carrying them out.
 * If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free.
@@ -144,8 +144,9 @@ Most inspections come with quick fixes.
 * If you see `LaTeX error: fily a4.sty not found` then you did not restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using `SHIFT+F10` on Windows.
 
-#### Tips
+#### <a name="tips">Tips</a>
 * You never have to remember to save your work, IntelliJ will automatically save every letter you type.
+* You can personalise the template that is used when you create a new LaTeX file in settings - editor - file and code templates - LaTeX source.
 * You don't need to close the pdf to recompile, it will automatically refresh.
 * A good way to start learning LaTeX is by asking someone how to do what you want to do or by Googling "what-I-want-to-do latex".
 * But some standard LaTeX commands are available in the LaTeX menu.
