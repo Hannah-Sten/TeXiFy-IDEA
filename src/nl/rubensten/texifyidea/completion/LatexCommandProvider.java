@@ -23,6 +23,7 @@ import nl.rubensten.texifyidea.index.LatexDefinitionIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.FileUtilKt;
+import nl.rubensten.texifyidea.util.Kindness;
 import nl.rubensten.texifyidea.util.PsiUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +74,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withInsertHandler(new LatexNoMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
         ));
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 
     private void addMathCommands(CompletionResultSet result) {
@@ -121,6 +123,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withTailText(packageName(env), true)
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 
     private String packageName(Dependend dependend) {
@@ -195,6 +198,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                     .withIcon(TexifyIcons.DOT_COMMAND)
             );
         }
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 
     @NotNull

@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PlatformIcons
@@ -30,20 +31,30 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
         private val TRIM_BACK = Pattern.compile("\\.\\./")
     }
 
-    override fun addCompletions(parameters: CompletionParameters,
-                                context: ProcessingContext, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         // Get base data.
         val baseFile = parameters.originalFile.virtualFile
-        var autocompleteText = processAutocompleteText(parameters.originalPosition!!.text)
-        val baseDirectory: VirtualFile = if (parameters.originalFile.isLatexFile()) {
+        val autocompleteText = processAutocompleteText(parameters.originalPosition!!.text)
+
+        val baseDirectory = if (parameters.originalFile.isLatexFile()) {
             parameters.originalFile.findRootFile().containingDirectory.virtualFile
         }
-        else {
-            baseFile.parent
-        }
+        else baseFile.parent
 
-        val directoryPath = baseDirectory.path + "/" + autocompleteText
+        addByDirectory(baseDirectory, autocompleteText, result)
+
+        // When the base directory is a sources directory => add items of all source directories.
+        val rootManager = ProjectRootManager.getInstance(parameters.originalFile.project)
+        rootManager.contentSourceRoots
+                .filter { it != baseDirectory }
+                .toSet()
+                .forEach { addByDirectory(it, autocompleteText, result) }
+    }
+
+    private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String, result: CompletionResultSet) {
+        val directoryPath = baseDirectory.path + "/" + autoCompleteText
         var searchDirectory = getByPath(directoryPath)
+        var autocompleteText = autoCompleteText
 
         if (searchDirectory == null) {
             autocompleteText = trimAutocompleteText(autocompleteText)
