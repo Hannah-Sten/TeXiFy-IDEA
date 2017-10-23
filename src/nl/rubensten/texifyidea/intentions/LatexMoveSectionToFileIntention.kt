@@ -51,14 +51,21 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
         // Create new file.
         val fileNameBraces = sectionCommand.requiredParameter(0) ?: return
-        val fileName = fileNameBraces.replace("}", "").replace("{", "")
+        // Decapitalize and use - instead of space according to LaTeX conventions
+        val fileName = fileNameBraces.replace("}", "")
+                .replace("{", "")
+                .replace(" ", "-")
+                .decapitalize()
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
 
         // Execute write actions.
-        val filePath = "$root/$fileName.tex";
+        val filePath = "$root/$fileName.tex"
         val createdFile = TexifyUtil.createFile(filePath, text)
-        document.deleteString(start, end);
-        val createdFileName = createdFile?.name?.substring(0, createdFile.name.length - 4)
+        document.deleteString(start, end)
+        val createdFileName = createdFile?.name
+                ?.substring(0, createdFile.name.length - 4)
+                ?.replace(" ", "-")
+                ?.decapitalize()
         val indent = sectionCommand.findIndentation()
         document.insertString(start, "\n$indent\\input{$createdFileName}\n\n")
     }
