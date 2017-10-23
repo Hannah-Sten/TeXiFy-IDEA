@@ -32,7 +32,7 @@ fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
         val referenced = TexifyUtil.getReferencedFiles(root).toSet() + root
 
         if (referenced.contains(baseFile)) {
-            return referenced
+            return referenced + baseFile
         }
 
         sets.put(root, referenced)
@@ -41,9 +41,9 @@ fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
     // Look for matching root.
     for (referenced in sets.values) {
         if (referenced.contains(baseFile)) {
-            return referenced
+            return referenced + baseFile
         }
     }
 
-    return emptySet()
+    return setOf(baseFile)
 }

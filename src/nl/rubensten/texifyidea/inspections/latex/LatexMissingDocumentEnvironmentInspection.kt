@@ -7,12 +7,12 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
-import nl.rubensten.texifyidea.util.TexifyUtil
+import nl.rubensten.texifyidea.util.childrenOfType
+import nl.rubensten.texifyidea.util.referencedFileSet
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -34,21 +34,10 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        val fileSet = TexifyUtil.getReferencedFileSet(file)
-        val commandSet: MutableSet<LatexBeginCommand> = HashSet()
-
-        for (referencedFile: PsiFile in fileSet) {
-            val beginCommands = PsiTreeUtil.findChildrenOfType(referencedFile, LatexBeginCommand::class.java)
-            commandSet.addAll(beginCommands)
-        }
-
-        if (!commandSet.isEmpty()) {
-            return descriptors
-        }
-
-        for (beginCommand in commandSet) {
-            val environment = beginCommand.parameterList[0]
-            if (environment.text == "{document}") {
+        println("Checks out files: ${file.referencedFileSet().joinToString(", ") { it.name }}")
+        for (referencedFile in file.referencedFileSet()) {
+            val beginCommands = referencedFile.childrenOfType(LatexBeginCommand::class)
+            if (beginCommands.any { it.text == "\\begin{document}" }) {
                 return descriptors
             }
         }
