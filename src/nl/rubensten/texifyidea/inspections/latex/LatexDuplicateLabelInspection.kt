@@ -32,13 +32,16 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         for (cmd in file.commandsInFileSet()) {
             val labelName = cmd.requiredParameter(0) ?: continue
 
+            if (cmd.name != "\\label" && cmd.name != "\\bibitem") {
+                continue
+            }
+
             if (labelName in firstPass) {
                 labels.add(labelName)
                 continue
             }
-            if (cmd.name == "\\label" || cmd.name == "\\bibitem") {
-                firstPass.add(labelName)
-            }
+
+            firstPass.add(labelName)
         }
 
         // Check labels in file.
@@ -52,7 +55,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
                         TextRange.from(cmd.commandToken.textLength + 1, labelName.length),
-                        "Duplicate label",
+                        "Duplicate label '$labelName'",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
                 ))
