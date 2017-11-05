@@ -256,6 +256,7 @@
 
         <!-- Run configurations -->
         <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
+        <configurationType implementation="nl.rubensten.texifyidea.run.BibtexRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->
