@@ -5,6 +5,8 @@ import com.intellij.execution.configurations.*
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import org.jdom.Element
 
@@ -16,15 +18,25 @@ class BibtexRunConfiguration(project: Project, factory: ConfigurationFactory, na
     companion object {
         private val PARENT_ELEMENT = "texify-bibtex"
         private val COMPILER = "compiler"
+        private val COMPILER_PATH = "compiler-path"
+        private val MAIN_FILE = "main-file"
+        private val AUX_DIR = "aux-dir"
     }
 
     var compiler: BibliographyCompiler? = null
+    var compilerPath: String? = null
+    var mainFile: VirtualFile? = null
+    var auxDir: VirtualFile? = null
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = BibtexSettingsEditor(project)
 
     override fun checkConfiguration() {
         if (compiler == null) {
             throw RuntimeConfigurationError("No compiler specified.")
+        }
+
+        if (mainFile == null) {
+            throw RuntimeConfigurationError("No main file specified.")
         }
     }
 
@@ -43,6 +55,25 @@ class BibtexRunConfiguration(project: Project, factory: ConfigurationFactory, na
         catch (e: IllegalArgumentException) {
             null
         }
+
+        compilerPath = parent.getChildText(COMPILER_PATH)
+        if (compilerPath?.isEmpty() == true) {
+            compilerPath = null
+        }
+
+        val mainFilePath = parent.getChildText(MAIN_FILE)
+        mainFile = if (mainFilePath != null) {
+            LocalFileSystem.getInstance().findFileByPath(mainFilePath)
+        } else {
+            null
+        }
+
+        val auxDirPath = parent.getChildText(AUX_DIR)
+        auxDir = if (auxDirPath != null) {
+            LocalFileSystem.getInstance().findFileByPath(auxDirPath)
+        } else {
+            null
+        }
     }
 
     override fun writeExternal(element: Element) {
@@ -52,6 +83,9 @@ class BibtexRunConfiguration(project: Project, factory: ConfigurationFactory, na
         parent.removeContent()
 
         parent.addContent(Element(COMPILER).apply { text = compiler?.name ?: "" })
+        parent.addContent(Element(COMPILER_PATH).apply { text = compilerPath ?: "" })
+        parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
+        parent.addContent(Element(AUX_DIR).apply { text = auxDir?.path ?: "" })
     }
 
     override fun isGeneratedName() = false

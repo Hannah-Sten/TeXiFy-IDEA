@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 interface Compiler<in R : RunConfiguration> {
 
     val displayName: String
+    val executableName: String
 
     fun getCommand(runConfig: R, project: Project): List<String>?
 

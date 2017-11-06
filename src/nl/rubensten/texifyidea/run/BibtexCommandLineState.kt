@@ -19,7 +19,7 @@ open class BibtexCommandLineState(environment: ExecutionEnvironment, private val
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val command: List<String> = compiler.getCommand(runConfig, environment.project) ?: throw ExecutionException("Compile command could not be created.")
 
-        val commandLine = GeneralCommandLine(command)
+        val commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.auxDir?.path ?: runConfig.mainFile?.parent?.path)
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated
