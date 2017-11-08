@@ -417,6 +417,9 @@
         <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+                         groupName="BibTeX" displayName="Missing bibliography style"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>

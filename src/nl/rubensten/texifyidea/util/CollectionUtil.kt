@@ -101,6 +101,30 @@ inline fun <T> Collection<T>.findAtLeast(amount: Int, predicate: (T) -> Boolean)
 }
 
 /**
+ * Checks if all given predicates can be matched at least once.
+ *
+ * @return `true` if all predicates match for at least 1 element in the collection, `false` otherwise.
+ */
+inline fun <T> Collection<T>.anyMatchAll(predicate: (T) -> Boolean, vararg predicates: (T) -> Boolean): Boolean {
+    val matches = BooleanArray(predicates.size + 1)
+    var matchCount = 0
+    for (element in this) {
+        for (i in 0 until predicates.size) {
+            if (!matches[i] && predicates[i](element)) {
+                matches[i] = true
+                matchCount += 1
+            }
+        }
+
+        if (!matches.last() && predicate(element)) {
+            matches[matches.size - 1] = true
+            matchCount += 1
+        }
+    }
+    return matchCount == matches.size
+}
+
+/**
  * Checks if the map contains the given value as either a key or value.
  */
 fun <T> Map<T, T>.containsKeyOrValue(value: T) = containsKey(value) || containsValue(value)
