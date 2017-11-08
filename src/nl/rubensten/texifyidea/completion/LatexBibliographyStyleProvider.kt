@@ -4,9 +4,9 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
+import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 
 /**
@@ -24,7 +24,7 @@ object LatexBibliographyStyleProvider : CompletionProvider<CompletionParameters>
             LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()
-                    .withIcon(PlatformIcons.PACKAGE_LOCAL_ICON)
+                    .withIcon(TexifyIcons.MISCELLANEOUS_ITEM)
                     .withInsertHandler(MoveToEndOfCommandHandler)
         })
     }

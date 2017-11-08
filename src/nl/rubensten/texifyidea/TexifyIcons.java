@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea;
 
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.PlatformIcons;
 
 import javax.swing.*;
 
@@ -345,6 +346,11 @@ public class TexifyIcons {
     public static final Icon KEY_USER_DEFINED = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/key-user.png"
     );
+
+    /**
+     * For lookup items that have no real category.
+     */
+    public static final Icon MISCELLANEOUS_ITEM = PlatformIcons.PACKAGE_LOCAL_ICON;
 
     /**
      * Get the file icon object that corresponds to the given file extension.
