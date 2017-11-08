@@ -152,5 +152,10 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         outputFormat = LabeledComponent.create(cboxFormat, "Output format");
         outputFormat.setSize(128, outputFormat.getHeight());
         panel.add(outputFormat);
+
+        panel.add(new TitledSeparator("Extensions"));
+
+        // Extension panels
+        panel.add(new BibliographyPanel(project));
     }
 }
