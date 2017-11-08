@@ -1,6 +1,8 @@
 package nl.rubensten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionContributor
+import com.intellij.codeInsight.completion.CompletionParameters
+import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns
@@ -96,36 +98,10 @@ open class TexifyCompletionContributor : CompletionContributor() {
         )
 
         // Package names
-        extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
-                        .inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>(null) {
-                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
-                                val command = psiElement.parentOfType(LatexCommands::class) ?: return false
-                                val text = command.text
-                                return text.startsWith("\\usepackage") || text.startsWith("\\RequirePackage")
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexPackageNameProvider
-        )
+        extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
 
         // Bibliography styles
-        extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
-                        .inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>(null) {
-                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
-                                val command = psiElement.parentOfType(LatexCommands::class) ?: return false
-                                val text = command.text
-                                return text.startsWith("\\bibliographystyle")
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexBibliographyStyleProvider
-        )
+        extendLatexCommand(LatexBibliographyStyleProvider, "\\bibliographystyle")
     }
 
     private fun registerBibtexCompletion() {
@@ -166,6 +142,39 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .inside(BibtexContent::class.java)
                         .withLanguage(BibtexLanguage),
                 BibtexStringProvider
+        )
+    }
+
+    /**
+     * Adds a completion contributor that gets activated within the first required parameter of a given command.
+     */
+    private fun extendLatexCommand(provider: CompletionProvider<CompletionParameters>, commandNameWithSlash: String) {
+        extendLatexCommands(provider, setOf(commandNameWithSlash))
+    }
+
+    /**
+     * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
+     */
+    private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, vararg commandNamesWithSlash: String) {
+        extendLatexCommands(provider, setOf(*commandNamesWithSlash))
+    }
+
+    /**
+     * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
+     */
+    private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, commandNamesWithSlash: Set<String>) {
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                        .inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>(null) {
+                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
+                                val command = psiElement.parentOfType(LatexCommands::class) ?: return false
+                                return command.commandToken.text in commandNamesWithSlash
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                provider
         )
     }
 }
