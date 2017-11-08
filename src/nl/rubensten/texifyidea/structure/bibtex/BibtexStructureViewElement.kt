@@ -33,7 +33,7 @@ open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTr
     override fun getAlphaSortKey() = when (element) {
         is PsiFile -> element.name.toLowerCase()
         else -> element.text.toLowerCase()
-    } ?: ""
+    }
 
     override fun getPresentation(): ItemPresentation {
         if (element is BibtexFile) {

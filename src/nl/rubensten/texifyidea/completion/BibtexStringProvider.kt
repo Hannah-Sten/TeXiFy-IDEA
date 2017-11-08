@@ -20,7 +20,6 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
         val psiFile = parameters.originalFile
-        val element = psiFile.findElementAt(parameters.offset)
         val strings: List<Triple<String, String, BibtexEntry>?> = psiFile.childrenOfType(BibtexEntry::class)
                 .filter { it.tokenType() == "@string" }
                 .map {
@@ -31,7 +30,7 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
                 }
 
         result.addAllElements(ContainerUtil.map2List(strings, {
-            LookupElementBuilder.create(StringDescription(it!!.first, it.third), it.first)
+            LookupElementBuilder.create(StringDescription(it!!.third), it.first)
                     .withPresentableText(it.first)
                     .bold()
                     .withTypeText(it.second, true)
@@ -39,7 +38,7 @@ object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
         }))
     }
 
-    class StringDescription(description: String, entry: BibtexEntry?) : Described {
+    class StringDescription(entry: BibtexEntry?) : Described {
 
         override val description: String
 

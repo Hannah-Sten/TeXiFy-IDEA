@@ -21,7 +21,7 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
         insertType(inserted, context)
     }
 
-    private fun insertString(inserted: BibtexEntryType, context: InsertionContext) {
+    private fun insertString(context: InsertionContext) {
         val editor = context.editor
         val document = editor.document
         val caret = editor.caretModel
@@ -31,7 +31,7 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
         caret.moveToOffset(offset + 2)
     }
 
-    private fun insertPreamble(inserted: BibtexEntryType, context: InsertionContext) {
+    private fun insertPreamble(context: InsertionContext) {
         val editor = context.editor
         val document = editor.document
         val caret = editor.caretModel
