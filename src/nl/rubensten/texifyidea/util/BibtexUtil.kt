@@ -69,6 +69,11 @@ fun BibtexTag.keyName(): String? = key()?.text
 fun BibtexTag.content(): BibtexContent? = firstChildOfType(BibtexContent::class)
 
 /**
+ * Get the name/identifier of the bibtex id.
+ */
+fun BibtexId.idName(): String = text.substringEnd(1)
+
+/**
  * Evaluates the string contents and returns a nicely concatenated version.
  *
  * E.g. `{Bambi} # space # "Broodje"` with `@string{space=" "}` will become `Bambi Broodje`.

@@ -71,6 +71,36 @@ fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
 }
 
 /**
+ * Finds at least `amount` elements matching the given predicate.
+ *
+ * @param amount
+ *          How many items the collection must contain at least in order to return true. Must be nonnegative.
+ * @return `true` when `amount` or more elements in the collection match the given predicate.
+ */
+inline fun <T> Collection<T>.findAtLeast(amount: Int, predicate: (T) -> Boolean): Boolean {
+    require(amount >= 0) { "Amount must be positive." }
+
+    // Edge cases.
+    when (amount) {
+        0 -> none(predicate)
+        1 -> any(predicate)
+    }
+
+    // More than 1 item, iterate.
+    var matches = 0
+    for (element in this) {
+        if (predicate(element)) {
+            matches += 1
+            if (matches >= amount) {
+                return true
+            }
+        }
+    }
+
+    return false
+}
+
+/**
  * Checks if the map contains the given value as either a key or value.
  */
 fun <T> Map<T, T>.containsKeyOrValue(value: T) = containsKey(value) || containsValue(value)

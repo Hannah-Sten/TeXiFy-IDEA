@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
-import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.util.PsiUtilKt;
 import org.jetbrains.annotations.Nls;
@@ -50,7 +49,8 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
     @Nullable
     @Override
     public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
-        if (!(file instanceof LatexFile)) {
+        InsightGroup group = getInspectionGroup();
+        if (!group.getFileTypes().contains(file.getFileType())) {
             return null;
         }
 
@@ -61,7 +61,7 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
     /**
      * Checks if the element is in the correct context.
-     *
+     * <p>
      * By default returns `false` when in comments.
      *
      * @return `true` if the inspection is allowed in the context, `false` otherwise.

@@ -282,6 +282,7 @@
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 
+        <!-- Latex inspections -->
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
                          groupName="LaTeX" displayName="Non-escaped common math operators"
                          enabledByDefault="true"/>
@@ -410,6 +411,11 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
+                         enabledByDefault="true"/>
+
+        <!-- Bibtex inspections -->
+        <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
+                         groupName="BibTeX" displayName="Duplicate ID"
                          enabledByDefault="true"/>
 
         <!-- Intentions -->

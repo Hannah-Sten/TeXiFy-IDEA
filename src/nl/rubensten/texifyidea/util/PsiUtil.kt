@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
@@ -288,6 +289,11 @@ fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.get
  * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
  */
 fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
+
+/**
+ * @see [BibtexIdIndex.getIndexedIdsInFileSet]
+ */
+fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
 
 /**
  * @see TexifyUtil.getFileRelativeTo
