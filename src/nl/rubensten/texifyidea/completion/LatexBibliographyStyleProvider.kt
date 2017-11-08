@@ -22,7 +22,7 @@ object LatexBibliographyStyleProvider : CompletionProvider<CompletionParameters>
             LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()
-                    .withIcon(PlatformIcons.ANNOTATION_TYPE_ICON)
+                    .withIcon(PlatformIcons.PACKAGE_LOCAL_ICON)
                     .withInsertHandler(BibliographyStyleInsertHandler)
         })
     }
