@@ -35,13 +35,18 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
         val duplicate: MutableSet<PsiFile> = HashSet()
         val bfs = BFS(root, PsiFile::findInclusions)
         bfs.setIterationAction {
+            // Set that contains all the inclusions in the current file.
+            // This is used to disregard files that have been included multiple times in the same file.
+            val inThisFile = HashSet<PsiFile>()
             val inclusions = it.findInclusions()
+
             for (inclusion in inclusions) {
-                if (covered.contains(inclusion)) {
+                if (covered.contains(inclusion) && inclusion !in inThisFile) {
                     duplicate.add(inclusion)
                 }
 
                 covered.add(inclusion)
+                inThisFile.add(inclusion)
             }
             BFS.BFSAction.CONTINUE
         }
