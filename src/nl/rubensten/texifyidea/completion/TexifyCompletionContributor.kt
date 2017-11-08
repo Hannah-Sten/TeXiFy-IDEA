@@ -101,7 +101,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>(null) {
-                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
                                 val command = psiElement.parentOfType(LatexCommands::class) ?: return false
                                 val text = command.text
                                 return text.startsWith("\\usepackage") || text.startsWith("\\RequirePackage")
@@ -109,6 +109,22 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexPackageNameProvider
+        )
+
+        // Bibliography styles
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                        .inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>(null) {
+                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
+                                val command = psiElement.parentOfType(LatexCommands::class) ?: return false
+                                val text = command.text
+                                return text.startsWith("\\bibliographystyle")
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexBibliographyStyleProvider
         )
     }
 
