@@ -326,7 +326,7 @@ public class TexifyUtil {
         }
 
         for (String extension : extensions) {
-            String lookFor = fileName.endsWith(extension) ? fileName : fileName + "." + extension;
+            String lookFor = fileName.endsWith("." + extension) ? fileName : fileName + "." + extension;
             file = directory.findFileByRelativePath(lookFor);
 
             if (file != null) {
