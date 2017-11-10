@@ -10,7 +10,6 @@ import javax.swing.Icon
 /**
  * PsiElement that contains all elements from a given start element to an end element.
  *
- * All contained elements must have the same level in the parse tree.
  * Most methods only apply to the start node.
  *
  * ***Warning:*** This is a hacky solution. In other words, not all functionality is guaranteed to work like
