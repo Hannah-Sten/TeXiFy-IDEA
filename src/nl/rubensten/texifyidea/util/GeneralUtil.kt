@@ -63,7 +63,7 @@ fun runWriteAction(writeAction: () -> Unit) {
 /**
  * Converts an [IntRange] to [TextRange].
  */
-fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive)
+fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
 
 /**
  * Converts a [TextRange] to [IntRange].
