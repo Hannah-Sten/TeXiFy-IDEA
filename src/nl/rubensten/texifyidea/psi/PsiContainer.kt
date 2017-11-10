@@ -5,6 +5,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.scope.PsiScopeProcessor
+import nl.rubensten.texifyidea.util.endOffset
 import javax.swing.Icon
 
 /**
@@ -115,7 +116,7 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getFirstChild(): PsiElement = start.firstChild
 
-    override fun getTextRange() = TextRange(start.textRange.startOffset, end.textRange.endOffset)
+    override fun getTextRange() = TextRange(start.textOffset, end.endOffset())
 
     override fun <T : Any?> putCopyableUserData(key: Key<T>?, value: T?) = iterateElements {
         it.putCopyableUserData(key, value)
@@ -133,7 +134,7 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getReference() = start.reference
 
-    override fun getTextLength() = end.textOffset - start.textOffset
+    override fun getTextLength() = end.endOffset() - start.textOffset
 
     override fun textMatches(text: CharSequence) = text == getText()
 

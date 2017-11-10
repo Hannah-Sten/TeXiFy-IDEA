@@ -24,7 +24,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val covered = HashSet<LatexCommands>()
-        val commands = LatexCommandsIndex.getCommandsByNames(root.containingFile, "usepackage", "RequirePackage")
+        val commands = LatexCommandsIndex.getCommandsByNames(root.containingFile, "\\usepackage", "\\RequirePackage")
 
         for (command in commands) {
             // Do not cover commands twice.
