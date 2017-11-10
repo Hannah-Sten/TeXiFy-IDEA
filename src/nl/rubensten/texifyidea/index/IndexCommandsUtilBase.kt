@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.index
 
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndexKey
 import nl.rubensten.texifyidea.psi.LatexCommands
@@ -37,5 +38,12 @@ abstract class IndexCommandsUtilBase(
         }
 
         return result
+    }
+
+    /**
+     * Get all the commands with a certain name in a certain file.
+     */
+    fun getCommandsByName(name: String, file: PsiFile): Collection<LatexCommands> {
+        return getCommandsByName(name, file.project, GlobalSearchScope.fileScope(file))
     }
 }
