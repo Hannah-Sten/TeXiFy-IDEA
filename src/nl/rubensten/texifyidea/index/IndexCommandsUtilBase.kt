@@ -46,4 +46,15 @@ abstract class IndexCommandsUtilBase(
     fun getCommandsByName(name: String, file: PsiFile): Collection<LatexCommands> {
         return getCommandsByName(name, file.project, GlobalSearchScope.fileScope(file))
     }
+
+    /**
+     * Get all commands that have the given names in a certain file.
+     */
+    fun getCommandsByNames(file: PsiFile, vararg names: String): Collection<LatexCommands> {
+        val result = ArrayList<LatexCommands>()
+        names.forEach {
+            result.addAll(getCommandsByName(it, file))
+        }
+        return result
+    }
 }
