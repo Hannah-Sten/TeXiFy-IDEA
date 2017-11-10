@@ -124,7 +124,8 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getOriginalElement(): PsiElement? = start.originalElement
 
-    override fun checkDelete() {
+    override fun checkDelete() = iterateElements {
+        it.checkDelete()
     }
 
     override fun getNavigationElement(): PsiElement? = start.navigationElement
