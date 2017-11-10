@@ -5,7 +5,7 @@ import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiElement
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.PsiContainer
 import nl.rubensten.texifyidea.util.nextCommand
@@ -17,6 +17,12 @@ import nl.rubensten.texifyidea.util.nextCommand
  */
 open class LatexImportFoldingBuilder : FoldingBuilderEx() {
 
+    companion object {
+
+        private val includesSet = setOf("\\usepackage", "\\RequirePackage")
+        private val includesArray = includesSet.toTypedArray()
+    }
+
     override fun isCollapsedByDefault(node: ASTNode) = true
 
     override fun getPlaceholderText(node: ASTNode) = "\\usepackage{...}"
@@ -24,7 +30,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val covered = HashSet<LatexCommands>()
-        val commands = LatexCommandsIndex.getCommandsByNames(root.containingFile, "\\usepackage", "\\RequirePackage")
+        val commands = LatexIncludesIndex.getCommandsByNames(root.containingFile, *includesArray)
 
         for (command in commands) {
             // Do not cover commands twice.
@@ -35,7 +41,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
             // Iterate over all consecutive commands.
             var next: LatexCommands? = command
             var last: LatexCommands = command
-            while (next != null) {
+            while (next != null && next.name in includesSet) {
                 covered += next
                 last = next
                 next = next.nextCommand()
