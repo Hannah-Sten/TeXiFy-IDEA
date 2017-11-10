@@ -226,6 +226,8 @@
         <!-- Editor -->
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexImportFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexSectionFoldingBuilder"/>
         <lang.formatter language="Latex" implementationClass="nl.rubensten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
         <enterHandlerDelegate implementation="nl.rubensten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>

@@ -2,7 +2,7 @@ package nl.rubensten.texifyidea.structure;
 
 import com.intellij.navigation.ItemPresentation;
 import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.PsiUtilKt;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -20,7 +20,7 @@ public class LatexOtherCommandPresentation implements ItemPresentation {
         this.commandName = command.getName();
         this.icon = icon;
 
-        LatexCommands firstNext = TexifyUtil.getNextCommand(command);
+        LatexCommands firstNext = PsiUtilKt.nextCommand(command);
         if (firstNext == null) {
             locationString = "";
             return;

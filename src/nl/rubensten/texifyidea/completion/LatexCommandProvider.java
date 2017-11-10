@@ -207,12 +207,12 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             return "";
         }
 
-        LatexCommands firstNext = TexifyUtil.getNextCommand(commands);
+        LatexCommands firstNext = PsiUtilKt.nextCommand(commands);
         if (firstNext == null) {
             return "";
         }
 
-        LatexCommands secondNext = TexifyUtil.getNextCommand(firstNext);
+        LatexCommands secondNext = PsiUtilKt.nextCommand(firstNext);
         if (secondNext == null) {
             return "";
         }
