@@ -184,12 +184,20 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             document.deleteString(startIndex, endIndex)
 
+            // Create new file.
             val fileNameBraces = if (cmd.parameterList.size > 0) cmd.parameterList[0].text else return
-            val fileName = fileNameBraces.replace("}", "").replace("{", "")
+            // Decapitalize and use - instead of space according to LaTeX conventions
+            val fileName = fileNameBraces.replace("}", "")
+                    .replace("{", "")
+                    .replace(" ", "-")
+                    .decapitalize()
             val createdFile = TexifyUtil.createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
             LocalFileSystem.getInstance().refresh(true)
 
-            val createdFileName = createdFile.name.subSequence(0, createdFile.name.length - 4)
+            val createdFileName = createdFile?.name
+                    ?.substring(0, createdFile.name.length - 4)
+                    ?.replace(" ", "-")
+                    ?.decapitalize()
             val indent = cmd.findIndentation()
             document.insertString(startIndex, "\n$indent\\input{$createdFileName}\n\n")
         }
