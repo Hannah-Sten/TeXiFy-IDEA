@@ -102,7 +102,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
                         .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
                 )
             ) }
-            auxFile = LabeledComponent.create(auxFileField, "Aux file of the main file")
+            auxFile = LabeledComponent.create(auxFileField, "Auxiliary files directory (keep empty when location is the same as for the main file)")
             add(auxFile)
         }
     }

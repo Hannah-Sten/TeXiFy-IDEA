@@ -1,18 +1,14 @@
 package nl.rubensten.texifyidea.run
 
-import com.intellij.execution.RunManagerEx
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JComponent
-import javax.swing.JList
 import javax.swing.ListSelectionModel
 import javax.swing.SwingUtilities
 
@@ -67,18 +63,7 @@ class RunConfigurationSelectionDialog(
                 isOKActionEnabled = list.selectedValue != null
             }
 
-            cellRenderer = object : ColoredListCellRenderer<RunnerAndConfigurationSettings>() {
-                override fun customizeCellRenderer(list: JList<out RunnerAndConfigurationSettings>, settings: RunnerAndConfigurationSettings?, index: Int, selected: Boolean, hasFocus: Boolean) {
-                    icon = RunManagerEx.getInstanceEx(project).getConfigurationIcon(settings ?: return)
-                    append(
-                        settings.configuration.name,
-                        if (settings.isTemporary)
-                            SimpleTextAttributes.GRAY_ATTRIBUTES
-                        else
-                            SimpleTextAttributes.REGULAR_ATTRIBUTES
-                    )
-                }
-            }
+            cellRenderer = RunConfigCellRenderer(project)
         }
 
         return JBScrollPane(list)
