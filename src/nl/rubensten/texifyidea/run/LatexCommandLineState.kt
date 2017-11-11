@@ -21,7 +21,7 @@ import java.io.File
  *
  * @author Sten Wessel
  */
-open class LatexCommandLineState(environment: ExecutionEnvironment, val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
+open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
@@ -36,6 +36,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, val runConfi
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
+
+        runConfig.bibRunConfig?.let {
+            if (runConfig.isSkipBibtex) {
+                return@let
+            }
+
+            handler.addProcessListener(RunBibtexListener(it, runConfig, environment))
+
+            // Skip the other handlers
+            return handler
+        }
 
         // Open Sumatra after compilation & execute inverse search.
         if (SystemInfo.isWindows) {

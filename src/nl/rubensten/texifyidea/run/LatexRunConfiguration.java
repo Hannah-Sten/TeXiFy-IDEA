@@ -44,6 +44,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private boolean auxDir = true;
     private Format outputFormat = Format.PDF;
     private String bibRunConfigId = "";
+    private boolean skipBibtex = false;
 
     protected LatexRunConfiguration(Project project, ConfigurationFactory factory, String name) {
         super(project, factory, name);
@@ -268,5 +269,13 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
                 ", auxDir=" + auxDir +
                 ", outputFormat=" + outputFormat +
                 '}';
+    }
+
+    public boolean isSkipBibtex() {
+        return skipBibtex;
+    }
+
+    public void setSkipBibtex(boolean skipBibtex) {
+        this.skipBibtex = skipBibtex;
     }
 }
