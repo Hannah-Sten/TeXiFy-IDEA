@@ -83,8 +83,10 @@
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
             Your input is valuable and well appreciated.
         </p>
-
-        <h2>Additions</h2>
+        <br>
+        <p>
+            <em>Additions</em>
+        </p>
         <ul>
             <li>Added BibTeX support (highlighting, formatter, autocomplete, structure view, and more). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/144">#144</a>)</li>
             <li>Added loads of inspections. Again. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/114">#114</a>)</li>
@@ -103,7 +105,10 @@
             <li>Added code folding for imports. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/226">#226</a>)</li>
             <li>Added code folding for section contents. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/226">#226</a>)</li>
         </ul>
-        <h2>Changes</h2>
+        <br>
+        <p>
+            <em>Changes</em>
+        </p>
         <ul>
             <li>Updated icons to make them fancier. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/135">#135</a>)</li>
             <li>Math environments have math syntax highlighting. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/28">#28</a>)</li>
@@ -133,7 +138,10 @@
             <li>Files in resource directories do now show up in file autocomplete. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/204">#204</a>)</li>
             <li>Words starting with a capital are no longer regarded as a valid sentence end. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/209">#209</a>)</li>
         </ul>
-        <h2>Bug fixes</h2>
+        <br>
+        <p>
+            <em>Bug fixes</em>
+        </p>
         <ul>
             <li>Fixed comments in math mode not being properly highlighted. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/111">#111</a>)</li>
             <li>Fixed <code>\input</code> and <code>\include</code> not working in PyCharm. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/119">#119</a>)</li>
@@ -156,7 +164,7 @@
             <li>Fixed inspections working in comment environments. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/196">#196</a>)</li>
             <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/125">#125</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/141">#141</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/149">#149</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/160">#160</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/198">#198</a>)</li>
         </ul>
-
+        <br>
         <p>
             Full list of releases available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>
