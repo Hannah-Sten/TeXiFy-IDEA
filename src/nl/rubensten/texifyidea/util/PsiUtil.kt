@@ -8,8 +8,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex
+import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
@@ -29,6 +31,30 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
     return PsiTreeUtil.findChildrenOfType(this, clazz.java)
+}
+
+/**
+ * @see [PsiTreeUtil.getChildrenOfType]
+ */
+inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
+
+/**
+ * Finds the fierst element that matches a given predicate.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
+    for (child in children) {
+        if (predicate(this)) {
+            return child as? T
+        }
+
+        val first = child.findFirstChild<T>(predicate)
+        if (first != null) {
+            return first
+        }
+    }
+
+    return null
 }
 
 /**
@@ -266,6 +292,11 @@ fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.get
 fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
 
 /**
+ * @see [BibtexIdIndex.getIndexedIdsInFileSet]
+ */
+fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
+
+/**
  * @see TexifyUtil.getFileRelativeTo
  */
 fun PsiFile.fileRelativeTo(path: String): PsiFile? = TexifyUtil.getFileRelativeTo(this, path)
@@ -483,3 +514,11 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
  * Checks if the latex content objects is a display math environment.
  */
 fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
+
+
+/**
+ * Checks if the fileset for this file has a bibliography included.
+ *
+ * @return `true` when the fileset has a bibliography included, `false` otherwise.
+ */
+fun PsiFile.hasBibliography() = LatexIncludesIndex.getItemsInFileSet(this).any { it.name == "\\bibliography" }

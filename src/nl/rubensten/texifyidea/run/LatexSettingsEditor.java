@@ -33,6 +33,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     private LabeledComponent<ComponentWithBrowseButton> mainFile;
     private JCheckBox auxDir;
     private LabeledComponent<ComboBox> outputFormat;
+    private BibliographyPanel bibliographyPanel;
 
     private Project project;
 
@@ -63,6 +64,9 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Reset project.
         project = runConfiguration.getProject();
+
+        // Reset bibliography
+        bibliographyPanel.setConfiguration(runConfiguration.getBibRunConfig());
     }
 
     @Override
@@ -87,6 +91,9 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         // Apply output format.
         Format format = (Format)outputFormat.getComponent().getSelectedItem();
         runConfiguration.setOutputFormat(format);
+
+        // Apply bibliography
+        runConfiguration.setBibRunConfig(bibliographyPanel.getConfiguration());
     }
 
     @NotNull
@@ -152,5 +159,11 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         outputFormat = LabeledComponent.create(cboxFormat, "Output format");
         outputFormat.setSize(128, outputFormat.getHeight());
         panel.add(outputFormat);
+
+        panel.add(new TitledSeparator("Extensions"));
+
+        // Extension panels
+        bibliographyPanel = new BibliographyPanel(project);
+        panel.add(bibliographyPanel);
     }
 }

@@ -247,33 +247,43 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
-        <fileTypeFactory implementation="nl.rubensten.texifyidea.file.LatexFileTypeFactory"/>
+        <fileTypeFactory implementation="nl.rubensten.texifyidea.file.TexifyFileTypeFactory"/>
 
         <!-- Templates -->
         <internalFileTemplate name="LaTeX Source"/>
         <internalFileTemplate name="LaTeX Package"/>
         <internalFileTemplate name="LaTeX Document class"/>
+        <internalFileTemplate name="BibTeX Bibliography"/>
 
         <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Live templates -->
         <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.LatexLiveTemplateProvider"/>
+        <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.BibtexLiveTemplateProvider"/>
         <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.LatexContext"/>
+        <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.BibtexContext"/>
 
         <!-- Settings -->
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
+        <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.BibtexColorSettingsPage"/>
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
+        <lang.parserDefinition language="Bibtex" implementationClass="nl.rubensten.texifyidea.BibtexParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexSyntaxHighlighterFactory"/>
         <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
+        <lang.commenter language="Bibtex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
+        <lang.braceMatcher language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
 
         <!-- Structure view -->
-        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.LatexStructureViewFactory"/>
+        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.latex.LatexStructureViewFactory"/>
+        <lang.psiStructureViewFactory language="Bibtex" implementationClass="nl.rubensten.texifyidea.structure.bibtex.BibtexStructureViewFactory"/>
 
         <!-- Breadcrumbs -->
-        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.LatexBreadcrumbsInfo"/>
+        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.latex.LatexBreadcrumbsInfo"/>
+        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.bibtex.BibtexBreadcrumbsInfo"/>
 
         <!-- Project view -->
         <projectViewNodeDecorator implementation="nl.rubensten.texifyidea.project.TeXiFyProjectViewNodeDecorator"/>
@@ -284,14 +294,18 @@
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexImportFoldingBuilder"/>
         <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexSectionFoldingBuilder"/>
         <lang.formatter language="Latex" implementationClass="nl.rubensten.texifyidea.formatting.LatexFormattingModelBuilder"/>
-        <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.LatexCompletionContributor"/>
+        <lang.formatter language="Bibtex" implementationClass="nl.rubensten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
+        <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.TexifyCompletionContributor"/>
+        <completion.contributor language="Bibtex" implementationClass="nl.rubensten.texifyidea.completion.TexifyCompletionContributor"/>
         <enterHandlerDelegate implementation="nl.rubensten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
+        <enterHandlerDelegate implementation="nl.rubensten.texifyidea.completion.InsertBibtexTag"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexParameterInfoHandler"/>
         <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
         <lookup.charFilter implementation="nl.rubensten.texifyidea.completion.LatexCharFilter" id="latex"/>
         <enterHandlerDelegate implementation="nl.rubensten.texifyidea.editor.InsertEnumerationItem" />
         <typedHandler implementation="nl.rubensten.texifyidea.editor.ShiftTracker" />
         <typedHandler implementation="nl.rubensten.texifyidea.editor.UpDownAutoBracket" />
+        <typedHandler implementation="nl.rubensten.texifyidea.editor.BibtexQuoteInsertHandler"/>
 
         <!-- Line markers -->
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexLineMarkerProvider"/>
@@ -299,27 +313,33 @@
 
         <!-- Run configurations -->
         <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
+        <configurationType implementation="nl.rubensten.texifyidea.run.BibtexRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
+        <annotator language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexAnnotator"/>
 
         <!-- Blame -->
         <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>
 
-        <!-- Stubs -->
+        <!-- Index -->
         <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
+        <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.BibtexTypes"/>
 
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
+        <stubIndex implementation="nl.rubensten.texifyidea.index.BibtexIdIndex"/>
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexIncludesIndex"/>
         <stubIndex implementation="nl.rubensten.texifyidea.index.LatexDefinitionIndex"/>
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
+        <lang.documentationProvider language="Bibtex" implementationClass="nl.rubensten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 
+        <!-- Latex inspections -->
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
                          groupName="LaTeX" displayName="Non-escaped common math operators"
                          enabledByDefault="true"/>
@@ -448,6 +468,17 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
+                         enabledByDefault="true"/>
+
+        <!-- Bibtex inspections -->
+        <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
+                         groupName="BibTeX" displayName="Duplicate ID"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+                         groupName="BibTeX" displayName="Missing bibliography style"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+                         groupName="BibTeX" displayName="Duplicate bibliography style commands"
                          enabledByDefault="true"/>
 
         <!-- Intentions -->

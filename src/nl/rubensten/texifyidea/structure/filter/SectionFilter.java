@@ -4,8 +4,8 @@ import com.intellij.ide.util.treeView.smartTree.ActionPresentation;
 import com.intellij.ide.util.treeView.smartTree.Filter;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.structure.LatexStructureViewCommandElement;
-import nl.rubensten.texifyidea.structure.LatexStructureViewElement;
+import nl.rubensten.texifyidea.structure.latex.LatexStructureViewCommandElement;
+import nl.rubensten.texifyidea.structure.latex.LatexStructureViewElement;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

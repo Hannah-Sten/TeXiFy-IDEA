@@ -23,6 +23,11 @@ val DEFINITIONS = setOf(
 )
 
 /**
+ * Creates a pair of two objects, analogous to [to].
+ */
+infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
+
+/**
  * Prints the object in default string presentation to the console.
  */
 fun Any.print() = print(this)

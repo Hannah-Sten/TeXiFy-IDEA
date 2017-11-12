@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea;
 
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.PlatformIcons;
 
 import javax.swing.*;
 
@@ -96,6 +97,13 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon TABLE_OF_CONTENTS_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/toc-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon BBL_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/bbl-file.png"
     );
@@ -112,6 +120,13 @@ public class TexifyIcons {
      */
     public static final Icon BUILD = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/build.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon BUILD_BIB = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/bib-build.png"
     );
 
     /**
@@ -316,6 +331,26 @@ public class TexifyIcons {
     public static final Icon SETTINGS = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/settings.png"
     );
+
+    // From IntelliJ
+    public static final Icon STRING = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/string.png"
+    );
+
+    // From IntelliJ (modified)
+    public static final Icon KEY_REQUIRED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/key-required.png"
+    );
+
+    // From IntelliJ (modified)
+    public static final Icon KEY_USER_DEFINED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/key-user.png"
+    );
+
+    /**
+     * For lookup items that have no real category.
+     */
+    public static final Icon MISCELLANEOUS_ITEM = PlatformIcons.PACKAGE_LOCAL_ICON;
 
     /**
      * Get the file icon object that corresponds to the given file extension.

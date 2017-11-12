@@ -17,9 +17,11 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.TeXception;
+import nl.rubensten.texifyidea.file.BibtexFileType;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.index.BibtexIdIndex;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
@@ -55,14 +57,12 @@ public class TexifyUtil {
     }
 
     // Referenced files.
-    public static final Set<String> INCLUDE_COMMANDS = new HashSet<>();
-    static {
-        Collections.addAll(INCLUDE_COMMANDS, "\\includeonly", "\\include", "\\input", "\\usepackage", "\\RequirePackage");
-    }
-
+    public static final List<String> INCLUDE_COMMANDS = Arrays.asList(
+            "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage", "\\usepackage"
+    );
     public static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
-        Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls");
+        Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls", "bib");
     }
 
     /**
@@ -208,8 +208,10 @@ public class TexifyUtil {
         }
 
         PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
-        if (psiFile == null || (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
-                !StyleFileType.INSTANCE.equals(psiFile.getFileType()))) {
+        if (psiFile == null ||
+                (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
+                        !StyleFileType.INSTANCE.equals(psiFile.getFileType()) &&
+                        !BibtexFileType.INSTANCE.equals(psiFile.getFileType()))) {
             return scanRoots(file, path);
         }
 
@@ -347,6 +349,8 @@ public class TexifyUtil {
                 return ClassFileType.INSTANCE;
             case "sty":
                 return StyleFileType.INSTANCE;
+            case "bib":
+                return BibtexFileType.INSTANCE;
             default:
                 return LatexFileType.INSTANCE;
         }
@@ -490,12 +494,20 @@ public class TexifyUtil {
      * @return A set containing all labels that are defined in the fileset of the given file.
      */
     public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
-        return LatexCommandsIndex.Companion.getItemsInFileSet(file).stream()
+        // LaTeX
+        Set<String> labels = LatexCommandsIndex.Companion.getItemsInFileSet(file).stream()
                 .filter(cmd -> cmd.getName().equals("\\label") || cmd.getName().equals("\\bibitem"))
                 .map(LatexCommands::getRequiredParameters)
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.get(0))
                 .collect(Collectors.toSet());
+
+        // BibTeX
+        BibtexIdIndex.getIndexedIdsInFileSet(file).stream()
+                .map(elt -> StringUtilKt.substringEnd(elt.getText(), 1))
+                .forEach(labels::add);
+
+        return labels;
     }
 
     /**
@@ -505,8 +517,12 @@ public class TexifyUtil {
      *         Project scope.
      * @return A list of label commands.
      */
-    public static Collection<LatexCommands> findLabels(@NotNull Project project) {
-        return findLabels(LatexCommandsIndex.Companion.getItems(project));
+    public static Collection<PsiElement> findLabels(@NotNull Project project) {
+        Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getItems(project);
+        Collection<BibtexId> bibIds = BibtexIdIndex.getIndexedIds(project);
+        List<PsiElement> result = new ArrayList<>(cmds);
+        result.addAll(bibIds);
+        return findLabels(result);
     }
 
     /**
@@ -516,8 +532,12 @@ public class TexifyUtil {
      *         The file to analyse the file set of.
      * @return A list of label commands.
      */
-    public static Collection<LatexCommands> findLabels(@NotNull PsiFile file) {
-        return findLabels(LatexCommandsIndex.Companion.getItemsInFileSet(file));
+    public static Collection<PsiElement> findLabels(@NotNull PsiFile file) {
+        Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getItems(file);
+        Collection<BibtexId> bibIds = BibtexIdIndex.getIndexedIds(file);
+        List<PsiElement> result = new ArrayList<>(cmds);
+        result.addAll(bibIds);
+        return findLabels(result);
     }
 
     /**
@@ -527,11 +547,15 @@ public class TexifyUtil {
      *         The commands to select all labels from.
      * @return A collection of all label commands.
      */
-    public static Collection<LatexCommands> findLabels(@NotNull Collection<LatexCommands> cmds) {
+    public static Collection<PsiElement> findLabels(@NotNull Collection<PsiElement> cmds) {
         cmds.removeIf(cmd -> {
-            String name = cmd.getName();
-            return !"\\label".equals(name) && !"\\bibitem".equals(name);
+            if (cmd instanceof LatexCommands) {
+                String name = ((LatexCommands)cmd).getName();
+                return !("\\bibitem".equals(name) || "\\label".equals(name));
+            }
+            return false;
         });
+
         return cmds;
     }
 
@@ -544,11 +568,21 @@ public class TexifyUtil {
      *         Key to match the label with.
      * @return A list of matched label commands.
      */
-    public static Collection<LatexCommands> findLabels(Project project, String key) {
+    public static Collection<PsiElement> findLabels(Project project, String key) {
         return findLabels(project).parallelStream()
                 .filter(c -> {
-                    List<String> p = ApplicationManager.getApplication().runReadAction((Computable<List<String>>)c::getRequiredParameters);
-                    return p.size() > 0 && p.get(0).equals(key);
+                    if (c instanceof LatexCommands) {
+                        LatexCommands cmd = (LatexCommands)c;
+                        List<String> p = ApplicationManager.getApplication().runReadAction(
+                                (Computable<List<String>>)cmd::getRequiredParameters
+                        );
+                        return p.size() > 0 && p.get(0).equals(key);
+                    }
+                    else if (c instanceof BibtexId) {
+                        return ((BibtexId)c).getName().equals(key);
+                    }
+
+                    return false;
                 })
                 .collect(Collectors.toList());
     }

@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.rubensten.texifyidea.TexifyIcons
+import nl.rubensten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 import nl.rubensten.texifyidea.util.PackageUtils
 
 /**
@@ -20,6 +21,7 @@ object LatexPackageNameProvider : CompletionProvider<CompletionParameters>() {
                     .withPresentableText(name)
                     .bold()
                     .withIcon(TexifyIcons.STYLE_FILE)
+                    .withInsertHandler(MoveToEndOfCommandHandler)
         })
     }
 }

@@ -11,7 +11,7 @@ import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexRequiredParam
-import nl.rubensten.texifyidea.structure.LatexStructureViewElement
+import nl.rubensten.texifyidea.structure.latex.LatexStructureViewElement
 import nl.rubensten.texifyidea.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList

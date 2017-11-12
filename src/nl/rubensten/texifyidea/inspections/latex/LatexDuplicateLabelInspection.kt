@@ -7,9 +7,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
-import nl.rubensten.texifyidea.util.commandsInFile
-import nl.rubensten.texifyidea.util.commandsInFileSet
-import nl.rubensten.texifyidea.util.requiredParameter
+import nl.rubensten.texifyidea.util.*
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -40,7 +38,16 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                 labels.add(labelName)
                 continue
             }
+            firstPass.add(labelName)
+        }
 
+        for (id in file.bibtexIdsInFileSet()) {
+            val labelName = id.idName()
+
+            if (labelName in firstPass) {
+                labels += labelName
+                continue
+            }
             firstPass.add(labelName)
         }
 

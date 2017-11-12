@@ -22,7 +22,8 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
                 "aux" to TexifyIcons.AUX_FILE,
                 "tmp" to TexifyIcons.TEMP_FILE,
                 "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
-                "bib" to TexifyIcons.BIBLIOGRAPHY_FILE
+                "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
+                "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE
         )
     }
 
