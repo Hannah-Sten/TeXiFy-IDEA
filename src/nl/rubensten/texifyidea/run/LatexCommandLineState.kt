@@ -13,6 +13,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.TeXception
+import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.*
 import org.jetbrains.concurrency.runAsync
 import java.io.File
@@ -73,7 +74,16 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     return@run
                 }
 
-                val line = document.getLineNumber(editor.caretModel.offset) + 1
+                // Do not do inverse search when editing the preamble.
+                if (psiFile.isRoot()) {
+                    val element = psiFile.findElementAt(editor.caretOffset()) ?: return@run
+                    val environment = element.parentOfType(LatexEnvironment::class) ?: return@run
+                    if (environment.name()?.text != "document") {
+                        return@run
+                    }
+                }
+
+                val line = document.getLineNumber(editor.caretOffset()) + 1
 
                 runAsync {
                     try {

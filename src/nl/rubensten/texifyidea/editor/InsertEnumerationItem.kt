@@ -119,7 +119,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
     private fun hasValidContext(element: PsiElement?): Boolean {
-        if (element == null || ShiftTracker.isShiftPressed()) {
+        if (element == null || ShiftTracker.isShiftPressed() || element.inMathContext()) {
             return false
         }
 

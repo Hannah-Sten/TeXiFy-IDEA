@@ -261,30 +261,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Looks for the next command relative to the given command.
-     *
-     * @param commands
-     *         The command to start looking from.
-     * @return The next command in the file, or {@code null} when there is no such command.
-     */
-    @Nullable
-    public static LatexCommands getNextCommand(@NotNull LatexCommands commands) {
-        LatexContent content = (LatexContent)commands.getParent().getParent();
-        PsiElement nextPsi = content.getNextSibling();
-        if (!(nextPsi instanceof LatexContent)) {
-            return null;
-        }
-
-        LatexContent siblingContent = (LatexContent)nextPsi;
-        LatexCommands childCommand = PsiTreeUtil.findChildOfType(siblingContent, LatexCommands.class);
-        if (childCommand == null) {
-            return null;
-        }
-
-        return childCommand;
-    }
-
-    /**
      * Turns a given integer into a roman numeral.
      *
      * @param integer
@@ -328,7 +304,7 @@ public class TexifyUtil {
         }
 
         for (String extension : extensions) {
-            String lookFor = fileName.endsWith(extension) ? fileName : fileName + "." + extension;
+            String lookFor = fileName.endsWith("." + extension) ? fileName : fileName + "." + extension;
             file = directory.findFileByRelativePath(lookFor);
 
             if (file != null) {

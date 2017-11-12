@@ -111,7 +111,7 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
-    return hasParent(LatexMathContent::class) || inDirectEnvironmentContext(Environment.Context.MATH)
+    return hasParent(LatexMathContent::class) || hasParent(LatexDisplayMath::class) || inDirectEnvironmentContext(Environment.Context.MATH)
 }
 
 /**
@@ -404,9 +404,17 @@ fun LatexCommands.firstRequiredParamAsCommand(): LatexCommands? = TexifyUtil.get
 fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
 
 /**
- * @see TexifyUtil.getNextCommand
+ * Looks for the next command relative to the given command.
+ *
+ * @param commands
+ *          The command to start looking from.
+ * @return The next command in the file, or `null` when there is no such command.
  */
-fun LatexCommands.nextCommand(): LatexCommands? = TexifyUtil.getNextCommand(this)
+fun LatexCommands.nextCommand(): LatexCommands? {
+    val content = parentOfType(LatexContent::class) ?: return null
+    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent ?: return null
+    return next.firstChildOfType(LatexCommands::class)
+}
 
 /**
  * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand

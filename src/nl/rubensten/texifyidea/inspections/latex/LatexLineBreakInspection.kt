@@ -29,7 +29,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
          * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
          */
         @Language("RegExp")
-        private val SENTENCE_END = Pattern.compile("([^.][^.][.?!;;] +[^%])|(^\\. )")
+        private val SENTENCE_END = Pattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%])|(^\\. )")
 
         @Language("RegExp")
         private val SENTENCE_SEPERATOR = Pattern.compile("[.?!;;]")

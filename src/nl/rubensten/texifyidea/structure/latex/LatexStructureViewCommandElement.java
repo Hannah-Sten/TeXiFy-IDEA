@@ -7,7 +7,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.structure.EditableHintPresentation;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.PsiUtilKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +32,7 @@ public class LatexStructureViewCommandElement implements StructureViewTreeElemen
     public static LatexStructureViewCommandElement newCommand(LatexCommands commands) {
         if ("\\let".equals(commands.getCommandToken().getText()) ||
                 "\\def".equals(commands.getCommandToken().getText())) {
-            LatexCommands sibling = TexifyUtil.getNextCommand(commands);
+            LatexCommands sibling = PsiUtilKt.nextCommand(commands);
             if (sibling == null) {
                 return null;
             }
