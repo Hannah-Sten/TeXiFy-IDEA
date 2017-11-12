@@ -88,5 +88,15 @@ class BibtexRunConfiguration(project: Project, factory: ConfigurationFactory, na
         parent.addContent(Element(AUX_DIR).apply { text = auxDir?.path ?: "" })
     }
 
-    override fun isGeneratedName() = false
+    override fun isGeneratedName() = name == suggestedName()
+
+    override fun suggestedName() = mainFile?.nameWithoutExtension?.plus(" bibliography")
+
+    fun setDefaultCompiler() {
+        compiler = BibliographyCompiler.BIBTEX
+    }
+
+    fun setSuggestedName() {
+        name = suggestedName()
+    }
 }

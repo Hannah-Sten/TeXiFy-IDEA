@@ -11,6 +11,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex
+import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
@@ -505,3 +506,11 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
  * Checks if the latex content objects is a display math environment.
  */
 fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
+
+
+/**
+ * Checks if the fileset for this file has a bibliography included.
+ *
+ * @return `true` when the fileset has a bibliography included, `false` otherwise.
+ */
+fun PsiFile.hasBibliography() = LatexIncludesIndex.getItemsInFileSet(this).any { it.name == "\\bibliography" }

@@ -160,6 +160,25 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         parent.addContent(bibRunConfigElt);
     }
 
+    void generateBibRunConfig() {
+        RunManagerImpl runManager = RunManagerImpl.getInstanceImpl(getProject());
+
+        RunnerAndConfigurationSettings bibSettings = runManager.createRunConfiguration(
+                "",
+                new LatexConfigurationFactory(new BibtexRunConfigurationType())
+        );
+
+        BibtexRunConfiguration bibtexRunConfiguration = (BibtexRunConfiguration)bibSettings.getConfiguration();
+
+        bibtexRunConfiguration.setDefaultCompiler();
+        bibtexRunConfiguration.setMainFile(mainFile);
+        bibtexRunConfiguration.setSuggestedName();
+
+        runManager.addConfiguration(bibSettings);
+
+        setBibRunConfig(bibSettings);
+    }
+
     public LatexCompiler getCompiler() {
         return compiler;
     }

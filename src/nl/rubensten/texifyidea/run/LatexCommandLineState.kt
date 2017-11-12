@@ -37,9 +37,20 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
 
+        // Generate bibliography run configuration when needed
+        if (!runConfig.isSkipBibtex && runConfig.bibRunConfig == null && mainFile.psiFile(environment.project)?.hasBibliography() == true) {
+            runConfig.generateBibRunConfig()
+        }
+
         runConfig.bibRunConfig?.let {
             if (runConfig.isSkipBibtex) {
                 return@let
+            }
+
+            // Change configuration to match the latex settings
+            (it.configuration as? BibtexRunConfiguration)?.apply {
+                this.mainFile = mainFile
+                this.auxDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
             }
 
             handler.addProcessListener(RunBibtexListener(it, runConfig, environment))
