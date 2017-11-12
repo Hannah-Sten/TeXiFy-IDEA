@@ -37,7 +37,8 @@ public class LatexStructureViewElement implements StructureViewTreeElement, Sort
 
     public static final List<String> SECTION_MARKERS = Arrays.asList(
             "\\part", "\\chapter",
-            "\\section", "\\subsection", "\\subsubsection", "\\paragraph", "\\subparagraph"
+            "\\section", "\\subsection", "\\subsubsection",
+            "\\paragraph", "\\subparagraph"
     );
 
     private final PsiElement element;

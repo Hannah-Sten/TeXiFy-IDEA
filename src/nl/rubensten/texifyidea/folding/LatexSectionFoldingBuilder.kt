@@ -9,7 +9,6 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.PsiContainer
-import nl.rubensten.texifyidea.structure.latex.LatexStructureViewElement
 import nl.rubensten.texifyidea.util.nextSiblingIgnoreWhitespace
 import nl.rubensten.texifyidea.util.parentOfType
 import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
@@ -23,7 +22,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     companion object {
 
-        private val sectionCommands = LatexStructureViewElement.SECTION_MARKERS.toTypedArray()
+        private val sectionCommands = arrayOf("\\section", "\\chapter")
     }
 
     override fun isCollapsedByDefault(node: ASTNode) = false

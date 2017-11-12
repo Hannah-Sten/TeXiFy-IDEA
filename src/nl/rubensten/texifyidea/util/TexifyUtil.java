@@ -58,7 +58,7 @@ public class TexifyUtil {
 
     // Referenced files.
     public static final List<String> INCLUDE_COMMANDS = Arrays.asList(
-            "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage"
+            "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage", "\\usepackage"
     );
     public static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
     static {
