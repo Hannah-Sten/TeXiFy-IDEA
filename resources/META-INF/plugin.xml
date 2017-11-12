@@ -72,7 +72,7 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <h1>Beta 0.5</h1>
+        <p><strong>Beta 0.5</strong></p>
         <p>
             The newest TeXiFy IDEA, with loads of new functionality.
             Starring in this release: <em>BibTeX support</em>!
