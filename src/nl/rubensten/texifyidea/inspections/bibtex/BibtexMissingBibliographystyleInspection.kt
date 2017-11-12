@@ -21,6 +21,9 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
 
     override fun getInspectionId() = "MissingBibliographystyle"
 
+    // Manual override to match short name in plugin.xml
+    override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
+
     override fun getDisplayName() = "Missing bibliography style"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
