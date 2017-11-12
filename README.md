@@ -18,86 +18,31 @@ Please bear in mind that this is just a side project for us. It might take a whi
 
 ## Features
 
-### Currently supported
+* Syntax highlighting
+* Autocomplete of labels, (custom defined) commands and environments
+* Writer ergonomics - writing LaTeX made less cumbersome
+* Run configurations for LaTeX and BibTeX (pdfLaTeX, bibtex)
+* Inspections. Intentions. And heaps more inspections.
+* Full BibTeX support
+* Formatter for LaTeX and BibTeX
+* Structure view for LaTeX and BibTeX with filters
+* Code folding for imports, sections, and environments
+* SumatraPDF support with forward and backward search
+* Unicode math preview
+* Gutter icons for quick compilation and file includes
+* Fancy icons that fit in with the IntelliJ style
+* Brace matching
+* Word counting tool
+* File templates for .tex, .sty, .cls and .bib files
+* Automagically import packages of common commands
+* Go to declaration of labels
+* Shortcuts for styling text
+* Line commenter
+* Support for user-created document classes and packages
+* Toggle star action
+* Words of encouragement
 
-#### Run configurations
-* Multiple 'compile' (run) configurations.
-* Supported compilers: `pdfLaTeX`
-* Seperate auxiliary files from output (only supported for `MiKTeX`).
-* Dynamically detect what runtime configuration to use based on the active file.
-* Support for `PDF` and `DVI` output.
-
-#### Editor
-* Autocompletion form a predefined list of commands.
-* Commands defined in the project will also be added to the autocompletion list.
-* Autocompletion of defined labels (using `\label`).
-* Autocompletion for file names.
-* Brace matching for `{}`, `[]`, `\[\]` and `$$`.
-* Automatically inserts other half of `{}`, `[]`, `\[\]` and `$$`.
-* Most math commands get replaced by their unicode representation using folding.
-* Gutter icon to navigate to included files.
-* Gutter icon to automatically compile the active file.
-* Comment out lines.
-* Code folding for environments.
-* Go to declaration of labels.
-* Toggle star in commands.
-* Automatically includes packages for registered commands (in TeXiFy, e.g. `ulem` for `\sout`)
-
-#### Syntax highlighting
-Braces, 
-Brackets, 
-Optional parameters, 
-Commands, 
-Commands in inline math mode, 
-Commands in display math mode, 
-Comments, 
-Inline math, 
-Display math, 
-and Stars.
-
-#### Structure view
-* Shows sectioning, inclusions, labels and command definitions.
-* Items can be sorted.
-* Filters to add/remove items from view.
-* Section numbering behind section items that takes `\setcounter` and `\addtocounter` into account.
-* Included files also show their item tree in the overview.
-* Updates automatically during editing.
-
-#### Inspections
-Most inspections come with quick fixes.
-
-* Integration with the default IntelliJ spell checker. 
-* Already defined commands
-* Discouraged use of `\def` and `\let`
-* Duplicate labels
-* Label conventions (`sec:`, `fig:` etc.)
-* Breaking TeXiFy IDEA functionality
-* Missing document environment
-* Missing `\documentclass`
-* Missing imports
-* Missing labels on `\section`, `\subsection` and `\chapter`
-* Non-breaking spaces before references
-* Non-escaped common math operators
-* Redundant escapes when unicode is enabled
-* Start sentences on a new line
-* Discouraged TeX styling primitive usage
-* Too large sections: move to another file
-* Unresolved references
-* Unsupported Unicode characters
-* Use of `\over` discouraged
-
-#### PDF Viewer
-* Offical support for SumatraPDF on Windows
-* Supports forward and backward search (Windows only)
-
-#### User Interface
-* Create new `.tex`, `.sty` and `.cls` files from the new file menu.
-* Some insertion actions from the LaTeX menu for styling and sections.
-
-#### Other
-* Word- and character counting tool
-* Available file templates for `.tex`, `.sty` and `.cls` files. 
-* Many fancy icons with the look and feel of the IntelliJ platform.
+We could make a detailed list, but that would take up your whole screen! We might add one later though :)
 
 ## How to build the project using IntelliJ
 * Clone or download the project.
