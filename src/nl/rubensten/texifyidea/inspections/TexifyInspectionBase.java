@@ -3,10 +3,12 @@ package nl.rubensten.texifyidea.inspections;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.insight.InsightGroup;
+import nl.rubensten.texifyidea.util.PsiUtilKt;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +55,19 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
         }
 
         List<ProblemDescriptor> descriptors = inspectFile(file, manager, isOnTheFly);
+        descriptors.removeIf(descriptor -> !checkContext(descriptor.getPsiElement()));
         return descriptors.toArray(new ProblemDescriptor[descriptors.size()]);
+    }
+
+    /**
+     * Checks if the element is in the correct context.
+     *
+     * By default returns `false` when in comments.
+     *
+     * @return `true` if the inspection is allowed in the context, `false` otherwise.
+     */
+    public boolean checkContext(@NotNull PsiElement element) {
+        return !PsiUtilKt.isComment(element);
     }
 
     /**

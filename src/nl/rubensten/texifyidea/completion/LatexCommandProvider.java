@@ -23,6 +23,7 @@ import nl.rubensten.texifyidea.index.LatexDefinitionIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.FileUtilKt;
+import nl.rubensten.texifyidea.util.Kindness;
 import nl.rubensten.texifyidea.util.PsiUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +74,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withInsertHandler(new LatexNoMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
         ));
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 
     private void addMathCommands(CompletionResultSet result) {
@@ -121,6 +123,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                         .withTailText(packageName(env), true)
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 
     private String packageName(Dependend dependend) {
@@ -144,7 +147,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        Set<PsiFile> files = TexifyUtil.getReferencedFileSet(file);
+        Set<PsiFile> files = new HashSet<>(TexifyUtil.getReferencedFileSet(file));
         PsiFile root = FileUtilKt.findRootFile(file);
         PsiFile documentClass = FileUtilKt.documentClassFile(root);
         if (documentClass != null) {
@@ -195,6 +198,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                     .withIcon(TexifyIcons.DOT_COMMAND)
             );
         }
+        result.addLookupAdvertisement(Kindness.getKindWords());
     }
 
     @NotNull
@@ -203,12 +207,12 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             return "";
         }
 
-        LatexCommands firstNext = TexifyUtil.getNextCommand(commands);
+        LatexCommands firstNext = PsiUtilKt.nextCommand(commands);
         if (firstNext == null) {
             return "";
         }
 
-        LatexCommands secondNext = TexifyUtil.getNextCommand(firstNext);
+        LatexCommands secondNext = PsiUtilKt.nextCommand(firstNext);
         if (secondNext == null) {
             return "";
         }

@@ -40,7 +40,6 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
                 .forEach {
                     val definedCmd = it.definedCommandName() ?: return@forEach
                     if (defined.count(definedCmd) > 1) {
-                        println("Add to ${it.text}")
                         descriptors.add(manager.createProblemDescriptor(
                                 it,
                                 "Command '$definedCmd' is defined multiple times",

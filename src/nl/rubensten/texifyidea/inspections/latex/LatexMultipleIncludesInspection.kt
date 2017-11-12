@@ -7,8 +7,10 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.psi.LatexRequiredParam
 import nl.rubensten.texifyidea.util.PackageUtils
 import nl.rubensten.texifyidea.util.commandsInFile
+import nl.rubensten.texifyidea.util.firstChildOfType
 import nl.rubensten.texifyidea.util.requiredParameter
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -38,10 +40,10 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         file.commandsInFile()
                 .filter { it.name == "\\usepackage" && it.requiredParameter(0) in duplicates }
                 .forEach {
-                    val nameLength = it.requiredParameter(0)?.length ?: 1
+                    val parameter = it.firstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
                     descriptors.add(manager.createProblemDescriptor(
                             it,
-                            TextRange.from(it.commandToken.textLength + 1, nameLength),
+                            TextRange.from(parameter.textOffset + 1 - it.textOffset, parameter.textLength - 2),
                             "Package has already been included",
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly
