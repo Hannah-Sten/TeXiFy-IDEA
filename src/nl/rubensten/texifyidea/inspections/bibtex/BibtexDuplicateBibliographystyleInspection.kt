@@ -10,7 +10,9 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.util.*
+import nl.rubensten.texifyidea.util.commandsInFile
+import nl.rubensten.texifyidea.util.commandsInFileSet
+import nl.rubensten.texifyidea.util.findAtLeast
 
 /**
  * @author Ruben Schellekens
@@ -63,8 +65,6 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
-            val document = file.document() ?: return
-            val editor = file.openedEditor() ?: return
 
             file.commandsInFileSet()
                     .filter { it.name == "\\bibliographystyle" && it != command }
