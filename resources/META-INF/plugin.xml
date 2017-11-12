@@ -34,10 +34,39 @@
     <depends>com.intellij.modules.lang</depends>
 
     <description><![CDATA[
-        <p>Plugin for LaTeX support in IntelliJ IDEA.</p>
         <p>
-            Note to users: all suggestions/requests/bug reports/kudos/critique/(non-)creative ideas/contributions are
-            welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin GitHub page</a>.
+            Plugin for LaTeX and BibTeX support in IntelliJ, featuring:
+        </p>
+        <ul>
+            <li>Syntax highlighting</li>
+            <li>Autocomplete of labels, (custom defined) commands and environments</li>
+            <li>Writer ergonomics - writing LaTeX made less cumbersome</li>
+            <li>Run configurations for LaTeX and BibTeX (pdfLaTeX, bibtex)</li>
+            <li>Inspections. Intentions. And heaps more inspections.</li>
+            <li>Full BibTeX support</li>
+            <li>Formatter for LaTeX and BibTeX</li>
+            <li>Structure view for LaTeX and BibTeX with filters</li>
+            <li>Code folding for imports, sections, and environments</li>
+            <li>SumatraPDF support with forward and backward search</li>
+            <li>Unicode math preview</li>
+            <li>Gutter icons for quick compilation and file includes</li>
+            <li>Fancy icons that fit in with the IntelliJ style</li>
+            <li>Brace matching</li>
+            <li>Word counting tool</li>
+            <li>File templates for <code>.tex</code>, <code>.sty</code>, <code>.cls</code> and <code>.bib</code> files</li>
+            <li>Automagically import packages of common commands</li>
+            <li>Go to declaration of labels</li>
+            <li>Shortcuts for styling text</li>
+            <li>Line commenter</li>
+            <li>Support for user-created document classes and packages</li>
+            <li>Toggle star action</li>
+            <li>Words of encouragement</li>
+        </ul>
+        <p>
+            All critique, questions, suggestions, requests, bug reports, kudos, and (non-)creative ideas are
+            welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin’s GitHub page</a>.
+            If you want to directly chat with us, take a peek at the project's
+            <a href="https://gitter.im/TeXiFy-IDEA">gitter</a>.
         </p>
     ]]></description>
 
