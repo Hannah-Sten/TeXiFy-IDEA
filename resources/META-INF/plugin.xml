@@ -422,6 +422,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+                         groupName="BibTeX" displayName="Duplicate bibliography style commands"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>

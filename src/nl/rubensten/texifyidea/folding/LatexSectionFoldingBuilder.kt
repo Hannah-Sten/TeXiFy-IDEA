@@ -9,7 +9,7 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.PsiContainer
-import nl.rubensten.texifyidea.structure.LatexStructureViewElement
+import nl.rubensten.texifyidea.structure.latex.LatexStructureViewElement
 import nl.rubensten.texifyidea.util.nextSiblingIgnoreWhitespace
 import nl.rubensten.texifyidea.util.parentOfType
 import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
