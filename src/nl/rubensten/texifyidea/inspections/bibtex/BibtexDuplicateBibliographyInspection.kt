@@ -15,7 +15,7 @@ import nl.rubensten.texifyidea.util.commandsInFileSet
 import nl.rubensten.texifyidea.util.requiredParameter
 
 /**
- * @author Ruben Schellekens
+ * @author Sten Wessel
  */
 open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 

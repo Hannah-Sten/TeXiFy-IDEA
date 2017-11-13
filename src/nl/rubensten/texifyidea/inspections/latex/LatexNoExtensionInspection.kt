@@ -53,6 +53,9 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
     }
 
 
+    /**
+     * @author Sten Wessel
+     */
     object RemoveExtensionFix : LocalQuickFix {
 
         override fun getFamilyName() = "Remove file extension"
