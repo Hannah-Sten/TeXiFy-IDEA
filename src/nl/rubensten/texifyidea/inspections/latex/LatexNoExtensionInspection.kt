@@ -19,10 +19,12 @@ import nl.rubensten.texifyidea.util.requiredParameter
  * @author Sten Wessel
  */
 open class LatexNoExtensionInspection : TexifyInspectionBase() {
+
     companion object {
+
         private val NO_EXTENSION_INCLUDES = mapOf(
-            "\\include" to listOf(".tex"),
-            "\\bibliography" to listOf(".bib")
+                "\\include" to listOf(".tex"),
+                "\\bibliography" to listOf(".bib")
         )
     }
 
@@ -36,22 +38,23 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         LatexCommandsIndex.getItems(file)
-            .filter { it.name in NO_EXTENSION_INCLUDES }
-            .filter { command ->
-                NO_EXTENSION_INCLUDES[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }
-            }
-            .forEach {
-                descriptors.add(manager.createProblemDescriptor(
-                    it, TextRange.allOf(it.requiredParameter(0)!!).shiftRight(it.commandToken.textLength + 1),
-                    "File argument should not include the extension", ProblemHighlightType.GENERIC_ERROR,
-                    isOntheFly,
-                    RemoveExtensionFix
-                ))
-            }
+                .filter { it.name in NO_EXTENSION_INCLUDES }
+                .filter { command ->
+                    NO_EXTENSION_INCLUDES[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }
+                }
+                .forEach {
+                    descriptors.add(manager.createProblemDescriptor(
+                            it,
+                            TextRange.allOf(it.requiredParameter(0)!!).shiftRight(it.commandToken.textLength + 1),
+                            "File argument should not include the extension",
+                            ProblemHighlightType.GENERIC_ERROR,
+                            isOntheFly,
+                            RemoveExtensionFix
+                    ))
+                }
 
         return descriptors
     }
-
 
     /**
      * @author Sten Wessel
@@ -65,15 +68,13 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
             val document = command.containingFile.document() ?: return
 
             val replacement = NO_EXTENSION_INCLUDES[command.name]
-                ?.find { command.requiredParameter(0)?.endsWith(it) == true }
-                ?.run { command.requiredParameter(0)?.removeSuffix(this) } ?: return
+                    ?.find { command.requiredParameter(0)?.endsWith(it) == true }
+                    ?.run { command.requiredParameter(0)?.removeSuffix(this) } ?: return
 
             // Exclude the enclosing braces
             val range = command.parameterList.first { it.requiredParam != null }.textRange.shiftRight(1).grown(-2)
 
             document.replaceString(range, replacement)
         }
-
     }
-
 }

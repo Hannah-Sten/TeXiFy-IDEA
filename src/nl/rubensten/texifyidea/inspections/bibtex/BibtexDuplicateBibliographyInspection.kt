@@ -32,18 +32,20 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         LatexIncludesIndex.getItemsInFileSet(file)
-            .filter { it.name == "\\bibliography" }
-            .groupBy { it.requiredParameters.getOrNull(0) }
-            .filter { it.key != null && it.value.size > 1 }
-            .flatMap { it.value }
-            .forEach {
-                descriptors.add(manager.createProblemDescriptor(
-                    it, TextRange(0, it.requiredParameter(0)?.length!!).shiftRight(it.commandToken.textLength + 1),
-                    "Bibliography file is included multiple times", ProblemHighlightType.GENERIC_ERROR,
-                    isOntheFly,
-                    RemoveOtherCommandsFix(it.requiredParameter(0)!!)
-                ))
-            }
+                .filter { it.name == "\\bibliography" }
+                .groupBy { it.requiredParameters.getOrNull(0) }
+                .filter { it.key != null && it.value.size > 1 }
+                .flatMap { it.value }
+                .forEach {
+                    descriptors.add(manager.createProblemDescriptor(
+                            it,
+                            TextRange(0, it.requiredParameter(0)?.length!!).shiftRight(it.commandToken.textLength + 1),
+                            "Bibliography file is included multiple times",
+                            ProblemHighlightType.GENERIC_ERROR,
+                            isOntheFly,
+                            RemoveOtherCommandsFix(it.requiredParameter(0)!!)
+                    ))
+                }
 
         return descriptors
     }
