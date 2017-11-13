@@ -506,6 +506,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNoExtensionInspection"
+                         groupName="LaTeX" displayName="File argument should not include the extension"
+                         enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
