@@ -506,6 +506,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNoExtensionInspection"
+                         groupName="LaTeX" displayName="File argument should not include the extension"
+                         enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
@@ -516,6 +519,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
+                         groupName="BibTeX" displayName="Same bibliography is included multiple times"
                          enabledByDefault="true"/>
 
         <!-- Intentions -->
