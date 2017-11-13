@@ -517,6 +517,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
+                         groupName="BibTeX" displayName="Same bibliography is included multiple times"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
