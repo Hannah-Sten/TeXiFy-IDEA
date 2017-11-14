@@ -509,6 +509,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNoExtensionInspection"
                          groupName="LaTeX" displayName="File argument should not include the extension"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
+                         groupName="LaTeX" displayName="Nested includes"
+                         enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
