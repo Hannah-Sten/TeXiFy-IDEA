@@ -350,7 +350,7 @@ enum class LatexMathCommand(
             }
         }
 
-        @JvmStatic fun get(command: String) = lookup[command]
+        @JvmStatic operator fun get(command: String) = lookup[command]
 
         @JvmStatic fun findByDisplay(display: String) = lookupDisplay[display]
     }
