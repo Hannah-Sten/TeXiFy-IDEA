@@ -43,7 +43,8 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
                     descriptors.add(manager.createProblemDescriptor(
                             it,
                             TextRange.allOf(it.text),
-                            "Includes cannot be nested", ProblemHighlightType.GENERIC_ERROR,
+                            "Includes cannot be nested",
+                            ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly,
                             ConvertToInputFix
                     ))
