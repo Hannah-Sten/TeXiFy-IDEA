@@ -12,12 +12,10 @@ import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexNormalText
+import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.firstChildOfType
-import org.intellij.lang.annotations.Language
-import java.util.regex.Pattern
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -26,23 +24,6 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
  */
 open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        /**
-         * All the commands that require a non-breaking space in front.
-         */
-        @JvmStatic val REFERENCE_COMMANDS = setOf(
-                "\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref",
-                "\\fullref", "\\pageref"
-        )
-
-        /**
-         * Matches when a string doesn't end with a non-breaking space (`~`).
-         */
-        @Language("RegExp")
-        private val ENDS_WITH_NON_BREAKING_SPACE = Pattern.compile("~$")
-    }
-
     override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Start sentences on a new line"
@@ -50,11 +31,11 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "NonBreakingSpace"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val commands = LatexCommandsIndex.getItems(file)
         for (cmd in commands) {
-            if (!REFERENCE_COMMANDS.contains(cmd.name)) {
+            if (!Magic.Command.reference.contains(cmd.name)) {
                 continue
             }
 
@@ -75,7 +56,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
             // Otherwise, it's CONTENT - so check the underlying normal text if it ends with whitespace.
             val text = sibling.firstChildOfType(LatexNormalText::class)?.text ?: continue
-            val matcher = ENDS_WITH_NON_BREAKING_SPACE.matcher(text)
+            val matcher = Magic.Pattern.endsWithNonBreakingSpace.matcher(text)
             if (!matcher.find()) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
@@ -97,9 +78,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
      */
     private class WhitespaceReplacementFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Insert non-breaking space"
-        }
+        override fun getFamilyName() = "Insert non-breaking space"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val whitespace = descriptor.psiElement as PsiWhiteSpace
@@ -114,7 +93,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
                 val text = texts.reversed().iterator().next()
 
                 // When there is a tilde, destroy the whitespace.
-                if (ENDS_WITH_NON_BREAKING_SPACE.matcher(text.text).find()) {
+                if (Magic.Pattern.endsWithNonBreakingSpace.matcher(text.text).find()) {
                     replacement = ""
                 }
             }
@@ -131,9 +110,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
      */
     private class TextReplacementFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Insert non-breaking space"
-        }
+        override fun getFamilyName() = "Insert non-breaking space"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

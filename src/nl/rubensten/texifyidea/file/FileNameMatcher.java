@@ -14,5 +14,4 @@ public interface FileNameMatcher {
      * @return {@code true} if the fileName matches, {@code false} when the fileName does not match.
      */
     boolean matchesName(String fileName);
-
 }

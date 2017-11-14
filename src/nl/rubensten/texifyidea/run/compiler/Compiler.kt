@@ -4,7 +4,6 @@ import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.project.Project
 
 /**
- *
  * @author Sten Wessel
  */
 interface Compiler<in R : RunConfiguration> {
@@ -13,5 +12,4 @@ interface Compiler<in R : RunConfiguration> {
     val executableName: String
 
     fun getCommand(runConfig: R, project: Project): List<String>?
-
 }

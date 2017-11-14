@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import com.intellij.util.SmartList
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
@@ -18,7 +17,6 @@ import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.name
 
 /**
- *
  * @author Sten Wessel
  */
 open class LatexQedHereInspection : TexifyInspectionBase() {
@@ -30,7 +28,7 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "QedHere"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         // Only proof environments
         val displayMaths = file.childrenOfType(LatexEnvironment::class).filter { it.name()?.text == "proof" }
@@ -56,12 +54,12 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-
+    /**
+     * @author Sten Wessel
+     */
     private class InsertQedHereFix() : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Insert \\qedhere"
-        }
+        override fun getFamilyName() = "Insert \\qedhere"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = (descriptor.psiElement as? LatexDisplayMath)?.mathContent ?: return
@@ -70,6 +68,5 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
 
             document.insertString(element.textOffset + element.textLength, " \\qedhere")
         }
-
     }
 }

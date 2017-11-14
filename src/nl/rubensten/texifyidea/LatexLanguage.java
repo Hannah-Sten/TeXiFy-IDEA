@@ -12,5 +12,4 @@ public class LatexLanguage extends Language {
     private LatexLanguage() {
         super("Latex");
     }
-
 }

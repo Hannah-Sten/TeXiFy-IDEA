@@ -14,7 +14,6 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.document
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -30,7 +29,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "DiscouragedUseOfDef"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val commands = LatexCommandsIndex.getItems(file)
         for (cmd in commands) {
@@ -60,9 +59,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
 
         constructor() : this("\\newcommand")
 
-        override fun getFamilyName(): String {
-            return "Convert to $commandName"
-        }
+        override fun getFamilyName() = "Convert to $commandName"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

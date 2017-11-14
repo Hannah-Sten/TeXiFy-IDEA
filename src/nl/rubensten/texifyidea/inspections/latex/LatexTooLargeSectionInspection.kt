@@ -19,7 +19,6 @@ import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -82,9 +81,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "TooLargeSection"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
                 .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
 
         if (isAlreadySplit(commands)) {
@@ -153,6 +152,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         return (endIndex - startIndex) >= TOO_LONG_LIMIT
     }
 
+    /**
+     * @author Ruben Schellekens
+     */
     class InspectionFix : LocalQuickFix {
 
         companion object {

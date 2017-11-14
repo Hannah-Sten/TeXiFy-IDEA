@@ -1,17 +1,6 @@
 package nl.rubensten.texifyidea.util
 
 import org.intellij.lang.annotations.Language
-import java.util.regex.Pattern
-
-/**
- * Matches leading whitespace.
- */
-private val LEADING_WHITESPACE: Pattern = Pattern.compile("^\\s*")
-
-/**
- * Matches newlines.
- */
-private val NEWLINE: Pattern = Pattern.compile("\\n")
 
 /**
  * Capitalises the first character of the string.
@@ -62,7 +51,7 @@ fun String.trimRange(startTrim: Int, endTrim: Int): String = substring(startTrim
  * Returns the leading whitespace of a string.
  */
 fun String.getIndent(): String {
-    val matcher = LEADING_WHITESPACE.matcher(this);
+    val matcher = Magic.Pattern.leadingWhitespace.matcher(this);
     return if (matcher.find()) matcher.group(0) else ""
 }
 
@@ -102,4 +91,7 @@ fun List<String>.removeIndents(): List<String> {
  *
  * @return All lines with shared indents removed.
  */
-fun String.removeIndents() = NEWLINE.split(this).toList().removeIndents().joinToString("\n")
+fun String.removeIndents() = Magic.Pattern.newline.split(this)
+        .toList()
+        .removeIndents()
+        .joinToString("\n")

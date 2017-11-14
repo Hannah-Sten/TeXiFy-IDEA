@@ -32,7 +32,6 @@ public class LatexErrorReportSubmitter extends ErrorReportSubmitter {
     public boolean submit(@NotNull IdeaLoggingEvent[] events, @Nullable String additionalInfo,
                           @NotNull Component parentComponent, @NotNull
                                       Consumer<SubmittedReportInfo> consumer) {
-
         IdeaLoggingEvent event = events[0];
 
         StringBuilder builder = new StringBuilder(URL);

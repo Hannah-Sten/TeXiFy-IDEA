@@ -1,10 +1,12 @@
 package nl.rubensten.texifyidea.lang
 
 import nl.rubensten.texifyidea.lang.Argument.Type
-import nl.rubensten.texifyidea.lang.Package.*
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSSYMB
+import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
+import nl.rubensten.texifyidea.lang.Package.Companion.LATEXSYMB
 
 /**
- *
  * @author Sten Wessel
  */
 enum class LatexMathCommand(
@@ -338,8 +340,9 @@ enum class LatexMathCommand(
     WIDETILDE("widetilde", "text".asRequired());
 
     companion object {
-        private val lookup = mutableMapOf<String, LatexMathCommand>()
-        private val lookupDisplay = mutableMapOf<String, LatexMathCommand>()
+
+        private val lookup = HashMap<String, LatexMathCommand>()
+        private val lookupDisplay = HashMap<String, LatexMathCommand>()
 
         init {
             for (command in LatexMathCommand.values()) {
@@ -350,9 +353,10 @@ enum class LatexMathCommand(
             }
         }
 
-        @JvmStatic fun get(command: String) = lookup[command]
+        @JvmStatic
+        operator fun get(command: String) = lookup[command]
 
-        @JvmStatic fun findByDisplay(display: String) = lookupDisplay[display]
+        @JvmStatic
+        fun findByDisplay(display: String) = lookupDisplay[display]
     }
-
 }

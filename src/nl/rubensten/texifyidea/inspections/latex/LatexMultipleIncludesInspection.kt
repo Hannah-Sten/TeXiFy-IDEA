@@ -12,7 +12,6 @@ import nl.rubensten.texifyidea.util.PackageUtils
 import nl.rubensten.texifyidea.util.commandsInFile
 import nl.rubensten.texifyidea.util.firstChildOfType
 import nl.rubensten.texifyidea.util.requiredParameter
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -26,7 +25,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Package has been imported multiple times"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         // Find all duplicates.
         val packages = PackageUtils.getIncludedPackagesList(file)

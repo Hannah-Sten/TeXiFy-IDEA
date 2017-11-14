@@ -15,7 +15,6 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 /**
- *
  * @author Sten Wessel
  */
 class BibtexSettingsEditor(private val project: Project) : SettingsEditor<BibtexRunConfiguration>() {
@@ -106,5 +105,4 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             add(auxFile)
         }
     }
-
 }

@@ -11,20 +11,12 @@ import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexRequiredParam
-import nl.rubensten.texifyidea.structure.latex.LatexStructureViewElement
 import nl.rubensten.texifyidea.util.*
-import java.util.regex.Pattern
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
  */
 open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
-
-    companion object {
-
-        val LEADING_TRAILING_WHITESPACE = Pattern.compile("(^(\\s+).*(\\s*)\$)|(^(\\s*).*(\\s+)\$)")!!
-    }
 
     override fun getInspectionGroup() = InsightGroup.LATEX
 
@@ -33,16 +25,16 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Unnecessary whitespace in section commands"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (cmd.name !in LatexStructureViewElement.SECTION_MARKERS) {
+            if (cmd.name !in Magic.Command.sectionMarkers) {
                 continue
             }
 
             val sectionName = cmd.firstChildOfType(LatexRequiredParam::class)?.group?.text?.trimRange(1, 1) ?: continue
-            if (!LEADING_TRAILING_WHITESPACE.matcher(sectionName).matches()) {
+            if (!Magic.Pattern.excessWhitespace.matcher(sectionName).matches()) {
                 continue
             }
 
@@ -61,7 +53,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
     }
 
     /**
-     * @author Ruben SChellekens
+     * @author Ruben Schellekens
      */
     private class TrimFix : LocalQuickFix {
 

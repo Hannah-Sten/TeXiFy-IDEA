@@ -14,12 +14,13 @@ import javax.swing.DefaultListSelectionModel
 import javax.swing.JPanel
 
 /**
- *
  * @author Sten Wessel
  */
 class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
+
     companion object {
-        private val TITLE = "Bibliography: "
+
+        private val title = "Bibliography: "
     }
 
     private val contentPanel = JPanel(BorderLayout())
@@ -34,7 +35,7 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
 
     init {
         createPanel()
-        hidePanel = HideableTitledPanel(TITLE, false).apply {
+        hidePanel = HideableTitledPanel(title, false).apply {
             setContentComponent(contentPanel)
         }
         add(hidePanel, BorderLayout.CENTER)
@@ -94,7 +95,7 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
     }
 
     private fun changeTitle(title: String) {
-        hidePanel.title = TITLE + title
+        hidePanel.title = title + title
     }
 
     private fun configurationChanged() {

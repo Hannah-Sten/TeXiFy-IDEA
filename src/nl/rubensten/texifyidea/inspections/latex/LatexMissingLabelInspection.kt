@@ -10,7 +10,6 @@ import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * Currently only works for Chapters, Sections and Subsections.
@@ -28,11 +27,11 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "MissingLabel"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (!LatexLabelConventionInspection.LABELED_COMMANDS.containsKey(cmd.name) || cmd.name == "\\item") {
+            if (!Magic.Command.labeled.containsKey(cmd.name) || cmd.name == "\\item") {
                 continue
             }
 
@@ -69,9 +68,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
      */
     private class InsertLabelFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Insert label"
-        }
+        override fun getFamilyName() = "Insert label"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
@@ -83,7 +80,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             }
 
             // Determine label name.
-            val prefix = LatexLabelConventionInspection.LABELED_COMMANDS[command.name]
+            val prefix = Magic.Command.labeled[command.name]
             val labelName = required[0].camelCase()
             val createdLabelBase = "$prefix:$labelName"
 

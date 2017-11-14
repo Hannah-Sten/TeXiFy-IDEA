@@ -15,7 +15,6 @@ import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * Currently works for built-in commands and environments.
@@ -31,7 +30,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "MissingImport"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val includedPackages = PackageUtils.getIncludedPackages(file)
         analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
@@ -105,9 +104,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
      */
     private class ImportCommandFix(val import: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Add import for package '$import'"
-        }
+        override fun getFamilyName() = "Add import for package '$import'"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
@@ -123,9 +120,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
      */
     private class ImportEnvironmentFix(val import: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Add import for package '$import'"
-        }
+        override fun getFamilyName() = "Add import for package '$import'"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val environment = descriptor.psiElement as? LatexEnvironment ?: return

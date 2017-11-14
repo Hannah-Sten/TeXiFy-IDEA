@@ -13,14 +13,14 @@ open class BibtexPairedBraceMatcher : PairedBraceMatcher {
 
     companion object {
 
-        val PAIRS = arrayOf(
+        private val bracePairs = arrayOf(
                 BracePair(BibtexTypes.OPEN_BRACE, BibtexTypes.CLOSE_BRACE, false),
                 BracePair(BibtexTypes.OPEN_PARENTHESIS, BibtexTypes.CLOSE_PARENTHESIS, false),
                 BracePair(BibtexTypes.QUOTES, BibtexTypes.END_QUOTES, false)
         )
     }
 
-    override fun getPairs() = PAIRS
+    override fun getPairs() = bracePairs
 
     override fun isPairedBracesAllowedBeforeType(leftBrace: IElementType, contextType: IElementType?): Boolean {
         return true

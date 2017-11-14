@@ -17,7 +17,7 @@ import nl.rubensten.texifyidea.util.PsiUtilKt;
 public class LatexRunConfigurationProducer extends RunConfigurationProducer<LatexRunConfiguration> {
 
     protected LatexRunConfigurationProducer() {
-        super(LatexRunConfigurationType.getInstance());
+        super(LatexRunConfigurationType.Companion.getInstance());
     }
 
     @Override

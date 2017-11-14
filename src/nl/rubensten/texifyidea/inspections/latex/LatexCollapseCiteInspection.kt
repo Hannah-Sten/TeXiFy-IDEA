@@ -13,7 +13,6 @@ import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -27,7 +26,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Collapce cite commands"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val commands = LatexCommandsIndex.getItems(file).toList()
         for (cmd in commands) {

@@ -44,13 +44,9 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
         }
     }
 
-    override fun canNavigate(): Boolean {
-        return entry is NavigationItem && entry.canNavigate()
-    }
+    override fun canNavigate() = entry is NavigationItem && entry.canNavigate()
 
-    override fun canNavigateToSource(): Boolean {
-        return entry is NavigationItem && entry.canNavigateToSource()
-    }
+    override fun canNavigateToSource() = entry is NavigationItem && entry.canNavigateToSource()
 
     override fun getAlphaSortKey() = when (entry.tokenName()) {
         "preamble" -> "a"

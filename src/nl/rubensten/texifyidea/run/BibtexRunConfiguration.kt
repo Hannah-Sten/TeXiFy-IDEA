@@ -11,11 +11,16 @@ import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import org.jdom.Element
 
 /**
- *
  * @author Sten Wessel
  */
-class BibtexRunConfiguration(project: Project, factory: ConfigurationFactory, name: String) : RunConfigurationBase(project, factory, name), LocatableConfiguration {
+class BibtexRunConfiguration(
+        project: Project,
+        factory: ConfigurationFactory,
+        name: String
+) : RunConfigurationBase(project, factory, name), LocatableConfiguration {
+
     companion object {
+
         private val PARENT_ELEMENT = "texify-bibtex"
         private val COMPILER = "compiler"
         private val COMPILER_PATH = "compiler-path"

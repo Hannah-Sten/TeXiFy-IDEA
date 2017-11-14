@@ -14,7 +14,7 @@ open class LatexDisplayMathIntention : TexifyIntentionBase("Change equation*/dis
 
     companion object {
 
-        val AFFECTED_ENVIRONMENTS = setOf("displaymath", "equation*")
+        private val affectedEnvironments = setOf("displaymath", "equation*")
     }
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
@@ -26,7 +26,7 @@ open class LatexDisplayMathIntention : TexifyIntentionBase("Change equation*/dis
         val begin = selected.parentOfType(LatexBeginCommand::class) ?: return false
         val name = begin.environmentName() ?: return false
 
-        return AFFECTED_ENVIRONMENTS.contains(name)
+        return affectedEnvironments.contains(name)
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {

@@ -5,7 +5,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import nl.rubensten.texifyidea.run.BibtexRunConfiguration
 
 /**
- *
  * @author Sten Wessel
  */
 internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {

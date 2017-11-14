@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.inspections.latex;
 
-import com.google.common.collect.Sets;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -15,17 +14,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexTypes;
+import nl.rubensten.texifyidea.util.Magic;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Detects non-escaped common math functions like <em>sin</em>, <em>cos</em> and replaces them
@@ -34,12 +32,6 @@ import java.util.Set;
  * @author Sten Wessel
  */
 public class LatexMathOperatorEscapeInspection extends TexifyInspectionBase {
-
-    private static Set<String> OPERATORS = Sets.newHashSet(
-            "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
-            "deg", "det", "dim", "exp", "gcd", "hom", "inf", "ker", "lg", "lim", "liminf", "limsup",
-            "ln", "log", "max", "min", "Pr", "sec", "sin", "sinh", "sup", "tan", "tanh"
-    );
 
     @NotNull
     @Override
@@ -64,7 +56,7 @@ public class LatexMathOperatorEscapeInspection extends TexifyInspectionBase {
     @Override
     public List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager manager,
                                                boolean isOnTheFly) {
-        List<ProblemDescriptor> descriptors = new SmartList<>();
+        List<ProblemDescriptor> descriptors = descriptorList();
 
         PsiElementPattern.Capture<PsiElement> pattern = PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT_WORD);
         Collection<LatexMathContent> envs = PsiTreeUtil.findChildrenOfType(file, LatexMathContent.class);
@@ -74,7 +66,7 @@ public class LatexMathOperatorEscapeInspection extends TexifyInspectionBase {
                 public void visitElement(PsiElement element) {
                     ProgressManager.checkCanceled();
                     if (pattern.accepts(element)) {
-                        if (OPERATORS.contains(element.getText())) {
+                        if (Magic.Command.slashlessMathOperators.contains(element.getText())) {
                             descriptors.add(manager.createProblemDescriptor(
                                     element,
                                     "Non-escaped math operator",
@@ -93,6 +85,9 @@ public class LatexMathOperatorEscapeInspection extends TexifyInspectionBase {
         return descriptors;
     }
 
+    /**
+     * @author Sten Wessel
+     */
     private static class EscapeMathOperatorFix implements LocalQuickFix {
 
         @Nls

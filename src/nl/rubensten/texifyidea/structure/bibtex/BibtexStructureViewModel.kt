@@ -15,18 +15,18 @@ import nl.rubensten.texifyidea.structure.filter.StringFilter
  */
 open class BibtexStructureViewModel(
         val file: PsiFile,
-        val theEditor: Editor?
+        theEditor: Editor?
 ) : StructureViewModelBase(file, theEditor, BibtexStructureViewElement(file)), ElementInfoProvider {
 
     companion object {
 
-        val SORTERS = arrayOf(Sorter.ALPHA_SORTER)
-        val FILTERS = arrayOf(EntryFilter, StringFilter, PreambleFilter)
+        val sorterArray = arrayOf(Sorter.ALPHA_SORTER)
+        val filterArray = arrayOf(EntryFilter, StringFilter, PreambleFilter)
     }
 
-    override fun getSorters() = SORTERS
+    override fun getSorters() = sorterArray
 
-    override fun getFilters() = FILTERS
+    override fun getFilters() = filterArray
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement?) = false
 

@@ -15,9 +15,7 @@ interface Environment : Dependend {
          * @return The [DefaultEnvironment] with the given name, or `null` when it couldn't
          * be found.
          */
-        fun lookup(environmentName: String): Environment? {
-            return DefaultEnvironment[environmentName]
-        }
+        fun lookup(environmentName: String) = DefaultEnvironment[environmentName]
 
         /**
          * @see [lookup]

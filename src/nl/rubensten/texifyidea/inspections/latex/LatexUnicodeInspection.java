@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.inspections.latex;
 
-import com.google.common.collect.Sets;
 import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -15,17 +14,15 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.lang.Diacritic;
 import nl.rubensten.texifyidea.lang.LatexCommand;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
-import nl.rubensten.texifyidea.lang.*;
-import nl.rubensten.texifyidea.lang.Package;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import nl.rubensten.texifyidea.psi.LatexNormalText;
+import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.PackageUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import java.text.Normalizer;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,11 +53,7 @@ import java.util.stream.IntStream;
  */
 public class LatexUnicodeInspection extends TexifyInspectionBase {
 
-    private static final Pattern NONASCII_PATTERN = Pattern.compile("\\P{ASCII}");
     private static final Pattern BASE_PATTERN = Pattern.compile("^\\p{ASCII}*");
-    private static final Set<Package> UNICODE_PACKAGES = Sets.newHashSet(
-            Package.INPUTENC.with("utf8"), Package.FONTENC.with("T1")
-    );
 
     @NotNull
     @Override
@@ -89,11 +81,11 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
 
         boolean hasUnicode = unicodeEnabled(file);
 
-        List<ProblemDescriptor> descriptors = new SmartList<>();
+        List<ProblemDescriptor> descriptors = descriptorList();
 
         Collection<LatexNormalText> texts = PsiTreeUtil.findChildrenOfType(file, LatexNormalText.class);
         for (LatexNormalText text : texts) {
-            Matcher matcher = NONASCII_PATTERN.matcher(text.getText());
+            Matcher matcher = Magic.Pattern.nonAscii.matcher(text.getText());
             while (matcher.find()) {
                 boolean inMathMode = PsiTreeUtil.getParentOfType(text, LatexMathEnvironment.class) != null;
 
@@ -130,7 +122,7 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
     static boolean unicodeEnabled(@NotNull PsiFile file) {
         // TODO: check if options are correct as well
         Collection<String> included = PackageUtils.getIncludedPackages(file);
-        return UNICODE_PACKAGES.stream().allMatch(p -> included.contains(p.getName()));
+        return Magic.Package.unicode.stream().allMatch(p -> included.contains(p.getName()));
     }
 
     /**
@@ -162,7 +154,7 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
                 return;
             }
 
-            UNICODE_PACKAGES.forEach(p -> {
+            Magic.Package.unicode.forEach(p -> {
                 if (included.contains(p.getName())) {
                     return;
                 }

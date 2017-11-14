@@ -10,8 +10,6 @@ import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.*
-import org.intellij.lang.annotations.Language
-import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -24,34 +22,6 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
 open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     companion object {
-
-        /**
-         * Map that maps all commands that are expected to have a label to the label prefix they have by convention.
-         *
-         * command name `=>` label prefix without colon
-         */
-        val LABELED_COMMANDS = mapOfVarargs(
-                "\\chapter", "ch",
-                "\\section", "sec",
-                "\\subsection", "subsec",
-                "\\item", "itm"
-        )
-
-        /**
-         * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
-         *
-         * environment name `=>` label prefix without colon
-         */
-        val LABELED_ENVIRONMENTS = mapOfVarargs(
-                "figure", "fig",
-                "table", "tab",
-                "tabular", "tab",
-                "equation", "eq",
-                "algorithm", "alg"
-        )
-
-        @Language("RegExp")
-        private val LABEL_PREFIX = Pattern.compile(".*:")
 
         /**
          * Looks for the command that the label is a definition for.
@@ -92,11 +62,11 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             }
 
             val context = findContextCommand(cmd) ?: continue
-            if (!LABELED_COMMANDS.containsKey(context.name)) {
+            if (!Magic.Command.labeled.containsKey(context.name)) {
                 continue
             }
 
-            val prefix = LABELED_COMMANDS[context.name]!!
+            val prefix = Magic.Command.labeled[context.name]!!
             if (!required[0].startsWith("$prefix:")) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
@@ -118,14 +88,9 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             }
 
             val environmentName = parameters[0].requiredParam?.group?.contentList!![0].text ?: continue
-            if (!LABELED_ENVIRONMENTS.containsKey(environmentName)) {
+            if (!Magic.Environment.labeled.containsKey(environmentName)) {
                 continue
             }
-
-            val labelMaybe = env.childrenOfType(LatexContent::class).stream()
-                    .filter { it.childrenOfType(LatexEnvironment::class).isEmpty() }
-                    .flatMap { it.childrenOfType(LatexCommands::class).stream() }
-                    .filter { it.name == "\\label" }
         }
 
         // TODO: make this work. but it's a bit dodgy..
@@ -136,9 +101,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
      */
     private class LabelPreFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Fix label name"
-        }
+        override fun getFamilyName() = "Fix label name"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
@@ -149,10 +112,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             val oldLabel = required.firstChildOfType(LatexNormalText::class)?.text ?: return
 
             // Determine label name.
-            val prefix: String = LABELED_COMMANDS[context.name] ?: return
+            val prefix: String = Magic.Command.labeled[context.name] ?: return
             val labelName = oldLabel.camelCase()
             val createdLabelBase = if (labelName.contains(":")) {
-                LABEL_PREFIX.matcher(labelName).replaceAll("$prefix:")
+                Magic.Pattern.labelPrefix.matcher(labelName).replaceAll("$prefix:")
             }
             else {
                 "$prefix:$labelName"

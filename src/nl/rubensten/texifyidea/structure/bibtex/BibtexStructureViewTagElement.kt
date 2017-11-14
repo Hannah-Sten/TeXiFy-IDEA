@@ -32,13 +32,9 @@ open class BibtexStructureViewTagElement(val tag: BibtexTag) : StructureViewTree
         }
     }
 
-    override fun canNavigate(): Boolean {
-        return tag is NavigationItem && tag.canNavigate()
-    }
+    override fun canNavigate() = tag is NavigationItem && tag.canNavigate()
 
-    override fun canNavigateToSource(): Boolean {
-        return tag is NavigationItem && tag.canNavigateToSource()
-    }
+    override fun canNavigateToSource() = tag is NavigationItem && tag.canNavigateToSource()
 
     override fun getAlphaSortKey() = tag.keyName() ?: ""
 

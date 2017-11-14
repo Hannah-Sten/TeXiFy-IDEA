@@ -7,17 +7,11 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexRequiredParam
 import nl.rubensten.texifyidea.util.*
-import java.util.regex.Pattern
 
 /**
  * @author Ruben Schellekens
  */
 open class LatexUnpackUsepackageIntention : TexifyIntentionBase("Split into multiple \\usepackage commands") {
-
-    companion object {
-
-        val SPLIT_PACKAGES = Pattern.compile("\\s*,\\s*")!!
-    }
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {
@@ -45,7 +39,7 @@ open class LatexUnpackUsepackageIntention : TexifyIntentionBase("Split into mult
         val command = selected.parentOfType(LatexCommands::class) ?: return
         val required = command.firstChildOfType(LatexRequiredParam::class) ?: return
         val requiredText = required.text.trimRange(1, 1)
-        val packages = SPLIT_PACKAGES.split(requiredText)
+        val packages = Magic.Pattern.parameterSplit.split(requiredText)
 
         // Reorganise includes.
         val document = file.document() ?: return

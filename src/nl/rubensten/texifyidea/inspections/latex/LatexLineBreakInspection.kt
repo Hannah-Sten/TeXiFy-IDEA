@@ -12,28 +12,11 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexComment
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.*
-import org.intellij.lang.annotations.Language
-import java.util.regex.Pattern
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
  */
 open class LatexLineBreakInspection : TexifyInspectionBase() {
-
-    companion object {
-
-        /**
-         * Matches the end of a sentence.
-         *
-         * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
-         */
-        @Language("RegExp")
-        private val SENTENCE_END = Pattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%])|(^\\. )")
-
-        @Language("RegExp")
-        private val SENTENCE_SEPERATOR = Pattern.compile("[.?!;;]")
-    }
 
     override fun getInspectionGroup() = InsightGroup.LATEX
 
@@ -42,7 +25,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "LineBreak"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
         val document = file.document() ?: return descriptors
 
         val texts = file.childrenOfType(LatexNormalText::class)
@@ -51,7 +34,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val matcher = SENTENCE_END.matcher(text.text)
+            val matcher = Magic.Pattern.sentenceEnd.matcher(text.text)
             while (matcher.find()) {
                 val offset = text.textOffset + matcher.end()
                 val lineNumber = document.getLineNumber(offset)
@@ -71,16 +54,17 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
         return descriptors
     }
 
+    /**
+     * @author Ruben Schellekens
+     */
     private class InspectionFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Insert line feed"
-        }
+        override fun getFamilyName() = "Insert line feed"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val textElement = descriptor.psiElement
             val document = textElement.containingFile.document() ?: return
-            val matcher = SENTENCE_END.matcher(textElement.text)
+            val matcher = Magic.Pattern.sentenceEnd.matcher(textElement.text)
             val range = descriptor.textRangeInElement
             val textOffset = textElement.textOffset
             val textInElement = document.getText(TextRange(textOffset + range.startOffset, textOffset + range.endOffset))
@@ -89,7 +73,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 return
             }
 
-            val signMarker = SENTENCE_SEPERATOR.matcher(textInElement)
+            val signMarker = Magic.Pattern.sentenceSeperator.matcher(textInElement)
             if (!signMarker.find()) {
                 return
             }

@@ -7,10 +7,10 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
-import nl.rubensten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.StringUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -58,14 +58,14 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         PsiFile file = myElement.getContainingFile().getOriginalFile();
         Collection<PsiElement> labels = new ArrayList<>();
         for (PsiFile referenced : TexifyUtil.getReferencedFileSet(file)) {
-             labels.addAll(TexifyUtil.findLabels(referenced));
+            labels.addAll(TexifyUtil.findLabels(referenced));
         }
 
         labels.removeIf(label -> {
             if (label instanceof LatexCommands) {
                 String name = ((LatexCommands)label).getName();
                 return ("\\cite".equals(token) && "\\label".equals(name)) ||
-                        (LatexNonBreakingSpaceInspection.getREFERENCE_COMMANDS().contains(token) &&
+                        (Magic.Command.reference.contains(token) &&
                                 "\\bibitem".equals(name) && !"\\cite".equals(token));
             }
 

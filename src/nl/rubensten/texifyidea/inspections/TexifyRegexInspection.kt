@@ -106,8 +106,11 @@ abstract class TexifyRegexInspection(
     }
 
     override fun getDisplayName() = inspectionDisplayName
+
     override fun getInspectionId() = myInspectionId
+
     override fun getInspectionGroup() = group
+
     override fun checkContext(element: PsiElement) = true
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {

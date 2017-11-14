@@ -16,7 +16,7 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
     companion object {
 
-        val AFFECTED_COMMANDS = setOf("\\section", "\\chapter")
+        private val affectedCommands = setOf("\\section", "\\chapter")
     }
 
     override fun startInWriteAction() = true
@@ -28,7 +28,7 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
         val element = file.findElementAt(editor.caretModel.offset) ?: return false
         val selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
-        return selected.name in AFFECTED_COMMANDS
+        return selected.name in affectedCommands
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {

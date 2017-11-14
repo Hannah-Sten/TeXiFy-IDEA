@@ -1,26 +1,20 @@
 package nl.rubensten.texifyidea.inspections.latex
 
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.TexifyUtil
 import nl.rubensten.texifyidea.util.commandsInFile
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
  */
 open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
-
-    companion object {
-
-        val NO_FIX: LocalQuickFix? = null
-    }
 
     override fun getInspectionGroup() = InsightGroup.LATEX
 
@@ -29,12 +23,12 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "UnresolvedReference"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val labels = TexifyUtil.findLabelsInFileSet(file)
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (!LatexNonBreakingSpaceInspection.REFERENCE_COMMANDS.contains(cmd.name)) {
+            if (!Magic.Command.reference.contains(cmd.name)) {
                 continue
             }
 

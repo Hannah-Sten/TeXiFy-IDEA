@@ -26,6 +26,6 @@ enum class InsightGroup(
         val fileTypes: Set<FileType>
 ) {
 
-    LATEX("LaTeX", "Latex", setOf(LatexFileType.INSTANCE, StyleFileType.INSTANCE)),
+    LATEX("LaTeX", "Latex", setOf(LatexFileType, StyleFileType)),
     BIBTEX("BibTeX", "Bibtex", setOf(BibtexFileType))
 }

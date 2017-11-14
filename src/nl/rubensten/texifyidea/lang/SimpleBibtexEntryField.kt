@@ -13,7 +13,5 @@ data class SimpleBibtexEntryField(override val fieldName: String, override val d
         return true
     }
 
-    override fun hashCode(): Int {
-        return fieldName.hashCode()
-    }
+    override fun hashCode() = fieldName.hashCode()
 }

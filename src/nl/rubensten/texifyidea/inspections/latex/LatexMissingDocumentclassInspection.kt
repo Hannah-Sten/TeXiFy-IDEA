@@ -11,7 +11,6 @@ import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -25,10 +24,10 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "MissingDocumentclass"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         // Workaround, because .sty files also return LatexFileType.INSTANCE
-        if (file.virtualFile.extension != LatexFileType.INSTANCE.defaultExtension) {
+        if (file.virtualFile.extension != LatexFileType.defaultExtension) {
             return descriptors
         }
 
@@ -54,9 +53,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
 
     private class InspectionFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Add \\documentclass{article}"
-        }
+        override fun getFamilyName() = "Add \\documentclass{article}"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val psiElement = descriptor.psiElement

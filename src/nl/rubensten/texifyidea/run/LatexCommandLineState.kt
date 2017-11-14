@@ -19,7 +19,6 @@ import org.jetbrains.concurrency.runAsync
 import java.io.File
 
 /**
- *
  * @author Sten Wessel
  */
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {

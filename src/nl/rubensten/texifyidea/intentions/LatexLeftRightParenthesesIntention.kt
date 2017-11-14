@@ -17,7 +17,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
 
     companion object {
 
-        val BRACKETS = mapOf(
+        private val brackets = mapOf(
                 "(" to ")",
                 "[" to "]",
                 "<" to ">"
@@ -35,7 +35,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
         }
 
         val (lookbehind, lookahead) = scan(editor, file) ?: return false
-        return BRACKETS.containsKeyOrValue(lookbehind) || BRACKETS.containsKeyOrValue(lookahead)
+        return brackets.containsKeyOrValue(lookbehind) || brackets.containsKeyOrValue(lookahead)
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
@@ -46,16 +46,16 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
         val caret = editor.caretModel
         val (lookbehind, lookahead) = scan(editor, file) ?: return
 
-        if (BRACKETS.containsKey(lookahead)) {
+        if (brackets.containsKey(lookahead)) {
             replaceForward(editor, caret.offset, file)
         }
-        else if (BRACKETS.containsKey(lookbehind)) {
+        else if (brackets.containsKey(lookbehind)) {
             replaceForward(editor, caret.offset - 1, file)
         }
-        else if (BRACKETS.containsValue(lookbehind)) {
+        else if (brackets.containsValue(lookbehind)) {
             replaceBackward(editor, caret.offset - 1, file)
         }
-        else if (BRACKETS.containsValue(lookahead)) {
+        else if (brackets.containsValue(lookahead)) {
             replaceBackward(editor, caret.offset, file)
         }
     }
@@ -63,7 +63,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
     private fun replaceForward(editor: Editor, offset: Int, file: PsiFile) {
         val document = editor.document
         val open = document.getText(TextRange.from(offset, 1))
-        val close = BRACKETS[open]
+        val close = brackets[open]
 
         // Scan document.
         var current = offset
@@ -117,7 +117,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
     private fun replaceBackward(editor: Editor, offset: Int, file: PsiFile) {
         val document = editor.document
         val close = document.getText(TextRange.from(offset, 1))
-        val open = BRACKETS.findKeys(close).first()
+        val open = brackets.findKeys(close).first()
 
         // Scan document.
         var current = offset

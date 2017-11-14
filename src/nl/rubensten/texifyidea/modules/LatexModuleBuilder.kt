@@ -117,10 +117,10 @@ class LatexModuleBuilder : ModuleBuilder() {
 
         // Apply template.
         val template = if (isBibtexEnabled) {
-            LatexTemplatesFactory.FILE_TEMPLATE_TEX_WITH_BIB
+            LatexTemplatesFactory.fileTemplateTexWithBib
         }
         else {
-            LatexTemplatesFactory.FILE_TEMPLATE_TEX
+            LatexTemplatesFactory.fileTemplateTex
         }
         val templateText = LatexTemplatesFactory.getTemplateText(project, template)
 
@@ -147,7 +147,7 @@ class LatexModuleBuilder : ModuleBuilder() {
         }
 
         // Apply template.
-        val template = LatexTemplatesFactory.FILE_TEMPLATE_BIB
+        val template = LatexTemplatesFactory.fileTemplateBib
         val templateText = LatexTemplatesFactory.getTemplateText(project, template)
 
         try {
@@ -158,5 +158,4 @@ class LatexModuleBuilder : ModuleBuilder() {
             throw TeXception("Could not apply .bib template to main bibliography file.", e)
         }
     }
-
 }

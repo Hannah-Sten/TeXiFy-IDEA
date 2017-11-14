@@ -24,5 +24,4 @@ class LatexModuleType : ModuleType<LatexModuleBuilder>(ID) {
     override fun getDescription() = "LaTeX"
 
     override fun getNodeIcon(isOpened: Boolean) = TexifyIcons.LATEX_MODULE!!
-
 }

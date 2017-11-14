@@ -11,6 +11,7 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.replaceString
 import nl.rubensten.texifyidea.util.requiredParameter
@@ -19,14 +20,6 @@ import nl.rubensten.texifyidea.util.requiredParameter
  * @author Sten Wessel
  */
 open class LatexNoExtensionInspection : TexifyInspectionBase() {
-
-    companion object {
-
-        private val NO_EXTENSION_INCLUDES = mapOf(
-                "\\include" to listOf(".tex"),
-                "\\bibliography" to listOf(".bib")
-        )
-    }
 
     override fun getInspectionGroup() = InsightGroup.LATEX
 
@@ -38,9 +31,9 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         LatexCommandsIndex.getItems(file)
-                .filter { it.name in NO_EXTENSION_INCLUDES }
+                .filter { it.name in Magic.Command.illegalExtensions }
                 .filter { command ->
-                    NO_EXTENSION_INCLUDES[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }
+                    Magic.Command.illegalExtensions[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }
                 }
                 .forEach {
                     descriptors.add(manager.createProblemDescriptor(
@@ -67,7 +60,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
 
-            val replacement = NO_EXTENSION_INCLUDES[command.name]
+            val replacement = Magic.Command.illegalExtensions[command.name]
                     ?.find { command.requiredParameter(0)?.endsWith(it) == true }
                     ?.run { command.requiredParameter(0)?.removeSuffix(this) } ?: return
 

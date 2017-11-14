@@ -27,16 +27,16 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         /**
          * Symbols that denote wheter a {} block has to be inserted when having more than 1 character.
          */
-        val INSERT_SYMBOLS = setOf("_", "^")
+        private val insertSymbols = setOf("_", "^")
 
         /**
          * Matches the suffix that denotes that braces may not be inserted.
          */
-        val INSERT_FORBIDDEN = Pattern.compile("^[\\s^_,.;%:$(]$")!!
+        private val insertForbidden = Pattern.compile("^[\\s^_,.;%:$(]$")!!
     }
 
     override fun charTyped(c: Char, project: Project?, editor: Editor, file: PsiFile): Result {
-        if (file.fileType != LatexFileType.INSTANCE) {
+        if (file.fileType != LatexFileType) {
             return Result.CONTINUE
         }
 
@@ -123,13 +123,13 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
         // Only insert when a valid symbol has been typed.
         val afterSymbol = char.toString()
-        if (INSERT_FORBIDDEN.matcher(afterSymbol).matches()) {
+        if (insertForbidden.matcher(afterSymbol).matches()) {
             return
         }
 
         // Check if the inserted symbol is eligible for brace insertion.
         val subSupSymbol = text.substring(relative - 3, relative - 2)
-        if (!INSERT_SYMBOLS.contains(subSupSymbol)) {
+        if (!insertSymbols.contains(subSupSymbol)) {
             return
         }
 

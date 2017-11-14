@@ -85,12 +85,12 @@ interface LatexCommand : Dependend {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Argument> getArgumentsOf(clazz: KClass<T>): List<T> {
-        return arguments.filter { clazz.java.isAssignableFrom(it.javaClass) }.mapNotNull { it as? T }
+        return arguments
+                .filter { clazz.java.isAssignableFrom(it.javaClass) }
+                .mapNotNull { it as? T }
     }
 
-    fun <T : Argument> getArgumentsOf(clazz: Class<T>): List<T> {
-        return getArgumentsOf(clazz.kotlin)
-    }
+    fun <T : Argument> getArgumentsOf(clazz: Class<T>) = getArgumentsOf(clazz.kotlin)
 }
 
 internal fun String.asRequired(type: Argument.Type = Argument.Type.NORMAL) = RequiredArgument(this, type)

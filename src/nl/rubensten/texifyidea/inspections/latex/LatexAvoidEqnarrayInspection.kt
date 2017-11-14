@@ -12,7 +12,6 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -26,7 +25,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "AvoidEqnarray"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val environments = file.childrenOfType(LatexEnvironment::class)
         for (env in environments) {
@@ -54,9 +53,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
      */
     private open class ChangeEnvironmentFix(val star: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Convert to 'align$star' (amsmath)"
-        }
+        override fun getFamilyName() = "Convert to 'align$star' (amsmath)"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val environment = descriptor.psiElement as LatexEnvironment

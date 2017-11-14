@@ -2,7 +2,6 @@ package nl.rubensten.texifyidea.run
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
-import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.project.Project
 
 /**
@@ -11,19 +10,15 @@ import com.intellij.openapi.project.Project
 class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
 
     companion object {
-        private val FACTORY_NAME = "LaTeX configuration factory"
+
+        private val factoryName = "LaTeX configuration factory"
     }
 
-    override fun createTemplateConfiguration(project: Project): RunConfiguration {
-        return when (type) {
-            is LatexRunConfigurationType -> LatexRunConfiguration(project, this, "LaTeX")
-            is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
-            else -> throw IllegalArgumentException("No TeXiFy run configuration type, but ${type.id} was received instead.")
-        }
+    override fun createTemplateConfiguration(project: Project) = when (type) {
+        is LatexRunConfigurationType -> LatexRunConfiguration(project, this, "LaTeX")
+        is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
+        else -> throw IllegalArgumentException("No TeXiFy run configuration type, but ${type.id} was received instead.")
     }
 
-    override fun getName(): String {
-        return FACTORY_NAME
-    }
-
+    override fun getName() = factoryName
 }

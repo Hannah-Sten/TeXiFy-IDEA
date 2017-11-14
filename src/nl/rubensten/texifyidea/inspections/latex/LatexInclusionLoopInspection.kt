@@ -13,7 +13,6 @@ import nl.rubensten.texifyidea.util.findInclusions
 import nl.rubensten.texifyidea.util.findRelativeFile
 import nl.rubensten.texifyidea.util.findRootFile
 import nl.rubensten.texifyidea.util.requiredParameter
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -27,7 +26,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Inclusion loops"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         // Run a BFS on all file inclusions to check for duplicate files.
         val root = file.findRootFile()
@@ -77,5 +76,4 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
         return descriptors
     }
-
 }

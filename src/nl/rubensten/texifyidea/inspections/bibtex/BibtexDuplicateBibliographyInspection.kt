@@ -19,12 +19,12 @@ import nl.rubensten.texifyidea.util.requiredParameter
  */
 open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
+    // Manual override to match short name in plugin.xml
+    override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
+
     override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getInspectionId() = "DuplicateBibliography"
-
-    // Manual override to match short name in plugin.xml
-    override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
 
     override fun getDisplayName() = "Same bibliography is included multiple times"
 

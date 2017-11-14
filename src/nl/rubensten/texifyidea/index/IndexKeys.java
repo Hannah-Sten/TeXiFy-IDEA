@@ -16,5 +16,4 @@ public class IndexKeys {
 
     public static final StubIndexKey<String, LatexCommands> DEFINITIONS_KEY =
             StubIndexKey.createIndexKey("nl.rubensten.texifyidea.definitions");
-
 }

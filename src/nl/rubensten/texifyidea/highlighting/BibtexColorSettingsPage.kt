@@ -12,7 +12,7 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
 
     companion object {
 
-        val DESCRIPTORS = arrayOf(
+        private val descriptors = arrayOf(
                 AttributesDescriptor("Assignment", BibtexSyntaxHighlighter.ASSIGNMENT),
                 AttributesDescriptor("Braces", BibtexSyntaxHighlighter.BRACES),
                 AttributesDescriptor("Comments", BibtexSyntaxHighlighter.COMMENTS),
@@ -25,7 +25,7 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
                 AttributesDescriptor("Value", BibtexSyntaxHighlighter.VALUE)
         )
 
-        val DEMO_TAGS = mapOf(
+        private val demoTags = mapOf(
                 "key" to BibtexSyntaxHighlighter.KEY,
                 "string" to BibtexSyntaxHighlighter.STRING,
                 "value" to BibtexSyntaxHighlighter.VALUE
@@ -61,9 +61,9 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
                 |    <key>note</key> = <value>{to appear}</value>,
                 |}""".trimMargin()
 
-    override fun getAdditionalHighlightingTagToDescriptorMap() = DEMO_TAGS
+    override fun getAdditionalHighlightingTagToDescriptorMap() = demoTags
 
-    override fun getAttributeDescriptors() = DESCRIPTORS
+    override fun getAttributeDescriptors() = descriptors
 
     override fun getColorDescriptors(): Array<out ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY!!
 

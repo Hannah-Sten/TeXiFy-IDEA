@@ -12,5 +12,4 @@ class SimpleEnvironment(
 ) : Environment {
 
     constructor(environmentName: String) : this(environmentName, context = Environment.Context.NORMAL)
-
 }

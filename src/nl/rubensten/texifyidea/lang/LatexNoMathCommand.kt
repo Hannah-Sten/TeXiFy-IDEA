@@ -1,7 +1,11 @@
 package nl.rubensten.texifyidea.lang
 
 import nl.rubensten.texifyidea.lang.Argument.Type
-import nl.rubensten.texifyidea.lang.Package.*
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
+import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
+import nl.rubensten.texifyidea.lang.Package.Companion.FONTENC
+import nl.rubensten.texifyidea.lang.Package.Companion.GRAPHICX
+import nl.rubensten.texifyidea.lang.Package.Companion.ULEM
 
 /**
  * @author Sten Wessel
@@ -301,8 +305,9 @@ enum class LatexNoMathCommand(
     RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT));
 
     companion object {
-        private val lookup = mutableMapOf<String, LatexNoMathCommand>()
-        private val lookupDisplay = mutableMapOf<String, LatexNoMathCommand>()
+
+        private val lookup = HashMap<String, LatexNoMathCommand>()
+        private val lookupDisplay = HashMap<String, LatexNoMathCommand>()
 
         init {
             for (command in LatexNoMathCommand.values()) {
@@ -313,8 +318,10 @@ enum class LatexNoMathCommand(
             }
         }
 
-        @JvmStatic fun get(command: String) = lookup[command]
+        @JvmStatic
+        operator fun get(command: String) = lookup[command]
 
-        @JvmStatic fun findByDisplay(display: String) = lookupDisplay[display]
+        @JvmStatic
+        fun findByDisplay(display: String) = lookupDisplay[display]
     }
 }

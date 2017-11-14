@@ -12,39 +12,24 @@ import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexNormalText
+import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.inMathContext
-import org.intellij.lang.annotations.Language
-import java.util.regex.Pattern
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
  */
 open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
 
-    companion object {
-
-        /**
-         * Finds all abbreviations that have at least two letters seperated by comma's.
-         *
-         * It might be more parts, like `b.v.b.d.` is a valid abbreviation. Likewise are `sajdflkj.asdkfj.asdf` and
-         * `i.e.`. Single period abbreviations are not being detected as they can easily be confused with two letter words
-         * at the end of the sentece (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
-         */
-        @Language("RegExp")
-        val ABBREVIATION = Pattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.|\\s)")!!
-    }
-
     override fun getInspectionGroup() = InsightGroup.LATEX
 
-    override fun getDisplayName(): String = "Normal space after abbreviation"
+    override fun getDisplayName() = "Normal space after abbreviation"
 
-    override fun getInspectionId(): String = "SpaceAfterAbbreviation"
+    override fun getInspectionId() = "SpaceAfterAbbreviation"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val texts = file.childrenOfType(LatexNormalText::class)
         for (text in texts) {
@@ -52,7 +37,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val matcher = ABBREVIATION.matcher(text.text)
+            val matcher = Magic.Pattern.abbreviation.matcher(text.text)
             while (matcher.find()) {
                 val matchRange = matcher.start()..matcher.end()
 
@@ -94,7 +79,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
      */
     private open class NormalSpaceFix(val whitespaceRange: IntRange) : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Insert normal space"
+        override fun getFamilyName() = "Insert normal space"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as LatexNormalText

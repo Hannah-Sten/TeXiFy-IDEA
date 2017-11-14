@@ -11,7 +11,6 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.psi.LatexEndCommand
 import nl.rubensten.texifyidea.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -25,7 +24,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "NonMatchingEnvironment"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val begins = file.childrenOfType(LatexBeginCommand::class)
         for (begin in begins) {
@@ -63,9 +62,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
      */
     private open class MatchBeginFix(val environmentName: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Change \\end environment to '$environmentName'"
-        }
+        override fun getFamilyName() = "Change \\end environment to '$environmentName'"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexBeginCommand
@@ -83,9 +80,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
      */
     private open class MatchEndFix(val environmentName: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Change \\begin environment to '$environmentName'"
-        }
+        override fun getFamilyName() = "Change \\begin environment to '$environmentName'"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEndCommand

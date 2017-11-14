@@ -17,11 +17,11 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexPsiUtil;
+import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,15 +29,6 @@ import java.util.List;
  * @author Ruben Schellekens
  */
 public class LatexPrimitiveStyleInspection extends TexifyInspectionBase {
-
-    private static final List<String> PRIMITIVES = Arrays.asList(
-            "\\rm", "\\sf", "\\tt", "\\it", "\\sl", "\\sc", "\\bf"
-    );
-
-    private static final List<String> REPLACEMENTS = Arrays.asList(
-            "\\textrm{%s}", "\\textsf{%s}", "\\texttt{%s}", "\\textit{%s}",
-            "\\textsl{%s}", "\\textsc{%s}", "\\textbf{%s}"
-    );
 
     @NotNull
     @Override
@@ -66,14 +57,14 @@ public class LatexPrimitiveStyleInspection extends TexifyInspectionBase {
 
         Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
         for (LatexCommands command : commands) {
-            int index = PRIMITIVES.indexOf(command.getName());
+            int index = Magic.Command.stylePrimitives.indexOf(command.getName());
             if (index < 0) {
                 continue;
             }
 
             descriptors.add(manager.createProblemDescriptor(
                     command,
-                    "Use of TeX primitive " + PRIMITIVES.get(index) + " is discouraged",
+                    "Use of TeX primitive " + Magic.Command.stylePrimitives.get(index) + " is discouraged",
                     new InspectionFix(),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -101,7 +92,7 @@ public class LatexPrimitiveStyleInspection extends TexifyInspectionBase {
 
             // Find elements that go after the primitive.
             LatexCommands cmd = (LatexCommands)element;
-            int cmdIndex = PRIMITIVES.indexOf(cmd.getName());
+            int cmdIndex = Magic.Command.stylePrimitives.indexOf(cmd.getName());
             if (cmdIndex < 0) {
                 return;
             }
@@ -113,7 +104,7 @@ public class LatexPrimitiveStyleInspection extends TexifyInspectionBase {
             PsiElement next = LatexPsiUtil.getNextSiblingIgnoreWhitespace(content);
 
             String after = (next == null ? "" : next.getText());
-            String replacement = String.format(REPLACEMENTS.get(cmdIndex), after);
+            String replacement = String.format(Magic.Command.stylePrimitveReplacements.get(cmdIndex), after);
 
             Document document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
 

@@ -38,7 +38,7 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
         }
     }
 
-    fun applyForInlineMath(editor: Editor, inline: LatexInlineMath) {
+    private fun applyForInlineMath(editor: Editor, inline: LatexInlineMath) {
         val document = editor.document
         val indent = document.lineIndentationByOffset(inline.textOffset)
         val text = inline.text.trimRange(1, 1).trim()
@@ -57,7 +57,7 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
         }
     }
 
-    fun applyForDisplayMath(editor: Editor, display: LatexDisplayMath) {
+    private fun applyForDisplayMath(editor: Editor, display: LatexDisplayMath) {
         val document = editor.document
         val indent = document.lineIndentationByOffset(display.textOffset)
         val whitespace = indent.length + 1

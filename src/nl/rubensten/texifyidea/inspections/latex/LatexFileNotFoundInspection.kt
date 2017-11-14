@@ -14,7 +14,6 @@ import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.findRelativeFile
 import nl.rubensten.texifyidea.util.findRootFile
 import nl.rubensten.texifyidea.util.firstChildOfType
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -28,7 +27,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "File not found"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         val commands = LatexCommandsIndex.getItems(file)
         for (cmd in commands) {
@@ -64,5 +63,4 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         return descriptors
     }
-
 }

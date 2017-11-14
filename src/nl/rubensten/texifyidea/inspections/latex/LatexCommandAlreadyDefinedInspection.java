@@ -10,7 +10,6 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
@@ -50,7 +49,7 @@ public class LatexCommandAlreadyDefinedInspection extends TexifyInspectionBase {
     @Override
     public List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager
             manager, boolean isOntheFly) {
-        List<ProblemDescriptor> descriptors = new SmartList<>();
+        List<ProblemDescriptor> descriptors = descriptorList();
 
         Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
         for (LatexCommands command : commands) {

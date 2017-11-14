@@ -17,12 +17,12 @@ import nl.rubensten.texifyidea.util.*
  */
 open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
 
+    // Manual override to match short name in plugin.xml
+    override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
+
     override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getInspectionId() = "MissingBibliographystyle"
-
-    // Manual override to match short name in plugin.xml
-    override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
 
     override fun getDisplayName() = "Missing bibliography style"
 

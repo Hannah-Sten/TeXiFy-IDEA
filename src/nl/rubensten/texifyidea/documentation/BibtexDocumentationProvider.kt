@@ -16,15 +16,11 @@ open class BibtexDocumentationProvider : DocumentationProvider {
      */
     private var lookup: Described? = null
 
-    override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String> {
-        return ArrayList()
-    }
+    override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String> = ArrayList()
 
-    override fun getQuickNavigateInfo(element: PsiElement, originalPsiElement: PsiElement): String? {
-        return when (element) {
-            is BibtexKey -> StringDeclarationLabel(element).makeLabel()
-            else -> null
-        }
+    override fun getQuickNavigateInfo(element: PsiElement, originalPsiElement: PsiElement) = when (element) {
+        is BibtexKey -> StringDeclarationLabel(element).makeLabel()
+        else -> null
     }
 
     override fun getDocumentationElementForLookupItem(manager: PsiManager?, obj: Any?, element: PsiElement?): PsiElement? {
@@ -36,11 +32,7 @@ open class BibtexDocumentationProvider : DocumentationProvider {
         return element
     }
 
-    override fun generateDoc(element: PsiElement, element2: PsiElement?): String? {
-        return lookup?.description
-    }
+    override fun generateDoc(element: PsiElement, element2: PsiElement?) = lookup?.description
 
-    override fun getDocumentationElementForLink(manager: PsiManager, string: String, element: PsiElement): PsiElement? {
-        return null
-    }
+    override fun getDocumentationElementForLink(manager: PsiManager, string: String, element: PsiElement) = null
 }

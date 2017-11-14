@@ -8,7 +8,6 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -22,7 +21,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     override fun getInspectionId(): String = "DuplicateLabel"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         // Fill up a set of labels.
         val labels: MutableSet<String> = HashSet()

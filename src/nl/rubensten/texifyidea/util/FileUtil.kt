@@ -121,7 +121,7 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
  * @return `true` if the file is a tex document root, `false` if the file is not a root.
  */
 fun PsiFile.isRoot(): Boolean {
-    if (fileType != LatexFileType.INSTANCE) {
+    if (fileType != LatexFileType) {
         return false
     }
 
@@ -152,8 +152,8 @@ fun PsiFile.findInclusions(): List<PsiFile> {
 /**
  * Checks if the file has LaTeX syntax.
  */
-fun PsiFile.isLatexFile() = fileType == LatexFileType.INSTANCE ||
-        fileType == StyleFileType.INSTANCE || fileType == ClassFileType.INSTANCE
+fun PsiFile.isLatexFile() = fileType == LatexFileType ||
+        fileType == StyleFileType || fileType == ClassFileType
 
 /**
  * Checks if the file has a `.sty` extention. This is a workaround for file type checking.

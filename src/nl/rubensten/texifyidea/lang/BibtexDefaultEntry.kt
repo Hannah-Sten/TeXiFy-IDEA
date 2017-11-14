@@ -98,11 +98,11 @@ enum class BibtexDefaultEntry(
 
     companion object {
 
-        private val LOOKUP: MutableMap<String, BibtexEntryType> = HashMap()
+        private val lookup: MutableMap<String, BibtexEntryType> = HashMap()
 
         init {
             for (entry in values()) {
-                LOOKUP.put(entry.token, entry)
+                lookup.put(entry.token, entry)
             }
         }
 
@@ -112,7 +112,7 @@ enum class BibtexDefaultEntry(
             if (token.startsWith("@")) {
                 trimmedToken = token.substring(1)
             }
-            return LOOKUP[trimmedToken]
+            return lookup[trimmedToken]
         }
     }
 }

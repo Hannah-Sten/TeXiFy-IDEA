@@ -50,9 +50,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
      */
     private class GatherEnvironments() : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Gather equations"
-        }
+        override fun getFamilyName() = "Gather equations"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexContent ?: return

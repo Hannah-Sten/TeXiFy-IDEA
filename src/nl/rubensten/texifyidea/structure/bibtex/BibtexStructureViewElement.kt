@@ -22,13 +22,9 @@ open class BibtexStructureViewElement(val element: PsiElement) : StructureViewTr
         }
     }
 
-    override fun canNavigate(): Boolean {
-        return element is NavigationItem && element.canNavigate()
-    }
+    override fun canNavigate() = element is NavigationItem && element.canNavigate()
 
-    override fun canNavigateToSource(): Boolean {
-        return element is NavigationItem && element.canNavigateToSource()
-    }
+    override fun canNavigateToSource() = element is NavigationItem && element.canNavigateToSource()
 
     override fun getAlphaSortKey() = when (element) {
         is PsiFile -> element.name.toLowerCase()

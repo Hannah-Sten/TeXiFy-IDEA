@@ -20,5 +20,4 @@ public interface LatexCommandsStub extends StubElement<LatexCommands>, NamedStub
 
     @NotNull
     List<String> getOptionalParams();
-
 }

@@ -13,7 +13,6 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.referencedFileSet
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -27,10 +26,10 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "MissingDocumentEnvironment"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         // Workaround, because .sty files also return LatexFileType.INSTANCE
-        if (file.virtualFile.extension != LatexFileType.INSTANCE.defaultExtension) {
+        if (file.virtualFile.extension != LatexFileType.defaultExtension) {
             return descriptors
         }
 
@@ -54,11 +53,12 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
         return descriptors
     }
 
+    /**
+     * @author Ruben Schellekens
+     */
     private class InspectionFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Add a document environment"
-        }
+        override fun getFamilyName() = "Add a document environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val psiElement = descriptor.psiElement

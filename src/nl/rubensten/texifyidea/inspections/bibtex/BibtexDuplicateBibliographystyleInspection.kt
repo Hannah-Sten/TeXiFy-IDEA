@@ -19,12 +19,12 @@ import nl.rubensten.texifyidea.util.findAtLeast
  */
 open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
 
+    // Manual override to match short name in plugin.xml
+    override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
+
     override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getInspectionId() = "DuplicateBibliographystyle"
-
-    // Manual override to match short name in plugin.xml
-    override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
 
     override fun getDisplayName() = "Duplicate bibliography style commands"
 

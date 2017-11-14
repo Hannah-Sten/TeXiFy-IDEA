@@ -15,7 +15,6 @@ import nl.rubensten.texifyidea.inspections.TexifyLineOptionsInspection
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -24,12 +23,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
 
     companion object {
 
-        private val AFFECTED_COMMANDS = setOf(
-                "\\frac", "\\dfrac", "\\sqrt", "\\sum", "\\int", "\\iint", "\\iiint", "\\iiiint",
-                "\\prod", "\\bigcup", "\\bigcap", "\\bigsqcup", "\\bigsqcap"
-        )
-
-        val BRACKETS = mapOf(
+        private val brackets = mapOf(
                 "(" to ")",
                 "[" to "]"
         )
@@ -42,7 +36,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     override fun getInspectionId() = "EncloseWithLeftRight"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
         val document = file.document() ?: return descriptors
 
         val mathModes = file.childrenOfType(LatexInlineMath::class) + file.childrenOfType(LatexDisplayMath::class)
@@ -50,7 +44,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
             // Scan all characters in math mode.
             for (openOffset in mathMode.textOffset until mathMode.endOffset()) {
                 val char = document[openOffset]
-                if (!BRACKETS.containsKey(char)) {
+                if (!brackets.containsKey(char)) {
                     continue
                 }
                 if (ignore(document, openOffset)) {
@@ -111,7 +105,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     private fun seek(document: Document, offset: Int, file: PsiFile): Int? {
         // Scan document.
         val open = document[offset]
-        val close = BRACKETS[open]
+        val close = brackets[open]
 
         var current = offset
         var nested = 0
@@ -167,24 +161,20 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
         return closeOffset
     }
 
-    private fun affectedCommands(): Set<String> {
-        return AFFECTED_COMMANDS + lines
-    }
+    private fun affectedCommands() = Magic.Command.high + lines
 
     /**
      * @author Ruben Schellekens
      */
     private open class InsertLeftRightFix(val openOffset: Int, val closeOffset: Int, val open: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Convert (..) to \\left(..\\right)"
-        }
+        override fun getFamilyName() = "Convert (..) to \\left(..\\right)"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val file = descriptor.psiElement.containingFile
             val document = file.document() ?: return
 
-            document[closeOffset] = "\\right${BRACKETS[open]}"
+            document[closeOffset] = "\\right${brackets[open]}"
             document[openOffset] = "\\left$open"
         }
     }

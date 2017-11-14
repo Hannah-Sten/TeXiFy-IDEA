@@ -121,8 +121,8 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         compilerPath.addBrowseFolderListener(
                 new TextBrowseFolderListener(
                         new FileChooserDescriptor(true, false, false, false, false, false)
-                            .withFileFilter(virtualFile -> virtualFile.getNameWithoutExtension().equals(((LatexCompiler)compilerField.getSelectedItem()).getExecutableName()))
-                            .withTitle("Choose " + compilerField.getSelectedItem() + " executable")
+                                .withFileFilter(virtualFile -> virtualFile.getNameWithoutExtension().equals(((LatexCompiler)compilerField.getSelectedItem()).getExecutableName()))
+                                .withTitle("Choose " + compilerField.getSelectedItem() + " executable")
                 )
         );
         compilerPath.setEnabled(false);

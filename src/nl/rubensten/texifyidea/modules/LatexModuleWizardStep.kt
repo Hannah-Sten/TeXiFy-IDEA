@@ -7,7 +7,6 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 /**
- *
  * @author Sten Wessel
  */
 class LatexModuleWizardStep(private val builder: LatexModuleBuilder) : ModuleWizardStep() {

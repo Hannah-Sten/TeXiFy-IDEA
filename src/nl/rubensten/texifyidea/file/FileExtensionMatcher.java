@@ -15,5 +15,4 @@ public interface FileExtensionMatcher {
      * match.
      */
     boolean matchesExtension(String extension);
-
 }

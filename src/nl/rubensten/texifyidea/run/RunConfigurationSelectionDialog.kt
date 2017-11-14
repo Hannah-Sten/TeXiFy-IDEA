@@ -18,16 +18,15 @@ import javax.swing.SwingUtilities
  * @author Sten Wessel
  */
 class RunConfigurationSelectionDialog(
-    private val project: Project,
-    private val settings: List<RunnerAndConfigurationSettings>,
-    selected: RunnerAndConfigurationSettings? = null
+        private val project: Project,
+        private val settings: List<RunnerAndConfigurationSettings>,
+        selected: RunnerAndConfigurationSettings? = null
 ) : DialogWrapper(project) {
 
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
 
     var selected = selected
         get() = if (isOK) field else null
-
 
     init {
         title = "Choose Run Configuration"
@@ -48,7 +47,7 @@ class RunConfigurationSelectionDialog(
 
             // Icon and gap (= 24) + max size of the configuration names
             val maxWidth = 24 + (settings.map { fontMetrics.stringWidth(it.configuration.name) }.max()
-                ?: fontMetrics.stringWidth("m") * 30)
+                    ?: fontMetrics.stringWidth("m") * 30)
 
             minimumSize = Dimension(maxWidth, preferredSize.height)
         }
@@ -68,5 +67,4 @@ class RunConfigurationSelectionDialog(
 
         return JBScrollPane(list)
     }
-
 }

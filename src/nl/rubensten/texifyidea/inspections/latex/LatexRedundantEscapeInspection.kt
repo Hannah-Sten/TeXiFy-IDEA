@@ -11,7 +11,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.SmartList
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.Diacritic
@@ -33,11 +32,10 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "RedundantEscape"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
+        val descriptors = descriptorList()
         if (!LatexUnicodeInspection.unicodeEnabled(file)) {
-            return emptyList<ProblemDescriptor>().toMutableList()
+            return descriptors
         }
-
-        val descriptors: MutableList<ProblemDescriptor> = SmartList();
 
         val commands = TexifyUtil.getAllCommands(file)
         for (command in commands) {
@@ -68,7 +66,11 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
         return siblingContent?.noMathContent?.normalText != null
     }
 
+    /**
+     * @author Sten Wessel
+     */
     private class RemoveEscapeFix : LocalQuickFix {
+
         override fun getFamilyName() = "Replace escape with Unicode character"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
@@ -86,7 +88,8 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
                 // Just a required parameter
                 range = command.textRange
                 base = param
-            } else {
+            }
+            else {
                 // Now find a sibling
                 val content = PsiTreeUtil.getParentOfType(command, LatexContent::class.java)
                 val siblingContent = PsiTreeUtil.getNextSiblingOfType(content, LatexContent::class.java)
@@ -95,7 +98,8 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
                 if (siblingText != null) {
                     base = siblingText.text
                     range = command.textRange.union(siblingText.textRange)
-                } else {
+                }
+                else {
                     base = ""
                     range = TextRange.EMPTY_RANGE
                 }

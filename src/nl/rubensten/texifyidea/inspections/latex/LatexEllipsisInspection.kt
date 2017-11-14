@@ -8,7 +8,6 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import com.intellij.util.SmartList
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.Package
@@ -20,10 +19,6 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexEllipsisInspection : TexifyInspectionBase() {
 
-    companion object {
-        private val ELLIPSIS = Regex("""(?<!\.)(\.\.\.)(?!\.)""")
-    }
-
     override fun getInspectionGroup() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Ellipsis with ... instead of \\ldots or \\dots"
@@ -31,13 +26,13 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "Ellipsis"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
         val texts = file.childrenOfType(LatexNormalText::class)
 
         for (text in texts) {
             ProgressManager.checkCanceled()
 
-            for (match in ELLIPSIS.findAll(text.text)) {
+            for (match in Magic.Pattern.ellipsis.findAll(text.text)) {
                 descriptors.add(manager.createProblemDescriptor(
                         text,
                         match.range.toTextRange(),
@@ -52,12 +47,12 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-
+    /**
+     * @author Sten Wessel
+     */
     private class InsertEllipsisCommandFix(val inMathMode: Boolean) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Convert to ${if (inMathMode) "\\dots (amsmath package)" else "\\ldots"}"
-        }
+        override fun getFamilyName() = "Convert to ${if (inMathMode) "\\dots (amsmath package)" else "\\ldots"}"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
@@ -71,6 +66,5 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
                 file.insertUsepackage(Package.AMSMATH)
             }
         }
-
     }
 }

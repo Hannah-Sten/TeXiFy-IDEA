@@ -12,15 +12,16 @@ import nl.rubensten.texifyidea.TeXception
  * @since b0.4
  */
 object SumatraConversation {
-    private val SERVER = "SUMATRA"
-    private val TOPIC = "control"
 
+    private val server = "SUMATRA"
+    private val topic = "control"
     private val conversation: DDEClientConversation
 
     init {
         try {
             conversation = DDEClientConversation()
-        } catch (e: NoClassDefFoundError) {
+        }
+        catch (e: NoClassDefFoundError) {
             throw TeXception("Native library DLLs could not be found.", e)
         }
     }
@@ -28,7 +29,8 @@ object SumatraConversation {
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, start: Boolean = false) {
         if (start) {
             Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
-        } else {
+        }
+        else {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
     }
@@ -53,7 +55,7 @@ object SumatraConversation {
 
     private fun execute(vararg commands: String) {
         try {
-            conversation.connect(SERVER, TOPIC)
+            conversation.connect(server, topic)
             conversation.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
@@ -64,7 +66,11 @@ object SumatraConversation {
         }
     }
 
+    /**
+     * @author Sten Wessel
+     */
     enum class ViewMode(val description: String) {
+
         SINGLE_PAGE("single page"),
         FACING("facing"),
         BOOK_VIEW("book view"),
@@ -73,11 +79,16 @@ object SumatraConversation {
         CONTINUOUS_BOOK_VIEW("continuous book view");
     }
 
+    /**
+     * @author Sten Wessel
+     */
     class ZoomLevel(val percentage: Int) {
+
         companion object {
-            val FIT_PAGE = ZoomLevel(-1)
-            val FIT_WIDTH = ZoomLevel(-2)
-            val FIT_CONTENT = ZoomLevel(-3)
+
+            private val fitPage = ZoomLevel(-1)
+            private val fitWidth = ZoomLevel(-2)
+            private val fitContent = ZoomLevel(-3)
         }
 
         init {
