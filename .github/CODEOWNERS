@@ -1,0 +1,4 @@
+# Global owners, automatically request review when pull request is submitted
+*       @rubenschellekens @stenwessel
+
+# Patterns below override the rules above
