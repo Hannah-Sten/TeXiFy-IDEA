@@ -4,11 +4,16 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.PsiContainer
-import nl.rubensten.texifyidea.util.nextCommand
+import nl.rubensten.texifyidea.util.Magic
+import nl.rubensten.texifyidea.util.firstChildOfType
+import nl.rubensten.texifyidea.util.parentOfType
 
 /**
  * Folds multiple \\usepackage or \\RequirePackage statements
@@ -52,5 +57,31 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
         }
 
         return descriptors.toTypedArray()
+    }
+
+    private fun PsiElement.nextCommand(): LatexCommands? {
+        val content = if (this is LatexCommands) {
+            parentOfType(LatexContent::class) ?: return null
+        }
+        else this
+        val next = content.nextSibling
+
+        // When having multiple breaks, don't find new commands to fold.
+        // When whitespace without multiple breaks, look further.
+        if (next is PsiWhiteSpace) {
+            return if (Magic.Pattern.containsMultipleNewlines.matcher(next.text).matches()) {
+                null
+            }
+            else {
+                next.nextCommand()
+            }
+        }
+
+        // Skip comments.
+        if (next is PsiComment) {
+            return next.nextCommand()
+        }
+
+        return next.firstChildOfType(LatexCommands::class)
     }
 }
