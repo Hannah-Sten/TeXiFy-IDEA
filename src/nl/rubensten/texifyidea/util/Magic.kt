@@ -251,7 +251,7 @@ object Magic {
         @JvmField val newline = RegexPattern.compile("\\n")!!
 
         /**
-         * Checks if the string is `text`, two newlines, `text.
+         * Checks if the string is `text`, two newlines, `text`.
          */
         @JvmField val containsMultipleNewlines = RegexPattern.compile("[^\\n]*\\n\\n+[^\\n]*")!!
     }
