@@ -19,7 +19,7 @@ With this set of guidelines we hope to make it easier for everyone to join in an
 
 
 ### Code of Conduct
-To ensure a healthy and respectful developing environment, we have a set of ground rules described in the [Code of Conduct](TODO).
+To ensure a healthy and respectful developing environment, we have a set of ground rules described in the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 By participating, we ask that you please respect this code.
 When you spot unacceptable behavior, please report per the instructions in the Code of Conduct.
 
@@ -40,7 +40,7 @@ If you have another issue or idea in mind, that's great too!
 Be sure to run your idea by us (see [here](#i-just-have-a-question) how to do this).
 This prevents your changes to be rejected in a later stage.
 
-Have a look at the [README](TODO) to see how you can setup local development and build from source and the [helpful resources](#helpful-resources).
+Have a look at the [README](README.md) to see how you can setup local development and build from source and the [helpful resources](#helpful-resources).
 
 At any point, feel free to ask for help!
 Everyone is a beginner at first, and we will try to help you on your way as good as we can.
@@ -95,4 +95,5 @@ If you want to know more or if anything is unclear, never be afraid [to ask](#i-
 
 
 ### Helpful resources
-
+- [README](README.md)
+- [IntelliJ Platform SDK DevGuide](http://www.jetbrains.org/intellij/sdk/docs/welcome.html)
