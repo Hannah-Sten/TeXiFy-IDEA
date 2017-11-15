@@ -49,6 +49,7 @@ Everyone is a beginner at first, and we will try to help you on your way as good
 ### How to file an issue
 When you open a new issue, make sure you fill in the provided issue template.
 The template asks for:
+- Which JetBrains IDE (IntelliJ, PyCharm, etc.) are you running?
 - Which version of IntelliJ, PyCharm or other JetBrains IDE are you running?
 - Which version of TeXiFy IDEA are you running?
 - What did you do?
