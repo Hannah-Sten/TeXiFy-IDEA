@@ -41,8 +41,8 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
 
         val mathModes = file.childrenOfType(LatexInlineMath::class) + file.childrenOfType(LatexDisplayMath::class)
         for (mathMode in mathModes) {
-            // Scan all characters in math mode.
-            for (openOffset in mathMode.textOffset until mathMode.endOffset()) {
+            // Scan all characters in math mode. (+2/-2 to ignore \[ and \]).
+            for (openOffset in mathMode.textOffset + 2 until mathMode.endOffset() - 2) {
                 val char = document[openOffset]
                 if (!brackets.containsKey(char)) {
                     continue
