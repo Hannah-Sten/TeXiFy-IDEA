@@ -2,7 +2,7 @@
 
 
 #### TeXiFy IDEA version
-
+Beta 0.5
 
 #### What I did (steps to reproduce)
 
