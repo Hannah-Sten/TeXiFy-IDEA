@@ -10,7 +10,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.util.*
 
 /**
- * @author Ruben Schellekens
+ * @author Ruben Schellekens, Sten Wessel
  */
 open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
@@ -24,8 +24,8 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Fill up a set of labels.
-        val labels: MutableSet<String> = HashSet()
-        val firstPass: MutableSet<String> = HashSet()
+        val labels = mutableMapOf<String, MutableSet<String>>()
+        val firstPass = mutableMapOf<String, MutableSet<String>>()
         for (cmd in file.commandsInFileSet()) {
             val labelName = cmd.requiredParameter(0) ?: continue
 
@@ -33,21 +33,21 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                 continue
             }
 
-            if (labelName in firstPass) {
-                labels.add(labelName)
+            if (firstPass[cmd.name!!]?.let { labelName in it } == true) {
+                labels.getOrPut(cmd.name!!, { mutableSetOf() }).add(labelName)
                 continue
             }
-            firstPass.add(labelName)
+            firstPass.getOrPut(cmd.name!!, { mutableSetOf() }).add(labelName)
         }
 
         for (id in file.bibtexIdsInFileSet()) {
             val labelName = id.idName()
 
-            if (labelName in firstPass) {
-                labels += labelName
+            if (firstPass["\\bibitem"]?.let { labelName in it } == true) {
+                labels.getOrPut("\\bibitem", { mutableSetOf() }).add(labelName)
                 continue
             }
-            firstPass.add(labelName)
+            firstPass.getOrPut("\\bibitem", { mutableSetOf() }).add(labelName)
         }
 
         // Check labels in file.
@@ -57,7 +57,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
             }
 
             val labelName = cmd.requiredParameter(0) ?: continue
-            if (labelName in labels) {
+            if (labelName in labels[cmd.name!!] ?: continue) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
                         TextRange.from(cmd.commandToken.textLength + 1, labelName.length),
