@@ -7,6 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,6 +57,12 @@ public enum LatexCompiler {
             for (VirtualFile root : moduleRoots) {
                 command.add("-include-directory=" + root.getPath());
             }
+        }
+
+        // Custom compiler arguments specified by the user
+        if (runConfig.getCompilerArguments() != null) {
+            String[] args = runConfig.getCompilerArguments().split("\\s+");
+            command.addAll(Arrays.asList(args));
         }
 
         command.add(mainFile.getName());

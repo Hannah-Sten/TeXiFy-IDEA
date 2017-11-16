@@ -27,6 +27,8 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
             addAll(moduleRoots.map { "-include-directory=${it.path}" })
 
+            runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
+
             add(runConfig.mainFile?.nameWithoutExtension ?: return null)
         }
 

@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.TitledSeparator;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
@@ -30,6 +31,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     private LabeledComponent<ComboBox> compiler;
     private JCheckBox enableCompilerPath;
     private TextFieldWithBrowseButton compilerPath;
+    private LabeledComponent<RawCommandLineEditor> compilerArguments;
     private LabeledComponent<ComponentWithBrowseButton> mainFile;
     private JCheckBox auxDir;
     private LabeledComponent<ComboBox> outputFormat;
@@ -49,6 +51,10 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         // Reset the custom compiler path
         compilerPath.setText(runConfiguration.getCompilerPath());
         enableCompilerPath.setSelected(runConfiguration.getCompilerPath() != null);
+
+        // Reset compiler arguments
+        String args = runConfiguration.getCompilerArguments();
+        compilerArguments.getComponent().setText(args == null ? "" : args);
 
         // Reset the main file to compile.
         TextFieldWithBrowseButton txtFile = (TextFieldWithBrowseButton)mainFile.getComponent();
@@ -78,6 +84,9 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Apply custom compiler path if applicable
         runConfiguration.setCompilerPath(enableCompilerPath.isSelected() ? compilerPath.getText() : null);
+
+        // Apply custom compiler arguments
+        runConfiguration.setCompilerArguments(compilerArguments.getComponent().getText());
 
         // Apply main file.
         TextFieldWithBrowseButton txtFile = (TextFieldWithBrowseButton)mainFile.getComponent();
@@ -134,6 +143,14 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         enableCompilerPath.addItemListener(e -> compilerPath.setEnabled(e.getStateChange() == ItemEvent.SELECTED));
 
         panel.add(compilerPath);
+
+        // Optional custom compiler arguments
+        final String argumentsTitle = "Custom compiler arguments";
+        RawCommandLineEditor argumentsField = new RawCommandLineEditor();
+        argumentsField.setDialogCaption(argumentsTitle);
+
+        compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle);
+        panel.add(compilerArguments);
 
         panel.add(new SeparatorComponent());
 
