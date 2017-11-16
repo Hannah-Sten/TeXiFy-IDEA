@@ -87,7 +87,7 @@ We could make a detailed list, but that would take up your whole screen! We migh
 * A standard document is already made for you, you can find it in the `src` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on it's side) on the left of your screen.
 * Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. If you see a pdf appearing, congratulations! 
 * If you see `LaTeX error: fily a4.sty not found` then you did not restart your pc. Do it now.
-* The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using `SHIFT+F10` on Windows.
+* The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd> on Windows.
 
 #### <a name="tips">Tips</a>
 * You never have to remember to save your work, IntelliJ will automatically save every letter you type.
@@ -95,8 +95,8 @@ We could make a detailed list, but that would take up your whole screen! We migh
 * You don't need to close the pdf to recompile, it will automatically refresh.
 * A good way to start learning LaTeX is by asking someone how to do what you want to do or by Googling "what-I-want-to-do latex".
 * But some standard LaTeX commands are available in the LaTeX menu.
-* Pay attention to squiggles (wavey lines) under text you typed, they indicate that something is wrong. Hovering over it gives extra information. In some cases, a ready-made fix is waiting to be applied: hit the lightbulb that appears on the left, or hit `ALT+ENTER` to view and apply it. A quick overview of useful shortcuts is [below](#installation-shortcuts-overview).
-* If your LaTeX indentation (the number of spaces that is in front of each line) looks messy, try to reformat with `CTRL+ALT+L`.
+* Pay attention to squiggles (wavey lines) under text you typed, they indicate that something is wrong. Hovering over it gives extra information. In some cases, a ready-made fix is waiting to be applied: hit the lightbulb that appears on the left, or hit <kbd>Alt</kbd>+<kbd>Enter</kbd> to view and apply it. A quick overview of useful shortcuts is [below](#installation-shortcuts-overview).
+* If your LaTeX indentation (the number of spaces that is in front of each line) looks messy, try to reformat with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd>.
 * If you are searching how a particular symbol has to be written in LaTeX, the [Detexify](http://detexify.kirelabs.org/classify.html) tool can probably help you. Just draw your symbol in the `draw here` box and the command will be listed on the right.
 * If you want a proper explanation of what LaTeX and its philosophy is about, read the [Not So Short Introduction To LaTeX2e](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf).
 
@@ -115,14 +115,14 @@ when you do not recognize the file.
 * You can share the Overleaf link under `Read & Edit Link` with your co-authors.
 
 #### To push (upload) changes to Overleaf
-* Hit `CTRL+K` to commit changes to git.
+* Hit <kbd>Ctrl</kbd>+<kbd>K</kbd> to commit changes to git.
 * Specify a commit message.
 * Click `commit and push` by hovering over the `commit` button.
 * If your git username is asked, specify it.
 * Click `push`.
 
 #### To pull (download) changes from Overleaf
-* Hit `CTRL+T`.
+* Hit <kbd>Ctrl</kbd>+<kbd>T</kbd>.
 
 ### I want to know more about git
 * That's great! Because git and similar tools are used everywhere by programmers to collaborate, it's not just for LaTeX and doesn't work just with Overleaf.
@@ -131,16 +131,19 @@ when you do not recognize the file.
 * Want to know even more of advanced use of git? Read the excellent [Pro Git book](https://git-scm.com/book/en/v2) for free.
 
 ### <a name="installation-shortcuts-overview"></a> Overview of some useful IntelliJ shortcuts
-* `DOUBLE SHIFT` Search for any IntelliJ command, like Reformat.
-* `ALT+ENTER` View the quick fix, if there is one. Apply the fix with `enter`.
-* `CTRL+ALT+L` Reformat your LaTeX.
-* `CTRL+K` Commit and push changes.
-* `CTRL+t` Pull changes.
+* Double <kbd>Shift</kbd> Search for any IntelliJ command, like Reformat.
+* <kbd>Alt</kbd>+<kbd>Enter</kbd> View the quick fix, if there is one. Apply the fix with <kbd>Enter</kbd>.
+* <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> Reformat your LaTeX.
+* <kbd>Ctrl</kbd>+<kbd>K</kbd> Commit and push changes.
+* <kbd>Ctrl</kbd>+<kbd>T</kbd> Pull changes.
 
 
 Any suggestions for improvements of the installation instructions, however small? Please let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
 ## FAQ
+
+#### SumatraPDF inverse search: _Error launching IDEA. No JVM installation found_
+* Please make sure you have a 32-bit JDK installed. This solved the issue before ([#104](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/104)). If installing a 32-bit JDK is resolving the problem for you, please report this on the issue tracker.
 
 #### `Error: java: package com.google.common.base does not exist`
 
