@@ -3,7 +3,7 @@ package nl.rubensten.texifyidea.run
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.SystemInfo
+import nl.rubensten.texifyidea.TeXception
 
 /**
  * @author Sten Wessel
@@ -11,8 +11,13 @@ import com.intellij.openapi.util.SystemInfo
 class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent?) {
-        if (event?.exitCode == 0 && SystemInfo.isWindows) {
-            SumatraConversation.openFile(runConfig.outputFilePath, start = true)
+        if (event?.exitCode == 0 && SumatraConversation.isAvailable) {
+            try {
+                SumatraConversation.openFile(runConfig.outputFilePath, start = true)
+            }
+            catch (ignored: TeXception) {
+
+            }
         }
     }
 
