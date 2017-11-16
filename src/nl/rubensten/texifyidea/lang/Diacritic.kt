@@ -1,17 +1,24 @@
 package nl.rubensten.texifyidea.lang
 
 /**
- *
  * @author Sten Wessel
  */
 interface Diacritic {
 
     companion object {
+
         fun buildChain(base: String, diacritics: List<Diacritic?>): String? {
             if (diacritics.contains(null)) {
                 return null
             }
             return diacritics.fold(base, { s, d -> d!!.buildCommand(s) })
+        }
+
+        fun allValues(): List<Diacritic> {
+            val list: MutableList<Diacritic> = ArrayList()
+            list.addAll(Normal.values())
+            list.addAll(Math.values())
+            return list
         }
     }
 
@@ -20,10 +27,22 @@ interface Diacritic {
     val needsSpace: Boolean
     val isTypeable: Boolean
 
-    fun buildCommand(param: String): String = command + if (param.length > 1) "{$param}" else if (needsSpace) " $param" else param
+    fun buildCommand(param: String) = command + if (param.length > 1) {
+        "{$param}"
+    }
+    else if (needsSpace) {
+        " $param"
+    }
+    else {
+        param
+    }
 
-    enum class Normal(override val unicode: String, override val command: String, override val needsSpace: Boolean,
-                      override val isTypeable: Boolean = false) : Diacritic {
+    enum class Normal(
+            override val unicode: String,
+            override val command: String,
+            override val needsSpace: Boolean,
+            override val isTypeable: Boolean = false
+    ) : Diacritic {
 
         GRAVE("\u0300", "\\`", false, isTypeable = true),
         ACUTE("\u0301", "\\'", false, isTypeable = true),
@@ -44,8 +63,16 @@ interface Diacritic {
         DOUBLE_TIE("\u0361", "\\t", true);
 
         companion object {
-            fun fromUnicode(unicode: String) = Normal.values().find { it.unicode == unicode }
-            fun fromCommand(command: String) = Normal.values().find { it.command == command }
+
+            fun fromUnicode(unicode: String): Normal? {
+                return Normal.values()
+                        .find { it.unicode == unicode }
+            }
+
+            fun fromCommand(command: String): Normal? {
+                return Normal.values()
+                        .find { it.command == command }
+            }
         }
 
         override fun buildCommand(param: String): String {
@@ -74,8 +101,16 @@ interface Diacritic {
         VEC("\u20D7", "\\vec", true);
 
         companion object {
-            fun fromUnicode(unicode: String) = Math.values().find { it.unicode == unicode }
-            fun fromCommand(command: String) = Math.values().find { it.command == command }
+
+            fun fromUnicode(unicode: String): Math? {
+                return Math.values()
+                        .find { it.unicode == unicode }
+            }
+
+            fun fromCommand(command: String): Math? {
+                return Math.values()
+                        .find { it.command == command }
+            }
         }
 
         override fun buildCommand(param: String): String {

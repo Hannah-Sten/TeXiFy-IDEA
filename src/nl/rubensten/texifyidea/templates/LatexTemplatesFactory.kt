@@ -1,0 +1,91 @@
+package nl.rubensten.texifyidea.templates
+
+import com.intellij.ide.fileTemplates.FileTemplateDescriptor
+import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor
+import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory
+import com.intellij.ide.fileTemplates.FileTemplateManager
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
+import nl.rubensten.texifyidea.TeXception
+import nl.rubensten.texifyidea.TexifyIcons
+import nl.rubensten.texifyidea.util.Container
+import java.io.IOException
+import java.util.*
+
+/**
+ * @author Ruben Schellekens
+ */
+open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
+
+    companion object {
+
+        @JvmField val descriptor = "LaTeX"
+
+        @JvmField val fileTemplateTex = "LaTeX Source.tex"
+        @JvmField val fileTemplateTexWithBib = "LaTeX Source With BibTeX.tex"
+        @JvmField val fileTemplateSty = "LaTeX Package.sty"
+        @JvmField val fileTemplateCls = "LaTeX Document class.cls"
+        @JvmField val fileTemplateBib = "BibTeX Bibliography.bib"
+
+        @JvmStatic
+        fun createFromTemplate(directory: PsiDirectory, fileName: String,
+                               templateName: String, fileType: FileType): PsiFile {
+            val project = directory.project
+            val templateText = getTemplateText(project, templateName)
+
+            val fileFactory = PsiFileFactory.getInstance(project)
+            val file = fileFactory.createFileFromText(fileName, fileType, templateText)
+
+            val createdFile = Container<PsiFile>()
+            val application = ApplicationManager.getApplication()
+            application.runWriteAction { createdFile.setItem(directory.add(file) as PsiFile) }
+
+            return createdFile.item
+                    .orElseThrow { TeXception("No created file in container.") }
+        }
+
+        /**
+         * Get the text from a certain template.
+         *
+         * @param project
+         * The IntelliJ project that contains the templates.
+         * @param templateName
+         * The name of the template. Use the constants prefixed with `FILE_TEMPLATE_` from
+         * [LatexTemplatesFactory].
+         * @return The contents of the template with applied properties.
+         */
+        @JvmStatic
+        fun getTemplateText(project: Project, templateName: String): String {
+            val templateManager = FileTemplateManager.getInstance(project)
+            val template = templateManager.getInternalTemplate(templateName)
+            val properties = Properties(templateManager.defaultProperties)
+
+            try {
+                return template.getText(properties)
+            }
+            catch (e: IOException) {
+                throw TeXception("Could not load template " + templateName, e)
+            }
+
+        }
+    }
+
+    override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {
+        val descriptor = FileTemplateGroupDescriptor(
+                descriptor,
+                TexifyIcons.LATEX_FILE
+        )
+
+        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTex, TexifyIcons.LATEX_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTexWithBib, TexifyIcons.LATEX_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateSty, TexifyIcons.STYLE_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateCls, TexifyIcons.CLASS_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateBib, TexifyIcons.BIBLIOGRAPHY_FILE))
+
+        return descriptor
+    }
+}

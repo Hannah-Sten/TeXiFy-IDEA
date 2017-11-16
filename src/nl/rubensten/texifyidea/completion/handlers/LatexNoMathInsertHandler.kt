@@ -8,11 +8,9 @@ import com.intellij.codeInsight.template.TemplateEditingListener
 import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateSettings
 import com.intellij.codeInsight.template.impl.TemplateState
-import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.lang.Environment
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
-import nl.rubensten.texifyidea.util.PackageUtils
-import nl.rubensten.texifyidea.util.insertUsepackage
+import nl.rubensten.texifyidea.lang.LatexCommand
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -20,9 +18,9 @@ import nl.rubensten.texifyidea.util.insertUsepackage
 class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
-        val command = item.`object` as LatexNoMathCommand
+        val command = item.`object` as LatexCommand
 
-        if (command == LatexNoMathCommand.BEGIN) {
+        if (command.command == "begin") {
             insertBegin(context)
         }
         else {
@@ -41,7 +39,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
 
         val editor = context.editor
         val templateManager = TemplateManager.getInstance(context.project)
-        templateManager.startTemplate(editor, template, EnvironmentInsertImports(context.file))
+        templateManager.startTemplate(editor, template, EnvironmentInsertImports(context))
     }
 
     /**
@@ -49,21 +47,31 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
      *
      * @author Ruben Schellekens
      */
-    private inner class EnvironmentInsertImports(val file: PsiFile) : TemplateEditingListener {
+    private inner class EnvironmentInsertImports(val context: InsertionContext) : TemplateEditingListener {
 
-        override fun beforeTemplateFinished(templateState: TemplateState, template: Template) {
-            val envName = templateState.getVariableValue("ENVNAME")?.text ?: return
+        override fun beforeTemplateFinished(templateState: TemplateState?, template: Template?) {
+            val envName = templateState?.getVariableValue("ENVNAME")?.text ?: return
             val environment = Environment[envName] ?: return
-            val pack = environment.getDependency()
+            val pack = environment.dependency
+            val file = context.file
+            val editor = context.editor
+            val envDefinitions = file.definitionsAndRedefinitionsInFileSet()
+                    .filter { it.isEnvironmentDefinition() }
+                    .mapNotNull { it.requiredParameter(0) }.toSet()
 
-            if (!PackageUtils.getIncludedPackages(file).contains(pack.name)) {
+            // Include packages.
+            if (!PackageUtils.getIncludedPackages(file).contains(pack.name) && envName !in envDefinitions) {
                 file.insertUsepackage(pack)
             }
+
+            // Add initial contents.
+            val initial = environment.initialContents
+            editor.insertAndMove(editor.caretModel.offset, initial)
         }
 
-        override fun templateFinished(template: Template, b: Boolean) {}
-        override fun templateCancelled(template: Template) {}
-        override fun currentVariableChanged(templateState: TemplateState, template: Template, i: Int, i1: Int) {}
-        override fun waitingForInput(template: Template) {}
+        override fun templateFinished(template: Template?, b: Boolean) {}
+        override fun templateCancelled(template: Template?) {}
+        override fun currentVariableChanged(templateState: TemplateState?, template: Template?, i: Int, i1: Int) {}
+        override fun waitingForInput(template: Template?) {}
     }
 }

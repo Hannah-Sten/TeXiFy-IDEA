@@ -11,6 +11,6 @@ open class InsertFontStyleActionGroup : DefaultActionGroup() {
 
     override fun update(event: AnActionEvent?) {
         super.update(event)
-        event?.presentation?.icon = TexifyIcons.FONT_ITALICS
+        event?.presentation?.icon = TexifyIcons.FONT_BOLD
     }
 }

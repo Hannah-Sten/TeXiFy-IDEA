@@ -5,32 +5,17 @@ import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.editor.Editor
 import nl.rubensten.texifyidea.lang.LatexMathCommand
-import nl.rubensten.texifyidea.util.mapOfVarargs
+import nl.rubensten.texifyidea.util.Magic
 
 /**
  * @author Ruben Schellekens
  */
 open class RightInsertHandler : InsertHandler<LookupElement> {
 
-    companion object {
-
-        /**
-         * Maps `\left` => `\right`.
-         */
-        val OPPOSITES = mapOfVarargs(
-                "(", ")",
-                "[", "]",
-                "\\{", "\\}",
-                "<", ">",
-                "|", "|",
-                "\\|", "\\|"
-        )
-    }
-
     override fun handleInsert(context: InsertionContext?, element: LookupElement?) {
         val editor = context?.editor ?: return
         val command = element?.`object` as? LatexMathCommand ?: return
-        val name = command.getCommand()
+        val name = command.command
 
         if (name.startsWith("left")) {
             insertRight(name, editor)
@@ -39,7 +24,7 @@ open class RightInsertHandler : InsertHandler<LookupElement> {
 
     private fun insertRight(commandName: String, editor: Editor) {
         val char = commandName.substring(4)
-        val opposite = OPPOSITES[char] ?: return
+        val opposite = Magic.Typography.braceOpposites[char] ?: return
         editor.document.insertString(editor.caretModel.offset, "  \\right$opposite")
         editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
     }

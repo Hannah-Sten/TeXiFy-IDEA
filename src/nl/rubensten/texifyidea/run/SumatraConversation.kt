@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.run
 
+import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
 
@@ -12,23 +13,43 @@ import nl.rubensten.texifyidea.TeXception
  * @since b0.4
  */
 object SumatraConversation {
-    private val SERVER = "SUMATRA"
-    private val TOPIC = "control"
 
-    private val conversation: DDEClientConversation
+    /**
+     * Indicates whether SumatraPDF is installed and DDE communication is enabled.
+     *
+     * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
+     * install SumatraPDF while running TeXiFy.
+     */
+    @JvmField val isAvailable: Boolean
+
+    private val server = "SUMATRA"
+    private val topic = "control"
+    private val conversation: DDEClientConversation?
 
     init {
-        try {
-            conversation = DDEClientConversation()
-        } catch (e: NoClassDefFoundError) {
-            throw TeXception("Native library DLLs could not be found.", e)
+        if (!SystemInfo.isWindows or !sumatraInstalled()) {
+            conversation = null
+            isAvailable = false
         }
+        else {
+            try {
+                conversation = DDEClientConversation()
+            }
+            catch (e: NoClassDefFoundError) {
+                isAvailable = false
+                throw TeXception("Native library DLLs could not be found.", e)
+            }
+
+            isAvailable = true
+        }
+
     }
 
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, start: Boolean = false) {
         if (start) {
             Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
-        } else {
+        }
+        else {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
     }
@@ -53,18 +74,35 @@ object SumatraConversation {
 
     private fun execute(vararg commands: String) {
         try {
-            conversation.connect(SERVER, TOPIC)
+            conversation!!.connect(server, topic)
             conversation.execute(commands.joinToString(separator = "") { "[$it]" })
         }
         catch (e: Exception) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
         }
         finally {
-            conversation.disconnect()
+            conversation?.disconnect()
         }
     }
 
+    private fun sumatraInstalled(): Boolean {
+        // Look up SumatraPDF registry key
+        val process = Runtime.getRuntime().exec(
+                "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
+        )
+
+        val br = process.inputStream.bufferedReader()
+        val firstLine = br.readLine() ?: return false
+        br.close()
+
+        return !firstLine.startsWith("ERROR:")
+    }
+
+    /**
+     * @author Sten Wessel
+     */
     enum class ViewMode(val description: String) {
+
         SINGLE_PAGE("single page"),
         FACING("facing"),
         BOOK_VIEW("book view"),
@@ -73,11 +111,16 @@ object SumatraConversation {
         CONTINUOUS_BOOK_VIEW("continuous book view");
     }
 
+    /**
+     * @author Sten Wessel
+     */
     class ZoomLevel(val percentage: Int) {
+
         companion object {
-            val FIT_PAGE = ZoomLevel(-1)
-            val FIT_WIDTH = ZoomLevel(-2)
-            val FIT_CONTENT = ZoomLevel(-3)
+
+            private val fitPage = ZoomLevel(-1)
+            private val fitWidth = ZoomLevel(-2)
+            private val fitContent = ZoomLevel(-3)
         }
 
         init {

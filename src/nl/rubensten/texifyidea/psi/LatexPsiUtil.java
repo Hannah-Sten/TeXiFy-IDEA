@@ -139,7 +139,6 @@ public class LatexPsiUtil {
         // LatexContent
         else if (element instanceof LatexContent) {
             LatexContent content = (LatexContent)element;
-            result.add(content.getMathEnvironment());
             result.add(content.getNoMathContent());
         }
         // LatexDisplayMath

@@ -1,12 +1,18 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.index.LatexDefinitionIndex
+import nl.rubensten.texifyidea.index.LatexIncludesIndex
+import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
 import kotlin.reflect.KClass
@@ -23,30 +29,70 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
 /**
  * @see [PsiTreeUtil.getChildrenOfType]
  */
-fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> = PsiTreeUtil.findChildrenOfType(this, clazz.java)
-
-/**
- * See method name.
- */
-fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    val children = childrenOfType(clazz)
-    if (children.isEmpty()) {
-        return null
-    }
-
-    return children.first()
+fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
+    return PsiTreeUtil.findChildrenOfType(this, clazz.java)
 }
 
 /**
- * See method name.
+ * @see [PsiTreeUtil.getChildrenOfType]
  */
-fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
-    val children = childrenOfType(clazz)
-    if (children.isEmpty()) {
-        return null
+inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
+
+/**
+ * Finds the fierst element that matches a given predicate.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
+    for (child in children) {
+        if (predicate(this)) {
+            return child as? T
+        }
+
+        val first = child.findFirstChild<T>(predicate)
+        if (first != null) {
+            return first
+        }
     }
 
-    return children.last()
+    return null
+}
+
+/**
+ * Finds the first child of a certain type.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
+    for (child in this.children) {
+        if (clazz.java.isAssignableFrom(child.javaClass)) {
+            return child as? T
+        }
+
+        val first = child.firstChildOfType(clazz)
+        if (first != null) {
+            return first
+        }
+    }
+
+    return null
+}
+
+/**
+ * Finds the last child of a certain type.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
+    for (child in children.reversedArray()) {
+        if (clazz.java.isAssignableFrom(child.javaClass)) {
+            return child as? T
+        }
+
+        val last = child.lastChildOfType(clazz)
+        if (last != null) {
+            return last
+        }
+    }
+
+    return null
 }
 
 /**
@@ -64,7 +110,17 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
-fun PsiElement.inMathMode(): Boolean = hasParent(LatexMathContent::class)
+fun PsiElement.inMathContext(): Boolean {
+    return hasParent(LatexMathContent::class) || hasParent(LatexDisplayMath::class) || inDirectEnvironmentContext(Environment.Context.MATH)
+}
+
+/**
+ * Check if the element is in a comment or not.
+ */
+fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMMENT) || when (this) {
+    is PsiComment -> true
+    else -> this is LeafPsiElement && elementType == LatexTypes.COMMAND_TOKEN
+}
 
 /**
  * @see LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
@@ -138,7 +194,7 @@ fun PsiElement.grandparent(generations: Int): PsiElement? {
 /**
  * Checks if the psi element has a (grand) parent that matches the given predicate.
  */
-fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
+inline fun PsiElement.hasParentMatching(maxDepth: Int, predicate: (PsiElement) -> Boolean): Boolean {
     var count = 0
     var parent = this.parent
     while (parent != null && parent !is PsiFile) {
@@ -187,7 +243,7 @@ fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
  * @return `true` when the predicate tests `true`, or `false` when there is no direct environment or when the
  *              predicate failed.
  */
-fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
+inline fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     return predicate(environment)
 }
@@ -210,9 +266,9 @@ fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
  * Checks if the psi element has a direct environment with the given context.
  */
 fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean {
-    val environment = parentOfType(LatexEnvironment::class) ?: return false
+    val environment = parentOfType(LatexEnvironment::class) ?: return context == Environment.Context.NORMAL
     return inDirectEnvironmentMatching {
-        Environment.fromPsi(environment)?.context == context
+        DefaultEnvironment.fromPsi(environment)?.context == context
     }
 }
 
@@ -226,14 +282,19 @@ fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexCommands]
+ * @see [LatexCommandsIndex.getIndexedCommands]
  */
-fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommands(this)
+fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexCommandsInFileSet]
+ * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
  */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getIndexCommandsInFileSet(this)
+fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
+
+/**
+ * @see [BibtexIdIndex.getIndexedIdsInFileSet]
+ */
+fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
 
 /**
  * @see TexifyUtil.getFileRelativeTo
@@ -248,21 +309,125 @@ fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this
 /**
  * @see TexifyUtil.getReferencedFileSet
  */
-fun PsiFile.referencedFiles(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
+fun PsiFile.referencedFileSet(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
+
+/**
+ * Get the editor of the file if it is currently opened.
+ */
+fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
+
+/**
+ * Get all the definitions in the file.
+ */
+fun PsiFile.definitions(): Collection<LatexCommands> {
+    return LatexDefinitionIndex.getItems(this)
+            .filter { it.isDefinition() }
+}
+
+/**
+ * Get all the definitions and redefinitions in the file.
+ */
+fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
+    return LatexDefinitionIndex.getItems(this)
+}
+
+/**
+ * Get all the definitions in the file set.
+ */
+fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
+    return LatexDefinitionIndex.getItemsInFileSet(this)
+            .filter { it.isDefinition() }
+}
+
+/**
+ * Get all the definitions and redefinitions in the file set.
+ */
+fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
+    return LatexDefinitionIndex.getItemsInFileSet(this)
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @see TexifyUtil.getNextCommand
+ * Checks whether the given LaTeX commands is a (re)definition or not.
+ *
+ * This is either a command definition or an environment (re)definition.
+ *
+ * @return `true` if the command is an environment (re)definition or a command (re)definition, `false` when the command is
+ *         `null` or otherwise.
  */
-fun LatexCommands.nextCommand(): LatexCommands? = TexifyUtil.getNextCommand(this)
+fun LatexCommands?.isDefinitionOrRedefinition() = this != null && (DEFINITIONS.contains(this.name) || REDEFINITIONS.contains(this.name))
+
+/**
+ * Checks whether the given LaTeX commands is a definition or not.
+ *
+ * This is either a command definition or an environment definition. Does not count redefinitions.
+ *
+ * @return `true` if the command is an environment definition or a command definition, `false` when the command is
+ *         `null` or otherwise.
+ */
+fun LatexCommands?.isDefinition() = this != null && DEFINITIONS.contains(this.name)
+
+/**
+ * Checks whether the given LaTeX commands is a command definition or not.
+ *
+ * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
+ */
+fun LatexCommands?.isCommandDefinition(): Boolean {
+    return this != null && ("\\newcommand" == name ||
+            "\\let" == name ||
+            "\\def" == name ||
+            "\\DeclareMathOperator" == name ||
+            "\\renewcommand" == name)
+}
+
+/**
+ * Checks whether the given LaTeX commands is an environment definition or not.
+ *
+ * @return `true` if the command is an environment definition, `false` when the command is `null` or otherwise.
+ */
+fun LatexCommands?.isEnvironmentDefinition(): Boolean {
+    return this != null && ("\\newenvironment" == name ||
+            "\\renewenvironment" == name)
+}
 
 /**
  * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
  */
-fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+fun LatexCommands.firstRequiredParamAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+
+/**
+ * Get the command that gets defined by a definition (`\let` or `\def` command).
+ */
+fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
+
+/**
+ * Looks for the next command relative to the given command.
+ *
+ * @param commands
+ *          The command to start looking from.
+ * @return The next command in the file, or `null` when there is no such command.
+ */
+fun LatexCommands.nextCommand(): LatexCommands? {
+    val content = parentOfType(LatexContent::class) ?: return null
+    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent ?: return null
+    return next.firstChildOfType(LatexCommands::class)
+}
+
+/**
+ * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
+ */
+fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
+
+/**
+ * Get the name of the command that is defined by `this` command.
+ */
+fun LatexCommands.definedCommandName() = when (name) {
+    "\\DeclareMathOperator", "\\newcommand" -> forcedFirstRequiredParameterAsCommand()?.name
+    else -> definitionCommand()?.name
+}
 
 /**
  * @see TexifyUtil.isCommandKnown
@@ -275,13 +440,33 @@ fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
  * @param element
  *              Either a [LatexBeginCommand] or a [LatexEndCommand]
  */
-private fun beginOrEndEnvironmentName(element: PsiElement): String? {
-    val children = element.childrenOfType(LatexNormalText::class)
-    if (children.isEmpty()) {
+private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexNormalText::class)?.text
+
+/**
+ * Get the `index+1`th required parameter of the command.
+ *
+ * @throws IllegalArgumentException When the index is negative.
+ */
+@Throws(IllegalArgumentException::class)
+fun LatexCommands.requiredParameter(index: Int): String? {
+    require(index >= 0, { "Index must not be negative" })
+
+    val parameters = requiredParameters
+    if (parameters.isEmpty() || index >= parameters.size) {
         return null
     }
 
-    return children.first().text
+    return parameters[index]
+}
+
+/**
+ * Finds the indentation of the line where the section command starts.
+ */
+fun LatexCommands.findIndentation(): String {
+    val file = containingFile
+    val document = file.document() ?: return ""
+    val lineNumber = document.getLineNumber(textOffset)
+    return document.lineIndentation(lineNumber)
 }
 
 /**
@@ -293,18 +478,16 @@ fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
  * Looks up the name of the environment in the required parameter.
  */
 fun LatexEnvironment.name(): LatexNormalText? {
-    val parameters = childrenOfType(LatexParameter::class)
-    if (parameters.isEmpty()) {
-        return null
-    }
+    return firstChildOfType(LatexNormalText::class)
+}
 
-    val parameter = parameters.first()
-    val texts = parameter.childrenOfType(LatexNormalText::class)
-    if (texts.isEmpty()) {
-        return null
-    }
-
-    return texts.first()
+/**
+ * Checks if the environment contains the given context.
+ */
+fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
+    val name = name()?.text ?: return false
+    val environment = Environment[name] ?: return false
+    return environment.context == context
 }
 
 /**
@@ -326,3 +509,16 @@ fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
  * Finds the [LatexBeginCommand] that matches the end command.
  */
 fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(LatexBeginCommand::class)
+
+/**
+ * Checks if the latex content objects is a display math environment.
+ */
+fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
+
+
+/**
+ * Checks if the fileset for this file has a bibliography included.
+ *
+ * @return `true` when the fileset has a bibliography included, `false` otherwise.
+ */
+fun PsiFile.hasBibliography() = LatexIncludesIndex.getItemsInFileSet(this).any { it.name == "\\bibliography" }

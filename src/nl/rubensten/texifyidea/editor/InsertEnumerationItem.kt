@@ -18,17 +18,9 @@ import nl.rubensten.texifyidea.util.*
  */
 class InsertEnumerationItem : EnterHandlerDelegate {
 
-    companion object {
-
-        /**
-         * All the listing environments.
-         */
-        val LISTING_ENVIRONMENTS = setOf("itemize", "enumerate", "description")
-    }
-
     override fun postProcessEnter(file: PsiFile, editor: Editor, context: DataContext): EnterHandlerDelegate.Result {
         ShiftTracker.setup(editor.contentComponent)
-        if (file.fileType != LatexFileType.INSTANCE) {
+        if (file.fileType != LatexFileType) {
             return Result.Continue
         }
 
@@ -119,10 +111,10 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
     private fun hasValidContext(element: PsiElement?): Boolean {
-        if (element == null || ShiftTracker.isShiftPressed()) {
+        if (element == null || ShiftTracker.isShiftPressed() || element.inMathContext()) {
             return false
         }
 
-        return element.inDirectEnvironment(LISTING_ENVIRONMENTS)
+        return element.inDirectEnvironment(Magic.Environment.listingEnvironments)
     }
 }

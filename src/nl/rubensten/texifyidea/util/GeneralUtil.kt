@@ -1,5 +1,32 @@
 package nl.rubensten.texifyidea.util
 
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.util.TextRange
+
+/**
+ * Set containing all commands that redefine functionality.
+ */
+val REDEFINITIONS = setOf(
+        "\\renewcommand",
+        "\\renewenvironment"
+)
+
+/**
+ * Set containing all commands that define functionality.
+ */
+val DEFINITIONS = setOf(
+        "\\newcommand",
+        "\\let",
+        "\\def",
+        "\\DeclareMathOperator",
+        "\\newenvironment"
+)
+
+/**
+ * Creates a pair of two objects, analogous to [to].
+ */
+infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
+
 /**
  * Prints the object in default string presentation to the console.
  */
@@ -30,3 +57,20 @@ fun Int.toRoman(): String = TexifyUtil.toRoman(this)
  * @see Integer.toHexString
  */
 fun Int.toHex(): String = Integer.toHexString(this)
+
+/**
+ * Executes the given run write action.
+ */
+fun runWriteAction(writeAction: () -> Unit) {
+    ApplicationManager.getApplication().runWriteAction(writeAction)
+}
+
+/**
+ * Converts an [IntRange] to [TextRange].
+ */
+fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
+
+/**
+ * Converts a [TextRange] to [IntRange].
+ */
+fun TextRange.toIntRange() = startOffset..endOffset

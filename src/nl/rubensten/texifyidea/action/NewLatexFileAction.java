@@ -11,11 +11,12 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.file.BibtexFileType;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
 import nl.rubensten.texifyidea.templates.LatexTemplatesFactory;
-import nl.rubensten.texifyidea.util.Constants;
+import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
     private static final String OPTION_TEX_FILE = "tex";
     private static final String OPTION_STY_FILE = "sty";
     private static final String OPTION_CLS_FILE = "cls";
+    private static final String OPTION_BIB_FILE = "bib";
 
     public NewLatexFileAction() {
         super("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE);
@@ -41,6 +43,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
         CreateFileFromTemplateDialog.Builder builder = CreateFileFromTemplateDialog.createDialog(project);
         builder.setTitle("Create a New LaTeX File");
         builder.addKind("Sources (.tex)", TexifyIcons.LATEX_FILE, OPTION_TEX_FILE);
+        builder.addKind("Bibliography (.bib)", TexifyIcons.BIBLIOGRAPHY_FILE, OPTION_BIB_FILE);
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE);
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE);
         builder.show("", null, fileCreator);
@@ -51,7 +54,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
     @NotNull
     @Override
     protected PsiElement[] create(String s, PsiDirectory psiDirectory) throws Exception {
-        return Constants.EMPTY_PSI_ELEMENT_ARRAY;
+        return Magic.General.emptyPsiElementArray;
     }
 
     @Override
@@ -87,17 +90,19 @@ public class NewLatexFileAction extends CreateElementActionBase {
         }
 
         public PsiElement[] getCreatedElements() {
-            return Constants.EMPTY_PSI_ELEMENT_ARRAY;
+            return Magic.General.emptyPsiElementArray;
         }
 
         private String getTemplateNameFromExtension(String extensionWithoutDot) {
             switch (extensionWithoutDot) {
                 case OPTION_STY_FILE:
-                    return LatexTemplatesFactory.FILE_TEMPLATE_STY;
+                    return LatexTemplatesFactory.fileTemplateSty;
                 case OPTION_CLS_FILE:
-                    return LatexTemplatesFactory.FILE_TEMPLATE_CLS;
+                    return LatexTemplatesFactory.fileTemplateCls;
+                case OPTION_BIB_FILE:
+                    return LatexTemplatesFactory.fileTemplateBib;
                 default:
-                    return LatexTemplatesFactory.FILE_TEMPLATE_TEX;
+                    return LatexTemplatesFactory.fileTemplateTex;
             }
         }
 
@@ -114,6 +119,10 @@ public class NewLatexFileAction extends CreateElementActionBase {
 
             if (smallFileName.endsWith("." + OPTION_STY_FILE)) {
                 return StyleFileType.INSTANCE;
+            }
+
+            if (smallFileName.endsWith("." + OPTION_BIB_FILE)) {
+                return BibtexFileType.INSTANCE;
             }
 
             return TexifyUtil.getFileTypeByExtension(option);
@@ -136,7 +145,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
             String newFileName = getNewFileName(fileName, fileType);
             String templateName = getTemplateNameFromExtension(fileType.getDefaultExtension());
 
-            PsiFile file = LatexTemplatesFactory.createFromTemplate(directory, newFileName,
+            PsiFile file = LatexTemplatesFactory.Companion.createFromTemplate(directory, newFileName,
                     templateName, fileType);
             openFile(file.getVirtualFile());
             return file;

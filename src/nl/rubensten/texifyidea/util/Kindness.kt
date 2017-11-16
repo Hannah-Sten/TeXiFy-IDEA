@@ -7,9 +7,9 @@ import java.util.*
  */
 object Kindness {
 
-    private val RANDOM = Random()
+    private val random = Random()
 
-    private val KIND_WORDS = listOf(
+    private val kindWords = listOf(
             "You are beautiful. You matter. You are awesome.",
             "While it is always best to believe in oneself, a little help from others is a great blessing.",
             "You have light and peace inside of you. If you let it out, you can change the world around you.",
@@ -22,5 +22,5 @@ object Kindness {
     )
 
     @JvmStatic
-    fun getKindWords(): String = KIND_WORDS.randomElement(RANDOM)
+    fun getKindWords(): String = kindWords.randomElement(random)
 }

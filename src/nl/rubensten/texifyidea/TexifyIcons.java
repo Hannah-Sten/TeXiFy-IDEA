@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea;
 
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.PlatformIcons;
 
 import javax.swing.*;
 
@@ -8,6 +9,13 @@ import javax.swing.*;
  * @author Ruben Schellekens, Sten Wessel
  */
 public class TexifyIcons {
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon LATEX_FILE_BIG = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/latex-file-big.png"
+    );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
@@ -68,6 +76,41 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon TEMP_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/temp.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon SYNCTEX_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/synctex-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon AUX_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/aux-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon TABLE_OF_CONTENTS_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/toc-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon BBL_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/bbl-file.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon TEXT_FILE = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/text-file.png"
     );
@@ -77,6 +120,13 @@ public class TexifyIcons {
      */
     public static final Icon BUILD = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/build.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon BUILD_BIB = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/bib-build.png"
     );
 
     /**
@@ -222,9 +272,85 @@ public class TexifyIcons {
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
+    public static final Icon FONT_TYPEWRITER = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-mono.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_STRIKETHROUGH = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-strike.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon FONT_SLANTED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/font-slanted.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
     public static final Icon SUMATRA = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/sumatra.png"
     );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon WORD_COUNT = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/word-count.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon TOGGLE_STAR = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/toggle-star.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon STATS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/stats.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon RIGHT = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/right.png"
+    );
+
+    /**
+     * Copyright (c) 2017 Ruben Schellekens
+     */
+    public static final Icon SETTINGS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/settings.png"
+    );
+
+    // From IntelliJ
+    public static final Icon STRING = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/string.png"
+    );
+
+    // From IntelliJ (modified)
+    public static final Icon KEY_REQUIRED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/key-required.png"
+    );
+
+    // From IntelliJ (modified)
+    public static final Icon KEY_USER_DEFINED = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/key-user.png"
+    );
+
+    /**
+     * For lookup items that have no real category.
+     */
+    public static final Icon MISCELLANEOUS_ITEM = PlatformIcons.PACKAGE_LOCAL_ICON;
 
     /**
      * Get the file icon object that corresponds to the given file extension.
@@ -259,6 +385,8 @@ public class TexifyIcons {
                 return TEXT_FILE;
             case "pdf":
                 return PDF_FILE;
+            case "synctex.gz":
+                return SYNCTEX_FILE;
             default:
                 return FILE;
         }

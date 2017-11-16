@@ -5,24 +5,12 @@ import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
 import com.intellij.packageDependencies.ui.PackageDependenciesNode
 import com.intellij.ui.ColoredTreeCellRenderer
-import nl.rubensten.texifyidea.TexifyIcons
-import java.util.*
-import javax.swing.Icon
+import nl.rubensten.texifyidea.util.Magic
 
 /**
  * @author Ruben Schellekens
  */
 class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
-
-    companion object {
-
-        private val FILE_ICONS = HashMap<String, Icon>()
-
-        init {
-            FILE_ICONS.put("pdf", TexifyIcons.PDF_FILE)
-            FILE_ICONS.put("dvi", TexifyIcons.DVI_FILE)
-        }
-    }
 
     private fun setIcon(projectViewNode: ProjectViewNode<*>, presentationData: PresentationData) {
         val file = projectViewNode.virtualFile ?: return
@@ -30,8 +18,16 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
             return
         }
 
-        val extension = file.extension ?: return
-        val icon = FILE_ICONS[extension.toLowerCase()] ?: return
+        var extension = file.extension ?: return
+        if (extension == "gz") {
+            extension = "synctex.gz"
+
+            if (!file.name.toLowerCase().endsWith("synctex.gz")) {
+                return
+            }
+        }
+
+        val icon = Magic.Icon.fileIcons[extension.toLowerCase()] ?: return
 
         presentationData.setIcon(icon)
     }

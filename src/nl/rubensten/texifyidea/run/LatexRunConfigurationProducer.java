@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.file.LatexFileType;
+import nl.rubensten.texifyidea.util.PsiUtilKt;
 
 /**
  * @author Ruben Schellekens
@@ -16,7 +17,7 @@ import nl.rubensten.texifyidea.file.LatexFileType;
 public class LatexRunConfigurationProducer extends RunConfigurationProducer<LatexRunConfiguration> {
 
     protected LatexRunConfigurationProducer() {
-        super(LatexRunConfigurationType.getInstance());
+        super(LatexRunConfigurationType.Companion.getInstance());
     }
 
     @Override
@@ -51,6 +52,10 @@ public class LatexRunConfigurationProducer extends RunConfigurationProducer<Late
         runConfiguration.setDefaultCompiler();
         runConfiguration.setDefaultOutputFormat();
         runConfiguration.setSuggestedName();
+
+        if (PsiUtilKt.hasBibliography(container)) {
+            runConfiguration.generateBibRunConfig();
+        }
 
         return true;
     }

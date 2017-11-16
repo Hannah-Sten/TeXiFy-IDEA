@@ -29,7 +29,7 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
      * @param extensions
      *         All supported extensions.
      */
-    protected RequiredFileArgument(String name, String... extensions) {
+    public RequiredFileArgument(String name, String... extensions) {
         super(name, Type.FILE);
         setExtensions(extensions);
     }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
 public enum LatexCompiler {
 
@@ -32,6 +32,7 @@ public enum LatexCompiler {
         ProjectFileIndex fileIndex = rootManager.getFileIndex();
         VirtualFile mainFile = runConfig.getMainFile();
         VirtualFile moduleRoot = fileIndex.getContentRootForFile(runConfig.getMainFile());
+        VirtualFile[] moduleRoots = rootManager.getContentSourceRoots();
         if (moduleRoot == null || mainFile == null) {
             return null;
         }
@@ -50,6 +51,10 @@ public enum LatexCompiler {
 
             if (runConfig.hasAuxiliaryDirectories()) {
                 command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
+            }
+
+            for (VirtualFile root : moduleRoots) {
+                command.add("-include-directory=" + root.getPath());
             }
         }
 

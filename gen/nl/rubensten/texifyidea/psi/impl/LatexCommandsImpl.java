@@ -11,12 +11,13 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
-import nl.rubensten.texifyidea.inspections.NonBreakingSpaceInspection;
+import nl.rubensten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.psi.LatexVisitor;
 import nl.rubensten.texifyidea.reference.LatexLabelReference;
+import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +29,7 @@ import static nl.rubensten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
 public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub>
         implements LatexCommands {
 
-    private static final Set<String> REFERENCE_COMMANDS = NonBreakingSpaceInspection.getREFERENCE_COMMANDS();
+    private static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
 
     private String name;
 

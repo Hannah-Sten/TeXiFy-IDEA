@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.gutter;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
@@ -13,12 +14,11 @@ import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.util.FileUtilKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static nl.rubensten.texifyidea.util.TexifyUtil.findFile;
 
@@ -46,22 +46,31 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
             return;
         }
 
+        // True when it doesnt have a required file argument, but must be handled.
+        boolean ignoreFileArgument = "\\RequirePackage".equals(fullCommand) ||
+                "\\usepackage".equals(fullCommand);
+
         // Fetch the corresponding LatexNoMathCommand object.
         String commandName = fullCommand.substring(1);
-        Optional<LatexNoMathCommand> commandHuh = LatexNoMathCommand.get(commandName);
-        if (!commandHuh.isPresent()) {
+        LatexNoMathCommand commandHuh = LatexNoMathCommand.get(commandName);
+        if (commandHuh == null && !ignoreFileArgument) {
             return;
         }
 
-        LatexNoMathCommand command = commandHuh.get();
-        List<RequiredFileArgument> arguments = command.getArgumentsOf(RequiredFileArgument.class);
-
-        if (arguments.isEmpty()) {
+        List<RequiredFileArgument> arguments = commandHuh.getArgumentsOf(RequiredFileArgument.class);
+        if (arguments.isEmpty() && !ignoreFileArgument) {
             return;
         }
 
         // Get the required file arguments.
-        RequiredFileArgument argument = arguments.get(0);
+        RequiredFileArgument argument;
+        if (ignoreFileArgument) {
+            argument = new RequiredFileArgument("", "sty");
+        }
+        else {
+            argument = arguments.get(0);
+        }
+
         List<LatexRequiredParam> requiredParams = TexifyUtil.getRequiredParameters(commands);
         if (requiredParams.isEmpty()) {
             return;
@@ -80,14 +89,27 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         if (containingDirectory == null) {
             return;
         }
-        VirtualFile directory = containingDirectory.getVirtualFile();
-        Optional<VirtualFile> fileHuh = findFile(directory, fileName, argument.getSupportedExtensions());
-        if (!fileHuh.isPresent()) {
+
+        List<VirtualFile> roots = new ArrayList<>();
+        PsiFile rootFile = FileUtilKt.findRootFile(containingFile);
+        roots.add(rootFile.getContainingDirectory().getVirtualFile());
+        ProjectRootManager rootManager = ProjectRootManager.getInstance(element.getProject());
+        Collections.addAll(roots, rootManager.getContentSourceRoots());
+
+        VirtualFile file = null;
+        for (VirtualFile root : roots) {
+            Optional<VirtualFile> fileHuh = findFile(root, fileName, argument.getSupportedExtensions());
+            if (fileHuh.isPresent()) {
+                file = fileHuh.get();
+                break;
+            }
+        }
+
+        if (file == null) {
             return;
         }
 
         // Build gutter icon.
-        VirtualFile file = fileHuh.get();
         NavigationGutterIconBuilder<PsiElement> builder = NavigationGutterIconBuilder
                 .create(TexifyIcons.getIconFromExtension(file.getExtension()))
                 .setTarget(PsiManager.getInstance(element.getProject()).findFile(file))

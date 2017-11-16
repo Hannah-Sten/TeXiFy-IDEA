@@ -1,0 +1,20 @@
+%%
+%% Author: ${USER}
+%% ${DATE}
+%%
+
+% Preamble
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{a4wide}
+
+% Document
+\begin{document}
+
+
+
+    \bibliography{main}
+    \bibliographystyle{plain}
+
+\end{document}

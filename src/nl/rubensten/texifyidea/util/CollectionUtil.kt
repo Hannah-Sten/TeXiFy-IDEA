@@ -71,6 +71,65 @@ fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
 }
 
 /**
+ * Finds at least `amount` elements matching the given predicate.
+ *
+ * @param amount
+ *          How many items the collection must contain at least in order to return true. Must be nonnegative.
+ * @return `true` when `amount` or more elements in the collection match the given predicate.
+ */
+inline fun <T> Collection<T>.findAtLeast(amount: Int, predicate: (T) -> Boolean): Boolean {
+    require(amount >= 0) { "Amount must be positive." }
+
+    // Edge cases.
+    when (amount) {
+        0 -> none(predicate)
+        1 -> any(predicate)
+    }
+
+    // More than 1 item, iterate.
+    var matches = 0
+    for (element in this) {
+        if (predicate(element)) {
+            matches += 1
+            if (matches >= amount) {
+                return true
+            }
+        }
+    }
+
+    return false
+}
+
+/**
+ * Checks if all given predicates can be matched at least once.
+ *
+ * @return `true` if all predicates match for at least 1 element in the collection, `false` otherwise.
+ */
+inline fun <T> Collection<T>.anyMatchAll(predicate: (T) -> Boolean, vararg predicates: (T) -> Boolean): Boolean {
+    val matches = BooleanArray(predicates.size + 1)
+    var matchCount = 0
+    for (element in this) {
+        for (i in 0 until predicates.size) {
+            if (!matches[i] && predicates[i](element)) {
+                matches[i] = true
+                matchCount += 1
+            }
+        }
+
+        if (!matches.last() && predicate(element)) {
+            matches[matches.size - 1] = true
+            matchCount += 1
+        }
+    }
+    return matchCount == matches.size
+}
+
+/**
+ * Checks if the map contains the given value as either a key or value.
+ */
+fun <T> Map<T, T>.containsKeyOrValue(value: T) = containsKey(value) || containsValue(value)
+
+/**
  * Collects stream to [List].
  */
 fun <T> Stream<T>.list(): List<T> = this.mutableList()

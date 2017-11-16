@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.run;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
+import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.LocatableConfiguration;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -10,6 +11,7 @@ import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RuntimeConfigurationError;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.filters.RegexpFilter;
+import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
@@ -34,12 +36,15 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private static final String MAIN_FILE = "main-file";
     private static final String AUX_DIR = "aux-dir";
     private static final String OUTPUT_FORMAT = "output-format";
+    private static final String BIB_RUN_CONFIG = "bib-run-config";
 
     private LatexCompiler compiler;
     private String compilerPath = null;
     private VirtualFile mainFile;
     private boolean auxDir = true;
     private Format outputFormat = Format.PDF;
+    private String bibRunConfigId = "";
+    private boolean skipBibtex = false;
 
     protected LatexRunConfiguration(Project project, ConfigurationFactory factory, String name) {
         super(project, factory, name);
@@ -102,6 +107,10 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         // Read output format.
         Format format = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT));
         this.outputFormat = format == null ? Format.PDF : format;
+
+        // Read bibliography run configuration
+        String bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG);
+        this.bibRunConfigId = bibRunConfigElt == null ? "" : bibRunConfigElt;
     }
 
     @Override
@@ -144,6 +153,30 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         final Element outputFormatElt = new Element(OUTPUT_FORMAT);
         outputFormatElt.setText(outputFormat.name());
         parent.addContent(outputFormatElt);
+
+        // Write bibliography run configuration
+        final Element bibRunConfigElt = new Element(BIB_RUN_CONFIG);
+        bibRunConfigElt.setText(bibRunConfigId);
+        parent.addContent(bibRunConfigElt);
+    }
+
+    void generateBibRunConfig() {
+        RunManagerImpl runManager = RunManagerImpl.getInstanceImpl(getProject());
+
+        RunnerAndConfigurationSettings bibSettings = runManager.createRunConfiguration(
+                "",
+                new LatexConfigurationFactory(new BibtexRunConfigurationType())
+        );
+
+        BibtexRunConfiguration bibtexRunConfiguration = (BibtexRunConfiguration)bibSettings.getConfiguration();
+
+        bibtexRunConfiguration.setDefaultCompiler();
+        bibtexRunConfiguration.setMainFile(mainFile);
+        bibtexRunConfiguration.setSuggestedName();
+
+        runManager.addConfiguration(bibSettings);
+
+        setBibRunConfig(bibSettings);
     }
 
     public LatexCompiler getCompiler() {
@@ -211,6 +244,14 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         this.compilerPath = compilerPath;
     }
 
+    public RunnerAndConfigurationSettings getBibRunConfig() {
+        return RunManagerImpl.getInstanceImpl(getProject()).getConfigurationById(bibRunConfigId);
+    }
+
+    public void setBibRunConfig(RunnerAndConfigurationSettings bibRunConfig) {
+        this.bibRunConfigId = bibRunConfig == null ? "" : bibRunConfig.getUniqueID();
+    }
+
     @Override
     public boolean isGeneratedName() {
         if (mainFile == null) {
@@ -247,5 +288,13 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
                 ", auxDir=" + auxDir +
                 ", outputFormat=" + outputFormat +
                 '}';
+    }
+
+    public boolean isSkipBibtex() {
+        return skipBibtex;
+    }
+
+    public void setSkipBibtex(boolean skipBibtex) {
+        this.skipBibtex = skipBibtex;
     }
 }
