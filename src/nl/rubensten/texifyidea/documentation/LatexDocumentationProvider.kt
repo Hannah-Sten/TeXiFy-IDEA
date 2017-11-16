@@ -14,7 +14,9 @@ import java.io.InputStream
  * @author Sten Wessel
  */
 open class LatexDocumentationProvider : AbstractDocumentationProvider() {
+
     companion object {
+
         private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
     }
 
