@@ -16,7 +16,6 @@ class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListene
                 SumatraConversation.openFile(runConfig.outputFilePath, start = true)
             }
             catch (ignored: TeXception) {
-
             }
         }
     }

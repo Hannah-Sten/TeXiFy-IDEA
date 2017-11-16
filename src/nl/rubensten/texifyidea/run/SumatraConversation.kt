@@ -93,6 +93,7 @@ object SumatraConversation {
 
         val br = process.inputStream.bufferedReader()
         val firstLine = br.readLine() ?: return false
+        br.close()
 
         return !firstLine.startsWith("ERROR:")
     }
