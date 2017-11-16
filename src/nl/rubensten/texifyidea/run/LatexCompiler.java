@@ -58,6 +58,9 @@ public enum LatexCompiler {
             }
         }
 
+        // Custom compiler arguments specified by the user
+        command.add(runConfig.getCompilerArguments());
+
         command.add(mainFile.getName());
 
         return command;

@@ -33,6 +33,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
     private static final String COMPILER_PATH = "compiler-path";
+    private static final String COMPILER_ARGUMENTS = "compiler-arguments";
     private static final String MAIN_FILE = "main-file";
     private static final String AUX_DIR = "aux-dir";
     private static final String OUTPUT_FORMAT = "output-format";
@@ -40,6 +41,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
     private LatexCompiler compiler;
     private String compilerPath = null;
+    @NotNull private String compilerArguments = "";
     private VirtualFile mainFile;
     private boolean auxDir = true;
     private Format outputFormat = Format.PDF;
@@ -95,6 +97,10 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         String compilerPathRead = parent.getChildText(COMPILER_PATH);
         this.compilerPath = (compilerPathRead == null || compilerPathRead.isEmpty()) ? null : compilerPathRead;
 
+        // Read compiler arguments.
+        String compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS);
+        this.compilerArguments = compilerArgumentsRead == null ? "" : compilerArgumentsRead;
+
         // Read main file.
         LocalFileSystem fileSystem = LocalFileSystem.getInstance();
         String filePath = parent.getChildText(MAIN_FILE);
@@ -138,6 +144,11 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         final Element compilerPathElt = new Element(COMPILER_PATH);
         compilerPathElt.setText(compilerPath == null ? "" : compilerPath);
         parent.addContent(compilerPathElt);
+
+        // Write compiler arguments
+        final Element compilerArgsElt = new Element(COMPILER_ARGUMENTS);
+        compilerArgsElt.setText(compilerArguments);
+        parent.addContent(compilerArgsElt);
 
         // Write main file.
         final Element mainFileElt = new Element(MAIN_FILE);
@@ -250,6 +261,15 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
     public void setBibRunConfig(RunnerAndConfigurationSettings bibRunConfig) {
         this.bibRunConfigId = bibRunConfig == null ? "" : bibRunConfig.getUniqueID();
+    }
+
+    @NotNull
+    public String getCompilerArguments() {
+        return compilerArguments;
+    }
+
+    public void setCompilerArguments(@NotNull String compilerArguments) {
+        this.compilerArguments = compilerArguments;
     }
 
     @Override
