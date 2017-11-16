@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import java.awt.event.ItemEvent
@@ -23,6 +24,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var compiler: LabeledComponent<ComboBox<BibliographyCompiler>>
     private lateinit var enableCompilerPath: JCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
+    private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
     private lateinit var auxFile: LabeledComponent<TextFieldWithBrowseButton>
 
@@ -34,6 +36,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     override fun resetEditorFrom(runConfig: BibtexRunConfiguration) {
         compiler.component.selectedItem = runConfig.compiler
         compilerPath.text = runConfig.compilerPath ?: ""
+        compilerArguments.component.text = runConfig.compilerArguments ?: ""
         enableCompilerPath.isSelected = runConfig.compilerPath != null
         mainFile.component.text = runConfig.mainFile?.path ?: ""
         auxFile.component.text = runConfig.auxDir?.path ?: ""
@@ -42,6 +45,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     override fun applyEditorTo(runConfig: BibtexRunConfiguration) {
         runConfig.compiler = compiler.component.selectedItem as BibliographyCompiler?
         runConfig.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
+        runConfig.compilerArguments = compilerArguments.component.text
         runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
         runConfig.auxDir = LocalFileSystem.getInstance().findFileByPath(auxFile.component.text)
     }
@@ -81,6 +85,12 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
 
             add(enableCompilerPath)
             add(compilerPath)
+
+            // Custom compiler arguments
+            val argumentsTitle = "Custom compiler arguments"
+            val argumentsField = RawCommandLineEditor().apply { dialogCaption = argumentsTitle }
+            compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
+            add(compilerArguments)
 
             add(SeparatorComponent())
 

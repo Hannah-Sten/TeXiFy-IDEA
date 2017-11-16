@@ -41,7 +41,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
     private LatexCompiler compiler;
     private String compilerPath = null;
-    @NotNull private String compilerArguments = "";
+    private String compilerArguments = null;
     private VirtualFile mainFile;
     private boolean auxDir = true;
     private Format outputFormat = Format.PDF;
@@ -99,7 +99,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
         // Read compiler arguments.
         String compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS);
-        this.compilerArguments = compilerArgumentsRead == null ? "" : compilerArgumentsRead;
+        setCompilerArguments("".equals(compilerArgumentsRead) ? null : compilerArgumentsRead);
 
         // Read main file.
         LocalFileSystem fileSystem = LocalFileSystem.getInstance();
@@ -147,7 +147,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
         // Write compiler arguments
         final Element compilerArgsElt = new Element(COMPILER_ARGUMENTS);
-        compilerArgsElt.setText(compilerArguments);
+        compilerArgsElt.setText(compilerArguments == null ? "" : compilerArguments);
         parent.addContent(compilerArgsElt);
 
         // Write main file.
@@ -263,13 +263,16 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         this.bibRunConfigId = bibRunConfig == null ? "" : bibRunConfig.getUniqueID();
     }
 
-    @NotNull
     public String getCompilerArguments() {
         return compilerArguments;
     }
 
-    public void setCompilerArguments(@NotNull String compilerArguments) {
-        this.compilerArguments = compilerArguments;
+    public void setCompilerArguments(String compilerArguments) {
+        if (compilerArguments != null) {
+            compilerArguments = compilerArguments.trim();
+        }
+
+        this.compilerArguments = compilerArguments != null && compilerArguments.isEmpty() ? null : compilerArguments;
     }
 
     @Override

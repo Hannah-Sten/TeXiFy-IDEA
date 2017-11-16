@@ -24,12 +24,19 @@ class BibtexRunConfiguration(
         private val PARENT_ELEMENT = "texify-bibtex"
         private val COMPILER = "compiler"
         private val COMPILER_PATH = "compiler-path"
+        private val COMPILER_ARGUMENTS = "compiler-arguments"
         private val MAIN_FILE = "main-file"
         private val AUX_DIR = "aux-dir"
     }
 
     var compiler: BibliographyCompiler? = null
     var compilerPath: String? = null
+    var compilerArguments: String? = null
+        set(value) {
+            field = value?.trim()
+            field = if (field?.isEmpty() == true) null else field
+        }
+
     var mainFile: VirtualFile? = null
     var auxDir: VirtualFile? = null
 
@@ -66,6 +73,8 @@ class BibtexRunConfiguration(
             compilerPath = null
         }
 
+        compilerArguments = parent.getChildText(COMPILER_ARGUMENTS)
+
         val mainFilePath = parent.getChildText(MAIN_FILE)
         mainFile = if (mainFilePath != null) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
@@ -89,6 +98,7 @@ class BibtexRunConfiguration(
 
         parent.addContent(Element(COMPILER).apply { text = compiler?.name ?: "" })
         parent.addContent(Element(COMPILER_PATH).apply { text = compilerPath ?: "" })
+        parent.addContent(Element(COMPILER_ARGUMENTS).apply { text = compilerArguments ?: "" })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
         parent.addContent(Element(AUX_DIR).apply { text = auxDir?.path ?: "" })
     }

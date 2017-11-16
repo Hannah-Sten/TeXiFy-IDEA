@@ -7,6 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,7 +60,10 @@ public enum LatexCompiler {
         }
 
         // Custom compiler arguments specified by the user
-        command.add(runConfig.getCompilerArguments());
+        if (runConfig.getCompilerArguments() != null) {
+            String[] args = runConfig.getCompilerArguments().split("\\s+");
+            command.addAll(Arrays.asList(args));
+        }
 
         command.add(mainFile.getName());
 

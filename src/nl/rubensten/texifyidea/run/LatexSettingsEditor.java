@@ -53,7 +53,8 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         enableCompilerPath.setSelected(runConfiguration.getCompilerPath() != null);
 
         // Reset compiler arguments
-        compilerArguments.getComponent().setText(runConfiguration.getCompilerArguments());
+        String args = runConfiguration.getCompilerArguments();
+        compilerArguments.getComponent().setText(args == null ? "" : args);
 
         // Reset the main file to compile.
         TextFieldWithBrowseButton txtFile = (TextFieldWithBrowseButton)mainFile.getComponent();
