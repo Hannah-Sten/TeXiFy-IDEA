@@ -94,8 +94,8 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
         return dialog.selected
     }
 
-    private fun changeTitle(title: String) {
-        hidePanel.title = title + title
+    private fun changeTitle(titleSuffix: String) {
+        hidePanel.title = title + titleSuffix
     }
 
     private fun configurationChanged() {
