@@ -3,8 +3,8 @@ package nl.rubensten.texifyidea.action.group;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.util.SystemInfo;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.run.SumatraConversation;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -13,7 +13,7 @@ public class SumatraActionGroup extends DefaultActionGroup {
 
     @Override
     public boolean canBePerformed(DataContext context) {
-        return SystemInfo.isWindows;
+        return SumatraConversation.isAvailable;
     }
 
     @Override

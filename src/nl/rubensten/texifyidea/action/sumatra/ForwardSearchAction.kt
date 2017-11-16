@@ -3,7 +3,6 @@ package nl.rubensten.texifyidea.action.sumatra
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.TexifyIcons
@@ -25,7 +24,7 @@ open class ForwardSearchAction : EditorAction(
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
-        if (!SystemInfo.isWindows) {
+        if (!SumatraConversation.isAvailable) {
             return
         }
 
@@ -41,6 +40,6 @@ open class ForwardSearchAction : EditorAction(
 
     override fun update(e: AnActionEvent?) {
         val presentation = e?.presentation ?: return
-        presentation.isEnabledAndVisible = SystemInfo.isWindows
+        presentation.isEnabledAndVisible = SumatraConversation.isAvailable
     }
 }
