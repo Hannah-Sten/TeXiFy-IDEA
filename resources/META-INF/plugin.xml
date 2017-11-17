@@ -170,6 +170,12 @@
         </p>
     ]]></change-notes>
 
+    <project-components>
+        <component>
+            <implementation-class>nl.rubensten.texifyidea.components.TexifyProjectComponent</implementation-class>
+        </component>
+    </project-components>
+
     <module-components>
     </module-components>
 
