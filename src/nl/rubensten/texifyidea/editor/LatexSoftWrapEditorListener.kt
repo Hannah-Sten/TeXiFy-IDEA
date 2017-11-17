@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.editor
 
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
+import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.util.isLatexFile
 import nl.rubensten.texifyidea.util.psiFile
 
@@ -13,6 +14,10 @@ import nl.rubensten.texifyidea.util.psiFile
 class LatexSoftWrapEditorListener : EditorFactoryListener {
 
     override fun editorCreated(event: EditorFactoryEvent) {
+        if (!TexifySettings.getInstance().automaticSoftWraps) {
+            return
+        }
+
         val editor = event.editor
 
         if (editor.document.psiFile(editor.project ?: return)?.isLatexFile() != true) {
