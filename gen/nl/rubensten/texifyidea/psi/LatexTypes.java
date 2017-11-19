@@ -55,7 +55,7 @@ public interface LatexTypes {
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
   IElementType DISPLAY_MATH_START = new LatexTokenType("\\[");
   IElementType END_TOKEN = new LatexTokenType("\\end");
-  IElementType INLINE_MATH_END = new LatexTokenType("$");
+  IElementType INLINE_MATH_END = new LatexTokenType("INLINE_MATH_END");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
   IElementType M_CLOSE_BRACKET = new LatexTokenType("M_CLOSE_BRACKET");
   IElementType M_OPEN_BRACKET = new LatexTokenType("M_OPEN_BRACKET");

@@ -64,7 +64,10 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
                 }
             }
             else if (c == '[') {
-                return insertDisplayMathClose(c, editor);
+                return insertDisplayMathClose(editor);
+            }
+            else if (c == '(') {
+                return insertRobustInlineMathClose(editor);
             }
 
         }
@@ -75,11 +78,28 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
     /**
      * Upon typing {@code \[}, inserts the closing delimiter {@code \]}.
      */
-    private Result insertDisplayMathClose(char c, Editor editor) {
+    private Result insertDisplayMathClose(Editor editor) {
         IElementType tokenType = getTypedTokenType(editor);
 
         if (tokenType == LatexTypes.DISPLAY_MATH_START) {
             editor.getDocument().insertString(editor.getCaretModel().getOffset(), "\\]");
+            return Result.STOP;
+        }
+
+        return Result.CONTINUE;
+    }
+
+    /**
+     * Upon typing {@code \(}, inserts the closing delimiter {@code \)} with spaces in between.
+     */
+    private Result insertRobustInlineMathClose(Editor editor) {
+        IElementType tokenType = getTypedTokenType(editor);
+
+        if (tokenType == LatexTypes.INLINE_MATH_START) {
+            // Only insert backslash because the closing parenthesis is already inserted by the PairedBraceMatcher.
+            editor.getDocument().insertString(editor.getCaretModel().getOffset(), "  \\");
+            editor.getCaretModel().moveCaretRelatively(1, 0, false, false, false);
+
             return Result.STOP;
         }
 
