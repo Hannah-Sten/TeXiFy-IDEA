@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.structure.latex
 
-import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.TreeBasedStructureViewBuilder
 import com.intellij.lang.PsiStructureViewFactory
@@ -14,15 +13,13 @@ import nl.rubensten.texifyidea.psi.StructurePsiChangeListener
  */
 class LatexStructureViewFactory : PsiStructureViewFactory {
 
-    override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder? {
-        return object : TreeBasedStructureViewBuilder() {
-            override fun createStructureViewModel(editor: Editor?): StructureViewModel {
-                val project = editor!!.project
-                val manager = PsiManager.getInstance(project!!)
-                manager.addPsiTreeChangeListener(StructurePsiChangeListener(project))
+    override fun getStructureViewBuilder(psiFile: PsiFile) = object : TreeBasedStructureViewBuilder() {
 
-                return LatexStructureViewModel(psiFile, editor)
-            }
+        override fun createStructureViewModel(editor: Editor?): StructureViewModel {
+            val project = editor?.project ?: return LatexStructureViewModel(psiFile, editor)
+            val manager = PsiManager.getInstance(project)
+            manager.addPsiTreeChangeListener(StructurePsiChangeListener(project))
+            return LatexStructureViewModel(psiFile, editor)
         }
     }
 }
