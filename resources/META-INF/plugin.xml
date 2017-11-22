@@ -170,6 +170,12 @@
         </p>
     ]]></change-notes>
 
+    <project-components>
+        <component>
+            <implementation-class>nl.rubensten.texifyidea.components.TexifyProjectComponent</implementation-class>
+        </component>
+    </project-components>
+
     <module-components>
     </module-components>
 
@@ -301,6 +307,8 @@
         <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.BibtexContext"/>
 
         <!-- Settings -->
+        <applicationService serviceInterface="nl.rubensten.texifyidea.settings.TexifySettings" serviceImplementation="nl.rubensten.texifyidea.settings.TexifySettings"/>
+        <applicationConfigurable instance="nl.rubensten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.BibtexColorSettingsPage"/>
 
