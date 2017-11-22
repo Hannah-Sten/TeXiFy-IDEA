@@ -10,4 +10,10 @@ public interface LatexInlineMath extends PsiElement {
   @Nullable
   LatexMathContent getMathContent();
 
+  @NotNull
+  PsiElement getInlineMathEnd();
+
+  @NotNull
+  PsiElement getInlineMathStart();
+
 }

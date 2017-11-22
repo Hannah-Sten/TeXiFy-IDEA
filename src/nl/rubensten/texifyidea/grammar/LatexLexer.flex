@@ -39,6 +39,8 @@ LINE_WS=[\ \t\f]
 WHITE_SPACE=({LINE_WS}|{EOL})+
 DISPLAY_MATH_START="\["
 DISPLAY_MATH_END="\]"
+ROBUST_INLINE_MATH_START="\\("
+ROBUST_INLINE_MATH_END="\\)"
 OPEN_BRACKET="["
 CLOSE_BRACKET="]"
 M_OPEN_BRACKET="["
@@ -55,20 +57,28 @@ COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 
-%states INLINE_MATH DISPLAY_MATH
+%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
 "\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
 <YYINITIAL,DISPLAY_MATH> {
-    "$"                { yypushState(INLINE_MATH); return INLINE_MATH_START; }
+    "$"                             { yypushState(INLINE_MATH); return INLINE_MATH_START; }
+    {ROBUST_INLINE_MATH_START}      { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START; }
+}
+
+<INLINE_MATH,INLINE_MATH_LATEX> {
+    {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
+    {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
 }
 
 <INLINE_MATH> {
-    {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
-    {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
-    "$"                { yypopState(); return INLINE_MATH_END; }
+    "$"                         { yypopState(); return INLINE_MATH_END; }
+}
+
+<INLINE_MATH_LATEX> {
+    {ROBUST_INLINE_MATH_END}    { yypopState(); return INLINE_MATH_END; }
 }
 
 <DISPLAY_MATH> {

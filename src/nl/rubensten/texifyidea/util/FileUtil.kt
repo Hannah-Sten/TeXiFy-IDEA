@@ -1,9 +1,11 @@
 package nl.rubensten.texifyidea.util
 
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import nl.rubensten.texifyidea.algorithm.IsChildDFS
@@ -191,3 +193,12 @@ fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this)
  * @return `true` when there is a package `package` included in the file set, `false` otherwise.
  */
 fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
+
+/**
+ * Retrieves the [PsiFile] for the document within the given [project].
+ *
+ * @param project
+ *          The project scope to retrieve the psi file for.
+ * @return The PSI file matching the document, or `null` when the PSI file could not be found.
+ */
+fun Document.psiFile(project: Project): PsiFile? = PsiDocumentManager.getInstance(project).getPsiFile(this)
