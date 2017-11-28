@@ -406,14 +406,23 @@ fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
 /**
  * Looks for the next command relative to the given command.
  *
- * @param commands
- *          The command to start looking from.
  * @return The next command in the file, or `null` when there is no such command.
  */
 fun LatexCommands.nextCommand(): LatexCommands? {
     val content = parentOfType(LatexContent::class) ?: return null
     val next = content.nextSiblingIgnoreWhitespace() as? LatexContent ?: return null
     return next.firstChildOfType(LatexCommands::class)
+}
+
+/**
+ * Looks for the previous command relative to the given command.
+ *
+ * @return The previous command in the file, or `null` when there is no such command.
+ */
+fun LatexCommands.previousCommand(): LatexCommands? {
+    val content = parentOfType(LatexContent::class) ?: return null
+    val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent ?: return null
+    return previous.firstChildOfType(LatexCommands::class)
 }
 
 /**

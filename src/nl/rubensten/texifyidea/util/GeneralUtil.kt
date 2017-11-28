@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.TextRange
+import java.util.regex.Pattern
 
 /**
  * Set containing all commands that redefine functionality.
@@ -74,3 +75,8 @@ fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
  * Converts a [TextRange] to [IntRange].
  */
 fun TextRange.toIntRange() = startOffset..endOffset
+
+/**
+ * Easy access to [java.util.regex.Matcher.matches].
+ */
+fun Pattern.matches(sequence: CharSequence?) = matcher(sequence).matches()

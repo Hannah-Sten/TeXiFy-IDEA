@@ -9,8 +9,9 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.commandsInFile
+import nl.rubensten.texifyidea.util.matches
+import nl.rubensten.texifyidea.util.previousCommand
 import java.util.*
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -24,17 +25,14 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
     override fun getInspectionId() = "NonMatchingIf"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         // Find matches.
         val stack = ArrayDeque<LatexCommands>()
-        val commands = file.commandsInFile()
+        val commands = file.commandsInFile().sortedBy { it.textOffset }
         for (cmd in commands) {
             val name = cmd.name
-            if (Magic.Command.ifs.contains(name)) {
-                stack.push(cmd)
-            }
-            else if (cmd.name in Magic.Command.endIfs) {
+            if (cmd.name in Magic.Command.endIfs) {
                 // Non-opened fi.
                 if (stack.isEmpty()) {
                     descriptors.add(manager.createProblemDescriptor(
@@ -46,8 +44,9 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                     ))
                     continue
                 }
-
-                stack.pop()
+            }
+            else if (Magic.Pattern.ifCommand.matches(name) && cmd.previousCommand()?.name != "\\newif") {
+                stack.push(cmd)
             }
         }
 
