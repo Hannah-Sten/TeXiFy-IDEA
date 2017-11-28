@@ -9,10 +9,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.file.LatexFileType
-import nl.rubensten.texifyidea.psi.LatexEnvironmentContent
-import nl.rubensten.texifyidea.psi.LatexMathContent
-import nl.rubensten.texifyidea.psi.LatexNoMathContent
-import nl.rubensten.texifyidea.psi.LatexNormalText
+import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.psi.LatexTypes.*
 import nl.rubensten.texifyidea.util.*
 import java.util.regex.Pattern
@@ -43,6 +40,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         // Find selected element.
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset - 1) ?: return Result.CONTINUE
+
+        // Check if in \label.
+        val parent = element.parentOfType(LatexCommands::class)
+        when (parent?.name) {
+            "\\label", "\\bibitem" -> return Result.CONTINUE
+        }
 
         // Insert squiggly brackets.
         if (element is LatexNormalText) {
