@@ -44,6 +44,8 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                     ))
                     continue
                 }
+
+                stack.pop()
             }
             else if (Magic.Pattern.ifCommand.matches(name) && cmd.previousCommand()?.name != "\\newif") {
                 stack.push(cmd)

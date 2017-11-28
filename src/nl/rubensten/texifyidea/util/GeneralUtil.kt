@@ -20,7 +20,8 @@ val DEFINITIONS = setOf(
         "\\let",
         "\\def",
         "\\DeclareMathOperator",
-        "\\newenvironment"
+        "\\newenvironment",
+        "\\newif"
 )
 
 /**
