@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.editor.highlighter.HighlighterIterator;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
@@ -82,7 +83,12 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
         IElementType tokenType = getTypedTokenType(editor);
 
         if (tokenType == LatexTypes.DISPLAY_MATH_START) {
-            editor.getDocument().insertString(editor.getCaretModel().getOffset(), "\\]");
+            // Checks if a bracket has already been inserted, if so: don't insert a 2nd one.
+            int offset = editor.getCaretModel().getOffset();
+            String bracketHuh = editor.getDocument().getText(TextRange.from(offset, 1));
+            String insertString = "\\" + ("]".equals(bracketHuh) ? "" : "]");
+
+            editor.getDocument().insertString(offset, insertString);
             return Result.STOP;
         }
 
