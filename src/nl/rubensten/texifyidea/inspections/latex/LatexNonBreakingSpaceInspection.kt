@@ -11,11 +11,12 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.firstChildOfType
+import nl.rubensten.texifyidea.util.parentOfType
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -40,7 +41,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             }
 
             // Get the NORMAL_TEXT in front of the command.
-            val sibling = cmd.parent.parent.prevSibling ?: continue
+            val sibling = cmd.parentOfType(LatexContent::class)?.prevSibling ?: continue
 
             // When sibling is whitespace, it's obviously bad news.
             if (sibling is PsiWhiteSpace) {
@@ -52,19 +53,6 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
                         isOntheFly
                 ))
                 continue
-            }
-
-            // Otherwise, it's CONTENT - so check the underlying normal text if it ends with whitespace.
-            val text = sibling.firstChildOfType(LatexNormalText::class)?.text ?: continue
-            val matcher = Magic.Pattern.endsWithNonBreakingSpace.matcher(text)
-            if (!matcher.find()) {
-                descriptors.add(manager.createProblemDescriptor(
-                        cmd,
-                        "Reference without a non-breaking space",
-                        TextReplacementFix(),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly
-                ))
             }
         }
 
