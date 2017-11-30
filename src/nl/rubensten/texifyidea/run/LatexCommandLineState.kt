@@ -9,7 +9,6 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.TeXception
@@ -86,9 +85,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
                 runAsync {
                     try {
-                        // Wait for sumatra pdf to start. 500ms should be plenty.
+                        // Wait for sumatra pdf to start. 1250ms should be plenty.
                         // Otherwise the person is out of luck ¯\_(ツ)_/¯
-                        Thread.sleep(500)
+                        Thread.sleep(1250)
                         SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line)
                     }
                     catch (ignored: TeXception) {
