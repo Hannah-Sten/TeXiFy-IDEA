@@ -31,7 +31,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (!Magic.Command.labeled.containsKey(cmd.name) || cmd.name == "\\item") {
+            if (!Magic.Command.labeled.containsKey(cmd.name) || cmd.name == "\\item" || cmd.hasStar()) {
                 continue
             }
 

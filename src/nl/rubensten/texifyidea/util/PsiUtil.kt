@@ -404,6 +404,13 @@ fun LatexCommands.firstRequiredParamAsCommand(): LatexCommands? = TexifyUtil.get
 fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
 
 /**
+ * Checks whether the command has a star or not.
+ */
+fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
+    it.elementType == LatexTypes.STAR
+}
+
+/**
  * Looks for the next command relative to the given command.
  *
  * @param commands
