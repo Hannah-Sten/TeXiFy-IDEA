@@ -191,7 +191,7 @@ enum class LatexNoMathCommand(
     SCRIPTSIZE("scriptsize"),
     SCSHAPE("scshape"),
     SECTION("section", "shorttitle".asOptional(Type.TEXT), "title".asRequired(Type.TEXT)),
-    SECTION_STAR("section", "title".asRequired(Type.TEXT)),
+    SECTION_STAR("section*", "title".asRequired(Type.TEXT)),
     SELECTFONT("selectfont"),
     SETCOUNTER("setcounter", "countername".asRequired(), "value".asRequired()),
     SETLENGTH("setlength", "cmd".asRequired(), "length".asRequired()),
