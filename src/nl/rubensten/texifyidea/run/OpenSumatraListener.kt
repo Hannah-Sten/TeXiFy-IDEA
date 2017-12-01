@@ -10,8 +10,8 @@ import nl.rubensten.texifyidea.TeXception
  */
 class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListener {
 
-    override fun processTerminated(event: ProcessEvent?) {
-        if (event?.exitCode == 0 && SumatraConversation.isAvailable) {
+    override fun processTerminated(event: ProcessEvent) {
+        if (event.exitCode == 0 && SumatraConversation.isAvailable) {
             try {
                 SumatraConversation.openFile(runConfig.outputFilePath, start = true)
             }
@@ -20,15 +20,15 @@ class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListene
         }
     }
 
-    override fun onTextAvailable(p0: ProcessEvent?, p1: Key<*>?) {
+    override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {
         // Do nothing.
     }
 
-    override fun processWillTerminate(p0: ProcessEvent?, p1: Boolean) {
+    override fun processWillTerminate(p0: ProcessEvent, p1: Boolean) {
         // Do nothing.
     }
 
-    override fun startNotified(p0: ProcessEvent?) {
+    override fun startNotified(p0: ProcessEvent) {
         // Do nothing.
     }
 }

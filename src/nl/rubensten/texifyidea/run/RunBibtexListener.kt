@@ -17,13 +17,13 @@ class RunBibtexListener(
         private val environment: ExecutionEnvironment
 ) : ProcessListener {
 
-    override fun processTerminated(event: ProcessEvent?) {
-        if (event?.exitCode != 0) {
+    override fun processTerminated(event: ProcessEvent) {
+        if (event.exitCode != 0) {
             return
         }
 
         // Run bibtex compiler (blocking execution)
-        RunConfigurationBeforeRunProvider.doExecuteTask(environment, bibtexSettings)
+        RunConfigurationBeforeRunProvider.doExecuteTask(environment, bibtexSettings, null)
 
         // Mark the next latex runs to exclude bibtex compilation
         latexConfiguration.isSkipBibtex = true
@@ -31,7 +31,7 @@ class RunBibtexListener(
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration) ?: return
 
             repeat(2) {
-                RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings)
+                RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             }
         }
         finally {
@@ -39,15 +39,15 @@ class RunBibtexListener(
         }
     }
 
-    override fun onTextAvailable(p0: ProcessEvent?, p1: Key<*>?) {
+    override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {
         // Do nothing.
     }
 
-    override fun processWillTerminate(p0: ProcessEvent?, p1: Boolean) {
+    override fun processWillTerminate(p0: ProcessEvent, p1: Boolean) {
         // Do nothing.
     }
 
-    override fun startNotified(p0: ProcessEvent?) {
+    override fun startNotified(p0: ProcessEvent) {
         // Do nothing.
     }
 }

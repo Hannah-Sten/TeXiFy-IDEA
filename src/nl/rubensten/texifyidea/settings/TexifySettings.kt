@@ -15,10 +15,12 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
 
     companion object {
 
+        @JvmStatic
         fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
     }
 
     var automaticSoftWraps = false
+    var automaticSecondInlineMathSymbol = true
 
     override fun getState() = this
 
