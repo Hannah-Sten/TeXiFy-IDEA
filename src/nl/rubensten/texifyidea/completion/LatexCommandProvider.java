@@ -252,6 +252,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         switch (commands.getName()) {
             case "\\DeclareMathOperator":
             case "\\newcommand":
+            case "\\newif":
                 return getNewCommandName(commands);
             default:
                 return getDefinitionName(commands);

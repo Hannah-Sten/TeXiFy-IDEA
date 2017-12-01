@@ -135,16 +135,6 @@ object Magic {
         )
 
         /**
-         * All if commands.
-         */
-        @JvmField val ifs = setOf(
-                "\\if", "\\ifcat", "\\ifnum", "\\ifdim", "\\ifodd", "\\ifvmode", "\\ifhmode", "\\ifmmode",
-                "\\ifinner", "\\ifvoid", "\\ifhbox", "\\ifvbox", "\\ifx", "\\ifeof", "\\iftrue", "\\iffalse",
-                "\\ifcase", "\\ifdefined", "\\ifcsname", "\\iffontchar", "\\ifincsname", "\\ifpdfprimitive",
-                "\\ifpdfabsnum", "\\ifpdfabsdim", "\\ifpdfprimitive", "\\ifprimitive", "\\ifabsum", "\\ifabsdim"
-        )
-
-        /**
          * All commands that end if.
          */
         @JvmField val endIfs = setOf("\\fi")
@@ -254,6 +244,11 @@ object Magic {
          * Checks if the string is `text`, two newlines, `text`.
          */
         @JvmField val containsMultipleNewlines = RegexPattern.compile("[^\\n]*\\n\\n+[^\\n]*")!!
+
+        /**
+         * Matches a LaTeX command that is the start of an \if-\fi structure.
+         */
+        @JvmField val ifCommand = RegexPattern.compile("\\\\if[a-zA-Z@]*")!!
     }
 
     /**
