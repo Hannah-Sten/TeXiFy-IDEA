@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement
 open class LatexLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(element: PsiElement,
-                                          result: MutableCollection<in RelatedItemLineMarkerInfo<PsiElement>>?) {
+                                          result: MutableCollection<in RelatedItemLineMarkerInfo<PsiElement>>) {
         LatexNavigationGutter().collectNavigationMarkers(element, result)
     }
 }
