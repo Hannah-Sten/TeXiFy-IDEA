@@ -4,6 +4,7 @@ import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.file.BibtexFileType
 import nl.rubensten.texifyidea.util.toTextRange
 
 /**
@@ -12,6 +13,10 @@ import nl.rubensten.texifyidea.util.toTextRange
 open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project?, editor: Editor, file: PsiFile): Result {
+        if (file.fileType != BibtexFileType) {
+            return super.charTyped(char, project, editor, file)
+        }
+
         val document = editor.document
         val caret = editor.caretModel
         val offset = caret.offset
