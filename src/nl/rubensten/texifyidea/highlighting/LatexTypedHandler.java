@@ -15,6 +15,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.file.LatexFile;
 import nl.rubensten.texifyidea.psi.LatexInlineMath;
 import nl.rubensten.texifyidea.psi.LatexTypes;
+import nl.rubensten.texifyidea.settings.TexifySettings;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -52,7 +53,7 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
             file) {
 
         if (file instanceof LatexFile) {
-            if (c == '$') {
+            if (c == '$' && TexifySettings.getInstance().getAutomaticSecondInlineMathSymbol()) {
                 IElementType tokenType = getTypedTokenType(editor);
 
                 if (tokenType != LatexTypes.COMMAND_TOKEN && tokenType != LatexTypes.COMMENT_TOKEN) {
