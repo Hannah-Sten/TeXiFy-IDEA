@@ -16,6 +16,10 @@ You can share new ideas/feature requests/bugs/calls for help in multiple ways:
 
 Please bear in mind that this is just a side project for us. It might take a while to fully process your feedback. We try our best :3
 
+## Contributing
+We would love it if you want to contribute to this project!
+Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get started.
+
 ## Features
 
 * Syntax highlighting
