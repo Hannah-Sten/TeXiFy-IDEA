@@ -169,7 +169,7 @@ abstract class TexifyRegexInspection(
             return false
         }
 
-        return mathMode == element.inMathContext()
+        return mathMode == element.inMathContext() && checkContext(element)
     }
 
     /**
