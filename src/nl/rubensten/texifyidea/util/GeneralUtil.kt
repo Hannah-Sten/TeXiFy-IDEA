@@ -80,4 +80,4 @@ fun TextRange.toIntRange() = startOffset..endOffset
 /**
  * Easy access to [java.util.regex.Matcher.matches].
  */
-fun Pattern.matches(sequence: CharSequence?) = matcher(sequence).matches()
+fun Pattern.matches(sequence: CharSequence?) = if (sequence != null) matcher(sequence).matches() else false
