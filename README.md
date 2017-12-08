@@ -150,8 +150,8 @@ Any suggestions for improvements of the installation instructions, however small
 * Please make sure you have a 32-bit JDK installed. This solved the issue before ([#104](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/104)). If installing a 32-bit JDK is resolving the problem for you, please report this on the issue tracker.
 
 
-#### Howto integerate a other latex compiler than pdflatex:
-The most tex distributions contain a commandline tool called [arara](https://github.com/cereda/arara).
+#### How to integerate a latex compiler other then pdflatex:
+Most tex distributions contain a commandline tool called [arara](https://github.com/cereda/arara).
 Arara uses a small configuration in your main *.tex file
 
 For example:
@@ -160,12 +160,12 @@ For example:
      % arara: biber
      % arara: lualatex: {shell: yes,  action: nonstopmode}
 
-when you add thesessmall code snippets and call
+when you add these small code snippets and call
 
     arara -v yourFavoritTexFileHere.tex
 
-Arara calls lualatex biber and lualatex again. Any Jetbrains IDE allows you to add something they call "tools". There you can add the arara call and add shortcut.
-Arara pipes the full output from all subsequent commands, which is not all the time usefull to find errors. So i put the arara call into a small bash script and add a grep filter.
+Arara calls lualatex biber and lualatex again. Any Jetbrains IDE allows you to add something they call "tools". There you can add the arara call and add a shortcut.
+Arara pipes the full output from all subsequent commands, which is not all the time usefull to find errors. So I put the arara call into a small bash script and add a grep filter.
 
     #!/usr/bin/env bash
 
