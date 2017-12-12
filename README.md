@@ -150,7 +150,7 @@ Any suggestions for improvements of the installation instructions, however small
 * Please make sure you have a 32-bit JDK installed. This solved the issue before ([#104](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/104)). If installing a 32-bit JDK is resolving the problem for you, please report this on the issue tracker.
 
 
-#### How to integerate a latex compiler other then pdflatex:
+#### How to integrate a latex compiler other than pdflatex:
 Most tex distributions contain a commandline tool called [arara](https://github.com/cereda/arara).
 Arara uses a small configuration in your main *.tex file
 
