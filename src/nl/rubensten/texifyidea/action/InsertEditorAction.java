@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.action;
 
+import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
@@ -51,11 +52,21 @@ public class InsertEditorAction extends EditorAction {
         final int start = selection.getSelectionStart();
         final int end = selection.getSelectionEnd();
 
-        runWriteAction(project, () -> insert(document, start, end));
+        runWriteAction(project, () -> insert(document, start, end, editor.getCaretModel()));
     }
 
-    private void insert(Document document, int start, int end) {
+    private void insert(Document document, int start, int end, CaretModel caretModel) {
         document.insertString(end, this.after);
         document.insertString(start, this.before);
+
+        int caretPosition;
+        if (start == end) {
+            caretPosition = start + this.before.length();
+        }
+        else {
+            caretPosition = end + this.before.length() + this.after.length();
+        }
+
+        caretModel.moveToOffset(caretPosition);
     }
 }
