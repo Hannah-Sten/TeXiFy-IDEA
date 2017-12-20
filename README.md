@@ -146,7 +146,48 @@ when you do not recognize the file.
 
 Any suggestions for improvements of the installation instructions, however small? Please let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
-## FAQ
+## <a name="FAQ">FAQ</a>
+
+#### What should my document structure look like?
+
+In general you have a main file which contains the documentclass and the document environment (the `\begin{document}` and `\end{document}`).
+From here you can include other files which can then include even more files and so on.
+An example is:
+
+```latex
+\documentclass{exam}
+
+% Packages
+\usepackage{amsthm}
+
+\author{L.A.\ TeX}
+\title{Example document setup}
+
+% Possible other definitions, configurations etc. that you need
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+
+% Document
+\begin{document}
+
+    \maketitle
+
+    \section{Introduction}\label{sec:introduction}
+    \input{introduction}
+
+    \section{Example theorems} \label{sec:exampleTheorem}
+    \input{example-theorems}
+
+\end{document}
+```
+
+where the files `introduction.tex` and `example-theorems.tex` contain just the content, for example these could be the complete file contents of `introduction.tex`:
+
+```latex
+\begin{theorem}
+    If the meanings of 'true' and 'false' were switched, then this sentence wouldn't be false.
+\end{theorem}
+```
 
 #### SumatraPDF inverse search: _Error launching IDEA. No JVM installation found_
 * Please make sure you have a 32-bit JDK installed. This solved the issue before ([#104](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/104)). If installing a 32-bit JDK is resolving the problem for you, please report this on the issue tracker.
