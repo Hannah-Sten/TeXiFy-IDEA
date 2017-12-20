@@ -1,30 +1,9 @@
-// Used for tests. Needs to be place before block 'plugins'
-buildscript {
-    ext.kotlin_version = '1.2.0'
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        // The JUnit plugin
-        classpath ("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4")
-
-        // Kotlin plugin
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
-// Include the Gradle plugins which help building. Needs to be placed after and only after the block 'buildscript'
+// Include the Gradle plugins which help building everything.
+// Supersedes the use of 'buildscript' block and 'apply plugin:'
 plugins {
     id 'org.jetbrains.intellij' version '0.2.17'
     id 'org.jetbrains.kotlin.jvm' version '1.2.0'
 }
-
-apply plugin: 'java'
-apply plugin: 'kotlin'
-// Used for tests
-apply plugin: 'org.junit.platform.gradle.plugin'
 
 group 'nl.rubensten'
 version '0.5'
@@ -79,7 +58,10 @@ dependencies {
     compile files("lib/JavaDDE.dll")
     compile files("lib/JavaDDEx64.dll")
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
+    // From Kotlin documentation
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
 
     // just in case, version number specified in buildscript is used by default
     compile "org.jetbrains.kotlin:kotlin-reflect"
@@ -124,6 +106,15 @@ task zip(type: Zip) {
 
 intellij {
     version '2017.3'
+}
+
+test {
+    // Always run tests, even when nothing changed
+//    dependsOn 'cleanTest'
+    // Show test results
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 // If wanted, changenotes could be supplied from here.
