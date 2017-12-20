@@ -62,6 +62,7 @@ We could make a detailed list, but that would take up your whole screen! We migh
 * Mark the `resources` folder as resources root by right-clicking on it and selecting Mark Directory As - Resources, otherwise it won't find the great icons.
 * Go to Project Structure - Libraries and hit the plus icon in the middle column. Select `Java`. Select `lib/pretty-tools-JDDE-2.1.0.jar`.
 * Install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html) if you want to use Go To Line in PDF/Source. 
+* Check that in Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
 
 #### To run directly from source
 * Note: sometimes this way will not work and will generate strange errors. In that case, see below to build the plugin to use it directly in IntelliJ.
