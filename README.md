@@ -48,7 +48,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 
 We could make a detailed list, but that would take up your whole screen! We might add one later though :)
 
-## How to build the project using IntelliJ
+## Building from source using IntelliJ
 * Clone or download the project.
 * Make a new project from existing sources, even if you used the option 'new project from version control'.
 * Follow the instructions.
