@@ -125,16 +125,16 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
     }
 
     private fun processAutocompleteText(autocompleteText: String): String {
-        var result = if (autocompleteText.endsWith("}"))
+        var result = if (autocompleteText.endsWith("}")) {
             autocompleteText.substring(0, autocompleteText.length - 1)
-        else
-            autocompleteText
+        }
+        else autocompleteText
 
         if (result.endsWith(".")) {
             result = result.substring(0, result.length - 1) + "/"
         }
 
-        return result
+        return result.replace("./", "")
     }
 
     private fun getByPath(path: String): VirtualFile? {
