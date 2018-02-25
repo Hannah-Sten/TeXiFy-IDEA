@@ -141,6 +141,11 @@ object Magic {
         @JvmField val endIfs = setOf("\\fi")
 
         /**
+         * All commands that at first glance look like \if-esque commands, but that actually aren't.
+         */
+        @JvmField val ignoredIfs = setOf("\\newif", "\\iff")
+
+        /**
          * List of all TeX style primitives.
          */
         @JvmField val stylePrimitives = listOf(
