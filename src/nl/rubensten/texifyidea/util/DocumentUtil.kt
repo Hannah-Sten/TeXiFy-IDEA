@@ -76,7 +76,7 @@ operator fun Document.set(range: IntRange, value: CharSequence) = replaceString(
  */
 fun Editor.insertAndMove(offset: Int, string: String) {
     val document = this.document
-    document.insertString(offset, string)
+    runWriteAction { document.insertString(offset, string) }
     caretModel.moveToOffset(caretModel.offset + string.length)
 }
 
