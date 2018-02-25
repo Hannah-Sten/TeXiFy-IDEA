@@ -178,6 +178,8 @@ enum class LatexMathCommand(
     RIGHT_PIPE("right|", display = "|"),
     LEFT_DOUBLE_PIPE("left\\|", display = "||"),
     RIGHT_DOUBLE_PIPE("right\\|", display = "||"),
+    LANGLE("langle", display = "<"),
+    RANGLE("rangle", display = ">"),
 
     /*
      *  Arrows

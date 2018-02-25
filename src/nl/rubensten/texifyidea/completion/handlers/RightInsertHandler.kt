@@ -20,12 +20,20 @@ open class RightInsertHandler : InsertHandler<LookupElement> {
         if (name.startsWith("left")) {
             insertRight(name, editor)
         }
+        else if (name == "langle") {
+            insertRangle(editor)
+        }
     }
 
     private fun insertRight(commandName: String, editor: Editor) {
         val char = commandName.substring(4)
         val opposite = Magic.Typography.braceOpposites[char] ?: return
         editor.document.insertString(editor.caretModel.offset, "  \\right$opposite")
+        editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
+    }
+
+    private fun insertRangle(editor: Editor) {
+        editor.document.insertString(editor.caretModel.offset, "  \\rangle")
         editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
     }
 }
