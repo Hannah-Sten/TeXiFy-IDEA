@@ -86,6 +86,8 @@
         </p>
         <ul>
             <li>Added <code>\section*</code> to the autocomplete.</li>
+            <li>Added setting to disable auto insertion of second '<code>$</code>'. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/277">#277</a>)</li>
+            <li>Added <code>\langle</code> and <code>\rangle</code> to autocomplete including automatic insertion of <code>\rangle</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/295">#295</a>)</li>
         </ul>
         <br>
         <p>
@@ -95,8 +97,6 @@
             <li>Added DuplicateBibliography inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/230">#230</a>)</li>
             <li>Added NoExtension inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/230">#230</a>)</li>
             <li>Added NestedIncludes inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/231">#231</a>)</li>
-            <li>Added setting to disable auto insertion of second '<code>$</code>'. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/277">#277</a>)</li>
-            <li>Added <code>\langle</code> and <code>\rangle</code> to autocomplete including automatic insertion of <code>\rangle</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/295">#295</a>)</li>
         </ul>
         <br>
         <p>
