@@ -579,7 +579,7 @@ public class TexifyUtil {
                         return p.size() > 0 && p.get(0).equals(key);
                     }
                     else if (c instanceof BibtexId) {
-                        return ((BibtexId)c).getName().equals(key);
+                        return key != null && key.equals(((BibtexId)c).getName());
                     }
 
                     return false;
