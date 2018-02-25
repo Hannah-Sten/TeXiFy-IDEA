@@ -134,7 +134,17 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
             result = result.substring(0, result.length - 1) + "/"
         }
 
-        return result.replace("./", "")
+        // Prevent double ./
+        if (result.startsWith("./")) {
+            result = result.substring(2)
+        }
+
+        // Prevent double /
+        if (result.startsWith("/")) {
+            result = result.substring(1)
+        }
+
+        return result
     }
 
     private fun getByPath(path: String): VirtualFile? {
