@@ -22,7 +22,7 @@ object Magic {
      */
     object General {
 
-        @JvmField val pathPackageRoot = "/nl/rubensten/texifyidea"
+        const val pathPackageRoot = "/nl/rubensten/texifyidea"
         @JvmField val emptyStringArray = arrayOfNulls<String>(0)
         @JvmField val emptyPsiElementArray = arrayOfNulls<PsiElement>(0)
         @JvmField val noQuickFix: LocalQuickFix? = null
@@ -97,7 +97,8 @@ object Magic {
          */
         @JvmField val reference = setOf(
                 "\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref",
-                "\\fullref", "\\pageref"
+                "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref",
+                "\\labelcref", "\\cpageref"
         )
 
         /**
