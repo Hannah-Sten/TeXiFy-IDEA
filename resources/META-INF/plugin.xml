@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.5</version>
+    <version>0.5.1</version>
     <idea-version since-build="141.0"/>
     <vendor url="https://ruben-sten.github.io/home/index.html">Ruben-Sten</vendor>
 
@@ -72,12 +72,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.5</strong></p>
+        <p><strong>Beta 0.5.1</strong></p>
         <p>
-            The newest TeXiFy IDEA, with loads of new functionality.
-            Starring in this release: <em>BibTeX support</em>!
-            But also many more <em>inspections</em> and much, much, much, MUCH more.
-            Check out the complete changelog to get an idea of this superhuman release.
+            A new release of TeXiFy IDEA, with a number of changes.
         </p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -88,81 +85,50 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li>Added BibTeX support (highlighting, formatter, autocomplete, structure view, and more). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/144">#144</a>)</li>
-            <li>Added loads of inspections. Again. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/114">#114</a>)</li>
-            <li>Added support for multipe content roots. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/42">#42</a>)</li>
-            <li>Added breadcrumbs for environments and commands. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/128">#128</a>)</li>
-            <li>Added lookup of package documentation of commands using texdoc. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/2">#2</a>)</li>
-            <li>Added support for <code>\DeclareMathOperator</code> (autocomplete &amp; structure view). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/130">#130</a>)</li>
-            <li>Added amsmath environments to default environment list. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/115">#115</a>)</li>
-            <li>Added intention to change <code>displaymath</code> &amp; <code>equation*</code> environments to <code>\[..\]</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/114">#114</a>)</li>
-            <li>Added new icons to the LaTeX menu. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/135">#135</a>)</li>
-            <li>Added navigation gutter icon for local style files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/163">#163</a>)</li>
-            <li>Added auto insertion of <code>{}</code> when typing multiple characters in sub- or super script in math mode. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/112">#112</a>)</li>
-            <li>Added auto insertion of <code>\leftX</code> and <code>\rightX</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/110">#110</a>)</li>
-            <li>Added auto insertion of <code>\item</code>s in listing environments. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/108">#108</a>)</li>
-            <li>Added autocomplete for default CTAN package names. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/167">#167</a>)</li>
-            <li>Added code folding for imports. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/226">#226</a>)</li>
-            <li>Added code folding for section contents. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/226">#226</a>)</li>
+            <li>Added <code>\section*</code> to the autocomplete.</li>
+        </ul>
+        <br>
+        <p>
+            <em>Added inspections</em>
+        </p>
+        <ul>
+            <li>Added DuplicateBibliography inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/230">#230</a>)</li>
+            <li>Added NoExtension inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/230">#230</a>)</li>
+            <li>Added NestedIncludes inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/231">#231</a>)</li>
+            <li>Added setting to disable auto insertion of second '<code>$</code>'. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/277">#277</a>)</li>
+            <li>Added <code>\langle</code> and <code>\rangle</code> to autocomplete including automatic insertion of <code>\rangle</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/295">#295</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>Updated icons to make them fancier. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/135">#135</a>)</li>
-            <li>Math environments have math syntax highlighting. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/28">#28</a>)</li>
-            <li>Math environments now have math autocompletion. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/115">#115</a>)</li>
-            <li>Environment autocomplete auto-imports packages. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/115">#115</a>)</li>
-            <li>MissingImports inspection also checks environment dependencies. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/115">#115</a>)</li>
-            <li>Seperated <code>\bibitem</code>s from <code>\label</code>s. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/129">#129</a>)</li>
-            <li><code>\bibitem</code>s get included in the structure view. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/129">#129</a>)</li>
-            <li><code>UnresolvedReference</code> inspection also checks <code>\bibitem</code>s. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/129">#129</a>)</li>
-            <li>When inserting a label with the MissingLabel inspection, the cursor will be moved to the end of the label. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/133">#133</a>)</li>
-            <li>Autocompletion of <code>\include</code> omits the <code>.tex</code> extension. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/118">#118</a>)</li>
-            <li>Autocomplete of labels now only shows labels within the document (and inclusions). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/102">#102</a>)</li>
-            <li>Environments added with <code>\newenvironment</code> are now added to the autocomplete. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/137">#137</a>)</li>
-            <li>Made the contents of a <code>.cls</code> file show up as inclusion in the structure view. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/145">#145</a>)</li>
-            <li>Commands defined in a <code>.cls</code> file show up in the autocomplete. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/143">#143</a>)</li>
-            <li><code>LabelConvention</code> inspection now updates all other references in the file set. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/114">#114</a>)</li>
-            <li>Changed the demo text in <code>LatexColorSettingsPage</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/158">#158</a>)</li>
-            <li>Inclusion commands get indexed to improve performance. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/163">#163</a>)</li>
-            <li>Definition commands get indexed to improve performance. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/186">#186</a>)</li>
-            <li>Spell checker now ignores optional arguments. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/166">#166</a>)</li>
-            <li>Comment environments are decoupled from the comment package when they are defined elsewhere. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/169">#169</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/170">#170</a>)</li>
-            <li>Math mode now gets ignored in word count. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/182">#182</a>)</li>
-            <li>Certain environments get ignored in word count. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/182">#182</a>)</li>
-            <li>Auto insertion of <code>{}</code> after multiletter super- or subscript happens in math-esque environments. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/183">#183</a>)</li>
-            <li>After compilation, the line where the cursor is will be highlighted in SumatraPDF. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/184">#184</a>)</li>
-            <li>Hugely improved performance of file set detection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/186">#186</a>)</li>
-            <li>Files in resource directories do now show up in file autocomplete. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/204">#204</a>)</li>
-            <li>Words starting with a capital are no longer regarded as a valid sentence end. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/209">#209</a>)</li>
+            <li>Reformatted a whole lot of code and converted much to Kotlin.</li>
+            <li>Import folding now ignores comments and breaks at blank lines. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/229">#229</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/236">#236</a>)</li>
+            <li>Program arguments can be added to LaTeX run configurations. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/240">#240</a>)</li>
+            <li>Duplicate label inspection does no longer crosscheck labels and bibliography items. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/242">#242</a>)</li>
+            <li>Unknown variants of <code>\if</code>-commands get recognised by NonMatchingIf inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/270">#270</a>)</li>
+            <li>Commands defined by <code>\newif</code> are now included into the autocomplete. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/270">#270</a>)</li>
+            <li>MissingLabel inspection now ignores starred commands.</li>
+            <li>Increased forward search delay to 1250ms (after compilation).</li>
+            <li>Reduced false positives with NonBreakingSpace inspection.</li>
+            <li>Disabled SentenceEndWithCapital inspection in verbatim environments.</li>
+            <li>Label autocomplete now pops up at several more reference commands. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/254">#254</a>)</li>
+            <li>Autocomplete of file names does not insert './' and '/' twice anymore. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/273">#273</a>)</li>
+            <li>Added <code>\includegraphics</code> to file completion path. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/237">#237</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Fixed comments in math mode not being properly highlighted. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/111">#111</a>)</li>
-            <li>Fixed <code>\input</code> and <code>\include</code> not working in PyCharm. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/119">#119</a>)</li>
-            <li>Fixed <code>\RequirePackage</code> not being treated as <code>\usepackage</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/147">#147</a>)</li>
-            <li>Fixed missing document class inspection checking in non-<code>.tex</code> files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/127">#127</a>)</li>
-            <li>Fixed file inclusion checking not being relative to the document root. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/117">#117</a>)</li>
-            <li>Fixed initial contents of environments not being added to the environment when autocompleted. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/137">#137</a>)</li>
-            <li>Fixed New Latex file menu action not showing in PyCharm. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/121">#121</a>)</li>
-            <li>Fixed <code>\begin</code> not showing the environment autocomplete in math mode. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/142">#142</a>)</li>
-            <li>Fixed some inspections having conflicting short names. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/125">#125</a>)</li>
-            <li>Fixed nested math environments not being supported by the parser. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/61">#61</a>)</li>
-            <li>Fixed commands containing <code>@</code> not being recognised. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/5">#5</a>)</li>
-            <li>Fixed <code>LatexColorSettingsPage</code> not showing annotation highlighting in demo. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/157">#157</a>)</li>
-            <li>Fixed <code>\RequirePackage</code> and <code>\usepackage</code> not being recognised in file sets. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/162">#162</a>)</li>
-            <li>Fixed <code>UnresolvedReference</code> errors appearing everywhere ‘randomly’. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/165">#165</a>)</li>
-            <li>Fixed indentation issues with <code>TooLargeSection</code> inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/114">#114</a>)</li>
-            <li>Fixed autocomplete not showing up in non-standard environments. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/161">#161</a>)</li>
-            <li>Fixed auto insertion of <code>{}</code> after multiletter super- or subscript. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/183">#183</a>)</li>
-            <li>Fixed parser not allowing stars in math mode. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/171">#171</a>)</li>
-            <li>Fixed inspections working in comment environments. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/196">#196</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/125">#125</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/141">#141</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/149">#149</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/160">#160</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/198">#198</a>)</li>
+            <li>Fixed EncloseWithLeftRight inspection not ignoring <code>\[</code> and <code>\]</code> of displaymath. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/234">#234</a>)</li>
+            <li>Fixed subsupscript inspection & typed handler being enabled in <code>\label</code> and <code>\bibitem</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/271">#271</a>)</li>
+            <li>Fixed insertion of extra '<code>]</code>' after '<code>\[</code>' in outer scope. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/272">#272</a>)</li>
+            <li>Fixed bibtex double quotes being inserted in different files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/277">#277</a>)</li>
+            <li>Fixed auto-<code>\item</code> insertion not copying all optional parameter contents. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/331">#331</a>)</li>
+            <li>Fixed <code>\iff</code> being recognised as an <code>\if</code>-command. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/278">#278</a>)</li>
+            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/235">#235</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/255">#255</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/279">#279</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/309">#309</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/345">#345</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/348">#348</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/368">#368</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/398">#398</a>)</li>
         </ul>
         <br>
         <p>
