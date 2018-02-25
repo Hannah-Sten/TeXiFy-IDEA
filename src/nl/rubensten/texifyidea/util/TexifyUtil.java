@@ -576,7 +576,7 @@ public class TexifyUtil {
                         List<String> p = ApplicationManager.getApplication().runReadAction(
                                 (Computable<List<String>>)cmd::getRequiredParameters
                         );
-                        return p.size() > 0 && p.get(0).equals(key);
+                        return p.size() > 0 && key != null && key.equals(p.get(0));
                     }
                     else if (c instanceof BibtexId) {
                         return key != null && key.equals(((BibtexId)c).getName());
