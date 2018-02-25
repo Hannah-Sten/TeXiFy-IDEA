@@ -11,7 +11,6 @@ import java.io.IOException
 import java.io.InputStream
 
 /**
- *
  * @author Sten Wessel
  */
 class LatexDocumentationProvider : DocumentationProvider {
@@ -21,13 +20,13 @@ class LatexDocumentationProvider : DocumentationProvider {
         private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
     }
 
-    override fun getQuickNavigateInfo(psiElement: PsiElement?, originalElement: PsiElement?) = when (psiElement) {
+    override fun getQuickNavigateInfo(psiElement: PsiElement, originalElement: PsiElement) = when (psiElement) {
         is LatexCommands -> LabelDeclarationLabel(psiElement).makeLabel()
         is BibtexId -> IdDeclarationLabel(psiElement).makeLabel()
         else -> null
     }
 
-    override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
+    override fun getUrlFor(element: PsiElement, originalElement: PsiElement): List<String>? {
         if (element !is LatexCommands) {
             return null
         }
@@ -38,12 +37,12 @@ class LatexDocumentationProvider : DocumentationProvider {
             return runTexdoc(Package(pkg))
         }
 
-        val command: LatexCommand = LatexCommand.lookup(element) ?: return null
-
+        val command = LatexCommand.lookup(element) ?: return null
         return runTexdoc(command.dependency)
     }
 
-    override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
+    override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
+        originalElement ?: return null
         val urls = getUrlFor(element, originalElement) ?: return null
 
         if (urls.isEmpty()) {
@@ -58,9 +57,9 @@ class LatexDocumentationProvider : DocumentationProvider {
         return sb.toString()
     }
 
-    override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, o: Any?, psiElement: PsiElement?) = null
+    override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, o: Any?, psiElement: PsiElement?): PsiElement? = null
 
-    override fun getDocumentationElementForLink(psiManager: PsiManager?, s: String?, psiElement: PsiElement?) = null
+    override fun getDocumentationElementForLink(psiManager: PsiManager?, s: String?, psiElement: PsiElement?): PsiElement? = null
 
     private fun runTexdoc(pkg: Package): List<String> {
         val name = if (pkg == Package.DEFAULT) "source2e" else pkg.name

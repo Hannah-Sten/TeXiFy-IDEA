@@ -5,7 +5,6 @@ import nl.rubensten.texifyidea.util.inMathContext
 import kotlin.reflect.KClass
 
 /**
- *
  * @author Ruben Schellekens, Sten Wessel
  */
 interface LatexCommand : Dependend {
@@ -15,7 +14,8 @@ interface LatexCommand : Dependend {
         /**
          * Looks up the given command name in all [LatexMathCommand]s and [LatexNoMathCommand]s.
          *
-         * @param commandName The command name to look up. Can start with or without `\`
+         * @param commandName
+         *          The command name to look up. Can start with or without `\`
          * @return The found command, or `null` when the command doesn't exist.
          */
         fun lookup(commandName: String?): LatexCommand? {
@@ -24,7 +24,7 @@ interface LatexCommand : Dependend {
                 result = result.substring(1)
             }
 
-            return LatexMathCommand.get(result) ?: LatexNoMathCommand.get(result)
+            return LatexMathCommand[result] ?: LatexNoMathCommand[result]
         }
 
         /**
@@ -34,13 +34,13 @@ interface LatexCommand : Dependend {
          * @return The found command, or `null` when the command does not exist.
          */
         fun lookup(command: LatexCommands): LatexCommand? {
-            val commandName = command.name!!.substring(1)
+            val name = command.commandToken.text
+            val commandName = name.substring(1)
 
             return if (command.inMathContext()) {
-                LatexMathCommand.get(commandName)
-            } else {
-                LatexNoMathCommand.get(commandName)
+                LatexMathCommand[commandName]
             }
+            else LatexNoMathCommand[commandName]
         }
     }
 

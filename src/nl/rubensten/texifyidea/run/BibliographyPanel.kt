@@ -20,7 +20,7 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
 
     companion object {
 
-        private val title = "Bibliography: "
+        private const val title = "Bibliography: "
     }
 
     private val contentPanel = JPanel(BorderLayout())
