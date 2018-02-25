@@ -11,6 +11,7 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
+import nl.rubensten.texifyidea.psi.LatexOptionalParam
 import nl.rubensten.texifyidea.util.*
 
 /**
@@ -42,7 +43,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      */
     private fun getInsertionString(element: PsiElement): String {
         val marker = getPreviousMarker(element)
-        return "\\item" + if (marker == null) " " else "[$marker] "
+        return "\\item" + if (marker == null) " " else "$marker "
     }
 
     /**
@@ -61,13 +62,8 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         } ?: return null // when no label could befound.
 
         // Extract optional parameters.
-        val optionals = label.optionalParameters
-        if (optionals.isEmpty()) {
-            return null
-        }
-
-        // Get first optional parameter == special \item marker.
-        return optionals[0]
+        val optionals = label.childrenOfType(LatexOptionalParam::class).firstOrNull() ?: return null
+        return optionals.text
     }
 
     /**
