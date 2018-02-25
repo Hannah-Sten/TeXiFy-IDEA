@@ -76,10 +76,8 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                                 isOntheFly: Boolean) {
         val commands = file.commandsInFileSet()
         for (cmd in commands) {
-            if (cmd.name == null) {
-                continue
-            }
-            val latexCommand = LatexCommand.lookup(cmd.name!!) ?: continue
+            val name = cmd.commandToken.text.substring(1)
+            val latexCommand = LatexCommand.lookup(name) ?: continue
             val pack = latexCommand.dependency
 
             if (pack.isDefault) {
