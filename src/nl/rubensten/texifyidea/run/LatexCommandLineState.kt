@@ -59,7 +59,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // Open Sumatra after compilation & execute inverse search.
-        if (SumatraConversation.isAvailable) {
+        if (isSumatraAvailable) {
             handler.addProcessListener(OpenSumatraListener(runConfig))
 
             // Inverse search.
