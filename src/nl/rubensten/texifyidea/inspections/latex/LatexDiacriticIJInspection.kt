@@ -11,6 +11,7 @@ import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.psi.LatexTypes
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inMathContext
+import nl.rubensten.texifyidea.util.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -59,6 +60,8 @@ open class LatexDiacriticIJInspection : TexifyRegexInspection(
     }
 
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
+        if (element.isComment()) return false
+
         val file = element.containingFile
         val offset = matcher.end()
 
