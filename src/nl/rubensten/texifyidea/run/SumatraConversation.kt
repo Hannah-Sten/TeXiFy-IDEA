@@ -27,7 +27,7 @@ object SumatraConversation {
     private val conversation: DDEClientConversation?
 
     init {
-        if (!SystemInfo.isWindows or !sumatraInstalled()) {
+        if (!SystemInfo.isWindows || !sumatraInstalled()) {
             conversation = null
             isAvailable = false
         }
