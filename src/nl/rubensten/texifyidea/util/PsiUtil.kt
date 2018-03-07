@@ -299,7 +299,7 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
 /**
  * @see TexifyUtil.getFileRelativeTo
  */
-fun PsiFile.fileRelativeTo(path: String): PsiFile? = TexifyUtil.getFileRelativeTo(this, path)
+fun PsiFile.fileRelativeTo(path: String, extensions: Set<String>? = null): PsiFile? = TexifyUtil.getFileRelativeTo(this, path, extensions)
 
 /**
  * @see TexifyUtil.findLabelsInFileSet

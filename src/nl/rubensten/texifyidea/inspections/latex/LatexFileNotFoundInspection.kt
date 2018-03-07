@@ -1,6 +1,8 @@
 package nl.rubensten.texifyidea.inspections.latex
 
+import com.intellij.codeInsight.daemon.quickFix.CreateFileFix
 import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
@@ -41,22 +43,33 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     break
                 }
 
-                arguments[i] as? RequiredFileArgument ?: continue
+                val fileArgument = arguments[i] as? RequiredFileArgument ?: continue
+                val extensions = fileArgument.supportedExtensions
                 val parameter = parameters[i]
                 val fileName = parameter.requiredParam?.firstChildOfType(LatexNormalText::class)?.text ?: continue
                 val root = file.findRootFile()
-                val relative = root.findRelativeFile(fileName)
+                val relative = root.findRelativeFile(fileName, extensions)
 
                 if (relative != null) {
                     continue
                 }
 
+                val fixes: MutableList<LocalQuickFix> = mutableListOf(
+                        CreateFileFix(false, fileName, root.containingDirectory)
+                )
+
+                // Create quick fixes for all extensions if none was supplied in the argument
+                if (extensions.none { fileName.endsWith(".$it") }) {
+                    extensions.forEach { fixes.add(0, CreateFileFix(false, "$fileName.$it", root.containingDirectory)) }
+                }
+
                 descriptors.add(manager.createProblemDescriptor(
                         parameter,
                         TextRange(1, parameter.textLength - 1),
-                        "File not found.",
+                        "File not found",
                         ProblemHighlightType.GENERIC_ERROR,
-                        isOntheFly
+                        isOntheFly,
+                        *fixes.toTypedArray()
                 ))
             }
         }

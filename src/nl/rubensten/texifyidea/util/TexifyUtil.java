@@ -151,7 +151,7 @@ public class TexifyUtil {
             }
 
             PsiFile root = FileUtilKt.findRootFile(file);
-            PsiFile included = getFileRelativeTo(root, fileName);
+            PsiFile included = getFileRelativeTo(root, fileName, null);
             if (included == null) {
                 continue;
             }
@@ -197,14 +197,14 @@ public class TexifyUtil {
      * @return The found file.
      */
     @Nullable
-    public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path) {
+    public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path, @Nullable Set<String> extensions) {
         // Find file
         VirtualFile directory = file.getContainingDirectory().getVirtualFile();
         String dirPath = directory.getPath();
 
-        Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
+        Optional<VirtualFile> fileHuh = findFile(directory, path, extensions != null ? extensions : INCLUDE_EXTENSIONS);
         if (!fileHuh.isPresent()) {
-            return scanRoots(file, path);
+            return scanRoots(file, path, extensions);
         }
 
         PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
@@ -212,14 +212,14 @@ public class TexifyUtil {
                 (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
                         !StyleFileType.INSTANCE.equals(psiFile.getFileType()) &&
                         !BibtexFileType.INSTANCE.equals(psiFile.getFileType()))) {
-            return scanRoots(file, path);
+            return scanRoots(file, path, extensions);
         }
 
         return psiFile;
     }
 
     /**
-     * {@link TexifyUtil#getFileRelativeTo(PsiFile, String)} but then it scans all content roots.
+     * {@link TexifyUtil#getFileRelativeTo(PsiFile, String, Set<String>)} but then it scans all content roots.
      *
      * @param original
      *         The file where the relative path starts.
@@ -227,14 +227,14 @@ public class TexifyUtil {
      *         The path relative to {@code original}.
      * @return The found file.
      */
-    public static PsiFile scanRoots(@NotNull PsiFile original, @NotNull String path) {
+    public static PsiFile scanRoots(@NotNull PsiFile original, @NotNull String path, @Nullable Set<String> extensions) {
         Project project = original.getProject();
         ProjectRootManager rootManager = ProjectRootManager.getInstance(project);
         VirtualFile[] roots = rootManager.getContentSourceRoots();
         VirtualFileManager fileManager = VirtualFileManager.getInstance();
 
         for (VirtualFile root : roots) {
-            Optional<VirtualFile> fileHuh = findFile(root, path, INCLUDE_EXTENSIONS);
+            Optional<VirtualFile> fileHuh = findFile(root, path, extensions != null ? extensions : INCLUDE_EXTENSIONS);
             if (fileHuh.isPresent()) {
                 return FileUtilKt.psiFile(fileHuh.get(), project);
             }
