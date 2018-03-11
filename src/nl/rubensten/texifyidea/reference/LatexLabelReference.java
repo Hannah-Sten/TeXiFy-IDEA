@@ -80,6 +80,10 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                                 TexifyIcons.DOT_BIB :
                                 TexifyIcons.DOT_LABEL;
 
+                        if (cmd.getRequiredParameters().isEmpty()) {
+                            return null;
+                        }
+
                         return LookupElementBuilder.create(cmd.getRequiredParameters().get(0))
                                 .bold()
                                 .withInsertHandler(new LatexReferenceInsertHandler())
