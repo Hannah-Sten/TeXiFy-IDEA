@@ -11,7 +11,7 @@ import nl.rubensten.texifyidea.TeXception
 class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        if (event.exitCode == 0 && SumatraConversation.isAvailable) {
+        if (event.exitCode == 0 && isSumatraAvailable) {
             try {
                 SumatraConversation.openFile(runConfig.outputFilePath, start = true)
             }

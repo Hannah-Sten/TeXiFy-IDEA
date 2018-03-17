@@ -8,6 +8,7 @@ import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.action.EditorAction
 import nl.rubensten.texifyidea.run.SumatraConversation
+import nl.rubensten.texifyidea.run.isSumatraAvailable
 
 /**
  * Starts a forward search action in SumatraPDF.
@@ -24,7 +25,7 @@ open class ForwardSearchAction : EditorAction(
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
-        if (!SumatraConversation.isAvailable) {
+        if (!isSumatraAvailable) {
             return
         }
 
@@ -40,6 +41,6 @@ open class ForwardSearchAction : EditorAction(
 
     override fun update(e: AnActionEvent?) {
         val presentation = e?.presentation ?: return
-        presentation.isEnabledAndVisible = SumatraConversation.isAvailable
+        presentation.isEnabledAndVisible = isSumatraAvailable
     }
 }

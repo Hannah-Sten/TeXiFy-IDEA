@@ -7,7 +7,7 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.ui.DialogBuilder
 import nl.rubensten.texifyidea.TexifyIcons
-import nl.rubensten.texifyidea.run.SumatraConversation
+import nl.rubensten.texifyidea.run.isSumatraAvailable
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -51,6 +51,6 @@ open class ConfigureInverseSearchAction : AnAction(
 
     override fun update(e: AnActionEvent?) {
         val presentation = e?.presentation ?: return
-        presentation.isEnabledAndVisible = SumatraConversation.isAvailable
+        presentation.isEnabledAndVisible = isSumatraAvailable
     }
 }

@@ -3,6 +3,41 @@ package nl.rubensten.texifyidea.run
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
+import nl.rubensten.texifyidea.util.TexifyUtil
+
+/**
+ * Indicates whether SumatraPDF is installed and DDE communication is enabled.
+ *
+ * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
+ * install SumatraPDF while running TeXiFy.
+ */
+val isSumatraAvailable: Boolean by lazy {
+    if (!SystemInfo.isWindows || !isSumatraInstalled()) return@lazy false
+
+    // Try if native bindings are available
+    try {
+        DDEClientConversation()
+    }
+    catch (e: NoClassDefFoundError) {
+        TexifyUtil.logf("Native library DLLs could not be found.")
+        return@lazy false
+    }
+
+    true
+}
+
+private fun isSumatraInstalled(): Boolean {
+    // Look up SumatraPDF registry key
+    val process = Runtime.getRuntime().exec(
+            "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
+    )
+
+    val br = process.inputStream.bufferedReader()
+    val firstLine = br.readLine() ?: return false
+    br.close()
+
+    return !firstLine.startsWith("ERROR:")
+}
 
 /**
  * Send commands to SumatraPDF.
@@ -14,33 +49,21 @@ import nl.rubensten.texifyidea.TeXception
  */
 object SumatraConversation {
 
-    /**
-     * Indicates whether SumatraPDF is installed and DDE communication is enabled.
-     *
-     * Is computed once at initialization (for performance), which means that the IDE needs to be restarted when users
-     * install SumatraPDF while running TeXiFy.
-     */
-    @JvmField val isAvailable: Boolean
-
     private val server = "SUMATRA"
     private val topic = "control"
     private val conversation: DDEClientConversation?
 
     init {
-        if (!SystemInfo.isWindows or !sumatraInstalled()) {
+        if (!isSumatraAvailable) {
             conversation = null
-            isAvailable = false
         }
         else {
             try {
                 conversation = DDEClientConversation()
             }
             catch (e: NoClassDefFoundError) {
-                isAvailable = false
                 throw TeXception("Native library DLLs could not be found.", e)
             }
-
-            isAvailable = true
         }
 
     }
@@ -83,19 +106,6 @@ object SumatraConversation {
         finally {
             conversation?.disconnect()
         }
-    }
-
-    private fun sumatraInstalled(): Boolean {
-        // Look up SumatraPDF registry key
-        val process = Runtime.getRuntime().exec(
-                "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
-        )
-
-        val br = process.inputStream.bufferedReader()
-        val firstLine = br.readLine() ?: return false
-        br.close()
-
-        return !firstLine.startsWith("ERROR:")
     }
 
     /**
