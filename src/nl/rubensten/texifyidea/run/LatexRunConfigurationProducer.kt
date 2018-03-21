@@ -56,9 +56,7 @@ class LatexRunConfigurationProducer : RunConfigurationProducer<LatexRunConfigura
                                             context: ConfigurationContext): Boolean {
         val mainFile = runConfiguration.mainFile
         val psiFile = context.dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
-
-        val currentFile = psiFile.virtualFile
-
-        return mainFile.path == currentFile.path
+        val currentFile = psiFile.virtualFile ?: return false
+        return mainFile?.path == currentFile.path
     }
 }
