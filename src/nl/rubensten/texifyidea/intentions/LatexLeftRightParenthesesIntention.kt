@@ -171,9 +171,9 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
         val caret = editor.caretModel
         val document = file.document() ?: return null
 
-        if (caret.offset >= document.textLength) {
-            return null
-        }
+        // Check document ranges.
+        if (caret.offset >= document.textLength) return null
+        if (caret.offset - 1 < 0) return null
 
         val lookbehind = document.getText(TextRange.from(caret.offset - 1, 1))
         val lookahead = document.getText(TextRange.from(caret.offset, 1))
