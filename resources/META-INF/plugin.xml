@@ -371,10 +371,10 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
                          groupName="LaTeX" displayName="Missing documentclass"
-                         enabledByDefault="true"/>
+                         enabledByDefault="false"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingDocumentEnvironmentInspection"
                          groupName="LaTeX" displayName="Missing document environment"
-                         enabledByDefault="true"/>
+                         enabledByDefault="false"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection"
                          groupName="LaTeX" displayName="Too large sections"
                          enabledByDefault="true"/>
