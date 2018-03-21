@@ -72,10 +72,11 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
             return if (Magic.Pattern.containsMultipleNewlines.matcher(next.text).matches()) {
                 null
             }
-            else {
-                next.nextCommand()
-            }
+            else next.nextCommand()
         }
+
+        // No next? Then there is no valid next command. This happens e.g. when it's the last element of the file.
+        next ?: return null
 
         // Skip comments.
         if (next is PsiComment) {
