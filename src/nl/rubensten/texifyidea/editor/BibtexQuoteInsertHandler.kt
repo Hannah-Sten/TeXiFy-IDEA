@@ -25,6 +25,10 @@ open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
             return super.charTyped(char, project, editor, file)
         }
 
+        if (offset < 0 || offset + 1 >= document.textLength) {
+            return super.charTyped(char, project, editor, file)
+        }
+
         if (document.getText((offset..offset + 1).toTextRange()) == "\"") {
             document.deleteString(offset, offset + 1)
             return Result.STOP
