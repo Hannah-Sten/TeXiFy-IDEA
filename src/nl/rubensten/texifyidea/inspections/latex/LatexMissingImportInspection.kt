@@ -74,7 +74,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     private fun analyseCommands(file: PsiFile, includedPackages: Collection<String>,
                                 descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
                                 isOntheFly: Boolean) {
-        val commands = file.commandsInFileSet()
+        val commands = file.commandsInFile()
         for (cmd in commands) {
             val name = cmd.commandToken.text.substring(1)
             val latexCommand = LatexCommand.lookup(name) ?: continue
