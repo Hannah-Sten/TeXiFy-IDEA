@@ -1,0 +1,125 @@
+// Include the Gradle plugins which help building everything.
+// Supersedes the use of 'buildscript' block and 'apply plugin:'
+plugins {
+    id 'org.jetbrains.intellij' version '0.2.17'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.30'
+}
+
+group 'nl.rubensten'
+version '0.5.1'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    // Specify source directories
+    main.java.srcDirs += 'src/'
+    main.java.srcDirs += 'gen/'
+    main.resources.srcDirs += 'resources/'
+    main.kotlin.srcDirs += 'src/'
+    main.kotlin.srcDirs += 'gen/'
+
+    // Specify test directories
+    test.java.srcDirs += 'test/'
+    test.kotlin.srcDirs += 'test/'
+}
+
+// Java target version
+sourceCompatibility = 1.8
+
+// Specify the right jvm target for Kotlin
+compileKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        apiVersion = "1.2"
+        languageVersion = "1.2"
+    }
+}
+
+// Same for Kotlin tests
+compileTestKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        apiVersion = "1.2"
+        languageVersion = "1.2"
+    }
+}
+
+dependencies {
+    // Local dependencies
+    compile files("lib/pretty-tools-JDDE-2.1.0.jar")
+    compile files("lib/JavaDDE.dll")
+    compile files("lib/JavaDDEx64.dll")
+
+    // From Kotlin documentation
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+
+    // just in case, version number specified in buildscript is used by default
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+
+    // Test dependencies
+
+    // Also compile junit 4, just in case
+    testCompile("junit:junit:4.12")
+    testRuntime("org.junit.vintage:junit-vintage-engine:4.12.0-M4")
+
+    // Use junit 5 for test cases
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M4")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-M4")
+
+    // Enable use of the JUnitPlatform Runner within the IDE
+    testCompile("org.junit.platform:junit-platform-runner:1.0.0-M4")
+
+    // just in case
+    testCompile "org.jetbrains.kotlin:kotlin-test"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+
+}
+
+// Special resource dependencies
+processResources {
+    from ('lib') {
+        include 'pretty-tools-JDDE-2.1.0.jar'
+        include 'JavaDDE.dll'
+        include 'JavaDDEx64.dll'
+    }
+}
+
+// Copy jar and dependencies in 'lib/' to a zip with the right folder structure
+task zip(type: Zip) {
+
+    into('TeXiFy-IDEA/lib') {
+        from jar
+        from 'lib'
+    }
+
+}
+
+intellij {
+    version '2017.3'
+}
+
+test {
+    // Always run tests, even when nothing changed
+//    dependsOn 'cleanTest'
+    // Show test results
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+// If wanted, changenotes could be supplied from here.
+//patchPluginXml {
+//    changeNotes """
+//      Add change notes here.<br>
+//      <em>most HTML tags may be used</em>"""
+//}

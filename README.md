@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA.svg?branch=master)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
 [![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/TeXiFy-IDEA)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 
@@ -50,33 +51,40 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 
 We could make a detailed list, but that would take up your whole screen! We might add one later though :)
 
-## How to build the project using IntelliJ
-* Clone or download the project.
-* Make a new project from existing sources, even if you used the option 'new project from version control'.
-* Follow the instructions.
-* In `TeXiFy-IDEA.iml` (in the root directory) change the module type to `PLUGIN_MODULE`.
-* In Project Structure under Project, add a new project SDK, namely an IntelliJ Platform Plugin SDK.
-* Select the (by default selected) IntelliJ directory if prompted.
-* Under Project Structure - Modules - Plugin Deployment change the resources path to the correct path, `\path\to\TeXiFy-IDEA\resources`.
-* Add a new run configuration of type Plugin (if you cannot make a new run configuration, restart some stuff or wait a bit).
-* Mark the `resources` folder as resources root by right-clicking on it and selecting Mark Directory As - Resources, otherwise it won't find the great icons.
-* Go to Project Structure - Libraries and hit the plus icon in the middle column. Select `Java`. Select `lib/pretty-tools-JDDE-2.1.0.jar`.
+## <a name="build-from-source">Building from source using IntelliJ</a>
+
+#### I know what I'm doing
+
+* This project uses gradle. Make a new project from existing sources and import the project. Done.
+
+#### I have no idea what I'm doing
+
+It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the normal [installation instructions](#installation-instructions) first.
+* Make a new project from version control if you don't have it yet downloaded, or from existing sources if you have.
+* On the GitHub [home page](https://github.com/Ruben-Sten/TeXiFy-IDEA) of TeXiFy click 'clone or download' and copy the url to Git Repository Url.
+* If the project opens and you get a popup 'Import Gradle project', click that.
+* If you are prompted to open the `build.gradle` file, do so.
+* Select 'Use auto-import'.
+* Thank Gradle that you're done now!
 * Install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html) if you want to use Go To Line in PDF/Source. 
 * Check that in Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
 
 #### To run directly from source
-* Note: sometimes this way will not work and will generate strange errors. In that case, see below to build the plugin to use it directly in IntelliJ.
-* Find out the location of your IntelliJ Sandbox by going to Project Structure - SDKs - IntelliJ IDEA ... - Sandbox Home, and copy the two `.dll`s from `path/to/TeXiFy/project/lib/` to `path/to/sandbox/plugins/TeXiFy-IDEA/lib/`.
-* Run in debug mode, normal run may not work.
+* Click the Gradle button on the right, the gradle task is located in Tasks - intellj - runIde. Right-click and run.
+* If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
+* Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
 * The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
 * Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
 * To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
 * Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
-#### To build the plugin for use in IntelliJ
-* Use Build - Prepare Plugin Module ...
-* Add the two `.dll`s from `lib/pretty-tools-JDDE-2.1.0/` to the compiled plugin by unzipping, copying the files to the `lib` directory and zipping.
+
+#### To build a zip which contains the plugin
+* Click the Gradle button on the right, the gradle task is located in Tasks - other - zip. Right-click and run. The zip will be in build/distributions.
 * Add the plugin to IntelliJ using Settings - Plugins - Install plugin from disk.
 * Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
+
+#### To run tests
+* Click the Gradle button on the right, the gradle task is located in Tasks - verification - check. Right-click and run. Note that check includes test so it will run the tests.
 
 
 ## <a name="installation-instructions">Installation instructions</a>

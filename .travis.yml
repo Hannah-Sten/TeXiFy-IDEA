@@ -1,0 +1,5 @@
+language: java
+jdk: oraclejdk8
+
+# Make the gradle wrapper executable
+before_install: chmod +x gradlew
