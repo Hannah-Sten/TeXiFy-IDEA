@@ -106,7 +106,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val latexCommand = LatexCommand.lookup(command.name!!) ?: return
+            val latexCommand = LatexCommand.lookup(command.commandToken.text) ?: return
             val file = command.containingFile
 
             PackageUtils.insertUsepackage(file, latexCommand.dependency)

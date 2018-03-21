@@ -127,7 +127,7 @@ fun PsiFile.isRoot(): Boolean {
         return false
     }
 
-    return commandsInFile().filter { it.name.equals("\\documentclass") }.any()
+    return commandsInFile().filter { it.commandToken.text == "\\documentclass" }.any()
 }
 
 /**
