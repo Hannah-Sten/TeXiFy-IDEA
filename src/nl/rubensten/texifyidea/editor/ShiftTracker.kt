@@ -47,7 +47,7 @@ object ShiftTracker : KeyListener, TypedHandlerDelegate() {
     @JvmStatic
     fun isShiftPressed(): Boolean = shift
 
-    override fun beforeCharTyped(c: Char, project: Project?, editor: Editor?, file: PsiFile?, fileType: FileType?): Result {
+    override fun beforeCharTyped(c: Char, project: Project, editor: Editor, file: PsiFile, fileType: FileType): Result {
         if (editor != null) {
             setup(editor.contentComponent)
         }
