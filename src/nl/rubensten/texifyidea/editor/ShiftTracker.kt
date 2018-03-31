@@ -48,10 +48,7 @@ object ShiftTracker : KeyListener, TypedHandlerDelegate() {
     fun isShiftPressed(): Boolean = shift
 
     override fun beforeCharTyped(c: Char, project: Project, editor: Editor, file: PsiFile, fileType: FileType): Result {
-        if (editor != null) {
-            setup(editor.contentComponent)
-        }
-
+        setup(editor.contentComponent)
         return super.beforeCharTyped(c, project, editor, file, fileType)
     }
 
