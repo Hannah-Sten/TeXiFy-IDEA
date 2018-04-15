@@ -29,7 +29,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         /**
          * Matches the suffix that denotes that braces may not be inserted.
          */
-        private val insertForbidden = Pattern.compile("^[\\s^_,.;%:$(]$")!!
+        private val insertForbidden = Pattern.compile("^[\\s^_,.;%:$(']$")!!
     }
 
     override fun charTyped(c: Char, project: Project?, editor: Editor, file: PsiFile): Result {
