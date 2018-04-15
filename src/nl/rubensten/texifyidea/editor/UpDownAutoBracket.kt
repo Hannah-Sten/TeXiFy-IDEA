@@ -32,7 +32,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         private val insertForbidden = Pattern.compile("^[\\s^_,.;%:$(]$")!!
     }
 
-    override fun charTyped(c: Char, project: Project?, editor: Editor, file: PsiFile): Result {
+    override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
         if (file.fileType != LatexFileType) {
             return Result.CONTINUE
         }
