@@ -12,6 +12,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexComment
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.*
+import kotlin.math.min
 
 /**
  * @author Ruben Schellekens
@@ -42,7 +43,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
 
                 descriptors.add(manager.createProblemDescriptor(
                         text,
-                        TextRange(matcher.start(), matcher.end() + (endLine - offset)),
+                        TextRange(matcher.start(), min(document.textLength, matcher.end() + (endLine - offset))),
                         "Sentence does not start on a new line",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
