@@ -322,7 +322,7 @@ enum class LatexMathCommand(
     DIVIDEONTIMES("divideontimes", dependency = AMSSYMB, display = "⋇", collapse = true),
     DOTEQ("doteq"),
     DOT("dot", "a".asRequired()),
-    DOTS("dots", dependency = AMSMATH, display = "⋯", collapse = true),
+    DOTS("dots", display = "⋯", collapse = true),
     ELL("ell"),
     EXP("exp"),
     FLAT("flat", display = "♭", collapse = true),
