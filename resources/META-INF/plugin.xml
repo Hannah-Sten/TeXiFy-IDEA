@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.5.1</version>
+    <version>0.6</version>
     <idea-version since-build="141.0"/>
     <vendor url="https://ruben-sten.github.io/home/index.html">Ruben-Sten</vendor>
 
@@ -72,9 +72,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.5.1</strong></p>
+        <p><strong>Beta 0.6</strong></p>
         <p>
-            A new release of TeXiFy IDEA, with a number of changes.
+            A new release of TeXiFy IDEA, with a smaller number of additions but with a big number of crash fixes.
         </p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -85,50 +85,26 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li>Added <code>\section*</code> to the autocomplete.</li>
-            <li>Added setting to disable auto insertion of second '<code>$</code>'. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/277">#277</a>)</li>
-            <li>Added <code>\langle</code> and <code>\rangle</code> to autocomplete including automatic insertion of <code>\rangle</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/295">#295</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Added inspections</em>
-        </p>
-        <ul>
-            <li>Added DuplicateBibliography inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/230">#230</a>)</li>
-            <li>Added NoExtension inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/230">#230</a>)</li>
-            <li>Added NestedIncludes inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/231">#231</a>)</li>
+            <li>Added Create File quick fix for the file not found inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/421">#421</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>Reformatted a whole lot of code and converted much to Kotlin.</li>
-            <li>Import folding now ignores comments and breaks at blank lines. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/229">#229</a>) (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/236">#236</a>)</li>
-            <li>Program arguments can be added to LaTeX run configurations. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/240">#240</a>)</li>
-            <li>Duplicate label inspection does no longer crosscheck labels and bibliography items. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/242">#242</a>)</li>
-            <li>Unknown variants of <code>\if</code>-commands get recognised by NonMatchingIf inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/270">#270</a>)</li>
-            <li>Commands defined by <code>\newif</code> are now included into the autocomplete. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/270">#270</a>)</li>
-            <li>MissingLabel inspection now ignores starred commands.</li>
-            <li>Increased forward search delay to 1250ms (after compilation).</li>
-            <li>Reduced false positives with NonBreakingSpace inspection.</li>
-            <li>Disabled SentenceEndWithCapital inspection in verbatim environments.</li>
-            <li>Label autocomplete now pops up at several more reference commands. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/254">#254</a>)</li>
-            <li>Autocomplete of file names does not insert './' and '/' twice anymore. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/273">#273</a>)</li>
-            <li>Added <code>\includegraphics</code> to file completion path. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/237">#237</a>)</li>
+            <li>MissingDocumentclass and MissingDocumentEnvironment inspections are now disabled by default.</li>
+            <li>Single quotes will not trigger automatic brace insertion anymore for sub- and superscripts. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/495">#495</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Fixed EncloseWithLeftRight inspection not ignoring <code>\[</code> and <code>\]</code> of displaymath. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/234">#234</a>)</li>
-            <li>Fixed subsupscript inspection & typed handler being enabled in <code>\label</code> and <code>\bibitem</code>. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/271">#271</a>)</li>
-            <li>Fixed insertion of extra '<code>]</code>' after '<code>\[</code>' in outer scope. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/272">#272</a>)</li>
-            <li>Fixed bibtex double quotes being inserted in different files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/277">#277</a>)</li>
-            <li>Fixed auto-<code>\item</code> insertion not copying all optional parameter contents. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/331">#331</a>)</li>
-            <li>Fixed <code>\iff</code> being recognised as an <code>\if</code>-command. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/278">#278</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/235">#235</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/255">#255</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/279">#279</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/309">#309</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/345">#345</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/348">#348</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/368">#368</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/398">#398</a>)</li>
+            <li>Fixed invalid range in LeftRightParenthesesIntention.</li>
+            <li>Fixed 2018.1 versioning issues. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/483">#483</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/484">#484</a>)</li>
+            <li>Sumatra native library fix. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/443">#443</a>)</li>
+            <li>Fixed <code>\dots</code> requiring amsmath whilst it should not. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/426">#426</a>)</li>
+            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/386">#386</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/415">#415</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/423">#423</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/427">#427</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/447">#447</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/454">#454</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/466">#466</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/493">#493</a>)
         </ul>
         <br>
         <p>
