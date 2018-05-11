@@ -43,7 +43,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
 
                 descriptors.add(manager.createProblemDescriptor(
                         text,
-                        TextRange(matcher.start(), min(document.textLength, matcher.end() + (endLine - offset))),
+                        TextRange(matcher.start(), min(text.textLength, matcher.end() + (endLine - offset))),
                         "Sentence does not start on a new line",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
