@@ -20,7 +20,8 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.run.compiler.DocumentCompiler;
+import nl.rubensten.texifyidea.run.compiler.DocumentCompiler.Format;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +40,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private static final String OUTPUT_FORMAT = "output-format";
     private static final String BIB_RUN_CONFIG = "bib-run-config";
 
-    private LatexCompiler compiler;
+    private DocumentCompiler compiler;
     private String compilerPath = null;
     private String compilerArguments = null;
     private VirtualFile mainFile;
@@ -87,7 +88,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         // Read compiler.
         String compilerName = parent.getChildText(COMPILER);
         try {
-            this.compiler = LatexCompiler.valueOf(compilerName);
+            this.compiler = DocumentCompiler.valueOf(compilerName);
         }
         catch (IllegalArgumentException e) {
             this.compiler = null;
@@ -190,11 +191,11 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         setBibRunConfig(bibSettings);
     }
 
-    public LatexCompiler getCompiler() {
+    public DocumentCompiler getCompiler() {
         return compiler;
     }
 
-    public void setCompiler(LatexCompiler compiler) {
+    public void setCompiler(DocumentCompiler compiler) {
         this.compiler = compiler;
     }
 
@@ -232,7 +233,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     }
 
     public void setDefaultCompiler() {
-        setCompiler(LatexCompiler.PDFLATEX);
+        setCompiler(DocumentCompiler.PDFLATEX_MIKTEX);
     }
 
     public void setDefaultAuxiliaryDirectories() {

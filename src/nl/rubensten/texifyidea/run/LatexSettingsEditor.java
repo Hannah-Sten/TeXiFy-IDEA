@@ -16,7 +16,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.TitledSeparator;
-import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.run.compiler.DocumentCompiler;
+import nl.rubensten.texifyidea.run.compiler.DocumentCompiler.Format;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -79,7 +80,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     protected void applyEditorTo(@NotNull LatexRunConfiguration runConfiguration) throws
             ConfigurationException {
         // Apply chosen compiler.
-        LatexCompiler chosenCompiler = (LatexCompiler)compiler.getComponent().getSelectedItem();
+        DocumentCompiler chosenCompiler = (DocumentCompiler)compiler.getComponent().getSelectedItem();
         runConfiguration.setCompiler(chosenCompiler);
 
         // Apply custom compiler path if applicable
@@ -118,7 +119,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         panel.setLayout(new VerticalFlowLayout(VerticalFlowLayout.TOP));
 
         // Compiler
-        ComboBox<LatexCompiler> compilerField = new ComboBox<>(LatexCompiler.values());
+        ComboBox<DocumentCompiler> compilerField = new ComboBox<>(DocumentCompiler.values());
         compiler = LabeledComponent.create(compilerField, "Compiler");
         panel.add(compiler);
 
@@ -130,7 +131,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         compilerPath.addBrowseFolderListener(
                 new TextBrowseFolderListener(
                         new FileChooserDescriptor(true, false, false, false, false, false)
-                                .withFileFilter(virtualFile -> virtualFile.getNameWithoutExtension().equals(((LatexCompiler)compilerField.getSelectedItem()).getExecutableName()))
+                                .withFileFilter(virtualFile -> virtualFile.getNameWithoutExtension().equals(((DocumentCompiler)compilerField.getSelectedItem()).getExecutableName()))
                                 .withTitle("Choose " + compilerField.getSelectedItem() + " executable")
                 )
         );
