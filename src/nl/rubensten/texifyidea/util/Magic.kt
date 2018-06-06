@@ -288,7 +288,8 @@ object Magic {
                 "tmp" to TexifyIcons.TEMP_FILE,
                 "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
-                "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE
+                "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
+                "tikz" to TexifyIcons.LATEX_FILE
         )
     }
 }

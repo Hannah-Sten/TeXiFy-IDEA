@@ -15,6 +15,7 @@ import nl.rubensten.texifyidea.file.BibtexFileType;
 import nl.rubensten.texifyidea.file.ClassFileType;
 import nl.rubensten.texifyidea.file.LatexFileType;
 import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.file.TikzFileType;
 import nl.rubensten.texifyidea.templates.LatexTemplatesFactory;
 import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.TexifyUtil;
@@ -30,6 +31,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
     private static final String OPTION_STY_FILE = "sty";
     private static final String OPTION_CLS_FILE = "cls";
     private static final String OPTION_BIB_FILE = "bib";
+    private static final String OPTION_TIKZ_FILE = "tikz";
 
     public NewLatexFileAction() {
         super("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE);
@@ -46,6 +48,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
         builder.addKind("Bibliography (.bib)", TexifyIcons.BIBLIOGRAPHY_FILE, OPTION_BIB_FILE);
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE);
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE);
+        builder.addKind("TikZ (.tikz)", TexifyIcons.LATEX_FILE, OPTION_TIKZ_FILE);
         builder.show("", null, fileCreator);
 
         return fileCreator.getCreatedElements();
@@ -101,6 +104,8 @@ public class NewLatexFileAction extends CreateElementActionBase {
                     return LatexTemplatesFactory.fileTemplateCls;
                 case OPTION_BIB_FILE:
                     return LatexTemplatesFactory.fileTemplateBib;
+                case OPTION_TIKZ_FILE:
+                    return LatexTemplatesFactory.fileTemplateTikz;
                 default:
                     return LatexTemplatesFactory.fileTemplateTex;
             }
@@ -123,6 +128,10 @@ public class NewLatexFileAction extends CreateElementActionBase {
 
             if (smallFileName.endsWith("." + OPTION_BIB_FILE)) {
                 return BibtexFileType.INSTANCE;
+            }
+
+            if (smallFileName.endsWith("." + OPTION_TIKZ_FILE)) {
+                return TikzFileType.INSTANCE;
             }
 
             return TexifyUtil.getFileTypeByExtension(option);

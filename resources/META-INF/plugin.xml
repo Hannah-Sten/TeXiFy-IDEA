@@ -239,6 +239,7 @@
         <internalFileTemplate name="LaTeX Package"/>
         <internalFileTemplate name="LaTeX Document class"/>
         <internalFileTemplate name="BibTeX Bibliography"/>
+        <internalFileTemplate name="TikZ Picture"/>
 
         <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
 
