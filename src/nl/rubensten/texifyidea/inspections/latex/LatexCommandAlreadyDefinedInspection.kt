@@ -38,8 +38,8 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                 if (TexifyUtil.isCommandKnown(newCommand)) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,
-                            newCommand.commandToken.textRange.shiftRight(-command.textOffset),
                             "Command is already defined",
+                            true,
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly, RenewCommandFix
                     ))
@@ -52,8 +52,8 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                 if (TexifyUtil.isCommandKnown(newCommand)) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,
-                            newCommand.commandToken.textRange.shiftRight(-command.textOffset),
                             "Command is already defined",
+                            true,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                     ))
