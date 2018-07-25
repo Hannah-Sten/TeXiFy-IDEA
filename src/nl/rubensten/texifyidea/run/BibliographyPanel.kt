@@ -74,7 +74,7 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
 
                 override fun isEnabled() = !list.isEmpty
 
-                override fun actionPerformed(e: AnActionEvent?) {
+                override fun actionPerformed(e: AnActionEvent) {
                     configuration = null
                 }
             }
