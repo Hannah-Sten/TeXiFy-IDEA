@@ -54,9 +54,6 @@ public enum LatexCompiler {
                 command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
             }
 
-            for (VirtualFile root : moduleRoots) {
-                command.add("-include-directory=" + root.getPath());
-            }
         }
 
         // Custom compiler arguments specified by the user
