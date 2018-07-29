@@ -89,6 +89,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 continue
             }
 
+            // amsfonts is included in amssymb
+            if (pack == Package.AMSFONTS && includedPackages.contains(Package.AMSSYMB.name)) {
+                continue
+            }
+
             if (!includedPackages.contains(pack.name)) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
