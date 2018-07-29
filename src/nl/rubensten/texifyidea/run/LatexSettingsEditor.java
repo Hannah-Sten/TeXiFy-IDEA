@@ -168,7 +168,8 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Auxiliary files
         auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
-        auxDir.setSelected(true);
+        // Only enable by default on Windows
+        auxDir.setSelected(System.getProperty("os.name").contains("Windows"));
         panel.add(auxDir);
 
         // Output format.
