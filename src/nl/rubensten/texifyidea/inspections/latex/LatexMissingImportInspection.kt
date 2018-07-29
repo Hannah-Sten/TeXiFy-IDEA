@@ -60,6 +60,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 continue
             }
 
+            // amsmath is included in mathtools
+            if (pack == Package.AMSMATH && includedPackages.contains(Package.MATHTOOLS.name)) {
+                continue
+            }
+
             descriptors.add(manager.createProblemDescriptor(
                     env,
                     TextRange(7, 7 + name.length),

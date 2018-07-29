@@ -17,6 +17,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val GRAPHICX = Package("graphicx")
         @JvmField val AMSSYMB = Package("amssymb")
         @JvmField val AMSMATH = Package("amsmath")
+        @JvmField val MATHTOOLS = Package("mathtools")
         @JvmField val MATHABX = Package("mathabx")
         @JvmField val ULEM = Package("ulem")
         @JvmField val HYPERREF = Package("hyperref")
