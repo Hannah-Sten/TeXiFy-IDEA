@@ -26,6 +26,12 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
 
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 
+            // Include files from auxiliary directory on Windows
+            if (System.getProperty("os.name").contains("Windows")) {
+                add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
+                addAll(moduleRoots.map { "-include-directory=${it.path}" })
+            }
+
             add(runConfig.mainFile?.nameWithoutExtension ?: return null)
         }
 

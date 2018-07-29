@@ -58,6 +58,12 @@ public enum LatexCompiler {
                 command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
             }
 
+            if (System.getProperty("os.name").contains("Windows")) {
+                for (VirtualFile root : moduleRoots) {
+                    command.add("-include-directory=" + root.getPath());
+                }
+            }
+
         }
 
         // Custom compiler arguments specified by the user
