@@ -9,6 +9,7 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.psi.LatexOptionalParam
@@ -111,6 +112,8 @@ class InsertEnumerationItem : EnterHandlerDelegate {
             return false
         }
 
-        return element.inDirectEnvironment(Magic.Environment.listingEnvironments)
+        val isGluedToTheBeginCommand = element.hasParent(LatexBeginCommand::class)
+        val isInsideAnEnumeration = element.inDirectEnvironment(Magic.Environment.listingEnvironments)
+        return isInsideAnEnumeration && !isGluedToTheBeginCommand
     }
 }
