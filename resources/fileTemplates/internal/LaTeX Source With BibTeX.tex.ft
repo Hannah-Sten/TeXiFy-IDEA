@@ -7,7 +7,7 @@
 \documentclass[11pt]{article}
 
 % Packages
-\usepackage{a4wide}
+\usepackage{amsmath}
 
 % Document
 \begin{document}
