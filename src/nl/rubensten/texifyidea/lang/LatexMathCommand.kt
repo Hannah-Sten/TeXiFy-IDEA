@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.lang
 
 import nl.rubensten.texifyidea.lang.Argument.Type
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
@@ -255,12 +256,12 @@ enum class LatexMathCommand(
     /*
      *  Generic commands
      */
-    MATHBB("mathbb", "text".asRequired(Type.TEXT), dependency = AMSSYMB),
+    MATHBB("mathbb", "text".asRequired(Type.TEXT), dependency = AMSFONTS),
     MATHBF("mathbf", "text".asRequired()),
     MATHCAL("mathcal", "text".asRequired()),
     MATHDS("mathds", "mathds".asRequired()),
     MATHELLIPSIS("mathellipsis"),
-    MATHFRAK("mathfrak", "text".asRequired(Type.TEXT), dependency = AMSSYMB),
+    MATHFRAK("mathfrak", "text".asRequired(Type.TEXT), dependency = AMSFONTS),
     MATHGROUP("mathgroup"),
     MATHIT("mathit", "text".asRequired()),
     MATHNORMAL("mathnormal", "text".asRequired()),
