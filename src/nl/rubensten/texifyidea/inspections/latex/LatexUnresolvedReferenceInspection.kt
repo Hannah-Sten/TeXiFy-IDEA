@@ -40,7 +40,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             val parts = required[0].split(",")
             for (i in 0 until parts.size) {
                 val part = parts[i]
-                if (!labels.contains(part)) {
+                if (!labels.contains(part.trim())) {
                     var offset = command.name!!.length + 1
                     for (j in 0 until i) {
                         offset += parts[j].length + 1
