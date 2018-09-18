@@ -22,9 +22,7 @@ fun Document.lineIndentation(lineNumber: Int): String {
         if (line[i] == ' ' || line[i] == '\t') {
             result.append(line[i])
         }
-        else {
-            break
-        }
+        else break
     }
 
     return result.toString()

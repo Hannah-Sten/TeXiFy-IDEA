@@ -16,11 +16,9 @@ class CommandDefinitionFilter : Filter {
         return if (treeElement !is LatexStructureViewCommandElement) {
             true
         }
-        else {
-            !(treeElement.commandName == "\\newcommand" ||
-                    treeElement.commandName == "\\DeclareMathOperator" ||
-                    treeElement.presentation is LatexOtherCommandPresentation)
-        }
+        else !(treeElement.commandName == "\\newcommand" ||
+                treeElement.commandName == "\\DeclareMathOperator" ||
+                treeElement.presentation is LatexOtherCommandPresentation)
     }
 
     override fun isReverted() = true

@@ -26,7 +26,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
-        val command: List<String> = compiler.getCommand(runConfig, environment.project) ?: throw ExecutionException("Compile command could not be created.")
+        val command: List<String> = compiler.getCommand(runConfig, environment.project)
+                ?: throw ExecutionException("Compile command could not be created.")
 
         createOutDirs(mainFile)
 
@@ -108,7 +109,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         val includeRoot = mainFile.parent
         val parentPath = (fileIndex.getContentRootForFile(mainFile, false)?.path ?: includeRoot.path)
-        val outPath = parentPath + "/out"
+        val outPath = "$parentPath/out"
 
         // Create output path for mac
         val module = fileIndex.getModuleForFile(mainFile, false)
@@ -123,7 +124,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // Create output paths for mac (see issue #70 on GitHub)
-        files.mapNotNull { TexifyUtil.getPathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
+        files.asSequence()
+                .mapNotNull { TexifyUtil.getPathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
                 .forEach { File(outPath + it).mkdirs() }
     }
 }

@@ -102,7 +102,7 @@ enum class BibtexDefaultEntry(
 
         init {
             for (entry in values()) {
-                lookup.put(entry.token, entry)
+                lookup[entry.token] = entry
             }
         }
 

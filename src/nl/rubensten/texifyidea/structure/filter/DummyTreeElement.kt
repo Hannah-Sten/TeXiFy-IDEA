@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.structure.filter
 
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
+import javax.swing.Icon
 
 /**
  * @author Ruben Schellekens
@@ -19,10 +20,10 @@ enum class DummyTreeElement : TreeElement {
      */
     object DummyPresentation : ItemPresentation {
 
-        override fun getPresentableText() = null
+        override fun getPresentableText(): String? = null
 
-        override fun getLocationString() = null
+        override fun getLocationString(): String? = null
 
-        override fun getIcon(b: Boolean) = null
+        override fun getIcon(b: Boolean): Icon? = null
     }
 }

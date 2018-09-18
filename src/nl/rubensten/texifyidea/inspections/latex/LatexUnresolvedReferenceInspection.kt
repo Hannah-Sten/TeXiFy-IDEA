@@ -27,12 +27,12 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
 
         val labels = TexifyUtil.findLabelsInFileSet(file)
         val commands = file.commandsInFile()
-        for (cmd in commands) {
-            if (!Magic.Command.reference.contains(cmd.name)) {
+        for (command in commands) {
+            if (!Magic.Command.reference.contains(command.name)) {
                 continue
             }
 
-            val required = cmd.requiredParameters
+            val required = command.requiredParameters
             if (required.isEmpty()) {
                 continue
             }
@@ -41,13 +41,13 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             for (i in 0 until parts.size) {
                 val part = parts[i]
                 if (!labels.contains(part)) {
-                    var offset = cmd.name!!.length + 1
+                    var offset = command.name!!.length + 1
                     for (j in 0 until i) {
                         offset += parts[j].length + 1
                     }
 
                     descriptors.add(manager.createProblemDescriptor(
-                            cmd,
+                            command,
                             TextRange.from(offset, part.length),
                             "Unresolved reference '$part'",
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,

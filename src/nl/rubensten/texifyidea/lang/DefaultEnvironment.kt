@@ -91,7 +91,7 @@ enum class DefaultEnvironment(
 
         init {
             for (environment in DefaultEnvironment.values()) {
-                lookup.put(environment.environmentName, environment)
+                lookup[environment.environmentName] = environment
             }
         }
 

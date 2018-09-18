@@ -43,9 +43,10 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                                 descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
                                 isOntheFly: Boolean) {
         val environments = file.childrenOfType(LatexEnvironment::class)
-        val defined = file.definitionsAndRedefinitionsInFileSet()
+        val defined = file.definitionsAndRedefinitionsInFileSet().asSequence()
                 .filter { it.isEnvironmentDefinition() }
-                .mapNotNull { it.requiredParameter(0) }.toSet()
+                .mapNotNull { it.requiredParameter(0) }
+                .toSet()
         for (env in environments) {
             // Don't consider environments that have been defined.
             if (env.name()?.text in defined) {
@@ -80,8 +81,8 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                                 descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
                                 isOntheFly: Boolean) {
         val commands = file.commandsInFile()
-        for (cmd in commands) {
-            val name = cmd.commandToken.text.substring(1)
+        for (command in commands) {
+            val name = command.commandToken.text.substring(1)
             val latexCommand = LatexCommand.lookup(name) ?: continue
             val pack = latexCommand.dependency
 
@@ -96,7 +97,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
             if (!includedPackages.contains(pack.name)) {
                 descriptors.add(manager.createProblemDescriptor(
-                        cmd,
+                        command,
                         TextRange(0, latexCommand.command.length + 1),
                         "Command requires ${pack.name} package",
                         ProblemHighlightType.ERROR,

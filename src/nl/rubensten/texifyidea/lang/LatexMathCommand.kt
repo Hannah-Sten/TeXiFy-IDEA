@@ -349,7 +349,7 @@ enum class LatexMathCommand(
 
         init {
             for (command in LatexMathCommand.values()) {
-                lookup.put(command.command, command)
+                lookup[command.command] = command
                 if (command.display != null) {
                     lookupDisplay.putIfAbsent(command.display!!, command)
                 }

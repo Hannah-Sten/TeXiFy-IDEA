@@ -28,7 +28,7 @@ enum class LatexMathEnvironment(
 
         init {
             for (environment in LatexMathEnvironment.values()) {
-                lookup.put(environment.environmentName, environment)
+                lookup[environment.environmentName] = environment
             }
         }
 

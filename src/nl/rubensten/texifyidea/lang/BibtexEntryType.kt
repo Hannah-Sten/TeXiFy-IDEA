@@ -3,7 +3,7 @@ package nl.rubensten.texifyidea.lang
 /**
  * @author Ruben Schellekens
  */
-interface BibtexEntryType : Described{
+interface BibtexEntryType : Described {
 
     /**
      * The token used to identify the BibTeX token _without_ `@` prefix.

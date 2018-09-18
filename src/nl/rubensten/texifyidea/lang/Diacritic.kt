@@ -11,7 +11,7 @@ interface Diacritic {
             if (diacritics.contains(null)) {
                 return null
             }
-            return diacritics.fold(base, { s, d -> d!!.buildCommand(s) })
+            return diacritics.fold(base) { s, d -> d!!.buildCommand(s) }
         }
 
         fun allValues(): List<Diacritic> {
@@ -33,9 +33,7 @@ interface Diacritic {
     else if (needsSpace) {
         " $param"
     }
-    else {
-        param
-    }
+    else param
 
     enum class Normal(
             override val unicode: String,
