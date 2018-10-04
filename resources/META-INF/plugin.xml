@@ -72,9 +72,10 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6</strong></p>
+        <p><strong>Beta 0.6.1</strong></p>
         <p>
-            A new release of TeXiFy IDEA, with a smaller number of additions but with a big number of crash fixes.
+            <em>Finally</em>, a new release of TeXiFy IDEA,
+            with a few changing and a few fixes for some annoying crashes.
         </p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -82,29 +83,22 @@
         </p>
         <br>
         <p>
-            <em>Additions</em>
-        </p>
-        <ul>
-            <li>Added Create File quick fix for the file not found inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/421">#421</a>)</li>
-        </ul>
-        <br>
-        <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>MissingDocumentclass and MissingDocumentEnvironment inspections are now disabled by default.</li>
-            <li>Single quotes will not trigger automatic brace insertion anymore for sub- and superscripts. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/495">#495</a>)</li>
+            <li>Removed 'a4wide' from the template file. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/642">#642</a>)</li>
+            <li>Recognises that amsfonts is included in amssymb and mathtools is included in amsmath. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/646">#646</a>)</li>
+            <li>Increased performance.</li>
+            <li>Supported Intellij 2018.2. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/638">#638</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Fixed invalid range in LeftRightParenthesesIntention.</li>
-            <li>Fixed 2018.1 versioning issues. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/483">#483</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/484">#484</a>)</li>
-            <li>Sumatra native library fix. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/443">#443</a>)</li>
-            <li>Fixed <code>\dots</code> requiring amsmath whilst it should not. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/426">#426</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/386">#386</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/415">#415</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/423">#423</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/427">#427</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/447">#447</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/454">#454</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/466">#466</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/493">#493</a>)
+            <li>Fixed `\item` being inserted when the cursor is just before `\begin{enumerate}`. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/584">#584</a>)</li>
+            <li>Fixed UnresolvedReference inspection not ignoring whitespace for multiple references. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/696">#696</a>)</li>
+            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/493">#493</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/551">#551</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/586">#586</a>)</li>
         </ul>
         <br>
         <p>
