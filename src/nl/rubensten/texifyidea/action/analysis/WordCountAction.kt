@@ -61,8 +61,8 @@ open class WordCountAction : AnAction(
         private val PUNCTUATION = Pattern.compile("[.,\\-_–:;?!'\"~=+*/\\\\&|]+")
     }
 
-    override fun actionPerformed(event: AnActionEvent?) {
-        val virtualFile = event?.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
+    override fun actionPerformed(event: AnActionEvent) {
+        val virtualFile = event.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
         val psiFile = virtualFile.psiFile(project) ?: return
 
