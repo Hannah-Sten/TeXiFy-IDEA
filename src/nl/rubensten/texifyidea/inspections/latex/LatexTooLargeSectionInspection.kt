@@ -38,7 +38,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         /**
          * The amount of characters it takes before a section is considered 'too long'.
          */
-        private val TOO_LONG_LIMIT = 4000
+        private const val TOO_LONG_LIMIT = 4000
 
         /**
          * Looks up the section command that comes after the given command.
@@ -115,7 +115,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      * Not the best way perhaps, but it does the job.
      */
     private fun isAlreadySplit(commands: Collection<LatexCommands>): Boolean {
-        val smallestIndex = commands.map { cmd -> SECTION_NAMES.indexOf(cmd.name) }.min() ?: return false
+        val smallestIndex = commands.asSequence()
+                .map { cmd -> SECTION_NAMES.indexOf(cmd.name) }
+                .min() ?: return false
 
         // Just check if \section or \chapter occur only once.
         for (name in SECTION_NAMES) {
@@ -123,7 +125,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 continue
             }
 
-            if (commands.filter { cmd -> cmd.name == name }.count() > 1) {
+            if (commands.asSequence().filter { cmd -> cmd.name == name }.count() > 1) {
                 return false
             }
         }

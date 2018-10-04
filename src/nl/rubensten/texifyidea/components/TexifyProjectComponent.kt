@@ -11,6 +11,6 @@ import nl.rubensten.texifyidea.editor.LatexSoftWrapEditorListener
 class TexifyProjectComponent : ProjectComponent {
 
     override fun initComponent() {
-        EditorFactory.getInstance().addEditorFactoryListener(LatexSoftWrapEditorListener(), { })
+        EditorFactory.getInstance().addEditorFactoryListener(LatexSoftWrapEditorListener()) { }
     }
 }

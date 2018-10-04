@@ -30,12 +30,12 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-        for (cmd in commands) {
-            if (!Magic.Command.labeled.containsKey(cmd.name) || cmd.name == "\\item" || cmd.hasStar()) {
+        for (command in commands) {
+            if (!Magic.Command.labeled.containsKey(command.name) || command.name == "\\item" || command.hasStar()) {
                 continue
             }
 
-            addCommandDescriptor(cmd, descriptors, manager, isOntheFly)
+            addCommandDescriptor(command, descriptors, manager, isOntheFly)
         }
 
         return descriptors

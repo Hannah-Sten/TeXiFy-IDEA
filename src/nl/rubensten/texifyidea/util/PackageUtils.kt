@@ -58,11 +58,11 @@ object PackageUtils {
 
         // When there are no usepackage commands: insert below documentclass.
         if (last == null) {
-            val classHuh = commands.stream()
+            val classHuh = commands.asSequence()
                     .filter { cmd -> "\\documentclass" == cmd.commandToken.text || "\\LoadClass" == cmd.commandToken.text }
-                    .findFirst()
-            if (classHuh.isPresent) {
-                insertLocation = classHuh.get().textOffset + classHuh.get().textLength
+                    .firstOrNull()
+            if (classHuh != null) {
+                insertLocation = classHuh.textOffset + classHuh.textLength
                 newlines = "\n"
             }
             else {

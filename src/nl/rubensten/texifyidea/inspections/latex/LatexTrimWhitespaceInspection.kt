@@ -28,19 +28,19 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-        for (cmd in commands) {
-            if (cmd.name !in Magic.Command.sectionMarkers) {
+        for (command in commands) {
+            if (command.name !in Magic.Command.sectionMarkers) {
                 continue
             }
 
-            val sectionName = cmd.firstChildOfType(LatexRequiredParam::class)?.group?.text?.trimRange(1, 1) ?: continue
+            val sectionName = command.firstChildOfType(LatexRequiredParam::class)?.group?.text?.trimRange(1, 1) ?: continue
             if (!Magic.Pattern.excessWhitespace.matcher(sectionName).matches()) {
                 continue
             }
 
-            val name = cmd.name ?: cmd.commandToken.text
+            val name = command.name ?: command.commandToken.text
             descriptors.add(manager.createProblemDescriptor(
-                    cmd,
+                    command,
                     TextRange.from(name.length + 1, sectionName.length),
                     "Unnecessary whitespace",
                     ProblemHighlightType.WEAK_WARNING,
