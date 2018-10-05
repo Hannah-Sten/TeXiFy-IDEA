@@ -72,9 +72,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <h1>Beta 0.6 nightly release</h1>
+        <h1>Beta 0.7 nightly release</h1>
         <p>
-            This is a nightly build with the very latest features, available before the official Beta 0.6 release.
+            This is a nightly build with the very latest features, available before the official Beta 0.7 release.
         </p>
         <p>
             For changes, see the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/milestone/7?closed=1">milestone page</a>.
