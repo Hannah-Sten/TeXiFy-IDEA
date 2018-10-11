@@ -20,12 +20,14 @@ internal object BiberCompiler : Compiler<BibtexRunConfiguration> {
             }
             else add(executableName)
 
-            // Biber needs auxiliary files, but the flag is different from bibtex
-            add("--output_directory ${runConfig.auxDir}")
+            // Biber can find auxiliary files, but the flag is different from bibtex
+//            add("--output-directory=${runConfig.auxDir?.path ?: ""}")
+            add("--output-directory=${runConfig.mainFile?.parent?.path ?: ""}")
 
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 
-            add(runConfig.mainFile?.nameWithoutExtension ?: return null)
+            // todo replace this test
+            add("../auxil/" + (runConfig.mainFile?.nameWithoutExtension ?: return null))
         }
 
         return command.toList()
