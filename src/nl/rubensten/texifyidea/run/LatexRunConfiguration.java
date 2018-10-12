@@ -21,6 +21,7 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -171,7 +172,12 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         parent.addContent(bibRunConfigElt);
     }
 
-    void generateBibRunConfig() {
+    /**
+     * Generate a Bibtex run configuration, using a certain compiler as default (e.g. bibtex or biber).
+     *
+     * @param defaultCompiler Compiler to set selected as default.
+     */
+    void generateBibRunConfig(BibliographyCompiler defaultCompiler) {
         RunManagerImpl runManager = RunManagerImpl.getInstanceImpl(getProject());
 
         RunnerAndConfigurationSettings bibSettings = runManager.createRunConfiguration(
@@ -181,7 +187,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
         BibtexRunConfiguration bibtexRunConfiguration = (BibtexRunConfiguration)bibSettings.getConfiguration();
 
-        bibtexRunConfiguration.setDefaultCompiler();
+        bibtexRunConfiguration.setCompiler(defaultCompiler);
         bibtexRunConfiguration.setMainFile(mainFile);
         bibtexRunConfiguration.setSuggestedName();
 

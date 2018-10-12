@@ -107,10 +107,6 @@ class BibtexRunConfiguration(
 
     override fun suggestedName() = mainFile?.nameWithoutExtension?.plus(" bibliography")
 
-    fun setDefaultCompiler() {
-        compiler = BibliographyCompiler.BIBTEX
-    }
-
     fun setSuggestedName() {
         name = suggestedName()
     }
