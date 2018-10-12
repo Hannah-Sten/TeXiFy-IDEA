@@ -550,4 +550,4 @@ fun PsiFile.hasBibliography() = LatexIncludesIndex.getItemsInFileSet(this).any {
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.usesBiber() = LatexIncludesIndex.getItemsInFileSet(this).any { it.name == "\\addbibresource" }
+fun PsiFile.usesBiber() = LatexIncludesIndex.getItemsInFileSet(this).any { it.name == "\\printbibliography" }

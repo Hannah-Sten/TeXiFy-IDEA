@@ -20,6 +20,7 @@ enum class LatexNoMathCommand(
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
     A_RING("aa", display = "å"),
     CAPITAL_A_RING("AA", display = "Å"),
+    ADDBIBRESOURCE("addbibresource", RequiredFileArgument("bibliographyfile", "bib"), dependency = Package.BIBLATEX), // .bib extension is required
     AE("ae", display = "æ"),
     CAPITAL_AE("AE", display = "Æ"),
     APPENDIX("appendix"),
@@ -173,6 +174,7 @@ enum class LatexNoMathCommand(
     PARTNAME("partname", "name".asRequired(Type.TEXT)),
     PDFINFO("pdfinfo", "info".asRequired(Type.TEXT)),
     POUNDS("pounds", display = "£"),
+    PRINTBIBLIOGRAPHY("printbibliography", dependency = Package.BIBLATEX),
     PRINTINDEX("printindex"),
     R("r", display = "˚ (accent)"),
     REF("ref", "label".asRequired()),
