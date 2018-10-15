@@ -13,7 +13,7 @@ class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListene
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0 && isSumatraAvailable) {
             try {
-                SumatraConversation.openFile(runConfig.outputFilePath, start = true)
+                SumatraConversation.openFile(runConfig.outputFilePath)
             }
             catch (ignored: TeXception) {
             }
