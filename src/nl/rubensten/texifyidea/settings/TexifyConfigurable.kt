@@ -25,7 +25,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
             automaticSoftWraps = addCheckbox("Enable soft wraps when opening LaTeX files")
             automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
-            automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments")
+            automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
         })
     }
 
