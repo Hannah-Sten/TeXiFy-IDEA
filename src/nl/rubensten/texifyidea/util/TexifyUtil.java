@@ -35,28 +35,6 @@ public class TexifyUtil {
     }
 
     /**
-     * If the given command is an include command, the contents of the first argument will be read.
-     *
-     * @param command
-     *         The command to read.
-     * @return The included filename or {@code null} when it's not an include command or when there
-     * are no required parameters.
-     */
-    @Nullable
-    public static String getIncludedFile(@NotNull LatexCommands command) {
-        if (!Magic.Command.includes.contains(command.getCommandToken().getText())) {
-            return null;
-        }
-
-        List<String> required = command.getRequiredParameters();
-        if (required.isEmpty()) {
-            return null;
-        }
-
-        return required.get(0);
-    }
-
-    /**
      * Looks up a file relative to the given {@code file}.
      *
      * @param file

@@ -115,7 +115,7 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
 
     // Find all related files.
     for (command in commands) {
-        val includedName = TexifyUtil.getIncludedFile(command) ?: continue
+        val includedName = command.includedFileName() ?: continue
         val declaredIn = command.containingFile
         val referenced = TexifyUtil.getFileRelativeTo(declaredIn, includedName, null) ?: continue
 
@@ -228,7 +228,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val commands = LatexCommandsIndex.getItems(project, scope)
 
     commands.forEach { command ->
-        val fileName = TexifyUtil.getIncludedFile(command) ?: return@forEach
+        val fileName = command.includedFileName() ?: return@forEach
         val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
         val included = TexifyUtil.getFileRelativeTo(rootFile, fileName, extensions) ?: return@forEach

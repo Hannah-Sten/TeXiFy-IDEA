@@ -451,6 +451,19 @@ fun LatexCommands.findIndentation(): String {
 }
 
 /**
+ * If the given command is an include command, the contents of the first argument will be read.
+ *
+ * @return The included filename or `null` when it's not an include command or when there
+ * are no required parameters.
+ */
+fun LatexCommands.includedFileName(): String? {
+    if (commandToken.text !in Magic.Command.includes) return null
+    val required = requiredParameters
+    if (required.isEmpty()) return null
+    return required.first()
+}
+
+/**
  * @see TexifyUtil.isEntryPoint
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
