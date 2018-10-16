@@ -18,9 +18,10 @@ import nl.rubensten.texifyidea.util.FilesKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-
-import static nl.rubensten.texifyidea.util.TexifyUtil.findFile;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Ruben Schellekens
@@ -98,9 +99,9 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
 
         VirtualFile file = null;
         for (VirtualFile root : roots) {
-            Optional<VirtualFile> fileHuh = findFile(root, fileName, argument.getSupportedExtensions());
-            if (fileHuh.isPresent()) {
-                file = fileHuh.get();
+            VirtualFile foundFile = FilesKt.findFile(root, fileName, argument.getSupportedExtensions());
+            if (foundFile != null) {
+                file = foundFile;
                 break;
             }
         }

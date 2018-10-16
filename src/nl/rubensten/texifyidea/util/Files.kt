@@ -48,6 +48,32 @@ val PsiFile.fileSearchScope: GlobalSearchScope
 fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(project).findFile(this)
 
 /**
+ * Looks for a certain file relative to this directory.
+ *
+ * First looks if the file including extensions exists, when it doesn't it tries to append all
+ * possible extensions until it finds a good one.
+ *
+ * @param fileName
+ *         The name of the file relative to the directory.
+ * @param extensions
+ *         Set of all supported extensions to look for.
+ * @return The matching file, or `null` when the file couldn't be found.
+ */
+fun VirtualFile.findFile(fileName: String, extensions: Set<String>): VirtualFile? {
+    var file = findFileByRelativePath(fileName)
+    if (file != null) return file
+
+    extensions.forEach { extension ->
+        val lookFor = if (fileName.endsWith(".$extension")) fileName else "$fileName.$extension"
+        file = findFileByRelativePath(lookFor)
+
+        if (file != null) return file
+    }
+
+    return null
+}
+
+/**
  * Removes the extension from a given file name.
  */
 fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replaceAll("")!!
@@ -245,12 +271,8 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
 fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val directory = containingDirectory.virtualFile
 
-    val fileHuh = TexifyUtil.findFile(directory, path, extensions ?: Magic.File.includeExtensions)
-    if (fileHuh.isPresent.not()) {
-        return scanRoots(path, extensions)
-    }
-
-    val psiFile = PsiManager.getInstance(project).findFile(fileHuh.get())
+    val file = directory.findFile(path, extensions ?: Magic.File.includeExtensions) ?: return scanRoots(path, extensions)
+    val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
             StyleFileType != psiFile.fileType &&
             BibtexFileType != psiFile.fileType) {
@@ -270,9 +292,9 @@ fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): Psi
 fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
     val rootManager = ProjectRootManager.getInstance(project)
     rootManager.contentSourceRoots.forEach { root ->
-        val fileHuh = TexifyUtil.findFile(root, path, extensions ?: Magic.File.includeExtensions)
-        if (fileHuh.isPresent) {
-            return fileHuh.get().psiFile(project)
+        val file = root.findFile(path, extensions ?: Magic.File.includeExtensions)
+        if (file != null) {
+            return file.psiFile(project)
         }
     }
 
