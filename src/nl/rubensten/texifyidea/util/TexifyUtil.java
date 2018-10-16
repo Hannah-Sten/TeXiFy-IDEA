@@ -35,38 +35,7 @@ public class TexifyUtil {
     }
 
     /**
-     * Looks up a file relative to the given {@code file}.
-     *
-     * @param file
-     *         The file where the relative path starts.
-     * @param path
-     *         The path relative to {@code file}.
-     * @return The found file.
-     */
-    @Nullable
-    public static PsiFile getFileRelativeTo(@NotNull PsiFile file, @NotNull String path, @Nullable Set<String> extensions) {
-        // Find file
-        VirtualFile directory = file.getContainingDirectory().getVirtualFile();
-        String dirPath = directory.getPath();
-
-        Optional<VirtualFile> fileHuh = findFile(directory, path, extensions != null ? extensions : Magic.File.includeExtensions);
-        if (!fileHuh.isPresent()) {
-            return scanRoots(file, path, extensions);
-        }
-
-        PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
-        if (psiFile == null ||
-                (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
-                        !StyleFileType.INSTANCE.equals(psiFile.getFileType()) &&
-                        !BibtexFileType.INSTANCE.equals(psiFile.getFileType()))) {
-            return scanRoots(file, path, extensions);
-        }
-
-        return psiFile;
-    }
-
-    /**
-     * {@link TexifyUtil#getFileRelativeTo(PsiFile, String, Set<String>)} but then it scans all content roots.
+     * {@link FilesKt#findRelativeFile} but then it scans all content roots.
      *
      * @param original
      *         The file where the relative path starts.

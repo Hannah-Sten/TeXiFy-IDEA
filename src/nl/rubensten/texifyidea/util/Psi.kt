@@ -286,11 +286,6 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 
 /**
- * @see TexifyUtil.getFileRelativeTo
- */
-fun PsiFile.fileRelativeTo(path: String, extensions: Set<String>? = null): PsiFile? = TexifyUtil.getFileRelativeTo(this, path, extensions)
-
-/**
  * Get the editor of the file if it is currently opened.
  */
 fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor

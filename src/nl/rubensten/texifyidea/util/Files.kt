@@ -11,6 +11,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
 import nl.rubensten.texifyidea.algorithm.IsChildDFS
+import nl.rubensten.texifyidea.file.BibtexFileType
 import nl.rubensten.texifyidea.file.ClassFileType
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.file.StyleFileType
@@ -117,7 +118,7 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
     for (command in commands) {
         val includedName = command.includedFileName() ?: continue
         val declaredIn = command.containingFile
-        val referenced = TexifyUtil.getFileRelativeTo(declaredIn, includedName, null) ?: continue
+        val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
 
         val inclusionSet = inclusions[declaredIn] ?: HashSet()
         inclusionSet.add(referenced)
@@ -141,11 +142,6 @@ fun PsiFile.isRoot(): Boolean {
 
     return commandsInFile().find { it.commandToken.text == "\\documentclass" } != null
 }
-
-/**
- * @see [TexifyUtil.getFileRelativeTo]
- */
-fun PsiFile.findRelativeFile(filePath: String, extensions: Set<String>? = null) = TexifyUtil.getFileRelativeTo(this, filePath, extensions)
 
 /**
  * Looks for all file inclusions in a given file.
@@ -188,7 +184,7 @@ fun PsiFile.documentClassFile(): PsiFile? {
             .filter { it.name == "\\documentclass" }
             .firstOrNull() ?: return null
     val argument = command.requiredParameter(0) ?: return null
-    return fileRelativeTo("$argument.cls")
+    return findRelativeFile("$argument.cls")
 }
 
 /**
@@ -231,11 +227,36 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
         val fileName = command.includedFileName() ?: return@forEach
         val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
-        val included = TexifyUtil.getFileRelativeTo(rootFile, fileName, extensions) ?: return@forEach
+        val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
         if (included in files) return@forEach
         files.add(included)
         included.referencedFiles(files)
     }
+}
+
+/**
+ * Looks up a file relative to this file.
+ *
+ * @param path
+ *         The path relative to this file.
+ * @return The found file, or `null` when the file could not be found.
+ */
+fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): PsiFile? {
+    val directory = containingDirectory.virtualFile
+
+    val fileHuh = TexifyUtil.findFile(directory, path, extensions ?: Magic.File.includeExtensions)
+    if (fileHuh.isPresent.not()) {
+        return TexifyUtil.scanRoots(this, path, extensions)
+    }
+
+    val psiFile = PsiManager.getInstance(project).findFile(fileHuh.get())
+    if (psiFile == null || LatexFileType != psiFile.fileType &&
+            StyleFileType != psiFile.fileType &&
+            BibtexFileType != psiFile.fileType) {
+        return TexifyUtil.scanRoots(this, path, extensions)
+    }
+
+    return psiFile
 }
 
 /**
