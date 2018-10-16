@@ -50,7 +50,7 @@ public class LatexMightBreakTexifyInspection extends TexifyInspectionBase {
         Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
         for (LatexCommands command : commands) {
             // Error when \newcommand is used on existing command
-            if (Magic.Command.redefinition.contains(command.getName())) {
+            if (Magic.Command.redefinitions.contains(command.getName())) {
                 LatexCommands newCommand = TexifyUtil.getForcedFirstRequiredParameterAsCommand(command);
                 if (newCommand == null) {
                     continue;

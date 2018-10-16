@@ -41,15 +41,6 @@ public class TexifyUtil {
     private TexifyUtil() {
     }
 
-    // Referenced files.
-    public static final List<String> INCLUDE_COMMANDS = Arrays.asList(
-            "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage", "\\usepackage"
-    );
-    public static final Set<String> INCLUDE_EXTENSIONS = new HashSet<>();
-    static {
-        Collections.addAll(INCLUDE_EXTENSIONS, "tex", "sty", "cls", "bib");
-    }
-
     /**
      * Creates a new file with a given name and given content.
      * <p>
@@ -161,7 +152,7 @@ public class TexifyUtil {
      */
     @Nullable
     public static String getIncludedFile(@NotNull LatexCommands command) {
-        if (!INCLUDE_COMMANDS.contains(command.getCommandToken().getText())) {
+        if (!Magic.Command.includes.contains(command.getCommandToken().getText())) {
             return null;
         }
 
@@ -188,7 +179,7 @@ public class TexifyUtil {
         VirtualFile directory = file.getContainingDirectory().getVirtualFile();
         String dirPath = directory.getPath();
 
-        Optional<VirtualFile> fileHuh = findFile(directory, path, extensions != null ? extensions : INCLUDE_EXTENSIONS);
+        Optional<VirtualFile> fileHuh = findFile(directory, path, extensions != null ? extensions : Magic.File.includeExtensions);
         if (!fileHuh.isPresent()) {
             return scanRoots(file, path, extensions);
         }
@@ -220,7 +211,7 @@ public class TexifyUtil {
         VirtualFileManager fileManager = VirtualFileManager.getInstance();
 
         for (VirtualFile root : roots) {
-            Optional<VirtualFile> fileHuh = findFile(root, path, extensions != null ? extensions : INCLUDE_EXTENSIONS);
+            Optional<VirtualFile> fileHuh = findFile(root, path, extensions != null ? extensions : Magic.File.includeExtensions);
             if (fileHuh.isPresent()) {
                 return FilesKt.psiFile(fileHuh.get(), project);
             }
@@ -232,7 +223,7 @@ public class TexifyUtil {
     public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
         // Find file
         VirtualFile directory = file.getVirtualFile().getParent();
-        Optional<VirtualFile> fileHuh = findFile(directory, path, INCLUDE_EXTENSIONS);
+        Optional<VirtualFile> fileHuh = findFile(directory, path, Magic.File.includeExtensions);
         if (!fileHuh.isPresent()) {
             return null;
         }
