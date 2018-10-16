@@ -25,7 +25,7 @@ open class ConfigureInverseSearchAction : AnAction(
         TexifyIcons.SETTINGS
 ) {
 
-    override fun actionPerformed(e: AnActionEvent?) {
+    override fun actionPerformed(e: AnActionEvent) {
         DialogBuilder().apply {
             setTitle("Configure inverse search")
             setCenterPanel(JLabel(
@@ -49,8 +49,7 @@ open class ConfigureInverseSearchAction : AnAction(
         }
     }
 
-    override fun update(e: AnActionEvent?) {
-        val presentation = e?.presentation ?: return
-        presentation.isEnabledAndVisible = isSumatraAvailable
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabledAndVisible = isSumatraAvailable
     }
 }

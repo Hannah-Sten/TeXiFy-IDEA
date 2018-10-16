@@ -26,28 +26,28 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         // Fill up a set of labels.
         val labels = mutableMapOf<String, MutableSet<String>>()
         val firstPass = mutableMapOf<String, MutableSet<String>>()
-        for (cmd in file.commandsInFileSet()) {
-            val labelName = cmd.requiredParameter(0) ?: continue
+        for (command in file.commandsInFileSet()) {
+            val labelName = command.requiredParameter(0) ?: continue
 
-            if (cmd.name != "\\label" && cmd.name != "\\bibitem") {
+            if (command.name != "\\label" && command.name != "\\bibitem") {
                 continue
             }
 
-            if (firstPass[cmd.name!!]?.let { labelName in it } == true) {
-                labels.getOrPut(cmd.name!!, { mutableSetOf() }).add(labelName)
+            if (firstPass[command.name!!]?.let { labelName in it } == true) {
+                labels.getOrPut(command.name!!) { mutableSetOf() }.add(labelName)
                 continue
             }
-            firstPass.getOrPut(cmd.name!!, { mutableSetOf() }).add(labelName)
+            firstPass.getOrPut(command.name!!) { mutableSetOf() }.add(labelName)
         }
 
         for (id in file.bibtexIdsInFileSet()) {
             val labelName = id.idName()
 
             if (firstPass["\\bibitem"]?.let { labelName in it } == true) {
-                labels.getOrPut("\\bibitem", { mutableSetOf() }).add(labelName)
+                labels.getOrPut("\\bibitem") { mutableSetOf() }.add(labelName)
                 continue
             }
-            firstPass.getOrPut("\\bibitem", { mutableSetOf() }).add(labelName)
+            firstPass.getOrPut("\\bibitem") { mutableSetOf() }.add(labelName)
         }
 
         // Check labels in file.

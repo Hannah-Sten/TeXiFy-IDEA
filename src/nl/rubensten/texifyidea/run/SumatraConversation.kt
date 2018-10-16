@@ -49,31 +49,29 @@ private fun isSumatraInstalled(): Boolean {
  */
 object SumatraConversation {
 
-    private val server = "SUMATRA"
-    private val topic = "control"
+    private const val server = "SUMATRA"
+    private const val topic = "control"
     private val conversation: DDEClientConversation?
 
     init {
-        if (!isSumatraAvailable) {
-            conversation = null
+        conversation = if (!isSumatraAvailable) {
+            null
         }
-        else {
-            try {
-                conversation = DDEClientConversation()
-            }
-            catch (e: NoClassDefFoundError) {
-                throw TeXception("Native library DLLs could not be found.", e)
-            }
+        else try {
+            DDEClientConversation()
+        }
+        catch (e: NoClassDefFoundError) {
+            throw TeXception("Native library DLLs could not be found.", e)
         }
 
     }
 
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, start: Boolean = false) {
-        if (start) {
-            Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
-        }
-        else {
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+        try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
+        }
+        catch (e: TeXception) {
+            Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
         }
     }
 

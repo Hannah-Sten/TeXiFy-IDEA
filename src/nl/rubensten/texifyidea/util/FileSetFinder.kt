@@ -20,7 +20,7 @@ fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
     val includes = LatexIncludesIndex.getItems(project)
 
     // Find all root files.
-    val roots = includes
+    val roots = includes.asSequence()
             .map { it.containingFile }
             .distinct()
             .filter { it.isRoot() }
@@ -35,7 +35,7 @@ fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
             return referenced + baseFile
         }
 
-        sets.put(root, referenced)
+        sets[root] = referenced
     }
 
     // Look for matching root.

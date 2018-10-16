@@ -68,7 +68,7 @@ fun List<String>.removeIndents(): List<String> {
     }
 
     val list = ArrayList<String>(size)
-    val (maxIndent, _) = this
+    val (maxIndent, _) = asSequence()
             .filter { !it.isBlank() }
             .map { Pair(it.getIndent().length, it) }
             .minBy { it.first } ?: return this

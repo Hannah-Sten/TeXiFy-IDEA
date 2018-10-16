@@ -31,9 +31,10 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Only proof environments
-        val displayMaths = file.childrenOfType(LatexEnvironment::class).filter { it.name()?.text == "proof" }
+        val displayMaths = file.childrenOfType(LatexEnvironment::class).asSequence()
+                .filter { it.name()?.text == "proof" }
                 // With no \qedhere command already present
-                .filterNot { it.childrenOfType(LatexCommands::class).any { it.name == "\\qedhere" } }
+                .filterNot { it.childrenOfType(LatexCommands::class).any { cmd -> cmd.name == "\\qedhere" } }
                 // Ending in a displaymath environment
                 .mapNotNull { it.environmentContent?.lastChild?.firstChild?.firstChild as? LatexDisplayMath }
 

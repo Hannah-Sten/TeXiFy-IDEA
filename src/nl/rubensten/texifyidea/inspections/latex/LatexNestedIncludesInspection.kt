@@ -37,7 +37,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        LatexCommandsIndex.getItems(file)
+        LatexCommandsIndex.getItems(file).asSequence()
                 .filter { it.name == "\\include" }
                 .forEach {
                     descriptors.add(manager.createProblemDescriptor(

@@ -9,9 +9,11 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.psi.LatexOptionalParam
+import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.util.*
 
 /**
@@ -19,7 +21,8 @@ import nl.rubensten.texifyidea.util.*
  */
 class InsertEnumerationItem : EnterHandlerDelegate {
 
-    override fun postProcessEnter(file: PsiFile, editor: Editor, context: DataContext): EnterHandlerDelegate.Result {
+    override fun postProcessEnter(file: PsiFile, editor: Editor,
+                                  context: DataContext): EnterHandlerDelegate.Result {
         ShiftTracker.setup(editor.contentComponent)
         if (file.fileType != LatexFileType) {
             return Result.Continue
@@ -34,7 +37,9 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         return Result.Continue
     }
 
-    override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>, context: DataContext, p5: EditorActionHandler?): EnterHandlerDelegate.Result {
+    override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>,
+                                 context: DataContext,
+                                 p5: EditorActionHandler?): EnterHandlerDelegate.Result {
         return Result.Continue
     }
 
@@ -72,8 +77,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      * @return The last label in the environment, or `null` when there are no labels.
      */
     private fun getLastLabel(environment: PsiElement): LatexCommands? {
-        val commands = environment.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\item" }
+        val commands = environment.childrenOfType(LatexCommands::class).filter { it.name == "\\item" }
         if (commands.isEmpty()) {
             return null
         }
@@ -107,10 +111,12 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
     private fun hasValidContext(element: PsiElement?): Boolean {
-        if (element == null || ShiftTracker.isShiftPressed() || element.inMathContext()) {
+        if (!TexifySettings.getInstance().automaticItemInItemize || element == null || ShiftTracker.isShiftPressed() || element.inMathContext()) {
             return false
         }
 
-        return element.inDirectEnvironment(Magic.Environment.listingEnvironments)
+        val isGluedToTheBeginCommand = element.hasParent(LatexBeginCommand::class)
+        val isInsideAnEnumeration = element.inDirectEnvironment(Magic.Environment.listingEnvironments)
+        return isInsideAnEnumeration && !isGluedToTheBeginCommand
     }
 }

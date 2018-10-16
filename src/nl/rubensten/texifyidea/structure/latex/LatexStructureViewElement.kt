@@ -71,12 +71,10 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
-        val docClass = LatexCommandsIndex.getItems(element.getProject(), scope)
-                .stream()
+        val docClass = LatexCommandsIndex.getItems(element.getProject(), scope).asSequence()
                 .filter { cmd -> cmd.commandToken.text == "\\documentclass" && !cmd.requiredParameters.isEmpty() }
                 .map { cmd -> cmd.requiredParameters[0] }
-                .findFirst()
-                .orElse("article")
+                .firstOrNull() ?: "article"
 
         // Fetch all commands in the active file.
         val numbering = SectionNumbering(DocumentClass.getClassByName(docClass))
@@ -158,9 +156,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val root = baseFile.findRootFile()
             val documentClass = root.documentClassFile()
             if (documentClass != null) {
-                val command = LatexCommandsIndex.getItems(baseFile).stream()
+                val command = LatexCommandsIndex.getItems(baseFile).asSequence()
                         .filter { cmd -> "\\documentclass" == cmd.name }
-                        .findFirst().orElse(null)
+                        .firstOrNull()
                 if (command != null) {
                     val elt = LatexStructureViewCommandElement(command)
                     elt.addChild(LatexStructureViewElement(documentClass))
@@ -304,21 +302,14 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Get the amount to modify with.
-        var amount: Int
-        try {
-            amount = Integer.parseInt(required[1])
-        }
-        catch (nfe: NumberFormatException) {
-            return
-        }
+        val amount = required[1].toIntOrNull() ?: return
 
-        // Setcounter
         if (token == "\\setcounter") {
             numbering.setCounter(level, amount)
         }
         else {
             numbering.addCounter(level, amount)
-        }// Addcounter
+        }
     }
 
     private fun hasStar(commands: LatexCommands): Boolean {

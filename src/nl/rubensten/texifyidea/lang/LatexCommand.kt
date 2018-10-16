@@ -85,9 +85,10 @@ interface LatexCommand : Dependend {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Argument> getArgumentsOf(clazz: KClass<T>): List<T> {
-        return arguments
+        return arguments.asSequence()
                 .filter { clazz.java.isAssignableFrom(it.javaClass) }
                 .mapNotNull { it as? T }
+                .toList()
     }
 
     fun <T : Argument> getArgumentsOf(clazz: Class<T>) = getArgumentsOf(clazz.kotlin)

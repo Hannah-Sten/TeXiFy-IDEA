@@ -36,7 +36,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         }
 
         // Duplicates!
-        file.commandsInFile()
+        file.commandsInFile().asSequence()
                 .filter { it.name == "\\usepackage" && it.requiredParameter(0) in duplicates }
                 .forEach {
                     val parameter = it.firstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")

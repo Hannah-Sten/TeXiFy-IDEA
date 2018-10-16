@@ -82,7 +82,7 @@ fun PsiFile.findRootFile(): PsiFile {
  * @return `true` when `childMaybe` is a child of `this` file, `false` otherwise.
  */
 private fun PsiFile.isIncludedBy(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiFile>>): Boolean {
-    return IsChildDFS<PsiFile>(
+    return IsChildDFS(
             this,
             { mapping[it] ?: emptySet() },
             { childMaybe == it }
@@ -127,7 +127,7 @@ fun PsiFile.isRoot(): Boolean {
         return false
     }
 
-    return commandsInFile().filter { it.commandToken.text == "\\documentclass" }.any()
+    return commandsInFile().find { it.commandToken.text == "\\documentclass" } != null
 }
 
 /**
@@ -142,13 +142,14 @@ fun PsiFile.findRelativeFile(filePath: String, extensions: Set<String>? = null) 
  */
 fun PsiFile.findInclusions(): List<PsiFile> {
     val root = findRootFile()
-    return commandsInFile()
+    return commandsInFile().asSequence()
             .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
             .map { it.requiredParameter(0) }
             .filter(Objects::nonNull)
             .map { root.findRelativeFile(it!!) }
             .filter(Objects::nonNull)
             .map { it!! }
+            .toList()
 }
 
 /**
@@ -171,7 +172,9 @@ fun PsiFile.isClassFile() = virtualFile.extension == "cls"
  * Looks up the the that is in the documentclass command.
  */
 fun PsiFile.documentClassFile(): PsiFile? {
-    val command = commandsInFile().filter { it.name == "\\documentclass" }.getOrNull(0) ?: return null
+    val command = commandsInFile().asSequence()
+            .filter { it.name == "\\documentclass" }
+            .firstOrNull() ?: return null
     val argument = command.requiredParameter(0) ?: return null
     return fileRelativeTo("$argument.cls")
 }

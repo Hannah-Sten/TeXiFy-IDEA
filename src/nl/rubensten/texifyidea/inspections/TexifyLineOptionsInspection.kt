@@ -28,7 +28,7 @@ abstract class TexifyLineOptionsInspection(val title: String) : TexifyInspection
      * All the nonempty lines in the text area.
      */
     protected val lines: List<String>
-        get() = txtaOptions.text.trim().split("\n")
+        get() = txtaOptions.text.trim().split("\n").asSequence()
                 .map { it.trim() }
                 .filter { !it.isBlank() }
                 .toList()

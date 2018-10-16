@@ -15,9 +15,7 @@ class BibitemFilter : Filter {
         return if (treeElement !is LatexStructureViewCommandElement) {
             true
         }
-        else {
-            treeElement.commandName != "\\bibitem"
-        }
+        else treeElement.commandName != "\\bibitem"
     }
 
     override fun isReverted() = true

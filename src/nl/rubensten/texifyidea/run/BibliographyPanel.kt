@@ -74,7 +74,7 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
 
                 override fun isEnabled() = !list.isEmpty
 
-                override fun actionPerformed(e: AnActionEvent?) {
+                override fun actionPerformed(e: AnActionEvent) {
                     configuration = null
                 }
             }
@@ -104,16 +104,15 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
 
             // Mock value change to commit changes (otherwise the apply button is not activated)
             list.setSelectionInterval(-1, -1)
-
             changeTitle("Enabled")
+            return
         }
-        else {
-            list.setListData(emptyArray())
 
-            // Mock value change to commit changes (otherwise the apply button is not activated)
-            list.setSelectionInterval(-1, -1)
+        list.setListData(emptyArray())
 
-            changeTitle("Disabled")
-        }
+        // Mock value change to commit changes (otherwise the apply button is not activated)
+        list.setSelectionInterval(-1, -1)
+
+        changeTitle("Disabled")
     }
 }

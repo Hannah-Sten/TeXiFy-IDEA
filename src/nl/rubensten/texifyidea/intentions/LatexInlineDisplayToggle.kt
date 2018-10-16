@@ -47,9 +47,7 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
             val extra = if (document.getText(TextRange.from(inline.endOffset(), 1)) == " ") {
                 1
             }
-            else {
-                0
-            }
+            else 0
 
             val result = "\n\\[\n    $text\n\\]\n".replace("\n", "\n$indent")
             document.replaceString(inline.textOffset, inline.endOffset() + extra, result)

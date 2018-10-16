@@ -29,13 +29,13 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         // Find matches.
         val stack = ArrayDeque<LatexCommands>()
         val commands = file.commandsInFile().sortedBy { it.textOffset }
-        for (cmd in commands) {
-            val name = cmd.name
-            if (cmd.name in Magic.Command.endIfs) {
+        for (command in commands) {
+            val name = command.name
+            if (command.name in Magic.Command.endIfs) {
                 // Non-opened fi.
                 if (stack.isEmpty()) {
                     descriptors.add(manager.createProblemDescriptor(
-                            cmd,
+                            command,
                             "No matching \\if-command found",
                             Magic.General.noQuickFix,
                             ProblemHighlightType.GENERIC_ERROR,
@@ -47,7 +47,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                 stack.pop()
             }
             else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs) {
-                stack.push(cmd)
+                stack.push(command)
             }
         }
 
