@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
@@ -246,17 +247,36 @@ fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): Psi
 
     val fileHuh = TexifyUtil.findFile(directory, path, extensions ?: Magic.File.includeExtensions)
     if (fileHuh.isPresent.not()) {
-        return TexifyUtil.scanRoots(this, path, extensions)
+        return scanRoots(path, extensions)
     }
 
     val psiFile = PsiManager.getInstance(project).findFile(fileHuh.get())
     if (psiFile == null || LatexFileType != psiFile.fileType &&
             StyleFileType != psiFile.fileType &&
             BibtexFileType != psiFile.fileType) {
-        return TexifyUtil.scanRoots(this, path, extensions)
+        return scanRoots(path, extensions)
     }
 
     return psiFile
+}
+
+/**
+ * [findRelativeFile] but then it scans all content roots.
+ *
+ * @param path
+ *         The path relative to {@code original}.
+ * @return The found file, or `null` when the file could not be found.
+ */
+fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
+    val rootManager = ProjectRootManager.getInstance(project)
+    rootManager.contentSourceRoots.forEach { root ->
+        val fileHuh = TexifyUtil.findFile(root, path, extensions ?: Magic.File.includeExtensions)
+        if (fileHuh.isPresent) {
+            return fileHuh.get().psiFile(project)
+        }
+    }
+
+    return null
 }
 
 /**

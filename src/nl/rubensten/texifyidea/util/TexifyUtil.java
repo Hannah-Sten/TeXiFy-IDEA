@@ -5,10 +5,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -32,31 +30,6 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * {@link FilesKt#findRelativeFile} but then it scans all content roots.
-     *
-     * @param original
-     *         The file where the relative path starts.
-     * @param path
-     *         The path relative to {@code original}.
-     * @return The found file.
-     */
-    public static PsiFile scanRoots(@NotNull PsiFile original, @NotNull String path, @Nullable Set<String> extensions) {
-        Project project = original.getProject();
-        ProjectRootManager rootManager = ProjectRootManager.getInstance(project);
-        VirtualFile[] roots = rootManager.getContentSourceRoots();
-        VirtualFileManager fileManager = VirtualFileManager.getInstance();
-
-        for (VirtualFile root : roots) {
-            Optional<VirtualFile> fileHuh = findFile(root, path, extensions != null ? extensions : Magic.File.includeExtensions);
-            if (fileHuh.isPresent()) {
-                return FilesKt.psiFile(fileHuh.get(), project);
-            }
-        }
-
-        return null;
     }
 
     public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
