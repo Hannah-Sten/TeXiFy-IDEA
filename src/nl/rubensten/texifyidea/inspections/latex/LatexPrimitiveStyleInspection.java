@@ -17,8 +17,8 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexPsiUtil;
+import nl.rubensten.texifyidea.util.DocumentsKt;
 import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -110,7 +110,7 @@ public class LatexPrimitiveStyleInspection extends TexifyInspectionBase {
 
             // Delete the ending part..
             if (next != null) {
-                TexifyUtil.deleteElement(document, next);
+                DocumentsKt.deleteElement(document, next);
             }
 
             // Replace command.

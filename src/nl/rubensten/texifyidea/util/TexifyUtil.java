@@ -2,7 +2,6 @@ package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -34,19 +33,6 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * Deletes the given element from a document.
-     *
-     * @param document
-     *         The document to remove the element from.
-     * @param element
-     *         The element to remove from the document.
-     */
-    public static void deleteElement(@NotNull Document document, @NotNull PsiElement element) {
-        int offset = element.getTextOffset();
-        document.deleteString(offset, offset + element.getTextLength());
     }
 
     /**
