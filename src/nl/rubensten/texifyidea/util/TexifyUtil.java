@@ -12,7 +12,6 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.index.BibtexIdIndex;
@@ -33,47 +32,6 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * Scans the whole document (recursively) for all referenced/included files.
-     *
-     * @return A collection containing all the PsiFiles that are referenced from {@code psiFile}.
-     */
-    @NotNull
-    public static Collection<PsiFile> getReferencedFiles(@NotNull PsiFile psiFile) {
-        Set<PsiFile> result = new HashSet<>();
-        getReferencedFiles(psiFile, result);
-        return result;
-    }
-
-    /**
-     * Recursive implementation of {@link TexifyUtil#getReferencedFiles(PsiFile)}.
-     */
-    private static void getReferencedFiles(@NotNull PsiFile file, @NotNull Collection<PsiFile> files) {
-        GlobalSearchScope scope = GlobalSearchScope.fileScope(file);
-        Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file.getProject(), scope);
-
-        for (LatexCommands command : commands) {
-            String fileName = getIncludedFile(command);
-            if (fileName == null) {
-                continue;
-            }
-
-            PsiFile root = FilesKt.findRootFile(file);
-            Set<String> extensions = Magic.Command.includeOnlyExtensions.get(command.getCommandToken().getText());
-            PsiFile included = getFileRelativeTo(root, fileName, extensions);
-            if (included == null) {
-                continue;
-            }
-
-            if (files.contains(included)) {
-                continue;
-            }
-
-            files.add(included);
-            getReferencedFiles(included, files);
-        }
     }
 
     /**

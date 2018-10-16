@@ -22,6 +22,7 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.util.FileSetKt;
 import nl.rubensten.texifyidea.util.FilesKt;
 import nl.rubensten.texifyidea.util.Kindness;
 import nl.rubensten.texifyidea.util.PsiKt;
@@ -146,7 +147,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        Set<PsiFile> files = new HashSet<>(PsiKt.referencedFileSet(file));
+        Set<PsiFile> files = new HashSet<>(FileSetKt.referencedFileSet(file));
         PsiFile root = FilesKt.findRootFile(file);
         PsiFile documentClass = FilesKt.documentClassFile(root);
         if (documentClass != null) {

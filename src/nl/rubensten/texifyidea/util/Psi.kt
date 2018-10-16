@@ -8,7 +8,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.index.LatexIncludesIndex
@@ -287,33 +286,9 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
- */
-fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
-
-/**
- * @see [BibtexIdIndex.getIndexedIdsInFileSet]
- */
-fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
-
-/**
  * @see TexifyUtil.getFileRelativeTo
  */
 fun PsiFile.fileRelativeTo(path: String, extensions: Set<String>? = null): PsiFile? = TexifyUtil.getFileRelativeTo(this, path, extensions)
-
-/**
- * @see TexifyUtil.findLabelsInFileSet
- */
-fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this)
-
-/**
- * Finds all the files in the project that are somehow related using includes.
- *
- * When A includes B and B includes C then A, B & C will all return a set containing A, B & C.
- *
- * @return All the files that are cross referenced between each other.
- */
-fun PsiFile.referencedFileSet(): Set<PsiFile> = findReferencedFileSet(this)
 
 /**
  * Get the editor of the file if it is currently opened.
@@ -333,21 +308,6 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
  */
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this)
-}
-
-/**
- * Get all the definitions in the file set.
- */
-fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItemsInFileSet(this)
-            .filter { it.isDefinition() }
-}
-
-/**
- * Get all the definitions and redefinitions in the file set.
- */
-fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
-    return LatexDefinitionIndex.getItemsInFileSet(this)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -535,7 +495,6 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
  * Checks if the latex content objects is a display math environment.
  */
 fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
-
 
 /**
  * Checks if the fileset for this file has a bibliography included.

@@ -10,10 +10,7 @@ import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
-import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.PsiKt;
-import nl.rubensten.texifyidea.util.StringsKt;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,7 +55,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         String token = myElement.getCommandToken().getText();
         PsiFile file = myElement.getContainingFile().getOriginalFile();
         Collection<PsiElement> labels = new ArrayList<>();
-        for (PsiFile referenced : PsiKt.referencedFileSet(file)) {
+        for (PsiFile referenced : FileSetKt.referencedFileSet(file)) {
             labels.addAll(TexifyUtil.findLabels(referenced));
         }
 

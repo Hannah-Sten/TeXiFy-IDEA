@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.psi.search.GlobalSearchScope
 import nl.rubensten.texifyidea.algorithm.IsChildDFS
 import nl.rubensten.texifyidea.file.ClassFileType
 import nl.rubensten.texifyidea.file.LatexFileType
@@ -20,6 +21,7 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.collections.HashSet
 
 /**
  * @author Ruben Schellekens
@@ -31,6 +33,12 @@ object FileUtil {
      */
     val FILE_EXTENSION = Pattern.compile("\\.[^.]+$")!!
 }
+
+/**
+ * Get the file search scope for this psi file.
+ */
+val PsiFile.fileSearchScope: GlobalSearchScope
+    get() = GlobalSearchScope.fileScope(this)
 
 /**
  * Looks up the PsiFile that corresponds to the Virtual File.
@@ -200,6 +208,35 @@ fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this)
  * @return `true` when there is a package `package` included in the file set, `false` otherwise.
  */
 fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
+
+/**
+ * Scans the whole document (recursively) for all referenced/included files.
+ *
+ * @return A collection containing all the PsiFiles that are referenced from this file.
+ */
+fun PsiFile.referencedFiles(): Set<PsiFile> {
+    val result = HashSet<PsiFile>()
+    referencedFiles(result)
+    return result
+}
+
+/**
+ * Recursive implementation of [referencedFiles].
+ */
+private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
+    val scope = fileSearchScope
+    val commands = LatexCommandsIndex.getItems(project, scope)
+
+    commands.forEach { command ->
+        val fileName = TexifyUtil.getIncludedFile(command) ?: return@forEach
+        val rootFile = findRootFile()
+        val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
+        val included = TexifyUtil.getFileRelativeTo(rootFile, fileName, extensions) ?: return@forEach
+        if (included in files) return@forEach
+        files.add(included)
+        included.referencedFiles(files)
+    }
+}
 
 /**
  * Retrieves the [PsiFile] for the document within the given [project].
