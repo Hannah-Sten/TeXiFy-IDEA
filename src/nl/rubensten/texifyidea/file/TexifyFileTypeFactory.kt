@@ -14,7 +14,8 @@ class TexifyFileTypeFactory : FileTypeFactory() {
                 LatexFileType,
                 StyleFileType,
                 ClassFileType,
-                BibtexFileType
+                BibtexFileType,
+                TikzFileType
         )
     }
 
