@@ -307,9 +307,13 @@ fun PsiFile.fileRelativeTo(path: String, extensions: Set<String>? = null): PsiFi
 fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this)
 
 /**
- * @see TexifyUtil.getReferencedFileSet
+ * Finds all the files in the project that are somehow related using includes.
+ *
+ * When A includes B and B includes C then A, B & C will all return a set containing A, B & C.
+ *
+ * @return All the files that are cross referenced between each other.
  */
-fun PsiFile.referencedFileSet(): Set<PsiFile> = TexifyUtil.getReferencedFileSet(this)
+fun PsiFile.referencedFileSet(): Set<PsiFile> = findReferencedFileSet(this)
 
 /**
  * Get the editor of the file if it is currently opened.

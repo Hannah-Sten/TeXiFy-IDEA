@@ -36,19 +36,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Finds all the files in the project that are somehow related using includes.
-     * <p>
-     * When A includes B and B includes C then A, B & C will all return a set containing A, B & C.
-     *
-     * @param psiFile
-     *         The file to find the reference set of.
-     * @return All the files that are cross referenced between each other.
-     */
-    public static Set<PsiFile> getReferencedFileSet(@NotNull PsiFile psiFile) {
-        return FileSetFinder.findReferencedFileSet(psiFile);
-    }
-
-    /**
      * Scans the whole document (recursively) for all referenced/included files.
      *
      * @return A collection containing all the PsiFiles that are referenced from {@code psiFile}.

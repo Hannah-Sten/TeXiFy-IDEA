@@ -25,7 +25,6 @@ import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.FilesKt;
 import nl.rubensten.texifyidea.util.Kindness;
 import nl.rubensten.texifyidea.util.PsiKt;
-import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -147,7 +146,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        Set<PsiFile> files = new HashSet<>(TexifyUtil.getReferencedFileSet(file));
+        Set<PsiFile> files = new HashSet<>(PsiKt.referencedFileSet(file));
         PsiFile root = FilesKt.findRootFile(file);
         PsiFile documentClass = FilesKt.documentClassFile(root);
         if (documentClass != null) {
