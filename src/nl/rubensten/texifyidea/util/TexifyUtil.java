@@ -2,16 +2,12 @@ package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.index.BibtexIdIndex;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
@@ -30,30 +26,6 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * Get the FileType instance that corresponds to the given file extension.
-     *
-     * @param extensionWithoutDot
-     *         The file extension to get the corresponding FileType instance of without a dot in
-     *         front.
-     * @return The corresponding FileType instance.
-     */
-    public static FileType getFileTypeByExtension(@NotNull String extensionWithoutDot) {
-
-        switch (extensionWithoutDot.toLowerCase()) {
-            case "cls":
-                return ClassFileType.INSTANCE;
-            case "sty":
-                return StyleFileType.INSTANCE;
-            case "bib":
-                return BibtexFileType.INSTANCE;
-            case "tikz":
-                return TikzFileType.INSTANCE;
-            default:
-                return LatexFileType.INSTANCE;
-        }
     }
 
     /**
