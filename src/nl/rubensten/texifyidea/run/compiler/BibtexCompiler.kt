@@ -20,9 +20,8 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
         command.apply {
             if (runConfig.compilerPath != null) {
                 add(runConfig.compilerPath!!)
-            } else {
-                add(executableName)
             }
+            else add(executableName)
 
             add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
             addAll(moduleRoots.map { "-include-directory=${it.path}" })

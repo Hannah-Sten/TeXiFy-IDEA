@@ -35,13 +35,13 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = LatexCommandsIndex.getItems(file)
-        for (cmd in commands) {
-            if (!Magic.Command.reference.contains(cmd.name)) {
+        for (command in commands) {
+            if (!Magic.Command.reference.contains(command.name)) {
                 continue
             }
 
             // Get the NORMAL_TEXT in front of the command.
-            val sibling = cmd.parentOfType(LatexContent::class)?.prevSibling ?: continue
+            val sibling = command.parentOfType(LatexContent::class)?.prevSibling ?: continue
 
             // When sibling is whitespace, it's obviously bad news.
             if (sibling is PsiWhiteSpace) {

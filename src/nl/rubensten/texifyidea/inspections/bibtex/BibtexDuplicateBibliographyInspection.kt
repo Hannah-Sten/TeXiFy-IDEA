@@ -31,7 +31,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        LatexIncludesIndex.getItemsInFileSet(file)
+        LatexIncludesIndex.getItemsInFileSet(file).asSequence()
                 .filter { it.name == "\\bibliography" }
                 .groupBy { it.requiredParameters.getOrNull(0) }
                 .filter { it.key != null && it.value.size > 1 }
@@ -63,7 +63,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
 
-            file.commandsInFileSet()
+            file.commandsInFileSet().asSequence()
                     .filter { it.name == "\\bibliography" && it.requiredParameter(0) == command.requiredParameter(0) && it != command }
                     .forEach {
                         it.delete()

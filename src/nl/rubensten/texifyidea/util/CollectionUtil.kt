@@ -25,7 +25,7 @@ fun <T> mutableMapOfArray(args: Array<out T>): MutableMap<T, T> {
 
     val map: MutableMap<T, T> = HashMap()
     for (i in 0 until args.size - 1 step 2) {
-        map.put(args[i], args[i + 1])
+        map[args[i]] = args[i + 1]
     }
 
     return map
@@ -64,10 +64,10 @@ fun <T> List<T>.randomElement(random: Random): T = this[random.nextInt(this.size
  * @return All keys with the given value.
  */
 fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
-    return entries.stream()
+    return entries.asSequence()
             .filter { (_, v) -> v == value }
             .map { it.key }
-            .set()
+            .toSet()
 }
 
 /**

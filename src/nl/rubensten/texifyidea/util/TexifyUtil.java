@@ -148,7 +148,8 @@ public class TexifyUtil {
             }
 
             PsiFile root = FileUtilKt.findRootFile(file);
-            PsiFile included = getFileRelativeTo(root, fileName, null);
+            Set<String> extensions = Magic.Command.includeOnlyExtensions.get(command.getCommandToken().getText());
+            PsiFile included = getFileRelativeTo(root, fileName, extensions);
             if (included == null) {
                 continue;
             }

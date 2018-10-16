@@ -38,7 +38,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         fields.removeIf { it.fieldName in keys }
 
         // Add lookup elements.
-        result.addAllElements(ContainerUtil.map2List(fields, {
+        result.addAllElements(ContainerUtil.map2List(fields) {
             val (message, icon) = when (it) {
                 in required -> " required" and TexifyIcons.KEY_REQUIRED
                 in optional -> " optional" and PlatformIcons.PROTECTED_ICON
@@ -52,7 +52,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
                     .withTypeText(message, true)
                     .withIcon(icon)
                     .withInsertHandler(TokenTypeInsertHandler)
-        }))
+        })
     }
 
     /**

@@ -30,7 +30,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        LatexCommandsIndex.getItems(file)
+        LatexCommandsIndex.getItems(file).asSequence()
                 .filter { it.name in Magic.Command.illegalExtensions }
                 .filter { command ->
                     Magic.Command.illegalExtensions[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }

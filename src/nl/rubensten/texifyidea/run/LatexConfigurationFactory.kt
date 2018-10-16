@@ -11,7 +11,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
 
     companion object {
 
-        private val factoryName = "LaTeX configuration factory"
+        private const val factoryName = "LaTeX configuration factory"
     }
 
     override fun createTemplateConfiguration(project: Project) = when (type) {

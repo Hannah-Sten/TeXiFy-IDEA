@@ -9,8 +9,8 @@ import nl.rubensten.texifyidea.TexifyIcons
  */
 open class InsertFontStyleActionGroup : DefaultActionGroup() {
 
-    override fun update(event: AnActionEvent?) {
+    override fun update(event: AnActionEvent) {
         super.update(event)
-        event?.presentation?.icon = TexifyIcons.FONT_BOLD
+        event.presentation.icon = TexifyIcons.FONT_BOLD
     }
 }

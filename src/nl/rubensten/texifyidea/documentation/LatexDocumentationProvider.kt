@@ -26,7 +26,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         else -> null
     }
 
-    override fun getUrlFor(element: PsiElement, originalElement: PsiElement): List<String>? {
+    override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
         if (element !is LatexCommands) {
             return null
         }

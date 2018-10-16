@@ -39,8 +39,7 @@ open class ForwardSearchAction : EditorAction(
         }
     }
 
-    override fun update(e: AnActionEvent?) {
-        val presentation = e?.presentation ?: return
-        presentation.isEnabledAndVisible = isSumatraAvailable
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabledAndVisible = isSumatraAvailable
     }
 }
