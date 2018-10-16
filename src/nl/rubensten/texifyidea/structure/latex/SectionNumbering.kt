@@ -1,6 +1,6 @@
 package nl.rubensten.texifyidea.structure.latex
 
-import nl.rubensten.texifyidea.util.TexifyUtil
+import nl.rubensten.texifyidea.util.toRoman
 
 /**
  * @author Ruben Schellekens
@@ -44,7 +44,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
     fun getTitle(level: Int): String {
         // Parts
         if (level == 0) {
-            return TexifyUtil.toRoman(Math.max(0, counters[0]))
+            return Math.max(0, counters[0]).toRoman()
         }
 
         val sb = StringBuilder()

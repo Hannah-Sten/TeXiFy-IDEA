@@ -50,17 +50,6 @@ infix fun Any.debug(message: Any) = print("$message: $this")
 infix fun Any.debugln(message: Any) = println("$message: $this")
 
 /**
- * @see TexifyUtil.toRoman
- */
-@Throws(IllegalArgumentException::class)
-fun Int.toRoman(): String = TexifyUtil.toRoman(this)
-
-/**
- * @see Integer.toHexString
- */
-fun Int.toHex(): String = Integer.toHexString(this)
-
-/**
  * Executes the given run write action.
  */
 fun runWriteAction(writeAction: () -> Unit) {
