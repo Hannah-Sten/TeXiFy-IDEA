@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
@@ -34,6 +35,21 @@ object FileUtil {
      * Matches the extension of a file name, including the dot.
      */
     val FILE_EXTENSION = Pattern.compile("\\.[^.]+$")!!
+
+    /**
+     * Get the FileType instance that corresponds to the given file extension.
+     *
+     * @param extensionWithoutDot
+     *         The file extension to get the corresponding FileType instance of without a dot in
+     *         front.
+     * @return The corresponding FileType instance.
+     */
+    @JvmStatic
+    fun fileTypeByExtension(extensionWithoutDot: String): FileType {
+        return Magic.File.fileTypes.firstOrNull {
+            it.defaultExtension == extensionWithoutDot
+        } ?: LatexFileType
+    }
 }
 
 /**

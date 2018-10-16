@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.util
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.psi.PsiElement
 import nl.rubensten.texifyidea.TexifyIcons
+import nl.rubensten.texifyidea.file.*
 import nl.rubensten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.rubensten.texifyidea.lang.Package
 import java.util.regex.Pattern
@@ -296,6 +297,17 @@ object Magic {
          * All file extensions of files that can be included.
          */
         @JvmField val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
+
+        /**
+         * All possible file types.
+         */
+        @JvmField val fileTypes = setOf(
+                BibtexFileType,
+                ClassFileType,
+                LatexFileType,
+                StyleFileType,
+                TikzFileType
+        )
     }
     
     /**

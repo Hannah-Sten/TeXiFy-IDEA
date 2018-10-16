@@ -11,12 +11,9 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.file.BibtexFileType;
-import nl.rubensten.texifyidea.file.ClassFileType;
-import nl.rubensten.texifyidea.file.LatexFileType;
-import nl.rubensten.texifyidea.file.StyleFileType;
-import nl.rubensten.texifyidea.file.TikzFileType;
+import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.templates.LatexTemplatesFactory;
+import nl.rubensten.texifyidea.util.FileUtil;
 import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +131,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
                 return TikzFileType.INSTANCE;
             }
 
-            return TexifyUtil.getFileTypeByExtension(option);
+            return FileUtil.fileTypeByExtension(option);
         }
 
         private String getNewFileName(@NotNull String fileName, FileType fileType) {
