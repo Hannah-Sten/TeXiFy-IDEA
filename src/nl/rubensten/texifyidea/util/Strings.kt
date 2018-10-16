@@ -23,9 +23,16 @@ fun String.camelCase(): String {
 }
 
 /**
- * Repeats the given string `count` amount of times.
+ * Repeats the given string a given amount of times.
+ *
+ * @param count
+ *         The amount of times to repeat the string.
  */
-fun String.repeat(count: Int): String = TexifyUtil.fill(this, count)
+fun String.repeat(count: Int) = buildString(count * this.length) {
+    for (i in 0 until count) {
+        append(this)
+    }
+}
 
 /**
  * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
