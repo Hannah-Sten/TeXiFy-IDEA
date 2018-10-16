@@ -14,7 +14,7 @@ import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
-import nl.rubensten.texifyidea.util.FileUtilKt;
+import nl.rubensten.texifyidea.util.FilesKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -91,7 +91,7 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         }
 
         List<VirtualFile> roots = new ArrayList<>();
-        PsiFile rootFile = FileUtilKt.findRootFile(containingFile);
+        PsiFile rootFile = FilesKt.findRootFile(containingFile);
         roots.add(rootFile.getContainingDirectory().getVirtualFile());
         ProjectRootManager rootManager = ProjectRootManager.getInstance(element.getProject());
         Collections.addAll(roots, rootManager.getContentSourceRoots());

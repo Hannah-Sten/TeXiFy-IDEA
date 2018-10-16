@@ -147,7 +147,7 @@ public class TexifyUtil {
                 continue;
             }
 
-            PsiFile root = FileUtilKt.findRootFile(file);
+            PsiFile root = FilesKt.findRootFile(file);
             Set<String> extensions = Magic.Command.includeOnlyExtensions.get(command.getCommandToken().getText());
             PsiFile included = getFileRelativeTo(root, fileName, extensions);
             if (included == null) {
@@ -234,7 +234,7 @@ public class TexifyUtil {
         for (VirtualFile root : roots) {
             Optional<VirtualFile> fileHuh = findFile(root, path, extensions != null ? extensions : INCLUDE_EXTENSIONS);
             if (fileHuh.isPresent()) {
-                return FileUtilKt.psiFile(fileHuh.get(), project);
+                return FilesKt.psiFile(fileHuh.get(), project);
             }
         }
 
@@ -504,7 +504,7 @@ public class TexifyUtil {
 
         // BibTeX
         BibtexIdIndex.getIndexedIdsInFileSet(file).stream()
-                .map(elt -> StringUtilKt.substringEnd(elt.getText(), 1))
+                .map(elt -> StringsKt.substringEnd(elt.getText(), 1))
                 .forEach(labels::add);
 
         return labels;

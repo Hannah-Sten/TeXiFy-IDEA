@@ -11,7 +11,7 @@ import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.StringUtilKt;
+import nl.rubensten.texifyidea.util.StringsKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,7 +97,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                     else if ("\\cite".equals(token)) {
                         BibtexId id = (BibtexId)l;
                         PsiFile containing = id.getContainingFile();
-                        String text = StringUtilKt.substringEnd(id.getText(), 1);
+                        String text = StringsKt.substringEnd(id.getText(), 1);
                         return LookupElementBuilder.create(text)
                                 .bold()
                                 .withInsertHandler(new LatexReferenceInsertHandler())
