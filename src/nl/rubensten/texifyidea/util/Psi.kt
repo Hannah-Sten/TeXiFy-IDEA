@@ -358,7 +358,8 @@ fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
  * @return `true` if the command is an environment (re)definition or a command (re)definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinitionOrRedefinition() = this != null && (DEFINITIONS.contains(this.name) || REDEFINITIONS.contains(this.name))
+fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
+        (this.name in Magic.Command.redefinition || this.name in Magic.Command.redefinition)
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
@@ -368,7 +369,7 @@ fun LatexCommands?.isDefinitionOrRedefinition() = this != null && (DEFINITIONS.c
  * @return `true` if the command is an environment definition or a command definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinition() = this != null && DEFINITIONS.contains(this.name)
+fun LatexCommands?.isDefinition() = this != null && this.name in Magic.Command.definition
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.

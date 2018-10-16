@@ -7,7 +7,7 @@ import nl.rubensten.texifyidea.index.LatexDefinitionIndex;
 import nl.rubensten.texifyidea.index.LatexIncludesIndex;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.impl.LatexCommandsImpl;
-import nl.rubensten.texifyidea.util.GeneralKt;
+import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -88,7 +88,7 @@ public class LatexCommandsStubElementType extends IStubElementType<LatexCommands
             indexSink.occurrence(LatexIncludesIndex.Companion.key(), token);
         }
 
-        if (GeneralKt.getDEFINITIONS().contains(token) || GeneralKt.getREDEFINITIONS().contains(token)) {
+        if (Magic.Command.definition.contains(token) || Magic.Command.redefinition.contains(token)) {
             indexSink.occurrence(LatexDefinitionIndex.Companion.key(), token);
         }
     }

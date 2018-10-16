@@ -111,9 +111,21 @@ object Magic {
         )
 
         /**
+         * All commands that define new commands.
+         */
+        @JvmField val definition = setOf(
+                "\\newcommand",
+                "\\let",
+                "\\def",
+                "\\DeclareMathOperator",
+                "\\newenvironment",
+                "\\newif"
+        )
+
+        /**
          * All commands that are able to redefine other commands.
          */
-        @JvmField val redefinition = setOf("\\renewcommand", "\\def", "\\let")
+        @JvmField val redefinition = setOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
 
         /**
          * Commands for which TeXiFy-IDEA has custom behaviour.

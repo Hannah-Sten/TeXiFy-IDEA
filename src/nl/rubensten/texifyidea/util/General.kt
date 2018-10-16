@@ -5,26 +5,6 @@ import com.intellij.openapi.util.TextRange
 import java.util.regex.Pattern
 
 /**
- * Set containing all commands that redefine functionality.
- */
-val REDEFINITIONS = setOf(
-        "\\renewcommand",
-        "\\renewenvironment"
-)
-
-/**
- * Set containing all commands that define functionality.
- */
-val DEFINITIONS = setOf(
-        "\\newcommand",
-        "\\let",
-        "\\def",
-        "\\DeclareMathOperator",
-        "\\newenvironment",
-        "\\newif"
-)
-
-/**
  * Creates a pair of two objects, analogous to [to].
  */
 infix fun <T1, T2> T1.and(other: T2) = Pair(this, other)
