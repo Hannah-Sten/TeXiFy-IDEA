@@ -32,23 +32,6 @@ public class TexifyUtil {
     private TexifyUtil() {
     }
 
-    public static PsiFile getFileRelativeToWithDirectory(@NotNull PsiFile file, @NotNull String path) {
-        // Find file
-        VirtualFile directory = file.getVirtualFile().getParent();
-        Optional<VirtualFile> fileHuh = findFile(directory, path, Magic.File.includeExtensions);
-        if (!fileHuh.isPresent()) {
-            return null;
-        }
-
-        PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(fileHuh.get());
-        if (psiFile == null || (!LatexFileType.INSTANCE.equals(psiFile.getFileType()) &&
-                !StyleFileType.INSTANCE.equals(psiFile.getFileType()))) {
-            return null;
-        }
-
-        return psiFile;
-    }
-
     /**
      * Looks for a certain file.
      * <p>
