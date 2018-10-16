@@ -42,40 +42,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Creates a new file with a given name and given content.
-     * <p>
-     * Also checks if the file already exists, and modifies the name accordingly.
-     *
-     * @return The created file.
-     */
-    public static File createFile(String name, String contents) {
-        int count = 0;
-        String fileName = name;
-        while (new File(fileName).exists()) {
-            String ext = "." + FileUtils.getExtension(fileName);
-            String stripped = fileName.substring(0, fileName.length() - ext.length());
-
-            String intString = Integer.toString(count);
-            if (stripped.endsWith(intString)) {
-                stripped = stripped.substring(0, stripped.length() - intString.length());
-            }
-
-            fileName = stripped + (++count) + ext;
-        }
-
-        try (PrintWriter writer = new PrintWriter(fileName, "UTF-8")) {
-            new File(fileName).createNewFile();
-            LocalFileSystem.getInstance().refresh(true);
-            writer.print(contents);
-        }
-        catch (IOException e) {
-            throw new TeXception("Could not write to file " + name, e);
-        }
-
-        return new File(fileName);
-    }
-
-    /**
      * Deletes the given element from a document.
      *
      * @param document
