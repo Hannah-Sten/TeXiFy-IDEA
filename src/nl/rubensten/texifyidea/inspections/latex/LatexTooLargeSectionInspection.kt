@@ -195,10 +195,10 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                     .replace("{", "")
                     .replace(" ", "-")
                     .decapitalize()
-            val createdFile = TexifyUtil.createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
+            val createdFile = createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
             LocalFileSystem.getInstance().refresh(true)
 
-            val createdFileName = createdFile?.name
+            val createdFileName = createdFile.name
                     ?.substring(0, createdFile.name.length - 4)
                     ?.replace(" ", "-")
                     ?.decapitalize()

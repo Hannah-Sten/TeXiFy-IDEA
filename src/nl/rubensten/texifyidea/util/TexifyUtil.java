@@ -8,7 +8,6 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiElement;
@@ -16,20 +15,16 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.rubensten.texifyidea.TeXception;
 import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.index.BibtexIdIndex;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.*;
-import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 

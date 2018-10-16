@@ -8,7 +8,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.TexifyIcons
-import nl.rubensten.texifyidea.util.TexifyUtil
+import nl.rubensten.texifyidea.util.createFile
 import nl.rubensten.texifyidea.util.findRootFile
 import nl.rubensten.texifyidea.util.isLatexFile
 import nl.rubensten.texifyidea.util.removeIndents
@@ -68,13 +68,13 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         // Execute write actions.
         runWriteAction {
             val filePath = "$root/$fileName.tex";
-            val createdFile = TexifyUtil.createFile(filePath, text.toString())
+            val createdFile = createFile(filePath, text.toString())
 
             for ((start, end) in offsets.reversed()) {
                 document.deleteString(start, end)
             }
 
-            val createdFileName = createdFile?.name?.substring(0, createdFile.name.length - 4)
+            val createdFileName = createdFile.name?.substring(0, createdFile.name.length - 4)
             document.insertString(offsets.first().first, "\\input{$createdFileName}")
         }
     }

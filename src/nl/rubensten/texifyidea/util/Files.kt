@@ -15,6 +15,9 @@ import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.file.StyleFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.lang.Package
+import org.codehaus.plexus.util.FileUtils
+import java.io.File
+import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.regex.Pattern
 
@@ -206,3 +209,32 @@ fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
  * @return The PSI file matching the document, or `null` when the PSI file could not be found.
  */
 fun Document.psiFile(project: Project): PsiFile? = PsiDocumentManager.getInstance(project).getPsiFile(this)
+
+/**
+ * Creates a new file with a given name and given content.
+ *
+ * Also checks if the file already exists, and modifies the name accordingly.
+ *
+ * @return The created file.
+ */
+fun createFile(fileName: String, contents: String): File {
+    var count = 0
+    var currentFileName = fileName
+    while (File(currentFileName).exists()) {
+        val extension = "." + FileUtils.getExtension(currentFileName)
+        var stripped = currentFileName.substring(0, currentFileName.length - extension.length)
+
+        val countString = count.toString()
+        if (stripped.endsWith(countString)) {
+            stripped = stripped.substring(0, stripped.length - countString.length)
+        }
+
+        currentFileName = stripped + (++count) + extension
+    }
+
+    return File(currentFileName).apply {
+        createNewFile()
+        LocalFileSystem.getInstance().refresh(true)
+        writeText(contents, StandardCharsets.UTF_8)
+    }
+}
