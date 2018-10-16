@@ -33,39 +33,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Looks for a certain file.
-     * <p>
-     * First looks if the file including extensions exists, when it doesn't it tries to append all
-     * possible extensions until it finds a good one.
-     *
-     * @param directory
-     *         The directory where the search is rooted from.
-     * @param fileName
-     *         The name of the file relative to the directory.
-     * @param extensions
-     *         Set of all supported extensions to look for.
-     * @return The matching file.
-     */
-    public static Optional<VirtualFile> findFile(VirtualFile directory, String fileName,
-                                                 Set<String> extensions) {
-        VirtualFile file = directory.findFileByRelativePath(fileName);
-        if (file != null) {
-            return Optional.of(file);
-        }
-
-        for (String extension : extensions) {
-            String lookFor = fileName.endsWith("." + extension) ? fileName : fileName + "." + extension;
-            file = directory.findFileByRelativePath(lookFor);
-
-            if (file != null) {
-                return Optional.of(file);
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    /**
      * Get the FileType instance that corresponds to the given file extension.
      *
      * @param extensionWithoutDot
