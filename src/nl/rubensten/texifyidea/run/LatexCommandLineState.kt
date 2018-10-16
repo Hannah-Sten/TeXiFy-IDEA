@@ -38,16 +38,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
 
-        // Generate bibliography run configuration when needed
-        if (!runConfig.isSkipBibtex && runConfig.bibRunConfig == null) {
-            // Set a default compiler depending on file contents
-            if (mainFile.psiFile(environment.project)?.hasBibliography() == true) {
-                runConfig.generateBibRunConfig(BibliographyCompiler.BIBTEX)
-            } else if (mainFile.psiFile(environment.project)?.usesBiber() == true) {
-                runConfig.generateBibRunConfig(BibliographyCompiler.BIBER)
-            }
-        }
-
         runConfig.bibRunConfig?.let {
             if (runConfig.isSkipBibtex) {
                 return@let

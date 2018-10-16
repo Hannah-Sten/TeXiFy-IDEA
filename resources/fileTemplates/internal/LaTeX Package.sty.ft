@@ -5,5 +5,5 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{PACKAGE_NAME}[${USER}'s Package]
+\ProvidesPackage{PACKAGE_NAME}[$YEAR/$MONTH/$DAY ${USER}'s Package]
 

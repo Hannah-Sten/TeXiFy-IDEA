@@ -17,10 +17,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.TeXception;
-import nl.rubensten.texifyidea.file.BibtexFileType;
-import nl.rubensten.texifyidea.file.ClassFileType;
-import nl.rubensten.texifyidea.file.LatexFileType;
-import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.index.BibtexIdIndex;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
@@ -151,7 +148,8 @@ public class TexifyUtil {
             }
 
             PsiFile root = FileUtilKt.findRootFile(file);
-            PsiFile included = getFileRelativeTo(root, fileName, null);
+            Set<String> extensions = Magic.Command.includeOnlyExtensions.get(command.getCommandToken().getText());
+            PsiFile included = getFileRelativeTo(root, fileName, extensions);
             if (included == null) {
                 continue;
             }
@@ -351,6 +349,8 @@ public class TexifyUtil {
                 return StyleFileType.INSTANCE;
             case "bib":
                 return BibtexFileType.INSTANCE;
+            case "tikz":
+                return TikzFileType.INSTANCE;
             default:
                 return LatexFileType.INSTANCE;
         }
