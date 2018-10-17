@@ -25,7 +25,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
             automaticSoftWraps = addCheckbox("Enable soft wraps when opening LaTeX files")
             automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
-            automaticUpDownBracket = addCheckbox("Automatically braces around text in subscript and superscript")
+            automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
         })
     }
 
