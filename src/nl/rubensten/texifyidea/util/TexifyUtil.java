@@ -29,22 +29,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Checks if the given latex command marks a valid entry point for latex compilation.
-     * <p>
-     * A valid entry point means that a latex compilation can start from the file containing the
-     * given command.
-     *
-     * @param command
-     *         The command to check if the file marks a valid entry point.
-     * @return {@code true} if the command marks a valid entry point, {@code false} if not.
-     */
-    public static boolean isEntryPoint(LatexBeginCommand command) {
-        // Currently: only allowing '\begin{document}'
-        List<LatexRequiredParam> requiredParams = PsiKt.requiredParameters(command);
-        return requiredParams.size() == 1 && requiredParams.get(0).getText().equals("{document}");
-    }
-
-    /**
      * Checks if the given elements contain a valid entry point for latex compilation.
      * <p>
      * A valid entry point means that a latex compilation can start from the file containing the
@@ -58,7 +42,7 @@ public class TexifyUtil {
         for (PsiElement element : elements) {
             if (element instanceof LatexBeginCommand) {
                 LatexBeginCommand command = (LatexBeginCommand)element;
-                if (TexifyUtil.isEntryPoint(command)) {
+                if (PsiKt.isEntryPoint(command)) {
                     return true;
                 }
             }

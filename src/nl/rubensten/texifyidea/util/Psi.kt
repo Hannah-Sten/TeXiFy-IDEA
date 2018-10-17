@@ -278,11 +278,6 @@ inline fun PsiElement.forEachChild(action: (PsiElement) -> Unit) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @see TexifyUtil.isEntryPoint
- */
-fun LatexBeginCommand.isEntryPoint(): Boolean = TexifyUtil.isEntryPoint(this)
-
-/**
  * Looks up the name of the environment in the required parameter.
  */
 fun LatexEnvironment.name(): LatexNormalText? {
@@ -317,6 +312,20 @@ fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> = parameter
         .filter { it.requiredParam != null }
         .mapNotNull(LatexParameter::getRequiredParam)
         .toList()
+
+/**
+ * Checks if the given latex command marks a valid entry point for latex compilation.
+ *
+ * A valid entry point means that a latex compilation can start from the file containing the
+ * given command.
+ *
+ * @return `true` if the command marks a valid entry point, `false` if not.
+ */
+fun LatexBeginCommand.isEntryPoint(): Boolean {
+    // Currently: only allowing `\begin{document}`.
+    val requiredParameters = requiredParameters()
+    return requiredParameters.firstOrNull()?.text == "{document}"
+}
 
 /**
  * Get the environment name of the end command.
