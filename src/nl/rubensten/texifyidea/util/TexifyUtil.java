@@ -29,22 +29,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Sends a formatted info message to the IntelliJ logger.
-     * <p>
-     * All messages start with the prefix "{@code TEXIFY-IDEA - }".
-     *
-     * @param format
-     *         How the log should be formatted, see also {@link String#format(Locale, String,
-     *         Object...)}.
-     * @param objects
-     *         The objects to bind to the format.
-     */
-    public static void logf(String format, Object... objects) {
-        Logger logger = Logger.getInstance(Log.class);
-        logger.info("TEXIFY-IDEA - " + String.format(format, objects));
-    }
-
-    /**
      * Finds all the defined labels in the fileset of the given file.
      *
      * @param file
