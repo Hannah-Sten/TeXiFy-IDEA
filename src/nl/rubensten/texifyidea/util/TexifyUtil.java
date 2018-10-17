@@ -22,25 +22,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Retrieves the file path relative to the root path, or {@code null} if the file is not a child
-     * of the root.
-     *
-     * @param rootPath
-     *         The path of the root
-     * @param filePath
-     *         The path of the file
-     * @return The relative path of the file to the root, or {@code null} if the file is no child of
-     * the root.
-     */
-    @Nullable
-    public static String getPathRelativeTo(@NotNull String rootPath, @NotNull String filePath) {
-        if (!filePath.startsWith(rootPath)) {
-            return null;
-        }
-        return filePath.substring(rootPath.length());
-    }
-
-    /**
      * Returns the forced first required parameter of a command as a command.
      * <p>
      * This allows both example constructs {@code \\usepackage{\\foo}} and {@code

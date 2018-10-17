@@ -120,7 +120,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Create output paths for mac (see issue #70 on GitHub)
         files.asSequence()
-                .mapNotNull { TexifyUtil.getPathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
+                .mapNotNull { FileUtil.pathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
                 .forEach { File(outPath + it).mkdirs() }
     }
 }

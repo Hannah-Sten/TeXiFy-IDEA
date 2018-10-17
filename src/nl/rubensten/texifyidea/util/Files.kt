@@ -53,6 +53,25 @@ object FileUtil {
             it.defaultExtension == extensionWithoutDot
         } ?: LatexFileType
     }
+
+    /**
+     * Retrieves the file path relative to the root path, or `null` if the file is not a child
+     * of the root.
+     *
+     * @param rootPath
+     *         The path of the root
+     * @param filePath
+     *         The path of the file
+     * @return The relative path of the file to the root, or `null` if the file is no child of
+     * the root.
+     */
+    @JvmStatic
+    fun pathRelativeTo(rootPath: String, filePath: String): String? {
+        if (!filePath.startsWith(rootPath)) {
+            return null
+        }
+        return filePath.substring(rootPath.length)
+    }
 }
 
 /**
@@ -290,7 +309,8 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
 fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val directory = containingDirectory.virtualFile
 
-    val file = directory.findFile(path, extensions ?: Magic.File.includeExtensions) ?: return scanRoots(path, extensions)
+    val file = directory.findFile(path, extensions ?: Magic.File.includeExtensions)
+            ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
             StyleFileType != psiFile.fileType &&
