@@ -2,9 +2,7 @@ package nl.rubensten.texifyidea.util
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.psi.LatexContent
-import nl.rubensten.texifyidea.psi.LatexTypes
+import nl.rubensten.texifyidea.psi.*
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
@@ -146,6 +144,16 @@ fun LatexCommands.includedFileName(): String? {
     if (required.isEmpty()) return null
     return required.first()
 }
+
+/**
+ * Looks up all the required parameters of this command.
+ *
+ * @return A list of all required parameters.
+ */
+fun LatexCommands.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
+        .filter { it.requiredParam != null }
+        .mapNotNull(LatexParameter::getRequiredParam)
+        .toList()
 
 /**
  * Get all [LatexCommands] that are children of the given element.

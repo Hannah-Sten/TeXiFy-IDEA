@@ -15,6 +15,7 @@ import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.FilesKt;
+import nl.rubensten.texifyidea.util.PsiCommandsKt;
 import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +73,7 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
             argument = arguments.get(0);
         }
 
-        List<LatexRequiredParam> requiredParams = TexifyUtil.getRequiredParameters(commands);
+        List<LatexRequiredParam> requiredParams = PsiCommandsKt.requiredParameters(commands);
         if (requiredParams.isEmpty()) {
             return;
         }

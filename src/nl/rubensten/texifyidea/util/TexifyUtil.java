@@ -35,20 +35,6 @@ public class TexifyUtil {
      *         The command to get the required parameters of.
      * @return A list of all required parameters.
      */
-    public static List<LatexRequiredParam> getRequiredParameters(LatexCommands command) {
-        return command.getParameterList().stream()
-                .filter(p -> p.getRequiredParam() != null)
-                .map(LatexParameter::getRequiredParam)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Looks up all the required parameters from a given {@link LatexCommands}.
-     *
-     * @param command
-     *         The command to get the required parameters of.
-     * @return A list of all required parameters.
-     */
     public static List<LatexRequiredParam> getRequiredParameters(LatexBeginCommand command) {
         return command.getParameterList().stream()
                 .filter(p -> p.getRequiredParam() != null)
@@ -254,7 +240,7 @@ public class TexifyUtil {
      * @return The forced first required parameter of the command.
      */
     public static LatexCommands getForcedFirstRequiredParameterAsCommand(LatexCommands command) {
-        List<LatexRequiredParam> params = getRequiredParameters(command);
+        List<LatexRequiredParam> params = PsiCommandsKt.requiredParameters(command);
         if (params.size() > 0) {
             LatexRequiredParam param = params.get(0);
             Collection<LatexCommands> found = PsiTreeUtil.findChildrenOfType(param, LatexCommands.class);
