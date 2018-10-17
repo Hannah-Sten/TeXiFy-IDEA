@@ -74,7 +74,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Fetch all commands in the active file.
         val numbering = SectionNumbering(DocumentClass.getClassByName(docClass))
-        val commands = TexifyUtil.getAllCommands(element)
+        val commands = element.allCommands()
         val treeElements = ArrayList<TreeElement>()
 
         // Add includes.

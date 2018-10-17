@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.util
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
@@ -144,4 +145,23 @@ fun LatexCommands.includedFileName(): String? {
     val required = requiredParameters
     if (required.isEmpty()) return null
     return required.first()
+}
+
+/**
+ * Get all [LatexCommands] that are children of the given element.
+ */
+fun PsiElement.allCommands(): List<LatexCommands> {
+    val commands = ArrayList<LatexCommands>()
+    allCommands(commands)
+    return commands
+}
+
+/**
+ * Recursive implementation of [allCommands].
+ */
+private fun PsiElement.allCommands(commands: MutableList<LatexCommands>) {
+    forEachChild { it.allCommands(commands) }
+    if (this is LatexCommands) {
+        commands.add(this)
+    }
 }

@@ -29,28 +29,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Get all commands that are children of the given element.
-     */
-    public static List<LatexCommands> getAllCommands(PsiElement element) {
-        List<LatexCommands> commands = new ArrayList<>();
-        getAllCommands(element, commands);
-        return commands;
-    }
-
-    /**
-     * Recursive implementation of {@link TexifyUtil#getAllCommands(PsiElement)}.
-     */
-    private static void getAllCommands(PsiElement element, List<LatexCommands> commands) {
-        for (PsiElement child : element.getChildren()) {
-            getAllCommands(child, commands);
-        }
-
-        if (element instanceof LatexCommands) {
-            commands.add((LatexCommands)element);
-        }
-    }
-
-    /**
      * Looks up all the required parameters from a given {@link LatexCommands}.
      *
      * @param command
