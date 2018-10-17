@@ -11,8 +11,8 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.psi.LatexTypes.*
+import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.util.*
-import java.util.regex.Pattern
 
 /**
  * @author Ruben Schellekens
@@ -27,12 +27,16 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         private val insertSymbols = setOf("_", "^")
 
         /**
-         * Matches the suffix that denotes that braces may not be inserted.
+         * Matches the suffix that denotes that braces may be inserted.
          */
-        private val insertForbidden = Pattern.compile("^[\\s^_,.;%:$(']$")!!
+        private val insertOnly = """^[a-zA-Z0-9]$""".toRegex()
     }
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
+        if (!TexifySettings.getInstance().automaticUpDownBracket) {
+            return Result.CONTINUE
+        }
+
         if (file.fileType != LatexFileType) {
             return Result.CONTINUE
         }
@@ -126,7 +130,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
         // Only insert when a valid symbol has been typed.
         val afterSymbol = char.toString()
-        if (insertForbidden.matcher(afterSymbol).matches()) {
+        if (!insertOnly.matches(afterSymbol)) {
             return
         }
 

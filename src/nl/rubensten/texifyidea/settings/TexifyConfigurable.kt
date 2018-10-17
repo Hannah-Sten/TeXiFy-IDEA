@@ -13,6 +13,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
     private lateinit var automaticSoftWraps: JCheckBox
     private lateinit var automaticSecondInlineMathSymbol: JCheckBox
+    private lateinit var automaticUpDownBracket: JCheckBox
 
     override fun getId() = "TexifyConfigurable"
 
@@ -24,6 +25,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
             automaticSoftWraps = addCheckbox("Enable soft wraps when opening LaTeX files")
             automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
+            automaticUpDownBracket = addCheckbox("Automatically braces around text in subscript and superscript")
         })
     }
 
@@ -36,17 +38,20 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun isModified(): Boolean {
-        return automaticSoftWraps.isSelected != settings.automaticSoftWraps ||
-                automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
+        return automaticSoftWraps.isSelected != settings.automaticSoftWraps
+                || automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
+                || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
     }
 
     override fun apply() {
         settings.automaticSoftWraps = automaticSoftWraps.isSelected
         settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
+        settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
     }
 
     override fun reset() {
         automaticSoftWraps.isSelected = settings.automaticSoftWraps
         automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
+        automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
     }
 }
