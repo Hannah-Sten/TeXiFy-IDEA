@@ -3,6 +3,8 @@ package nl.rubensten.texifyidea.util
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import nl.rubensten.texifyidea.lang.LatexMathCommand
+import nl.rubensten.texifyidea.lang.LatexNoMathCommand
 import nl.rubensten.texifyidea.psi.*
 
 /**
@@ -92,9 +94,14 @@ fun LatexCommands.definedCommandName() = when (name) {
 }
 
 /**
- * @see TexifyUtil.isCommandKnown
+ * Checks whether the command is known by TeXiFy.
+ *
+ * @return Whether the command is known (`true`), or unknown (`false`).
  */
-fun LatexCommands.isKnown(): Boolean = TexifyUtil.isCommandKnown(this)
+fun LatexCommands.isKnown(): Boolean {
+    val name = name?.substring(1) ?: ""
+    return LatexNoMathCommand[name] != null || LatexMathCommand[name] != null
+}
 
 /**
  * Get the `index+1`th required parameter of the command.

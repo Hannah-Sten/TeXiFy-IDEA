@@ -10,9 +10,9 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.util.TexifyUtil
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.forcedFirstRequiredParameterAsCommand
+import nl.rubensten.texifyidea.util.isKnown
 import nl.rubensten.texifyidea.util.replaceString
 
 /**
@@ -36,7 +36,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
             if ("\\newcommand" == command.name) {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
 
-                if (TexifyUtil.isCommandKnown(newCommand)) {
+                if (newCommand.isKnown()) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,
                             "Command is already defined",
@@ -50,7 +50,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
             else if ("\\def" == command.name || "\\let" == command.name) {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
 
-                if (TexifyUtil.isCommandKnown(newCommand)) {
+                if (newCommand.isKnown()) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,
                             "Command is already defined",
