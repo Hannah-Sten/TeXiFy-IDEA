@@ -29,20 +29,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Looks up all the required parameters from a given {@link LatexCommands}.
-     *
-     * @param command
-     *         The command to get the required parameters of.
-     * @return A list of all required parameters.
-     */
-    public static List<LatexRequiredParam> getRequiredParameters(LatexBeginCommand command) {
-        return command.getParameterList().stream()
-                .filter(p -> p.getRequiredParam() != null)
-                .map(LatexParameter::getRequiredParam)
-                .collect(Collectors.toList());
-    }
-
-    /**
      * Checks if the given latex command marks a valid entry point for latex compilation.
      * <p>
      * A valid entry point means that a latex compilation can start from the file containing the
@@ -54,7 +40,7 @@ public class TexifyUtil {
      */
     public static boolean isEntryPoint(LatexBeginCommand command) {
         // Currently: only allowing '\begin{document}'
-        List<LatexRequiredParam> requiredParams = getRequiredParameters(command);
+        List<LatexRequiredParam> requiredParams = PsiKt.requiredParameters(command);
         return requiredParams.size() == 1 && requiredParams.get(0).getText().equals("{document}");
     }
 

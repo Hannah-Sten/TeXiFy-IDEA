@@ -309,6 +309,16 @@ fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(thi
 fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEndCommand::class)
 
 /**
+ * Looks up all the required parameters from this begin command.
+ *
+ * @return A list of all required parameters.
+ */
+fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
+        .filter { it.requiredParam != null }
+        .mapNotNull(LatexParameter::getRequiredParam)
+        .toList()
+
+/**
  * Get the environment name of the end command.
  */
 fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
