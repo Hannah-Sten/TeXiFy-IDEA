@@ -29,29 +29,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Checks if the given elements contain a valid entry point for latex compilation.
-     * <p>
-     * A valid entry point means that a latex compilation can start from the file containing the
-     * given command.
-     *
-     * @param elements
-     *         The elements to check for a valid entry point.
-     * @return {@code true} if a valid entry point is found, {@code false} otherwise.
-     */
-    public static boolean containsEntryPoint(PsiElement[] elements) {
-        for (PsiElement element : elements) {
-            if (element instanceof LatexBeginCommand) {
-                LatexBeginCommand command = (LatexBeginCommand)element;
-                if (PsiKt.isEntryPoint(command)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Sends a formatted info message to the IntelliJ logger.
      * <p>
      * All messages start with the prefix "{@code TEXIFY-IDEA - }".
