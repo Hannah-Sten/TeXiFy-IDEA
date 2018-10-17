@@ -60,11 +60,6 @@ fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
 fun PsiFile.referencedFileSet(): Set<PsiFile> = findReferencedFileSet(this)
 
 /**
- * @see TexifyUtil.findLabelsInFileSet
- */
-fun PsiFile.labelsInFileSet(): Set<String> = TexifyUtil.findLabelsInFileSet(this)
-
-/**
  * @see [BibtexIdIndex.getIndexedIdsInFileSet]
  */
 fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)

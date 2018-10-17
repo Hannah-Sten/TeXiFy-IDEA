@@ -8,8 +8,8 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.util.Magic
-import nl.rubensten.texifyidea.util.TexifyUtil
 import nl.rubensten.texifyidea.util.commandsInFile
+import nl.rubensten.texifyidea.util.findLabelsInFileSet
 
 /**
  * @author Ruben Schellekens
@@ -25,7 +25,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val labels = TexifyUtil.findLabelsInFileSet(file)
+        val labels = file.findLabelsInFileSet()
         val commands = file.commandsInFile()
         for (command in commands) {
             if (!Magic.Command.reference.contains(command.name)) {

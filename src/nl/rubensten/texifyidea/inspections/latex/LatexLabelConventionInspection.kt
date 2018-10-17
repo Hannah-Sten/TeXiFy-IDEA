@@ -121,7 +121,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 "$prefix:$labelName"
             }
 
-            val createdLabel = appendCounter(createdLabelBase, TexifyUtil.findLabelsInFileSet(file))
+            val createdLabel = appendCounter(createdLabelBase, file.findLabelsInFileSet())
 
             // Replace in document.
             val references = findReferences(file, oldLabel)

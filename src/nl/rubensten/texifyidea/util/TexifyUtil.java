@@ -1,7 +1,6 @@
 package nl.rubensten.texifyidea.util;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
@@ -12,7 +11,10 @@ import nl.rubensten.texifyidea.index.BibtexIdIndex;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
-import nl.rubensten.texifyidea.psi.*;
+import nl.rubensten.texifyidea.psi.BibtexId;
+import nl.rubensten.texifyidea.psi.LatexCommands;
+import nl.rubensten.texifyidea.psi.LatexContent;
+import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,30 +28,6 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * Finds all the defined labels in the fileset of the given file.
-     *
-     * @param file
-     *         The file to get all the labels from.
-     * @return A set containing all labels that are defined in the fileset of the given file.
-     */
-    public static Set<String> findLabelsInFileSet(@NotNull PsiFile file) {
-        // LaTeX
-        Set<String> labels = LatexCommandsIndex.Companion.getItemsInFileSet(file).stream()
-                .filter(cmd -> "\\label".equals(cmd.getName()) || "\\bibitem".equals(cmd.getName()))
-                .map(LatexCommands::getRequiredParameters)
-                .filter(list -> !list.isEmpty())
-                .map(list -> list.get(0))
-                .collect(Collectors.toSet());
-
-        // BibTeX
-        BibtexIdIndex.getIndexedIdsInFileSet(file).stream()
-                .map(elt -> StringsKt.substringEnd(elt.getText(), 1))
-                .forEach(labels::add);
-
-        return labels;
     }
 
     /**
@@ -198,14 +176,4 @@ public class TexifyUtil {
         String commandName = Optional.ofNullable(command.getName()).map(cmd -> cmd.substring(1)).orElse("");
         return LatexNoMathCommand.get(commandName) != null || LatexMathCommand.get(commandName) != null;
     }
-
-    /**
-     * Little class to make the log messages look awesome :3
-     *
-     * @author Ruben Schellekens
-     */
-    private class Log {
-
-    }
-
 }

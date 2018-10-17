@@ -84,7 +84,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val labelName = required[0].camelCase()
             val createdLabelBase = "$prefix:$labelName"
 
-            val allLabels = TexifyUtil.findLabelsInFileSet(file)
+            val allLabels = file.findLabelsInFileSet()
             val createdLabel = appendCounter(createdLabelBase, allLabels)
 
             // Insert label.
