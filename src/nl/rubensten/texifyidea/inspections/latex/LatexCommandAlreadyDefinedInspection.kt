@@ -12,6 +12,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.TexifyUtil
 import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.rubensten.texifyidea.util.replaceString
 
 /**
@@ -33,7 +34,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
         for (command in commands) {
             // Error when \newcommand is used on existing command
             if ("\\newcommand" == command.name) {
-                val newCommand = TexifyUtil.getForcedFirstRequiredParameterAsCommand(command) ?: continue
+                val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
 
                 if (TexifyUtil.isCommandKnown(newCommand)) {
                     descriptors.add(manager.createProblemDescriptor(
@@ -47,7 +48,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
             }
             // Warning when a builtin command gets overridden
             else if ("\\def" == command.name || "\\let" == command.name) {
-                val newCommand = TexifyUtil.getForcedFirstRequiredParameterAsCommand(command) ?: continue
+                val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
 
                 if (TexifyUtil.isCommandKnown(newCommand)) {
                     descriptors.add(manager.createProblemDescriptor(

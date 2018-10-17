@@ -258,7 +258,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     @Nullable
     private String getNewCommandName(@NotNull LatexCommands commands) {
-        LatexCommands cmd = PsiCommandsKt.firstRequiredParamAsCommand(commands);
+        LatexCommands cmd = PsiCommandsKt.forcedFirstRequiredParameterAsCommand(commands);
         return cmd == null ? null : cmd.getName();
     }
 

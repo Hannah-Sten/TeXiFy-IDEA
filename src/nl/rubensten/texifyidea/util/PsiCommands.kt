@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.util
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.psi.*
 
 /**
@@ -49,11 +50,6 @@ fun LatexCommands?.isEnvironmentDefinition(): Boolean {
 }
 
 /**
- * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
- */
-fun LatexCommands.firstRequiredParamAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
-
-/**
  * Get the command that gets defined by a definition (`\let` or `\def` command).
  */
 fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
@@ -86,11 +82,6 @@ fun LatexCommands.previousCommand(): LatexCommands? {
     val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent ?: return null
     return previous.firstChildOfType(LatexCommands::class)
 }
-
-/**
- * @see TexifyUtil.getForcedFirstRequiredParameterAsCommand
- */
-fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? = TexifyUtil.getForcedFirstRequiredParameterAsCommand(this)
 
 /**
  * Get the name of the command that is defined by `this` command.
@@ -154,6 +145,28 @@ fun LatexCommands.requiredParameters(): List<LatexRequiredParam> = parameterList
         .filter { it.requiredParam != null }
         .mapNotNull(LatexParameter::getRequiredParam)
         .toList()
+
+/**
+ * Returns the forced first required parameter of a command as a command.
+ *
+ * This allows both example constructs `\\usepackage{\\foo}}` and `\\usepackage\\foo`,
+ * which are equivalent.
+ * Note that when the command does not take parameters this method might return untrue results.
+ *
+ * @return The forced first required parameter of the command.
+ */
+fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
+    val parameters = requiredParameters()
+    if (parameters.isNotEmpty()) {
+        val parameter = parameters.first()
+        val found = PsiTreeUtil.findChildrenOfType(parameter, LatexCommands::class.java)
+        return if (found.size == 1) found.first() else null
+    }
+
+    val parent = PsiTreeUtil.getParentOfType(this, LatexContent::class.java)
+    val sibling = PsiTreeUtil.getNextSiblingOfType(parent, LatexContent::class.java)
+    return PsiTreeUtil.findChildOfType(sibling, LatexCommands::class.java)
+}
 
 /**
  * Get all [LatexCommands] that are children of the given element.
