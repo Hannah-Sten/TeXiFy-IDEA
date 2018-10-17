@@ -15,7 +15,8 @@ import java.util.List;
  */
 public enum LatexCompiler {
 
-    PDFLATEX("pdfLaTeX", "pdflatex");
+    PDFLATEX("pdfLaTeX", "pdflatex"),
+    LUALATEX("LuaLaTeX", "lualatex");
 
     private String displayName;
     private String executableName;
@@ -57,6 +58,21 @@ public enum LatexCompiler {
             for (VirtualFile root : moduleRoots) {
                 command.add("-include-directory=" + root.getPath());
             }
+        } else if (this == LUALATEX) {
+            if (runConfig.getCompilerPath() != null) {
+                command.add(runConfig.getCompilerPath());
+            } else {
+                command.add("lualatex");
+            }
+
+            // Some commands are the same as for pdflatex
+            command.add("-file-line-error");
+            command.add("-interaction=nonstopmode");
+            command.add("-synctex=1");
+            command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
+            command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+
+            // But lualatex has no -aux-directory
         }
 
         // Custom compiler arguments specified by the user
