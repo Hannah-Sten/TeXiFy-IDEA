@@ -56,7 +56,7 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
         List<ProblemDescriptor> descriptors = inspectFile(file, manager, isOnTheFly);
         descriptors.removeIf(descriptor -> !checkContext(descriptor.getPsiElement()));
-        return descriptors.toArray(new ProblemDescriptor[descriptors.size()]);
+        return descriptors.toArray(new ProblemDescriptor[0]);
     }
 
     /**

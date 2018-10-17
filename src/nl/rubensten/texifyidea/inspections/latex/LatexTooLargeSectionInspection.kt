@@ -177,7 +177,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands
             val nextCmd = findNextSection(cmd)
-            val label = Companion.findLabel(cmd)
+            val label = findLabel(cmd)
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 

@@ -46,7 +46,7 @@ class RunConfigurationSelectionDialog(
             val fontMetrics = list.getFontMetrics(list.font)
 
             // Icon and gap (= 24) + max size of the configuration names
-            val maxWidth = 24 + (settings.map { fontMetrics.stringWidth(it.configuration.name) }.max()
+            val maxWidth = 24 + (settings.asSequence().map { fontMetrics.stringWidth(it.configuration.name) }.max()
                     ?: fontMetrics.stringWidth("m") * 30)
 
             minimumSize = Dimension(maxWidth, preferredSize.height)

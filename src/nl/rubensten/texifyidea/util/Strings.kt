@@ -58,7 +58,7 @@ fun String.trimRange(startTrim: Int, endTrim: Int): String = substring(startTrim
  * Returns the leading whitespace of a string.
  */
 fun String.getIndent(): String {
-    val matcher = Magic.Pattern.leadingWhitespace.matcher(this);
+    val matcher = Magic.Pattern.leadingWhitespace.matcher(this)
     return if (matcher.find()) matcher.group(0) else ""
 }
 

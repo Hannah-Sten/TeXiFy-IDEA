@@ -24,7 +24,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
 
     companion object {
 
-        private val minimumSelectionLength = 24
+        private const val minimumSelectionLength = 24
     }
 
     override fun startInWriteAction() = false
@@ -67,7 +67,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
 
         // Execute write actions.
         runWriteAction {
-            val filePath = "$root/$fileName.tex";
+            val filePath = "$root/$fileName.tex"
             val createdFile = createFile(filePath, text.toString())
 
             for ((start, end) in offsets.reversed()) {
