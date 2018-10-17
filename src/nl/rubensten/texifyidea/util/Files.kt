@@ -112,6 +112,27 @@ fun VirtualFile.findFile(fileName: String, extensions: Set<String>): VirtualFile
 }
 
 /**
+ * Recursively finds all files in a directory (thus, also the files in sub-directories etc.)
+ */
+fun VirtualFile.allChildFiles(): Set<VirtualFile> {
+    val set = HashSet<VirtualFile>()
+    allChildFiles(set)
+    return set
+}
+
+/**
+ * Recursive implementation of [allChildFiles].
+ */
+private fun VirtualFile.allChildFiles(files: MutableSet<VirtualFile>) {
+    if (isDirectory) {
+        children.forEach {
+            it.allChildFiles(files)
+        }
+    }
+    else files.add(this)
+}
+
+/**
  * Removes the extension from a given file name.
  */
 fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replaceAll("")!!
