@@ -5,10 +5,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.rubensten.texifyidea.index.BibtexIdIndex;
-import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.psi.BibtexId;
@@ -19,7 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -28,55 +27,6 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * Finds all defined labels within the project.
-     *
-     * @param project
-     *         Project scope.
-     * @return A list of label commands.
-     */
-    public static Collection<PsiElement> findLabels(@NotNull Project project) {
-        Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getItems(project);
-        Collection<BibtexId> bibIds = BibtexIdIndex.getIndexedIds(project);
-        List<PsiElement> result = new ArrayList<>(cmds);
-        result.addAll(bibIds);
-        return findLabels(result);
-    }
-
-    /**
-     * Finds all defined labels within the fileset of a given file.
-     *
-     * @param file
-     *         The file to analyse the file set of.
-     * @return A list of label commands.
-     */
-    public static Collection<PsiElement> findLabels(@NotNull PsiFile file) {
-        Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getItems(file);
-        Collection<BibtexId> bibIds = BibtexIdIndex.getIndexedIds(file);
-        List<PsiElement> result = new ArrayList<>(cmds);
-        result.addAll(bibIds);
-        return findLabels(result);
-    }
-
-    /**
-     * Finds all the label within the collection of commands.
-     *
-     * @param cmds
-     *         The commands to select all labels from.
-     * @return A collection of all label commands.
-     */
-    public static Collection<PsiElement> findLabels(@NotNull Collection<PsiElement> cmds) {
-        cmds.removeIf(cmd -> {
-            if (cmd instanceof LatexCommands) {
-                String name = ((LatexCommands)cmd).getName();
-                return !("\\bibitem".equals(name) || "\\label".equals(name));
-            }
-            return false;
-        });
-
-        return cmds;
     }
 
     /**
@@ -89,7 +39,7 @@ public class TexifyUtil {
      * @return A list of matched label commands.
      */
     public static Collection<PsiElement> findLabels(Project project, String key) {
-        return findLabels(project).parallelStream()
+        return LabelsKt.findLabels(project).parallelStream()
                 .filter(c -> {
                     if (c instanceof LatexCommands) {
                         LatexCommands cmd = (LatexCommands)c;

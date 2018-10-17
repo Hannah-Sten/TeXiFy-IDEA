@@ -56,7 +56,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         PsiFile file = myElement.getContainingFile().getOriginalFile();
         Collection<PsiElement> labels = new ArrayList<>();
         for (PsiFile referenced : FileSetKt.referencedFileSet(file)) {
-            labels.addAll(TexifyUtil.findLabels(referenced));
+            labels.addAll(LabelsKt.findLabels(referenced));
         }
 
         labels.removeIf(label -> {
