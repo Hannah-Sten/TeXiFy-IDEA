@@ -120,7 +120,8 @@ object Magic {
                 "\\def",
                 "\\DeclareMathOperator",
                 "\\newenvironment",
-                "\\newif"
+                "\\newif",
+                "\\ProvidesClass"
         )
 
         /**
