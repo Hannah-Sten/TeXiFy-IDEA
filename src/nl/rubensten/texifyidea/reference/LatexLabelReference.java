@@ -10,7 +10,10 @@ import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
-import nl.rubensten.texifyidea.util.*;
+import nl.rubensten.texifyidea.util.FileSetKt;
+import nl.rubensten.texifyidea.util.LabelsKt;
+import nl.rubensten.texifyidea.util.Magic;
+import nl.rubensten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +41,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     @Override
     public ResolveResult[] multiResolve(boolean b) {
         Project project = myElement.getProject();
-        final Collection<PsiElement> labels = TexifyUtil.findLabels(project, key);
+        final Collection<PsiElement> labels = LabelsKt.findLabels(project, key);
         return labels.stream().map(PsiElementResolveResult::new).toArray(ResolveResult[]::new);
     }
 

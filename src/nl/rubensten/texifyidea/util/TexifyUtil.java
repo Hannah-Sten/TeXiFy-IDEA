@@ -1,14 +1,9 @@
 package nl.rubensten.texifyidea.util;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Computable;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
-import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexContent;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
@@ -19,7 +14,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -27,34 +21,6 @@ import java.util.stream.Collectors;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * Finds all defined labels within the project matching the key.
-     *
-     * @param project
-     *         Project scope.
-     * @param key
-     *         Key to match the label with.
-     * @return A list of matched label commands.
-     */
-    public static Collection<PsiElement> findLabels(Project project, String key) {
-        return LabelsKt.findLabels(project).parallelStream()
-                .filter(c -> {
-                    if (c instanceof LatexCommands) {
-                        LatexCommands cmd = (LatexCommands)c;
-                        List<String> p = ApplicationManager.getApplication().runReadAction(
-                                (Computable<List<String>>)cmd::getRequiredParameters
-                        );
-                        return p.size() > 0 && key != null && key.equals(p.get(0));
-                    }
-                    else if (c instanceof BibtexId) {
-                        return key != null && key.equals(((BibtexId)c).getName());
-                    }
-
-                    return false;
-                })
-                .collect(Collectors.toList());
     }
 
     /**
