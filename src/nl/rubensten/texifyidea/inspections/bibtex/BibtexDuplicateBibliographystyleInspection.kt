@@ -36,7 +36,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
         commands.find { it.name == "\\bibliography" } ?: return descriptors
 
         if (commands.findAtLeast(2) { it.name == "\\bibliographystyle" }) {
-            file.commandsInFile()
+            file.commandsInFile().asSequence()
                     .filter { it.name == "\\bibliographystyle" }
                     .forEach {
                         descriptors.add(manager.createProblemDescriptor(
@@ -66,7 +66,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
 
-            file.commandsInFileSet()
+            file.commandsInFileSet().asSequence()
                     .filter { it.name == "\\bibliographystyle" && it != command }
                     .forEach {
                         it.delete()

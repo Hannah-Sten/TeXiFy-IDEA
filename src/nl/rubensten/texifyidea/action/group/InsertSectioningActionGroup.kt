@@ -9,8 +9,8 @@ import nl.rubensten.texifyidea.TexifyIcons
  */
 open class InsertSectioningActionGroup : DefaultActionGroup() {
 
-    override fun update(event: AnActionEvent?) {
+    override fun update(event: AnActionEvent) {
         super.update(event)
-        event?.presentation?.icon = TexifyIcons.DOT_SECTION
+        event.presentation.icon = TexifyIcons.DOT_SECTION
     }
 }

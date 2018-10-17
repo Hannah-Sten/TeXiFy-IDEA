@@ -465,7 +465,7 @@ private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildO
  */
 @Throws(IllegalArgumentException::class)
 fun LatexCommands.requiredParameter(index: Int): String? {
-    require(index >= 0, { "Index must not be negative" })
+    require(index >= 0) { "Index must not be negative" }
 
     val parameters = requiredParameters
     if (parameters.isEmpty() || index >= parameters.size) {

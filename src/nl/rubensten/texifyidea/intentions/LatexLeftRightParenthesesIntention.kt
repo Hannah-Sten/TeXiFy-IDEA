@@ -108,7 +108,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
 
         // Replace stuff
         runWriteAction {
-            document.replaceString(closeOffset!!, closeOffset!! + 1, "\\right$close")
+            document.replaceString(closeOffset, closeOffset + 1, "\\right$close")
             document.replaceString(offset, offset + 1, "\\left$open")
             editor.caretModel.moveToOffset(offset + 6)
         }
@@ -163,7 +163,7 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
         // Replace stuff
         runWriteAction {
             document.replaceString(offset, offset + 1, "\\right$close")
-            document.replaceString(openOffset!!, openOffset!! + 1, "\\left$open")
+            document.replaceString(openOffset, openOffset + 1, "\\left$open")
         }
     }
 

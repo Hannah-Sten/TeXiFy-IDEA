@@ -136,6 +136,17 @@ object Magic {
         )
 
         /**
+         * Extensions that should only be scanned for the provided include commands.
+         */
+        @JvmField val includeOnlyExtensions = mapOf(
+                "\\include" to setOf("tex"),
+                "\\includeonly" to setOf("tex"),
+                "\\bibliography" to setOf("bib"),
+                "\\RequirePackage" to setOf("sty"),
+                "\\usepackage" to setOf("sty")
+        )
+
+        /**
          * All commands that end if.
          */
         @JvmField val endIfs = setOf("\\fi")
@@ -288,7 +299,8 @@ object Magic {
                 "tmp" to TexifyIcons.TEMP_FILE,
                 "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
-                "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE
+                "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
+                "tikz" to TexifyIcons.LATEX_FILE
         )
     }
 }

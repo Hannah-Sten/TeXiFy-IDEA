@@ -9,8 +9,8 @@ import nl.rubensten.texifyidea.TexifyIcons
  */
 open class AnalysisActionGroup : DefaultActionGroup() {
 
-    override fun update(event: AnActionEvent?) {
+    override fun update(event: AnActionEvent) {
         super.update(event)
-        event?.presentation?.icon = TexifyIcons.STATS
+        event.presentation.icon = TexifyIcons.STATS
     }
 }

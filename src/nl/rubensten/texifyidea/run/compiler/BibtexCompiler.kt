@@ -20,9 +20,8 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
         command.apply {
             if (runConfig.compilerPath != null) {
                 add(runConfig.compilerPath!!)
-            } else {
-                add(executableName)
             }
+            else add(executableName)
 
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 

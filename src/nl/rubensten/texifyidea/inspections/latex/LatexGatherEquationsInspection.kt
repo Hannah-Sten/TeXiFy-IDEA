@@ -26,11 +26,11 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.childrenOfType(LatexContent::class)
+        file.childrenOfType(LatexContent::class).asSequence()
                 .filter { it.isDisplayMath() }
                 .map { Pair(it, it.nextSiblingIgnoreWhitespace()) }
                 .filter { (_, next) -> next != null && next is LatexContent && next.isDisplayMath() }
-                .flatMap { listOf(it.first, it.second) }
+                .flatMap { sequenceOf(it.first, it.second) }
                 .distinct()
                 .forEach {
                     descriptors.add(manager.createProblemDescriptor(
@@ -66,7 +66,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
             val gather = buildString {
                 append("\\begin{gather*}\n")
 
-                equations
+                equations.asSequence()
                         .map { trimEquation(it) }
                         .forEach {
                             append(indent)

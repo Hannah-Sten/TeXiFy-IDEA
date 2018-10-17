@@ -32,11 +32,11 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = LatexCommandsIndex.getItems(file)
-        for (cmd in commands) {
+        for (command in commands) {
             // Only consider default commands with a file argument.
-            val default = LatexCommand.lookup(cmd.name) ?: continue
+            val default = LatexCommand.lookup(command.name) ?: continue
             val arguments = default.arguments
-            val parameters = cmd.parameterList
+            val parameters = command.parameterList
 
             for (i in 0 until arguments.size) {
                 if (i >= parameters.size) {
@@ -60,7 +60,9 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
                 // Create quick fixes for all extensions if none was supplied in the argument
                 if (extensions.none { fileName.endsWith(".$it") }) {
-                    extensions.forEach { fixes.add(0, CreateFileFix(false, "$fileName.$it", root.containingDirectory)) }
+                    extensions.forEach {
+                        fixes.add(0, CreateFileFix(false, "$fileName.$it", root.containingDirectory))
+                    }
                 }
 
                 descriptors.add(manager.createProblemDescriptor(

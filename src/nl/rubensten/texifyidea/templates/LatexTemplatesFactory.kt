@@ -23,13 +23,13 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
 
     companion object {
 
-        @JvmField val descriptor = "LaTeX"
-
-        @JvmField val fileTemplateTex = "LaTeX Source.tex"
-        @JvmField val fileTemplateTexWithBib = "LaTeX Source With BibTeX.tex"
-        @JvmField val fileTemplateSty = "LaTeX Package.sty"
-        @JvmField val fileTemplateCls = "LaTeX Document class.cls"
-        @JvmField val fileTemplateBib = "BibTeX Bibliography.bib"
+        const val descriptor = "LaTeX"
+        const val fileTemplateTex = "LaTeX Source.tex"
+        const val fileTemplateTexWithBib = "LaTeX Source With BibTeX.tex"
+        const val fileTemplateSty = "LaTeX Package.sty"
+        const val fileTemplateCls = "LaTeX Document class.cls"
+        const val fileTemplateBib = "BibTeX Bibliography.bib"
+        const val fileTemplateTikz = "TikZ Picture.tikz"
 
         @JvmStatic
         fun createFromTemplate(directory: PsiDirectory, fileName: String,
@@ -68,7 +68,7 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
                 return template.getText(properties)
             }
             catch (e: IOException) {
-                throw TeXception("Could not load template " + templateName, e)
+                throw TeXception("Could not load template $templateName", e)
             }
 
         }
@@ -85,6 +85,7 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
         descriptor.addTemplate(FileTemplateDescriptor(fileTemplateSty, TexifyIcons.STYLE_FILE))
         descriptor.addTemplate(FileTemplateDescriptor(fileTemplateCls, TexifyIcons.CLASS_FILE))
         descriptor.addTemplate(FileTemplateDescriptor(fileTemplateBib, TexifyIcons.BIBLIOGRAPHY_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTikz, TexifyIcons.LATEX_FILE))
 
         return descriptor
     }

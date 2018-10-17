@@ -53,21 +53,21 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
         // Look through all commands to see if they include duplicates.
         val commands = LatexCommandsIndex.getItems(file)
-        for (cmd in commands) {
-            val name = cmd.name
+        for (command in commands) {
+            val name = command.name
             if ("\\input" != name && "\\include" != name && "\\includeonly" != name) {
                 continue
             }
 
-            val param = cmd.requiredParameter(0) ?: continue
+            val param = command.requiredParameter(0) ?: continue
             val targetFile = root.findRelativeFile(param)
             if (!duplicate.contains(targetFile)) {
                 continue
             }
 
             descriptors.add(manager.createProblemDescriptor(
-                    cmd,
-                    TextRange(name.length + 1, cmd.textLength - 1),
+                    command,
+                    TextRange(name.length + 1, command.textLength - 1),
                     "File inclusion loop found.",
                     ProblemHighlightType.GENERIC_ERROR,
                     isOntheFly

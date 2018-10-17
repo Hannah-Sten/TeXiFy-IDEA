@@ -89,20 +89,39 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 
 ## <a name="installation-instructions">Installation instructions</a>
 ### Installing IntelliJ and the TeXiFy-IDEA plugin
-* It is probably a good idea to keep these instructions open as a reference while carrying them out.
+* It is probably a good idea to keep these instructions open as a reference while carrying them out. For linux instructions see [below](#linux-instructions).
 * If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free.
 * Download and install [LaTeX for Windows](https://miktex.org/download) or [LaTeX for Mac](https://miktex.org/howto/install-miktex-mac). During installation, choose the option `Install missing packages on the fly: yes`.
 * If you're on Windows, download and install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html), you will use it to view your compiled pdf files. If you know you are on a 64-bit system you can download the 64-bit build. If you have no idea, download the normal installer which is the top-most link.
-* Open IntelliJ, choose `create new project`, click `empty project` and click next. Save it anywhere because we will not use this project.
-* If you see a window named Project Structure, just click ok.
-* Go to File - Settings - Plugins, search for `texify`, click `search in repositories` and click `install`.
+* Open IntelliJ, in the welcome menu choose Configure - Plugins (or when you already have a project open, use File - Settings - Plugins).
+* Search for `texify`, click `search in repositories` and click `install`.
 * Restart your pc to finish the LaTeX and the plugin installations.
-* Click on File - New - Project, select LaTeX in the left column and click next. Specify a name for your project, and a location. A project can contain multiple LaTeX files, so for example if you make a new document for each new homework you get, place them all in the same project.
+* Click on Create New Project (in welcome menu) or File - New - Project, select LaTeX in the left column and click next. Specify a name for your project, and a location. A project can contain multiple LaTeX files, so for example if you make a new document for each new homework you get, place them all in the same project.
 * Double-click or click on the arrow next to your project name on the left to open the directory.
-* A standard document is already made for you, you can find it in the `src` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on it's side) on the left of your screen.
+* A standard document is already made for you, you can find it in the `src` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
 * Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. If you see a pdf appearing, congratulations! 
 * If you see `LaTeX error: fily a4.sty not found` then you did not restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd> on Windows.
+
+### <a name="linux-instructions">Installation instructions for linux</a>
+
+* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You can extract in your Downloads folder with `sudo tar xf ideaIU-2018.1.5.tar.gz -C /opt/`, then run `/opt/idea-IU-181.5281.24/bin/idea.sh`.
+* To install LaTeX, you can use the TeX Live distribution. If something is already installed, check that the version is at least 2017 with `latex --version`. If not, for example if you are on Ubuntu 16.04, you have to first remove the old TeX Live (see for example [these steps](https://tex.stackexchange.com/a/95502/98850)) and then install a newer TeX Live (based on the LaTeX3 setup):
+  *  Run in your Downloads directory `sudo wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz` 
+  * `sudo tar -xzf install-tl-unx.tar.gz` 
+  * `sudo install-tl-20*/install-tl -scheme scheme-basic` 
+  * Then use `nano ~/.profile` to add texlive to your path, so at the end of the file write `export PATH="/usr/local/texlive/2018/bin/x86_64-linux:$PATH"`. 
+  * Log out and log back in for this to take effect. Check again with `latex --version` and `pdflatex --version` and `tlmgr --version` that everything went right. 
+  * Now you probably need to `sudo visudo` to modify `Defaults secure_path="/usr/..."` to make it look like `Defaults secure_path="/usr/local/texlive/2018/bin/x86_64-linux:/usr/..."`.
+* Now you can install packages, so `sudo tlmgr install xkeyval collection-latex collection-langeuropean` and all the other packages you want.
+* Open IntelliJ, in the welcome menu choose Configure - Plugins (or when you already have a project open, use File - Settings - Plugins).
+* Search for `texify`, click `search in repositories` and click `install`.
+* Restart IntelliJ to finish the the plugin installation.
+* Click on Create New Project (in welcome menu) or File - New - Project, select LaTeX in the left column and click next. Specify a name for your project, and a location. A project can contain multiple LaTeX files, so for example if you make a new document for each new homework you get, place them all in the same project.
+* Double-click or click on the arrow next to your project name on the left to open the directory.
+* A standard document is already made for you, you can find it in the `src/` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
+* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. The resulting pdf file is hiding in the `output/` folder.
+* The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd>.
 
 #### <a name="tips">Tips</a>
 * You never have to remember to save your work, IntelliJ will automatically save every letter you type.
@@ -223,7 +242,22 @@ Arara pipes the full output from all subsequent commands, which is not all the t
 
     arara thesis.tex -v | grep -C 1 -E "((E|e)rror|ERROR|SUCCESS|FAILURE|Undefined control sequence)"
 
+##### Alternative for integrating a latex compiler other than pdflatex:
+In your run configuration, tick the box `select custom compiler executable path (required on Mac OS X)`.
+You can now provide the path to any latex compiler. 
+When using Windows and MiKTeX, these executables are located in 
 
+    C:\Program Files\MiKTeX 2.9\miktex\bin\x64
+
+or (in some cases)
+
+    C:\Users\user\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64
+    
+For example, to use lualatex:
+
+    C:\Program Files\MiKTeX 2.9\miktex\bin\x64\lualatex.exe
+    
+You can run this run configuration by pressing <kbd>Shift</kbd>+<kbd>F10</kbd> (on Windows), by clicking the play button, or by clicking the gutter icon.
 
 
 

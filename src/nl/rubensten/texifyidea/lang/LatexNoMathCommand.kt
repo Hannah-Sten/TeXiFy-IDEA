@@ -311,7 +311,7 @@ enum class LatexNoMathCommand(
 
         init {
             for (command in LatexNoMathCommand.values()) {
-                lookup.put(command.command, command)
+                lookup[command.command] = command
                 if (command.display != null) {
                     lookupDisplay.putIfAbsent(command.display!!, command)
                 }

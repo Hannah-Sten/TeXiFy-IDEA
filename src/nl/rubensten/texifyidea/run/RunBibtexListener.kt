@@ -28,7 +28,8 @@ class RunBibtexListener(
         // Mark the next latex runs to exclude bibtex compilation
         latexConfiguration.isSkipBibtex = true
         try {
-            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration) ?: return
+            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration)
+                    ?: return
 
             repeat(2) {
                 RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
