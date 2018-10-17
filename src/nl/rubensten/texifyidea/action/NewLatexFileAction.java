@@ -15,7 +15,7 @@ import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.templates.LatexTemplatesFactory;
 import nl.rubensten.texifyidea.util.FileUtil;
 import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -141,7 +141,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
                 return smallFileName;
             }
 
-            return TexifyUtil.appendExtension(fileName, fileType.getDefaultExtension());
+            return StringsKt.appendExtension(fileName, fileType.getDefaultExtension());
         }
 
         @Nullable

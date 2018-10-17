@@ -63,6 +63,26 @@ fun String.getIndent(): String {
 }
 
 /**
+ * Appends an extension to a path only if the given path does not end in that extension.
+ *
+ * @param extensionWithoutDot
+ *         The extension to append optionally.
+ * @return A path ending with the given extension without duplications (e.g. `.tex.tex` is impossible.)
+ */
+fun String.appendExtension(extensionWithoutDot: String): String {
+    val dottedExtension = ".${extensionWithoutDot.toLowerCase()}"
+    val thisLower = toLowerCase()
+
+    return if (thisLower.endsWith(dottedExtension)) {
+        this
+    }
+    else if (endsWith('.')) {
+        this + extensionWithoutDot
+    }
+    else this + dottedExtension
+}
+
+/**
  * Removes unnecessary indents.
  *
  * Meaning that when all lines have at least `x` characters, `x` characters will be removed.

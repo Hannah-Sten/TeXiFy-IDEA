@@ -29,31 +29,6 @@ public class TexifyUtil {
     }
 
     /**
-     * Appends an extension to a path only if the given path does not end in that extension.
-     *
-     * @param path
-     *         The path to append the extension to.
-     * @param extensionWithoutDot
-     *         The extension to append optionally.
-     * @return A path ending with the given extension without duplications (e.g. {@code .tex.tex} is
-     * impossible}.
-     * @throws IllegalArgumentException
-     *         When {@code path} or {@code extensionWithoutDot} is {@code null}.
-     */
-    public static String appendExtension(@NotNull String path, @NotNull String extensionWithoutDot) {
-
-        if (path.toLowerCase().endsWith("." + extensionWithoutDot.toLowerCase())) {
-            return path;
-        }
-
-        if (path.endsWith(".")) {
-            return path + extensionWithoutDot;
-        }
-
-        return path + "." + extensionWithoutDot;
-    }
-
-    /**
      * Get all commands that are children of the given element.
      */
     public static List<LatexCommands> getAllCommands(PsiElement element) {
