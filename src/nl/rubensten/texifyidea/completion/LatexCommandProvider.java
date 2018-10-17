@@ -22,10 +22,7 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.util.FileSetKt;
-import nl.rubensten.texifyidea.util.FilesKt;
-import nl.rubensten.texifyidea.util.Kindness;
-import nl.rubensten.texifyidea.util.PsiKt;
+import nl.rubensten.texifyidea.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,7 +106,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
         LatexDefinitionIndex.Companion.getItemsInFileSet(parameters.getOriginalFile()).stream()
                 .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
-                .map(cmd -> PsiKt.requiredParameter(cmd, 0))
+                .map(cmd -> PsiCommandsKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)
                 .map(SimpleEnvironment::new)
                 .forEach(environments::add);
@@ -163,7 +160,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getItems(project, scope);
 
         for (LatexCommands cmd : cmds) {
-            if (!PsiKt.isDefinition(cmd) && !PsiKt.isEnvironmentDefinition(cmd)) {
+            if (!PsiCommandsKt.isDefinition(cmd) && !PsiCommandsKt.isEnvironmentDefinition(cmd)) {
                 continue;
             }
 
@@ -207,12 +204,12 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             return "";
         }
 
-        LatexCommands firstNext = PsiKt.nextCommand(commands);
+        LatexCommands firstNext = PsiCommandsKt.nextCommand(commands);
         if (firstNext == null) {
             return "";
         }
 
-        LatexCommands secondNext = PsiKt.nextCommand(firstNext);
+        LatexCommands secondNext = PsiCommandsKt.nextCommand(firstNext);
         if (secondNext == null) {
             return "";
         }
@@ -261,13 +258,13 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     @Nullable
     private String getNewCommandName(@NotNull LatexCommands commands) {
-        LatexCommands cmd = PsiKt.firstRequiredParamAsCommand(commands);
+        LatexCommands cmd = PsiCommandsKt.firstRequiredParamAsCommand(commands);
         return cmd == null ? null : cmd.getName();
     }
 
     @Nullable
     private String getDefinitionName(@NotNull LatexCommands commands) {
-        LatexCommands next = PsiKt.definitionCommand(commands);
+        LatexCommands next = PsiCommandsKt.definitionCommand(commands);
         if (next == null) {
             return null;
         }

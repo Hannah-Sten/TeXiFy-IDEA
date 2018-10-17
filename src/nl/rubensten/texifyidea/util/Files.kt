@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
@@ -18,7 +19,9 @@ import nl.rubensten.texifyidea.file.ClassFileType
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.file.StyleFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.psi.LatexCommands
 import org.codehaus.plexus.util.FileUtils
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -315,6 +318,36 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
     }
 
     return null
+}
+
+/**
+ * Get the corresponding document of the PsiFile.
+ */
+fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
+
+/**
+ * @see [LatexCommandsIndex.getIndexedCommands]
+ */
+fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
+
+/**
+ * Get the editor of the file if it is currently opened.
+ */
+fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedTextEditor
+
+/**
+ * Get all the definitions in the file.
+ */
+fun PsiFile.definitions(): Collection<LatexCommands> {
+    return LatexDefinitionIndex.getItems(this)
+            .filter { it.isDefinition() }
+}
+
+/**
+ * Get all the definitions and redefinitions in the file.
+ */
+fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
+    return LatexDefinitionIndex.getItems(this)
 }
 
 /**
