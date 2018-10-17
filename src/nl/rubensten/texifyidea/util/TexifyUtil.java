@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.util;
 
-import com.intellij.openapi.module.Module;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
@@ -10,7 +9,6 @@ import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -21,17 +19,6 @@ import java.util.Optional;
 public class TexifyUtil {
 
     private TexifyUtil() {
-    }
-
-    /**
-     * Creates a project directory at {@code path} which will be marked as excluded.
-     *
-     * @param path
-     *         The path to create the directory to.
-     */
-    public static void createExcludedDir(@NotNull String path, @NotNull Module module) {
-        new File(path).mkdirs();
-        // TODO: actually mark as excluded
     }
 
     /**
