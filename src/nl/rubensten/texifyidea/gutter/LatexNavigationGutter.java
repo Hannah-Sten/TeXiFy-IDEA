@@ -16,7 +16,6 @@ import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.FilesKt;
 import nl.rubensten.texifyidea.util.PsiCommandsKt;
-import nl.rubensten.texifyidea.util.TexifyUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
