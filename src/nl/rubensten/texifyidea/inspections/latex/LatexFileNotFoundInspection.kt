@@ -46,33 +46,36 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 val fileArgument = arguments[i] as? RequiredFileArgument ?: continue
                 val extensions = fileArgument.supportedExtensions
                 val parameter = parameters[i]
-                val fileName = parameter.requiredParam?.firstChildOfType(LatexNormalText::class)?.text ?: continue
+                val fileNames = parameter.requiredParam?.firstChildOfType(LatexNormalText::class)?.text?.split(',') ?: continue
                 val root = file.findRootFile()
-                val relative = root.findRelativeFile(fileName, extensions)
 
-                if (relative != null) {
-                    continue
-                }
+                for (fileName in fileNames) {
+                    val relative = root.findRelativeFile(fileName, extensions)
 
-                val fixes: MutableList<LocalQuickFix> = mutableListOf(
-                        CreateFileFix(false, fileName, root.containingDirectory)
-                )
-
-                // Create quick fixes for all extensions if none was supplied in the argument
-                if (extensions.none { fileName.endsWith(".$it") }) {
-                    extensions.forEach {
-                        fixes.add(0, CreateFileFix(false, "$fileName.$it", root.containingDirectory))
+                    if (relative != null) {
+                        continue
                     }
-                }
 
-                descriptors.add(manager.createProblemDescriptor(
-                        parameter,
-                        TextRange(1, parameter.textLength - 1),
-                        "File not found",
-                        ProblemHighlightType.GENERIC_ERROR,
-                        isOntheFly,
-                        *fixes.toTypedArray()
-                ))
+                    val fixes: MutableList<LocalQuickFix> = mutableListOf(
+                            CreateFileFix(false, fileName, root.containingDirectory)
+                    )
+
+                    // Create quick fixes for all extensions if none was supplied in the argument
+                    if (extensions.none { fileName.endsWith(".$it") }) {
+                        extensions.forEach {
+                            fixes.add(0, CreateFileFix(false, "$fileName.$it", root.containingDirectory))
+                        }
+                    }
+
+                    descriptors.add(manager.createProblemDescriptor(
+                            parameter,
+                            TextRange(1, parameter.textLength - 1),
+                            "File \"$fileName\" not found",
+                            ProblemHighlightType.GENERIC_ERROR,
+                            isOntheFly,
+                            *fixes.toTypedArray()
+                    ))
+                }
             }
         }
 

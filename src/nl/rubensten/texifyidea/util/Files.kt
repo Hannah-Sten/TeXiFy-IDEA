@@ -181,13 +181,17 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
 
     // Find all related files.
     for (command in commands) {
-        val includedName = command.includedFileName() ?: continue
+        val includedNames = command.includedFileName() ?: continue
         val declaredIn = command.containingFile
-        val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
 
-        val inclusionSet = inclusions[declaredIn] ?: HashSet()
-        inclusionSet.add(referenced)
-        inclusions[declaredIn] = inclusionSet
+        for (includedName in includedNames) {
+            val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
+
+            val inclusionSet = inclusions[declaredIn] ?: HashSet()
+            inclusionSet.add(referenced)
+            inclusions[declaredIn] = inclusionSet
+        }
+
     }
 
     return inclusions
@@ -289,13 +293,16 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val commands = LatexCommandsIndex.getItems(project, scope)
 
     commands.forEach { command ->
-        val fileName = command.includedFileName() ?: return@forEach
+        val fileNames = command.includedFileName() ?: return@forEach
         val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
-        val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
-        if (included in files) return@forEach
-        files.add(included)
-        included.referencedFiles(files)
+
+        for (fileName in fileNames) {
+            val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
+            if (included in files) return@forEach
+            files.add(included)
+            included.referencedFiles(files)
+        }
     }
 }
 
