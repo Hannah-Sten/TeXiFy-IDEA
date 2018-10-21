@@ -24,7 +24,7 @@ open class BibtexCommandLineState(
         // Only on Windows (MikTeX) the auxiliary files should be found in the auxiliary directory
         var commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.mainFile?.parent?.path)
         if (System.getProperty("os.name").contains("Windows")) {
-            commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.auxDir?.path ?: runConfig.mainFile?.parent?.path)
+            commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.bibWorkingDirectory?.path ?: runConfig.mainFile?.parent?.path)
         }
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)

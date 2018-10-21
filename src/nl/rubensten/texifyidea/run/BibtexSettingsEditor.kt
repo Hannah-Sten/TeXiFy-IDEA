@@ -39,7 +39,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         compilerArguments.component.text = runConfig.compilerArguments ?: ""
         enableCompilerPath.isSelected = runConfig.compilerPath != null
         mainFile.component.text = runConfig.mainFile?.path ?: ""
-        auxFile.component.text = runConfig.auxDir?.path ?: ""
+        auxFile.component.text = runConfig.bibWorkingDirectory?.path ?: ""
     }
 
     override fun applyEditorTo(runConfig: BibtexRunConfiguration) {
@@ -47,7 +47,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         runConfig.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
         runConfig.compilerArguments = compilerArguments.component.text
         runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
-        runConfig.auxDir = LocalFileSystem.getInstance().findFileByPath(auxFile.component.text)
+        runConfig.bibWorkingDirectory = LocalFileSystem.getInstance().findFileByPath(auxFile.component.text)
     }
 
     private fun createUIComponents() {

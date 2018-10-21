@@ -38,7 +38,7 @@ class BibtexRunConfiguration(
         }
 
     var mainFile: VirtualFile? = null
-    var auxDir: VirtualFile? = null
+    var bibWorkingDirectory: VirtualFile? = null
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = BibtexSettingsEditor(project)
 
@@ -83,7 +83,7 @@ class BibtexRunConfiguration(
         }
 
         val auxDirPath = parent.getChildText(AUX_DIR)
-        auxDir = if (auxDirPath != null) {
+        bibWorkingDirectory = if (auxDirPath != null) {
             LocalFileSystem.getInstance().findFileByPath(auxDirPath)
         } else {
             null
@@ -100,7 +100,7 @@ class BibtexRunConfiguration(
         parent.addContent(Element(COMPILER_PATH).apply { text = compilerPath ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).apply { text = compilerArguments ?: "" })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
-        parent.addContent(Element(AUX_DIR).apply { text = auxDir?.path ?: "" })
+        parent.addContent(Element(AUX_DIR).apply { text = bibWorkingDirectory?.path ?: "" })
     }
 
     override fun isGeneratedName() = name == suggestedName()

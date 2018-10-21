@@ -308,7 +308,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         return "LatexRunConfiguration{" + "compiler=" + compiler +
                 ", compilerPath=" + compilerPath +
                 ", mainFile=" + mainFile +
-                ", auxDir=" + auxDir +
+                ", bibWorkingDirectory=" + auxDir +
                 ", outputFormat=" + outputFormat +
                 '}';
     }
