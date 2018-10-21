@@ -58,7 +58,7 @@ fun String.formatAsFileName(): String {
                     this.dropLast(1)
                 }
             }
-            .decapitalize()
+            .toLowerCase()
 
     // If there are no valid characters left, use a default name.
     return if (formatted.isEmpty()) { "myfile" } else { formatted }
@@ -70,7 +70,7 @@ fun String.formatAsFileName(): String {
 fun String.formatAsLabel(): String {
     return replace(" ", "-")
             .removeAll("%", "~", "#", "\\")
-            .decapitalize()
+            .toLowerCase()
 }
 
 /**
