@@ -171,18 +171,23 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile");
         panel.add(mainFile);
 
-        panel.add(new TitledSeparator("Options"));
-
-        // Auxiliary files
-        auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
-        // Only enable by default on Windows.
-        auxDir.setSelected(System.getProperty("os.name").contains("Windows"));
-        panel.add(auxDir);
-        
-        outDir = new JCheckBox("Separate output files from source");
-        // Only enable by default on Windows.
-        outDir.setSelected(System.getProperty("os.name").contains("Windows"));
-        panel.add(outDir);
+        // Only add options to disable aux and out folder on Windows.
+        // (Disabled on other systems by default.)
+        if (System.getProperty("os.name").contains("Windows")) {
+            panel.add(new TitledSeparator("Options"));
+            
+            // Auxiliary files
+            auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
+            // Only enable by default on Windows.
+            auxDir.setSelected(System.getProperty("os.name").contains("Windows"));
+            panel.add(auxDir);
+            
+            // Output folder
+            outDir = new JCheckBox("Separate output files from source");
+            // Only enable by default on Windows.
+            outDir.setSelected(System.getProperty("os.name").contains("Windows"));
+            panel.add(outDir);
+        }
 
         // Output format.
         ComboBox<Format> cboxFormat = new ComboBox<>(Format.values());

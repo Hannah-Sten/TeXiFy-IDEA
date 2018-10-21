@@ -324,7 +324,6 @@ public class LatexRunConfiguration extends RunConfigurationBase
     public String getOutputFilePath() {
         String folder;
         
-        
         if (outDir) {
             folder = ProjectRootManager.getInstance(getProject()).getFileIndex()
                     .getContentRootForFile(mainFile).getPath() + "/out/";
@@ -357,7 +356,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
         return "LatexRunConfiguration{" + "compiler=" + compiler +
                 ", compilerPath=" + compilerPath +
                 ", mainFile=" + mainFile +
-                ", bibWorkingDirectory=" + auxDir +
+                ", bibWorkingDir=" + auxDir +
                 ", outputFormat=" + outputFormat +
                 '}';
     }
