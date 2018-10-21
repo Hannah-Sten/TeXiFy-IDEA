@@ -51,11 +51,9 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
         // Create new file.
         val fileNameBraces = sectionCommand.requiredParameter(0) ?: return
-        // Decapitalize and use - instead of space according to LaTeX conventions
-        val fileName = fileNameBraces.replace("}", "")
-                .replace("{", "")
-                .replace(" ", "-")
-                .decapitalize()
+        // Remove the braces of the LaTeX command before creating a filename of it
+        val fileName = fileNameBraces.removeAll("{", "}")
+                .formatAsFileName()
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
 
         // Execute write actions.

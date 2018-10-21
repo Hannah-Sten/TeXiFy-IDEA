@@ -63,11 +63,13 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         // Manage paths/file names.
         @Language("RegExp")
         val fileName = dialogResult.replace(Regex("(\\.tex)+$", RegexOption.IGNORE_CASE), "")
+        // Note that we do not override the user-specified filename to be LaTeX-like.
+
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
 
         // Execute write actions.
         runWriteAction {
-            val filePath = "$root/$fileName.tex";
+            val filePath = "$root/$fileName.tex"
             val createdFile = TexifyUtil.createFile(filePath, text.toString())
 
             for ((start, end) in offsets.reversed()) {

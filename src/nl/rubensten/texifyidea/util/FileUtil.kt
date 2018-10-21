@@ -39,6 +39,41 @@ fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(pro
 fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replaceAll("")!!
 
 /**
+ * Remove all appearances of all given strings.
+ */
+fun String.removeAll(vararg strings: String): String {
+    var formatted = this
+    strings.forEach { formatted = formatted.replace(it, "") }
+    return formatted
+}
+
+/**
+ * Formats the string as a valid filename, removing not-allowed characters, in TeX-style with - as separator. // todo make sure this is used everywhere
+ */
+fun String.formatAsFileName(): String {
+    val formatted = this.replace(" ", "-")
+            .removeAll("/", "\\", "<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
+            .apply { // File cannot end in . on Windows
+                if (this.last() == '.') {
+                    this.dropLast(1)
+                }
+            }
+            .decapitalize()
+
+    // If there are no valid characters left, use a default name.
+    return if (formatted.isEmpty()) { "myfile" } else { formatted }
+}
+
+/**
+ * Formats the string as a valid LaTeX label name.
+ */
+fun String.formatAsLabel(): String {
+    return replace(" ", "-")
+            .removeAll("%", "~", "#", "\\")
+            .decapitalize()
+}
+
+/**
  * Creates a project directory at `path` which will be marked as excluded.
  *
  * @param path The path to create the directory to.
