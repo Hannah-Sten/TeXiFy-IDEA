@@ -53,11 +53,6 @@ fun String.removeAll(vararg strings: String): String {
 fun String.formatAsFileName(): String {
     val formatted = this.replace(" ", "-")
             .removeAll("/", "\\", "<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
-            .apply { // File cannot end in . on Windows
-                if (this.last() == '.') {
-                    this.dropLast(1)
-                }
-            }
             .toLowerCase()
 
     // If there are no valid characters left, use a default name.
