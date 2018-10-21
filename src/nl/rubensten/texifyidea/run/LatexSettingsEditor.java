@@ -34,6 +34,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     private LabeledComponent<RawCommandLineEditor> compilerArguments;
     private LabeledComponent<ComponentWithBrowseButton> mainFile;
     private JCheckBox auxDir;
+    private JCheckBox outDir;
     private LabeledComponent<ComboBox> outputFormat;
     private BibliographyPanel bibliographyPanel;
 
@@ -64,6 +65,9 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Reset seperate auxiliary files.
         auxDir.setSelected(runConfiguration.hasAuxiliaryDirectories());
+        
+        // Reset seperate output files.
+        outDir.setSelected(runConfiguration.hasOutputDirectories());
 
         // Reset output format.
         outputFormat.getComponent().setSelectedItem(runConfiguration.getOutputFormat());
@@ -96,6 +100,9 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         // Apply auxiliary files.
         boolean auxDirectories = auxDir.isSelected();
         runConfiguration.setAuxiliaryDirectories(auxDirectories);
+        
+        boolean outDirectories = outDir.isSelected();
+        runConfiguration.setOutputDirectories(outDirectories);
 
         // Apply output format.
         Format format = (Format)outputFormat.getComponent().getSelectedItem();
@@ -168,9 +175,14 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Auxiliary files
         auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
-        // Only enable by default on Windows
+        // Only enable by default on Windows.
         auxDir.setSelected(System.getProperty("os.name").contains("Windows"));
         panel.add(auxDir);
+        
+        outDir = new JCheckBox("Separate output files from source");
+        // Only enable by default on Windows.
+        outDir.setSelected(System.getProperty("os.name").contains("Windows"));
+        panel.add(outDir);
 
         // Output format.
         ComboBox<Format> cboxFormat = new ComboBox<>(Format.values());

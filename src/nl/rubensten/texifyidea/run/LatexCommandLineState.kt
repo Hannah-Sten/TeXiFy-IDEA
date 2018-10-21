@@ -49,8 +49,11 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 if (runConfig.hasAuxiliaryDirectories()) {
                     this.bibWorkingDirectory = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
                 }
-                else {
+                else if (runConfig.hasOutputDirectories()) {
                     this.bibWorkingDirectory = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
+                }
+                else {
+                    this.bibWorkingDirectory = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("src")
                 }
             }
 
