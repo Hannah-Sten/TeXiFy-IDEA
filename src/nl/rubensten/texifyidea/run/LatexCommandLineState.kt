@@ -45,7 +45,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Change configuration to match the latex settings
             (it.configuration as? BibtexRunConfiguration)?.apply {
                 this.mainFile = mainFile
-                this.auxDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
+                // If the auxil folder should be used
+                if (runConfig.hasAuxiliaryDirectories()) {
+                    this.bibWorkingDirectory = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
+                }
+                else {
+                    this.bibWorkingDirectory = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
+                }
             }
 
             handler.addProcessListener(RunBibtexListener(it, runConfig, environment))
