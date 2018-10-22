@@ -49,7 +49,7 @@ public enum LatexCompiler {
             command.add("-interaction=nonstopmode");
             command.add("-synctex=1");
             command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
-            
+
             if (runConfig.hasOutputDirectories() && System.getProperty("os.name").contains("Windows")) {
                 command.add("-output-directory=" + moduleRoot.getPath() + "/out");
             }
@@ -76,7 +76,10 @@ public enum LatexCompiler {
             command.add("-interaction=nonstopmode");
             command.add("-synctex=1");
             command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
-            command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+
+            if (runConfig.hasOutputDirectories() && System.getProperty("os.name").contains("Windows")) {
+                command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+            }
 
             // But lualatex has no -aux-directory
         }
