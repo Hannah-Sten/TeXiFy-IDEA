@@ -123,7 +123,15 @@ public class LatexRunConfiguration extends RunConfigurationBase
         
         // Read output directories.
         String outDirBoolean = parent.getChildText(OUT_DIR);
-        this.outDir = Boolean.parseBoolean(outDirBoolean);
+        // This is null if the original run configuration did not contain the
+        // option to disable the out directory, which should be enabled by
+        // default.
+        if (outDirBoolean == null) {
+            this.outDir = true;
+        }
+        else {
+            this.outDir = Boolean.parseBoolean(outDirBoolean);
+        }
         
         // Read output format.
         Format format = Format
