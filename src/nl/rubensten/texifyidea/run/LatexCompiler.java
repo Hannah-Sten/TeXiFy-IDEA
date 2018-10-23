@@ -48,15 +48,22 @@ public enum LatexCompiler {
             command.add("-interaction=nonstopmode");
             command.add("-synctex=1");
             command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
-            command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+
+            // Only on Windows (MikTeX) the out/ directory can be used, on other systems it will break bibtex because the .aux file will also end up in out/ where bibtex can't find it.
+            if (System.getProperty("os.name").contains("Windows")) {
+                command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+            }
 
             if (runConfig.hasAuxiliaryDirectories()) {
                 command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
             }
 
-            for (VirtualFile root : moduleRoots) {
-                command.add("-include-directory=" + root.getPath());
+            if (System.getProperty("os.name").contains("Windows")) {
+                for (VirtualFile root : moduleRoots) {
+                    command.add("-include-directory=" + root.getPath());
+                }
             }
+
         }
 
         // Custom compiler arguments specified by the user
