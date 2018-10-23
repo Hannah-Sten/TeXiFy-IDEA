@@ -4,6 +4,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import nl.rubensten.texifyidea.util.PlatformType;
+import nl.rubensten.texifyidea.util.PlatformUtilKt;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -80,7 +82,7 @@ public enum LatexCompiler {
         command.add("-synctex=1");
         command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
 
-        if (runConfig.hasOutputDirectories() && getPlatform() == Platform.WINDOWS) {
+        if (runConfig.hasOutputDirectories() && (PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
         }
 
@@ -110,15 +112,15 @@ public enum LatexCompiler {
         command.add("-synctex=1");
         command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
 
-        if (runConfig.hasOutputDirectories() && getPlatform() == Platform.WINDOWS) {
+        if (runConfig.hasOutputDirectories() && (PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
         }
 
-        if (runConfig.hasAuxiliaryDirectories() && getPlatform() == Platform.WINDOWS) {
+        if (runConfig.hasAuxiliaryDirectories() &&(PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
             command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
         }
 
-        if (getPlatform() == Platform.WINDOWS) {
+        if ((PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
             for (VirtualFile root : moduleRoots) {
                 command.add("-include-directory=" + root.getPath());
             }
