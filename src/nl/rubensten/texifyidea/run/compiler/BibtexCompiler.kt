@@ -23,10 +23,13 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             }
             else add(executableName)
 
-            add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
-            addAll(moduleRoots.map { "-include-directory=${it.path}" })
-
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
+
+            // Include files from auxiliary directory on Windows
+            if (System.getProperty("os.name").contains("Windows")) {
+                add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
+                addAll(moduleRoots.map { "-include-directory=${it.path}" })
+            }
 
             add(runConfig.mainFile?.nameWithoutExtension ?: return null)
         }

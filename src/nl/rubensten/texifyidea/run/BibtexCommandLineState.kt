@@ -21,7 +21,12 @@ open class BibtexCommandLineState(
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val command: List<String> = compiler.getCommand(runConfig, environment.project) ?: throw ExecutionException("Compile command could not be created.")
 
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.auxDir?.path ?: runConfig.mainFile?.parent?.path)
+        // Only on Windows (MikTeX) the auxiliary files should be found in the auxiliary directory
+        var commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.mainFile?.parent?.path)
+        if (System.getProperty("os.name").contains("Windows")) {
+            commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.auxDir?.path ?: runConfig.mainFile?.parent?.path)
+        }
+
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated
