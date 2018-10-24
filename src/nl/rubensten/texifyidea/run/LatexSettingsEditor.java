@@ -17,10 +17,13 @@ import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.TitledSeparator;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.util.PlatformType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
+
+import static nl.rubensten.texifyidea.util.PlatformUtilKt.getPlatformType;
 
 /**
  * @author Sten Wessel
@@ -173,19 +176,19 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Only add options to disable aux and out folder on Windows.
         // (Disabled on other systems by default.)
-        if (System.getProperty("os.name").contains("Windows")) {
+        if (getPlatformType() == PlatformType.WINDOWS) {
             panel.add(new TitledSeparator("Options"));
             
             // Auxiliary files
             auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
             // Only enable by default on Windows.
-            auxDir.setSelected(System.getProperty("os.name").contains("Windows"));
+            auxDir.setSelected(getPlatformType() == PlatformType.WINDOWS);
             panel.add(auxDir);
             
             // Output folder
             outDir = new JCheckBox("Separate output files from source");
             // Only enable by default on Windows.
-            outDir.setSelected(System.getProperty("os.name").contains("Windows"));
+            outDir.setSelected(getPlatformType() == PlatformType.WINDOWS);
             panel.add(outDir);
         }
 

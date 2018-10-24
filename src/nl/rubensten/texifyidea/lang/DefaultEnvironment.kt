@@ -80,7 +80,10 @@ enum class DefaultEnvironment(
     CASES(environmentName = "cases", context = Context.MATH, dependency = Package.AMSMATH),
 
     // comment
-    COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT);
+    COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT),
+
+    // lualatex
+    LUACODE(environmentName = "luacode", dependency = Package.LUACODE);
 
     companion object {
 

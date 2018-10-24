@@ -26,8 +26,8 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
-    // Keep track of the the working directory for bibtex, i.e., where bibtex
-    // should find the files it needs. User sets this in latex run configuration.
+    /** Keep track of the the working directory for bibtex, i.e., where bibtex should find the files it needs.
+     * User sets this in latex run configuration. */
     private lateinit var bibWorkingDir: String
 
     override fun createEditor(): JComponent {
