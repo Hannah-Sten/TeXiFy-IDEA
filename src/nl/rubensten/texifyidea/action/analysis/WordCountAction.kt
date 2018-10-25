@@ -135,7 +135,7 @@ open class WordCountAction : AnAction(
     private fun countWords(latexNormalText: List<LatexNormalText>): Pair<Int, Int> {
         // Seperate all latex words.
         val latexWords: MutableSet<PsiElement> = HashSet()
-        var characters: Int = 0
+        var characters = 0
         for (text in latexNormalText) {
             var child = text.firstChild
             while (child != null) {
@@ -153,13 +153,13 @@ open class WordCountAction : AnAction(
         // Count words.
         val filteredWords = filterWords(latexWords)
 
-        var words: Int = 0
+        var wordCount = 0
         for (word in filteredWords) {
-            words += contractionCount(word.text)
+            wordCount += contractionCount(word.text)
             characters += word.textLength
         }
 
-        return Pair(words, characters)
+        return Pair(wordCount, characters)
     }
 
     /**

@@ -29,8 +29,8 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var auxFile: LabeledComponent<TextFieldWithBrowseButton>
 
     override fun createEditor(): JComponent {
-        createUIComponents();
-        return panel;
+        createUIComponents()
+        return panel
     }
 
     override fun resetEditorFrom(runConfig: BibtexRunConfiguration) {

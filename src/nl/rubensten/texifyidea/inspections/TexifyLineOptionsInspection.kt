@@ -37,7 +37,7 @@ abstract class TexifyLineOptionsInspection(val title: String) : TexifyInspection
         val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
         panel.add(txtaOptions)
-        panel.border = IdeBorderFactory.createTitledBorder(title);
+        panel.border = IdeBorderFactory.createTitledBorder(title)
         return panel
     }
 

@@ -34,5 +34,5 @@ open class BibtexDocumentationProvider : DocumentationProvider {
 
     override fun generateDoc(element: PsiElement, element2: PsiElement?) = lookup?.description
 
-    override fun getDocumentationElementForLink(manager: PsiManager, string: String, element: PsiElement) = null
+    override fun getDocumentationElementForLink(manager: PsiManager, string: String, element: PsiElement): PsiElement? = null
 }

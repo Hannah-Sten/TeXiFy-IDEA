@@ -35,7 +35,7 @@ abstract class IndexUtilBase<T : PsiElement>(
     fun getItemsInFileSet(baseFile: PsiFile): Collection<T> {
         // Setup search set.
         val project = baseFile.project
-        val searchFiles = baseFile.referencedFileSet()
+        val searchFiles = baseFile.referencedFileSet().asSequence()
                 .map { it.virtualFile }
                 .toMutableSet()
         searchFiles.add(baseFile.virtualFile)

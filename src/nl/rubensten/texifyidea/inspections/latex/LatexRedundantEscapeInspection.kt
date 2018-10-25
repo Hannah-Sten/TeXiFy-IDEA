@@ -17,7 +17,7 @@ import nl.rubensten.texifyidea.lang.Diacritic
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment
-import nl.rubensten.texifyidea.util.TexifyUtil
+import nl.rubensten.texifyidea.util.allCommands
 import java.text.Normalizer
 
 /**
@@ -37,7 +37,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        val commands = TexifyUtil.getAllCommands(file)
+        val commands = file.allCommands()
         for (command in commands) {
             val inMathMode = PsiTreeUtil.getParentOfType(command, LatexMathEnvironment::class.java) != null
             if (inMathMode) {

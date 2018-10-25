@@ -42,10 +42,9 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
 
             val createdFile = Container<PsiFile>()
             val application = ApplicationManager.getApplication()
-            application.runWriteAction { createdFile.setItem(directory.add(file) as PsiFile) }
+            application.runWriteAction { createdFile.item = directory.add(file) as PsiFile }
 
-            return createdFile.item
-                    .orElseThrow { TeXception("No created file in container.") }
+            return createdFile.item ?: throw TeXception("No created file in container.")
         }
 
         /**

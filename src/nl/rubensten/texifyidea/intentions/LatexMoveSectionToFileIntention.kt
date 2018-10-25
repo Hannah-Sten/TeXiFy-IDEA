@@ -58,9 +58,9 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
         // Execute write actions.
         val filePath = "$root/$fileName.tex"
-        val createdFile = TexifyUtil.createFile(filePath, text)
+        val createdFile = createFile(filePath, text)
         document.deleteString(start, end)
-        val createdFileName = createdFile?.name
+        val createdFileName = createdFile.name
                 ?.substring(0, createdFile.name.length - 4)
                 ?.replace(" ", "-")
                 ?.decapitalize()

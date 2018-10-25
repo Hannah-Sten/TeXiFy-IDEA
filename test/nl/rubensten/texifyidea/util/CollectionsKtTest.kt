@@ -7,7 +7,7 @@ import org.junit.Test
 /**
  * @author Ruben Schellekens
  */
-open class CollectionUtilKtTest {
+open class CollectionsKtTest {
 
     @Test
     fun `Collection anyMatchAll`() {

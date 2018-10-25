@@ -38,5 +38,5 @@ class LatexMathSymbolFoldingBuilder : FoldingBuilderEx() {
 
     override fun isCollapsedByDefault(node: ASTNode) = true
 
-    override fun getPlaceholderText(node: ASTNode) = null
+    override fun getPlaceholderText(node: ASTNode): String? = null
 }

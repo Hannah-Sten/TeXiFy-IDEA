@@ -177,7 +177,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands
             val nextCmd = findNextSection(cmd)
-            val label = Companion.findLabel(cmd)
+            val label = findLabel(cmd)
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
@@ -197,7 +197,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val createdFile = TexifyUtil.createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
             LocalFileSystem.getInstance().refresh(true)
 
-            val createdFileName = createdFile?.name
+            val createdFileName = createdFile.name
                     ?.substring(0, createdFile.name.length - 4)
                     ?.replace(" ", "-")
                     ?.decapitalize()

@@ -27,8 +27,8 @@ public class InsertStrikethroughAction extends InsertEditorAction {
         final PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         final String packageName = "ulem";
 
-        runWriteAction(project, () -> {
-            PackageUtils.insertUsepackage(document, psiFile, packageName, null);
-        });
+        runWriteAction(project, () ->
+                PackageUtils.insertUsepackage(document, psiFile, packageName, null)
+        );
     }
 }
