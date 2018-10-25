@@ -194,7 +194,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
                     .formatAsFileName()
-            val createdFile = TexifyUtil.createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
+            val createdFile = createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
             LocalFileSystem.getInstance().refresh(true)
 
             val createdFileName = createdFile.name
