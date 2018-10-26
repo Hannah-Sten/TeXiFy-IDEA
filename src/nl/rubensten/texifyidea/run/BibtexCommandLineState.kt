@@ -8,8 +8,6 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.roots.ProjectRootManager
-import nl.rubensten.texifyidea.util.PlatformType
-import nl.rubensten.texifyidea.util.getPlatformType
 
 /**
  * @author Sten Wessel
@@ -28,12 +26,9 @@ open class BibtexCommandLineState(
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val command: List<String> = compiler.getCommand(runConfig, environment.project) ?: throw ExecutionException("Compile command could not be created.")
 
-        // On systems other than Windows the working directory is the directory of the main file.
-        var commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.mainFile?.parent?.path)
-        // Only on Windows (MikTeX) the auxiliary files should be found in the auxiliary directory.
-        if (getPlatformType() == PlatformType.WINDOWS) {
-            commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.bibWorkingDir?.path ?: moduleRoot?.path + "/out")
-        }
+        // The working directory is as specified by the user in the working directory.
+        // The fallback (if null) directory is the directory of the main file.
+        val commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.bibWorkingDir?.path ?: runConfig.mainFile?.parent?.path)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 

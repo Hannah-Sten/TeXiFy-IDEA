@@ -184,13 +184,15 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
             // Only enable by default on Windows.
             auxDir.setSelected(getPlatformType() == PlatformType.WINDOWS);
             panel.add(auxDir);
+        }
             
             // Output folder
-            outDir = new JCheckBox("Separate output files from source");
-            // Only enable by default on Windows.
-            outDir.setSelected(getPlatformType() == PlatformType.WINDOWS);
+            outDir = new JCheckBox("Separate output files from source "
+                                           + "(disable this when using BiBTeX"
+                                           + " without MiKTeX)");
+            // Enable by default.
+            outDir.setSelected(true);
             panel.add(outDir);
-        }
 
         // Output format.
         ComboBox<Format> cboxFormat = new ComboBox<>(Format.values());
