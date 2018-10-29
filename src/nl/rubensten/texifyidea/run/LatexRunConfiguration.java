@@ -206,6 +206,11 @@ public class LatexRunConfiguration extends RunConfigurationBase
     }
     
     void generateBibRunConfig() {
+        // On non-Windows systems, disable the out/ directory by default for bibtex to work
+        if (getPlatformType() != PlatformType.WINDOWS) {
+            this.outDir = false;
+        }
+
         RunManagerImpl runManager = RunManagerImpl
                 .getInstanceImpl(getProject());
         
