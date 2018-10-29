@@ -21,9 +21,12 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.util.PlatformType;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static nl.rubensten.texifyidea.util.PlatformUtilKt.getPlatformType;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -45,7 +48,8 @@ public class LatexRunConfiguration extends RunConfigurationBase
     private String compilerPath = null;
     private String compilerArguments = null;
     private VirtualFile mainFile;
-    private boolean auxDir = true;
+    // Enable auxDir by default on Windows only
+    private boolean auxDir = getPlatformType() == PlatformType.WINDOWS;
     private boolean outDir = true;
     private Format outputFormat = Format.PDF;
     private String bibRunConfigId = "";
@@ -273,9 +277,12 @@ public class LatexRunConfiguration extends RunConfigurationBase
     public void setDefaultCompiler() {
         setCompiler(LatexCompiler.PDFLATEX);
     }
-    
+
+    /**
+     * Only enabled by default on Windows, because -aux-directory is MikTeX only.
+     */
     public void setDefaultAuxiliaryDirectories() {
-        setAuxiliaryDirectories(true);
+        setAuxiliaryDirectories(getPlatformType() == PlatformType.WINDOWS);
     }
     
     public void setDefaultOutputFormat() {

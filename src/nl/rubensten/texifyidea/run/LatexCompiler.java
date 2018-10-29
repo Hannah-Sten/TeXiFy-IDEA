@@ -82,7 +82,8 @@ public enum LatexCompiler {
         command.add("-synctex=1");
         command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
 
-        if (runConfig.hasOutputDirectories() && (PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
+        // -output-directory also exists on non-Windows systems
+        if (runConfig.hasOutputDirectories()) {
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
         }
 
@@ -112,10 +113,12 @@ public enum LatexCompiler {
         command.add("-synctex=1");
         command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
 
-        if (runConfig.hasOutputDirectories() && (PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
+        // -output-directory also exists on non-Windows systems
+        if (runConfig.hasOutputDirectories()) {
             command.add("-output-directory=" + moduleRoot.getPath() + "/out");
         }
 
+        // -aux-directory only exists on MikTeX
         if (runConfig.hasAuxiliaryDirectories() &&(PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
             command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
         }
