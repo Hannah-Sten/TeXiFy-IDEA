@@ -25,7 +25,6 @@ enum class DefaultEnvironment(
     DOCUMENT(environmentName = "document"),
     ENUMERATE(environmentName = "enumerate", initialContents = "\\item "),
     EQUATION(environmentName = "equation", context = Context.MATH),
-    EQUATION_STAR(environmentName = "equation*", context = Context.MATH),
     EQNARRAY(environmentName = "eqnarray"),
     FIGURE(environmentName = "figure", arguments = *arrayOf(OptionalArgument("placement"))),
     FIGURE_STAR(environmentName = "figure*", arguments = *arrayOf(OptionalArgument("placement"))),
@@ -69,6 +68,7 @@ enum class DefaultEnvironment(
     ALIGN_STAR(environmentName = "align*", context = Context.MATH, dependency = Package.AMSMATH),
     ALIGNAT(environmentName = "alignat", context = Context.MATH, dependency = Package.AMSMATH),
     ALIGNAT_STAR(environmentName = "alignat*", context = Context.MATH, dependency = Package.AMSMATH),
+    EQUATION_STAR(environmentName = "equation*", context = Context.MATH, dependency = Package.AMSMATH),
     FLALIGN(environmentName = "flalign", context = Context.MATH, dependency = Package.AMSMATH),
     FLALIGN_STAR(environmentName = "flalign*", context = Context.MATH, dependency = Package.AMSMATH),
     GATHER(environmentName = "gather", context = Context.MATH, dependency = Package.AMSMATH),
@@ -76,7 +76,6 @@ enum class DefaultEnvironment(
     MULTLINE(environmentName = "multline", context = Context.MATH, dependency = Package.AMSMATH),
     MULTLINE_STAR(environmentName = "multline*", context = Context.MATH, dependency = Package.AMSMATH),
     SPLIT(environmentName = "split", context = Context.MATH, dependency = Package.AMSMATH),
-    SPLIT_STAR(environmentName = "split*", context = Context.MATH, dependency = Package.AMSMATH),
     CASES(environmentName = "cases", context = Context.MATH, dependency = Package.AMSMATH),
 
     // comment
