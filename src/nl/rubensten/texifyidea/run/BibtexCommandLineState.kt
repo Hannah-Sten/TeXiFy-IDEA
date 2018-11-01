@@ -25,13 +25,10 @@ open class BibtexCommandLineState(
         // The working directory is as specified by the user in the working directory.
         // The fallback (if null or empty) directory is the directory of the main file.
         val bibPath = runConfig.bibWorkingDir?.path
-        val commandLine = if (!(bibPath.equals("") || bibPath == null)) {
+        val commandLine = if (!bibPath.isNullOrBlank()) {
             GeneralCommandLine(command).withWorkDirectory(bibPath)
         }
-        else {
-            GeneralCommandLine(command).withWorkDirectory(runConfig.mainFile?.parent?.path)
-        }
-
+        else GeneralCommandLine(command).withWorkDirectory(runConfig.mainFile?.parent?.path)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 

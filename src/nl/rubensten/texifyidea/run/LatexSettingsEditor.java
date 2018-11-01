@@ -200,8 +200,7 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
             
             // Output folder
             outDir = new JCheckBox("Separate output files from source "
-                                           + "(disable this when using BiBTeX"
-                                           + " without MiKTeX)");
+                                           + "(disable this when using BiBTeX without MiKTeX)");
             // Enable by default.
             outDir.setSelected(true);
             panel.add(outDir);
