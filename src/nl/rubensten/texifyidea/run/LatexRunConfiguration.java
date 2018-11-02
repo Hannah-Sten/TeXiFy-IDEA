@@ -21,9 +21,12 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.util.PlatformType;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static nl.rubensten.texifyidea.util.PlatformUtilKt.getPlatformType;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -45,7 +48,8 @@ public class LatexRunConfiguration extends RunConfigurationBase
     private String compilerPath = null;
     private String compilerArguments = null;
     private VirtualFile mainFile;
-    private boolean auxDir = true;
+    // Enable auxDir by default on Windows only
+    private boolean auxDir = getPlatformType() == PlatformType.WINDOWS;
     private boolean outDir = true;
     private Format outputFormat = Format.PDF;
     private String bibRunConfigId = "";
@@ -123,7 +127,15 @@ public class LatexRunConfiguration extends RunConfigurationBase
         
         // Read output directories.
         String outDirBoolean = parent.getChildText(OUT_DIR);
-        this.outDir = Boolean.parseBoolean(outDirBoolean);
+        // This is null if the original run configuration did not contain the
+        // option to disable the out directory, which should be enabled by
+        // default.
+        if (outDirBoolean == null) {
+            this.outDir = true;
+        }
+        else {
+            this.outDir = Boolean.parseBoolean(outDirBoolean);
+        }
         
         // Read output format.
         Format format = Format
@@ -194,6 +206,11 @@ public class LatexRunConfiguration extends RunConfigurationBase
     }
     
     void generateBibRunConfig() {
+        // On non-Windows systems, disable the out/ directory by default for bibtex to work
+        if (getPlatformType() != PlatformType.WINDOWS) {
+            this.outDir = false;
+        }
+
         RunManagerImpl runManager = RunManagerImpl
                 .getInstanceImpl(getProject());
         
@@ -265,9 +282,12 @@ public class LatexRunConfiguration extends RunConfigurationBase
     public void setDefaultCompiler() {
         setCompiler(LatexCompiler.PDFLATEX);
     }
-    
+
+    /**
+     * Only enabled by default on Windows, because -aux-directory is MikTeX only.
+     */
     public void setDefaultAuxiliaryDirectories() {
-        setAuxiliaryDirectories(true);
+        setAuxiliaryDirectories(getPlatformType() == PlatformType.WINDOWS);
     }
     
     public void setDefaultOutputFormat() {
