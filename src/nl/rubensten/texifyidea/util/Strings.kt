@@ -23,9 +23,16 @@ fun String.camelCase(): String {
 }
 
 /**
- * Repeats the given string `count` amount of times.
+ * Repeats the given string a given amount of times.
+ *
+ * @param count
+ *         The amount of times to repeat the string.
  */
-fun String.repeat(count: Int): String = TexifyUtil.fill(this, count)
+fun String.repeat(count: Int) = buildString(count * this.length) {
+    for (i in 0 until count) {
+        append(this)
+    }
+}
 
 /**
  * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
@@ -51,8 +58,28 @@ fun String.trimRange(startTrim: Int, endTrim: Int): String = substring(startTrim
  * Returns the leading whitespace of a string.
  */
 fun String.getIndent(): String {
-    val matcher = Magic.Pattern.leadingWhitespace.matcher(this);
+    val matcher = Magic.Pattern.leadingWhitespace.matcher(this)
     return if (matcher.find()) matcher.group(0) else ""
+}
+
+/**
+ * Appends an extension to a path only if the given path does not end in that extension.
+ *
+ * @param extensionWithoutDot
+ *         The extension to append optionally.
+ * @return A path ending with the given extension without duplications (e.g. `.tex.tex` is impossible.)
+ */
+fun String.appendExtension(extensionWithoutDot: String): String {
+    val dottedExtension = ".${extensionWithoutDot.toLowerCase()}"
+    val thisLower = toLowerCase()
+
+    return if (thisLower.endsWith(dottedExtension)) {
+        this
+    }
+    else if (endsWith('.')) {
+        this + extensionWithoutDot
+    }
+    else this + dottedExtension
 }
 
 /**
@@ -95,3 +122,33 @@ fun String.removeIndents() = Magic.Pattern.newline.split(this)
         .toList()
         .removeIndents()
         .joinToString("\n")
+
+/**
+ * Remove all appearances of all given strings.
+ */
+fun String.removeAll(vararg strings: String): String {
+    var formatted = this
+    strings.forEach { formatted = formatted.replace(it, "") }
+    return formatted
+}
+
+/**
+ * Formats the string as a valid filename, removing not-allowed characters, in TeX-style with - as separator.
+ */
+fun String.formatAsFileName(): String {
+    val formatted = this.replace(" ", "-")
+            .removeAll("/", "\\", "<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
+            .toLowerCase()
+
+    // If there are no valid characters left, use a default name.
+    return if (formatted.isEmpty()) { "myfile" } else { formatted }
+}
+
+/**
+ * Formats the string as a valid LaTeX label name.
+ */
+fun String.formatAsLabel(): String {
+    return replace(" ", "-")
+            .removeAll("%", "~", "#", "\\")
+            .toLowerCase()
+}

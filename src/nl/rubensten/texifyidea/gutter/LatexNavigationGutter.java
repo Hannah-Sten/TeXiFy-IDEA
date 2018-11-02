@@ -14,13 +14,14 @@ import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
-import nl.rubensten.texifyidea.util.FileUtilKt;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.FilesKt;
+import nl.rubensten.texifyidea.util.PsiCommandsKt;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-
-import static nl.rubensten.texifyidea.util.TexifyUtil.findFile;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Ruben Schellekens
@@ -71,7 +72,7 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
             argument = arguments.get(0);
         }
 
-        List<LatexRequiredParam> requiredParams = TexifyUtil.getRequiredParameters(commands);
+        List<LatexRequiredParam> requiredParams = PsiCommandsKt.requiredParameters(commands);
         if (requiredParams.isEmpty()) {
             return;
         }
@@ -91,16 +92,16 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         }
 
         List<VirtualFile> roots = new ArrayList<>();
-        PsiFile rootFile = FileUtilKt.findRootFile(containingFile);
+        PsiFile rootFile = FilesKt.findRootFile(containingFile);
         roots.add(rootFile.getContainingDirectory().getVirtualFile());
         ProjectRootManager rootManager = ProjectRootManager.getInstance(element.getProject());
         Collections.addAll(roots, rootManager.getContentSourceRoots());
 
         VirtualFile file = null;
         for (VirtualFile root : roots) {
-            Optional<VirtualFile> fileHuh = findFile(root, fileName, argument.getSupportedExtensions());
-            if (fileHuh.isPresent()) {
-                file = fileHuh.get();
+            VirtualFile foundFile = FilesKt.findFile(root, fileName, argument.getSupportedExtensions());
+            if (foundFile != null) {
+                file = foundFile;
                 break;
             }
         }

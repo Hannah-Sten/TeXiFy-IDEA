@@ -9,7 +9,7 @@ import java.util.*
  * @author Ruben Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-        vararg override val arguments: Argument,
+        override vararg val arguments: Argument,
         override val environmentName: String,
         override val initialContents: String = "",
         override val context: Context = Context.NORMAL,

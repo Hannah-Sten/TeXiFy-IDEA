@@ -11,14 +11,13 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import nl.rubensten.texifyidea.index.stub.LatexCommandsStub;
-import nl.rubensten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexParameter;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.psi.LatexVisitor;
 import nl.rubensten.texifyidea.reference.LatexLabelReference;
 import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.PsiCommandsKt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -57,7 +56,7 @@ public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub
     @Override
     public PsiReference getReference() {
         LatexRequiredParam firstParam = ApplicationManager.getApplication().runReadAction((Computable<LatexRequiredParam>)() -> {
-            List<LatexRequiredParam> params = TexifyUtil.getRequiredParameters(this);
+            List<LatexRequiredParam> params = PsiCommandsKt.requiredParameters(this);
             return params.isEmpty() ? null : params.get(0);
         });
 

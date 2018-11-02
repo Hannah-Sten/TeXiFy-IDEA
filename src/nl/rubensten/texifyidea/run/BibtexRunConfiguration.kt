@@ -21,12 +21,12 @@ class BibtexRunConfiguration(
 
     companion object {
 
-        private val PARENT_ELEMENT = "texify-bibtex"
-        private val COMPILER = "compiler"
-        private val COMPILER_PATH = "compiler-path"
-        private val COMPILER_ARGUMENTS = "compiler-arguments"
-        private val MAIN_FILE = "main-file"
-        private val AUX_DIR = "aux-dir"
+        private const val PARENT_ELEMENT = "texify-bibtex"
+        private const val COMPILER = "compiler"
+        private const val COMPILER_PATH = "compiler-path"
+        private const val COMPILER_ARGUMENTS = "compiler-arguments"
+        private const val MAIN_FILE = "main-file"
+        private const val AUX_DIR = "aux-dir"
     }
 
     var compiler: BibliographyCompiler? = null

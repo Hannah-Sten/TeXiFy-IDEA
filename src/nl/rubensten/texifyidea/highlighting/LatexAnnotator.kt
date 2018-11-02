@@ -21,7 +21,7 @@ open class LatexAnnotator : Annotator {
         /**
          * The maximum amount of times the cache may be used before doing another lookup.
          */
-        private val MAX_CACHE_COUNT = 40
+        private const val MAX_CACHE_COUNT = 40
     }
 
     // Cache to prevent many PsiFile#isUsed and PsiFile#definitions() lookups.
