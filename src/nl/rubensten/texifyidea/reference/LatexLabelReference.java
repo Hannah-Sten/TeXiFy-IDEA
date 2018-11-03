@@ -10,9 +10,10 @@ import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.util.FileSetKt;
+import nl.rubensten.texifyidea.util.LabelsKt;
 import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.StringUtilKt;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +41,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     @Override
     public ResolveResult[] multiResolve(boolean b) {
         Project project = myElement.getProject();
-        final Collection<PsiElement> labels = TexifyUtil.findLabels(project, key);
+        final Collection<PsiElement> labels = LabelsKt.findLabels(project, key);
         return labels.stream().map(PsiElementResolveResult::new).toArray(ResolveResult[]::new);
     }
 
@@ -57,8 +58,8 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         String token = myElement.getCommandToken().getText();
         PsiFile file = myElement.getContainingFile().getOriginalFile();
         Collection<PsiElement> labels = new ArrayList<>();
-        for (PsiFile referenced : TexifyUtil.getReferencedFileSet(file)) {
-            labels.addAll(TexifyUtil.findLabels(referenced));
+        for (PsiFile referenced : FileSetKt.referencedFileSet(file)) {
+            labels.addAll(LabelsKt.findLabels(referenced));
         }
 
         labels.removeIf(label -> {
@@ -97,7 +98,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                     else if ("\\cite".equals(token)) {
                         BibtexId id = (BibtexId)l;
                         PsiFile containing = id.getContainingFile();
-                        String text = StringUtilKt.substringEnd(id.getText(), 1);
+                        String text = StringsKt.substringEnd(id.getText(), 1);
                         return LookupElementBuilder.create(text)
                                 .bold()
                                 .withInsertHandler(new LatexReferenceInsertHandler())

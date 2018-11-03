@@ -38,6 +38,7 @@ object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
     fun getIndexedIdsInFileSet(baseFile: PsiFile): Collection<BibtexId> {
         val project = baseFile.project
         val searchFiles: MutableSet<VirtualFile> = baseFile.referencedFileSet()
+                .asSequence()
                 .map(PsiFile::getVirtualFile)
                 .toMutableSet()
         searchFiles.add(baseFile.virtualFile)
@@ -53,7 +54,7 @@ object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
         val commands: MutableCollection<BibtexId> = ArrayList()
 
         for (key in getKeys(project)) {
-            commands.addAll(getIdByName(key, project, scope));
+            commands.addAll(getIdByName(key, project, scope))
         }
 
         return commands

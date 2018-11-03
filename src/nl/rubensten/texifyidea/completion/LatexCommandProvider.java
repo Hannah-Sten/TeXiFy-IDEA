@@ -22,10 +22,7 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex;
 import nl.rubensten.texifyidea.lang.*;
 import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.util.FileUtilKt;
-import nl.rubensten.texifyidea.util.Kindness;
-import nl.rubensten.texifyidea.util.PsiUtilKt;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,7 +106,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
         LatexDefinitionIndex.Companion.getItemsInFileSet(parameters.getOriginalFile()).stream()
                 .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
-                .map(cmd -> PsiUtilKt.requiredParameter(cmd, 0))
+                .map(cmd -> PsiCommandsKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)
                 .map(SimpleEnvironment::new)
                 .forEach(environments::add);
@@ -147,9 +144,9 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         }
 
         PsiFile file = parameters.getOriginalFile();
-        Set<PsiFile> files = new HashSet<>(TexifyUtil.getReferencedFileSet(file));
-        PsiFile root = FileUtilKt.findRootFile(file);
-        PsiFile documentClass = FileUtilKt.documentClassFile(root);
+        Set<PsiFile> files = new HashSet<>(FileSetKt.referencedFileSet(file));
+        PsiFile root = FilesKt.findRootFile(file);
+        PsiFile documentClass = FilesKt.documentClassFile(root);
         if (documentClass != null) {
             files.add(documentClass);
         }
@@ -163,7 +160,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         Collection<LatexCommands> cmds = LatexCommandsIndex.Companion.getItems(project, scope);
 
         for (LatexCommands cmd : cmds) {
-            if (!PsiUtilKt.isDefinition(cmd) && !PsiUtilKt.isEnvironmentDefinition(cmd)) {
+            if (!PsiCommandsKt.isDefinition(cmd) && !PsiCommandsKt.isEnvironmentDefinition(cmd)) {
                 continue;
             }
 
@@ -177,7 +174,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             }
 
             // Skip over 'private' commands containing @ symbol in normal tex source files.
-            if (!FileUtilKt.isClassFile(file) && !FileUtilKt.isStyleFile(file)) {
+            if (!FilesKt.isClassFile(file) && !FilesKt.isStyleFile(file)) {
                 if (cmdName.contains("@")) {
                     continue;
                 }
@@ -207,12 +204,12 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             return "";
         }
 
-        LatexCommands firstNext = PsiUtilKt.nextCommand(commands);
+        LatexCommands firstNext = PsiCommandsKt.nextCommand(commands);
         if (firstNext == null) {
             return "";
         }
 
-        LatexCommands secondNext = PsiUtilKt.nextCommand(firstNext);
+        LatexCommands secondNext = PsiCommandsKt.nextCommand(firstNext);
         if (secondNext == null) {
             return "";
         }
@@ -261,13 +258,13 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     @Nullable
     private String getNewCommandName(@NotNull LatexCommands commands) {
-        LatexCommands cmd = PsiUtilKt.firstRequiredParamAsCommand(commands);
+        LatexCommands cmd = PsiCommandsKt.forcedFirstRequiredParameterAsCommand(commands);
         return cmd == null ? null : cmd.getName();
     }
 
     @Nullable
     private String getDefinitionName(@NotNull LatexCommands commands) {
-        LatexCommands next = PsiUtilKt.definitionCommand(commands);
+        LatexCommands next = PsiCommandsKt.definitionCommand(commands);
         if (next == null) {
             return null;
         }

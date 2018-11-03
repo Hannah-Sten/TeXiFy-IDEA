@@ -16,7 +16,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexPsiUtil;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.DocumentsKt;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -102,7 +102,7 @@ public class LatexOverInsteadOfFracInspection extends TexifyInspectionBase {
 
             // Delete denominator.
             if (next != null) {
-                TexifyUtil.deleteElement(document, next);
+                DocumentsKt.deleteElement(document, next);
             }
 
             // Replace command.
@@ -113,7 +113,7 @@ public class LatexOverInsteadOfFracInspection extends TexifyInspectionBase {
 
             // Replace numerator.
             if (previous != null) {
-                TexifyUtil.deleteElement(document, previous);
+                DocumentsKt.deleteElement(document, previous);
             }
         }
     }

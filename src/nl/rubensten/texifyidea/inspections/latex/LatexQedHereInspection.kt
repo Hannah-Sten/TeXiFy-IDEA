@@ -58,7 +58,7 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
     /**
      * @author Sten Wessel
      */
-    private class InsertQedHereFix() : LocalQuickFix {
+    private class InsertQedHereFix : LocalQuickFix {
 
         override fun getFamilyName() = "Insert \\qedhere"
 

@@ -242,7 +242,22 @@ Arara pipes the full output from all subsequent commands, which is not all the t
 
     arara thesis.tex -v | grep -C 1 -E "((E|e)rror|ERROR|SUCCESS|FAILURE|Undefined control sequence)"
 
+##### Alternative for integrating a latex compiler other than pdflatex:
+In your run configuration, tick the box `select custom compiler executable path (required on Mac OS X)`.
+You can now provide the path to any latex compiler. 
+When using Windows and MiKTeX, these executables are located in 
 
+    C:\Program Files\MiKTeX 2.9\miktex\bin\x64
+
+or (in some cases)
+
+    C:\Users\user\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64
+    
+For example, to use lualatex:
+
+    C:\Program Files\MiKTeX 2.9\miktex\bin\x64\lualatex.exe
+    
+You can run this run configuration by pressing <kbd>Shift</kbd>+<kbd>F10</kbd> (on Windows), by clicking the play button, or by clicking the gutter icon.
 
 
 

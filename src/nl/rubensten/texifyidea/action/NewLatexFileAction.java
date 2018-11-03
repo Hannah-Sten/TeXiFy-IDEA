@@ -11,13 +11,11 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.file.BibtexFileType;
-import nl.rubensten.texifyidea.file.ClassFileType;
-import nl.rubensten.texifyidea.file.LatexFileType;
-import nl.rubensten.texifyidea.file.StyleFileType;
+import nl.rubensten.texifyidea.file.*;
 import nl.rubensten.texifyidea.templates.LatexTemplatesFactory;
+import nl.rubensten.texifyidea.util.FileUtil;
 import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +28,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
     private static final String OPTION_STY_FILE = "sty";
     private static final String OPTION_CLS_FILE = "cls";
     private static final String OPTION_BIB_FILE = "bib";
+    private static final String OPTION_TIKZ_FILE = "tikz";
 
     public NewLatexFileAction() {
         super("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE);
@@ -46,6 +45,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
         builder.addKind("Bibliography (.bib)", TexifyIcons.BIBLIOGRAPHY_FILE, OPTION_BIB_FILE);
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE);
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE);
+        builder.addKind("TikZ (.tikz)", TexifyIcons.LATEX_FILE, OPTION_TIKZ_FILE);
         builder.show("", null, fileCreator);
 
         return fileCreator.getCreatedElements();
@@ -101,6 +101,8 @@ public class NewLatexFileAction extends CreateElementActionBase {
                     return LatexTemplatesFactory.fileTemplateCls;
                 case OPTION_BIB_FILE:
                     return LatexTemplatesFactory.fileTemplateBib;
+                case OPTION_TIKZ_FILE:
+                    return LatexTemplatesFactory.fileTemplateTikz;
                 default:
                     return LatexTemplatesFactory.fileTemplateTex;
             }
@@ -125,7 +127,11 @@ public class NewLatexFileAction extends CreateElementActionBase {
                 return BibtexFileType.INSTANCE;
             }
 
-            return TexifyUtil.getFileTypeByExtension(option);
+            if (smallFileName.endsWith("." + OPTION_TIKZ_FILE)) {
+                return TikzFileType.INSTANCE;
+            }
+
+            return FileUtil.fileTypeByExtension(option);
         }
 
         private String getNewFileName(@NotNull String fileName, FileType fileType) {
@@ -135,7 +141,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
                 return smallFileName;
             }
 
-            return TexifyUtil.appendExtension(fileName, fileType.getDefaultExtension());
+            return StringsKt.appendExtension(fileName, fileType.getDefaultExtension());
         }
 
         @Nullable

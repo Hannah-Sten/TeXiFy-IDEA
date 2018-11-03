@@ -21,12 +21,12 @@ class BibtexRunConfiguration(
 
     companion object {
 
-        private val PARENT_ELEMENT = "texify-bibtex"
-        private val COMPILER = "compiler"
-        private val COMPILER_PATH = "compiler-path"
-        private val COMPILER_ARGUMENTS = "compiler-arguments"
-        private val MAIN_FILE = "main-file"
-        private val AUX_DIR = "aux-dir"
+        private const val PARENT_ELEMENT = "texify-bibtex"
+        private const val COMPILER = "compiler"
+        private const val COMPILER_PATH = "compiler-path"
+        private const val COMPILER_ARGUMENTS = "compiler-arguments"
+        private const val MAIN_FILE = "main-file"
+        private const val AUX_DIR = "aux-dir"
     }
 
     var compiler: BibliographyCompiler? = null
@@ -38,7 +38,7 @@ class BibtexRunConfiguration(
         }
 
     var mainFile: VirtualFile? = null
-    var auxDir: VirtualFile? = null
+    var bibWorkingDir: VirtualFile? = null
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = BibtexSettingsEditor(project)
 
@@ -83,7 +83,7 @@ class BibtexRunConfiguration(
         }
 
         val auxDirPath = parent.getChildText(AUX_DIR)
-        auxDir = if (auxDirPath != null) {
+        bibWorkingDir = if (auxDirPath != null) {
             LocalFileSystem.getInstance().findFileByPath(auxDirPath)
         } else {
             null
@@ -100,7 +100,7 @@ class BibtexRunConfiguration(
         parent.addContent(Element(COMPILER_PATH).apply { text = compilerPath ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).apply { text = compilerArguments ?: "" })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
-        parent.addContent(Element(AUX_DIR).apply { text = auxDir?.path ?: "" })
+        parent.addContent(Element(AUX_DIR).apply { text = bibWorkingDir?.path ?: "" })
     }
 
     override fun isGeneratedName() = name == suggestedName()

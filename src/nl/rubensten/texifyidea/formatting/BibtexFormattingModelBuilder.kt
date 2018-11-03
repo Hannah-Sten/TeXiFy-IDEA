@@ -2,6 +2,7 @@ package nl.rubensten.texifyidea.formatting
 
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleSettings
@@ -38,5 +39,5 @@ open class BibtexFormattingModelBuilder : FormattingModelBuilder {
             settings
     )!!
 
-    override fun getRangeAffectingIndent(file: PsiFile?, offset: Int, elementAtOffset: ASTNode?) = null
+    override fun getRangeAffectingIndent(file: PsiFile?, offset: Int, elementAtOffset: ASTNode?): TextRange? = null
 }

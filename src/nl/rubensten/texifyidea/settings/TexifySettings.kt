@@ -10,7 +10,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  *
  * @author Sten Wessel
  */
-@State(name = "TexifySettings", storages = arrayOf(Storage("texifySettings.xml")))
+@State(name = "TexifySettings", storages = [(Storage("texifySettings.xml"))])
 class TexifySettings : PersistentStateComponent<TexifySettings> {
 
     companion object {
@@ -22,6 +22,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticSoftWraps = false
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
+    var automaticItemInItemize = true
 
     override fun getState() = this
 

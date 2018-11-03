@@ -113,7 +113,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // Determine label name.
             val prefix: String = Magic.Command.labeled[context.name] ?: return
-            val labelName = oldLabel.camelCase()
+            val labelName = oldLabel.formatAsLabel()
             val createdLabelBase = if (labelName.contains(":")) {
                 Magic.Pattern.labelPrefix.matcher(labelName).replaceAll("$prefix:")
             }
@@ -121,7 +121,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 "$prefix:$labelName"
             }
 
-            val createdLabel = appendCounter(createdLabelBase, TexifyUtil.findLabelsInFileSet(file))
+            val createdLabel = appendCounter(createdLabelBase, file.findLabelsInFileSet())
 
             // Replace in document.
             val references = findReferences(file, oldLabel)

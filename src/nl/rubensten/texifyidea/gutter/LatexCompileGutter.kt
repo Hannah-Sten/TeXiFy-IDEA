@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.Function
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
-import nl.rubensten.texifyidea.util.TexifyUtil
+import nl.rubensten.texifyidea.util.isEntryPoint
 
 /**
  * Puts a run-configuration icon in the gutter in front of the \begin{document} command.
@@ -20,7 +20,7 @@ class LatexCompileGutter : RunLineMarkerContributor() {
         element as? LatexBeginCommand ?: return null
 
         // Break when not a valid command: don't show icon.
-        if (!TexifyUtil.isEntryPoint(element)) {
+        if (!element.isEntryPoint()) {
             return null
         }
 

@@ -14,6 +14,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticSoftWraps: JCheckBox
     private lateinit var automaticSecondInlineMathSymbol: JCheckBox
     private lateinit var automaticUpDownBracket: JCheckBox
+    private lateinit var automaticItemInItemize: JCheckBox
 
     override fun getId() = "TexifyConfigurable"
 
@@ -26,6 +27,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             automaticSoftWraps = addCheckbox("Enable soft wraps when opening LaTeX files")
             automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
             automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
+            automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
         })
     }
 
@@ -41,17 +43,20 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         return automaticSoftWraps.isSelected != settings.automaticSoftWraps
                 || automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
+                || automaticItemInItemize.isSelected != settings.automaticItemInItemize
     }
 
     override fun apply() {
         settings.automaticSoftWraps = automaticSoftWraps.isSelected
         settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
+        settings.automaticItemInItemize = automaticItemInItemize.isSelected
     }
 
     override fun reset() {
         automaticSoftWraps.isSelected = settings.automaticSoftWraps
         automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
+        automaticItemInItemize.isSelected = settings.automaticItemInItemize
     }
 }

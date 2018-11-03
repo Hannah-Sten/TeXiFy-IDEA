@@ -37,20 +37,26 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
 
-        // Generate bibliography run configuration when needed
-        if (!runConfig.isSkipBibtex && runConfig.bibRunConfig == null && mainFile.psiFile(environment.project)?.hasBibliography() == true) {
-            runConfig.generateBibRunConfig()
-        }
-
         runConfig.bibRunConfig?.let {
             if (runConfig.isSkipBibtex) {
                 return@let
             }
 
-            // Change configuration to match the latex settings
+            // Pass necessary latex run configurations settings to the bibtex run configuration.
             (it.configuration as? BibtexRunConfiguration)?.apply {
                 this.mainFile = mainFile
-                this.auxDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
+                // Check if the aux, out, or src folder should be used as bib working dir.
+                when {
+                    runConfig.hasAuxiliaryDirectories() -> {
+                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
+                    }
+                    runConfig.hasOutputDirectories() -> {
+                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
+                    }
+                    else -> {
+                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(mainFile.parent.name)
+                    }
+                }
             }
 
             handler.addProcessListener(RunBibtexListener(it, runConfig, environment))
@@ -125,7 +131,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Create output paths for mac (see issue #70 on GitHub)
         files.asSequence()
-                .mapNotNull { TexifyUtil.getPathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
+                .mapNotNull { FileUtil.pathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
                 .forEach { File(outPath + it).mkdirs() }
     }
 }

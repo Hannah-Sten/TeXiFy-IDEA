@@ -177,7 +177,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands
             val nextCmd = findNextSection(cmd)
-            val label = Companion.findLabel(cmd)
+            val label = findLabel(cmd)
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
@@ -190,15 +190,14 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             // Create new file.
             val fileNameBraces = if (cmd.parameterList.size > 0) cmd.parameterList[0].text else return
-            // Decapitalize and use - instead of space according to LaTeX conventions
-            val fileName = fileNameBraces.replace("}", "")
-                    .replace("{", "")
-                    .replace(" ", "-")
-                    .decapitalize()
-            val createdFile = TexifyUtil.createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
+
+            // Remove the braces of the LaTeX command before creating a filename of it
+            val fileName = fileNameBraces.removeAll("{", "}")
+                    .formatAsFileName()
+            val createdFile = createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
             LocalFileSystem.getInstance().refresh(true)
 
-            val createdFileName = createdFile?.name
+            val createdFileName = createdFile.name
                     ?.substring(0, createdFile.name.length - 4)
                     ?.replace(" ", "-")
                     ?.decapitalize()
