@@ -18,7 +18,8 @@ import java.util.List;
 public enum LatexCompiler {
 
     PDFLATEX("pdfLaTeX", "pdflatex"),
-    LUALATEX("LuaLaTeX", "lualatex");
+    LUALATEX("LuaLaTeX", "lualatex"),
+    LATEXMK("Latexmk", "latexmk");
 
     private String displayName;
     private String executableName;
@@ -123,12 +124,55 @@ public enum LatexCompiler {
             command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
         }
 
+        // Prepend root paths to the input search path
         if ((PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
             for (VirtualFile root : moduleRoots) {
                 command.add("-include-directory=" + root.getPath());
             }
         }
 
+        return command;
+    }
+
+    /**
+     * Create the command to execute latexmk.
+     *
+     * @param runConfig LaTeX run configuration which initiated the action of creating this command.
+     * @param moduleRoot Module root.
+     * @param moduleRoots List of source roots.
+     *
+     * @return The command to be executed.
+     */
+    private List<String> createLatexmkCommand(LatexRunConfiguration runConfig, VirtualFile moduleRoot, VirtualFile[] moduleRoots) {
+        List<String> command = new ArrayList<>();
+
+        if (runConfig.getCompilerPath() != null) {
+            command.add(runConfig.getCompilerPath());
+        } else {
+            command.add("latexmk");
+        }
+
+        // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
+        command.add("-pdf");
+
+        command.add("-file-line-error");
+        command.add("-interaction=nonstopmode");
+        command.add("-synctex=1");
+        command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
+
+        // -output-directory also exists on non-Windows systems
+        if (runConfig.hasOutputDirectories()) {
+            command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+        }
+
+        // -aux-directory only exists on MikTeX
+        if (runConfig.hasAuxiliaryDirectories() &&(PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
+            command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
+        }
+
+        // -include-directory does not work with latexmk, so use -cd flag to change into source directory
+        // todo cannot cd into all module roots
+        // todo
         return command;
     }
 
