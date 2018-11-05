@@ -49,6 +49,7 @@ enum class LatexNoMathCommand(
     DATE("date", "text".asRequired(Type.TEXT)),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT)),
     DEF("def"),
+    DIRECTLUA("directlua", "luacode".asRequired()),
     DOCUMENTCLASS("documentclass", "options".asOptional(), "class".asRequired()),
     DOTFILL("dotfill"),
     EM("em"),
