@@ -179,6 +179,13 @@ public class TexifyIcons {
     );
 
     /**
+     * Copyright (c) 2018 Ruben Schellekens
+     */
+    public static final Icon DOT_CLASS = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/dot-cls.png"
+    );
+
+    /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_NUMBER = IconLoader.getIcon(

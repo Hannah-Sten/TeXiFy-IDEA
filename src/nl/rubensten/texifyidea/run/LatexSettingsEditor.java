@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.ItemEvent;
 
-import static nl.rubensten.texifyidea.util.PlatformUtilKt.getPlatformType;
+import static nl.rubensten.texifyidea.util.PlatformsKt.getPlatformType;
 
 /**
  * @author Sten Wessel
