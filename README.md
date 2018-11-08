@@ -106,7 +106,7 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * Double-click or click on the arrow next to your project name on the left to open the directory.
 * A standard document is already made for you, you can find it in the `src` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
 * Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run, or use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>. If you see a pdf appearing, congratulations! 
-* If you see `LaTeX error: fily a4.sty not found` then you did not restart your pc. Do it now.
+* If you see `LaTeX error: file a4.sty not found` then you did not restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd> on Windows.
 * When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the `LaTeX` menu in the top menu bar and clicking  SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
 * If you don't see a SumatraPDF option, reboot your computer.
