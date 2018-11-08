@@ -94,13 +94,28 @@ object Magic {
         )
 
         /**
-         * All commands that represend some kind of reference (think \ref).
+         * All commands that represent a reference to a label.
          */
-        @JvmField val reference = hashSetOf(
-                "\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref",
+        @JvmField val labelReference = hashSetOf(
+                "\\ref", "\\eqref", "\\nameref", "\\autoref",
                 "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref",
                 "\\labelcref", "\\cpageref"
         )
+
+        /**
+         * All commands that represent a reference to a bibiography entry/item.
+         */
+        @JvmField val bibliographyReference = hashSetOf(
+                "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
+                "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
+                "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
+                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar"
+        )
+
+        /**
+         * All commands that represend some kind of reference (think \ref and \cite).
+         */
+        @JvmField val reference = labelReference + bibliographyReference
 
         /**
          * All math operators without a leading slash.
