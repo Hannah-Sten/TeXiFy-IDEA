@@ -6,25 +6,18 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.ComponentWithBrowseButton;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.TextBrowseFolderListener;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.ui.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.TitledSeparator;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
-import nl.rubensten.texifyidea.util.PlatformType;
+import nl.rubensten.texifyidea.util.OperatingSystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
-
-import static nl.rubensten.texifyidea.util.PlatformsKt.getPlatformType;
 
 /**
  * @author Sten Wessel
@@ -188,13 +181,13 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Only add options to disable aux and out folder on Windows.
         // (Disabled on other systems by default.)
-        if (getPlatformType() == PlatformType.WINDOWS) {
+        if (OperatingSystem.getType() == OperatingSystem.Type.WINDOWS) {
             panel.add(new TitledSeparator("Options"));
             
             // Auxiliary files
             auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
             // Only enable by default on Windows.
-            auxDir.setSelected(getPlatformType() == PlatformType.WINDOWS);
+            auxDir.setSelected(OperatingSystem.getType() == OperatingSystem.Type.WINDOWS);
             panel.add(auxDir);
         }
             
