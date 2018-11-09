@@ -48,6 +48,9 @@ public enum LatexCompiler {
         else if (this == LUALATEX) {
             command = createLualatexCommand(runConfig, moduleRoot);
         }
+        else if (this == LATEXMK) {
+            command = createLatexmkCommand(runConfig, moduleRoot);
+        }
 
         // Custom compiler arguments specified by the user
         if (runConfig.getCompilerArguments() != null) {
@@ -139,11 +142,10 @@ public enum LatexCompiler {
      *
      * @param runConfig LaTeX run configuration which initiated the action of creating this command.
      * @param moduleRoot Module root.
-     * @param moduleRoots List of source roots.
      *
      * @return The command to be executed.
      */
-    private List<String> createLatexmkCommand(LatexRunConfiguration runConfig, VirtualFile moduleRoot, VirtualFile[] moduleRoots) {
+    private List<String> createLatexmkCommand(LatexRunConfiguration runConfig, VirtualFile moduleRoot) {
         List<String> command = new ArrayList<>();
 
         if (runConfig.getCompilerPath() != null) {
@@ -170,9 +172,7 @@ public enum LatexCompiler {
             command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
         }
 
-        // -include-directory does not work with latexmk, so use -cd flag to change into source directory
-        // todo cannot cd into all module roots
-        // todo
+        // -include-directory does not work with latexmk
         return command;
     }
 
