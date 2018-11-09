@@ -87,25 +87,37 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * Click the Gradle button on the right, the gradle task is located in Tasks - verification - check. Right-click and run. Note that check includes test so it will run the tests.
 
 
-## <a name="installation-instructions">Installation instructions</a>
-### Installing IntelliJ and the TeXiFy-IDEA plugin
-* It is probably a good idea to keep these instructions open as a reference while carrying them out. For linux instructions see [below](#linux-instructions).
-* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free.
-* Download and install [LaTeX for Windows](https://miktex.org/download) or [LaTeX for Mac](https://miktex.org/howto/install-miktex-mac). During installation, choose the option `Install missing packages on the fly: yes`.
-* If you're on Windows, download and install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html), you will use it to view your compiled pdf files. If you know you are on a 64-bit system you can download the 64-bit build. If you have no idea, download the normal installer which is the top-most link.
+## <a name="installation-instructions">Installation instructions: installing IntelliJ and the TeXiFy-IDEA plugin</a>
+
+[Instructions for Windows](#windows-instructions).
+
+[Instructions for Linux](#linux-instructions).
+
+[Instructions for Mac](#mac-instructions).
+
+### <a name="windows-instructions">Installation instructions for Windows</a>
+* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to install the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well).
+* Download and install [LaTeX for Windows](https://miktex.org/download). During installation, choose the option `Install missing packages on the fly: yes`.
+* Download and install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html), you will use it to view your compiled pdf files. If you know you are on a 64-bit system you can download the 64-bit build. If you have no idea, download the normal installer which is the top-most link.
 * Open IntelliJ, in the welcome menu choose Configure - Plugins (or when you already have a project open, use File - Settings - Plugins).
 * Search for `texify`, click `search in repositories` and click `install`.
 * Restart your pc to finish the LaTeX and the plugin installations.
 * Click on Create New Project (in welcome menu) or File - New - Project, select LaTeX in the left column and click next. Specify a name for your project, and a location. A project can contain multiple LaTeX files, so for example if you make a new document for each new homework you get, place them all in the same project.
 * Double-click or click on the arrow next to your project name on the left to open the directory.
 * A standard document is already made for you, you can find it in the `src` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
-* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. If you see a pdf appearing, congratulations! 
-* If you see `LaTeX error: fily a4.sty not found` then you did not restart your pc. Do it now.
+* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run, or use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>. If you see a pdf appearing, congratulations! 
+* If you see `LaTeX error: file a4.sty not found` then you did not restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd> on Windows.
+* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the `LaTeX` menu in the top menu bar and clicking  SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
+* If you don't see a SumatraPDF option, reboot your computer.
+* You can also do the reverse: you have to configure it once by clicking LaTeX - SumatraPDF - Configure inverse search. Then double-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
+* If you get the error `Error launching IDEA No JVM installation found. Please install a 32-bit JDK`,  then you have to install a 32-bit JDK. Download the Windows x86 installer from [oracle.com](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and install, then reboot, configure inverse search, compile your pdf and try double-clicking again.
+* Have a look at the [tips](#tips).
 
 ### <a name="linux-instructions">Installation instructions for linux</a>
 
-* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You can extract in your Downloads folder with `sudo tar xf ideaIU-2018.1.5.tar.gz -C /opt/`, then run `/opt/idea-IU-181.5281.24/bin/idea.sh`.
+* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to install the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well).
+* You can extract in your Downloads folder with `sudo tar xf ideaIU-2018.1.5.tar.gz -C /opt/`, then run `/opt/idea-IU-181.5281.24/bin/idea.sh`.
 * To install LaTeX, you can use the TeX Live distribution. If something is already installed, check that the version is at least 2017 with `latex --version`. If not, for example if you are on Ubuntu 16.04, you have to first remove the old TeX Live (see for example [these steps](https://tex.stackexchange.com/a/95502/98850)) and then install a newer TeX Live (based on the LaTeX3 setup):
   *  Run in your Downloads directory `sudo wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz` 
   * `sudo tar -xzf install-tl-unx.tar.gz` 
@@ -122,6 +134,22 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * A standard document is already made for you, you can find it in the `src/` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
 * Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. The resulting pdf file is hiding in the `output/` folder.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd>.
+* Have a look at the [tips](#tips).
+
+### <a name="mac-instructions">Installation instructions for Mac</a>
+Note that we didn't have the opportunity yet to test these instructions, so please let us know if you did.
+
+* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to install the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well).
+* Download and install [LaTeX for Mac](https://miktex.org/howto/install-miktex-mac). During installation, choose the option `Install missing packages on the fly: yes`.
+* Open IntelliJ, in the welcome menu choose Configure - Plugins (or when you already have a project open, use File - Settings - Plugins).
+* Search for `texify`, click `search in repositories` and click `install`.
+* Restart your pc to finish the LaTeX and the plugin installations.
+* Click on Create New Project (in welcome menu) or File - New - Project, select LaTeX in the left column and click next. Specify a name for your project, and a location. A project can contain multiple LaTeX files, so for example if you make a new document for each new homework you get, place them all in the same project.
+* Double-click or click on the arrow next to your project name on the left to open the directory.
+* A standard document is already made for you, you can find it in the `src` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
+* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. If you see a pdf appearing, congratulations! 
+* The next time you can also compile using the Run button (looks like a Play button) in the top-right menu.
+* Have a look at the [tips](#tips).
 
 #### <a name="tips">Tips</a>
 * You never have to remember to save your work, IntelliJ will automatically save every letter you type.
@@ -136,7 +164,8 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 
 ### When you want to work together: install git
 * Often you will be working together on one document. In that case, use git to make this go smoothly. We use git because git is awesome, but there exist other tools as well.
-* But sometimes you cannot use IntelliJ, for example because you are at school. For that, we use Overleaf.
+* But sometimes you cannot use IntelliJ, for example because you are at school. For that, we use Overleaf. 
+* Note that this Overleaf feature will become paid in Overleaf v2, and direct git access will stop end of 2018. If you find an other service that can do this for free, please let us know.
 * Install [git](https://git-scm.com/downloads), during installation just click `next` everywhere.
 * Restart your computer.
 * Go to [Overleaf](https://www.overleaf.com/signup) and sign up.

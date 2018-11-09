@@ -48,7 +48,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
     /**
      * @author Ruben Schellekens
      */
-    private class GatherEnvironments() : LocalQuickFix {
+    private class GatherEnvironments : LocalQuickFix {
 
         override fun getFamilyName() = "Gather equations"
 

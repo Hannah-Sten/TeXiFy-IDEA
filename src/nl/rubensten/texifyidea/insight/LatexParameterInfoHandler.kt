@@ -33,7 +33,7 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexNoMat
     }
 
     override fun showParameterInfo(element: LatexCommands, context: CreateParameterInfoContext) {
-        val commandHuh = LatexNoMathCommand.get(element.commandToken.text.substring(1)) ?: return
+        val commandHuh = LatexNoMathCommand[element.commandToken.text.substring(1)] ?: return
 
         context.itemsToShow = arrayOf<Any>(commandHuh)
         context.showHint(element, element.textOffset, this)

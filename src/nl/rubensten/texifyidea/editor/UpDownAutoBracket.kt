@@ -11,8 +11,8 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.psi.LatexTypes.*
+import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.util.*
-import java.util.regex.Pattern
 
 /**
  * @author Ruben Schellekens
@@ -27,12 +27,16 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         private val insertSymbols = setOf("_", "^")
 
         /**
-         * Matches the suffix that denotes that braces may not be inserted.
+         * Matches the suffix that denotes that braces may be inserted.
          */
-        private val insertForbidden = Pattern.compile("^[\\s^_,.;%:$(']$")!!
+        private val insertOnly = """^[a-zA-Z0-9]$""".toRegex()
     }
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
+        if (!TexifySettings.getInstance().automaticUpDownBracket) {
+            return Result.CONTINUE
+        }
+
         if (file.fileType != LatexFileType) {
             return Result.CONTINUE
         }
@@ -62,46 +66,46 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
     }
 
     private fun findNormalText(element: PsiElement): LatexNormalText? {
-        return exit@ when (element) {
+        return when (element) {
             is PsiWhiteSpace -> {
                 // When the whitespace is the end of a math environment.
-                val sibling = element.previousSiblingIgnoreWhitespace() ?: return@exit element.parentOfType(LatexNormalText::class)
-                when (sibling) {
+                val sibling = element.previousSiblingIgnoreWhitespace() ?: return element.parentOfType(LatexNormalText::class)
+                return when (sibling) {
                     is LatexMathContent, is LatexEnvironmentContent -> {
-                        return@exit sibling.lastChildOfType(LatexNoMathContent::class)
+                        sibling.lastChildOfType(LatexNoMathContent::class)
                                 ?.firstChildOfType(LatexNormalText::class)
                     }
                     is LeafPsiElement -> {
-                        return@exit sibling.parentOfType(LatexNormalText::class)
+                        sibling.parentOfType(LatexNormalText::class)
                     }
                     else -> {
-                        return@exit sibling.firstChildOfType(LatexNormalText::class)
+                        sibling.firstChildOfType(LatexNormalText::class)
                     }
                 }
             }
             is PsiComment -> {
                 // When for some reason people want to insert it directly before a comment.
-                val mother = element.previousSiblingIgnoreWhitespace() ?: return@exit null
-                return@exit mother.lastChildOfType(LatexNormalText::class)
+                val mother = element.previousSiblingIgnoreWhitespace() ?: return null
+                return mother.lastChildOfType(LatexNormalText::class)
             }
             is LeafPsiElement -> {
                 when (element.elementType) {
                     END_COMMAND, BEGIN_COMMAND, COMMAND_TOKEN -> {
                         // When it is followed by a LatexCommands or comment tokens.
-                        val noMathContent = element.parent.parent ?: return@exit null
-                        val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return@exit null
-                        return@exit sibling.firstChildOfType(LatexNormalText::class)
+                        val noMathContent = element.parent.parent ?: return null
+                        val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return null
+                        return sibling.firstChildOfType(LatexNormalText::class)
                     }
                     INLINE_MATH_END -> {
                         // At the end of inline math.
-                        val mathContent = element.previousSiblingIgnoreWhitespace() as? LatexMathContent ?: return@exit null
-                        val noMathContent = mathContent.lastChildOfType(LatexNoMathContent::class) ?: return@exit null
-                        return@exit noMathContent.firstChildOfType(LatexNormalText::class)
+                        val mathContent = element.previousSiblingIgnoreWhitespace() as? LatexMathContent ?: return null
+                        val noMathContent = mathContent.lastChildOfType(LatexNoMathContent::class) ?: return null
+                        return noMathContent.firstChildOfType(LatexNormalText::class)
                     }
                     else -> {
                         // When a character is inserted just before the close brace of a group/inline math end.
-                        val content = element.prevSibling ?: return@exit null
-                        return@exit content.firstChildOfType(LatexNormalText::class)
+                        val content = element.prevSibling ?: return null
+                        return content.firstChildOfType(LatexNormalText::class)
                     }
                 }
             }
@@ -126,7 +130,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
         // Only insert when a valid symbol has been typed.
         val afterSymbol = char.toString()
-        if (insertForbidden.matcher(afterSymbol).matches()) {
+        if (!insertOnly.matches(afterSymbol)) {
             return
         }
 

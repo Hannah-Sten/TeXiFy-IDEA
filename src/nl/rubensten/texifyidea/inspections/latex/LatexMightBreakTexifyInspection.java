@@ -10,7 +10,7 @@ import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.TexifyUtil;
+import nl.rubensten.texifyidea.util.PsiCommandsKt;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,8 +50,8 @@ public class LatexMightBreakTexifyInspection extends TexifyInspectionBase {
         Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
         for (LatexCommands command : commands) {
             // Error when \newcommand is used on existing command
-            if (Magic.Command.redefinition.contains(command.getName())) {
-                LatexCommands newCommand = TexifyUtil.getForcedFirstRequiredParameterAsCommand(command);
+            if (Magic.Command.redefinitions.contains(command.getName())) {
+                LatexCommands newCommand = PsiCommandsKt.forcedFirstRequiredParameterAsCommand(command);
                 if (newCommand == null) {
                     continue;
                 }

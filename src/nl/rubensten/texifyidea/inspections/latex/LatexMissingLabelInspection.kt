@@ -81,10 +81,10 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
             // Determine label name.
             val prefix = Magic.Command.labeled[command.name]
-            val labelName = required[0].camelCase()
+            val labelName = required[0].formatAsLabel()
             val createdLabelBase = "$prefix:$labelName"
 
-            val allLabels = TexifyUtil.findLabelsInFileSet(file)
+            val allLabels = file.findLabelsInFileSet()
             val createdLabel = appendCounter(createdLabelBase, allLabels)
 
             // Insert label.

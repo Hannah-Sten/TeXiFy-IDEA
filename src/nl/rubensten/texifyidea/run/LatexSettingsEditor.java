@@ -17,10 +17,14 @@ import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.TitledSeparator;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.util.PlatformType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
+
+import static nl.rubensten.texifyidea.util.PlatformsKt.getPlatformType;
 
 /**
  * @author Sten Wessel
@@ -33,7 +37,11 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
     private TextFieldWithBrowseButton compilerPath;
     private LabeledComponent<RawCommandLineEditor> compilerArguments;
     private LabeledComponent<ComponentWithBrowseButton> mainFile;
+    // The following options may or may not exist.
+    @Nullable
     private JCheckBox auxDir;
+    @Nullable
+    private JCheckBox outDir;
     private LabeledComponent<ComboBox> outputFormat;
     private BibliographyPanel bibliographyPanel;
 
@@ -63,7 +71,14 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         txtFile.setText(path);
 
         // Reset seperate auxiliary files.
-        auxDir.setSelected(runConfiguration.hasAuxiliaryDirectories());
+        if (auxDir != null) {
+            auxDir.setSelected(runConfiguration.hasAuxiliaryDirectories());
+        }
+
+        // Reset seperate output files.
+        if (outDir != null) {
+            outDir.setSelected(runConfiguration.hasOutputDirectories());
+        }
 
         // Reset output format.
         outputFormat.getComponent().setSelectedItem(runConfiguration.getOutputFormat());
@@ -93,9 +108,16 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         String filePath = txtFile.getText();
         runConfiguration.setMainFile(filePath);
 
-        // Apply auxiliary files.
-        boolean auxDirectories = auxDir.isSelected();
-        runConfiguration.setAuxiliaryDirectories(auxDirectories);
+        // Apply auxiliary files, only if the option exists.
+        if (auxDir != null) {
+            boolean auxDirectories = auxDir.isSelected();
+            runConfiguration.setAuxiliaryDirectories(auxDirectories);
+        }
+
+        if (outDir != null) {
+            boolean outDirectories = outDir.isSelected();
+            runConfiguration.setOutputDirectories(outDirectories);
+        }
 
         // Apply output format.
         Format format = (Format)outputFormat.getComponent().getSelectedItem();
@@ -164,13 +186,24 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile");
         panel.add(mainFile);
 
-        panel.add(new TitledSeparator("Options"));
-
-        // Auxiliary files
-        auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
-        // Only enable by default on Windows
-        auxDir.setSelected(System.getProperty("os.name").contains("Windows"));
-        panel.add(auxDir);
+        // Only add options to disable aux and out folder on Windows.
+        // (Disabled on other systems by default.)
+        if (getPlatformType() == PlatformType.WINDOWS) {
+            panel.add(new TitledSeparator("Options"));
+            
+            // Auxiliary files
+            auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
+            // Only enable by default on Windows.
+            auxDir.setSelected(getPlatformType() == PlatformType.WINDOWS);
+            panel.add(auxDir);
+        }
+            
+            // Output folder
+            outDir = new JCheckBox("Separate output files from source "
+                                           + "(disable this when using BiBTeX without MiKTeX)");
+            // Enable by default.
+            outDir.setSelected(true);
+            panel.add(outDir);
 
         // Output format.
         ComboBox<Format> cboxFormat = new ComboBox<>(Format.values());

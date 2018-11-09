@@ -10,7 +10,7 @@ import java.util.*
  * @author Ruben Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-        vararg override val arguments: Argument,
+        override vararg val arguments: Argument,
         override val environmentName: String,
         override val initialContents: String = "",
         override val context: Context = Context.NORMAL,
@@ -26,7 +26,6 @@ enum class DefaultEnvironment(
     DOCUMENT(environmentName = "document"),
     ENUMERATE(environmentName = "enumerate", initialContents = "\\item "),
     EQUATION(environmentName = "equation", context = Context.MATH),
-    EQUATION_STAR(environmentName = "equation*", context = Context.MATH),
     EQNARRAY(environmentName = "eqnarray"),
     FIGURE(environmentName = "figure", arguments = *arrayOf(OptionalArgument("placement"))),
     FIGURE_STAR(environmentName = "figure*", arguments = *arrayOf(OptionalArgument("placement"))),
@@ -70,6 +69,7 @@ enum class DefaultEnvironment(
     ALIGN_STAR(environmentName = "align*", context = Context.MATH, dependency = AMSMATH),
     ALIGNAT(environmentName = "alignat", context = Context.MATH, dependency = AMSMATH),
     ALIGNAT_STAR(environmentName = "alignat*", context = Context.MATH, dependency = AMSMATH),
+    EQUATION_STAR(environmentName = "equation*", context = Context.MATH, dependency = AMSMATH),
     FLALIGN(environmentName = "flalign", context = Context.MATH, dependency = AMSMATH),
     FLALIGN_STAR(environmentName = "flalign*", context = Context.MATH, dependency = AMSMATH),
     GATHER(environmentName = "gather", context = Context.MATH, dependency = AMSMATH),
@@ -77,11 +77,13 @@ enum class DefaultEnvironment(
     MULTLINE(environmentName = "multline", context = Context.MATH, dependency = AMSMATH),
     MULTLINE_STAR(environmentName = "multline*", context = Context.MATH, dependency = AMSMATH),
     SPLIT(environmentName = "split", context = Context.MATH, dependency = AMSMATH),
-    SPLIT_STAR(environmentName = "split*", context = Context.MATH, dependency = AMSMATH),
     CASES(environmentName = "cases", context = Context.MATH, dependency = AMSMATH),
 
     // comment
-    COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT);
+    COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT),
+
+    // lualatex
+    LUACODE(environmentName = "luacode", dependency = Package.LUACODE);
 
     companion object {
 

@@ -87,7 +87,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
 
                                 val name = command.commandToken.text
-                                val cmd = LatexNoMathCommand.get(name.substring(1)) ?: return false
+                                val cmd = LatexNoMathCommand[name.substring(1)] ?: return false
 
                                 val args = cmd.getArgumentsOf(RequiredFileArgument::class)
                                 return !args.isEmpty()
@@ -99,6 +99,9 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
+
+        // Documentclasses
+        extendLatexCommands(LatexDocumentclassProvider, "\\documentclass")
 
         // Bibliography styles
         extendLatexCommand(LatexBibliographyStyleProvider, "\\bibliographystyle")
@@ -127,7 +130,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                     return false
                                 }
 
-                                return psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class);
+                                return psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class)
                             }
                         })
                         .withLanguage(BibtexLanguage),

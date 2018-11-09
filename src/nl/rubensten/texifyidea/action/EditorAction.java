@@ -77,9 +77,9 @@ public abstract class EditorAction extends AnAction {
     }
 
     protected void runWriteAction(@NotNull Project project, @NotNull Runnable writeAction) {
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            CommandProcessor.getInstance().executeCommand(project, writeAction, getName(), "Texify");
-        });
+        ApplicationManager.getApplication().runWriteAction(() ->
+                CommandProcessor.getInstance().executeCommand(project, writeAction, getName(), "Texify")
+        );
     }
 
     @Override

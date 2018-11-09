@@ -4,6 +4,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import nl.rubensten.texifyidea.util.PlatformType;
+import nl.rubensten.texifyidea.util.PlatformsKt;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -15,7 +17,8 @@ import java.util.List;
  */
 public enum LatexCompiler {
 
-    PDFLATEX("pdfLaTeX", "pdflatex");
+    PDFLATEX("pdfLaTeX", "pdflatex"),
+    LUALATEX("LuaLaTeX", "lualatex");
 
     private String displayName;
     private String executableName;
@@ -39,32 +42,10 @@ public enum LatexCompiler {
         }
 
         if (this == PDFLATEX) {
-            if (runConfig.getCompilerPath() != null) {
-                command.add(runConfig.getCompilerPath());
-            }
-            else {
-                command.add("pdflatex");
-            }
-            command.add("-file-line-error");
-            command.add("-interaction=nonstopmode");
-            command.add("-synctex=1");
-            command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
-
-            // Only on Windows (MikTeX) the out/ directory can be used, on other systems it will break bibtex because the .aux file will also end up in out/ where bibtex can't find it.
-            if (System.getProperty("os.name").contains("Windows")) {
-                command.add("-output-directory=" + moduleRoot.getPath() + "/out");
-            }
-
-            if (runConfig.hasAuxiliaryDirectories()) {
-                command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
-            }
-
-            if (System.getProperty("os.name").contains("Windows")) {
-                for (VirtualFile root : moduleRoots) {
-                    command.add("-include-directory=" + root.getPath());
-                }
-            }
-
+            command = createPdflatexCommand(runConfig, moduleRoot, moduleRoots);
+        }
+        else if (this == LUALATEX) {
+            command = createLualatexCommand(runConfig, moduleRoot);
         }
 
         // Custom compiler arguments specified by the user
@@ -74,6 +55,81 @@ public enum LatexCompiler {
         }
 
         command.add(mainFile.getName());
+
+        return command;
+    }
+
+    /**
+     * Create the command to execute lualatex.
+     *
+     * @param runConfig LaTeX run configuration which initiated the action of creating this command.
+     * @param moduleRoot Module root.
+     *
+     * @return The command to be executed.
+     */
+    private List<String> createLualatexCommand(LatexRunConfiguration runConfig, VirtualFile moduleRoot) {
+        List<String> command = new ArrayList<>();
+
+        if (runConfig.getCompilerPath() != null) {
+            command.add(runConfig.getCompilerPath());
+        }
+        else {
+            command.add("lualatex");
+        }
+
+        // Some commands are the same as for pdflatex
+        command.add("-file-line-error");
+        command.add("-interaction=nonstopmode");
+        command.add("-synctex=1");
+        command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
+
+        // -output-directory also exists on non-Windows systems
+        if (runConfig.hasOutputDirectories()) {
+            command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+        }
+
+        // Note that lualatex has no -aux-directory
+        return command;
+    }
+
+    /**
+     * Create the command to execute pdflatex.
+     *
+     * @param runConfig LaTeX run configuration which initiated the action of creating this command.
+     * @param moduleRoot Module root.
+     * @param moduleRoots List of source roots.
+     *
+     * @return The command to be executed.
+     */
+    private List<String> createPdflatexCommand(LatexRunConfiguration runConfig, VirtualFile moduleRoot, VirtualFile[] moduleRoots) {
+        List<String> command = new ArrayList<>();
+
+        if (runConfig.getCompilerPath() != null) {
+            command.add(runConfig.getCompilerPath());
+        }
+        else {
+            command.add("pdflatex");
+        }
+        command.add("-file-line-error");
+        command.add("-interaction=nonstopmode");
+        command.add("-synctex=1");
+        command.add("-output-format=" + runConfig.getOutputFormat().name().toLowerCase());
+
+        // -output-directory also exists on non-Windows systems
+        if (runConfig.hasOutputDirectories()) {
+            command.add("-output-directory=" + moduleRoot.getPath() + "/out");
+        }
+
+        // -aux-directory only exists on MikTeX
+        if (runConfig.hasAuxiliaryDirectories() &&(PlatformsKt.getPlatformType() == PlatformType.WINDOWS)) {
+            command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
+        }
+
+        if ((PlatformsKt.getPlatformType() == PlatformType.WINDOWS)) {
+            for (VirtualFile root : moduleRoots) {
+                command.add("-include-directory=" + root.getPath());
+            }
+        }
 
         return command;
     }

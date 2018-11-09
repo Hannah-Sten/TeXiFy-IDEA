@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.util
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.psi.PsiElement
 import nl.rubensten.texifyidea.TexifyIcons
+import nl.rubensten.texifyidea.file.*
 import nl.rubensten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.rubensten.texifyidea.lang.Package
 import java.util.regex.Pattern
@@ -51,7 +52,7 @@ object Magic {
      */
     object Environment {
 
-        @JvmField val listingEnvironments = setOf("itemize", "enumerate", "description")
+        @JvmField val listingEnvironments = hashSetOf("itemize", "enumerate", "description")
 
         /**
          * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
@@ -75,7 +76,7 @@ object Magic {
         /**
          * LaTeX commands that make the text take up more vertical space.
          */
-        @JvmField val high = setOf(
+        @JvmField val high = hashSetOf(
                 "\\frac", "\\dfrac", "\\sqrt", "\\sum", "\\int", "\\iint", "\\iiint", "\\iiiint",
                 "\\prod", "\\bigcup", "\\bigcap", "\\bigsqcup", "\\bigsqcap"
         )
@@ -93,32 +94,67 @@ object Magic {
         )
 
         /**
-         * All commands that represend some kind of reference (think \ref).
+         * All commands that represent a reference to a label.
          */
-        @JvmField val reference = setOf(
-                "\\ref", "\\cite", "\\eqref", "\\nameref", "\\autoref",
+        @JvmField val labelReference = hashSetOf(
+                "\\ref", "\\eqref", "\\nameref", "\\autoref",
                 "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref",
                 "\\labelcref", "\\cpageref"
         )
 
         /**
+         * All commands that represent a reference to a bibiography entry/item.
+         */
+        @JvmField val bibliographyReference = hashSetOf(
+                "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
+                "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
+                "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
+                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar"
+        )
+
+        /**
+         * All commands that represend some kind of reference (think \ref and \cite).
+         */
+        @JvmField val reference = labelReference + bibliographyReference
+
+        /**
          * All math operators without a leading slash.
          */
-        @JvmField val slashlessMathOperators = setOf(
+        @JvmField val slashlessMathOperators = hashSetOf(
                 "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
                 "deg", "det", "dim", "exp", "gcd", "hom", "inf", "ker", "lg", "lim", "liminf", "limsup",
                 "ln", "log", "max", "min", "Pr", "sec", "sin", "sinh", "sup", "tan", "tanh"
         )
 
         /**
+         * All commands that define new commands.
+         */
+        @JvmField val definitions = hashSetOf(
+                "\\newcommand",
+                "\\let",
+                "\\def",
+                "\\DeclareMathOperator",
+                "\\newenvironment",
+                "\\newif",
+                "\\ProvidesClass"
+        )
+
+        /**
          * All commands that are able to redefine other commands.
          */
-        @JvmField val redefinition = setOf("\\renewcommand", "\\def", "\\let")
+        @JvmField val redefinitions = hashSetOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
+
+        /**
+         * All commands that include other files.
+         */
+        @JvmField val includes = hashSetOf(
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage", "\\usepackage"
+        )
 
         /**
          * Commands for which TeXiFy-IDEA has custom behaviour.
          */
-        @JvmField val fragile = setOf(
+        @JvmField val fragile = hashSetOf(
                 "\\addtocounter", "\\begin", "\\chapter", "\\def", "\\documentclass", "\\end",
                 "\\include", "\\includeonly", "\\input", "\\label", "\\let", "\\newcommand",
                 "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
@@ -139,22 +175,22 @@ object Magic {
          * Extensions that should only be scanned for the provided include commands.
          */
         @JvmField val includeOnlyExtensions = mapOf(
-                "\\include" to setOf("tex"),
-                "\\includeonly" to setOf("tex"),
-                "\\bibliography" to setOf("bib"),
-                "\\RequirePackage" to setOf("sty"),
-                "\\usepackage" to setOf("sty")
+                "\\include" to hashSetOf("tex"),
+                "\\includeonly" to hashSetOf("tex"),
+                "\\bibliography" to hashSetOf("bib"),
+                "\\RequirePackage" to hashSetOf("sty"),
+                "\\usepackage" to hashSetOf("sty")
         )
 
         /**
          * All commands that end if.
          */
-        @JvmField val endIfs = setOf("\\fi")
+        @JvmField val endIfs = hashSetOf("\\fi")
 
         /**
          * All commands that at first glance look like \if-esque commands, but that actually aren't.
          */
-        @JvmField val ignoredIfs = setOf("\\newif", "\\iff")
+        @JvmField val ignoredIfs = hashSetOf("\\newif", "\\iff")
 
         /**
          * List of all TeX style primitives.
@@ -271,12 +307,34 @@ object Magic {
     /**
      * @author Ruben Schellekens
      */
+    object File {
+
+        /**
+         * All file extensions of files that can be included.
+         */
+        @JvmField val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
+
+        /**
+         * All possible file types.
+         */
+        @JvmField val fileTypes = setOf(
+                BibtexFileType,
+                ClassFileType,
+                LatexFileType,
+                StyleFileType,
+                TikzFileType
+        )
+    }
+    
+    /**
+     * @author Ruben Schellekens
+     */
     object Package {
 
         /**
          * All unicode enabling packages.
          */
-        @JvmField val unicode = setOf(
+        @JvmField val unicode = hashSetOf(
                 LatexPackage.INPUTENC.with("utf8"),
                 LatexPackage.FONTENC.with("T1")
         )

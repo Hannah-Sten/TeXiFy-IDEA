@@ -20,11 +20,7 @@ import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexTypes
 import nl.rubensten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.rubensten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.rubensten.texifyidea.util.Magic
-import nl.rubensten.texifyidea.util.TexifyUtil
-import nl.rubensten.texifyidea.util.TexifyUtil.findFile
-import nl.rubensten.texifyidea.util.documentClassFile
-import nl.rubensten.texifyidea.util.findRootFile
+import nl.rubensten.texifyidea.util.*
 import java.util.*
 
 /**
@@ -78,7 +74,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Fetch all commands in the active file.
         val numbering = SectionNumbering(DocumentClass.getClassByName(docClass))
-        val commands = TexifyUtil.getAllCommands(element)
+        val commands = element.allCommands()
         val treeElements = ArrayList<TreeElement>()
 
         // Add includes.
@@ -189,12 +185,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val containingFile = element.containingFile
             val directory = containingFile.findRootFile()
                     .containingDirectory.virtualFile
-            val fileHuh = findFile(directory, fileName, argument.supportedExtensions)
-            if (!fileHuh.isPresent) {
-                continue
-            }
 
-            val psiFile = PsiManager.getInstance(element.project).findFile(fileHuh.get()) ?: continue
+            val file = directory.findFile(fileName, argument.supportedExtensions) ?: continue
+            val psiFile = PsiManager.getInstance(element.project).findFile(file) ?: continue
 
             if (BibtexFileType == psiFile.fileType) {
                 val elt = LatexStructureViewCommandElement(cmd)

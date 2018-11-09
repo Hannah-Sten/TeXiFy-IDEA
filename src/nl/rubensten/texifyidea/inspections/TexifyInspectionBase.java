@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import kotlin.reflect.jvm.internal.impl.utils.SmartList;
 import nl.rubensten.texifyidea.insight.InsightGroup;
-import nl.rubensten.texifyidea.util.PsiUtilKt;
+import nl.rubensten.texifyidea.util.PsiKt;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +56,7 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
 
         List<ProblemDescriptor> descriptors = inspectFile(file, manager, isOnTheFly);
         descriptors.removeIf(descriptor -> !checkContext(descriptor.getPsiElement()));
-        return descriptors.toArray(new ProblemDescriptor[descriptors.size()]);
+        return descriptors.toArray(new ProblemDescriptor[0]);
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class TexifyInspectionBase extends LocalInspectionTool {
      * @return `true` if the inspection is allowed in the context, `false` otherwise.
      */
     public boolean checkContext(@NotNull PsiElement element) {
-        return !PsiUtilKt.isComment(element);
+        return !PsiKt.isComment(element);
     }
 
     /**

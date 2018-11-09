@@ -4,7 +4,7 @@ package nl.rubensten.texifyidea.psi;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.rubensten.texifyidea.index.stub.BibtexIdStub;
-import nl.rubensten.texifyidea.util.StringUtilKt;
+import nl.rubensten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -15,6 +15,6 @@ public interface BibtexId extends StubBasedPsiElement<BibtexIdStub>, PsiNamedEle
     List<BibtexComment> getCommentList();
 
     default String getName() {
-        return StringUtilKt.substringEnd(getText(), 1);
+        return StringsKt.substringEnd(getText(), 1);
     }
 }

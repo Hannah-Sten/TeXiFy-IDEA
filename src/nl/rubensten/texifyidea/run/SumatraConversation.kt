@@ -3,7 +3,7 @@ package nl.rubensten.texifyidea.run
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
-import nl.rubensten.texifyidea.util.TexifyUtil
+import nl.rubensten.texifyidea.util.Log
 
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
@@ -19,7 +19,7 @@ val isSumatraAvailable: Boolean by lazy {
         DDEClientConversation()
     }
     catch (e: NoClassDefFoundError) {
-        TexifyUtil.logf("Native library DLLs could not be found.")
+        Log.logf("Native library DLLs could not be found.")
         return@lazy false
     }
 
