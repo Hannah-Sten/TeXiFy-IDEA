@@ -26,7 +26,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static nl.rubensten.texifyidea.util.PlatformUtilKt.getPlatformType;
+import static nl.rubensten.texifyidea.util.PlatformsKt.getPlatformType;
 
 /**
  * @author Ruben Schellekens, Sten Wessel

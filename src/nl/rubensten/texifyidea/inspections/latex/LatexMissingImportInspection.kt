@@ -47,6 +47,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 .filter { it.isEnvironmentDefinition() }
                 .mapNotNull { it.requiredParameter(0) }
                 .toSet()
+
         for (env in environments) {
             // Don't consider environments that have been defined.
             if (env.name()?.text in defined) {
@@ -69,7 +70,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             descriptors.add(manager.createProblemDescriptor(
                     env,
                     TextRange(7, 7 + name.length),
-                    "DefaultEnvironment requires ${pack.name} package",
+                    "Environment requires ${pack.name} package",
                     ProblemHighlightType.ERROR,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)

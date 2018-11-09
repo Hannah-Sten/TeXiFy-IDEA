@@ -5,6 +5,7 @@ import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.rubensten.texifyidea.lang.Package.Companion.FONTENC
 import nl.rubensten.texifyidea.lang.Package.Companion.GRAPHICX
+import nl.rubensten.texifyidea.lang.Package.Companion.NATBIB
 import nl.rubensten.texifyidea.lang.Package.Companion.ULEM
 
 /**
@@ -294,7 +295,7 @@ enum class LatexNoMathCommand(
     WIDTH("width"),
 
     /*
-     *  New definitions
+     * New definitions
      */
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWCOMMAND_STAR("newcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
@@ -303,7 +304,35 @@ enum class LatexNoMathCommand(
     RENEWCOMMAND("renewcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     RENEWCOMMAND_STAR("renewcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWENVIRONMENT("newenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
-    RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT));
+    RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
+
+    /**
+     * Natbib citations
+     */
+    CITEP("citep", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = Package.NATBIB),
+    CITEP_STAR("citep*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITET("citet", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITET_STAR("citet*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEP_CAPITALIZED("Citep", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEP_STAR_CAPITALIZED("Citep*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITET_CAPITALIZED("Citet", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITET_STAR_CAPITALIZED("Citet*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALP("citealp", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALP_STAR("citealp*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALT("citealt", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALT_STAR("citealt*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALP_CAPITALIZED("Citealp", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALP_STAR_CAPITALIZED("Citealp*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALT_CAPITALIZED("Citealt", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEALT_STAR_CAPITALIZED("Citealt*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
+    CITEAUTHOR("citeauthor", "keys".asRequired(), dependency = NATBIB),
+    CITEAUTHOR_STAR("citeauthor*", "keys".asRequired(), dependency = NATBIB),
+    CITEAUTHOR_CAPITALIZED("Citeauthor", "keys".asRequired(), dependency = NATBIB),
+    CITEAUTHOR_STAR_CAPITALIZED("Citeauthor*", "keys".asRequired(), dependency = NATBIB),
+    CITEYEAR("citeyear", "keys".asRequired(), dependency = NATBIB),
+    CITEYEARPAR("citeyearpar", "keys".asRequired(), dependency = NATBIB),
+    CITENUM("citenum", "key".asRequired(), dependency = NATBIB),
+    CITETEXT("citetext", "text".asRequired(), dependency = NATBIB);
 
     companion object {
 

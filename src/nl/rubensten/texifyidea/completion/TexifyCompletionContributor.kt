@@ -100,6 +100,9 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
 
+        // Documentclasses
+        extendLatexCommands(LatexDocumentclassProvider, "\\documentclass")
+
         // Bibliography styles
         extendLatexCommand(LatexBibliographyStyleProvider, "\\bibliographystyle")
     }

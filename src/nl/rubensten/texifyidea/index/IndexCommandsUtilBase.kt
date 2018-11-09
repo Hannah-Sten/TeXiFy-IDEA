@@ -37,7 +37,7 @@ abstract class IndexCommandsUtilBase(
      * Get all the commands that have a given name (without slash).
      */
     fun getCommandsByName(name: String, project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
-        val nameSlash = if (!name.startsWith("\\")) name else "\\$name"
+        val nameSlash = if (name.startsWith('\\')) name else "\\$name"
         return getCommandsByNames(setOf(nameSlash), project, scope)
     }
 
@@ -45,7 +45,7 @@ abstract class IndexCommandsUtilBase(
      * Get all the commands with a certain name in a certain file. (with slash)
      */
     fun getCommandsByName(name: String, file: PsiFile): Collection<LatexCommands> {
-        val nameSlash = if (!name.startsWith("\\")) name else "\\$name"
+        val nameSlash = if (name.startsWith('\\')) name else "\\$name"
         return getCommandsByName(nameSlash, file.project, GlobalSearchScope.fileScope(file))
     }
 

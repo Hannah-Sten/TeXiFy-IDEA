@@ -5,7 +5,7 @@ import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.util.PlatformType;
-import nl.rubensten.texifyidea.util.PlatformUtilKt;
+import nl.rubensten.texifyidea.util.PlatformsKt;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -123,12 +123,12 @@ public enum LatexCompiler {
         }
 
         // -aux-directory only exists on MikTeX
-        if (runConfig.hasAuxiliaryDirectories() &&(PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
+        if (runConfig.hasAuxiliaryDirectories() &&(PlatformsKt.getPlatformType() == PlatformType.WINDOWS)) {
             command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
         }
 
         // Prepend root paths to the input search path
-        if ((PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
+        if ((PlatformsKt.getPlatformType() == PlatformType.WINDOWS)) {
             for (VirtualFile root : moduleRoots) {
                 command.add("-include-directory=" + root.getPath());
             }

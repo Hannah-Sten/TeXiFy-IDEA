@@ -10,6 +10,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.commandsInFile
 import nl.rubensten.texifyidea.util.findLabelsInFileSet
+import nl.rubensten.texifyidea.util.hasStar
 
 /**
  * @author Ruben Schellekens
@@ -40,10 +41,20 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             val parts = required[0].split(",")
             for (i in 0 until parts.size) {
                 val part = parts[i]
+                if (part == "*") continue
+
                 if (!labels.contains(part.trim())) {
                     var offset = command.name!!.length + 1
                     for (j in 0 until i) {
                         offset += parts[j].length + 1
+                    }
+
+                    // Add offset change by optional parameters.
+                    offset += command.optionalParameters.sumBy { it.length + 2 }
+
+                    // Add extra star offset
+                    if (command.hasStar()) {
+                        offset++
                     }
 
                     descriptors.add(manager.createProblemDescriptor(
