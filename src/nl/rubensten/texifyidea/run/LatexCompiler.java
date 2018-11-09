@@ -41,7 +41,8 @@ public enum LatexCompiler {
         if (this == PDFLATEX) {
             if (runConfig.getCompilerPath() != null) {
                 command.add(runConfig.getCompilerPath());
-            } else {
+            }
+            else {
                 command.add("pdflatex");
             }
             command.add("-file-line-error");

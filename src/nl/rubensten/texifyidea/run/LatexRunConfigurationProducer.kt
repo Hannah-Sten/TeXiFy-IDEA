@@ -40,7 +40,8 @@ class LatexRunConfigurationProducer : RunConfigurationProducer<LatexRunConfigura
 
         if (container.hasBibliography()) {
             runConfiguration.generateBibRunConfig(BibliographyCompiler.BIBTEX)
-        } else if (container.usesBiber()) {
+        }
+        else if (container.usesBiber()) {
             runConfiguration.generateBibRunConfig(BibliographyCompiler.BIBER)
         }
 

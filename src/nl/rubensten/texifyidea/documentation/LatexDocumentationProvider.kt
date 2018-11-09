@@ -76,7 +76,8 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         return if (lines.getOrNull(0)?.endsWith("could not be found.") == true) {
              emptyList()
-        } else {
+        }
+        else {
             lines
         }
     }

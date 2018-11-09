@@ -18,10 +18,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
         val moduleRoots = ProjectRootManager.getInstance(project).contentSourceRoots
 
         command.apply {
-            if (runConfig.compilerPath != null) {
-                add(runConfig.compilerPath!!)
-            }
-            else add(executableName)
+            add(runConfig.compilerPath ?: BiberCompiler.executableName)
 
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 

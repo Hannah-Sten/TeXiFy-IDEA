@@ -78,14 +78,16 @@ class BibtexRunConfiguration(
         val mainFilePath = parent.getChildText(MAIN_FILE)
         mainFile = if (mainFilePath != null) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
-        } else {
+        }
+        else {
             null
         }
 
         val auxDirPath = parent.getChildText(AUX_DIR)
         auxDir = if (auxDirPath != null) {
             LocalFileSystem.getInstance().findFileByPath(auxDirPath)
-        } else {
+        }
+        else {
             null
         }
     }
