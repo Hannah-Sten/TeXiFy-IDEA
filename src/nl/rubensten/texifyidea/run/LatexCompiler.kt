@@ -5,7 +5,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.rubensten.texifyidea.util.OperatingSystem
 import nl.rubensten.texifyidea.util.splitWhitespace
-import java.util.*
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -67,31 +66,23 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     LATEXMK("Latexmk", "latexmk") {
 
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
-            val command = ArrayList<String>()
-
-            if (runConfig.compilerPath != null) {
-                command.add(runConfig.compilerPath)
-            }
-            else {
-                command.add("latexmk")
-            }
+            val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
             // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
             command.add("-pdf")
-
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=" + runConfig.outputFormat.name.toLowerCase())
+            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             // -output-directory also exists on non-Windows systems
             if (runConfig.hasOutputDirectories()) {
-                command.add("-output-directory=" + moduleRoot.path + "/out")
+                command.add("-output-directory=${moduleRoot.path}/out")
             }
 
             // -aux-directory only exists on MikTeX
             if (runConfig.hasAuxiliaryDirectories() && OperatingSystem.type == OperatingSystem.Type.WINDOWS) {
-                command.add("-aux-directory=" + moduleRoot.path + "/auxil")
+                command.add("-aux-directory=${moduleRoot.path}/auxil")
             }
 
             // -include-directory does not work with latexmk
