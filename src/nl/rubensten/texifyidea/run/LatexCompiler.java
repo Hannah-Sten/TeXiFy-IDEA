@@ -168,7 +168,7 @@ public enum LatexCompiler {
         }
 
         // -aux-directory only exists on MikTeX
-        if (runConfig.hasAuxiliaryDirectories() &&(PlatformUtilKt.getPlatformType() == PlatformType.WINDOWS)) {
+        if (runConfig.hasAuxiliaryDirectories() &&(PlatformsKt.getPlatformType() == PlatformType.WINDOWS)) {
             command.add("-aux-directory=" + moduleRoot.getPath() + "/auxil");
         }
 
