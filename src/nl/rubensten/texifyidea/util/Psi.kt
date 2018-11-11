@@ -362,11 +362,11 @@ fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != 
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.hasBibliography() = LatexIncludesIndex.getItemsInFileSet(this).any { it.name == "\\bibliography" }
+fun PsiFile.hasBibliography() = this.commandsInFileSet().any { it.name == "\\bibliography"}
 
 /**
  * Checks if the fileset for this file uses \printbibliography, in which case the user probably wants to use biber.
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.usesBiber() = LatexIncludesIndex.getItemsInFileSet(this).any { it.name == "\\printbibliography" }
+fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibliography"}
