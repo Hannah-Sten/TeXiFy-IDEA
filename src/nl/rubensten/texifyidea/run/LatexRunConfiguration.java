@@ -3,13 +3,7 @@ package nl.rubensten.texifyidea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.RunnerAndConfigurationSettings;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.LocatableConfiguration;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.configurations.RuntimeConfigurationError;
-import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.RegexpFilter;
 import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.execution.runners.ExecutionEnvironment;
@@ -21,13 +15,11 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
-import nl.rubensten.texifyidea.util.PlatformType;
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler;
+import nl.rubensten.texifyidea.util.OperatingSystem;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static nl.rubensten.texifyidea.util.PlatformsKt.getPlatformType;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -50,7 +42,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
     private String compilerArguments = null;
     private VirtualFile mainFile;
     // Enable auxDir by default on Windows only
-    private boolean auxDir = getPlatformType() == PlatformType.WINDOWS;
+    private boolean auxDir = OperatingSystem.getType().equals(OperatingSystem.Type.WINDOWS);
     private boolean outDir = true;
     private Format outputFormat = Format.PDF;
     private String bibRunConfigId = "";
@@ -139,7 +131,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
         }
 
         // Read output format.
-        Format format = Format
+        Format format = Format.Companion
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT));
         this.outputFormat = format == null ? Format.PDF : format;
 
@@ -213,7 +205,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
      */
     void generateBibRunConfig(BibliographyCompiler defaultCompiler) {
         // On non-Windows systems, disable the out/ directory by default for bibtex to work
-        if (getPlatformType() != PlatformType.WINDOWS) {
+        if (OperatingSystem.getType() != OperatingSystem.Type.WINDOWS) {
             this.outDir = false;
         }
 
@@ -292,7 +284,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
      * Only enabled by default on Windows, because -aux-directory is MikTeX only.
      */
     public void setDefaultAuxiliaryDirectories() {
-        setAuxiliaryDirectories(getPlatformType() == PlatformType.WINDOWS);
+        setAuxiliaryDirectories(OperatingSystem.getType() == OperatingSystem.Type.WINDOWS);
     }
 
     public void setDefaultOutputFormat() {

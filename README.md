@@ -66,7 +66,6 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * If you are prompted to open the `build.gradle` file, do so.
 * Select 'Use auto-import'.
 * Thank Gradle that you're done now!
-* Install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html) if you want to use Go To Line in PDF/Source. 
 * Check that in Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
 
 #### To run directly from source
@@ -96,6 +95,9 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 [Instructions for Mac](#mac-instructions).
 
 ### <a name="windows-instructions">Installation instructions for Windows</a>
+
+These instructions were tested on Windows 7, 8.1 and 10.
+
 * If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to install the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well).
 * Download and install [LaTeX for Windows](https://miktex.org/download). During installation, choose the option `Install missing packages on the fly: yes`.
 * Download and install [SumatraPDF](https://www.sumatrapdfreader.org/download-free-pdf-viewer.html), you will use it to view your compiled pdf files. If you know you are on a 64-bit system you can download the 64-bit build. If you have no idea, download the normal installer which is the top-most link.
@@ -116,8 +118,10 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 
 ### <a name="linux-instructions">Installation instructions for linux</a>
 
-* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to install the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well).
-* You can extract in your Downloads folder with `sudo tar xf ideaIU-2018.1.5.tar.gz -C /opt/`, then run `/opt/idea-IU-181.5281.24/bin/idea.sh`.
+These instructions were tested on Ubuntu 16.04 and Arch Linux 4.18.16.
+
+* If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to use the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well). Download and save the `.tar.gz` file to your Downloads folder.
+* You can extract in your Downloads folder with, in case you downloaded IntelliJ, (change the exactly version number to the correct one, you can use tab for autocompletion) `sudo tar xf ideaIU-2018.1.5.tar.gz -C /opt/`, then run `/opt/idea-IU-181.5281.24/bin/idea.sh`, or in case you downloaded the toolbox, `sudo tar xf jetbrains-toolbox-1.11.4269.tar.gz -C /opt/` and run `/opt/jetbrains-toolbox-1.11.4269/jetbrains-toolbox`, then install IntelliJ.
 * To install LaTeX, you can use the TeX Live distribution. If something is already installed, check that the version is at least 2017 with `latex --version`. If not, for example if you are on Ubuntu 16.04, you have to first remove the old TeX Live (see for example [these steps](https://tex.stackexchange.com/a/95502/98850)) and then install a newer TeX Live (based on the LaTeX3 setup):
   *  Run in your Downloads directory `sudo wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz` 
   * `sudo tar -xzf install-tl-unx.tar.gz` 
