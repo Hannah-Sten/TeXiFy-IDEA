@@ -152,3 +152,8 @@ fun String.formatAsLabel(): String {
             .removeAll("%", "~", "#", "\\")
             .toLowerCase()
 }
+
+/**
+ * Split the given string on whitespace.
+ */
+fun String.splitWhitespace() = split(Regex("\\s+"))

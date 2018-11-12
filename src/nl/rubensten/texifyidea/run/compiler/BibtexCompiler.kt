@@ -3,8 +3,7 @@ package nl.rubensten.texifyidea.run.compiler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import nl.rubensten.texifyidea.run.BibtexRunConfiguration
-import nl.rubensten.texifyidea.util.PlatformType
-import nl.rubensten.texifyidea.util.getPlatformType
+import nl.rubensten.texifyidea.util.OperatingSystem
 
 /**
  * @author Sten Wessel
@@ -28,7 +27,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 
             // Include files from auxiliary directory on Windows
-            if (getPlatformType() == PlatformType.WINDOWS) {
+            if (OperatingSystem.type == OperatingSystem.Type.WINDOWS) {
                 add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }
