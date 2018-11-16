@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.lang
 
 import nl.rubensten.texifyidea.lang.Environment.Context
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.name
 import java.util.*
@@ -64,19 +65,19 @@ enum class DefaultEnvironment(
     VERSE(environmentName = "verse"),
 
     // amsmath
-    ALIGN(environmentName = "align", context = Context.MATH, dependency = Package.AMSMATH),
-    ALIGN_STAR(environmentName = "align*", context = Context.MATH, dependency = Package.AMSMATH),
-    ALIGNAT(environmentName = "alignat", context = Context.MATH, dependency = Package.AMSMATH),
-    ALIGNAT_STAR(environmentName = "alignat*", context = Context.MATH, dependency = Package.AMSMATH),
-    EQUATION_STAR(environmentName = "equation*", context = Context.MATH, dependency = Package.AMSMATH),
-    FLALIGN(environmentName = "flalign", context = Context.MATH, dependency = Package.AMSMATH),
-    FLALIGN_STAR(environmentName = "flalign*", context = Context.MATH, dependency = Package.AMSMATH),
-    GATHER(environmentName = "gather", context = Context.MATH, dependency = Package.AMSMATH),
-    GATHER_STAR(environmentName = "gather*", context = Context.MATH, dependency = Package.AMSMATH),
-    MULTLINE(environmentName = "multline", context = Context.MATH, dependency = Package.AMSMATH),
-    MULTLINE_STAR(environmentName = "multline*", context = Context.MATH, dependency = Package.AMSMATH),
-    SPLIT(environmentName = "split", context = Context.MATH, dependency = Package.AMSMATH),
-    CASES(environmentName = "cases", context = Context.MATH, dependency = Package.AMSMATH),
+    ALIGN(environmentName = "align", context = Context.MATH, dependency = AMSMATH),
+    ALIGN_STAR(environmentName = "align*", context = Context.MATH, dependency = AMSMATH),
+    ALIGNAT(environmentName = "alignat", context = Context.MATH, dependency = AMSMATH),
+    ALIGNAT_STAR(environmentName = "alignat*", context = Context.MATH, dependency = AMSMATH),
+    EQUATION_STAR(environmentName = "equation*", context = Context.MATH, dependency = AMSMATH),
+    FLALIGN(environmentName = "flalign", context = Context.MATH, dependency = AMSMATH),
+    FLALIGN_STAR(environmentName = "flalign*", context = Context.MATH, dependency = AMSMATH),
+    GATHER(environmentName = "gather", context = Context.MATH, dependency = AMSMATH),
+    GATHER_STAR(environmentName = "gather*", context = Context.MATH, dependency = AMSMATH),
+    MULTLINE(environmentName = "multline", context = Context.MATH, dependency = AMSMATH),
+    MULTLINE_STAR(environmentName = "multline*", context = Context.MATH, dependency = AMSMATH),
+    SPLIT(environmentName = "split", context = Context.MATH, dependency = AMSMATH),
+    CASES(environmentName = "cases", context = Context.MATH, dependency = AMSMATH),
 
     // comment
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT),

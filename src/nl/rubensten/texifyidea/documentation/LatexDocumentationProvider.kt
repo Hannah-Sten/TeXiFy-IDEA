@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.LatexCommands
 import java.io.IOException
@@ -62,7 +63,7 @@ class LatexDocumentationProvider : DocumentationProvider {
     override fun getDocumentationElementForLink(psiManager: PsiManager?, s: String?, psiElement: PsiElement?): PsiElement? = null
 
     private fun runTexdoc(pkg: Package): List<String> {
-        val name = if (pkg == Package.DEFAULT) "source2e" else pkg.name
+        val name = if (pkg == DEFAULT) "source2e" else pkg.name
 
         val stream: InputStream
         try {
@@ -75,7 +76,8 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         return if (lines.getOrNull(0)?.endsWith("could not be found.") == true) {
              emptyList()
-        } else {
+        }
+        else {
             lines
         }
     }

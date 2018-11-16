@@ -9,7 +9,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
-import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.*
 
@@ -65,7 +65,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
             document.replaceString(end.textOffset, end.endOffset(), "\\end{align$star}")
             document.replaceString(begin.textOffset, begin.endOffset(), "\\begin{align$star}")
 
-            file.insertUsepackage(Package.AMSMATH)
+            file.insertUsepackage(AMSMATH)
         }
     }
 }

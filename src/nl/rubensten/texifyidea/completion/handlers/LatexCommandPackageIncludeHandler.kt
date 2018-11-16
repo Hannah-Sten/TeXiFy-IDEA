@@ -5,7 +5,7 @@ import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.util.text.StringUtil
 import nl.rubensten.texifyidea.lang.LatexCommand
-import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.rubensten.texifyidea.util.PackageUtils
 
 /**
@@ -18,7 +18,7 @@ class LatexCommandPackageIncludeHandler : InsertHandler<LookupElement> {
         val file = insertionContext.file
 
         val pack = command.dependency
-        if (Package.DEFAULT == pack) {
+        if (pack == DEFAULT) {
             return
         }
 
