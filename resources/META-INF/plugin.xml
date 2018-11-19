@@ -545,5 +545,9 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
         </intentionAction>
+
+        <toolWindow id="Equation Preview" secondary="true" anchor="bottom"
+                    factoryClass="nl.rubensten.texifyidea.window.EquationPreviewToolWindowFactory"/>
+
     </extensions>
 </idea-plugin>

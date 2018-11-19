@@ -11,12 +11,12 @@ import com.intellij.ui.content.*
  * Date: Aug 25, 2010
  * Time: 2:09:00 PM
  */
-class ExpressionPreviewToolWindowFactory : ToolWindowFactory {
+class EquationPreviewToolWindowFactory : ToolWindowFactory {
     // Create the tool window content.
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val previewToolWindow = ExpressionPreviewToolWindow(toolWindow)
+        val myToolWindow = EquationPreviewToolWindow(toolWindow)
         val contentFactory = ContentFactory.SERVICE.getInstance()
-        val content = contentFactory.createContent(previewToolWindow.content, "", false)
+        val content = contentFactory.createContent(myToolWindow.content, "", false)
         toolWindow.contentManager.addContent(content)
     }
 }
