@@ -257,6 +257,11 @@
             <action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
                     text="_Configure inverse search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
         </group>
+        <action id="nl.rubensten.texifyidea.action.ShowEquationPreview"
+                class="nl.rubensten.texifyidea.action.ShowEquationPreview" text="Preview Equation">
+            <add-to-group group-id="texify.LatexMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
+        </action>
     </actions>
 
     <!-- Hooks for plugin functionality -->
@@ -545,9 +550,6 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
         </intentionAction>
-
-        <toolWindow id="Equation Preview" secondary="true" anchor="bottom"
-                    factoryClass="nl.rubensten.texifyidea.window.EquationPreviewToolWindowFactory"/>
 
     </extensions>
 </idea-plugin>

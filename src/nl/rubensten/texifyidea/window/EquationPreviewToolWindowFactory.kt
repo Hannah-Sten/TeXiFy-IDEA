@@ -14,7 +14,7 @@ import com.intellij.ui.content.*
 class EquationPreviewToolWindowFactory : ToolWindowFactory {
     // Create the tool window content.
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val myToolWindow = EquationPreviewToolWindow(toolWindow)
+        val myToolWindow = EquationPreviewToolWindow("")
         val contentFactory = ContentFactory.SERVICE.getInstance()
         val content = contentFactory.createContent(myToolWindow.content, "", false)
         toolWindow.contentManager.addContent(content)

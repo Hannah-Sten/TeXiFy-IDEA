@@ -354,6 +354,10 @@ public class TexifyIcons {
             "/nl/rubensten/texifyidea/icons/key-user.png"
     );
 
+    public static final Icon EQUATION_PREVIEW = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/equation-preview.png"
+    );
+
     /**
      * For lookup items that have no real category.
      */
