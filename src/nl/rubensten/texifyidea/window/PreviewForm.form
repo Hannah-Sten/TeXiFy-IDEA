@@ -49,7 +49,9 @@
                 <children>
                   <component id="c7469" class="javax.swing.JTextArea" binding="equation_area">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>

@@ -19,6 +19,18 @@ internal class ImagePanel : JPanel() {
         this.img_height = img.height
         this.img_width = img.width
         this.invalidate()
+        revalidate()
+        repaint()
+    }
+
+    fun clear_image() {
+        this.img = null
+        this.scaled = null
+        this.img_height = 1
+        this.img_width = 1
+        this.invalidate()
+        revalidate()
+        repaint()
     }
 
     override fun invalidate() {

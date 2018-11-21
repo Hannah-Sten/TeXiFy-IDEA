@@ -52,6 +52,7 @@ class PreviewForm {
                 if (!latex.waitFor(3, TimeUnit.SECONDS)){
                     latex.destroy()
                     output_area!!.text = "Latex took more than 3 seconds. Terminated."
+                    preview_panel!!.clear_image()
                     return;
                 }
 
@@ -59,35 +60,58 @@ class PreviewForm {
                 output_area!!.text = reader.readText()
                 reader.close()
                 if (latex.exitValue() == 0) {
-                    val imagemagick = Runtime.getRuntime().exec(
-                            arrayOf("convert",
-                                    "-verbose",
-                                    "-density", "300",
+                    val pdf2svg = Runtime.getRuntime().exec(
+                            arrayOf("pdf2svg",
                                     tmp_basename + ".pdf",
-                                    "-quality", "100",
-                                    "-flatten",
-                                    "-sharpen","0x1.0",
-                                    "-trim",
-                                    tmp_basename + ".png"
+                                    tmp_basename + ".svg"
                             ),
                             null,
                             tmpdir
                     )
 
-                    if (!imagemagick.waitFor(3, TimeUnit.SECONDS)){
-                        imagemagick.destroy()
-                        output_area!!.text = "Imagemagick took more than 3 seconds. Terminated."
+                    if (!pdf2svg.waitFor(3, TimeUnit.SECONDS)){
+                        pdf2svg.destroy()
+                        preview_panel!!.clear_image()
+                        output_area!!.text = "pdf2svg took more than 3 seconds. Terminated."
                         return;
                     }
 
-                    if (imagemagick.exitValue()==0){
-                        val image = ImageIO.read(File(tmp_basename + ".png"))
+                    if (pdf2svg.exitValue()==0){
 
-                        preview_panel!!.set_image(image)
-                        preview_panel!!.requestFocus()
+                        val inkscape = Runtime.getRuntime().exec(
+                                arrayOf("inkscape",
+                                        tmp_basename + ".svg",
+                                        "--export-area-drawing",
+                                        "--export-dpi", "1000",
+                                        "--export-background", "#FFFFFF",
+                                        "--export-png", tmp_basename + ".png"
+                                ),
+                                null,
+                                tmpdir
+                        )
+                        if (!inkscape.waitFor(3, TimeUnit.SECONDS)){
+                            inkscape.destroy()
+                            preview_panel!!.clear_image()
+                            output_area!!.text = "inkscape took more than 3 seconds. Terminated."
+                            return;
+                        }
+
+                        if (inkscape.exitValue()==0){
+                            val image = ImageIO.read(File(tmp_basename + ".png"))
+
+                            preview_panel!!.set_image(image)
+                            preview_panel!!.requestFocus()
+                        }else{
+                            output_area!!.text += "Inkscape exited with " + inkscape.exitValue()
+                            preview_panel!!.clear_image()
+                        }
+                    }else{
+                        output_area!!.text += "Pdf2svg exited with " + pdf2svg.exitValue()
+                        preview_panel!!.clear_image()
                     }
 
                 }else{
+                    preview_panel!!.clear_image()
                     output_area!!.text += "Latex exited with " + latex.exitValue()
                 }
             } finally {
