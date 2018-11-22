@@ -17,7 +17,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="f114e" class="nl.rubensten.texifyidea.window.ImagePanel" binding="preview_panel">
+          <component id="f114e" class="nl.rubensten.texifyidea.window.ImagePanel" binding="previewPanel">
             <constraints>
               <splitpane position="left"/>
             </constraints>
@@ -47,7 +47,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="c7469" class="javax.swing.JTextArea" binding="equation_area">
+                  <component id="c7469" class="javax.swing.JTextArea" binding="equationArea">
                     <constraints/>
                     <properties>
                       <editable value="false"/>
@@ -71,7 +71,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="494c1" class="javax.swing.JTextArea" binding="output_area">
+                  <component id="494c1" class="javax.swing.JTextArea" binding="outputArea">
                     <constraints/>
                     <properties>
                       <editable value="false"/>

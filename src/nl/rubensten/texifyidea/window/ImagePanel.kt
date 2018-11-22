@@ -1,33 +1,41 @@
 package nl.rubensten.texifyidea.window
 
-
 import javax.swing.*
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.lang.Integer.max
 import java.lang.Double.min
 
+/**
+ * @author Sergei Izmailov
+ * */
 internal class ImagePanel : JPanel() {
 
-    private var img: Image? = null
-    private var img_width: Int = 1
-    private var img_height: Int = 1
+
+    companion object {
+
+        private const val serialVersionUID = 1L
+    }
+
+    private var image: Image? = null
+    private var imageWidth: Int = 1
+    private var imageHeight: Int = 1
     private var scaled: Image? = null
 
-    fun set_image(img: BufferedImage) {
-        this.img = img
-        this.img_height = img.height
-        this.img_width = img.width
+    fun setImage(img: BufferedImage) {
+        this.image = img
+        this.imageHeight = img.height
+        this.imageWidth = img.width
         this.invalidate()
         revalidate()
         repaint()
     }
 
-    fun clear_image() {
-        this.img = null
+    fun clearImage() {
+        this.image = null
         this.scaled = null
-        this.img_height = 1
-        this.img_width = 1
+        this.imageHeight = 1
+        this.imageWidth = 1
         this.invalidate()
         revalidate()
         repaint()
@@ -36,25 +44,24 @@ internal class ImagePanel : JPanel() {
     override fun invalidate() {
         super.invalidate()
 
-        if (img == null) return
+        if (image == null) return
 
-        val width = max(50,width)
-        val height = max(50,height)
+        val width = max(50, width)
+        val height = max(50, height)
 
-        val ratio = min(width.toDouble()/img_width,height.toDouble()/img_height)
+        val ratio = min(width.toDouble() / imageWidth, height.toDouble() / imageHeight)
 
-        val w = (img_width*ratio).toInt()
-        val h = (img_height*ratio).toInt()
+        val scaledImageWidth = (imageWidth * ratio).toInt()
+        val scaledImageHeight = (imageHeight * ratio).toInt()
 
-        scaled = img?.getScaledInstance(w, h, Image.SCALE_SMOOTH)
+        scaled = image?.getScaledInstance(scaledImageWidth, scaledImageHeight, Image.SCALE_SMOOTH)
     }
 
     override fun getPreferredSize(): Dimension {
-        return if (img == null)
+        return if (image == null) {
             Dimension(200, 200)
-        else
-            Dimension(
-                    img!!.getWidth(this), img!!.getHeight(this))
+        }
+        else Dimension(image!!.getWidth(this), image!!.getHeight(this))
     }
 
     public override fun paintComponent(g: Graphics) {
@@ -64,8 +71,4 @@ internal class ImagePanel : JPanel() {
         }
     }
 
-    companion object {
-
-        private val serialVersionUID = 1L
-    }
 }

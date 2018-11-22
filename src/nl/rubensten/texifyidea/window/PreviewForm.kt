@@ -6,119 +6,129 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import javax.swing.*
 
+/**
+ * @author Sergei Izmailov
+ * */
 class PreviewForm {
+
     var panel: JPanel? = null
-    private var equation_area: JTextArea? = null
-    private var output_area: JTextArea? = null
-    private var output_panel: JPanel? = null
-    private var equation_panel9: JPanel? = null
-    private var preview_panel: ImagePanel? = null
+    private var equationArea: JTextArea? = null
+    private var outputArea: JTextArea? = null
+    private var previewPanel: ImagePanel? = null
 
     private val preamble = """
-    \usepackage{amsmath,amsthm,amssymb,amsfonts}
-    \usepackage{color}
+        \usepackage{amsmath,amsthm,amssymb,amsfonts}
+        \usepackage{color}
     """.trimIndent()
 
-    fun set_equation_text(equation_text: String) {
-        equation_area!!.text = equation_text
+    @Suppress("UnstableApiUsage")
+    fun setEquationText(equationText: String) {
+        equationArea!!.text = equationText
 
         try {
-            val tmpdir = Files.createTempDir()
-            try {
-                val tmp_basename = tmpdir.path + "/equation"
-                val writer = PrintWriter(tmp_basename + ".tex", "UTF-8")
 
-                val tmp_content = """
-\documentclass{article}
-""" + preamble +
-                        """
-\pagestyle{empty}
-\begin{document}
-""" + equation_text +
-                        """
-\end{document}"""
-                writer.println(tmp_content)
+            val tempDirectory = Files.createTempDir()
+            try {
+                val tempBasename = "${tempDirectory.path}/equation"
+                val writer = PrintWriter("$tempBasename.tex", "UTF-8")
+
+                val tmpContent = """
+                    \documentclass{article}
+                    $preamble
+
+                    \pagestyle{empty}
+                    \begin{document}
+                    $equationText
+
+                    \end{document}
+                """.trimIndent()
+                writer.println(tmpContent)
                 writer.close()
 
                 val latex = Runtime.getRuntime().exec(
                         arrayOf("pdflatex",
                                 "-halt-on-error",
-                                tmp_basename + ".tex",
+                                tempBasename + ".tex",
                                 "-interaction=nonstopmode"),
                         null,
-                        tmpdir
+                        tempDirectory
                 )
                 latex.outputStream.close()
-                if (!latex.waitFor(3, TimeUnit.SECONDS)){
+                if (!latex.waitFor(3, TimeUnit.SECONDS)) {
                     latex.destroy()
-                    output_area!!.text = "Latex took more than 3 seconds. Terminated."
-                    preview_panel!!.clear_image()
+                    outputArea!!.text = "Latex took more than 3 seconds. Terminated."
+                    previewPanel!!.clearImage()
                     return;
                 }
 
-                val reader = BufferedReader(InputStreamReader(latex.inputStream))
-                output_area!!.text = reader.readText()
-                reader.close()
+                latex.inputStream.bufferedReader().use {
+                    outputArea!!.text = it.readText()
+                }
+
                 if (latex.exitValue() == 0) {
                     val pdf2svg = Runtime.getRuntime().exec(
                             arrayOf("pdf2svg",
-                                    tmp_basename + ".pdf",
-                                    tmp_basename + ".svg"
+                                    "$tempBasename.pdf",
+                                    "$tempBasename.svg"
                             ),
                             null,
-                            tmpdir
+                            tempDirectory
                     )
 
-                    if (!pdf2svg.waitFor(3, TimeUnit.SECONDS)){
+                    if (!pdf2svg.waitFor(3, TimeUnit.SECONDS)) {
                         pdf2svg.destroy()
-                        preview_panel!!.clear_image()
-                        output_area!!.text = "pdf2svg took more than 3 seconds. Terminated."
+                        previewPanel!!.clearImage()
+                        outputArea!!.text = "pdf2svg took more than 3 seconds. Terminated."
                         return;
                     }
 
-                    if (pdf2svg.exitValue()==0){
+                    if (pdf2svg.exitValue() == 0) {
 
                         val inkscape = Runtime.getRuntime().exec(
                                 arrayOf("inkscape",
-                                        tmp_basename + ".svg",
+                                        "$tempBasename.svg",
                                         "--export-area-drawing",
                                         "--export-dpi", "1000",
                                         "--export-background", "#FFFFFF",
-                                        "--export-png", tmp_basename + ".png"
+                                        "--export-png", "$tempBasename.png"
                                 ),
                                 null,
-                                tmpdir
+                                tempDirectory
                         )
-                        if (!inkscape.waitFor(3, TimeUnit.SECONDS)){
+
+                        if (!inkscape.waitFor(3, TimeUnit.SECONDS)) {
                             inkscape.destroy()
-                            preview_panel!!.clear_image()
-                            output_area!!.text = "inkscape took more than 3 seconds. Terminated."
+                            previewPanel!!.clearImage()
+                            outputArea!!.text = "inkscape took more than 3 seconds. Terminated."
                             return;
                         }
 
-                        if (inkscape.exitValue()==0){
-                            val image = ImageIO.read(File(tmp_basename + ".png"))
+                        if (inkscape.exitValue() == 0) {
+                            val image = ImageIO.read(File("$tempBasename.png"))
 
-                            preview_panel!!.set_image(image)
-                            preview_panel!!.requestFocus()
-                        }else{
-                            output_area!!.text += "Inkscape exited with " + inkscape.exitValue()
-                            preview_panel!!.clear_image()
+                            previewPanel!!.setImage(image)
+                            previewPanel!!.requestFocus()
                         }
-                    }else{
-                        output_area!!.text += "Pdf2svg exited with " + pdf2svg.exitValue()
-                        preview_panel!!.clear_image()
+                        else {
+                            outputArea!!.text += "Inkscape exited with " + inkscape.exitValue()
+                            previewPanel!!.clearImage()
+                        }
                     }
-
-                }else{
-                    preview_panel!!.clear_image()
-                    output_area!!.text += "Latex exited with " + latex.exitValue()
+                    else {
+                        outputArea!!.text += "Pdf2svg exited with " + pdf2svg.exitValue()
+                        previewPanel!!.clearImage()
+                    }
+                }
+                else {
+                    previewPanel!!.clearImage()
+                    outputArea!!.text += "Latex exited with " + latex.exitValue()
                 }
             } finally {
-                tmpdir.delete()
+                tempDirectory.delete()
             }
 
-        } catch (e: IOException) {
+        }
+        catch (ignored: IOException) {
 
         }
 

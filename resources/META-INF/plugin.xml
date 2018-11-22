@@ -168,6 +168,11 @@
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
+            <action id="nl.rubensten.texifyidea.action.ShowEquationPreview"
+                    class="nl.rubensten.texifyidea.action.ShowEquationPreview" text="Preview Equation">
+                <add-to-group group-id="texify.LatexMenu" anchor="first"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
+            </action>
         </group>
 
         <!-- Insert: Sectioning -->
@@ -257,11 +262,6 @@
             <action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
                     text="_Configure inverse search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
         </group>
-        <action id="nl.rubensten.texifyidea.action.ShowEquationPreview"
-                class="nl.rubensten.texifyidea.action.ShowEquationPreview" text="Preview Equation">
-            <add-to-group group-id="texify.LatexMenu" anchor="first"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
-        </action>
     </actions>
 
     <!-- Hooks for plugin functionality -->
@@ -550,6 +550,5 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
         </intentionAction>
-
     </extensions>
 </idea-plugin>
