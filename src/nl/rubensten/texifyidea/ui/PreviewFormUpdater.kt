@@ -97,14 +97,16 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
             previewForm.setLatexErrorMessage("$command took more than 3 seconds. Terminated.")
             return null
         }
-        if (executable.exitValue() != 0) {
-            previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n ")
-        }
-        executable.inputStream.bufferedReader().use { stdout ->
+
+        val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->
             executable.errorStream.bufferedReader().use { stderr ->
-                return Triple(executable.exitValue(), stdout.readText(), stderr.readText())
+                Pair(stdout.readText(),stderr.readText())
             }
         }
-
+        if (executable.exitValue() != 0) {
+            previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n$stdout\n$stderr")
+            return null
+        }
+        return Triple(executable.exitValue(),stdout,stderr)
     }
 }
