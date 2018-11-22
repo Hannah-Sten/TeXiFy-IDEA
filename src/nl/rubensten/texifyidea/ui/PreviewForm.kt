@@ -23,11 +23,13 @@ class PreviewForm {
     fun setPreview(image: BufferedImage, latexOutput: String) {
         equationPanel!!.setImage(image)
         outputArea!!.text = latexOutput
+        tabbedPane!!.selectedIndex = tabbedPane!!.indexOfComponent(equationTab)
     }
 
     fun setLatexErrorMessage(errorMessage: String) {
         outputArea!!.text = errorMessage
         equationPanel!!.clearImage()
+        tabbedPane!!.selectedIndex = tabbedPane!!.indexOfComponent(latexOutputTab)
     }
 
     fun clear() {
