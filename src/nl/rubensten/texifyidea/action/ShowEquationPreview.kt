@@ -27,30 +27,9 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
     }
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        var element: PsiElement? = getElement(file, project, textEditor) ?: return
+        val element: PsiElement? = getElement(file, project, textEditor) ?: return
 
-        var outerMathEnvironment: PsiElement? = null
-
-        while (element != null) {
-            // get to parent which is *IN* math content
-            while (element != null && element.inMathContext().not()) {
-                element = element.parent
-            }
-            // find the marginal element which is NOT IN math content
-            while (element != null && element.inMathContext()) {
-                element = element.parent
-            }
-
-            if (element != null) {
-                outerMathEnvironment = when (element.parent) {
-                    is LatexInlineMath -> element.parent
-                    is LatexDisplayMath -> element.parent
-                    else -> element
-                }
-                element = element.parent
-            }
-        }
-        outerMathEnvironment ?: return
+        val outerMathEnvironment = findOuterMathEnvironment(element) ?: return
 
         val toolWindowId = "Equation Preview"
         val toolWindowManager = ToolWindowManager.getInstance(project)
@@ -93,6 +72,32 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             updater.setEquationText(outerMathEnvironment.text)
         }
         toolWindow.activate(null)
+    }
+
+    private fun findOuterMathEnvironment(element: PsiElement?): PsiElement? {
+        var element1 = element
+        var outerMathEnvironment: PsiElement? = null
+
+        while (element1 != null) {
+            // get to parent which is *IN* math content
+            while (element1 != null && element1.inMathContext().not()) {
+                element1 = element1.parent
+            }
+            // find the marginal element which is NOT IN math content
+            while (element1 != null && element1.inMathContext()) {
+                element1 = element1.parent
+            }
+
+            if (element1 != null) {
+                outerMathEnvironment = when (element1.parent) {
+                    is LatexInlineMath -> element1.parent
+                    is LatexDisplayMath -> element1.parent
+                    else -> element1
+                }
+                element1 = element1.parent
+            }
+        }
+        return outerMathEnvironment
     }
 
 }
