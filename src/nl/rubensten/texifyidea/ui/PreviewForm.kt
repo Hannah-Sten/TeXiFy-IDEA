@@ -1,6 +1,6 @@
 package nl.rubensten.texifyidea.ui
 
-import com.google.common.io.Files
+import org.apache.commons.io.FileUtils
 import java.io.*
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
@@ -21,13 +21,11 @@ class PreviewForm {
         \usepackage{color}
     """.trimIndent()
 
-    @Suppress("UnstableApiUsage")
     fun setEquationText(equationText: String) {
         equationArea!!.text = equationText
 
         try {
-
-            val tempDirectory = Files.createTempDir()
+            val tempDirectory = createTempDir()
             try {
                 val tempBasename = "${tempDirectory.path}/equation"
                 val writer = PrintWriter("$tempBasename.tex", "UTF-8")
@@ -124,12 +122,11 @@ class PreviewForm {
                     outputArea!!.text += "Latex exited with " + latex.exitValue()
                 }
             } finally {
-                tempDirectory.delete()
+                FileUtils.deleteDirectory(tempDirectory)
             }
 
         }
         catch (ignored: IOException) {
-
         }
 
     }
