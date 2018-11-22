@@ -31,13 +31,20 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
     }
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        var element = this.getElement(file, project, textEditor) ?: return
-
+        var element = getElement(file, project, textEditor) ?: return
 
         if (!LatexMathEnvironment::class.java.isAssignableFrom(element.javaClass)) {
             val parentMath = element.parentOfType(LatexMathEnvironment::class)
-            element = parentMath as PsiElement
-//            TODO: figure out math environments
+
+            if (parentMath != null) {
+                element = parentMath
+            } else {
+                if (element.inMathContext().not()) return
+
+                while (element.inMathContext()) {
+                    element = element.parent
+                }
+            }
         }
 
         val toolWindowId = "Equation Preview"
