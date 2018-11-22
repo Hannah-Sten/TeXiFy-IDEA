@@ -69,11 +69,13 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
                 previewForm.setPreview(image, latexStdoutText)
 
 
-            } finally {
+            }
+            finally {
                 FileUtils.deleteDirectory(tempDirectory)
             }
 
-        } catch (ignored: IOException) {
+        }
+        catch (ignored: IOException) {
         }
 
     }
@@ -93,7 +95,7 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
             return null
         }
         if (executable.exitValue() != 0) {
-            previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n " )
+            previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n ")
         }
         executable.inputStream.bufferedReader().use { stdout ->
             executable.errorStream.bufferedReader().use { stderr ->

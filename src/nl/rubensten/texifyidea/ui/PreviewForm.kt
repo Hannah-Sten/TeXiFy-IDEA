@@ -16,21 +16,21 @@ class PreviewForm {
     private var equationTab: JPanel? = null
     private var tabbedPane: JTabbedPane? = null
 
-    fun setEquation(equation: String){
+    fun setEquation(equation: String) {
         equationArea!!.text = equation
     }
 
-    fun setPreview(image: BufferedImage, latexOutput: String){
+    fun setPreview(image: BufferedImage, latexOutput: String) {
         equationPanel!!.setImage(image)
         outputArea!!.text = latexOutput
     }
 
-    fun setLatexErrorMessage(errorMessage: String){
+    fun setLatexErrorMessage(errorMessage: String) {
         outputArea!!.text = errorMessage
         equationPanel!!.clearImage()
     }
 
-    fun clear(){
+    fun clear() {
         outputArea!!.text = ""
         equationArea!!.text = ""
         equationPanel!!.clearImage()

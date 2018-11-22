@@ -27,11 +27,11 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
     }
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        var element : PsiElement? = getElement(file, project, textEditor) ?: return
+        var element: PsiElement? = getElement(file, project, textEditor) ?: return
 
         var outerMathEnvironment: PsiElement? = null
 
-        while (element!=null){
+        while (element != null) {
             // get to parent which is *IN* math content
             while (element != null && element.inMathContext().not()) {
                 element = element.parent
@@ -41,16 +41,16 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
                 element = element.parent
             }
 
-            if (element != null){
-                outerMathEnvironment = when (element.parent){
-                    is LatexInlineMath ->   element.parent
-                    is LatexDisplayMath ->  element.parent
+            if (element != null) {
+                outerMathEnvironment = when (element.parent) {
+                    is LatexInlineMath -> element.parent
+                    is LatexDisplayMath -> element.parent
                     else -> element
                 }
                 element = element.parent
             }
         }
-        outerMathEnvironment?: return
+        outerMathEnvironment ?: return
 
         val toolWindowId = "Equation Preview"
         val toolWindowManager = ToolWindowManager.getInstance(project)
