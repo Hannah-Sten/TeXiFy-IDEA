@@ -92,6 +92,7 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             newContent.putUserData(FORM_KEY, updater)
             updater.setEquationText(outerMathEnvironment.text)
         }
+        toolWindow.activate(null)
     }
 
 }
