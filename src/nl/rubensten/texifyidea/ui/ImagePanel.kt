@@ -8,7 +8,7 @@ import java.lang.Double.min
 
 /**
  * @author Sergei Izmailov
- * */
+ */
 internal class ImagePanel : JPanel() {
 
 

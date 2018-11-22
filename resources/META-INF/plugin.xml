@@ -169,7 +169,7 @@
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
             <action id="nl.rubensten.texifyidea.action.ShowEquationPreview"
-                    class="nl.rubensten.texifyidea.action.ShowEquationPreview" text="Preview Equation">
+                    class="nl.rubensten.texifyidea.action.ShowEquationPreview" text="Preview _Equation">
                 <add-to-group group-id="texify.LatexMenu" anchor="first"/>
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
             </action>

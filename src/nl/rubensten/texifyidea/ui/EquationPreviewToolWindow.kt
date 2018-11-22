@@ -3,7 +3,7 @@ package nl.rubensten.texifyidea.ui
 import javax.swing.*
 
 
-class EquationPreviewToolWindow(val equationText:String) {
+class EquationPreviewToolWindow {
     private val previewForm = PreviewForm()
 
     val content: JPanel

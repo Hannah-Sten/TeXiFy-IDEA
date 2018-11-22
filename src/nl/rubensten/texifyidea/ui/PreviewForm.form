@@ -3,29 +3,42 @@
   <grid id="27dc6" binding="panel" default-binding="true" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="811" height="301"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <splitpane id="313bd">
+      <tabbedpane id="29dbe" binding="tabbedPane">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="200" height="200"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <tabPlacement value="2"/>
+        </properties>
         <border type="none"/>
         <children>
-          <component id="7ddc2" class="nl.rubensten.texifyidea.ui.ImagePanel" binding="previewPanel">
-            <constraints>
-              <splitpane position="left"/>
-            </constraints>
-          </component>
-          <grid id="43813" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="2631c" binding="equationTab" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <splitpane position="right"/>
+              <tabbedpane title="Equation"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="7ddc2" class="nl.rubensten.texifyidea.ui.ImagePanel" binding="equationPanel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+            </children>
+          </grid>
+          <grid id="d411e" binding="latexOutputTab" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <tabbedpane title="Output"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -81,7 +94,7 @@
             </children>
           </grid>
         </children>
-      </splitpane>
+      </tabbedpane>
     </children>
   </grid>
 </form>

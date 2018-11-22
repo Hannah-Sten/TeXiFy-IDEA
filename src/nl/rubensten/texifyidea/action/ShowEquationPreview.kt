@@ -9,10 +9,11 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiElement
 import com.intellij.ui.content.ContentFactory
 import nl.rubensten.texifyidea.TexifyIcons
-import nl.rubensten.texifyidea.psi.LatexMathEnvironment
+import nl.rubensten.texifyidea.psi.LatexDisplayMath
+import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.util.*
 import nl.rubensten.texifyidea.ui.EquationPreviewToolWindow
-import nl.rubensten.texifyidea.ui.PreviewForm
+import nl.rubensten.texifyidea.ui.PreviewFormUpdater
 
 /**
  * @author Sergei Izmailov
@@ -22,37 +23,37 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
     companion object {
 
         @JvmStatic
-        lateinit var FORM_KEY: Key<PreviewForm>
-    }
-
-    init {
-        FORM_KEY = Key<PreviewForm>("form")
+        val FORM_KEY = Key<PreviewFormUpdater>("updater")
     }
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         var element : PsiElement? = getElement(file, project, textEditor) ?: return
 
-        if (!LatexMathEnvironment::class.java.isAssignableFrom(element!!.javaClass)) {
-            val parentMath = element.parentOfType(LatexMathEnvironment::class)
+        var outerMathEnvironment: PsiElement? = null
 
-            if (parentMath != null) {
-                element = parentMath
-            } else {
-                // get to parent which is *IN* math content
-                while (element != null && element.inMathContext().not()) {
-                    element = element.parent
+        while (element!=null){
+            // get to parent which is *IN* math content
+            while (element != null && element.inMathContext().not()) {
+                element = element.parent
+            }
+            // find the marginal element which is NOT IN math content
+            while (element != null && element.inMathContext()) {
+                element = element.parent
+            }
+
+            if (element != null){
+                outerMathEnvironment = when (element.parent){
+                    is LatexInlineMath ->   element.parent
+                    is LatexDisplayMath ->  element.parent
+                    else -> element
                 }
-                // find the marginal element which is NOT IN math content
-                while (element != null && element.inMathContext()) {
-                    element = element.parent
-                }
-                if (element == null) return
+                element = element.parent
             }
         }
+        outerMathEnvironment?: return
 
         val toolWindowId = "Equation Preview"
         val toolWindowManager = ToolWindowManager.getInstance(project)
-        val previewToolWindow = EquationPreviewToolWindow(element.text)
 
         var toolWindow = toolWindowManager.getToolWindow(toolWindowId)
         if (toolWindow == null) {
@@ -73,21 +74,23 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             val content = toolWindow.contentManager.getContent(i) ?: continue
             if (content.isPinned.not()) {
                 val form = content.getUserData(FORM_KEY) ?: continue
-                form.setEquationText(element.text)
+                form.setEquationText(outerMathEnvironment.text)
                 replaced = true
                 break
             }
         }
 
         if (!replaced) {
+            val previewToolWindow = EquationPreviewToolWindow()
             val newContent = contentFactory.createContent(
                     previewToolWindow.content,
                     "Equation preview",
                     true
             )
             toolWindow.contentManager.addContent(newContent)
-            newContent.putUserData(FORM_KEY, previewToolWindow.form)
-            previewToolWindow.form.setEquationText(element.text)
+            val updater = PreviewFormUpdater(previewToolWindow.form)
+            newContent.putUserData(FORM_KEY, updater)
+            updater.setEquationText(outerMathEnvironment.text)
         }
     }
 
