@@ -19,7 +19,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
         val moduleRoots = ProjectRootManager.getInstance(project).contentSourceRoots
 
         command.apply {
-            add(runConfig.compilerPath ?: BiberCompiler.executableName)
+            add(runConfig.compilerPath ?: executableName)
 
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 
