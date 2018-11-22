@@ -15,7 +15,7 @@ import nl.rubensten.texifyidea.util.PackageUtils
  */
 object LatexPackageNameProvider : CompletionProvider<CompletionParameters>() {
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         result.addAllElements(ContainerUtil.map2List(PackageUtils.CTAN_PACKAGE_NAMES) { name ->
             LookupElementBuilder.create(name, name)
                     .withPresentableText(name)

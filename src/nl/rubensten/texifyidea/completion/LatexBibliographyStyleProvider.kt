@@ -19,7 +19,7 @@ object LatexBibliographyStyleProvider : CompletionProvider<CompletionParameters>
      */
     private val DEFAULT_STYLES = setOf("abbrv", "acm", "alpha", "apalike", "ieeetr", "plain", "siam", "unsrt")
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         result.addAllElements(ContainerUtil.map2List(DEFAULT_STYLES) { name ->
             LookupElementBuilder.create(name, name)
                     .withPresentableText(name)

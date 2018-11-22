@@ -334,7 +334,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
         }
 
         String name = mainFile.getNameWithoutExtension();
-        return name != null && name.equals(getName());
+        return name.equals(getName());
     }
 
     @Override
