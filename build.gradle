@@ -111,7 +111,7 @@ task zip(type: Zip) {
 }
 
 intellij {
-    version '2018.3'
+    version '2018.2'
 }
 
 test {
