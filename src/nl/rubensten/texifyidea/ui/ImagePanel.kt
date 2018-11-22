@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.window
+package nl.rubensten.texifyidea.ui
 
 import javax.swing.*
 import java.awt.*

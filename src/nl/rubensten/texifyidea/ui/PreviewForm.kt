@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.window
+package nl.rubensten.texifyidea.ui
 
 import com.google.common.io.Files
 import java.io.*
@@ -58,7 +58,7 @@ class PreviewForm {
                     latex.destroy()
                     outputArea!!.text = "Latex took more than 3 seconds. Terminated."
                     previewPanel!!.clearImage()
-                    return;
+                    return
                 }
 
                 latex.inputStream.bufferedReader().use {
@@ -79,7 +79,7 @@ class PreviewForm {
                         pdf2svg.destroy()
                         previewPanel!!.clearImage()
                         outputArea!!.text = "pdf2svg took more than 3 seconds. Terminated."
-                        return;
+                        return
                     }
 
                     if (pdf2svg.exitValue() == 0) {
@@ -100,7 +100,7 @@ class PreviewForm {
                             inkscape.destroy()
                             previewPanel!!.clearImage()
                             outputArea!!.text = "inkscape took more than 3 seconds. Terminated."
-                            return;
+                            return
                         }
 
                         if (inkscape.exitValue() == 0) {

@@ -10,8 +10,8 @@ import com.intellij.ui.content.ContentFactory
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment
 import nl.rubensten.texifyidea.util.*
-import nl.rubensten.texifyidea.window.EquationPreviewToolWindow
-import nl.rubensten.texifyidea.window.PreviewForm
+import nl.rubensten.texifyidea.ui.EquationPreviewToolWindow
+import nl.rubensten.texifyidea.ui.PreviewForm
 
 /**
  * @author Sergei Izmailov
