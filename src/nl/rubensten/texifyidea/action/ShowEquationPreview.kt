@@ -6,6 +6,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.psi.PsiElement
 import com.intellij.ui.content.ContentFactory
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment
@@ -29,19 +30,23 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
     }
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        var element = getElement(file, project, textEditor) ?: return
+        var element : PsiElement? = getElement(file, project, textEditor) ?: return
 
-        if (!LatexMathEnvironment::class.java.isAssignableFrom(element.javaClass)) {
+        if (!LatexMathEnvironment::class.java.isAssignableFrom(element!!.javaClass)) {
             val parentMath = element.parentOfType(LatexMathEnvironment::class)
 
             if (parentMath != null) {
                 element = parentMath
             } else {
-                if (element.inMathContext().not()) return
-
-                while (element.inMathContext()) {
+                // get to parent which is *IN* math content
+                while (element != null && element.inMathContext().not()) {
                     element = element.parent
                 }
+                // find the marginal element which is NOT IN math content
+                while (element != null && element.inMathContext()) {
+                    element = element.parent
+                }
+                if (element == null) return
             }
         }
 
