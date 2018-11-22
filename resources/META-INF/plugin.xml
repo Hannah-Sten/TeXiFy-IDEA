@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.2</version>
+    <version>0.6.3</version>
     <idea-version since-build="141.*"/>
     <vendor url="https://ruben-sten.github.io/home/index.html">Ruben-Sten</vendor>
 
@@ -72,8 +72,11 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.2</strong></p>
+        <p><strong>Beta 0.6.3</strong></p>
         <p>
+            Contains a critical bug fix in b0.6.2 regarding BibTeX and biber. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/766">#766</a>)
+            Below you can find the changelog for b0.6.3 and b0.6.2.
+
             We continue our update streak with a brand new TeXiFy-IDEA build.
             This time with a handful of changes, bug fixes, and run configuration tweaks!
         </p>
@@ -131,6 +134,7 @@
             <li>Fixed some indexed commands not getting fetched correctly when they requested without slash. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/731">#731</a>)</li>
             <li>Fixed bib entries not being recognised when a similar tex/sty/cls file exists. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/612">#612</a>)</li>
             <li>Fixed unresolved reference inspection not taking stars and optional arguments into account when highlighting. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/751">#751</a>)</li>
+            <li>Fixed BibTeX run configuration using biber. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/766">#766</a>)</li>
             <li>Fixed crash. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/602">#602</a>)</li>
         </ul>
         <br>
