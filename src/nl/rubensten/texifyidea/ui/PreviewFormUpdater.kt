@@ -7,6 +7,9 @@ import java.io.PrintWriter
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
+/**
+* @author Sergei Izmailov
+*/
 class PreviewFormUpdater(val previewForm: PreviewForm) {
 
     var preamble = """
