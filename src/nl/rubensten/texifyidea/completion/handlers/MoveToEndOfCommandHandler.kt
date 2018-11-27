@@ -14,8 +14,8 @@ import nl.rubensten.texifyidea.util.parentOfType
  */
 object MoveToEndOfCommandHandler : InsertHandler<LookupElement> {
 
-    override fun handleInsert(context: InsertionContext?, item: LookupElement?) {
-        val editor = context?.editor ?: return
+    override fun handleInsert(context: InsertionContext, item: LookupElement) {
+        val editor = context.editor
         val caret = editor.caretModel
         val file = context.file
         val element = file.findElementAt(caret.offset) ?: return

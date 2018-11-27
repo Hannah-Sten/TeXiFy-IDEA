@@ -14,9 +14,9 @@ import nl.rubensten.texifyidea.util.removeFileExtension
  */
 open class FileNameInsertionHandler : InsertHandler<LookupElement> {
 
-    override fun handleInsert(context: InsertionContext?, element: LookupElement?) {
-        val text = element?.`object` ?: return
-        val file = context?.file ?: return
+    override fun handleInsert(context: InsertionContext, element: LookupElement) {
+        val text = element.`object`
+        val file = context.file
         val document = file.document() ?: return
         val offset = context.startOffset
         val normalTextWord = file.findElementAt(offset) ?: return

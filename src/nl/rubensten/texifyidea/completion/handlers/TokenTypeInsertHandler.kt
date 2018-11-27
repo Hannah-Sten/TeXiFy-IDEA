@@ -12,12 +12,8 @@ import nl.rubensten.texifyidea.lang.BibtexEntryType
  */
 object TokenTypeInsertHandler : InsertHandler<LookupElement> {
 
-    override fun handleInsert(context: InsertionContext?, item: LookupElement?) {
-        if (context == null) {
-            return
-        }
-
-        val inserted = item?.`object` as? BibtexEntryType ?: return
+    override fun handleInsert(context: InsertionContext, item: LookupElement) {
+        val inserted = item.`object` as? BibtexEntryType ?: return
         insertType(inserted, context)
     }
 

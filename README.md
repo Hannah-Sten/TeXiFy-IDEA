@@ -292,6 +292,11 @@ For example, to use lualatex:
     
 You can run this run configuration by pressing <kbd>Shift</kbd>+<kbd>F10</kbd> (on Windows), by clicking the play button, or by clicking the gutter icon.
 
+#### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine",`
+
+If you get this warning, you have to install the mentioned gtk engine, in this case Murrine.
+For example on Arch Linux, install the `gtk-engine-murrine` package. Arch Linux sets the default theme to Adwaita, so install that with the `gnome-themes-extra` package.
+For more information see [wiki.archlinux.org](https://wiki.archlinux.org/index.php/GTK+).
 
 
 #### `Error: java: package com.google.common.base does not exist`

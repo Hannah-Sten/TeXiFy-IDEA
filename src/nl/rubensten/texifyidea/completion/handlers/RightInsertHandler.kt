@@ -12,9 +12,9 @@ import nl.rubensten.texifyidea.util.Magic
  */
 open class RightInsertHandler : InsertHandler<LookupElement> {
 
-    override fun handleInsert(context: InsertionContext?, element: LookupElement?) {
-        val editor = context?.editor ?: return
-        val command = element?.`object` as? LatexMathCommand ?: return
+    override fun handleInsert(context: InsertionContext, element: LookupElement) {
+        val editor = context.editor
+        val command = element.`object` as? LatexMathCommand ?: return
         val name = command.command
 
         if (name.startsWith("left")) {
