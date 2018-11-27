@@ -1,6 +1,6 @@
 package nl.rubensten.texifyidea.ui
 
-import org.apache.commons.io.FileUtils
+import kotlin.io.deleteRecursively
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -74,7 +74,7 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
 
             }
             finally {
-                FileUtils.deleteDirectory(tempDirectory)
+                tempDirectory.deleteRecursively()
             }
 
         }
