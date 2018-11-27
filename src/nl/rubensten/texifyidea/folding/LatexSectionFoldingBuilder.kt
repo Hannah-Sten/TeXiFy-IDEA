@@ -22,7 +22,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     companion object {
 
-        private val sectionCommands = arrayOf("\\section", "\\chapter")
+        private val sectionCommands = arrayOf("\\section", "\\chapter", "\\part")
     }
 
     override fun isCollapsedByDefault(node: ASTNode) = false
