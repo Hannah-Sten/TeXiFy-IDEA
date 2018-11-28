@@ -51,41 +51,6 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 
 We could make a detailed list, but that would take up your whole screen! We might add one later though :)
 
-## <a name="build-from-source">Building from source using IntelliJ</a>
-
-#### I know what I'm doing
-
-* This project uses gradle. Make a new project from existing sources and import the project. Done.
-
-#### I have no idea what I'm doing
-
-It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the normal [installation instructions](#installation-instructions) first.
-* Make a new project from version control if you don't have it yet downloaded, or from existing sources if you have.
-* On the GitHub [home page](https://github.com/Ruben-Sten/TeXiFy-IDEA) of TeXiFy click 'clone or download' and copy the url to Git Repository Url.
-* If the project opens and you get a popup 'Import Gradle project', click that.
-* If you are prompted to open the `build.gradle` file, do so.
-* Select 'Use auto-import'.
-* Thank Gradle that you're done now!
-* Check that in Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
-
-#### To run directly from source
-* Click the Gradle button on the right, the gradle task is located in Tasks - intellj - runIde. Right-click and run.
-* If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
-* Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
-* The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
-* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
-* To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
-* Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
-
-#### To build a zip which contains the plugin
-* Click the Gradle button on the right, the gradle task is located in Tasks - other - zip. Right-click and run. The zip will be in build/distributions.
-* Add the plugin to IntelliJ using Settings - Plugins - Install plugin from disk.
-* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
-
-#### To run tests
-* Click the Gradle button on the right, the gradle task is located in Tasks - verification - check. Right-click and run. Note that check includes test so it will run the tests.
-
-
 ## <a name="installation-instructions">Installation instructions: installing IntelliJ and the TeXiFy-IDEA plugin</a>
 
 [Instructions for Windows](#windows-instructions).
@@ -206,6 +171,40 @@ when you do not recognize the file.
 
 
 Any suggestions for improvements of the installation instructions, however small? Please let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
+
+## <a name="build-from-source">Building from source using IntelliJ</a>
+
+#### I know what I'm doing
+
+* This project uses gradle. Make a new project from existing sources and import the project. Done.
+
+#### I have no idea what I'm doing
+
+It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the normal [installation instructions](#installation-instructions) first.
+* Make a new project from version control if you don't have it yet downloaded, or from existing sources if you have.
+* On the GitHub [home page](https://github.com/Ruben-Sten/TeXiFy-IDEA) of TeXiFy click 'clone or download' and copy the url to Git Repository Url.
+* If the project opens and you get a popup 'Import Gradle project', click that.
+* If you are prompted to open the `build.gradle` file, do so.
+* Select 'Use auto-import'.
+* Thank Gradle that you're done now!
+* Check that in Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
+
+#### To run directly from source
+* Click the Gradle button on the right, the gradle task is located in Tasks - intellj - runIde. Right-click and run.
+* If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
+* Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
+* The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
+* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
+* To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
+* Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
+
+#### To build a zip which contains the plugin
+* Click the Gradle button on the right, the gradle task is located in Tasks - other - zip. Right-click and run. The zip will be in build/distributions.
+* Add the plugin to IntelliJ using Settings - Plugins - Install plugin from disk.
+* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
+
+#### To run tests
+* Click the Gradle button on the right, the gradle task is located in Tasks - verification - check. Right-click and run. Note that check includes test so it will run the tests.
 
 ## <a name="FAQ">FAQ</a>
 
