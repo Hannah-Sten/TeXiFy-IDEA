@@ -10,7 +10,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
  */
 open class CompositeHandler<T : LookupElement>(vararg val handlers: InsertHandler<T>) : InsertHandler<T> {
 
-    override fun handleInsert(context: InsertionContext?, lookupElement: T) {
+    override fun handleInsert(context: InsertionContext, lookupElement: T) {
         handlers.forEach { it.handleInsert(context, lookupElement) }
     }
 }

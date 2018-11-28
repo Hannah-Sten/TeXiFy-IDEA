@@ -22,7 +22,7 @@ import nl.rubensten.texifyidea.util.*
  */
 object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val psiElement = parameters.position
         val entry = psiElement.parentOfType(BibtexEntry::class) ?: return
         val token = entry.tokenType() ?: return
