@@ -14,6 +14,7 @@ import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.util.*
 import nl.rubensten.texifyidea.ui.EquationPreviewToolWindow
 import nl.rubensten.texifyidea.ui.PreviewFormUpdater
+import com.intellij.psi.PsiDocumentManager
 
 /**
  * @author Sergei Izmailov
@@ -45,6 +46,13 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             toolWindow.icon = TexifyIcons.EQUATION_PREVIEW
         }
 
+        val containingFile = outerMathEnvironment.containingFile
+        val psiDocumentManager = PsiDocumentManager.getInstance(project)
+        val document = psiDocumentManager.getDocument(containingFile)
+        val textOffset = outerMathEnvironment.textOffset
+        val lineNumber = document?.getLineNumber(textOffset) ?: 0;
+        val displayName = "${containingFile.name}:${lineNumber + 1}"
+
         val contentFactory = ContentFactory.SERVICE.getInstance()
         val contentCount = toolWindow.contentManager.contentCount
 
@@ -54,6 +62,7 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             if (content.isPinned.not()) {
                 val form = content.getUserData(FORM_KEY) ?: continue
                 form.setEquationText(outerMathEnvironment.text)
+                content.displayName = displayName
                 replaced = true
                 break
             }
@@ -63,7 +72,7 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             val previewToolWindow = EquationPreviewToolWindow()
             val newContent = contentFactory.createContent(
                     previewToolWindow.content,
-                    "Equation preview",
+                    displayName,
                     true
             )
             toolWindow.contentManager.addContent(newContent)
