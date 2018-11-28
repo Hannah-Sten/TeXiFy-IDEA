@@ -6,15 +6,15 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.ui.content.ContentFactory
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
-import nl.rubensten.texifyidea.util.*
 import nl.rubensten.texifyidea.ui.EquationPreviewToolWindow
 import nl.rubensten.texifyidea.ui.PreviewFormUpdater
-import com.intellij.psi.PsiDocumentManager
+import nl.rubensten.texifyidea.util.inMathContext
 
 /**
  * @author Sergei Izmailov
@@ -108,5 +108,4 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
         }
         return outerMathEnvironment
     }
-
 }

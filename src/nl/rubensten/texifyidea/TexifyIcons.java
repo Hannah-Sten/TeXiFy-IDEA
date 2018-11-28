@@ -339,6 +339,13 @@ public class TexifyIcons {
             "/nl/rubensten/texifyidea/icons/settings.png"
     );
 
+    /**
+     * Copyright (c) 2018 Ruben Schellekens
+     */
+    public static final Icon EQUATION_PREVIEW = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/equation-preview.png"
+    );
+
     // From IntelliJ
     public static final Icon STRING = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/string.png"
@@ -352,10 +359,6 @@ public class TexifyIcons {
     // From IntelliJ (modified)
     public static final Icon KEY_USER_DEFINED = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/key-user.png"
-    );
-
-    public static final Icon EQUATION_PREVIEW = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/equation-preview.png"
     );
 
     /**

@@ -1,16 +1,17 @@
 package nl.rubensten.texifyidea.ui
 
-import javax.swing.*
-import java.awt.*
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Image
 import java.awt.image.BufferedImage
-import java.lang.Integer.max
 import java.lang.Double.min
+import java.lang.Integer.max
+import javax.swing.JPanel
 
 /**
  * @author Sergei Izmailov
  */
 internal class ImagePanel : JPanel() {
-
 
     companion object {
 
@@ -70,5 +71,4 @@ internal class ImagePanel : JPanel() {
             g.drawImage(scaled, 0, 0, null)
         }
     }
-
 }

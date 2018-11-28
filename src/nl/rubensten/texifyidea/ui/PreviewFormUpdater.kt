@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.ui
 
-import kotlin.io.deleteRecursively
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -18,7 +17,6 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
 
         \pagestyle{empty}
     """.trimIndent()
-
 
     fun setEquationText(equationText: String) {
         previewForm.setEquation(equationText)
