@@ -49,7 +49,8 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
                         tempDirectory
                 )?.second ?: return
 
-                runCommand("pdf2svg",
+                runCommand(
+                        pdf2svgExecutable(),
                         arrayOf(
                                 "$tempBasename.pdf",
                                 "$tempBasename.svg"
@@ -58,7 +59,7 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
                 ) ?: return
 
                 runCommand(
-                        "inkscape",
+                        inkscapeExecutable(),
                         arrayOf("$tempBasename.svg",
                                 "--export-area-drawing",
                                 "--export-dpi", "1000",
@@ -108,5 +109,21 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
             return null
         }
         return Triple(executable.exitValue(),stdout,stderr)
+    }
+
+    private fun inkscapeExecutable(): String {
+        var suffix = "";
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            suffix = ".exe";
+        }
+        return "inkscape$suffix";
+    }
+
+    private fun pdf2svgExecutable(): String {
+        var suffix = "";
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            suffix = ".exe";
+        }
+        return "pdf2svg$suffix";
     }
 }
