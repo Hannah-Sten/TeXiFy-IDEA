@@ -79,7 +79,8 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
             }
 
         }
-        catch (ignored: IOException) {
+        catch (exception: IOException) {
+            previewForm.setLatexErrorMessage("${exception.message}")
         }
 
     }
