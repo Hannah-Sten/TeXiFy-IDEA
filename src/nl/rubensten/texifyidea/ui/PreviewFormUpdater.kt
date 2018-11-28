@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 /**
-* @author Sergei Izmailov
-*/
+ * @author Sergei Izmailov
+ */
 class PreviewFormUpdater(val previewForm: PreviewForm) {
 
     var preamble = """
@@ -77,7 +77,6 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
             finally {
                 tempDirectory.deleteRecursively()
             }
-
         }
         catch (exception: IOException) {
             previewForm.setLatexErrorMessage("${exception.message}")
@@ -102,14 +101,14 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
 
         val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->
             executable.errorStream.bufferedReader().use { stderr ->
-                Pair(stdout.readText(),stderr.readText())
+                Pair(stdout.readText(), stderr.readText())
             }
         }
         if (executable.exitValue() != 0) {
             previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n$stdout\n$stderr")
             return null
         }
-        return Triple(executable.exitValue(),stdout,stderr)
+        return Triple(executable.exitValue(), stdout, stderr)
     }
 
     private fun inkscapeExecutable(): String {
