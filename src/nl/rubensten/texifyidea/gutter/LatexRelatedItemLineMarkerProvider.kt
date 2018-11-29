@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 /**
  * @author Sten Wessel
  */
-open class LatexLineMarkerProvider : RelatedItemLineMarkerProvider() {
+open class LatexRelatedItemLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(element: PsiElement,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<PsiElement>>) {
