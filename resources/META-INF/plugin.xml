@@ -162,6 +162,11 @@
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
+
+            <!-- Show equation preview -->
+            <action class="nl.rubensten.texifyidea.action.ShowEquationPreview" id="texify.ShowEquationPreview" text="Preview _Equation">
+                <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
+            </action>
         </group>
 
         <!-- Insert: Sectioning -->
