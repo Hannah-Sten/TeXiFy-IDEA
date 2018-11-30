@@ -153,15 +153,33 @@
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile" />
         </action>
 
-        <!-- LaTeX commands -->
-        <group id="texify.LatexMenu" text="_LaTeX" description="Latex Actions">
-            <add-to-group group-id="MainMenu" anchor="after" relative-to-action="CodeMenu" />
+        <!-- LaTeX Edit commands -->
+        <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex Edit Actions" popup="true"
+               class="nl.rubensten.texifyidea.action.group.LatexEditMenuGroup">
+            <add-to-group group-id="EditSmartGroup" anchor="first"/>
 
             <!-- Toggle Star -->
             <action class="nl.rubensten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
+        </group>
+
+        <!-- LaTeX Analyze commands -->
+        <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex Analysis Actions" popup="true"
+               class="nl.rubensten.texifyidea.action.group.LatexAnalyzeMenuGroup">
+            <add-to-group group-id="AnalyzeMenu" anchor="last"/>
+
+            <action class="nl.rubensten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
+                    text="_Word count" description="Estimate the word count of the currently active .tex file and inclusions.">
+                <keyboard-shortcut first-keystroke="control alt W" keymap="$default" />
+            </action>
+        </group>
+
+        <!-- LaTeX Tools commands -->
+        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex Tools" popup="true"
+               class="nl.rubensten.texifyidea.action.group.LatexToolsMenuGroup">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Show equation preview -->
             <action class="nl.rubensten.texifyidea.action.ShowEquationPreview" id="texify.ShowEquationPreview" text="Preview _Equation">
@@ -171,7 +189,7 @@
 
         <!-- Insert: Sectioning -->
         <group id="texify.LatexMenu.Insert.Sectioning" class="nl.rubensten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
-            <add-to-group group-id="texify.LatexMenu" anchor="first"/>
+            <add-to-group group-id="texify.LatexMenuEdit" anchor="first"/>
 
             <action class="nl.rubensten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
                     text="_Part" description="Insert the part command." />
@@ -191,7 +209,7 @@
 
         <!-- Insert: Font Style -->
         <group id="texify.LatexMenu.Insert.FontStyle" class="nl.rubensten.texifyidea.action.group.InsertFontStyleActionGroup" text="_Font Style" description="Insert font style commands." popup="true">
-            <add-to-group group-id="texify.LatexMenu" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning" />
+            <add-to-group group-id="texify.LatexMenuEdit" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning" />
 
             <action class="nl.rubensten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
                     text="_Bold" description="Insert the command to make text appear bold.">
@@ -234,20 +252,10 @@
             </action>
         </group>
 
-        <!-- Analysis -->
-        <group id="texify.LatexMenu.Analysis" class="nl.rubensten.texifyidea.action.group.AnalysisActionGroup" text="_Analysis" description="Analyse your documents." popup="true">
-            <add-to-group group-id="texify.LatexMenu" anchor="before" relative-to-action="texify.LatexMenu.Sumatra"/>
-
-            <action class="nl.rubensten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
-                    text="_Word count" description="Estimate the word count of the currently active .tex file and inclusions.">
-                <keyboard-shortcut first-keystroke="control alt W" keymap="$default" />
-            </action>
-        </group>
-
         <!-- SumatraPDF -->
         <group id="texify.LatexMenu.Sumatra" class="nl.rubensten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF"
                description="Interact with SumatraPDF." popup="true">
-            <add-to-group group-id="texify.LatexMenu" anchor="before" relative-to-action="texify.ToggleStar"/>
+            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
 
             <action class="nl.rubensten.texifyidea.action.sumatra.ForwardSearchAction" id="texify.sumatra.ForwardSearch"
                     text="Go to _line in PDF" description="Find the content on cursor in the PDF.">
