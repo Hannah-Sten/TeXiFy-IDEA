@@ -69,6 +69,16 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
             DefaultLanguageHighlighterColors.DOT
     );
 
+    public static final TextAttributesKey LABEL_DEFINITION = TextAttributesKey.createTextAttributesKey(
+            "LATEX_LABEL_DEFINITION",
+            DefaultLanguageHighlighterColors.IDENTIFIER
+    );
+
+    public static final TextAttributesKey LABEL_REFERENCE = TextAttributesKey.createTextAttributesKey(
+            "LATEX_LABEL_REFERENCE",
+            DefaultLanguageHighlighterColors.IDENTIFIER
+    );
+
     /*
      * TokenSets
      */
@@ -107,6 +117,14 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
 
     private static final TextAttributesKey[] STAR_KEYS = new TextAttributesKey[] {
             STAR
+    };
+
+    private static final TextAttributesKey[] LABEL_DEFINITION_KEYS = new TextAttributesKey[] {
+            LABEL_DEFINITION
+    };
+
+    private static final TextAttributesKey[] LABEL_REFERENCE_KEYS = new TextAttributesKey[] {
+            LABEL_REFERENCE
     };
 
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];

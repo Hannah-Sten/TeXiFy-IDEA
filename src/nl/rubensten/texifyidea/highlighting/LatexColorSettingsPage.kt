@@ -20,6 +20,8 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 AttributesDescriptor("Commands in inline math mode", LatexSyntaxHighlighter.COMMAND_MATH_INLINE),
                 AttributesDescriptor("Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
                 AttributesDescriptor("Comments", LatexSyntaxHighlighter.COMMENT),
+                AttributesDescriptor("Label definition", LatexSyntaxHighlighter.LABEL_DEFINITION),
+                AttributesDescriptor("Label references", LatexSyntaxHighlighter.LABEL_REFERENCE),
                 AttributesDescriptor("Inline math", LatexSyntaxHighlighter.INLINE_MATH),
                 AttributesDescriptor("Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
                 AttributesDescriptor("Stars", LatexSyntaxHighlighter.STAR)
@@ -31,7 +33,9 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 "displayMath" to LatexSyntaxHighlighter.DISPLAY_MATH,
                 "inlineMath" to LatexSyntaxHighlighter.INLINE_MATH,
                 "optionalParam" to LatexSyntaxHighlighter.OPTIONAL_PARAM,
-                "comment" to LatexSyntaxHighlighter.COMMENT
+                "comment" to LatexSyntaxHighlighter.COMMENT,
+                "labelDefinition" to LatexSyntaxHighlighter.LABEL_DEFINITION,
+                "reference" to LatexSyntaxHighlighter.LABEL_REFERENCE
         )
     }
 
@@ -70,8 +74,10 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |        Yes, even comment environments get highlighted.
                 |    \end{comment}</comment>
                 |
-                |    \section{Introduction}\label{sec:introduction}
-                |    This is time for all good men to come to the aid of their party!
+                |    \section{Introduction}\label{<labelDefinition>sec:introduction</labelDefinition>}
+                |    This is time for all good men to come to the aid of
+                |    their party!~\cite{<reference>some-bibitem</reference>}
+                |    For the end see~\ref{<reference>sec:conclusions</reference>}.
                 |
                 |    \paragraph{Mathematics}
                 |    Please take a look at the value of <inlineMath>${'$'}x <inlineCommand>\times</inlineCommand>
@@ -81,7 +87,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |           <displayCommand>\sqrt</displayCommand>[<optionalParam>1234</optionalParam>]{5678}.
                 |    \]</displayMath>
                 |
-                |    \section{More work}\label{sec:moreWork}
+                |    \section{More work}\label{<labelDefinition>sec:moreWork</labelDefinition>}
                 |    A much longer \LaTeXe{} example was written by Henk-Jan~\cite{Gil:02}. But
                 |    we can also just do some more epic plugin showoffy stuff like
                 |    <displayMath>\begin{align}
@@ -89,11 +95,11 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |       <displayCommand>\sum</displayCommand>_{i=0}^n <displayCommand>\left</displayCommand>( i <displayCommand>\right</displayCommand>)
                 |    \begin{align}</displayMath>
                 |
-                |    \section{Results}\label{sec:results}
+                |    \section{Results}\label{<labelDefinition>sec:results</labelDefinition>}
                 |    In this section we describe the results. So basically <inlineMath>${'$'}x${'$'}</inlineMath> but maybe
                 |    also <inlineMath>${'$'}<inlineCommand>\hat</inlineCommand>{x}^{2y}${'$'}</inlineMath>.
                 |
-                |    \section{Conclusions}\label{sec:conclusions}
+                |    \section{Conclusions}\label{<labelDefinition>sec:conclusions</labelDefinition>}
                 |    We worked hard, and achieved very little. Or did we?
                 |
                 |    % Another extremely descriptive comment.

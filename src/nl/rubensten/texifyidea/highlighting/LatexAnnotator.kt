@@ -88,6 +88,10 @@ open class LatexAnnotator : Annotator {
         else if (psiElement is LatexOptionalParam) {
             annotateOptionalParameters(psiElement, annotationHolder)
         }
+        // Commands
+        else if (psiElement is LatexCommands) {
+            annotateCommands(psiElement, annotationHolder)
+        }
     }
 
     /**
@@ -172,6 +176,28 @@ open class LatexAnnotator : Annotator {
             val toStyle = noMathContent.normalText ?: continue
             val annotation = annotationHolder.createInfoAnnotation(toStyle, null)
             annotation.textAttributes = LatexSyntaxHighlighter.OPTIONAL_PARAM
+        }
+    }
+
+    /**
+     * Annotates the given required parameters of commands.
+     */
+    private fun annotateCommands(command: LatexCommands, annotationHolder: AnnotationHolder) {
+        // Label references.
+        if (command.name in Magic.Command.reference) {
+            command.requiredParameters().firstOrNull()?.let {
+                val content = it.firstChildOfType(LatexContent::class) ?: return@let
+                val annotation = annotationHolder.createInfoAnnotation(content, null)
+                annotation.textAttributes = LatexSyntaxHighlighter.LABEL_REFERENCE
+            }
+        }
+        // Label definitions.
+        else if (command.name in Magic.Command.labelDefinition) {
+            command.requiredParameters().firstOrNull()?.let {
+                val content = it.firstChildOfType(LatexContent::class) ?: return@let
+                val annotation = annotationHolder.createInfoAnnotation(content, null)
+                annotation.textAttributes = LatexSyntaxHighlighter.LABEL_DEFINITION
+            }
         }
     }
 }
