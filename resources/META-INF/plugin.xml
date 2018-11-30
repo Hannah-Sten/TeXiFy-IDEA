@@ -160,7 +160,8 @@
         </action>
 
         <!-- LaTeX Edit commands -->
-        <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex Edit Actions" popup="true">
+        <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex Edit Actions" popup="true"
+               class="nl.rubensten.texifyidea.action.group.LatexEditMenuGroup">
             <add-to-group group-id="EditSmartGroup" anchor="first"/>
 
             <!-- Toggle Star -->
@@ -171,8 +172,9 @@
         </group>
 
         <!-- LaTeX Analyze commands -->
-        <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex Analysis Actions" popup="true">
-            <add-to-group group-id="AnalyzeActions" anchor="first"/>
+        <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex Analysis Actions" popup="true"
+               class="nl.rubensten.texifyidea.action.group.LatexAnalyzeMenuGroup">
+            <add-to-group group-id="AnalyzeMenu" anchor="last"/>
 
             <action class="nl.rubensten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
                     text="_Word count" description="Estimate the word count of the currently active .tex file and inclusions.">
@@ -181,7 +183,8 @@
         </group>
 
         <!-- LaTeX Tools commands -->
-        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex Tools" popup="true">
+        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex Tools" popup="true"
+               class="nl.rubensten.texifyidea.action.group.LatexToolsMenuGroup">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Show equation preview -->
