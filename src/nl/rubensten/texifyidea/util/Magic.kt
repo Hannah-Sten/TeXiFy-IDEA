@@ -118,6 +118,16 @@ object Magic {
         @JvmField val reference = labelReference + bibliographyReference
 
         /**
+         * All commands that define labels.
+         */
+        @JvmField val labelDefinition = setOf("\\label")
+
+        /**
+         * All commands that define bibliography items.
+         */
+        @JvmField val bibliographyItems = setOf("\\bibitem")
+
+        /**
          * All math operators without a leading slash.
          */
         @JvmField val slashlessMathOperators = hashSetOf(

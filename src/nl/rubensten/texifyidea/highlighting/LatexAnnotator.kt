@@ -88,6 +88,10 @@ open class LatexAnnotator : Annotator {
         else if (psiElement is LatexOptionalParam) {
             annotateOptionalParameters(psiElement, annotationHolder)
         }
+        // Commands
+        else if (psiElement is LatexCommands) {
+            annotateCommands(psiElement, annotationHolder)
+        }
     }
 
     /**
@@ -173,5 +177,64 @@ open class LatexAnnotator : Annotator {
             val annotation = annotationHolder.createInfoAnnotation(toStyle, null)
             annotation.textAttributes = LatexSyntaxHighlighter.OPTIONAL_PARAM
         }
+    }
+
+    /**
+     * Annotates the given required parameters of commands.
+     */
+    private fun annotateCommands(command: LatexCommands, annotationHolder: AnnotationHolder) {
+        annotateStyle(command, annotationHolder)
+
+        // Label references.
+        val style = if (command.name in Magic.Command.labelReference) {
+            LatexSyntaxHighlighter.LABEL_REFERENCE
+        }
+        // Label definitions.
+        else if (command.name in Magic.Command.labelDefinition) {
+            LatexSyntaxHighlighter.LABEL_DEFINITION
+        }
+        // Bibliography references (citations).
+        else if (command.name in Magic.Command.bibliographyReference) {
+            LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
+        }
+        // Label definitions.
+        else if (command.name in Magic.Command.bibliographyItems) {
+            LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
+        }
+        else return
+
+        command.requiredParameters().firstOrNull()?.let {
+            annotationHolder.annotateRequiredParameter(it, style!!)
+        }
+    }
+
+    /**
+     * Annotates the command according to its font style, i.e. \textbf{} gets annotated with the `STYLE_BOLD` style.
+     */
+    private fun annotateStyle(command: LatexCommands, annotationHolder: AnnotationHolder) {
+        val style = when (command.name) {
+            "\\textbf" -> LatexSyntaxHighlighter.STYLE_BOLD
+            "\\textit" -> LatexSyntaxHighlighter.STYLE_ITALIC
+            "\\underline" -> LatexSyntaxHighlighter.STYLE_UNDERLINE
+            "\\sout" -> LatexSyntaxHighlighter.STYLE_STRIKETHROUGH
+            "\\textsc" -> LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS
+            "\\overline" -> LatexSyntaxHighlighter.STYLE_OVERLINE
+            "\\texttt" -> LatexSyntaxHighlighter.STYLE_TYPEWRITER
+            "\\textsl" -> LatexSyntaxHighlighter.STYLE_SLANTED
+            else -> return
+        }
+
+        command.requiredParameters().firstOrNull()?.let {
+            annotationHolder.annotateRequiredParameter(it, style)
+        }
+    }
+
+    /**
+     * Annotates the contents of the given parameter with the given style.
+     */
+    private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
+        val content = parameter.firstChildOfType(LatexContent::class) ?: return
+        val annotation = createInfoAnnotation(content, null)
+        annotation.textAttributes = style
     }
 }
