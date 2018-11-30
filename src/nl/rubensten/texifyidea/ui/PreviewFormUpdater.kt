@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.ui
 
+import com.intellij.openapi.util.SystemInfo
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -110,18 +111,18 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
     }
 
     private fun inkscapeExecutable(): String {
-        var suffix = "";
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            suffix = ".exe";
+        var suffix = ""
+        if (SystemInfo.isWindows) {
+            suffix = ".exe"
         }
-        return "inkscape$suffix";
+        return "inkscape$suffix"
     }
 
     private fun pdf2svgExecutable(): String {
-        var suffix = "";
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            suffix = ".exe";
+        var suffix = ""
+        if (SystemInfo.isWindows) {
+            suffix = ".exe"
         }
-        return "pdf2svg$suffix";
+        return "pdf2svg$suffix"
     }
 }
