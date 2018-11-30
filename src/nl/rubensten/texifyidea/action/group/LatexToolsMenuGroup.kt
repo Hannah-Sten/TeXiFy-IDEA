@@ -12,6 +12,6 @@ open class LatexToolsMenuGroup : DefaultActionGroup() {
 
     override fun update(event: AnActionEvent) {
         val file = event.getData(CommonDataKeys.PSI_FILE)
-        event.presentation.isEnabled = file?.isLatexFile() ?: false
+        event.presentation.isEnabledAndVisible = file?.isLatexFile() ?: false
     }
 }
