@@ -217,7 +217,7 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
 
 #### To build a zip which contains the plugin
-* Click the Gradle button on the right, the gradle task is located in Tasks - other - zip. Right-click and run. The zip will be in build/distributions.
+* Click the Gradle button on the right, the gradle task is located in Tasks - intellij - buildPlugin. Right-click and run. The zip will be in build/distributions.
 * Add the plugin to IntelliJ using Settings - Plugins - Install plugin from disk.
 * Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
 
