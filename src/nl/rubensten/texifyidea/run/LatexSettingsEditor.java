@@ -7,12 +7,12 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.*;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.TitledSeparator;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
-import nl.rubensten.texifyidea.util.OperatingSystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -181,13 +181,13 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
 
         // Only add options to disable aux and out folder on Windows.
         // (Disabled on other systems by default.)
-        if (OperatingSystem.getType() == OperatingSystem.Type.WINDOWS) {
+        if (SystemInfo.isWindows) {
             panel.add(new TitledSeparator("Options"));
             
             // Auxiliary files
             auxDir = new JCheckBox("Separate auxiliary files from output (MiKTeX only)");
             // Only enable by default on Windows.
-            auxDir.setSelected(OperatingSystem.getType() == OperatingSystem.Type.WINDOWS);
+            auxDir.setSelected(SystemInfo.isWindows);
             panel.add(auxDir);
         }
             
