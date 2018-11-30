@@ -143,12 +143,6 @@
         </p>
     ]]></change-notes>
 
-    <project-components>
-        <component>
-            <implementation-class>nl.rubensten.texifyidea.components.TexifyProjectComponent</implementation-class>
-        </component>
-    </project-components>
-
     <module-components>
     </module-components>
 
@@ -167,6 +161,11 @@
             <action class="nl.rubensten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
+            </action>
+
+            <!-- Show equation preview -->
+            <action class="nl.rubensten.texifyidea.action.ShowEquationPreview" id="texify.ShowEquationPreview" text="Preview _Equation">
+                <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
             </action>
         </group>
 
@@ -261,6 +260,9 @@
 
     <!-- Hooks for plugin functionality -->
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Startup -->
+        <postStartupActivity implementation="nl.rubensten.texifyidea.startup.TexifyStartupActivity"/>
+
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
         <fileTypeFactory implementation="nl.rubensten.texifyidea.file.TexifyFileTypeFactory"/>
