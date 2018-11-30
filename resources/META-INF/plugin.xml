@@ -143,12 +143,6 @@
         </p>
     ]]></change-notes>
 
-    <project-components>
-        <component>
-            <implementation-class>nl.rubensten.texifyidea.components.TexifyProjectComponent</implementation-class>
-        </component>
-    </project-components>
-
     <module-components>
     </module-components>
 
@@ -274,6 +268,9 @@
 
     <!-- Hooks for plugin functionality -->
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Startup -->
+        <postStartupActivity implementation="nl.rubensten.texifyidea.startup.TexifyStartupActivity"/>
+
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
         <fileTypeFactory implementation="nl.rubensten.texifyidea.file.TexifyFileTypeFactory"/>
