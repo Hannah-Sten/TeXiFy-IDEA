@@ -25,8 +25,10 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 AttributesDescriptor("Commands//Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
                 AttributesDescriptor("Commands//Stars", LatexSyntaxHighlighter.STAR),
                 AttributesDescriptor("Comments", LatexSyntaxHighlighter.COMMENT),
-                AttributesDescriptor("Labels//Label definition", LatexSyntaxHighlighter.LABEL_DEFINITION),
-                AttributesDescriptor("Labels//Label references", LatexSyntaxHighlighter.LABEL_REFERENCE),
+                AttributesDescriptor("References//Label definition", LatexSyntaxHighlighter.LABEL_DEFINITION),
+                AttributesDescriptor("References//Label reference", LatexSyntaxHighlighter.LABEL_REFERENCE),
+                AttributesDescriptor("References//Bibliography item", LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION),
+                AttributesDescriptor("References//Citation", LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE),
                 AttributesDescriptor("Math//Inline math", LatexSyntaxHighlighter.INLINE_MATH),
                 AttributesDescriptor("Math//Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
 
@@ -51,6 +53,8 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 "comment" to LatexSyntaxHighlighter.COMMENT,
                 "labelDefinition" to LatexSyntaxHighlighter.LABEL_DEFINITION,
                 "reference" to LatexSyntaxHighlighter.LABEL_REFERENCE,
+                "bibliographyDefinition" to LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION,
+                "bibliographyReference" to LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE,
                 "styleBold" to LatexSyntaxHighlighter.STYLE_BOLD,
                 "styleItalic" to LatexSyntaxHighlighter.STYLE_ITALIC,
                 "styleUnderline" to LatexSyntaxHighlighter.STYLE_UNDERLINE,
@@ -111,7 +115,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |    \]</displayMath>
                 |
                 |    \section{More work}\label{<labelDefinition>sec:moreWork</labelDefinition>}
-                |    A much longer \LaTeXe{} example was written by Henk-Jan~\cite{<reference>Gil:02</reference>}. But
+                |    A much longer \LaTeXe{} example was written by Henk-Jan~\cite{<bibliographyReference>Gil:02</bibliographyReference>}. But
                 |    we can also just do some more epic plugin showoffy stuff like
                 |    <displayMath>\begin{align}
                 |       <displayCommand>\text</displayCommand>{Stuff here is also highlighted, and also }
@@ -138,6 +142,13 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |    % Another extremely descriptive comment.
                 |    \bibliographystyle{abbrv}
                 |    \bibliography{main}
+                |
+                |    \begin{thebibliography}{9}
+                |        \bibitem{<bibliographyDefinition>latexcompanion</bibliographyDefinition>}
+                |        Michel Goossens, Frank Mittelbach, and Alexander Samarin.
+                |        \textit{<styleItalic>The \LaTeX\ Companion</styleItalic>}.
+                |        Addison-Wesley, Reading, Massachusetts, 1993.
+                |    \end{thebibliography}
                 |
                 |\end{document}
         """.trimMargin()

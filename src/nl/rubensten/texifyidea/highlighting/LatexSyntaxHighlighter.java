@@ -30,6 +30,8 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey STAR = createKey("LATEX_STAR", DefaultLanguageHighlighterColors.DOT);
     public static final TextAttributesKey LABEL_DEFINITION = createKey("LATEX_LABEL_DEFINITION", DefaultLanguageHighlighterColors.IDENTIFIER);
     public static final TextAttributesKey LABEL_REFERENCE = createKey("LATEX_LABEL_REFERENCE", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey BIBLIOGRAPHY_DEFINITION = createKey("LATEX_BIBLIOGRAPHY_DEFINITION", LABEL_DEFINITION);
+    public static final TextAttributesKey BIBLIOGRAPHY_REFERENCE = createKey("LATEX_BIBLIOGRAPHY_REFERENCE", LABEL_REFERENCE);
     public static final TextAttributesKey STYLE_BOLD = createKey("LATEX_STYLE_BOLD", DefaultLanguageHighlighterColors.IDENTIFIER);
     public static final TextAttributesKey STYLE_ITALIC = createKey("LATEX_STYLE_ITALIC", DefaultLanguageHighlighterColors.IDENTIFIER);
     public static final TextAttributesKey STYLE_UNDERLINE = createKey("LATEX_STYLE_UNDERLINE", DefaultLanguageHighlighterColors.IDENTIFIER);

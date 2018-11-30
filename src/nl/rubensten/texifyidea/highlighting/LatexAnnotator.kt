@@ -186,16 +186,25 @@ open class LatexAnnotator : Annotator {
         annotateStyle(command, annotationHolder)
 
         // Label references.
-        if (command.name in Magic.Command.reference) {
-            command.requiredParameters().firstOrNull()?.let {
-                annotationHolder.annotateRequiredParameter(it, LatexSyntaxHighlighter.LABEL_REFERENCE)
-            }
+        val style = if (command.name in Magic.Command.labelReference) {
+            LatexSyntaxHighlighter.LABEL_REFERENCE
         }
         // Label definitions.
         else if (command.name in Magic.Command.labelDefinition) {
-            command.requiredParameters().firstOrNull()?.let {
-                annotationHolder.annotateRequiredParameter(it, LatexSyntaxHighlighter.LABEL_DEFINITION)
-            }
+            LatexSyntaxHighlighter.LABEL_DEFINITION
+        }
+        // Bibliography references (citations).
+        else if (command.name in Magic.Command.bibliographyReference) {
+            LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
+        }
+        // Label definitions.
+        else if (command.name in Magic.Command.bibliographyItems) {
+            LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
+        }
+        else return
+
+        command.requiredParameters().firstOrNull()?.let {
+            annotationHolder.annotateRequiredParameter(it, style!!)
         }
     }
 
