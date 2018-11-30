@@ -30,7 +30,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
         val commands = LatexCommandsIndex.getItems(file)
         for (cmd in commands) {
-            if (cmd.name != "\\cite") {
+            if (cmd.name !in Magic.Command.bibliographyReference) {
                 continue
             }
 
@@ -93,7 +93,10 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         }
 
         val name = cite.name ?: return null
-        return if ("\\cite" == name) cite else null
+        val nextCommandIsACitation = name in Magic.Command.bibliographyReference
+        val previousCommandIsOfTheSameType = this.name == name
+        val equalStars = hasStar() == cite.hasStar()
+        return if (nextCommandIsACitation && previousCommandIsOfTheSameType && equalStars) cite else null
     }
 
     private fun LatexContent.isCorrect(): Boolean {
@@ -120,7 +123,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
                     .flatMap { it.requiredParameters }
                     .joinToString(",")
 
-            document.replaceString(offsetRange.toTextRange(), "\\cite{$bundle}")
+            val first = citeBundle.first()
+            val star = if (first.hasStar()) "*" else ""
+            document.replaceString(offsetRange.toTextRange(), "${first.name}$star{$bundle}")
         }
     }
 }

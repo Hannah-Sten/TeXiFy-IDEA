@@ -75,7 +75,8 @@ public class LatexMathOperatorEscapeInspection extends TexifyInspectionBase {
                                     isOnTheFly
                             ));
                         }
-                    } else {
+                    }
+                    else {
                         super.visitElement(element);
                     }
                 }

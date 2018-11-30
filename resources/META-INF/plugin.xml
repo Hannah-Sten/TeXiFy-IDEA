@@ -26,8 +26,8 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.1</version>
-    <idea-version since-build="141.0"/>
+    <version>0.6.3</version>
+    <idea-version since-build="141.*"/>
     <vendor url="https://ruben-sten.github.io/home/index.html">Ruben-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
@@ -41,8 +41,8 @@
             <li>Syntax highlighting</li>
             <li>Autocomplete of labels, (custom defined) commands and environments</li>
             <li>Writer ergonomics - writing LaTeX made less cumbersome</li>
-            <li>Run configurations for LaTeX and BibTeX (pdfLaTeX, bibtex)</li>
-            <li>Inspections. Intentions. And heaps more inspections.</li>
+            <li>Compiler support for pdfLaTeX, LuaTeX, Latexmk, bibtex, and biber</li>
+            <li>Inspections. Intentions. And heaps more inspections</li>
             <li>Full BibTeX support</li>
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
@@ -72,10 +72,13 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.1</strong></p>
+        <p><strong>Beta 0.6.3</strong></p>
         <p>
-            <em>Finally</em>, a new release of TeXiFy IDEA,
-            with a few changing and a few fixes for some annoying crashes.
+            Contains a critical bug fix in b0.6.2 regarding BibTeX and biber. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/766">#766</a>)
+            Below you can find the changelog for b0.6.3 and b0.6.2.
+
+            We continue our update streak with a brand new TeXiFy-IDEA build.
+            This time with a handful of changes, bug fixes, and run configuration tweaks!
         </p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -83,26 +86,60 @@
         </p>
         <br>
         <p>
+            <em>Additions</em>
+        </p>
+        <ul>
+            <li>Added setting to ignore auto-insertion of \item. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/722">#722</a>)</li>
+            <li>Added setting to enable/disable automatic brace insertion for sub and super scripts. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/605">#605</a>)</li>
+            <li>Added date to package file template. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/647">#647</a>)</li>
+            <li>Added autocompletion for default and provided classes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/725">#725</a>)</li>
+            <li>Added support for BibTeX on non-Windows systems. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/645">#645</a>)</li>
+            <li>Added biber support. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/507">#507</a>)</li>
+            <li>Added option to disable the out directory. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/728">#728</a>)</li>
+            <li>Added LuaTeX as a compiler option. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/738">#738</a>)</li>
+            <li>Added Latexmk as a compiler option. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/755">#755</a>)</li>
+            <li>Added support for natbib citation commands. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/743">#743</a>)</li>
+            <li>Added plugin icon. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/749">#749</a>)</li>
+        </ul>
+        <br>
+        <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>Removed 'a4wide' from the template file. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/642">#642</a>)</li>
-            <li>Recognises that amsfonts is included in amssymb and mathtools is included in amsmath. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/646">#646</a>)</li>
-            <li>Increased performance.</li>
-            <li>Supported Intellij 2018.2. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/638">#638</a>)</li>
+            <li>SumatraPDF will no longer steal focus after compilation when SumatraPDF is already running. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/723">#723</a>)</li>
+            <li>No new BibTeX runconfig is being linked when a BibTeX runconfig is removed from a LaTeX one. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/723">#723</a>)</li>
+            <li>Updated CTAN package list.</li>
+            <li>Registered tikz-files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/595">#595</a>)</li>
+            <li>Changed internal organisation of utilities. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/726">#726</a>)</li>
+            <li>Made automatic brace insertion for sub and super scripts more strict. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/730">#730</a>)</li>
+            <li>Changed bibtex working directory when auxil is not used. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/732">#732</a>)</li>
+            <li>Removed auxil and out options for non-Windows systems. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/732">#732</a>)</li>
+            <li>Enhanced formatting of labels and file names. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/734">#734</a>)</li>
+            <li>Added amsmath as dependency for the equation* environment. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/744">#744</a>)</li>
+            <li>Collapse cite inspection now works for all registered citation commands and only works when commands are equal. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/751">#751</a>)</li>
+        </ul>
+        <br>
+        <p>
+            <em>Removals</em>
+        </p>
+        <ul>
+            <li>Removed split* from the equation list. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/744">#744</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Fixed `\item` being inserted when the cursor is just before `\begin{enumerate}`. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/584">#584</a>)</li>
-            <li>Fixed UnresolvedReference inspection not ignoring whitespace for multiple references. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/696">#696</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/493">#493</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/551">#551</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/586">#586</a>)</li>
+            <li>Fixed auxil path being visible in BibTeX run configurations. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/732">#732</a>)</li>
+            <li>Fixed some indexed commands not getting fetched correctly when they requested without slash. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/731">#731</a>)</li>
+            <li>Fixed bib entries not being recognised when a similar tex/sty/cls file exists. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/612">#612</a>)</li>
+            <li>Fixed unresolved reference inspection not taking stars and optional arguments into account when highlighting. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/751">#751</a>)</li>
+            <li>Fixed BibTeX run configuration using biber. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/766">#766</a>)</li>
+            <li>Fixed crash. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/602">#602</a>)</li>
         </ul>
         <br>
         <p>
-            Full list of releases available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+            The full list of releases is available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>
     ]]></change-notes>
 

@@ -3,7 +3,7 @@ package nl.rubensten.texifyidea.inspections.latex
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
-import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.rubensten.texifyidea.util.insertUsepackage
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -58,6 +58,6 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         super.applyFix(project, descriptor, replacementRange, replacement, groups)
 
         val file = descriptor.psiElement.containingFile ?: return
-        file.insertUsepackage(Package.AMSSYMB)
+        file.insertUsepackage(AMSSYMB)
     }
 }

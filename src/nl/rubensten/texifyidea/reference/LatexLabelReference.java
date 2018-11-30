@@ -65,9 +65,9 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         labels.removeIf(label -> {
             if (label instanceof LatexCommands) {
                 String name = ((LatexCommands)label).getName();
-                return ("\\cite".equals(token) && "\\label".equals(name)) ||
+                return (Magic.Command.bibliographyReference.contains(token) && "\\label".equals(name)) ||
                         (Magic.Command.reference.contains(token) &&
-                                "\\bibitem".equals(name) && !"\\cite".equals(token));
+                                "\\bibitem".equals(name) && !Magic.Command.bibliographyReference.contains(token));
             }
 
             return false;
@@ -95,7 +95,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                                 )
                                 .withIcon(icon);
                     }
-                    else if ("\\cite".equals(token)) {
+                    else if (Magic.Command.bibliographyReference.contains(token)) {
                         BibtexId id = (BibtexId)l;
                         PsiFile containing = id.getContainingFile();
                         String text = StringsKt.substringEnd(id.getText(), 1);

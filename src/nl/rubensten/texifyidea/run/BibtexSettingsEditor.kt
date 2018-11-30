@@ -26,7 +26,9 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
-    private lateinit var auxFile: LabeledComponent<TextFieldWithBrowseButton>
+    /** Keep track of the the working directory for bibtex, i.e., where bibtex should find the files it needs.
+     * User sets this in latex run configuration. */
+    private lateinit var bibWorkingDir: String
 
     override fun createEditor(): JComponent {
         createUIComponents()
@@ -39,7 +41,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         compilerArguments.component.text = runConfig.compilerArguments ?: ""
         enableCompilerPath.isSelected = runConfig.compilerPath != null
         mainFile.component.text = runConfig.mainFile?.path ?: ""
-        auxFile.component.text = runConfig.auxDir?.path ?: ""
+        bibWorkingDir = runConfig.bibWorkingDir?.path ?: ""
     }
 
     override fun applyEditorTo(runConfig: BibtexRunConfiguration) {
@@ -47,7 +49,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         runConfig.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
         runConfig.compilerArguments = compilerArguments.component.text
         runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
-        runConfig.auxDir = LocalFileSystem.getInstance().findFileByPath(auxFile.component.text)
+        runConfig.bibWorkingDir = LocalFileSystem.getInstance().findFileByPath(bibWorkingDir)
     }
 
     private fun createUIComponents() {
@@ -103,16 +105,6 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             ) }
             mainFile = LabeledComponent.create(mainFileField, "Main file that includes bibliography")
             add(mainFile)
-
-            // Aux file
-            val auxFileField = TextFieldWithBrowseButton().apply { addBrowseFolderListener(
-                TextBrowseFolderListener(
-                    FileChooserDescriptor(false, true, false, false, false, false)
-                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
-                )
-            ) }
-            auxFile = LabeledComponent.create(auxFileField, "Auxiliary files directory (keep empty when location is the same as for the main file)")
-            add(auxFile)
         }
     }
 }

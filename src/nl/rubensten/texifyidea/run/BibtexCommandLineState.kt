@@ -18,10 +18,18 @@ open class BibtexCommandLineState(
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
+
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val command: List<String> = compiler.getCommand(runConfig, environment.project) ?: throw ExecutionException("Compile command could not be created.")
 
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(runConfig.auxDir?.path ?: runConfig.mainFile?.parent?.path)
+        // The working directory is as specified by the user in the working directory.
+        // The fallback (if null or empty) directory is the directory of the main file.
+        val bibPath = runConfig.bibWorkingDir?.path
+        val commandLine = if (!bibPath.isNullOrBlank()) {
+            GeneralCommandLine(command).withWorkDirectory(bibPath)
+        }
+        else GeneralCommandLine(command).withWorkDirectory(runConfig.mainFile?.parent?.path)
+
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated

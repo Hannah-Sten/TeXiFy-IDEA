@@ -21,6 +21,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
 
     var automaticSoftWraps = false
     var automaticSecondInlineMathSymbol = true
+    var automaticUpDownBracket = true
     var automaticItemInItemize = true
 
     override fun getState() = this

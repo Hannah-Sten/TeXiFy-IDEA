@@ -11,7 +11,11 @@ import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.LatexCommand
-import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSFONTS
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSSYMB
+import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
+import nl.rubensten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.*
@@ -47,6 +51,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 .filter { it.isEnvironmentDefinition() }
                 .mapNotNull { it.requiredParameter(0) }
                 .toSet()
+
         for (env in environments) {
             // Don't consider environments that have been defined.
             if (env.name()?.text in defined) {
@@ -57,19 +62,19 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             val environment = DefaultEnvironment[name] ?: continue
             val pack = environment.dependency
 
-            if (pack == Package.DEFAULT || includedPackages.contains(pack.name)) {
+            if (pack == DEFAULT || includedPackages.contains(pack.name)) {
                 continue
             }
 
             // amsmath is included in mathtools
-            if (pack == Package.AMSMATH && includedPackages.contains(Package.MATHTOOLS.name)) {
+            if (pack == AMSMATH && includedPackages.contains(MATHTOOLS.name)) {
                 continue
             }
 
             descriptors.add(manager.createProblemDescriptor(
                     env,
                     TextRange(7, 7 + name.length),
-                    "DefaultEnvironment requires ${pack.name} package",
+                    "Environment requires ${pack.name} package",
                     ProblemHighlightType.ERROR,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)
@@ -91,7 +96,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             }
 
             // amsfonts is included in amssymb
-            if (pack == Package.AMSFONTS && includedPackages.contains(Package.AMSSYMB.name)) {
+            if (pack == AMSFONTS && includedPackages.contains(AMSSYMB.name)) {
                 continue
             }
 

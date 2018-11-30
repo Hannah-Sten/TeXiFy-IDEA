@@ -17,7 +17,7 @@ class BibtexRunConfiguration(
         project: Project,
         factory: ConfigurationFactory,
         name: String
-) : RunConfigurationBase(project, factory, name), LocatableConfiguration {
+) : RunConfigurationBase<BibtexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
 
@@ -38,7 +38,7 @@ class BibtexRunConfiguration(
         }
 
     var mainFile: VirtualFile? = null
-    var auxDir: VirtualFile? = null
+    var bibWorkingDir: VirtualFile? = null
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = BibtexSettingsEditor(project)
 
@@ -78,14 +78,16 @@ class BibtexRunConfiguration(
         val mainFilePath = parent.getChildText(MAIN_FILE)
         mainFile = if (mainFilePath != null) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
-        } else {
+        }
+        else {
             null
         }
 
         val auxDirPath = parent.getChildText(AUX_DIR)
-        auxDir = if (auxDirPath != null) {
+        bibWorkingDir = if (auxDirPath != null) {
             LocalFileSystem.getInstance().findFileByPath(auxDirPath)
-        } else {
+        }
+        else {
             null
         }
     }
@@ -100,16 +102,12 @@ class BibtexRunConfiguration(
         parent.addContent(Element(COMPILER_PATH).apply { text = compilerPath ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).apply { text = compilerArguments ?: "" })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
-        parent.addContent(Element(AUX_DIR).apply { text = auxDir?.path ?: "" })
+        parent.addContent(Element(AUX_DIR).apply { text = bibWorkingDir?.path ?: "" })
     }
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension?.plus(" bibliography")
-
-    fun setDefaultCompiler() {
-        compiler = BibliographyCompiler.BIBTEX
-    }
+    override fun suggestedName() = mainFile?.nameWithoutExtension.plus(" bibliography")
 
     fun setSuggestedName() {
         name = suggestedName()

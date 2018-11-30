@@ -113,7 +113,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // Determine label name.
             val prefix: String = Magic.Command.labeled[context.name] ?: return
-            val labelName = oldLabel.camelCase()
+            val labelName = oldLabel.formatAsLabel()
             val createdLabelBase = if (labelName.contains(":")) {
                 Magic.Pattern.labelPrefix.matcher(labelName).replaceAll("$prefix:")
             }

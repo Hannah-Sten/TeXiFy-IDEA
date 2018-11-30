@@ -8,19 +8,28 @@ import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
-import nl.rubensten.texifyidea.util.PackageUtils
+import nl.rubensten.texifyidea.util.findAvailableDocumentClasses
 
 /**
  * @author Ruben Schellekens
  */
-object LatexPackageNameProvider : CompletionProvider<CompletionParameters>() {
+object LatexDocumentclassProvider : CompletionProvider<CompletionParameters>() {
+
+    /**
+     * List of all available default documentclasses.
+     */
+    private val DEFAULT_CLASSES = setOf(
+            "article", "IEEEtran", "proc", "report", "book", "slides", "memoir", "letter", "beamer"
+    )
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-        result.addAllElements(ContainerUtil.map2List(PackageUtils.CTAN_PACKAGE_NAMES) { name ->
+        val project = parameters.editor.project ?: return
+        val classes = DEFAULT_CLASSES + project.findAvailableDocumentClasses()
+        result.addAllElements(ContainerUtil.map2List(classes) { name ->
             LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()
-                    .withIcon(TexifyIcons.STYLE_FILE)
+                    .withIcon(TexifyIcons.DOT_CLASS)
                     .withInsertHandler(MoveToEndOfCommandHandler)
         })
     }

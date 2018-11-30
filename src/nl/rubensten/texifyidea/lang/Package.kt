@@ -24,7 +24,9 @@ open class Package @JvmOverloads constructor(
         @JvmField val HYPERREF = Package("hyperref")
         @JvmField val LATEXSYMB = Package("latexsymb")
         @JvmField val COMMENT = Package("comment")
-        @JvmField val BIBLATEX = Package("biblatex", "backend=bibtex")
+        @JvmField val BIBLATEX = Package("biblatex")
+        @JvmField val LUACODE = Package("luacode")
+        @JvmField val NATBIB = Package("natbib")
     }
 
     /**

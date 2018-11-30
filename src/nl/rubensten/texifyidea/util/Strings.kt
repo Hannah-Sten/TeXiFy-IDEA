@@ -122,3 +122,38 @@ fun String.removeIndents() = Magic.Pattern.newline.split(this)
         .toList()
         .removeIndents()
         .joinToString("\n")
+
+/**
+ * Remove all appearances of all given strings.
+ */
+fun String.removeAll(vararg strings: String): String {
+    var formatted = this
+    strings.forEach { formatted = formatted.replace(it, "") }
+    return formatted
+}
+
+/**
+ * Formats the string as a valid filename, removing not-allowed characters, in TeX-style with - as separator.
+ */
+fun String.formatAsFileName(): String {
+    val formatted = this.replace(" ", "-")
+            .removeAll("/", "\\", "<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
+            .toLowerCase()
+
+    // If there are no valid characters left, use a default name.
+    return if (formatted.isEmpty()) { "myfile" } else { formatted }
+}
+
+/**
+ * Formats the string as a valid LaTeX label name.
+ */
+fun String.formatAsLabel(): String {
+    return replace(" ", "-")
+            .removeAll("%", "~", "#", "\\")
+            .toLowerCase()
+}
+
+/**
+ * Split the given string on whitespace.
+ */
+fun String.splitWhitespace() = split(Regex("\\s+"))

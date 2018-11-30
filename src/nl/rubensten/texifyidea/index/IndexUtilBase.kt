@@ -28,6 +28,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 
     /**
      * Get all the items in the index in the given file set.
+     * Consider using [PsiFile.commandsInFileSet] where applicable.
      *
      * @param baseFile
      *          The file from which to look.

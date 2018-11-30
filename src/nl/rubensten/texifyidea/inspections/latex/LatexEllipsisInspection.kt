@@ -10,7 +10,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
-import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.*
 
@@ -62,8 +62,8 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
 
             document.replaceString(range.startOffset, range.endOffset, if (inMathMode) "\\dots" else "\\ldots")
 
-            if (inMathMode && Package.AMSMATH.name !in file.includedPackages()) {
-                file.insertUsepackage(Package.AMSMATH)
+            if (inMathMode && AMSMATH.name !in file.includedPackages()) {
+                file.insertUsepackage(AMSMATH)
             }
         }
     }

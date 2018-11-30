@@ -3,13 +3,7 @@ package nl.rubensten.texifyidea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.RunnerAndConfigurationSettings;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.LocatableConfiguration;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.configurations.RuntimeConfigurationError;
-import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.RegexpFilter;
 import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.execution.runners.ExecutionEnvironment;
@@ -21,6 +15,8 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
+import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler;
+import nl.rubensten.texifyidea.util.OperatingSystem;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +24,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Ruben Schellekens, Sten Wessel
  */
-public class LatexRunConfiguration extends RunConfigurationBase implements LocatableConfiguration {
+public class LatexRunConfiguration extends RunConfigurationBase
+        implements LocatableConfiguration {
 
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
@@ -36,6 +33,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private static final String COMPILER_ARGUMENTS = "compiler-arguments";
     private static final String MAIN_FILE = "main-file";
     private static final String AUX_DIR = "aux-dir";
+    private static final String OUT_DIR = "out-dir";
     private static final String OUTPUT_FORMAT = "output-format";
     private static final String BIB_RUN_CONFIG = "bib-run-config";
 
@@ -43,12 +41,15 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     private String compilerPath = null;
     private String compilerArguments = null;
     private VirtualFile mainFile;
-    private boolean auxDir = true;
+    // Enable auxDir by default on Windows only
+    private boolean auxDir = OperatingSystem.getType().equals(OperatingSystem.Type.WINDOWS);
+    private boolean outDir = true;
     private Format outputFormat = Format.PDF;
     private String bibRunConfigId = "";
     private boolean skipBibtex = false;
 
-    protected LatexRunConfiguration(Project project, ConfigurationFactory factory, String name) {
+    protected LatexRunConfiguration(Project project,
+                                    ConfigurationFactory factory, String name) {
         super(project, factory, name);
     }
 
@@ -61,16 +62,21 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
         if (compiler == null || mainFile == null || outputFormat == null) {
-            throw new RuntimeConfigurationError("Run configuration is invalid.");
+            throw new RuntimeConfigurationError(
+                    "Run configuration is invalid.");
         }
     }
 
     @Nullable
     @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-        RegexpFilter filter = new RegexpFilter(environment.getProject(), "^$FILE_PATH$:$LINE$");
+    public RunProfileState getState(@NotNull Executor executor,
+                                    @NotNull ExecutionEnvironment environment)
+            throws ExecutionException {
+        RegexpFilter filter = new RegexpFilter(environment.getProject(),
+                                               "^$FILE_PATH$:$LINE$");
 
-        LatexCommandLineState state = new LatexCommandLineState(environment, this);
+        LatexCommandLineState state = new LatexCommandLineState(environment,
+                                                                this);
         state.addConsoleFilters(filter);
         return state;
     }
@@ -88,18 +94,20 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         String compilerName = parent.getChildText(COMPILER);
         try {
             this.compiler = LatexCompiler.valueOf(compilerName);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             this.compiler = null;
         }
 
         // Read compiler custom path.
         String compilerPathRead = parent.getChildText(COMPILER_PATH);
-        this.compilerPath = (compilerPathRead == null || compilerPathRead.isEmpty()) ? null : compilerPathRead;
+        this.compilerPath =
+                (compilerPathRead == null || compilerPathRead.isEmpty()) ?
+                null : compilerPathRead;
 
         // Read compiler arguments.
         String compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS);
-        setCompilerArguments("".equals(compilerArgumentsRead) ? null : compilerArgumentsRead);
+        setCompilerArguments("".equals(compilerArgumentsRead) ? null :
+                             compilerArgumentsRead);
 
         // Read main file.
         LocalFileSystem fileSystem = LocalFileSystem.getInstance();
@@ -110,8 +118,21 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         String auxDirBoolean = parent.getChildText(AUX_DIR);
         this.auxDir = Boolean.parseBoolean(auxDirBoolean);
 
+        // Read output directories.
+        String outDirBoolean = parent.getChildText(OUT_DIR);
+        // This is null if the original run configuration did not contain the
+        // option to disable the out directory, which should be enabled by
+        // default.
+        if (outDirBoolean == null) {
+            this.outDir = true;
+        }
+        else {
+            this.outDir = Boolean.parseBoolean(outDirBoolean);
+        }
+
         // Read output format.
-        Format format = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT));
+        Format format = Format.Companion
+                .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT));
         this.outputFormat = format == null ? Format.PDF : format;
 
         // Read bibliography run configuration
@@ -147,7 +168,8 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
         // Write compiler arguments
         final Element compilerArgsElt = new Element(COMPILER_ARGUMENTS);
-        compilerArgsElt.setText(compilerArguments == null ? "" : compilerArguments);
+        compilerArgsElt
+                .setText(compilerArguments == null ? "" : compilerArguments);
         parent.addContent(compilerArgsElt);
 
         // Write main file.
@@ -160,6 +182,11 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         auxDirElt.setText(Boolean.toString(auxDir));
         parent.addContent(auxDirElt);
 
+        // Write output directories.
+        final Element outDirElt = new Element(OUT_DIR);
+        outDirElt.setText(Boolean.toString(outDir));
+        parent.addContent(outDirElt);
+
         // Write output format.
         final Element outputFormatElt = new Element(OUTPUT_FORMAT);
         outputFormatElt.setText(outputFormat.name());
@@ -171,7 +198,17 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         parent.addContent(bibRunConfigElt);
     }
 
-    void generateBibRunConfig() {
+    /**
+     * Generate a Bibtex run configuration, using a certain compiler as default (e.g. bibtex or biber).
+     *
+     * @param defaultCompiler Compiler to set selected as default.
+     */
+    void generateBibRunConfig(BibliographyCompiler defaultCompiler) {
+        // On non-Windows systems, disable the out/ directory by default for bibtex to work
+        if (OperatingSystem.getType() != OperatingSystem.Type.WINDOWS) {
+            this.outDir = false;
+        }
+
         RunManagerImpl runManager = RunManagerImpl.getInstanceImpl(getProject());
 
         RunnerAndConfigurationSettings bibSettings = runManager.createRunConfiguration(
@@ -181,7 +218,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
 
         BibtexRunConfiguration bibtexRunConfiguration = (BibtexRunConfiguration)bibSettings.getConfiguration();
 
-        bibtexRunConfiguration.setDefaultCompiler();
+        bibtexRunConfiguration.setCompiler(defaultCompiler);
         bibtexRunConfiguration.setMainFile(mainFile);
         bibtexRunConfiguration.setSuggestedName();
 
@@ -219,8 +256,16 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         return this.auxDir;
     }
 
+    public boolean hasOutputDirectories() {
+        return this.outDir;
+    }
+
     public void setAuxiliaryDirectories(boolean auxDir) {
         this.auxDir = auxDir;
+    }
+
+    public void setOutputDirectories(boolean outDir) {
+        this.outDir = outDir;
     }
 
     public Format getOutputFormat() {
@@ -235,8 +280,11 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         setCompiler(LatexCompiler.PDFLATEX);
     }
 
+    /**
+     * Only enabled by default on Windows, because -aux-directory is MikTeX only.
+     */
     public void setDefaultAuxiliaryDirectories() {
-        setAuxiliaryDirectories(true);
+        setAuxiliaryDirectories(OperatingSystem.getType() == OperatingSystem.Type.WINDOWS);
     }
 
     public void setDefaultOutputFormat() {
@@ -256,11 +304,13 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
     }
 
     public RunnerAndConfigurationSettings getBibRunConfig() {
-        return RunManagerImpl.getInstanceImpl(getProject()).getConfigurationById(bibRunConfigId);
+        return RunManagerImpl.getInstanceImpl(getProject())
+                .getConfigurationById(bibRunConfigId);
     }
 
     public void setBibRunConfig(RunnerAndConfigurationSettings bibRunConfig) {
-        this.bibRunConfigId = bibRunConfig == null ? "" : bibRunConfig.getUniqueID();
+        this.bibRunConfigId = bibRunConfig == null ? "" :
+                              bibRunConfig.getUniqueID();
     }
 
     public String getCompilerArguments() {
@@ -272,7 +322,9 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
             compilerArguments = compilerArguments.trim();
         }
 
-        this.compilerArguments = compilerArguments != null && compilerArguments.isEmpty() ? null : compilerArguments;
+        this.compilerArguments =
+                compilerArguments != null && compilerArguments.isEmpty() ?
+                null : compilerArguments;
     }
 
     @Override
@@ -282,16 +334,29 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         }
 
         String name = mainFile.getNameWithoutExtension();
-        return name != null && name.equals(getName());
+        return name.equals(getName());
     }
 
     @Override
     public String getOutputFilePath() {
-        return ProjectRootManager.getInstance(getProject()).getFileIndex().getContentRootForFile(mainFile).getPath() + "/out/" + mainFile.getNameWithoutExtension() + "." + outputFormat.toString().toLowerCase();
+        String folder;
+
+        if (outDir) {
+            folder = ProjectRootManager.getInstance(getProject()).getFileIndex()
+                    .getContentRootForFile(mainFile).getPath() + "/out/";
+        }
+        else {
+            folder = mainFile.getParent().getPath() + "/";
+        }
+
+        return folder + mainFile
+                .getNameWithoutExtension() + "." + outputFormat.toString()
+                .toLowerCase();
     }
 
     @Override
-    public void setFileOutputPath(String fileOutputPath) { }
+    public void setFileOutputPath(String fileOutputPath) {
+    }
 
     @Nullable
     @Override
@@ -308,7 +373,7 @@ public class LatexRunConfiguration extends RunConfigurationBase implements Locat
         return "LatexRunConfiguration{" + "compiler=" + compiler +
                 ", compilerPath=" + compilerPath +
                 ", mainFile=" + mainFile +
-                ", auxDir=" + auxDir +
+                ", bibWorkingDir=" + auxDir +
                 ", outputFormat=" + outputFormat +
                 '}';
     }
