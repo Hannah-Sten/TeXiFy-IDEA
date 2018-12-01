@@ -2,7 +2,6 @@ package nl.rubensten.texifyidea.inspections.latex
 
 import com.intellij.codeInsight.daemon.quickFix.CreateFileFix
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
@@ -12,10 +11,9 @@ import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
-import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.findRelativeFile
 import nl.rubensten.texifyidea.util.findRootFile
-import nl.rubensten.texifyidea.util.firstChildOfType
+import nl.rubensten.texifyidea.util.splitContent
 
 /**
  * @author Ruben Schellekens
@@ -46,19 +44,13 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 val fileArgument = arguments[i] as? RequiredFileArgument ?: continue
                 val extensions = fileArgument.supportedExtensions
                 val parameter = parameters[i]
-                val fileNames = parameter.requiredParam?.firstChildOfType(LatexNormalText::class)?.text?.split(',') ?: continue
+                val fileNames = parameter.splitContent() ?: continue
                 val root = file.findRootFile()
 
                 for (fileName in fileNames) {
-                    val relative = root.findRelativeFile(fileName, extensions)
+                    root.findRelativeFile(fileName, extensions) ?: continue
 
-                    if (relative != null) {
-                        continue
-                    }
-
-                    val fixes: MutableList<LocalQuickFix> = mutableListOf(
-                            CreateFileFix(false, fileName, root.containingDirectory)
-                    )
+                    val fixes = mutableListOf(CreateFileFix(false, fileName, root.containingDirectory))
 
                     // Create quick fixes for all extensions if none was supplied in the argument
                     if (extensions.none { fileName.endsWith(".$it") }) {
@@ -70,7 +62,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     descriptors.add(manager.createProblemDescriptor(
                             parameter,
                             TextRange(1, parameter.textLength - 1),
-                            "File \"$fileName\" not found",
+                            "File '$fileName' not found",
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly,
                             *fixes.toTypedArray()

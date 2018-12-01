@@ -202,11 +202,11 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
 
     // Find all related files.
     for (command in commands) {
-        val includedNames = command.includedFileName() ?: continue
+        val includedNames = command.includedFileNames() ?: continue
         val declaredIn = command.containingFile
 
         for (includedName in includedNames) {
-            val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
+            val referenced = declaredIn.findRelativeFile(includedName) ?: continue
 
             val inclusionSet = inclusions[declaredIn] ?: HashSet()
             inclusionSet.add(referenced)
@@ -314,7 +314,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val commands = LatexCommandsIndex.getItems(project, scope)
 
     commands.forEach { command ->
-        val fileNames = command.includedFileName() ?: return@forEach
+        val fileNames = command.includedFileNames() ?: return@forEach
         val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
 
