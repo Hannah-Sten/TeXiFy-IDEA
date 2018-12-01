@@ -18,60 +18,29 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     /*
      * TextAttributesKeys
      */
-    public static final TextAttributesKey BRACES = TextAttributesKey.createTextAttributesKey(
-            "LATEX_BRACES",
-            DefaultLanguageHighlighterColors.BRACES
-    );
+    public static final TextAttributesKey BRACES = createKey("LATEX_BRACES", DefaultLanguageHighlighterColors.BRACES);
+    public static final TextAttributesKey BRACKETS = createKey("LATEX_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
+    public static final TextAttributesKey OPTIONAL_PARAM = createKey("LATEX_OPTIONAL_PARAM", DefaultLanguageHighlighterColors.PARAMETER);
+    public static final TextAttributesKey COMMAND = createKey("LATEX_COMMAND", DefaultLanguageHighlighterColors.KEYWORD);
+    public static final TextAttributesKey COMMAND_MATH_INLINE = createKey("LATEX_COMMAND_MATH_INLINE", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
+    public static final TextAttributesKey COMMAND_MATH_DISPLAY = createKey("LATEX_COMMAND_MATH_DISPLAY", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
+    public static final TextAttributesKey COMMENT = createKey("LATEX_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
+    public static final TextAttributesKey INLINE_MATH = createKey("LATEX_INLINE_MATH", DefaultLanguageHighlighterColors.STRING);
+    public static final TextAttributesKey DISPLAY_MATH = createKey("LATEX_DISPLAY_MATH", DefaultLanguageHighlighterColors.STRING);
+    public static final TextAttributesKey STAR = createKey("LATEX_STAR", DefaultLanguageHighlighterColors.DOT);
+    public static final TextAttributesKey LABEL_DEFINITION = createKey("LATEX_LABEL_DEFINITION", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey LABEL_REFERENCE = createKey("LATEX_LABEL_REFERENCE", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey BIBLIOGRAPHY_DEFINITION = createKey("LATEX_BIBLIOGRAPHY_DEFINITION", LABEL_DEFINITION);
+    public static final TextAttributesKey BIBLIOGRAPHY_REFERENCE = createKey("LATEX_BIBLIOGRAPHY_REFERENCE", LABEL_REFERENCE);
+    public static final TextAttributesKey STYLE_BOLD = createKey("LATEX_STYLE_BOLD", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey STYLE_ITALIC = createKey("LATEX_STYLE_ITALIC", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey STYLE_UNDERLINE = createKey("LATEX_STYLE_UNDERLINE", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey STYLE_STRIKETHROUGH = createKey("LATEX_STYLE_STRIKETHROUGH", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey STYLE_SMALL_CAPITALS = createKey("LATEX_STYLE_SMALL_CAPITALS", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey STYLE_OVERLINE = createKey("LATEX_STYLE_OVERLINE", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey STYLE_TYPEWRITER = createKey("LATEX_STYLE_TYPEWRITER", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey STYLE_SLANTED = createKey("LATEX_STYLE_SLANTED", DefaultLanguageHighlighterColors.IDENTIFIER);
 
-    public static final TextAttributesKey BRACKETS = TextAttributesKey.createTextAttributesKey(
-            "LATEX_BRACKETS",
-            DefaultLanguageHighlighterColors.BRACKETS
-    );
-
-    public static final TextAttributesKey OPTIONAL_PARAM = TextAttributesKey.createTextAttributesKey(
-            "LATEX_OPTIONAL_PARAM",
-            DefaultLanguageHighlighterColors.PARAMETER
-    );
-
-    public static final TextAttributesKey COMMAND = TextAttributesKey.createTextAttributesKey(
-            "LATEX_COMMAND",
-            DefaultLanguageHighlighterColors.KEYWORD
-    );
-
-    public static final TextAttributesKey COMMAND_MATH_INLINE = TextAttributesKey.createTextAttributesKey(
-            "LATEX_COMMAND_MATH_INLINE",
-            DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
-    );
-
-    public static final TextAttributesKey COMMAND_MATH_DISPLAY = TextAttributesKey
-            .createTextAttributesKey(
-            "LATEX_COMMAND_MATH_DISPLAY",
-            DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
-    );
-
-    public static final TextAttributesKey COMMENT = TextAttributesKey.createTextAttributesKey(
-            "LATEX_COMMENT",
-            DefaultLanguageHighlighterColors.LINE_COMMENT
-    );
-
-    public static final TextAttributesKey INLINE_MATH = TextAttributesKey.createTextAttributesKey(
-            "LATEX_INLINE_MATH",
-            DefaultLanguageHighlighterColors.STRING
-    );
-
-    public static final TextAttributesKey DISPLAY_MATH = TextAttributesKey.createTextAttributesKey(
-            "LATEX_DISPLAY_MATH",
-            DefaultLanguageHighlighterColors.STRING
-    );
-
-    public static final TextAttributesKey STAR = TextAttributesKey.createTextAttributesKey(
-            "LATEX_STAR",
-            DefaultLanguageHighlighterColors.DOT
-    );
-
-    /*
-     * TokenSets
-     */
     private static final TokenSet COMMAND_TOKENS = TokenSet.create(
             LatexTypes.COMMAND_TOKEN,
             LatexTypes.BEGIN_TOKEN,
@@ -81,35 +50,22 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     /*
      * TextAttributeKey[]s
      */
-    private static final TextAttributesKey[] BRACES_KEYS = new TextAttributesKey[] {
-            BRACES
-    };
-
-    private static final TextAttributesKey[] BRACKET_KEYS = new TextAttributesKey[] {
-            BRACKETS
-    };
-
-    private static final TextAttributesKey[] COMMAND_KEYS = new TextAttributesKey[] {
-            COMMAND
-    };
-
-    private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[] {
-            COMMENT
-    };
-
-    private static final TextAttributesKey[] INLINE_MATH_KEYS = new TextAttributesKey[] {
-            INLINE_MATH
-    };
-
-    private static final TextAttributesKey[] DISPLAY_MATH_KEYS = new TextAttributesKey[] {
-            DISPLAY_MATH
-    };
-
-    private static final TextAttributesKey[] STAR_KEYS = new TextAttributesKey[] {
-            STAR
-    };
-
+    private static final TextAttributesKey[] BRACES_KEYS = keys(BRACES);
+    private static final TextAttributesKey[] BRACKET_KEYS = keys(BRACKETS);
+    private static final TextAttributesKey[] COMMAND_KEYS = keys(COMMAND);
+    private static final TextAttributesKey[] COMMENT_KEYS = keys(COMMENT);
+    private static final TextAttributesKey[] INLINE_MATH_KEYS = keys(INLINE_MATH);
+    private static final TextAttributesKey[] DISPLAY_MATH_KEYS = keys(DISPLAY_MATH);
+    private static final TextAttributesKey[] STAR_KEYS = keys(STAR);
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
+
+    private static TextAttributesKey createKey(String externalName, TextAttributesKey defaultStyle) {
+        return TextAttributesKey.createTextAttributesKey(externalName, defaultStyle);
+    }
+
+    private static TextAttributesKey[] keys(TextAttributesKey... keys) {
+        return keys;
+    }
 
     @NotNull
     @Override
