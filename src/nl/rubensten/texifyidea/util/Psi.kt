@@ -370,6 +370,8 @@ fun PsiFile.hasBibliography() = this.commandsInFileSet().any { it.name == "\\bib
  */
 fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibliography"}
 
+private fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter)
+
 /**
  * Splits the plain text contents on [delimiter].
  *
@@ -377,4 +379,22 @@ fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibl
  *
  * @return The split contents.
  */
-fun LatexParameter.splitContent(delimiter: String = ",") = (requiredParam ?: optionalParam)?.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter)
+fun LatexRequiredParam.splitContent(delimiter: String = ",") = splitContent(this, delimiter)
+
+/**
+ * Splits the plain text contents on [delimiter].
+ *
+ * Note that only the first [LatexNormalText] child content is processed. When other PSI children are present in the parameter, these are ignored.
+ *
+ * @return The split contents.
+ */
+fun LatexOptionalParam.splitContent(delimiter: String = ",") = splitContent(this, delimiter)
+
+/**
+ * Splits the plain text contents on [delimiter].
+ *
+ * Note that only the first [LatexNormalText] child content is processed. When other PSI children are present in the parameter, these are ignored.
+ *
+ * @return The split contents.
+ */
+fun LatexParameter.splitContent(delimiter: String = ",") = splitContent(this, delimiter)

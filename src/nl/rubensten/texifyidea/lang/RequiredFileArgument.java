@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class RequiredFileArgument extends RequiredArgument implements FileNameMatcher, FileExtensionMatcher {
 
     private Set<String> extensions;
+    private String defaultExtension;
     private Pattern pattern;
 
     /**
@@ -27,7 +28,7 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
      * @param name
      *         The name of the required argument.
      * @param extensions
-     *         All supported extensions.
+     *         All supported extensions, of which the first extension is the default extension.
      */
     public RequiredFileArgument(String name, String... extensions) {
         super(name, Type.FILE);
@@ -51,6 +52,9 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
             setRegex(regex.toString());
             return;
         }
+        else {
+            this.defaultExtension = extensions[0];
+        }
 
         regex.append("(");
         for (String extension : extensions) {
@@ -60,7 +64,7 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
             regex.append(extensionLower);
             this.extensions.add(extensionLower);
 
-            if (extension != extensions[extensions.length - 1]) {
+            if (!extension.equals(extensions[extensions.length - 1])) {
                 regex.append("|");
             }
         }
@@ -75,6 +79,10 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
 
     public Set<String> getSupportedExtensions() {
         return Collections.unmodifiableSet(extensions);
+    }
+
+    public String getDefaultExtension() {
+        return defaultExtension;
     }
 
     @Override
