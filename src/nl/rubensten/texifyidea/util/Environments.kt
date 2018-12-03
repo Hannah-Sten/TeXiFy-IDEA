@@ -5,12 +5,12 @@ import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
 
 /**
- * Finds all defined commands within the project.
+ * Finds all environemnt definition commands within the project.
  *
- * @return The found commands.
+ * @return The found definition commands.
  */
-fun Project.findCommandDefinitions(): Collection<LatexCommands> {
+fun Project.findEnvironmentDefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this).filter {
-        it.name in Magic.Command.commandDefinitions
+        it.name in Magic.Command.environmentDefinitions
     }
 }

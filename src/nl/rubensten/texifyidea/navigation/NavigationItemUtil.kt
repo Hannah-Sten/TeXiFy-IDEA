@@ -36,4 +36,10 @@ object NavigationItemUtil {
         val defined = psiElement.forcedFirstRequiredParameterAsCommand() ?: return null
         return GoToSymbolProvider.BaseNavigationItem(psiElement, defined.name ?: "", TexifyIcons.DOT_COMMAND)
     }
+
+    @JvmStatic
+    fun createEnvironmentDefinitionNavigationItem(psiElement: LatexCommands): NavigationItem? {
+        val environmentName = psiElement.requiredParameter(0) ?: return null
+        return GoToSymbolProvider.BaseNavigationItem(psiElement, environmentName, TexifyIcons.DOT_ENVIRONMENT)
+    }
 }
