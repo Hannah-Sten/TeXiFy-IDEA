@@ -5,13 +5,13 @@ import com.intellij.lang.parameterInfo.*
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ArrayUtil
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.psi.LatexCommands
 
 /**
  * @author Sten Wessel
  */
-class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexNoMathCommand> {
+class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegularCommand> {
 
     private fun findLatexCommand(file: PsiFile, offset: Int): LatexCommands? {
         val element = file.findElementAt(offset)
@@ -24,7 +24,7 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexNoMat
         return ArrayUtil.EMPTY_OBJECT_ARRAY
     }
 
-    override fun getParametersForDocumentation(p: LatexNoMathCommand, context: ParameterInfoContext): Array<Any>? {
+    override fun getParametersForDocumentation(p: LatexRegularCommand, context: ParameterInfoContext): Array<Any>? {
         return ArrayUtil.EMPTY_OBJECT_ARRAY
     }
 
@@ -33,7 +33,7 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexNoMat
     }
 
     override fun showParameterInfo(element: LatexCommands, context: CreateParameterInfoContext) {
-        val commandHuh = LatexNoMathCommand[element.commandToken.text.substring(1)] ?: return
+        val commandHuh = LatexRegularCommand[element.commandToken.text.substring(1)] ?: return
 
         context.itemsToShow = arrayOf<Any>(commandHuh)
         context.showHint(element, element.textOffset, this)
@@ -51,7 +51,7 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexNoMat
 
     override fun tracksParameterIndex() = true
 
-    override fun updateUI(cmd: LatexNoMathCommand?, context: ParameterInfoUIContext) {
+    override fun updateUI(cmd: LatexRegularCommand?, context: ParameterInfoUIContext) {
         if (cmd == null) {
             context.isUIComponentEnabled = false
             return

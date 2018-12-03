@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.lang.LatexMathCommand
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.psi.*
 
 /**
@@ -100,7 +100,7 @@ fun LatexCommands.definedCommandName() = when (name) {
  */
 fun LatexCommands.isKnown(): Boolean {
     val name = name?.substring(1) ?: ""
-    return LatexNoMathCommand[name] != null || LatexMathCommand[name] != null
+    return LatexRegularCommand[name] != null || LatexMathCommand[name] != null
 }
 
 /**

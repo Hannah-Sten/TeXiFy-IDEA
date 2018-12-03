@@ -14,7 +14,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.file.*
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexTypes
@@ -177,7 +177,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
 
             // Find file
-            val latexCommandHuh = LatexNoMathCommand[name.substring(1)] ?: continue
+            val latexCommandHuh = LatexRegularCommand[name.substring(1)] ?: continue
             val argument = latexCommandHuh
                     .getArgumentsOf(RequiredFileArgument::class.java)[0]
 
