@@ -7,6 +7,7 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.Magic
+import nl.rubensten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.rubensten.texifyidea.util.requiredParameter
 
 /**
@@ -15,7 +16,7 @@ import nl.rubensten.texifyidea.util.requiredParameter
 object NavigationItemUtil {
 
     @JvmStatic
-    fun createNavigationItem(psiElement: PsiElement): NavigationItem? {
+    fun createLabelNavigationItem(psiElement: PsiElement): NavigationItem? {
         when (psiElement) {
             is LatexCommands -> return GoToSymbolProvider.BaseNavigationItem(psiElement,
                     psiElement.requiredParameter(0) ?: return null,
@@ -28,5 +29,11 @@ object NavigationItemUtil {
         }
 
         return null
+    }
+
+    @JvmStatic
+    fun createCommandDefinitionNavigationItem(psiElement: LatexCommands): NavigationItem? {
+        val defined = psiElement.forcedFirstRequiredParameterAsCommand() ?: return null
+        return GoToSymbolProvider.BaseNavigationItem(psiElement, defined.name ?: "", TexifyIcons.DOT_COMMAND)
     }
 }

@@ -15,7 +15,7 @@ class GotoLabelSymbolContributor : ChooseByNameContributor {
         val labels = project?.findLabels() ?: return emptyArray()
         return labels.asSequence()
                 .filter { it.extractLabelName() == name || (pattern != null && it.extractLabelName().contains(pattern, ignoreCase = true)) }
-                .mapNotNull { NavigationItemUtil.createNavigationItem(it) }
+                .mapNotNull { NavigationItemUtil.createLabelNavigationItem(it) }
                 .toList()
                 .toTypedArray()
     }
