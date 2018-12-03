@@ -40,7 +40,9 @@ NUMBER=[0-9-]+
 NORMAL_TEXT_WORD=([^\"]|\\\" )+
 NORMAL_TEXT_BRACED_STRING=[^{} ]+
 
+%state XXAFTERTYPETOKEN
 %state XXENTRY
+%state XXAFTERENTRY
 %state XXSTRINGDEF
 %state XXQUOTED_STRING
 %state XXQUOTED_STRINGDEF
@@ -51,8 +53,11 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 %%
 {COMMENT_TOKEN}                 { return COMMENT_TOKEN; }
 
-<YYINITIAL> {
-    {SEPARATOR}                 { return SEPARATOR; }
+<XXAFTERENTRY> {
+    {SEPARATOR}                 { yybegin(YYINITIAL); return SEPARATOR; }
+}
+
+<YYINITIAL,XXAFTERENTRY> {
     {TYPE_TOKEN}                { String sequence = yytext().toString();
                                   if ("@string".equalsIgnoreCase(sequence)) {
                                     yybegin(XXSTRINGDEF);
@@ -60,10 +65,15 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
                                   else if ("@preamble".equalsIgnoreCase(sequence)) {
                                     yybegin(XXPREAMBLE);
                                   }
+                                  else {
+                                    yybegin(XXAFTERTYPETOKEN);
+                                  }
                                   return TYPE_TOKEN; }
+    [^\s]                       { yybegin(YYINITIAL); return COMMENT_TOKEN; }
+}
+
+<XXAFTERTYPETOKEN> {
     {OPEN_BRACE}                { yybegin(XXENTRY); return OPEN_BRACE; }
-    {ASSIGNMENT}                { return ASSIGNMENT; }
-    {IDENTIFIER}                { return IDENTIFIER; }
 }
 
 // Preamble: @preamble{ "some string" }
@@ -73,7 +83,7 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
     {NUMBER}                    { return NUMBER; }
     {CONCATENATE}               { return CONCATENATE; }
     {IDENTIFIER}                { return IDENTIFIER; }
-    {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
+    {CLOSE_BRACE}               { yybegin(XXAFTERENTRY); return CLOSE_BRACE; }
 }
 
 // String in the preamble.
@@ -89,8 +99,8 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
     {IDENTIFIER}                { return IDENTIFIER; }
     {ASSIGNMENT}                { return ASSIGNMENT; }
     {QUOTES}                    { yybegin(XXQUOTED_STRINGDEF); return QUOTES; }
-    {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
-    {CLOSE_PARENTHESIS}         { yybegin(YYINITIAL); return CLOSE_PARENTHESIS; }
+    {CLOSE_BRACE}               { yybegin(XXAFTERENTRY); return CLOSE_BRACE; }
+    {CLOSE_PARENTHESIS}         { yybegin(XXAFTERENTRY); return CLOSE_PARENTHESIS; }
 }
 
 // String in string definition.
@@ -108,8 +118,8 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
     {QUOTES}                    { yybegin(XXQUOTED_STRING); return QUOTES; }
     {CONCATENATE}               { return CONCATENATE; }
     {SEPARATOR}                 { return SEPARATOR; }
-    {CLOSE_BRACE}               { yybegin(YYINITIAL); return CLOSE_BRACE; }
-    {CLOSE_PARENTHESIS}         { yybegin(YYINITIAL); return CLOSE_PARENTHESIS; }
+    {CLOSE_BRACE}               { yybegin(XXAFTERENTRY); return CLOSE_BRACE; }
+    {CLOSE_PARENTHESIS}         { yybegin(XXAFTERENTRY); return CLOSE_PARENTHESIS; }
 }
 
 // "Quoted string" in an entry.
