@@ -308,14 +308,18 @@ enum class LatexRegularCommand(
     RENEWCOMMAND_STAR("renewcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWENVIRONMENT("newenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
     RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
-    NEWDOCUMENTCOMMAND("NewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired()),
-    RENEWDOCUMENTCOMMAND("RenewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired()),
-    PROVIDEDOCUMENTCOMMAND("ProvideDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired()),
-    DECLAREDOCUMENTCOMMAND("DeclareDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired()),
-    NEWDOCUMENTENVIRONMENT("NewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired()),
-    RENEWDOCUMENTENVIRONMENT("RenewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired()),
-    PROVIDEDOCUMENTENVIRONMENT("ProvideDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired()),
-    DECLAREDOCUMENTENVIRONMENT("DeclareDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired()),
+
+    /**
+     * Xparse definitions.
+     */
+    NEWDOCUMENTCOMMAND("NewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    RENEWDOCUMENTCOMMAND("RenewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    PROVIDEDOCUMENTCOMMAND("ProvideDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    DECLAREDOCUMENTCOMMAND("DeclareDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    NEWDOCUMENTENVIRONMENT("NewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+    RENEWDOCUMENTENVIRONMENT("RenewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+    PROVIDEDOCUMENTENVIRONMENT("ProvideDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+    DECLAREDOCUMENTENVIRONMENT("DeclareDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
 
     /**
      * Natbib citations
