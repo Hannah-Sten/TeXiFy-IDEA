@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.run
+package nl.rubensten.texifyidea.run.evince
 
 import com.intellij.openapi.util.SystemInfo
 import java.io.IOException

@@ -13,7 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.psi.LatexEnvironment
-import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
+import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
 import nl.rubensten.texifyidea.util.*
 import org.jetbrains.concurrency.runAsync
 import java.io.File
@@ -102,6 +102,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     }
                 }
             }
+        }
+
+        if(isEvinceAvailable()) {
+
         }
 
         return handler
