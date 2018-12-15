@@ -17,7 +17,6 @@ fun isEvinceAvailable(): Boolean {
 
     // Find out whether Evince is installed and in PATH, otherwise we can't use it
     val output = "which evince".runCommand()
-    println(output)
     return output?.contains("evince") ?: false
 }
 
@@ -40,5 +39,30 @@ fun String.runCommand(): String? {
     } catch(e: IOException) {
         e.printStackTrace()
         null
+    }
+}
+
+/**
+ * Send commands to Evince.
+ *
+ * @author Thomas Schouten
+ */
+object EvinceConversation {
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+        // todo what happens when the command fails?
+        // todo possibly use the default document viewer if evince not available?
+//        try {
+            // todo is filepath full path or relative? need working dir in second case
+            // todo focus (always on top) or not depends on DE? https://unix.stackexchange.com/questions/36998/open-pdf-previewer-width-specific-size-and-position-and-always-on-top-from-com
+            "evince $pdfFilePath".runCommand()
+//            SumatraConversation.execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
+//        }
+//        catch (e: TeXception) {
+//            Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
+//        }
+    }
+
+    fun forwardSearch(pdfFilePath: String? = null, sourceFilePath: String, line: Int) {
+
     }
 }
