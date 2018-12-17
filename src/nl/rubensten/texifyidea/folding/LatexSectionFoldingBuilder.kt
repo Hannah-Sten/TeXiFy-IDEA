@@ -9,9 +9,9 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.PsiContainer
+import nl.rubensten.texifyidea.util.Magic.Command.sectionMarkers
 import nl.rubensten.texifyidea.util.nextSiblingIgnoreWhitespace
 import nl.rubensten.texifyidea.util.parentOfType
-import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
 
 /**
  * Folds multiple \\usepackage or \\RequirePackage statements
@@ -19,11 +19,12 @@ import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
  * @author Ruben Schellekens
  */
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
-
     companion object {
-
-        private val sectionCommands = arrayOf("\\section", "\\chapter", "\\part")
+        private val sectionCommands = arrayOf("\\part", "\\chapter",
+                "\\section", "\\subsection", "\\subsubsection",
+                "\\paragraph", "\\subparagraph")
     }
+
 
     override fun isCollapsedByDefault(node: ASTNode) = false
 
@@ -37,27 +38,32 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
             return descriptors.toTypedArray()
         }
 
-        // Fold all sections that end with another section.
-        var previous = commands.first()
-        for (command in commands) {
-            if (previous == command) {
-                continue
-            }
-
-            val end = command.parentOfType(LatexContent::class)?.previousSiblingIgnoreWhitespace() ?: continue
-            if (end.textOffset < previous.textOffset) {
-                continue
-            }
-
-            val elt = PsiContainer(previous, end)
-            descriptors.add(FoldingDescriptor(elt, elt.textRange))
-            previous = command
-        }
-
-        // Find the range of the last section.
-        findEnd(descriptors, previous)
-
+        // Fold all section markers.
+        val index_last = recursiveFold(descriptors, commands, 0, commands.size)
+        findEnd(descriptors, commands[index_last])
         return descriptors.toTypedArray()
+    }
+
+    private fun recursiveFold(descriptors: MutableCollection<FoldingDescriptor>, commands: List<LatexCommands>,
+                              index_cur_toplevel: Int, index_last: Int): Int {
+        if (index_cur_toplevel >= index_last) {
+            return index_last - 1
+        }
+        val toplevel = commands[index_cur_toplevel]
+        var index_next_toplevel = index_last
+        for (i in index_cur_toplevel + 1 until index_last) {
+            if (commands[i].name == toplevel.name) {
+                index_next_toplevel = i
+                break
+            }
+        }
+        val end = commands[index_next_toplevel - 1]
+        val elt = PsiContainer(toplevel, end)
+        descriptors.add(FoldingDescriptor(elt, elt.textRange))
+        if (index_cur_toplevel + 1 < index_next_toplevel) {
+            recursiveFold(descriptors, commands, index_cur_toplevel + 1, index_next_toplevel)
+        }
+        return recursiveFold(descriptors, commands, index_next_toplevel, index_last)
     }
 
     private fun findEnd(descriptors: MutableCollection<FoldingDescriptor>, lastCommand: LatexCommands) {
