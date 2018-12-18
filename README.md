@@ -316,13 +316,13 @@ For example, to use lualatex:
     
 You can run this run configuration by pressing <kbd>Shift</kbd>+<kbd>F10</kbd> (on Windows), by clicking the play button, or by clicking the gutter icon.
 
-#### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine",`
+#### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
 
-If you get this warning, you have to install the mentioned gtk engine, in this case Murrine.
+If you get this warning, it is not critical so you could ignore it but to solve it you can install the mentioned gtk engine, in this case Murrine.
 For example on Arch Linux, install the `gtk-engine-murrine` package. Arch Linux sets the default theme to Adwaita, so install that with the `gnome-themes-extra` package.
 For more information see [wiki.archlinux.org](https://wiki.archlinux.org/index.php/GTK+).
 
-#### Unable to find method 'sun.misc.Unsafe.defineClass' or Please provide the path to the Android SDK
+#### `Unable to find method 'sun.misc.Unsafe.defineClass'` or `Please provide the path to the Android SDK` when syncing Gradle
 
 This probably means your Gradle cache is corrupt, delete (on Windows) `C:\Users\username\.gradle\caches` and `C:\Users\username\.gradle\wrapper\dists` or (on Linux) `~/.gradle/caches` and `~/.gradle/wrapper/dists`, then reboot your system.
 
