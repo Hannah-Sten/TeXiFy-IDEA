@@ -17,7 +17,7 @@ import nl.rubensten.texifyidea.util.isEntryPoint
 class LatexCompileGutter : RunLineMarkerContributor() {
 
     override fun getInfo(element: PsiElement): RunLineMarkerContributor.Info? {
-        element as? LatexBeginCommand ?: return null
+        if (element !is LatexBeginCommand) return null
 
         // Break when not a valid command: don't show icon.
         if (!element.isEntryPoint()) {

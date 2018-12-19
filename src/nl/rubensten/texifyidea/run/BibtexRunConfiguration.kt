@@ -17,7 +17,7 @@ class BibtexRunConfiguration(
         project: Project,
         factory: ConfigurationFactory,
         name: String
-) : RunConfigurationBase(project, factory, name), LocatableConfiguration {
+) : RunConfigurationBase<BibtexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
 
@@ -107,7 +107,7 @@ class BibtexRunConfiguration(
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension?.plus(" bibliography")
+    override fun suggestedName() = mainFile?.nameWithoutExtension.plus(" bibliography")
 
     fun setSuggestedName() {
         name = suggestedName()
