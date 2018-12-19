@@ -12,7 +12,7 @@ plugins {
 }
 
 group 'nl.rubensten'
-version '0.6.3'
+version '0.6.3.1'
 
 repositories {
     mavenCentral()
