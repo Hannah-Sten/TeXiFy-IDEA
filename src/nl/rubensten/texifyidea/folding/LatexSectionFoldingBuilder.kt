@@ -13,9 +13,8 @@ import nl.rubensten.texifyidea.util.parentOfType
 import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
 
 /**
- * Folds multiple \\usepackage or \\RequirePackage statements
- *
- * @author Ruben Schellekens
+ * Recursively folds section commands
+ * @author Tom Evers
  */
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
     companion object {
