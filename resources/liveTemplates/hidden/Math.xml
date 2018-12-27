@@ -1,0 +1,11 @@
+<templateSet group="Math">
+    <!--TODO: Ask about space after \frac{}{}-->
+    <template id="MATH.frac" name="frac" value="{$NUMERATOR$}{$DENOMINATOR$} " description="Fraction" toReformat="false"
+              toShortenFQNames="false">
+        <variable name="NUMERATOR" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <variable name="DENOMINATOR" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="LATEX" value="true"/>
+        </context>
+    </template>
+</templateSet>
