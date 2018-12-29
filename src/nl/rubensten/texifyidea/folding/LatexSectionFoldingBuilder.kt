@@ -4,72 +4,73 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
-import nl.rubensten.texifyidea.psi.PsiContainer
 import nl.rubensten.texifyidea.util.nextSiblingIgnoreWhitespace
 import nl.rubensten.texifyidea.util.parentOfType
 import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
 
 /**
- * Folds multiple \\usepackage or \\RequirePackage statements
- *
- * @author Ruben Schellekens
+ * Recursively folds section commands
+ * @author Tom Evers
  */
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
-
     companion object {
-
-        private val sectionCommands = arrayOf("\\section", "\\chapter")
+        private val sectionCommands = arrayOf("\\part", "\\chapter",
+                "\\section", "\\subsection", "\\subsubsection",
+                "\\paragraph", "\\subparagraph")
     }
 
     override fun isCollapsedByDefault(node: ASTNode) = false
 
     override fun getPlaceholderText(node: ASTNode) = node.text + "..."
 
-    override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
+    override fun buildFoldRegions(root: PsiElement, document: Document,
+                                  quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val commands = LatexCommandsIndex.getCommandsByNames(root.containingFile, *sectionCommands).toList()
-
+                .sortedBy { x -> x.textOffset }
         if (commands.isEmpty()) {
             return descriptors.toTypedArray()
         }
 
-        // Fold all sections that end with another section.
-        var previous = commands.first()
-        for (command in commands) {
-            if (previous == command) {
-                continue
+        for (index_cur in 0 until commands.size) {
+            var found_higher = false
+            val cur_command = commands[index_cur]
+            val depth_cur = sectionCommands.indexOf(cur_command.name)
+            for (index_next in index_cur + 1 until commands.size) {
+                val next_command = commands[index_next]
+                val depth_next = sectionCommands.indexOf(next_command.name)
+                if (depth_cur >= depth_next) {
+                    val end = next_command.parentOfType(LatexContent::class)
+                            ?.previousSiblingIgnoreWhitespace() ?: break
+                    val folding_range = TextRange(cur_command.textOffset, end.textOffset + end.textLength)
+                    if (folding_range.length > 0) {
+                        descriptors.add(FoldingDescriptor(cur_command, folding_range))
+                    }
+                    found_higher = true
+                    break
+                }
             }
-
-            val end = command.parentOfType(LatexContent::class)?.previousSiblingIgnoreWhitespace() ?: continue
-            if (end.textOffset < previous.textOffset) {
-                continue
+            /* If this item is the topmost level of the section structure or the last section marker,
+             * use the end of all text as the end of the range.
+             */
+            if (!found_higher) {
+                val content = commands.last().parentOfType(LatexContent::class) ?: continue // TODO: Check this
+                var next: LatexContent? = content
+                var previous: LatexContent = content
+                while (next != null) {
+                    previous = next
+                    next = next.nextSiblingIgnoreWhitespace() as? LatexContent
+                }
+                val range = TextRange(cur_command.textOffset, previous.textOffset + previous.textLength)
+                if (range.length > 0) {
+                    descriptors.add(FoldingDescriptor(cur_command, range))
+                }
             }
-
-            val elt = PsiContainer(previous, end)
-            descriptors.add(FoldingDescriptor(elt, elt.textRange))
-            previous = command
         }
-
-        // Find the range of the last section.
-        findEnd(descriptors, previous)
-
         return descriptors.toTypedArray()
-    }
-
-    private fun findEnd(descriptors: MutableCollection<FoldingDescriptor>, lastCommand: LatexCommands) {
-        val content = lastCommand.parentOfType(LatexContent::class) ?: return
-        var next: LatexContent? = content
-        var previous: LatexContent = content
-        while (next != null) {
-            previous = next
-            next = next.nextSiblingIgnoreWhitespace() as? LatexContent
-        }
-
-        val elt = PsiContainer(content, previous)
-        descriptors.add(FoldingDescriptor(elt, elt.textRange))
     }
 }
