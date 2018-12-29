@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
-import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.util.*
 
@@ -81,7 +81,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
             document.replaceString(startOffset, endOffset, gather)
 
             // Add import.
-            PackageUtils.insertUsepackage(file, Package.AMSMATH)
+            PackageUtils.insertUsepackage(file, AMSMATH)
         }
 
         /**

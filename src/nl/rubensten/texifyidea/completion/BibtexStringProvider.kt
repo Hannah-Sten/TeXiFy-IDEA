@@ -18,7 +18,7 @@ import nl.rubensten.texifyidea.util.*
  */
 object BibtexStringProvider : CompletionProvider<CompletionParameters>() {
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val psiFile = parameters.originalFile
         val strings: List<Triple<String, String, BibtexEntry>?> = psiFile.childrenOfType(BibtexEntry::class).asSequence()
                 .filter { it.tokenType() == "@string" }

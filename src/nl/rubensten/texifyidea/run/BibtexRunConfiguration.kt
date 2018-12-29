@@ -17,7 +17,7 @@ class BibtexRunConfiguration(
         project: Project,
         factory: ConfigurationFactory,
         name: String
-) : RunConfigurationBase(project, factory, name), LocatableConfiguration {
+) : RunConfigurationBase<BibtexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
 
@@ -78,14 +78,16 @@ class BibtexRunConfiguration(
         val mainFilePath = parent.getChildText(MAIN_FILE)
         mainFile = if (mainFilePath != null) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
-        } else {
+        }
+        else {
             null
         }
 
         val auxDirPath = parent.getChildText(AUX_DIR)
         bibWorkingDir = if (auxDirPath != null) {
             LocalFileSystem.getInstance().findFileByPath(auxDirPath)
-        } else {
+        }
+        else {
             null
         }
     }
@@ -105,11 +107,7 @@ class BibtexRunConfiguration(
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension?.plus(" bibliography")
-
-    fun setDefaultCompiler() {
-        compiler = BibliographyCompiler.BIBTEX
-    }
+    override fun suggestedName() = mainFile?.nameWithoutExtension.plus(" bibliography")
 
     fun setSuggestedName() {
         name = suggestedName()

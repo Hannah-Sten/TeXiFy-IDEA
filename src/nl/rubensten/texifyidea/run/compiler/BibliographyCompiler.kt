@@ -7,7 +7,8 @@ import nl.rubensten.texifyidea.run.BibtexRunConfiguration
  */
 enum class BibliographyCompiler(private val compiler: Compiler<BibtexRunConfiguration>) : Compiler<BibtexRunConfiguration> by compiler {
 
-    BIBTEX(BibtexCompiler);
+    BIBTEX(BibtexCompiler),
+    BIBER(BiberCompiler);
 
     override fun toString() = displayName
 }

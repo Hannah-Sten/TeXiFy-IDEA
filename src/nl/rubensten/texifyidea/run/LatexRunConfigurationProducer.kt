@@ -8,7 +8,9 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.util.hasBibliography
+import nl.rubensten.texifyidea.util.usesBiber
 
 /**
  * @author Ruben Schellekens
@@ -37,7 +39,10 @@ class LatexRunConfigurationProducer : RunConfigurationProducer<LatexRunConfigura
         runConfiguration.setSuggestedName()
 
         if (container.hasBibliography()) {
-            runConfiguration.generateBibRunConfig()
+            runConfiguration.generateBibRunConfig(BibliographyCompiler.BIBTEX)
+        }
+        else if (container.usesBiber()) {
+            runConfiguration.generateBibRunConfig(BibliographyCompiler.BIBER)
         }
 
         return true

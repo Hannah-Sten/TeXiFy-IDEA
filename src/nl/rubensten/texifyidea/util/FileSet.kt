@@ -65,7 +65,7 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> = findReferencedFileSet(this)
 fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexedCommandsInFileSet]
+ * @see [LatexCommandsIndex.getItemsInFileSet]
  */
 fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
 

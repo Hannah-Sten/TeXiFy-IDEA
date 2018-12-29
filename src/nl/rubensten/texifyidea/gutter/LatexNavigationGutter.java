@@ -17,7 +17,9 @@ import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.FilesKt;
 import nl.rubensten.texifyidea.util.PsiCommandsKt;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -117,5 +119,16 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
                 .setTooltipText("Go to referenced file '" + file.getName() + "'");
 
         result.add(builder.createLineMarkerInfo(element));
+    }
+
+    @Override
+    public String getName() {
+        return "Navigate to referenced file";
+    }
+
+    @Nullable
+    @Override
+    public Icon getIcon() {
+        return TexifyIcons.LATEX_FILE;
     }
 }
