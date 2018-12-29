@@ -62,6 +62,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 continue
             }
 
+            // amsfonts is included in amssymb
+            if (pack == Package.AMSFONTS && includedPackages.contains(Package.AMSSYMB.name)) {
+                continue
+            }
+
             // amsmath is included in mathtools
             if (pack == Package.AMSMATH && includedPackages.contains(Package.MATHTOOLS.name)) {
                 continue
@@ -93,6 +98,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
             // amsfonts is included in amssymb
             if (pack == Package.AMSFONTS && includedPackages.contains(Package.AMSSYMB.name)) {
+                continue
+            }
+
+            // amsmath is included in mathtools
+            if (pack == Package.AMSMATH && includedPackages.contains(Package.MATHTOOLS.name)) {
                 continue
             }
 
