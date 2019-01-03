@@ -167,7 +167,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         for (cmd in commands) {
             val name = cmd.commandToken.text
             if (name != "\\include" && name != "\\includeonly" && name != "\\input"
-                    && name != "\\bibliography") {
+                    && name != "\\bibliography" && name != "\\addbibresource") {
                 continue
             }
 
