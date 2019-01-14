@@ -14,7 +14,7 @@ import javax.swing.SwingConstants
 /**
  * Sets up inverse search integration with SumatraPDF.
  *
- * This action attempts to set the permanent inverse search command setting in SumatraPDF. This action is Windows-only.
+ * This action attempts to set the permanent inverse search (backward search) command setting in SumatraPDF. This action is Windows-only.
  *
  * @author Sten Wessel
  * @since b0.4
