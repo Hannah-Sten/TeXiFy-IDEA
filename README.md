@@ -274,6 +274,18 @@ where the files `introduction.tex` and `example-theorems.tex` contain just the c
 
 Make sure you have installed the dependencies, instructions are in the [Equation Preview](#equation-preview) section.
 
+#### makeindex or bibtex not writing to file (`openout_any = p`)
+When you get during compilation the error
+```
+makeindex: Not writing to /path/to/project/latexfile.ind (openout_any = p).
+Can't create output index file /path/to/project/latexfile.ind.
+```
+or
+```
+bibtex: Not writing to ../out/latexfile.blg (openout_any = p).
+```
+this probably happens because you are trying to use makeindex or bibtex with a separate output directory. You should either disable the out directory in the run config or change the security setting in `texmf.cnf`, see [this tex.stackexchange.com answer](https://tex.stackexchange.com/questions/12686/how-do-i-run-bibtex-after-using-the-output-directory-flag-with-pdflatex-when-f/289336#289336).
+
 #### How to integrate a latex compiler other than pdflatex:
 Most tex distributions contain a commandline tool called [arara](https://github.com/cereda/arara).
 Arara uses a small configuration in your main *.tex file
