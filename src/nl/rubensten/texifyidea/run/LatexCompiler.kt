@@ -88,6 +88,31 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // -include-directory does not work with latexmk
             return command
         }
+    },
+
+    TEXLIVEONFLY("Texliveonfly", "texliveonfly") {
+
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+            val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")
+
+            // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
+            // commands can be passed to those compilers with the arguments flag
+            command.add("--arguments='")
+
+            // The arguments that will be passed on.
+            // -interaction=nonstopmode and -synctex=1 are on by default
+            command.add("--output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            command.add("--file-line-error")
+
+            // It does not make sense to run this on Windows because there MikTeX already can automatically download packages
+            if (runConfig.hasOutputDirectories()) {
+                command.add("--output-directory=${moduleRoot.path}/out'")
+            }
+
+            // Close the compiler arguments
+            command.add("'")
+            return command
+        }
     };
 
     /**
