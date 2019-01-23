@@ -96,21 +96,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")
 
             // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
-            // commands can be passed to those compilers with the arguments flag
-            command.add("--arguments='")
-
-            // The arguments that will be passed on.
-            // -interaction=nonstopmode and -synctex=1 are on by default
-            command.add("--output-format=${runConfig.outputFormat.name.toLowerCase()}")
-            command.add("--file-line-error")
-
-            // It does not make sense to run this on Windows because there MikTeX already can automatically download packages
+            // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
+            // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
+            // Since adding one will work without any quotes, we choose the output directory.
             if (runConfig.hasOutputDirectories()) {
-                command.add("--output-directory=${moduleRoot.path}/out'")
+                command.add("--arguments=--output-directory=${moduleRoot.path}/out")
             }
 
-            // Close the compiler arguments
-            command.add("'")
             return command
         }
     };
