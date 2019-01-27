@@ -40,7 +40,7 @@ open class ConfigureInverseSearchAction : AnAction(
             addCancelAction()
             setOkOperation {
                 val path = PathManager.getBinPath()
-                val name = ApplicationNamesInfo.getInstance().defaultLauncherName
+                val name = ApplicationNamesInfo.getInstance().scriptName
                 Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" \\\"\\\" --line %l \\\"%f\\\"\"")
                 dialogWrapper.close(0)
             }
