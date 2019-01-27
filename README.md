@@ -267,9 +267,6 @@ where the files `introduction.tex` and `example-theorems.tex` contain just the c
 \end{theorem}
 ```
 
-#### SumatraPDF inverse search: _Error launching IDEA. No JVM installation found_
-* Please make sure you have a 32-bit JDK installed. This solved the issue before ([#104](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/104)). If installing a 32-bit JDK is resolving the problem for you, please report this on the issue tracker.
-
 #### The Equation Preview does not work
 
 Make sure you have installed the dependencies, instructions are in the [Equation Preview](#equation-preview) section.

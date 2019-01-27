@@ -10,6 +10,10 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.run.isSumatraAvailable
 import javax.swing.JLabel
 import javax.swing.SwingConstants
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.util.PlatformUtils
+
+
 
 /**
  * Sets up inverse search integration with SumatraPDF.
@@ -40,8 +44,20 @@ open class ConfigureInverseSearchAction : AnAction(
             addCancelAction()
             setOkOperation {
                 val path = PathManager.getBinPath()
-                val name = ApplicationNamesInfo.getInstance().scriptName
-                Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" \\\"\\\" --line %l \\\"%f\\\"\"")
+                var name = ApplicationNamesInfo.getInstance().scriptName
+
+                // If we can find a 64-bits Java, then we can start (the equivalent of) idea64.exe since that will use the 64-bits Java
+                // see issue 104 and https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/809
+                // If we find a 32-bits Java or nothing at all, we will keep (the equivalent of) idea.exe which is the default
+                if (System.getProperty("sun.arch.data.model") == "64") {
+                    // We will assume that since the user is using a 64-bit IDEA that name64 exists, this is at least true for idea64.exe and pycharm64.exe on Windows
+                    name += "64"
+                    // We also remove an extra "" because it opens an empty IDEA instance when present
+                    Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" --line %l \\\"%f\\\"\"")
+                } else {
+                    Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" \\\"\\\" --line %l \\\"%f\\\"\"")
+                }
+
                 dialogWrapper.close(0)
             }
 
