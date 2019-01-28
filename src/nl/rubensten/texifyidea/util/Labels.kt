@@ -18,7 +18,8 @@ import kotlin.streams.toList
 fun PsiFile.findLabelsInFileSet(): Set<String> {
     val latex = findLatexLabelsInFileSet()
     val bibtex = findBibtexLabelsInFileSet()
-    return (latex + bibtex).toSet()
+    val userSpecificLabels = findMyLabels()
+    return (latex + bibtex + userSpecificLabels).toSet()
 }
 
 /**
@@ -32,6 +33,12 @@ fun PsiFile.findLatexLabelsInFileSet(): Sequence<String> = LatexCommandsIndex.ge
         .mapNotNull(LatexCommands::getRequiredParameters)
         .filter { it.isNotEmpty() }
         .map { it.first() }
+
+fun PsiFile.findMyLabels(): Sequence<String> = LatexCommandsIndex.getItemsInFileSet(this)
+        .asSequence().filter { "\\listingcaption" == it.name }
+        .mapNotNull(LatexCommands::getRequiredParameters)
+        .filter { it.isNotEmpty() }
+        .map { if (it.size >= 2) it[1] else "" }
 
 /**
  * Finds all the defined bibtex labels in the fileset of the file.
