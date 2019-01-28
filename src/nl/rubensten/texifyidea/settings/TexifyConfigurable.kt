@@ -67,7 +67,11 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
         for (i in 0 until table.rowCount) {
-            addOrUpdateStoredRow(i, table.getValueAt(i, 0), table.getValueAt(i, 1))
+            val position = (table.getValueAt(i, 1) as String).toIntOrNull()
+            if (position != null) {
+                addOrUpdateStoredRow(table.getValueAt(i, 0) as String, position)
+            }
+            //ToDo: add error message in case position isn't an integer
         }
     }
 
@@ -76,27 +80,26 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
-        for (i in 0 until settings.labelCommands.size) {
-            addOrUpdateRow(i, settings.labelCommands[i])
-        }
+        var i = 0
+        settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position) }
     }
 
-    private fun addOrUpdateStoredRow(row : Int, command : Any, position : Any) {
-        if (settings.labelCommands.size > row) {
-            settings.labelCommands[row] = arrayOf(command, position)
+    private fun addOrUpdateStoredRow(command : String, position : Int) {
+        if (settings.labelCommands.containsKey(command)) {
+            settings.labelCommands[command] = position
         }
         else {
-            settings.labelCommands.plus(arrayOf(command, position))
+            settings.labelCommands.plus(Pair(command, position))
         }
     }
 
-    private fun addOrUpdateRow(row : Int, data : Array<Any>) {
+    private fun addOrUpdateRow(row : Int, command: String, position: Int) {
         if (table.rowCount > row) {
             table.removeRow(row)
-            table.insertRow(row, data)
+            table.insertRow(row, arrayOf(command, position))
         }
         else {
-            table.addRow(data)
+            table.addRow(arrayOf(command, position))
         }
     }
 
@@ -105,8 +108,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             return true
         }
         for (i in 0 until table.rowCount) {
-            if (table.getValueAt(i, 0) != settings.labelCommands[i][0] ||
-                    table.getValueAt(i, 1) != settings.labelCommands[i][1]) {
+            if (!settings.labelCommands.containsKey(table.getValueAt(i, 0) as String) ||
+                    settings.labelCommands[table.getValueAt(i, 0) as String] != table.getValueAt(i, 1)) {
                 return true
             }
         }
