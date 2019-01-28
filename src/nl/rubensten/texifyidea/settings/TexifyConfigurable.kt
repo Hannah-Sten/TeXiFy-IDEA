@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.settings
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.ui.table.JBTable
 import java.awt.FlowLayout
+import java.awt.event.ActionListener
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
 
@@ -15,8 +16,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticSecondInlineMathSymbol: JCheckBox
     private lateinit var automaticUpDownBracket: JCheckBox
     private lateinit var automaticItemInItemize: JCheckBox
-
     private lateinit var table: DefaultTableModel
+    private lateinit var newLineButton: JButton
 
     override fun getId() = "TexifyConfigurable"
 
@@ -32,6 +33,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
 
             table = addTable()
+            newLineButton = addButton()
         })
     }
 
@@ -53,6 +55,17 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         return checkBox
     }
 
+    private fun JPanel.addButton() : JButton {
+        val button = JButton("New line")
+        button.addActionListener {
+            if(table.getValueAt(table.rowCount - 1, 0) != "") {
+                table.addRow(arrayOf("", ""))
+            }
+        }
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(button) })
+        return button
+    }
+
     override fun isModified(): Boolean {
         return automaticSoftWraps.isSelected != settings.automaticSoftWraps
                 || automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
@@ -66,13 +79,18 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
+
+        var names = settings.labelCommands.keys
+
         for (i in 0 until table.rowCount) {
             val position = (table.getValueAt(i, 1) as String).toIntOrNull()
             if (position != null) {
                 addOrUpdateStoredRow(table.getValueAt(i, 0) as String, position)
             }
+            names.remove(table.getValueAt(i, 0) as String)
             //ToDo: add error message in case position isn't an integer
         }
+        names.forEach{settings.labelCommands.remove(it)}
     }
 
     override fun reset() {
