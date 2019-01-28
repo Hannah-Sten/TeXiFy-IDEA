@@ -24,6 +24,8 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
 
+    var labelCommands = arrayOf(arrayOf("\\label", 1))
+
     override fun getState() = this
 
     override fun loadState(state: TexifySettings) {
