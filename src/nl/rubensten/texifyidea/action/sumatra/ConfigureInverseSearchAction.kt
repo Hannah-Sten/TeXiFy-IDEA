@@ -10,9 +10,6 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.run.isSumatraAvailable
 import javax.swing.JLabel
 import javax.swing.SwingConstants
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.PlatformUtils
-
 
 
 /**
