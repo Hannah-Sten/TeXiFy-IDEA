@@ -58,7 +58,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private fun JPanel.addButton() : JButton {
         val button = JButton("New line")
         button.addActionListener {
-            if(table.getValueAt(table.rowCount - 1, 0) != "") {
+            if(table.rowCount == 0 || table.getValueAt(table.rowCount - 1, 0) != "") {
                 table.addRow(arrayOf("", ""))
             }
         }
@@ -80,14 +80,22 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
 
-        var names = settings.labelCommands.keys
+        val names = settings.labelCommands.keys.toMutableList()
 
         for (i in 0 until table.rowCount) {
-            val position = (table.getValueAt(i, 1) as String).toIntOrNull()
-            if (position != null) {
-                addOrUpdateStoredRow(table.getValueAt(i, 0) as String, position)
+            val command = table.getValueAt(i, 0) as String
+            val pos = table.getValueAt(i, 1)
+            var position : Int? = null
+            if (pos is Int) {
+                position = pos
             }
-            names.remove(table.getValueAt(i, 0) as String)
+            else if (pos is String){
+                position = pos.toIntOrNull()
+            }
+            if (position != null && command != "") {
+                settings.labelCommands[command] = position
+                names.remove(table.getValueAt(i, 0) as String)
+            }
             //ToDo: add error message in case position isn't an integer
         }
         names.forEach{settings.labelCommands.remove(it)}
@@ -100,15 +108,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         var i = 0
         settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position) }
-    }
-
-    private fun addOrUpdateStoredRow(command : String, position : Int) {
-        if (settings.labelCommands.containsKey(command)) {
-            settings.labelCommands[command] = position
-        }
-        else {
-            settings.labelCommands.plus(Pair(command, position))
-        }
     }
 
     private fun addOrUpdateRow(row : Int, command: String, position: Int) {
