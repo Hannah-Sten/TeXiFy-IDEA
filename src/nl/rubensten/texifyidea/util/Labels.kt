@@ -16,39 +16,24 @@ import kotlin.streams.toList
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLabelsInFileSet(): Set<String> {
-    val bibtex = findBibtexLabelsInFileSet()
-    val userSpecificLabels = findMyLabels()
-    return (bibtex + userSpecificLabels).toSet()
-}
+fun PsiFile.findLabelsInFileSet(): Set<String> = (findAllLabelsInFileSet() + findBibtexLabelsInFileSet()).toSet()
 
 /**
  * Finds all the defined latex labels in the fileset of the file.
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexLabelsInFileSet(): Sequence<String> = LatexCommandsIndex.getItemsInFileSet(this)
-        .asSequence()
-        .filter { "\\label" == it.name || "\\bibitem" == it.name }
-        .mapNotNull(LatexCommands::getRequiredParameters)
-        .filter { it.isNotEmpty() }
-        .map { it.first() }
-
-fun PsiFile.wrapFindMyLabels(): Set<String> = findMyLabels().toSet()
-
-fun PsiFile.findMyLabels(): Sequence<String> {
+fun PsiFile.findAllLabelsInFileSet(): Sequence<String> {
     val commands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
-    return LatexCommandsIndex.getItemsInFileSet(this)
-            .asSequence().filter { commands.containsKey(it.name) }
+    return findLabelingCommandsSequence()
             .map { it.name to it.requiredParameters }
             .filter { it.second.isNotEmpty() }
             .mapNotNull {
                 val position = commands[it.first]
                 if (position != null && it.second.size >= position)
                     it.second[position - 1] else null
-            }
+            }.filterNot { it == "" }
 }
-
 
 /**
  * Finds all the defined bibtex labels in the fileset of the file.
@@ -60,7 +45,7 @@ fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String> = BibtexIdIndex.getInd
         .map { it.text.substringEnd(1) }
 
 /**
- * Finds all the labels within the collection of commands.
+ * Finds all the labeling commands within the collection of commands.
  *
  * @return A collection of all label commands.
  */
@@ -69,7 +54,10 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
     return filter {
         if (it is LatexCommands) {
             commandNames.containsKey(it.name)
-        } else true
+        }
+        else {
+            true
+        }
     }
 }
 
@@ -80,20 +68,16 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
  *         The file to analyse the file set of.
  * @return The found label commands.
  */
-fun PsiFile.findLabelingCommands(): Collection<PsiElement> = findeLabelingCommandsSequence().toList()
+fun PsiFile.findLabelingCommands(): Collection<LatexCommands> = findLabelingCommandsSequence().toList()
 
 /**
  * make a sequence of all commands which specify an label
  */
-fun PsiFile.findeLabelingCommandsSequence(): Sequence<PsiElement> {
+fun PsiFile.findLabelingCommandsSequence(): Sequence<LatexCommands> {
     val commandNames = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
 
-    val commands = LatexCommandsIndex.getItems(this).asSequence()
+    return LatexCommandsIndex.getItemsInFileSet(this).asSequence()
             .filter { commandNames.containsKey(it.name) }
-//    val bibtexIds = BibtexIdIndex.getIndexedIds(this).asSequence()
-//            .filter { commandNames.containsKey(it.name) }
-
-    return (commands)
 }
 
 /**
@@ -108,6 +92,11 @@ fun Project.findLabels(): Collection<PsiElement> {
     result.addAll(bibtexIds)
     return result.findLabels()
 }
+
+/**
+ * Finds all specified bibtex entries
+ */
+fun PsiFile.findBibtexItems(): Collection<BibtexId> = BibtexIdIndex.getIndexedIdsInFileSet(this)
 
 /**
  * Finds all defined labels within the project matching the label key/id.

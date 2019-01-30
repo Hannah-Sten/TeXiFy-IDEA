@@ -7,20 +7,19 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
-import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.settings.TexifySettings;
-import nl.rubensten.texifyidea.util.FileSetKt;
 import nl.rubensten.texifyidea.util.LabelsKt;
 import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -56,32 +55,48 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     @Override
     public Object[] getVariants() {
         PsiFile file = myElement.getContainingFile().getOriginalFile();
-        Collection<PsiElement> labelingCommands = new ArrayList<>();
         Map<String, Integer> commands = TexifySettings.getInstance().getLabelCommandsLeadingSlash();
 
-        for (PsiFile referenced : FileSetKt.referencedFileSet(file)) {
-            labelingCommands.addAll(LabelsKt.findLabelingCommands(referenced));
-        }
+        String command = myElement.getCommandToken().getText();
 
-        return labelingCommands.stream().map(labelingCommand -> {
-            if (labelingCommand instanceof LatexCommands) {
-                LatexCommands command = (LatexCommands) labelingCommand;
-                List<String> parameters = command.getRequiredParameters();
-                if (parameters != null && parameters.size() >= commands.get(command.getName())) {
-                    String label = parameters.get(commands.get(command.getName()) - 1);
-                    Icon icon = (command.getName() != null && command.getName().contains("bib")) ?
-                            TexifyIcons.DOT_BIB : TexifyIcons.DOT_LABEL;
-                    return LookupElementBuilder.create(label)
-                            .bold()
-                            .withInsertHandler(new LatexReferenceInsertHandler())
-                            .withTypeText(labelingCommand.getContainingFile().getName() + ":"
-                                    + (1 + StringUtil.offsetToLineNumber(
-                                            labelingCommand.getContainingFile().getText(),
-                                            labelingCommand.getTextOffset())), true)
-                            .withIcon(icon);
+        // add bibreferences to autocompletion for \cite-style commands
+        if (Magic.Command.bibliographyReference.contains(command)) {
+            return LabelsKt.findBibtexItems(file).stream()
+                    .map(bibtexId -> {
+                        if (bibtexId != null) {
+                            PsiFile containing = bibtexId.getContainingFile();
+                            return LookupElementBuilder.create(StringsKt.substringEnd(bibtexId.getText(), 1))
+                                    .bold()
+                                    .withInsertHandler(new LatexReferenceInsertHandler())
+                                    .withTypeText(containing.getName() + ": " +
+                                                    (1 + StringUtil.offsetToLineNumber(containing.getText(), bibtexId.getTextOffset())),
+                                            true)
+                                    .withIcon(TexifyIcons.DOT_BIB);
+                        }
+                        return null;
+                    }).filter(Objects::nonNull).toArray();
+        }
+        // add all labels to \ref-styled commands
+        else if (Magic.Command.labelReference.contains(command)) {
+            return LabelsKt.findLabelingCommands(file).stream().map(labelingCommand -> {
+                if (labelingCommand != null) {
+                    List<String> parameters = labelingCommand.getRequiredParameters();
+                    if (parameters != null && parameters.size() >= commands.get(labelingCommand.getName())) {
+                        String label = parameters.get(commands.get(labelingCommand.getName()) - 1);
+                        return LookupElementBuilder.create(label)
+                                .bold()
+                                .withInsertHandler(new LatexReferenceInsertHandler())
+                                .withTypeText(labelingCommand.getContainingFile().getName() + ":"
+                                        + (1 + StringUtil.offsetToLineNumber(
+                                        labelingCommand.getContainingFile().getText(),
+                                        labelingCommand.getTextOffset())), true)
+                                .withIcon(TexifyIcons.DOT_LABEL);
+                    }
                 }
-            }
-            return null;
-        }).filter(Objects::nonNull).toArray();
+                return null;
+            }).filter(Objects::nonNull).toArray();
+        }
+        // if command isn't ref or cite-styled return empty array
+        return new Object[]{};
     }
 }
