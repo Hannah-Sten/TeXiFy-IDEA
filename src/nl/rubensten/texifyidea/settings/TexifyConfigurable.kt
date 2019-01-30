@@ -1,9 +1,10 @@
 package nl.rubensten.texifyidea.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
+import java.awt.Dimension
 import java.awt.FlowLayout
-import java.awt.event.ActionListener
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
 
@@ -38,18 +39,20 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     private fun JPanel.addTable() : DefaultTableModel {
-        val info = JLabel("Commands which set labels. The position is starts with 1, " +
-                "for example in \"\\label{labelname}\" \"labelname\" is on position 1")
-        val toDelete = JLabel("To delete a command empty one of the fields")
+        val info = JLabel("<html>Define which custom commands define labels. The position starts with 1, <br>" +
+                "for example in '\\label{labelname}', 'labelname' is on position 1.</html>")
+        val toDelete = JLabel("To delete a command empty one of the fields.")
 
         val tableInfo = DefaultTableModel()
         tableInfo.addColumn("Name of command")
         tableInfo.addColumn("Position of label parameter")
         val table = JBTable(tableInfo)
+        val scrollPane = JBScrollPane(table)
+        scrollPane.preferredSize = Dimension(400, 6 * table.rowHeight)
 
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(info) })
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(JScrollPane(table)) })
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(toDelete) })
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(scrollPane) })
         return tableInfo
     }
 
@@ -87,7 +90,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
 
         val names = settings.labelCommands.keys.toMutableList()
-        var removeRows = mutableListOf<Int>()
+        val removeRows = mutableListOf<Int>()
 
         for (i in 0 until table.rowCount) {
             val command = table.getValueAt(i, 0) as String
@@ -109,7 +112,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             else {
                 removeRows.add(i)
             }
-            //ToDo: add error message in case position isn't an integer
         }
         names.forEach{settings.labelCommands.remove(it)}
         removeRows.forEach { table.removeRow(it) }
