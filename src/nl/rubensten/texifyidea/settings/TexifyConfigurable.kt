@@ -38,12 +38,18 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     private fun JPanel.addTable() : DefaultTableModel {
+        val info = JLabel("Commands which set labels. The position is starts with 1, " +
+                "for example in \"\\label{labelname}\" \"labelname\" is on position 1")
+        val toDelete = JLabel("To delete a command empty one of the fields")
+
         val tableInfo = DefaultTableModel()
         tableInfo.addColumn("Name of command")
         tableInfo.addColumn("Position of label parameter")
         val table = JBTable(tableInfo)
 
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(info) })
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(JScrollPane(table)) })
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(toDelete) })
         return tableInfo
     }
 
@@ -81,24 +87,32 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
 
         val names = settings.labelCommands.keys.toMutableList()
+        var removeRows = mutableListOf<Int>()
 
         for (i in 0 until table.rowCount) {
             val command = table.getValueAt(i, 0) as String
             val pos = table.getValueAt(i, 1)
-            var position : Int? = null
+            var position = 0
             if (pos is Int) {
                 position = pos
             }
             else if (pos is String){
-                position = pos.toIntOrNull()
+                val positionNull = pos.toIntOrNull()
+                if (positionNull != null && positionNull.toString() == pos) {
+                    position = positionNull
+                }
             }
-            if (position != null && command != "") {
+            if (position > 0 && command != "") {
                 settings.labelCommands[command] = position
                 names.remove(table.getValueAt(i, 0) as String)
+            }
+            else {
+                removeRows.add(i)
             }
             //ToDo: add error message in case position isn't an integer
         }
         names.forEach{settings.labelCommands.remove(it)}
+        removeRows.forEach { table.removeRow(it) }
     }
 
     override fun reset() {
@@ -108,6 +122,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         var i = 0
         settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position) }
+        while (i < table.rowCount) {
+            table.removeRow(i)
+        }
     }
 
     private fun addOrUpdateRow(row : Int, command: String, position: Int) {
