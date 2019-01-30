@@ -31,4 +31,10 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     override fun loadState(state: TexifySettings) {
         XmlSerializerUtil.copyBean(state, this)
     }
+
+    fun getLabelCommandsLeadingSlash() = labelCommands.mapKeys { addLeadingSlash(it.key) }
+
+    private fun addLeadingSlash(command: String): String {
+        return if (command[0] == '\\') command else "\\" + command
+    }
 }

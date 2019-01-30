@@ -57,10 +57,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     public Object[] getVariants() {
         PsiFile file = myElement.getContainingFile().getOriginalFile();
         Collection<PsiElement> labelingCommands = new ArrayList<>();
-        HashMap<String, Integer> commands = TexifySettings.getInstance().getLabelCommands();
-        Set<String> commandsNames = new HashSet<>(commands.keySet());
-
-        commandsNames.forEach(command -> commands.put(LabelsKt.addLeadingSlash(command), commands.remove(command)));
+        Map<String, Integer> commands = TexifySettings.getInstance().getLabelCommandsLeadingSlash();
 
         for (PsiFile referenced : FileSetKt.referencedFileSet(file)) {
             labelingCommands.addAll(LabelsKt.findLabelingCommands(referenced));

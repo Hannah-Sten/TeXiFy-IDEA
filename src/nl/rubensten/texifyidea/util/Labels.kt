@@ -37,8 +37,7 @@ fun PsiFile.findLatexLabelsInFileSet(): Sequence<String> = LatexCommandsIndex.ge
 fun PsiFile.wrapFindMyLabels(): Set<String> = findMyLabels().toSet()
 
 fun PsiFile.findMyLabels(): Sequence<String> {
-    val commands = TexifySettings.getInstance().labelCommands
-            .mapKeys { addLeadingSlash(it.key) }
+    val commands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
     return LatexCommandsIndex.getItemsInFileSet(this)
             .asSequence().filter { commands.containsKey(it.name) }
             .map { it.name to it.requiredParameters }
@@ -50,9 +49,6 @@ fun PsiFile.findMyLabels(): Sequence<String> {
             }
 }
 
-fun addLeadingSlash(command: String): String {
-    return if (command[0] == '\\') command else "\\" + command
-}
 
 /**
  * Finds all the defined bibtex labels in the fileset of the file.
@@ -69,8 +65,7 @@ fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String> = BibtexIdIndex.getInd
  * @return A collection of all label commands.
  */
 fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
-    val commandNames = TexifySettings.getInstance().labelCommands
-            .mapKeys { addLeadingSlash(it.key) }
+    val commandNames = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
     return filter {
         if (it is LatexCommands) {
             commandNames.containsKey(it.name)
@@ -85,14 +80,20 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
  *         The file to analyse the file set of.
  * @return The found label commands.
  */
-fun PsiFile.findLabelingCommands(): Collection<PsiElement> {
-    val commandNames = TexifySettings.getInstance().labelCommands
-            .mapKeys { addLeadingSlash(it.key) }
+fun PsiFile.findLabelingCommands(): Collection<PsiElement> = findeLabelingCommandsSequence().toList()
+
+/**
+ * make a sequence of all commands which specify an label
+ */
+fun PsiFile.findeLabelingCommandsSequence(): Sequence<PsiElement> {
+    val commandNames = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+
     val commands = LatexCommandsIndex.getItems(this).asSequence()
             .filter { commandNames.containsKey(it.name) }
-    val bibtexIds = BibtexIdIndex.getIndexedIds(this).asSequence()
-            .filter { commandNames.containsKey(it.name) }
-    return (commands + bibtexIds).toList()
+//    val bibtexIds = BibtexIdIndex.getIndexedIds(this).asSequence()
+//            .filter { commandNames.containsKey(it.name) }
+
+    return (commands)
 }
 
 /**
