@@ -335,7 +335,8 @@ fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): Psi
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
             StyleFileType != psiFile.fileType &&
-            BibtexFileType != psiFile.fileType) {
+            BibtexFileType != psiFile.fileType &&
+            "Image" != psiFile.fileType.name) {
         return scanRoots(path, extensions)
     }
 
