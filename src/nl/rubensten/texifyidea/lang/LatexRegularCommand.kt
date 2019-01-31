@@ -12,7 +12,7 @@ import nl.rubensten.texifyidea.lang.Package.Companion.ULEM
 /**
  * @author Sten Wessel
  */
-enum class LatexNoMathCommand(
+enum class LatexRegularCommand(
         override val command: String,
         override vararg val arguments: Argument = emptyArray(),
         override val dependency: Package = DEFAULT,
@@ -310,6 +310,18 @@ enum class LatexNoMathCommand(
     RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
 
     /**
+     * Xparse definitions.
+     */
+    NEWDOCUMENTCOMMAND("NewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    RENEWDOCUMENTCOMMAND("RenewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    PROVIDEDOCUMENTCOMMAND("ProvideDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    DECLAREDOCUMENTCOMMAND("DeclareDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
+    NEWDOCUMENTENVIRONMENT("NewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+    RENEWDOCUMENTENVIRONMENT("RenewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+    PROVIDEDOCUMENTENVIRONMENT("ProvideDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+    DECLAREDOCUMENTENVIRONMENT("DeclareDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+
+    /**
      * Natbib citations
      */
     CITEP("citep", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = Package.NATBIB),
@@ -339,11 +351,11 @@ enum class LatexNoMathCommand(
 
     companion object {
 
-        private val lookup = HashMap<String, LatexNoMathCommand>()
-        private val lookupDisplay = HashMap<String, LatexNoMathCommand>()
+        private val lookup = HashMap<String, LatexRegularCommand>()
+        private val lookupDisplay = HashMap<String, LatexRegularCommand>()
 
         init {
-            for (command in LatexNoMathCommand.values()) {
+            for (command in LatexRegularCommand.values()) {
                 lookup[command.command] = command
                 if (command.display != null) {
                     lookupDisplay.putIfAbsent(command.display!!, command)

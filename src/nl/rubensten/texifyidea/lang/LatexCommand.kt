@@ -12,7 +12,7 @@ interface LatexCommand : Dependend {
     companion object {
 
         /**
-         * Looks up the given command name in all [LatexMathCommand]s and [LatexNoMathCommand]s.
+         * Looks up the given command name in all [LatexMathCommand]s and [LatexRegularCommand]s.
          *
          * @param commandName
          *          The command name to look up. Can start with or without `\`
@@ -24,7 +24,7 @@ interface LatexCommand : Dependend {
                 result = result.substring(1)
             }
 
-            return LatexMathCommand[result] ?: LatexNoMathCommand[result]
+            return LatexMathCommand[result] ?: LatexRegularCommand[result]
         }
 
         /**
@@ -40,7 +40,7 @@ interface LatexCommand : Dependend {
             return if (command.inMathContext()) {
                 LatexMathCommand[commandName]
             }
-            else LatexNoMathCommand[commandName]
+            else LatexRegularCommand[commandName]
         }
     }
 
