@@ -51,7 +51,8 @@ open class ConfigureInverseSearchAction : AnAction(
                     name += "64"
                     // We also remove an extra "" because it opens an empty IDEA instance when present
                     Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" --line %l \\\"%f\\\"\"")
-                } else {
+                }
+                else {
                     Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -inverse-search \"\\\"$path\\$name.exe\\\" \\\"\\\" --line %l \\\"%f\\\"\"")
                 }
 
