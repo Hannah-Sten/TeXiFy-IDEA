@@ -32,7 +32,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         LatexIncludesIndex.getItemsInFileSet(file).asSequence()
-                .filter { it.name == "\\bibliography" || it.name == "\\addbibresource"}
+                .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
                 .groupBy { it.requiredParameters.getOrNull(0) }
                 .filter { it.key != null && it.value.size > 1 }
                 .flatMap { it.value }
