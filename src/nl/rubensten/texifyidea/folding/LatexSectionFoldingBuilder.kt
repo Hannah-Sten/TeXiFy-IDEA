@@ -57,7 +57,9 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                     break
                 }
             }
-            /* If this item is the topmost level of the section structure or the last section marker,
+
+            /*
+             * If this item is the topmost level of the section structure or the last section marker,
              * use the end of all text as the end of the range.
              */
             if (!foundHigherCommand) {
