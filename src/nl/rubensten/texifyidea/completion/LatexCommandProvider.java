@@ -105,7 +105,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         Collections.addAll(environments, DefaultEnvironment.values());
 
         LatexDefinitionIndex.Companion.getItemsInFileSet(parameters.getOriginalFile()).stream()
-                .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
+                .filter(cmd -> Magic.Command.environmentDefinitions.contains(cmd.getName()))
                 .map(cmd -> PsiCommandsKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)
                 .map(SimpleEnvironment::new)
