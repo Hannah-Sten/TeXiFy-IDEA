@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
@@ -53,9 +53,9 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         boolean ignoreFileArgument = "\\RequirePackage".equals(fullCommand) ||
                 "\\usepackage".equals(fullCommand);
 
-        // Fetch the corresponding LatexNoMathCommand object.
+        // Fetch the corresponding LatexRegularCommand object.
         String commandName = fullCommand.substring(1);
-        LatexNoMathCommand commandHuh = LatexNoMathCommand.get(commandName);
+        LatexRegularCommand commandHuh = LatexRegularCommand.get(commandName);
         if (commandHuh == null && !ignoreFileArgument) {
             return;
         }
