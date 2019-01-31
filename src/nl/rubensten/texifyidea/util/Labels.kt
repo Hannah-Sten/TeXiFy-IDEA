@@ -107,10 +107,12 @@ fun Project.findLabels(): Collection<PsiElement> {
  */
 fun PsiFile.findBibtexItems(): Collection<PsiElement> {
     val bibtex = BibtexIdIndex.getIndexedIdsInFileSet(this)
-    val bibitem = LatexCommandsIndex.getItemsInFileSet(this).asSequence()
-            .filter { it.name == "\\bibitem" }.toList()
+    val bibitem = findBibitemCommands().toList()
     return (bibtex + bibitem)
 }
+
+fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this).asSequence()
+        .filter { it.name == "\\bibitem" }
 
 /**
  * Finds all defined labels within the project matching the label key/id.
