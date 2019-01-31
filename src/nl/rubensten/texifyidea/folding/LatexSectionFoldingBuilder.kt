@@ -14,13 +14,16 @@ import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
 
 /**
  * Recursively folds section commands
+ *
  * @author Tom Evers
  */
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
     companion object {
-        private val sectionCommands = arrayOf("\\part", "\\chapter",
+        private val sectionCommands = arrayOf(
+                "\\part", "\\chapter",
                 "\\section", "\\subsection", "\\subsubsection",
-                "\\paragraph", "\\subparagraph")
+                "\\paragraph", "\\subparagraph"
+            )
     }
 
     override fun isCollapsedByDefault(node: ASTNode) = false
@@ -31,7 +34,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                                   quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val commands = LatexCommandsIndex.getCommandsByNames(root.containingFile, *sectionCommands).toList()
-                .sortedBy { x -> x.textOffset }
+                .sortedBy { it.textOffset }
         if (commands.isEmpty()) {
             return descriptors.toTypedArray()
         }
