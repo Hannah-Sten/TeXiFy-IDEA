@@ -76,10 +76,12 @@ These instructions were tested on Windows 7, 8.1 and 10.
 * Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run, or use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>. If you see a pdf appearing, congratulations! 
 * If you see `LaTeX error: file a4.sty not found` then you did not restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd> on Windows.
-* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the `LaTeX` menu in the top menu bar and clicking  SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
+
+#### Configuring forward and inverse search
+* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the Tools - LaTeX menu in the top menu bar and clicking  SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
+This shortcut can also be used to bring the SumatraPDF window in view when you do not see it.
 * If you don't see a SumatraPDF option, reboot your computer.
-* You can also do the reverse: you have to configure it once by clicking LaTeX - SumatraPDF - Configure inverse search. Then double-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
-* If you get the error `Error launching IDEA No JVM installation found. Please install a 32-bit JDK`,  then you have to install a 32-bit JDK. Download the Windows x86 installer from [oracle.com](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and install, then reboot, configure inverse search, compile your pdf and try double-clicking again.
+* You can also do the reverse: you have to configure it once by clicking Tools - LaTeX - SumatraPDF - Configure inverse search. Then double-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
 * Have a look at the [tips](#tips).
 
 ### <a name="linux-instructions">Installation instructions for linux</a>
