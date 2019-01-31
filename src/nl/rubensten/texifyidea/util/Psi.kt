@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*

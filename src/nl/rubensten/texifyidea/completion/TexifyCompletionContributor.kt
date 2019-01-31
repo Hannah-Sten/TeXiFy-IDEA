@@ -11,7 +11,7 @@ import com.intellij.util.ProcessingContext
 import nl.rubensten.texifyidea.BibtexLanguage
 import nl.rubensten.texifyidea.LatexLanguage
 import nl.rubensten.texifyidea.lang.LatexMode
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.firstChildOfType
@@ -87,7 +87,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
 
                                 val name = command.commandToken.text
-                                val cmd = LatexNoMathCommand[name.substring(1)] ?: return false
+                                val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
                                 val args = cmd.getArgumentsOf(RequiredFileArgument::class)
                                 return !args.isEmpty()

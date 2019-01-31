@@ -191,6 +191,7 @@ The current implementation of the Equation Preview was contributed by Sergei Izm
 * Install Inkscape from [inkscape.org/release](https://inkscape.org/release), suppose you install it in `C:\Program Files\Inkscape`.
 * Install pdf2svg from [github.com/textext/pdf2svg/releases](https://github.com/textext/pdf2svg/releases), suppose you install it in `C:\Program Files\pdf2svg`.
 * Add both `C:\Program Files\Inkscape` and `C:\Program Files\pdf2svg` to your PATH environment variable, for example by searching for Environment Variables on your computer, clicking 'Edit the system environment variables', clicking 'Environment Variables', and under System variables find the one named Path, edit it and insert the paths here. Make sure the paths are separated by a `;`.
+* Reboot your system.
 
 ## <a name="build-from-source">Building from source using IntelliJ</a>
 
@@ -208,6 +209,9 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * Select 'Use auto-import'.
 * Thank Gradle that you're done now!
 * Check that in Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
+* Test it worked by executing the 'build' task in Tasks - build - build.
+* You can ignore deprecation warnings in the build output.
+* If something doesn't work, try looking at the [FAQ](#FAQ) first.
 
 #### To run directly from source
 * Click the Gradle button on the right, the gradle task is located in Tasks - intellj - runIde. Right-click and run.
@@ -326,12 +330,15 @@ For example, to use lualatex:
     
 You can run this run configuration by pressing <kbd>Shift</kbd>+<kbd>F10</kbd> (on Windows), by clicking the play button, or by clicking the gutter icon.
 
-#### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine",`
+#### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
 
-If you get this warning, you have to install the mentioned gtk engine, in this case Murrine.
+If you get this warning, it is not critical so you could ignore it but to solve it you can install the mentioned gtk engine, in this case Murrine.
 For example on Arch Linux, install the `gtk-engine-murrine` package. Arch Linux sets the default theme to Adwaita, so install that with the `gnome-themes-extra` package.
 For more information see [wiki.archlinux.org](https://wiki.archlinux.org/index.php/GTK+).
 
+#### `Unable to find method 'sun.misc.Unsafe.defineClass'` or `Please provide the path to the Android SDK` when syncing Gradle
+
+This probably means your Gradle cache is corrupt, delete (on Windows) `C:\Users\username\.gradle\caches` and `C:\Users\username\.gradle\wrapper\dists` or (on Linux) `~/.gradle/caches` and `~/.gradle/wrapper/dists`, then reboot your system.
 
 #### `Error: java: package com.google.common.base does not exist`
 
