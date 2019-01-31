@@ -17,7 +17,8 @@ class LatexMathInsertHandler : InsertHandler<LookupElement> {
 
         if (command.command == "frac") {
             insertFraction(context)
-        } else {
+        }
+        else {
             LatexCommandArgumentInsertHandler().handleInsert(context, item)
             LatexCommandPackageIncludeHandler().handleInsert(context, item)
             RightInsertHandler().handleInsert(context, item)
