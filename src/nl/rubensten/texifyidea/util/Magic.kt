@@ -151,7 +151,7 @@ object Magic {
                 "\\DeclareMathOperator",
                 "\\newif",
                 "\\NewDocumentCommand",
-                "\\ProvidesDocumentCommand",
+                "\\ProvideDocumentCommand",
                 "\\DeclareDocumentCommand"
         )
 
@@ -166,7 +166,7 @@ object Magic {
         @JvmField val environmentDefinitions = hashSetOf(
                 "\\newenvironment",
                 "\\NewDocumentEnvironment",
-                "\\ProvidesDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
                 "\\DeclareDocumentEnvironment"
         )
 
@@ -198,10 +198,10 @@ object Magic {
                 "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
                 "\\newenvironment", "\\bibitem",
                 "\\NewDocumentCommand",
-                "\\ProvidesDocumentCommand",
+                "\\ProvideDocumentCommand",
                 "\\DeclareDocumentCommand",
                 "\\NewDocumentEnvironment",
-                "\\ProvidesDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
                 "\\DeclareDocumentEnvironment"
         )
 

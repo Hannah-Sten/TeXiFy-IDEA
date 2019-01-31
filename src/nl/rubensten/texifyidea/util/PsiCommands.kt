@@ -54,7 +54,7 @@ fun LatexCommands?.isEnvironmentDefinition(): Boolean {
 /**
  * Get the command that gets defined by a definition (`\let` or `\def` command).
  */
-fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
+fun LatexCommands.definitionCommand(): LatexCommands? = forcedFirstRequiredParameterAsCommand()
 
 /**
  * Checks whether the command has a star or not.
