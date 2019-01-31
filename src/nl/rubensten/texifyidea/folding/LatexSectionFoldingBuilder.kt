@@ -18,6 +18,7 @@ import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
  * @author Tom Evers
  */
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
+
     companion object {
         private val sectionCommands = arrayOf(
                 "\\part", "\\chapter",
