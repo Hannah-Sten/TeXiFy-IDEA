@@ -146,6 +146,13 @@
     <module-components>
     </module-components>
 
+    <!-- todo -->
+    <application-components>
+        <component>
+            <implementation-class>nl.rubensten.texifyidea.action.TexifyMenuRegistration</implementation-class>
+        </component>
+    </application-components>
+
     <!-- Custom actions -->
     <actions>
         <!-- New LaTeX file -->
@@ -168,7 +175,7 @@
         <!-- LaTeX Analyze commands -->
         <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex Analysis Actions" popup="true"
                class="nl.rubensten.texifyidea.action.group.LatexAnalyzeMenuGroup">
-            <add-to-group group-id="AnalyzeMenu" anchor="last"/>
+            <!--<add-to-group group-id="AnalyzeMenu" anchor="last"/>-->
 
             <action class="nl.rubensten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
                     text="_Word count" description="Estimate the word count of the currently active .tex file and inclusions.">
