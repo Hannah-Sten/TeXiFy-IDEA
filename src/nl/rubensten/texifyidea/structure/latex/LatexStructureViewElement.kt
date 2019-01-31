@@ -131,10 +131,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add command definitions.
-        addFromCommand(treeElements, commands, "\\newcommand")
-        addFromCommand(treeElements, commands, "\\DeclareMathOperator")
-        addFromCommand(treeElements, commands, "\\let")
-        addFromCommand(treeElements, commands, "\\def")
+        Magic.Command.commandDefinitions.forEach {
+            addFromCommand(treeElements, commands, it)
+        }
 
         // Add label definitions.
         addFromCommand(treeElements, commands, "\\label")
@@ -205,16 +204,10 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     private fun addFromCommand(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>,
                                commandName: String) {
         for (cmd in commands) {
-            if (cmd.commandToken.text != commandName) {
-                continue
-            }
+            if (cmd.commandToken.text != commandName) continue
+            val definedCommand = cmd.forcedFirstRequiredParameterAsCommand() ?: continue
 
-            val required = cmd.requiredParameters
-            if (commandName == "\\newcommand" && required.isEmpty()) {
-                continue
-            }
-
-            val element = LatexStructureViewCommandElement.newCommand(cmd)
+            val element = LatexStructureViewCommandElement.newCommand(definedCommand)
             if (element != null) {
                 treeElements.add(element)
             }
