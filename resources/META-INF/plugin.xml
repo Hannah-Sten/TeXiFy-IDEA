@@ -146,10 +146,10 @@
     <module-components>
     </module-components>
 
-    <!-- todo -->
+    <!-- Register WordCount programmatically. -->
     <application-components>
         <component>
-            <implementation-class>nl.rubensten.texifyidea.action.TexifyMenuRegistration</implementation-class>
+            <implementation-class>nl.rubensten.texifyidea.action.WordCountMenuRegistration</implementation-class>
         </component>
     </application-components>
 
@@ -175,6 +175,7 @@
         <!-- LaTeX Analyze commands -->
         <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex Analysis Actions" popup="true"
                class="nl.rubensten.texifyidea.action.group.LatexAnalyzeMenuGroup">
+            <!-- Do not add it to the group here, because that will be handled in WordCountMenuRegistration. -->
             <!--<add-to-group group-id="AnalyzeMenu" anchor="last"/>-->
 
             <action class="nl.rubensten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
