@@ -2,8 +2,8 @@ package nl.rubensten.texifyidea.run
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
-import nl.rubensten.texifyidea.util.OperatingSystem
 import nl.rubensten.texifyidea.util.splitWhitespace
 
 /**
@@ -27,12 +27,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories() && OperatingSystem.type == OperatingSystem.Type.WINDOWS) {
+            if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
                 command.add("-aux-directory=" + moduleRoot.path + "/auxil")
             }
 
             // Prepend root paths to the input search path
-            if (OperatingSystem.type == OperatingSystem.Type.WINDOWS) {
+            if (SystemInfo.isWindows) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -81,11 +81,28 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories() && OperatingSystem.type == OperatingSystem.Type.WINDOWS) {
+            if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
                 command.add("-aux-directory=${moduleRoot.path}/auxil")
             }
 
             // -include-directory does not work with latexmk
+            return command
+        }
+    },
+
+    TEXLIVEONFLY("Texliveonfly", "texliveonfly") {
+
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+            val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")
+
+            // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
+            // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
+            // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
+            // Since adding one will work without any quotes, we choose the output directory.
+            if (runConfig.hasOutputDirectories()) {
+                command.add("--arguments=--output-directory=${moduleRoot.path}/out")
+            }
+
             return command
         }
     };

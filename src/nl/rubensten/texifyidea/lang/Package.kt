@@ -27,6 +27,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val BIBLATEX = Package("biblatex")
         @JvmField val LUACODE = Package("luacode")
         @JvmField val NATBIB = Package("natbib")
+        @JvmField val XPARSE = Package("xparse")
     }
 
     /**

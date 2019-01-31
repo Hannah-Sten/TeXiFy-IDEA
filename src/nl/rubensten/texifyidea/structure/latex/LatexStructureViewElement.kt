@@ -14,7 +14,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.file.*
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexTypes
@@ -131,10 +131,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add command definitions.
-        addFromCommand(treeElements, commands, "\\newcommand")
-        addFromCommand(treeElements, commands, "\\DeclareMathOperator")
-        addFromCommand(treeElements, commands, "\\let")
-        addFromCommand(treeElements, commands, "\\def")
+        Magic.Command.commandDefinitions.forEach {
+            addFromCommand(treeElements, commands, it)
+        }
 
         // Add label definitions.
         addFromCommand(treeElements, commands, "\\label")
@@ -167,7 +166,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         for (cmd in commands) {
             val name = cmd.commandToken.text
             if (name != "\\include" && name != "\\includeonly" && name != "\\input"
-                    && name != "\\bibliography") {
+                    && name != "\\bibliography" && name != "\\addbibresource") {
                 continue
             }
 
@@ -177,7 +176,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
 
             // Find file
-            val latexCommandHuh = LatexNoMathCommand[name.substring(1)] ?: continue
+            val latexCommandHuh = LatexRegularCommand[name.substring(1)] ?: continue
             val argument = latexCommandHuh
                     .getArgumentsOf(RequiredFileArgument::class.java)[0]
 
@@ -205,16 +204,10 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     private fun addFromCommand(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>,
                                commandName: String) {
         for (cmd in commands) {
-            if (cmd.commandToken.text != commandName) {
-                continue
-            }
+            if (cmd.commandToken.text != commandName) continue
+            val definedCommand = cmd.forcedFirstRequiredParameterAsCommand() ?: continue
 
-            val required = cmd.requiredParameters
-            if (commandName == "\\newcommand" && required.isEmpty()) {
-                continue
-            }
-
-            val element = LatexStructureViewCommandElement.newCommand(cmd)
+            val element = LatexStructureViewCommandElement.newCommand(definedCommand)
             if (element != null) {
                 treeElements.add(element)
             }
