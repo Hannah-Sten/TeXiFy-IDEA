@@ -18,6 +18,7 @@ import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexTypes
+import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.rubensten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.rubensten.texifyidea.util.*
@@ -136,7 +137,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add label definitions.
-        addFromCommand(treeElements, commands, "\\label")
+        addFromLabelingCommands(treeElements, commands)
 
         // Add bibitem definitions.
         addFromCommand(treeElements, commands, "\\bibitem")
@@ -208,6 +209,16 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val element = LatexStructureViewCommandElement.newCommand(cmd) ?: continue
             treeElements.add(element)
         }
+    }
+
+    private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
+        val labelingCommands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+        commands.filter { labelingCommands.containsKey(it.commandToken.text) }
+                .forEach {
+                    val element = LatexStructureViewCommandElement.newCommand(it)
+                            ?: return@forEach
+                    treeElements.add(element)
+                }
     }
 
     private fun registerHigher(sections: Deque<LatexStructureViewCommandElement>,
