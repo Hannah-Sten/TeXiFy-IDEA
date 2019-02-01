@@ -10,9 +10,7 @@ import nl.rubensten.texifyidea.util.isLatexFile
  */
 open class LatexAnalyzeMenuGroup : DefaultActionGroup() {
 
-
     override fun update(event: AnActionEvent) {
-
         val file = event.getData(CommonDataKeys.PSI_FILE)
         event.presentation.isEnabledAndVisible = file?.isLatexFile() ?: false
     }

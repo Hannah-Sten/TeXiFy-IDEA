@@ -38,6 +38,5 @@ class AnalyzeMenuRegistration : BaseComponent {
 
             analyzeGroup.add(latexAnalyzeMenuGroup)
         }
-
     }
 }
