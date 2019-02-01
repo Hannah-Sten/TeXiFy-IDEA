@@ -5,12 +5,11 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.components.BaseComponent
-import com.intellij.util.messages.MessageBus
-import nl.rubensten.texifyidea.action.analysis.WordCountAction
-import nl.rubensten.texifyidea.action.group.LatexAnalyzeMenuGroup
 
 /**
- * Register a menu item programmatically instead of in plugin.xml, so we can customize when it is shown or not.
+ * Register a menu item programmatically instead of in plugin.xml, so we can customize when it is shown or not (xml is preferred, but we cannot switch on application name in xml).
+ *
+ * @author Thomas Schouten
  */
 class AnalyzeMenuRegistration : BaseComponent {
     override fun initComponent() {
@@ -30,7 +29,6 @@ class AnalyzeMenuRegistration : BaseComponent {
             val analyzeGroup: DefaultActionGroup = ActionManager.getInstance().getAction(IdeActions.GROUP_ANALYZE) as DefaultActionGroup
 
             analyzeGroup.addSeparator()
-
             analyzeGroup.addAll(latexAnalyzeMenuGroup)
         }
         else {
