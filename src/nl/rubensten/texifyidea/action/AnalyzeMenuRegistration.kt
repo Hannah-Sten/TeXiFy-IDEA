@@ -12,6 +12,7 @@ import com.intellij.openapi.components.BaseComponent
  * @author Thomas Schouten
  */
 class AnalyzeMenuRegistration : BaseComponent {
+
     override fun initComponent() {
         super.initComponent()
 
@@ -28,15 +29,14 @@ class AnalyzeMenuRegistration : BaseComponent {
             // Get an instance of the Analyze action group by ID
             val analyzeGroup: DefaultActionGroup = ActionManager.getInstance().getAction(IdeActions.GROUP_ANALYZE) as DefaultActionGroup
 
-            analyzeGroup.addSeparator()
-            analyzeGroup.addAll(latexAnalyzeMenuGroup)
+            // Add the group which contains the LaTeX actions to the Analyze menu
+            analyzeGroup.add(latexAnalyzeMenuGroup)
         }
         else {
-            // Get an instance of the Analyze action group by ID
+            // Get an instance of the Code action group by ID
             val analyzeGroup: DefaultActionGroup = com.intellij.openapi.actionSystem.ActionManager.getInstance().getAction("CodeMenu") as DefaultActionGroup
 
-            analyzeGroup.addSeparator()
-            analyzeGroup.addAll(latexAnalyzeMenuGroup)
+            analyzeGroup.add(latexAnalyzeMenuGroup)
         }
 
     }
