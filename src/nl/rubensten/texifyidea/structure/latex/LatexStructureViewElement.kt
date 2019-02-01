@@ -136,10 +136,10 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add label definitions.
-        addLabelsFromCommand(treeElements, commands, "\\label")
+        addFromCommand(treeElements, commands, "\\label")
 
         // Add bibitem definitions.
-        addLabelsFromCommand(treeElements, commands, "\\bibitem")
+        addFromCommand(treeElements, commands, "\\bibitem")
 
         return treeElements.toTypedArray()
     }
@@ -205,16 +205,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                                commandName: String) {
         for (cmd in commands) {
             if (cmd.commandToken.text != commandName) continue
-            val definedCommand = cmd.forcedFirstRequiredParameterAsCommand() ?: continue
-            val element = LatexStructureViewCommandElement.newCommand(definedCommand) ?: continue
-            treeElements.add(element)
-        }
-    }
-
-    private fun addLabelsFromCommand(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>,
-                                     commandName: String) {
-        commands.filter { it.commandToken.text == commandName }.forEach {
-            val element = LatexStructureViewCommandElement.newCommand(it) ?: return@forEach
+            val element = LatexStructureViewCommandElement.newCommand(cmd) ?: continue
             treeElements.add(element)
         }
     }
