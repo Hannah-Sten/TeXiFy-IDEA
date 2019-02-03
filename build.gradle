@@ -72,6 +72,9 @@ dependencies {
     // just in case, version number specified in buildscript is used by default
     compile "org.jetbrains.kotlin:kotlin-reflect"
 
+    // D-Bus Java bindings
+    implementation 'com.github.hypfvieh:dbus-java:3.0.0'
+
     // Test dependencies
 
     // Also compile junit 4, just in case

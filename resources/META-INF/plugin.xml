@@ -47,7 +47,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
-            <li>SumatraPDF support with forward and backward search</li>
+            <li>SumatraPDF (Windows) and Evince (Linux) support with forward and backward search</li>
             <li>Unicode math preview</li>
             <li>Gutter icons for quick compilation and file includes</li>
             <li>Fancy icons that fit in with the IntelliJ style</li>

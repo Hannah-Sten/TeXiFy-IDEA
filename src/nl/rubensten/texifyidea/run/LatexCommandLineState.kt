@@ -133,8 +133,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
                 runAsync {
                     try {
-                        // Wait for sumatra pdf to start. 1250ms should be plenty.
-                        // Otherwise the person is out of luck ¯\_(ツ)_/¯
+                        // Wait for Evince to start
                         Thread.sleep(1250)
                         EvinceConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line)
                     }
