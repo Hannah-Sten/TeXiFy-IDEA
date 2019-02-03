@@ -205,12 +205,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                                commandName: String) {
         for (cmd in commands) {
             if (cmd.commandToken.text != commandName) continue
-            val definedCommand = cmd.forcedFirstRequiredParameterAsCommand() ?: continue
-
-            val element = LatexStructureViewCommandElement.newCommand(definedCommand)
-            if (element != null) {
-                treeElements.add(element)
-            }
+            val element = LatexStructureViewCommandElement.newCommand(cmd) ?: continue
+            treeElements.add(element)
         }
     }
 
