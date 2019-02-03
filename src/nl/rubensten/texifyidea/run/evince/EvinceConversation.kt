@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.run.evince
 import com.intellij.openapi.util.SystemInfo
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.gnome.evince.Daemon
+import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -91,8 +92,11 @@ object EvinceConversation {
         // Get the Daemon object using its bus name and object path
         val daemon = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Daemon::class.java)
 
+        // If no pdf file is given, try to guess it
+        val pdfFile = pdfFilePath ?: sourceFilePath.dropLast(4) + ".pdf"
+
         // Call the method on the D-Bus by using the function we defined in the Daemon interface
-        val documentProcessOwner = daemon.FindDocument("file://$pdfFilePath", true)
+        val documentProcessOwner = daemon.FindDocument("file://$pdfFile", true)
 
         // Theoretically we should use the Java D-Bus bindings as well to call SyncView, but that did
         // not succeed with a NoReply exception, so we will execute a command via the shell.

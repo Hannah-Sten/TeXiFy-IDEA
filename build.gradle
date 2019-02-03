@@ -74,6 +74,7 @@ dependencies {
 
     // D-Bus Java bindings
     implementation 'com.github.hypfvieh:dbus-java:3.0.0'
+    compile 'org.slf4j:slf4j-simple:1.8.0-beta2' // todo not needed?
 
     // Test dependencies
 
