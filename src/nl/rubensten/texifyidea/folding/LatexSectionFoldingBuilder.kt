@@ -24,7 +24,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                 "\\part", "\\chapter",
                 "\\section", "\\subsection", "\\subsubsection",
                 "\\paragraph", "\\subparagraph"
-            )
+        )
     }
 
     override fun isCollapsedByDefault(node: ASTNode) = false
