@@ -114,7 +114,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                 continue
             }
 
-            val currentIndex = order(current(sections))
+            val currentIndex = order(current(sections) ?: continue)
             val nextIndex = order(currentCmd)
 
             // Same level.
@@ -126,8 +126,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
             else {
                 registerHigher(sections, child, currentCmd, treeElements, numbering)
-            }// Go higher
-            // Go deeper
+            }
         }
 
         // Add command definitions.
@@ -205,12 +204,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                                commandName: String) {
         for (cmd in commands) {
             if (cmd.commandToken.text != commandName) continue
-            val definedCommand = cmd.forcedFirstRequiredParameterAsCommand() ?: continue
-
-            val element = LatexStructureViewCommandElement.newCommand(definedCommand)
-            if (element != null) {
-                treeElements.add(element)
-            }
+            val element = LatexStructureViewCommandElement.newCommand(cmd) ?: continue
+            treeElements.add(element)
         }
     }
 
@@ -222,7 +217,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val indexInsert = order(currentCmd)
         while (!sections.isEmpty()) {
             pop(sections)
-            val index = order(current(sections))
+            val index = order(current(sections) ?: continue)
 
             if (index == indexInsert) {
                 registerSameLevel(sections, child, currentCmd, treeElements, numbering)
@@ -239,7 +234,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     private fun registerDeeper(sections: Deque<LatexStructureViewCommandElement>,
                                child: LatexStructureViewCommandElement,
                                numbering: SectionNumbering) {
-        current(sections).addChild(child)
+        current(sections)?.addChild(child) ?: return
         queue(child, sections)
 
         setLevelHint(child, numbering)
@@ -321,7 +316,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         sections.addFirst(child)
     }
 
-    private fun current(sections: Deque<LatexStructureViewCommandElement>) = sections.first
+    private fun current(sections: Deque<LatexStructureViewCommandElement>) = sections.peekFirst() ?: null
 
     private fun order(element: LatexStructureViewCommandElement) = order(element.commandName)
 
