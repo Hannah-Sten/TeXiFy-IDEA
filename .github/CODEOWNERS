@@ -6,3 +6,5 @@
 /src/nl/rubensten/texifyidea/file/TikzFileType.kt @PHPirates @rubenschellekens @stenwessel
 /src/nl/rubensten/texifyidea/run/compiler/BiberCompiler.kt @PHPirates @rubenschellekens @stenwessel
 /src/nl/rubensten/texifyidea/action/AnalyzeMenuRegistration.kt @PHPirates @rubenschellekens @stenwessel
+/src/org/gnome/evince/ @PHPirates @rubenschellekens @stenwessel
+/src/nl/rubensten/texifyidea/run/evince/ @PHPirates @rubenschellekens @stenwessel

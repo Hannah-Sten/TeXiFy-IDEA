@@ -13,7 +13,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.psi.LatexEnvironment
-import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
+import nl.rubensten.texifyidea.run.evince.EvinceConversation
+import nl.rubensten.texifyidea.run.evince.OpenEvinceListener
+import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
 import nl.rubensten.texifyidea.util.*
 import org.jetbrains.concurrency.runAsync
 import java.io.File
@@ -70,7 +72,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (isSumatraAvailable) {
             handler.addProcessListener(OpenSumatraListener(runConfig))
 
-            // Inverse search.
+            // Forward search.
             run {
                 val psiFile = runConfig.mainFile.psiFile(environment.project) ?: return@run
                 val document = psiFile.document() ?: return@run
@@ -80,7 +82,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     return@run
                 }
 
-                // Do not do inverse search when editing the preamble.
+                // Do not do forward search when editing the preamble.
                 if (psiFile.isRoot()) {
                     val element = psiFile.findElementAt(editor.caretOffset()) ?: return@run
                     val environment = element.parentOfType(LatexEnvironment::class) ?: return@run
@@ -102,6 +104,44 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     }
                 }
             }
+        }
+
+        if(isEvinceAvailable()) {
+            handler.addProcessListener(OpenEvinceListener(runConfig))
+
+            // todo reuse code of above
+            // Forward search.
+            run {
+                val psiFile = runConfig.mainFile.psiFile(environment.project) ?: return@run
+                val document = psiFile.document() ?: return@run
+                val editor = psiFile.openedEditor() ?: return@run
+
+                if (document != editor.document) {
+                    return@run
+                }
+
+                // Do not do forward search when editing the preamble.
+                if (psiFile.isRoot()) {
+                    val element = psiFile.findElementAt(editor.caretOffset()) ?: return@run
+                    val environment = element.parentOfType(LatexEnvironment::class) ?: return@run
+                    if (environment.name()?.text != "document") {
+                        return@run
+                    }
+                }
+
+                val line = document.getLineNumber(editor.caretOffset()) + 1
+
+                runAsync {
+                    try {
+                        // Wait for Evince to start
+                        Thread.sleep(1250)
+                        EvinceConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line)
+                    }
+                    catch (ignored: TeXception) {
+                    }
+                }
+            }
+
         }
 
         return handler

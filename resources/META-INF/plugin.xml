@@ -47,7 +47,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
-            <li>SumatraPDF support with forward and backward search</li>
+            <li>SumatraPDF (Windows) and Evince (Linux) support with forward and backward search</li>
             <li>Unicode math preview</li>
             <li>Gutter icons for quick compilation and file includes</li>
             <li>Fancy icons that fit in with the IntelliJ style</li>
@@ -210,6 +210,19 @@
             </action>
             <action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
                     text="_Configure inverse search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
+        </group>
+
+        <!-- Evince -->
+        <group id="texify.LatexMenu.Evince" class="nl.rubensten.texifyidea.action.group.EvinceActionGroup" text="Evince"
+               description="Interact with Evince." popup="true">
+            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
+
+            <action class="nl.rubensten.texifyidea.action.evince.ForwardSearchAction" id="texify.evince.ForwardSearch"
+                    text="Go to _line in PDF" description="Find the content on cursor in the PDF.">
+                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
+            </action>
+            <!--<action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"-->
+                    <!--text="_Configure inverse search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>-->
         </group>
     </actions>
 

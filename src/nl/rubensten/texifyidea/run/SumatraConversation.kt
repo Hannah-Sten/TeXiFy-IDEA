@@ -66,6 +66,9 @@ object SumatraConversation {
 
     }
 
+    /**
+     * Open a file in SumatraPDF, starting it if it is not running yet.
+     */
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
@@ -75,6 +78,9 @@ object SumatraConversation {
         }
     }
 
+    /**
+     * Execute forward search, highlighting a certain line in SumatraPDF.
+     */
     fun forwardSearch(pdfFilePath: String? = null, sourceFilePath: String, line: Int, newWindow: Boolean = false, focus: Boolean = false) {
         val pdfPath = if (pdfFilePath != null) "\"$pdfFilePath\", " else ""
         execute("ForwardSearch($pdfPath\"$sourceFilePath\", $line, 0, ${newWindow.bit}, ${focus.bit})")

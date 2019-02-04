@@ -36,7 +36,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Formatter for LaTeX and BibTeX
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
-* SumatraPDF support with forward and backward search
+* SumatraPDF (Windows) and Evince (Linux) support with forward and backward search
 * Unicode math preview
 * Gutter icons for quick compilation and file includes
 * Fancy icons that fit in with the IntelliJ style
