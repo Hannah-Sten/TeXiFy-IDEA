@@ -73,8 +73,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect"
 
     // D-Bus Java bindings
-    implementation 'com.github.hypfvieh:dbus-java:3.0.0'
-    compile 'org.slf4j:slf4j-simple:1.8.0-beta2' // todo not needed?
+    compile "com.github.hypfvieh:dbus-java:3.0.1"
+    compile "org.slf4j:slf4j-simple:1.8.0-beta2"
 
     // Test dependencies
 
