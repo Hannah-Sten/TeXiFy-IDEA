@@ -149,7 +149,10 @@ object Magic {
                 "\\let",
                 "\\def",
                 "\\DeclareMathOperator",
-                "\\newif"
+                "\\newif",
+                "\\NewDocumentCommand",
+                "\\ProvideDocumentCommand",
+                "\\DeclareDocumentCommand"
         )
 
         /**
@@ -160,7 +163,12 @@ object Magic {
         /**
          * All commands that define new environments.
          */
-        @JvmField val environmentDefinitions = hashSetOf("\\newenvironment")
+        @JvmField val environmentDefinitions = hashSetOf(
+                "\\newenvironment",
+                "\\NewDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
+                "\\DeclareDocumentEnvironment"
+        )
 
         /**
          * All commands that define stuff like classes, environments, and definitions.
@@ -188,7 +196,13 @@ object Magic {
                 "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
                 "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
                 "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
-                "\\newenvironment", "\\bibitem"
+                "\\newenvironment", "\\bibitem",
+                "\\NewDocumentCommand",
+                "\\ProvideDocumentCommand",
+                "\\DeclareDocumentCommand",
+                "\\NewDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
+                "\\DeclareDocumentEnvironment"
         )
 
         /**

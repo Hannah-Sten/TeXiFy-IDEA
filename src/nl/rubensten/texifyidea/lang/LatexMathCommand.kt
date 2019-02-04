@@ -296,6 +296,7 @@ enum class LatexMathCommand(
     BIGUPLUS("biguplus", display = "⨄", collapse = true),
     BIGVEE("bigvee", display = "⋁", collapse = true),
     BIGWEDGE("bigwedge", display = "⋀", collapse = true),
+    BINOM("binom", "total".asRequired(), "sample".asRequired(), dependency = AMSMATH),
     BOT("bot", display = "⟂", collapse = true),
     BRACEVERT("bracevert"),
     BREVE("breve", "a".asRequired()),
@@ -339,6 +340,8 @@ enum class LatexMathCommand(
     UNDERBRACE("underbrace", "text".asRequired()),
     UNDERLINE("underline", "text".asRequired()),
     VEC("vec", "a".asRequired()),
+    VEE("vee",  display = "⋁", collapse = true),
+    WEDGE("wedge", display = "⋀", collapse = true),
     WIDEHAT("widehat", "text".asRequired()),
     WIDETILDE("widetilde", "text".asRequired());
 
