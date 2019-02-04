@@ -2,3 +2,7 @@
 *       @rubenschellekens @stenwessel
 
 # Patterns below override the rules above
+/src/nl/rubensten/texifyidea/file/TikzFile.kt @PHPirates @rubenschellekens @stenwessel
+/src/nl/rubensten/texifyidea/file/TikzFileType.kt @PHPirates @rubenschellekens @stenwessel
+/src/nl/rubensten/texifyidea/run/compiler/BiberCompiler.kt @PHPirates @rubenschellekens @stenwessel
+/src/nl/rubensten/texifyidea/action/AnalyzeMenuRegistration.kt @PHPirates @rubenschellekens @stenwessel
