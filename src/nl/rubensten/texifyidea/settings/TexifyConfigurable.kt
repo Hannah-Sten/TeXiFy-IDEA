@@ -39,6 +39,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     private fun JPanel.addTable() : DefaultTableModel {
+        // ToDo: rework layout and add info about only required parameters count
         val info = JLabel("<html>Define which custom commands define labels. The position starts with 1, <br>" +
                 "for example in '\\label{labelname}', 'labelname' is on position 1.</html>")
         val toDelete = JLabel("To delete a command empty one of the fields.")

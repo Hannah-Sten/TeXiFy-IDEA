@@ -8,6 +8,7 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.settings.TexifySettings
+import kotlin.streams.toList
 
 /**
  * Finds all the defined labels in the fileset of the file.
@@ -38,9 +39,19 @@ fun PsiFile.findAllLabelsInFileSet(): Sequence<String> {
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String> = BibtexIdIndex.getIndexedIdsInFileSet(this)
-        .asSequence()
-        .map { it.text.substringEnd(1) }
+//fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String> = BibtexIdIndex.getIndexedIdsInFileSet(this)
+//        .asSequence()
+//        .map { it.text.substringEnd(1) }
+
+fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String>  = findBibtexItems().asSequence()
+            .mapNotNull {
+                when (it) {
+                    is BibtexId -> it.text.substringEnd(1)
+                    is LatexCommands -> it.requiredParameter(0)
+                    else -> null
+                }
+            }
+
 
 /**
  * Finds all the labeling commands within the collection of commands.
@@ -94,7 +105,14 @@ fun Project.findLabels(): Collection<PsiElement> {
 /**
  * Finds all specified bibtex entries
  */
-fun PsiFile.findBibtexItems(): Collection<BibtexId> = BibtexIdIndex.getIndexedIdsInFileSet(this)
+fun PsiFile.findBibtexItems(): Collection<PsiElement> {
+    val bibtex = BibtexIdIndex.getIndexedIdsInFileSet(this)
+    val bibitem = findBibitemCommands().toList()
+    return (bibtex + bibitem)
+}
+
+fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this).asSequence()
+        .filter { it.name == "\\bibitem" }
 
 /**
  * Finds all defined labels within the project matching the label key/id.

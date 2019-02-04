@@ -7,6 +7,8 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
+import nl.rubensten.texifyidea.lang.LatexCommand;
+import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.settings.TexifySettings;
@@ -65,7 +67,20 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                     .map(bibtexId -> {
                         if (bibtexId != null) {
                             PsiFile containing = bibtexId.getContainingFile();
-                            return LookupElementBuilder.create(StringsKt.substringEnd(bibtexId.getText(), 1))
+                            String label;
+
+                            if (bibtexId instanceof BibtexId) {
+                                label = StringsKt.substringEnd(bibtexId.getText(), 1);
+                            }
+                            else if (bibtexId instanceof LatexCommands) {
+                                LatexCommands actualCommand = (LatexCommands) bibtexId;
+                                List<String> parameters = actualCommand.getRequiredParameters();
+                                label = parameters.get(0);
+                            }
+                            else {
+                                return null;
+                            }
+                            return LookupElementBuilder.create(label)
                                     .bold()
                                     .withInsertHandler(new LatexReferenceInsertHandler())
                                     .withTypeText(containing.getName() + ": " +
