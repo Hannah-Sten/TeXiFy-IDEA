@@ -24,7 +24,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
 
-    var labelCommands = hashMapOf("\\label" to 1)
+    var labelCommands = hashMapOf("\\label" to arrayOf(1, false))
 
     override fun getState() = this
 
@@ -32,7 +32,9 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
         XmlSerializerUtil.copyBean(state, this)
     }
 
-    fun getLabelCommandsLeadingSlash() = labelCommands.mapKeys { addLeadingSlash(it.key) }
+    fun removeBoolean() = labelCommands.mapValues { it.value[0] as Int }
+
+    fun getLabelCommandsLeadingSlash() = removeBoolean().mapKeys { addLeadingSlash(it.key) }
 
     private fun addLeadingSlash(command: String): String {
         return if (command[0] == '\\') command else "\\" + command

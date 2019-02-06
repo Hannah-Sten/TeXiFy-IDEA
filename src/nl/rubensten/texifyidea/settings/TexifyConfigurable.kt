@@ -1,6 +1,9 @@
 package nl.rubensten.texifyidea.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.ui.ColoredTableCellRenderer
+import com.intellij.ui.TableUtil
+import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import java.awt.Dimension
@@ -18,7 +21,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticUpDownBracket: JCheckBox
     private lateinit var automaticItemInItemize: JCheckBox
     private lateinit var table: DefaultTableModel
-    private lateinit var newLineButton: JButton
 
     override fun getId() = "TexifyConfigurable"
 
@@ -34,26 +36,32 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
 
             table = addTable()
-            newLineButton = addButton()
         })
     }
 
     private fun JPanel.addTable() : DefaultTableModel {
         // ToDo: rework layout and add info about only required parameters count
-        val info = JLabel("<html>Define which custom commands define labels. The position starts with 1, <br>" +
-                "for example in '\\label{labelname}', 'labelname' is on position 1.</html>")
-        val toDelete = JLabel("To delete a command empty one of the fields.")
-
-        val tableInfo = DefaultTableModel()
+        val tableInfo = MyTableModel()
         tableInfo.addColumn("Name of command")
         tableInfo.addColumn("Position of label parameter")
+        tableInfo.addColumn("Defines counter")
         val table = JBTable(tableInfo)
-        val scrollPane = JBScrollPane(table)
-        scrollPane.preferredSize = Dimension(400, 6 * table.rowHeight)
+        table.intercellSpacing = Dimension(0, 0)
+        table.setShowGrid(false)
+        table.dragEnabled = false
+        table.showHorizontalLines = false
+        table.showVerticalLines = false
+        table.selectionModel.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
 
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(info) })
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(toDelete) })
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(scrollPane) })
+        val decorator = ToolbarDecorator.createDecorator(table)
+                .setAddAction {
+                    (table.model as DefaultTableModel).addRow(arrayOf("bumms", 1, false))
+                }
+                .setRemoveAction {
+                    TableUtil.removeSelectedItems(table)
+                }
+                .createPanel()
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(decorator) })
         return tableInfo
     }
 
@@ -63,17 +71,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             add(checkBox)
         })
         return checkBox
-    }
-
-    private fun JPanel.addButton() : JButton {
-        val button = JButton("New line")
-        button.addActionListener {
-            if(table.rowCount == 0 || table.getValueAt(table.rowCount - 1, 0) != "") {
-                table.addRow(arrayOf("", ""))
-            }
-        }
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(button) })
-        return button
     }
 
     override fun isModified(): Boolean {
@@ -107,7 +104,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 }
             }
             if (position > 0 && command != "") {
-                settings.labelCommands[command] = position
+                settings.labelCommands[command] = arrayOf(position, false)
                 names.remove(table.getValueAt(i, 0) as String)
             }
             else {
@@ -124,16 +121,17 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         var i = 0
-        settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position) }
+        settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position[0] as Int,
+                position[1] as Boolean) }
         while (i < table.rowCount) {
             table.removeRow(i)
         }
     }
 
-    private fun addOrUpdateRow(row : Int, command: String, position: Int) {
+    private fun addOrUpdateRow(row : Int, command: String, position: Int, definesCounter: Boolean) {
         if (table.rowCount > row) {
             table.removeRow(row)
-            table.insertRow(row, arrayOf(command, position))
+            table.insertRow(row, arrayOf(command, position, definesCounter))
         }
         else {
             table.addRow(arrayOf(command, position))
@@ -151,5 +149,13 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             }
         }
         return false
+    }
+
+    private class MyCellRenderer : ColoredTableCellRenderer() {
+        override fun customizeCellRenderer(table: JTable?, value: Any?, selected: Boolean, hasFocus: Boolean, row: Int, column: Int) {
+            setPaintFocusBorder(false)
+            setFocusBorderAroundIcon(true)
+            border = BorderFactory.createEmptyBorder(1, 1, 1, 1)
+        }
     }
 }
