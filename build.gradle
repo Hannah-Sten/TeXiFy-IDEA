@@ -1,6 +1,3 @@
-// Include credentials to publish the plugin
-apply from: "gradle/credentials.properties"
-
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of 'buildscript' block and 'apply plugin:'
 plugins {
@@ -13,6 +10,9 @@ plugins {
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id 'se.patrikerdes.use-latest-versions' version '0.2.7'
 }
+
+// Include credentials to publish the plugin
+apply from: "gradle/credentials.properties"
 
 group 'nl.rubensten'
 version '0.6.3'
