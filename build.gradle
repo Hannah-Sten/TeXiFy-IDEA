@@ -11,9 +11,6 @@ plugins {
     id 'se.patrikerdes.use-latest-versions' version '0.2.7'
 }
 
-// Include credentials to publish the plugin
-apply from: "gradle/credentials.properties"
-
 group 'nl.rubensten'
 version '0.6.3'
 
@@ -135,9 +132,15 @@ patchPluginXml {
 // Allow publishing to the Jetbrains repo via a Gradle task
 // This requires to put your Jetbrains username and password in a gradle/credentials.properties file, see http://www.jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html for more details
 publishPlugin {
-    username intellijPublishUsername
-    password intellijPublishPassword
+    // Although apply from: "filename.properties" is the right way according to the IJ docs this is apparently deprecated since Gradle 2, so we have to work around that.
+    Properties credentialProperties = new Properties()
+    InputStream inputStream = new FileInputStream("gradle/credentials.properties")
+    credentialProperties.load(inputStream)
+    inputStream.close()
+
+    username credentialProperties['intellijPublishUsername']
+    password credentialProperties['intellijPublishPassword']
     // We need to set the intellij.publish.channel property according to the tutorial
     // It is documented here that it is the same as below: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
-    channels ['alpha']
+    channels 'alpha'
 }
