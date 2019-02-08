@@ -200,7 +200,10 @@ The alpha channel contains the latest build with the latest features available, 
 It is used for testing features before they are released in the stable channel, so alpha versions of the plugin may be more unstable.
 
 #### Subscribing to the alpha channel
-You can subscribe to the alpha channel by going to Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon, then use the url https://plugins.jetbrains.com/plugins/alpha/list
+
+* Uninstall the plugin
+* Subscribe to the alpha channel by going to Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon, then use the url https://plugins.jetbrains.com/plugins/alpha/list
+* Install the plugin by going to Marketplace and searching for `TeXiFy-IDEA`, you should see the version next to the name is the alpha version.
 
 ## <a name="build-from-source">Building from source using IntelliJ</a>
 

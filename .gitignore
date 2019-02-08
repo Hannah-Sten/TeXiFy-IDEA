@@ -3,3 +3,4 @@
 out
 build
 *iml
+gradle/credentials.properties
