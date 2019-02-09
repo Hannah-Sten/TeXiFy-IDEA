@@ -140,6 +140,7 @@ publishPlugin {
 
     username credentialProperties['intellijPublishUsername']
     password credentialProperties['intellijPublishPassword']
+    
     // We need to set the intellij.publish.channel property according to the tutorial
     // It is documented here that it is the same as below: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
     channels 'alpha'

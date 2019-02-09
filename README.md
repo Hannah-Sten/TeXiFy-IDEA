@@ -201,6 +201,7 @@ It is used for testing features before they are released in the stable channel, 
 
 #### Subscribing to the alpha channel
 
+More detailed information is at https://www.jetbrains.com/help/idea/managing-plugins.html#repos but we will quickly summarize the steps.
 * Uninstall the plugin
 * Subscribe to the alpha channel by going to Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon, then use the url https://plugins.jetbrains.com/plugins/alpha/list
 * Install the plugin by going to Marketplace and searching for `TeXiFy-IDEA`, you should see the version next to the name is the alpha version.
