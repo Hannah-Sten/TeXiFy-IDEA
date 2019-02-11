@@ -100,11 +100,16 @@ fun List<String>.removeIndents(): List<String> {
             .map { Pair(it.getIndent().length, it) }
             .minBy { it.first } ?: return this
 
+    var noContentYet = true
     for (originalLine in this) {
+        if (noContentYet && originalLine.isBlank()) {
+            continue
+        }
+
         if (originalLine.isBlank()) {
             list.add("")
-        }
-        else {
+        } else {
+            noContentYet = false
             list.add(originalLine.substring(maxIndent))
         }
     }
