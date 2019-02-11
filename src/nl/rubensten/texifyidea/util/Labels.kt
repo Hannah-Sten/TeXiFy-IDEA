@@ -1,6 +1,5 @@
 package nl.rubensten.texifyidea.util
 
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -8,7 +7,6 @@ import nl.rubensten.texifyidea.index.BibtexIdIndex
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.LatexCommands
-import kotlin.streams.toList
 
 /**
  * Finds all the defined labels in the fileset of the file.
@@ -92,16 +90,13 @@ fun Project.findLabels(): Collection<PsiElement> {
  *         Key to match the label with.
  * @return A list of matched label commands.
  */
-fun Project.findLabels(key: String?): Collection<PsiElement> = findLabels().parallelStream()
-        .filter { command ->
-            if (command is LatexCommands) {
-                val parameters = runReadAction { command.requiredParameters }
-                parameters.isNotEmpty() && key != null && key == parameters.firstOrNull()
+fun Project.findLabels(key: String?): Collection<PsiElement> = findLabels().filter { it.extractLabelName() == key }
 
-            }
-            else if (command is BibtexId) {
-                key == command.name
-            }
-            else false
-        }
-        .toList()
+/**
+ * Extracts the label name from the PsiElement given that the PsiElement represents a label.
+ */
+fun PsiElement.extractLabelName(): String = when (this) {
+    is BibtexId -> idName()
+    is LatexCommands -> requiredParameter(0) ?: ""
+    else -> text
+}

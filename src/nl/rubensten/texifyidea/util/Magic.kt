@@ -118,6 +118,21 @@ object Magic {
         @JvmField val reference = labelReference + bibliographyReference
 
         /**
+         * All commands that define labels.
+         */
+        @JvmField val labelDefinition = setOf("\\label")
+
+        /**
+         * All commands that define bibliography items.
+         */
+        @JvmField val bibliographyItems = setOf("\\bibitem")
+
+        /**
+         * All label definition commands.
+         */
+        @JvmField val labels = setOf("\\label")
+
+        /**
          * All math operators without a leading slash.
          */
         @JvmField val slashlessMathOperators = hashSetOf(
@@ -129,15 +144,36 @@ object Magic {
         /**
          * All commands that define new commands.
          */
-        @JvmField val definitions = hashSetOf(
+        @JvmField val commandDefinitions = hashSetOf(
                 "\\newcommand",
                 "\\let",
                 "\\def",
                 "\\DeclareMathOperator",
-                "\\newenvironment",
                 "\\newif",
-                "\\ProvidesClass"
+                "\\NewDocumentCommand",
+                "\\ProvideDocumentCommand",
+                "\\DeclareDocumentCommand"
         )
+
+        /**
+         * All commands that define new documentclasses.
+         */
+        @JvmField val classDefinitions = hashSetOf("\\ProvidesClass")
+
+        /**
+         * All commands that define new environments.
+         */
+        @JvmField val environmentDefinitions = hashSetOf(
+                "\\newenvironment",
+                "\\NewDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
+                "\\DeclareDocumentEnvironment"
+        )
+
+        /**
+         * All commands that define stuff like classes, environments, and definitions.
+         */
+        @JvmField val definitions = commandDefinitions + classDefinitions + environmentDefinitions
 
         /**
          * All commands that are able to redefine other commands.
@@ -148,7 +184,7 @@ object Magic {
          * All commands that include other files.
          */
         @JvmField val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage", "\\usepackage"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage"
         )
 
         /**
@@ -160,7 +196,13 @@ object Magic {
                 "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
                 "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
                 "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
-                "\\newenvironment", "\\bibitem"
+                "\\newenvironment", "\\bibitem",
+                "\\NewDocumentCommand",
+                "\\ProvideDocumentCommand",
+                "\\DeclareDocumentCommand",
+                "\\NewDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
+                "\\DeclareDocumentEnvironment"
         )
 
         /**
@@ -178,6 +220,7 @@ object Magic {
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
+                "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
                 "\\usepackage" to hashSetOf("sty")
         )

@@ -1,6 +1,6 @@
 package nl.rubensten.texifyidea.ui
 
-import kotlin.io.deleteRecursively
+import com.intellij.openapi.util.SystemInfo
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 /**
-* @author Sergei Izmailov
-*/
+ * @author Sergei Izmailov
+ */
 class PreviewFormUpdater(val previewForm: PreviewForm) {
 
     var preamble = """
@@ -18,7 +18,6 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
 
         \pagestyle{empty}
     """.trimIndent()
-
 
     fun setEquationText(equationText: String) {
         previewForm.setEquation(equationText)
@@ -49,7 +48,8 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
                         tempDirectory
                 )?.second ?: return
 
-                runCommand("pdf2svg",
+                runCommand(
+                        pdf2svgExecutable(),
                         arrayOf(
                                 "$tempBasename.pdf",
                                 "$tempBasename.svg"
@@ -58,7 +58,7 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
                 ) ?: return
 
                 runCommand(
-                        "inkscape",
+                        inkscapeExecutable(),
                         arrayOf("$tempBasename.svg",
                                 "--export-area-drawing",
                                 "--export-dpi", "1000",
@@ -76,9 +76,9 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
             finally {
                 tempDirectory.deleteRecursively()
             }
-
         }
-        catch (ignored: IOException) {
+        catch (exception: IOException) {
+            previewForm.setLatexErrorMessage("${exception.message}")
         }
 
     }
@@ -100,13 +100,29 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
 
         val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->
             executable.errorStream.bufferedReader().use { stderr ->
-                Pair(stdout.readText(),stderr.readText())
+                Pair(stdout.readText(), stderr.readText())
             }
         }
         if (executable.exitValue() != 0) {
             previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n$stdout\n$stderr")
             return null
         }
-        return Triple(executable.exitValue(),stdout,stderr)
+        return Triple(executable.exitValue(), stdout, stderr)
+    }
+
+    private fun inkscapeExecutable(): String {
+        var suffix = ""
+        if (SystemInfo.isWindows) {
+            suffix = ".exe"
+        }
+        return "inkscape$suffix"
+    }
+
+    private fun pdf2svgExecutable(): String {
+        var suffix = ""
+        if (SystemInfo.isWindows) {
+            suffix = ".exe"
+        }
+        return "pdf2svg$suffix"
     }
 }

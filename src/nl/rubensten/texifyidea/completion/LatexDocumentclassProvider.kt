@@ -22,7 +22,7 @@ object LatexDocumentclassProvider : CompletionProvider<CompletionParameters>() {
             "article", "IEEEtran", "proc", "report", "book", "slides", "memoir", "letter", "beamer"
     )
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext?, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
         val classes = DEFAULT_CLASSES + project.findAvailableDocumentClasses()
         result.addAllElements(ContainerUtil.map2List(classes) { name ->

@@ -6,14 +6,15 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.ui.content.ContentFactory
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
-import nl.rubensten.texifyidea.util.*
 import nl.rubensten.texifyidea.ui.EquationPreviewToolWindow
 import nl.rubensten.texifyidea.ui.PreviewFormUpdater
+import nl.rubensten.texifyidea.util.inMathContext
 
 /**
  * @author Sergei Izmailov
@@ -45,6 +46,13 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             toolWindow.icon = TexifyIcons.EQUATION_PREVIEW
         }
 
+        val containingFile = outerMathEnvironment.containingFile
+        val psiDocumentManager = PsiDocumentManager.getInstance(project)
+        val document = psiDocumentManager.getDocument(containingFile)
+        val textOffset = outerMathEnvironment.textOffset
+        val lineNumber = document?.getLineNumber(textOffset) ?: 0;
+        val displayName = "${containingFile.name}:${lineNumber + 1}"
+
         val contentFactory = ContentFactory.SERVICE.getInstance()
         val contentCount = toolWindow.contentManager.contentCount
 
@@ -54,6 +62,7 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             if (content.isPinned.not()) {
                 val form = content.getUserData(FORM_KEY) ?: continue
                 form.setEquationText(outerMathEnvironment.text)
+                content.displayName = displayName
                 replaced = true
                 break
             }
@@ -63,7 +72,7 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
             val previewToolWindow = EquationPreviewToolWindow()
             val newContent = contentFactory.createContent(
                     previewToolWindow.content,
-                    "Equation preview",
+                    displayName,
                     true
             )
             toolWindow.contentManager.addContent(newContent)
@@ -99,5 +108,4 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
         }
         return outerMathEnvironment
     }
-
 }
