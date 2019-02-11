@@ -1,7 +1,6 @@
 package nl.rubensten.texifyidea.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
-import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
@@ -9,7 +8,6 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.*
-import javax.swing.border.EmptyBorder
 import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableCellRenderer
@@ -43,10 +41,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     private fun JPanel.addTable() : DefaultTableModel {
-        // ToDo: rework layout and add info about only required parameters count
         val tableInfo = MyTableModel()
-        tableInfo.addColumn("Name of command")
-        tableInfo.addColumn("Position of label parameter")
+        tableInfo.addColumn(" Name of command")
+        tableInfo.addColumn(" Position of label parameter")
         val table = JBTable(tableInfo)
         table.intercellSpacing = Dimension(0, 0)
         table.setShowGrid(false)
@@ -56,12 +53,16 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         table.selectionModel.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
         table.tableHeader.defaultRenderer = HeaderRenderer(table)
 
+        val panel = JPanel(FlowLayout(FlowLayout.LEFT))
+        panel.preferredSize = Dimension(400, 10 * table.rowHeight)
+
         val decorator = ToolbarDecorator.createDecorator(table)
                 .setAddAction { addCommand(tableInfo) }
                 .setRemoveAction { removeCommand(table) }
                 .setEditAction { editCommand(table, tableInfo) }
                 .createPanel()
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(decorator) })
+        panel.add(decorator)
+        add(panel)
         return tableInfo
     }
 
