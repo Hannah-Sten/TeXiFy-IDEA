@@ -4,12 +4,15 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
-import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
+import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.*
+import javax.swing.border.EmptyBorder
+import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
+import javax.swing.table.TableCellRenderer
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -44,7 +47,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         val tableInfo = MyTableModel()
         tableInfo.addColumn("Name of command")
         tableInfo.addColumn("Position of label parameter")
-        tableInfo.addColumn("Defines counter")
         val table = JBTable(tableInfo)
         table.intercellSpacing = Dimension(0, 0)
         table.setShowGrid(false)
@@ -52,17 +54,37 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         table.showHorizontalLines = false
         table.showVerticalLines = false
         table.selectionModel.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
+        table.tableHeader.defaultRenderer = HeaderRenderer(table)
 
         val decorator = ToolbarDecorator.createDecorator(table)
-                .setAddAction {
-                    (table.model as DefaultTableModel).addRow(arrayOf("bumms", 1, false))
-                }
-                .setRemoveAction {
-                    TableUtil.removeSelectedItems(table)
-                }
+                .setAddAction { addCommand(tableInfo) }
+                .setRemoveAction { removeCommand(table) }
+                .setEditAction { editCommand(table, tableInfo) }
                 .createPanel()
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(decorator) })
         return tableInfo
+    }
+
+    private fun addCommand(tableInfo: MyTableModel) {
+        val dialog = TexifyDefineLabelingCommand("", 1)
+        if (dialog.showAndGet()) {
+            tableInfo.addRow(arrayOf(dialog.getMyCommandName(), dialog.getMyCommandPosition()))
+        }
+    }
+
+    private fun editCommand(table: JBTable, tableInfo: MyTableModel) {
+        val row = table.selectedRow
+        val name = tableInfo.getValueAt(row, 0) as String
+        val position = tableInfo.getValueAt(row, 1) as Int
+        val dialog = TexifyDefineLabelingCommand(name, position)
+        if (dialog.showAndGet()) {
+            tableInfo.setValueAt(dialog.getMyCommandName(), row, 0)
+            tableInfo.setValueAt(dialog.getMyCommandPosition(), row, 1)
+        }
+    }
+
+    private fun removeCommand(table: JTable) {
+        TableUtil.removeSelectedItems(table)
     }
 
     private fun JPanel.addCheckbox(message: String): JCheckBox {
@@ -104,7 +126,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 }
             }
             if (position > 0 && command != "") {
-                settings.labelCommands[command] = arrayOf(position, false)
+                settings.labelCommands[command] = position
                 names.remove(table.getValueAt(i, 0) as String)
             }
             else {
@@ -121,17 +143,16 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         var i = 0
-        settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position[0] as Int,
-                position[1] as Boolean) }
+        settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position) }
         while (i < table.rowCount) {
             table.removeRow(i)
         }
     }
 
-    private fun addOrUpdateRow(row : Int, command: String, position: Int, definesCounter: Boolean) {
+    private fun addOrUpdateRow(row : Int, command: String, position: Int) {
         if (table.rowCount > row) {
             table.removeRow(row)
-            table.insertRow(row, arrayOf(command, position, definesCounter))
+            table.insertRow(row, arrayOf(command, position))
         }
         else {
             table.addRow(arrayOf(command, position))
@@ -151,11 +172,19 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         return false
     }
 
-    private class MyCellRenderer : ColoredTableCellRenderer() {
-        override fun customizeCellRenderer(table: JTable?, value: Any?, selected: Boolean, hasFocus: Boolean, row: Int, column: Int) {
-            setPaintFocusBorder(false)
-            setFocusBorderAroundIcon(true)
-            border = BorderFactory.createEmptyBorder(1, 1, 1, 1)
+    private class HeaderRenderer(table: JTable) : TableCellRenderer {
+        val renderer : DefaultTableCellRenderer = table.tableHeader.defaultRenderer as DefaultTableCellRenderer
+
+        init {
+            renderer.border = BorderFactory.createCompoundBorder(table.tableHeader.border,
+                    BorderFactory.createEmptyBorder(0, 100, 0, 0))
+            renderer.horizontalAlignment = JLabel.LEFT
         }
+
+        override fun getTableCellRendererComponent(table: JTable?, value: Any?, isSelected: Boolean, hasFocus: Boolean,
+                                                   row: Int, column: Int): Component {
+            return renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
+        }
+
     }
 }
