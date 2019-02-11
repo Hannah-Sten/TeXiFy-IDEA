@@ -102,10 +102,11 @@ fun List<String>.removeIndents(): List<String> {
 
     for (originalLine in this) {
         if (originalLine.isBlank()) {
-            continue
+            list.add("")
         }
-
-        list.add(originalLine.substring(maxIndent))
+        else {
+            list.add(originalLine.substring(maxIndent))
+        }
     }
 
     return list
@@ -141,7 +142,7 @@ fun String.formatAsFileName(): String {
             .toLowerCase()
 
     // If there are no valid characters left, use a default name.
-    return if (formatted.isEmpty()) { "myfile" } else { formatted }
+    return if (formatted.isEmpty()) "myfile" else formatted
 }
 
 /**
