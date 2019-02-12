@@ -5,10 +5,7 @@ import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.UIUtil
-import java.awt.Component
-import java.awt.Dimension
-import java.awt.FlowLayout
-import java.awt.Font
+import java.awt.*
 import java.awt.event.ActionListener
 import javax.swing.*
 import javax.swing.table.DefaultTableCellRenderer
@@ -78,6 +75,15 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 .createPanel()
         panel.apply { add(decorator) }
         add(panel)
+
+        val label = add(JLabel("Only required parameters count for the position", SwingConstants.LEFT))
+        label.foreground = Color.GRAY
+
+        val labelPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+            add(label)
+        }
+        add(labelPanel)
+
         return table
     }
 
