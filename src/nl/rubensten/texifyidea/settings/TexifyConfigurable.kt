@@ -18,13 +18,19 @@ import javax.swing.table.TableCellRenderer
  * @author Ruben Schellekens, Sten Wessel
  */
 class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
-
     private lateinit var automaticSoftWraps: JCheckBox
     private lateinit var automaticSecondInlineMathSymbol: JCheckBox
     private lateinit var automaticUpDownBracket: JCheckBox
     private lateinit var automaticItemInItemize: JCheckBox
     private lateinit var tableInfo: DefaultTableModel
     private lateinit var table: JBTable
+
+    companion object {
+        private const val NAME_LABEL = " Name of command"
+        private const val POSITION_LABEL = " Position of label parameter"
+        @JvmStatic fun getNameLabel() = TexifyConfigurable.NAME_LABEL
+        @JvmStatic fun getPositionLabel() = TexifyConfigurable.POSITION_LABEL
+    }
 
     override fun getId() = "TexifyConfigurable"
 
@@ -47,8 +53,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
     private fun JPanel.addTable() : JBTable {
         val tableInfo = MyTableModel()
-        tableInfo.addColumn(" Name of command")
-        tableInfo.addColumn(" Position of label parameter")
+        tableInfo.addColumn(TexifyConfigurable.NAME_LABEL)
+        tableInfo.addColumn(TexifyConfigurable.POSITION_LABEL)
         val table = JBTable(tableInfo)
         table.intercellSpacing = Dimension(0, 0)
         table.setShowGrid(false)
@@ -97,8 +103,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private fun updateTableSize() {
         val fontMetrics = table.getFontMetrics(UIManager.getFont("Table.font").deriveFont(Font.BOLD))
 
-        val nameWidth = fontMetrics.stringWidth(" Name of Command")
-        val positionWidth = fontMetrics.stringWidth(" Position of label parameter")
+        val nameWidth = fontMetrics.stringWidth(TexifyConfigurable.NAME_LABEL)
+        val positionWidth = fontMetrics.stringWidth(TexifyConfigurable.POSITION_LABEL)
         val tableHeight = table.rowHeight * (table.rowCount + 3)
 
         table.columnModel.getColumn(0).preferredWidth = nameWidth
