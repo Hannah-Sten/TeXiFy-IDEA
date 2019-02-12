@@ -57,9 +57,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
     private fun JPanel.addTable() : JBTable {
         val tableInfo = MyTableModel()
-        val table = JBTable(tableInfo)
         tableInfo.addColumn(NAME_LABEL)
         tableInfo.addColumn(POSITION_LABEL)
+        val table = MySettingsTable(tableInfo)
         table.intercellSpacing = Dimension(0, 0)
         table.setShowGrid(false)
         table.dragEnabled = false
