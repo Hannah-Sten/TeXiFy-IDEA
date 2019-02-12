@@ -28,8 +28,12 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     companion object {
         private const val NAME_LABEL = " Name of command"
         private const val POSITION_LABEL = " Position of label parameter"
-        @JvmStatic fun getNameLabel() = TexifyConfigurable.NAME_LABEL
-        @JvmStatic fun getPositionLabel() = TexifyConfigurable.POSITION_LABEL
+        @JvmStatic fun getNameLabel() = NAME_LABEL
+        @JvmStatic fun getPositionLabel() = POSITION_LABEL
+
+        private const val NAME_LABEL_WIDTH = 200
+        private const val POSITION_LABEL_WIDTH = 150
+        private const val EMPTY_ROWS_TO_DISPLAY = 3
     }
 
     override fun getId() = "TexifyConfigurable"
@@ -53,9 +57,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
     private fun JPanel.addTable() : JBTable {
         val tableInfo = MyTableModel()
-        tableInfo.addColumn(TexifyConfigurable.NAME_LABEL)
-        tableInfo.addColumn(TexifyConfigurable.POSITION_LABEL)
         val table = JBTable(tableInfo)
+        tableInfo.addColumn(NAME_LABEL)
+        tableInfo.addColumn(POSITION_LABEL)
         table.intercellSpacing = Dimension(0, 0)
         table.setShowGrid(false)
         table.dragEnabled = false
@@ -95,18 +99,20 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         }
     }
 
-    private fun removeCommand(table: JTable) {
-        TableUtil.removeSelectedItems(table)
+    private fun removeCommand(jTable: JBTable) {
+        TableUtil.removeSelectedItems(jTable)
         updateTableSize()
     }
 
     private fun updateTableSize() {
         val fontMetrics = table.getFontMetrics(UIManager.getFont("Table.font").deriveFont(Font.BOLD))
 
-        var nameWidth = fontMetrics.stringWidth(TexifyConfigurable.NAME_LABEL) + UIUtil.DEFAULT_HGAP
-        var positionWidth = fontMetrics.stringWidth(TexifyConfigurable.POSITION_LABEL)
-        val tableHeight = table.rowHeight * (table.rowCount + 3)
+        // set minimum width for each column
+        var nameWidth = NAME_LABEL_WIDTH
+        var positionWidth = POSITION_LABEL_WIDTH
+        val tableHeight = table.rowHeight * (table.rowCount + EMPTY_ROWS_TO_DISPLAY)
 
+        // check the width of each column in each row, to display all commands and positions in full length
         for (i in 0 until tableInfo.rowCount) {
             val label = tableInfo.getValueAt(i, 0) as String
             val labelWidth = fontMetrics.stringWidth(label) + UIUtil.DEFAULT_HGAP
@@ -118,9 +124,11 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             positionWidth = if (positionWidth > actualPositionWidth) positionWidth else actualPositionWidth
         }
 
+        // set width for each column
         table.columnModel.getColumn(0).preferredWidth = nameWidth
         table.columnModel.getColumn(1).preferredWidth = positionWidth
 
+        // set the size of the table
         table.preferredScrollableViewportSize = Dimension(nameWidth + positionWidth + UIUtil.DEFAULT_HGAP,
                 tableHeight)
     }
