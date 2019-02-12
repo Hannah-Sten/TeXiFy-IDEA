@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.settings
+package nl.rubensten.texifyidea.settings.labelDefiningCommands
 
 import java.lang.StringBuilder
 import javax.swing.text.AttributeSet

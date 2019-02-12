@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.settings
+package nl.rubensten.texifyidea.settings.labelDefiningCommands
 
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.table.JBTable

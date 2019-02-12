@@ -1,20 +1,20 @@
-package nl.rubensten.texifyidea.settings
+package nl.rubensten.texifyidea.settings.labelDefiningCommands
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.UIUtil
+import java.awt.Color
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
-import javax.swing.JComponent
-import javax.swing.JPanel
-import javax.swing.JTextField
-import javax.swing.SwingConstants
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import javax.swing.*
 import javax.swing.text.PlainDocument
 
 class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrapper(null, false) {
-    private val myCommandName : JTextField = JTextField(cmdName, 30)
+    private val myCommandName : JTextField = JTextField(cmdName, 25)
     private val myCommandPosition : JTextField = JTextField("$position", 5)
 
     init {
@@ -34,6 +34,18 @@ class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrappe
         remoteComponent.add(myCommandName, gridBag.next().weightx(1.0))
         remoteComponent.add(JBLabel("Position: ", SwingConstants.RIGHT), gridBag.nextLine().next().weightx(0.0))
         remoteComponent.add(myCommandPosition, gridBag.next().weightx(1.0))
+
+        remoteComponent.add(JLabel("", SwingConstants.LEFT), gridBag.nextLine().next().weightx(0.0))
+        val label = JLabel("Only required parameters count for the position", SwingConstants.LEFT)
+        label.foreground = Color.GRAY
+        remoteComponent.add(label, gridBag.next().weightx(1.0))
+
+        peer.window.addWindowListener(object: WindowAdapter() {
+            override fun windowOpened(e: WindowEvent?) {
+                myCommandName.requestFocus()
+            }
+        })
+
         return remoteComponent
     }
 
