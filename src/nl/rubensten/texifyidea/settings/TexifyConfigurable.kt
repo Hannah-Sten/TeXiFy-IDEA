@@ -4,9 +4,11 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
+import com.intellij.util.ui.UIUtil
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
+import java.awt.Font
 import javax.swing.*
 import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
@@ -21,7 +23,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticSecondInlineMathSymbol: JCheckBox
     private lateinit var automaticUpDownBracket: JCheckBox
     private lateinit var automaticItemInItemize: JCheckBox
-    private lateinit var table: DefaultTableModel
+    private lateinit var tableInfo: DefaultTableModel
+    private lateinit var table: JBTable
 
     override fun getId() = "TexifyConfigurable"
 
@@ -38,9 +41,11 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
             table = addTable()
         })
+        tableInfo = table.model as DefaultTableModel
+        updateTableSize()
     }
 
-    private fun JPanel.addTable() : DefaultTableModel {
+    private fun JPanel.addTable() : JBTable {
         val tableInfo = MyTableModel()
         tableInfo.addColumn(" Name of command")
         tableInfo.addColumn(" Position of label parameter")
@@ -54,22 +59,22 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         table.tableHeader.defaultRenderer = HeaderRenderer(table)
 
         val panel = JPanel(FlowLayout(FlowLayout.LEFT))
-        panel.preferredSize = Dimension(400, 10 * table.rowHeight)
 
         val decorator = ToolbarDecorator.createDecorator(table)
                 .setAddAction { addCommand(tableInfo) }
                 .setRemoveAction { removeCommand(table) }
                 .setEditAction { editCommand(table, tableInfo) }
                 .createPanel()
-        panel.add(decorator)
+        panel.apply { add(decorator) }
         add(panel)
-        return tableInfo
+        return table
     }
 
     private fun addCommand(tableInfo: MyTableModel) {
         val dialog = TexifyDefineLabelingCommand("", 1)
         if (dialog.showAndGet()) {
             tableInfo.addRow(arrayOf(dialog.getMyCommandName(), dialog.getMyCommandPosition()))
+            updateTableSize()
         }
     }
 
@@ -86,6 +91,21 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
 
     private fun removeCommand(table: JTable) {
         TableUtil.removeSelectedItems(table)
+        updateTableSize()
+    }
+
+    private fun updateTableSize() {
+        val fontMetrics = table.getFontMetrics(UIManager.getFont("Table.font").deriveFont(Font.BOLD))
+
+        val nameWidth = fontMetrics.stringWidth(" Name of Command")
+        val positionWidth = fontMetrics.stringWidth(" Position of label parameter")
+        val tableHeight = table.rowHeight * (table.rowCount + 3)
+
+        table.columnModel.getColumn(0).preferredWidth = nameWidth
+        table.columnModel.getColumn(1).preferredWidth = positionWidth
+
+        table.preferredScrollableViewportSize = Dimension(nameWidth + positionWidth + UIUtil.DEFAULT_HGAP,
+                tableHeight)
     }
 
     private fun JPanel.addCheckbox(message: String): JCheckBox {
@@ -113,9 +133,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         val names = settings.labelCommands.keys.toMutableList()
         val removeRows = mutableListOf<Int>()
 
-        for (i in 0 until table.rowCount) {
-            val command = table.getValueAt(i, 0) as String
-            val pos = table.getValueAt(i, 1)
+        for (i in 0 until tableInfo.rowCount) {
+            val command = tableInfo.getValueAt(i, 0) as String
+            val pos = tableInfo.getValueAt(i, 1)
             var position = 0
             if (pos is Int) {
                 position = pos
@@ -128,14 +148,14 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             }
             if (position > 0 && command != "") {
                 settings.labelCommands[command] = position
-                names.remove(table.getValueAt(i, 0) as String)
+                names.remove(tableInfo.getValueAt(i, 0) as String)
             }
             else {
                 removeRows.add(i)
             }
         }
         names.forEach{settings.labelCommands.remove(it)}
-        removeRows.forEach { table.removeRow(it) }
+        removeRows.forEach { tableInfo.removeRow(it) }
     }
 
     override fun reset() {
@@ -145,28 +165,29 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         var i = 0
         settings.labelCommands.forEach { command, position -> addOrUpdateRow(i++, command, position) }
-        while (i < table.rowCount) {
-            table.removeRow(i)
+        while (i < tableInfo.rowCount) {
+            tableInfo.removeRow(i)
         }
+        updateTableSize()
     }
 
     private fun addOrUpdateRow(row : Int, command: String, position: Int) {
-        if (table.rowCount > row) {
-            table.removeRow(row)
-            table.insertRow(row, arrayOf(command, position))
+        if (tableInfo.rowCount > row) {
+            tableInfo.removeRow(row)
+            tableInfo.insertRow(row, arrayOf(command, position))
         }
         else {
-            table.addRow(arrayOf(command, position))
+            tableInfo.addRow(arrayOf(command, position))
         }
     }
 
     private fun commandsModified() : Boolean {
-        if (table.rowCount != settings.labelCommands.size) {
+        if (tableInfo.rowCount != settings.labelCommands.size) {
             return true
         }
-        for (i in 0 until table.rowCount) {
-            if (!settings.labelCommands.containsKey(table.getValueAt(i, 0) as String) ||
-                    settings.labelCommands[table.getValueAt(i, 0) as String] != table.getValueAt(i, 1)) {
+        for (i in 0 until tableInfo.rowCount) {
+            if (!settings.labelCommands.containsKey(tableInfo.getValueAt(i, 0) as String) ||
+                    settings.labelCommands[tableInfo.getValueAt(i, 0) as String] != tableInfo.getValueAt(i, 1)) {
                 return true
             }
         }
