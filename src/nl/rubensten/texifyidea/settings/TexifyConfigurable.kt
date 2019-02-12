@@ -103,9 +103,20 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private fun updateTableSize() {
         val fontMetrics = table.getFontMetrics(UIManager.getFont("Table.font").deriveFont(Font.BOLD))
 
-        val nameWidth = fontMetrics.stringWidth(TexifyConfigurable.NAME_LABEL)
-        val positionWidth = fontMetrics.stringWidth(TexifyConfigurable.POSITION_LABEL)
+        var nameWidth = fontMetrics.stringWidth(TexifyConfigurable.NAME_LABEL) + UIUtil.DEFAULT_HGAP
+        var positionWidth = fontMetrics.stringWidth(TexifyConfigurable.POSITION_LABEL)
         val tableHeight = table.rowHeight * (table.rowCount + 3)
+
+        for (i in 0 until tableInfo.rowCount) {
+            val label = tableInfo.getValueAt(i, 0) as String
+            val labelWidth = fontMetrics.stringWidth(label) + UIUtil.DEFAULT_HGAP
+
+            val position = tableInfo.getValueAt(i, 1) as Int
+            val actualPositionWidth = fontMetrics.stringWidth("$position")
+
+            nameWidth = if (nameWidth > labelWidth) nameWidth else labelWidth
+            positionWidth = if (positionWidth > actualPositionWidth) positionWidth else actualPositionWidth
+        }
 
         table.columnModel.getColumn(0).preferredWidth = nameWidth
         table.columnModel.getColumn(1).preferredWidth = positionWidth
