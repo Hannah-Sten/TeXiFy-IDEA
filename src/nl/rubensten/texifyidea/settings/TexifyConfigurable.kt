@@ -9,6 +9,7 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Font
+import java.awt.event.ActionListener
 import javax.swing.*
 import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
@@ -59,7 +60,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         val tableInfo = MyTableModel()
         tableInfo.addColumn(NAME_LABEL)
         tableInfo.addColumn(POSITION_LABEL)
-        val table = MySettingsTable(tableInfo)
+        val table = MySettingsTable(tableInfo, ActionListener { addCommand() })
         table.intercellSpacing = Dimension(0, 0)
         table.setShowGrid(false)
         table.dragEnabled = false
@@ -71,7 +72,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         val panel = JPanel(FlowLayout(FlowLayout.LEFT))
 
         val decorator = ToolbarDecorator.createDecorator(table)
-                .setAddAction { addCommand(tableInfo) }
+                .setAddAction { addCommand() }
                 .setRemoveAction { removeCommand(table) }
                 .setEditAction { editCommand(table, tableInfo) }
                 .createPanel()
@@ -80,7 +81,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         return table
     }
 
-    private fun addCommand(tableInfo: MyTableModel) {
+    private fun addCommand() {
         val dialog = TexifyDefineLabelingCommand("", 1)
         if (dialog.showAndGet()) {
             tableInfo.addRow(arrayOf(dialog.getMyCommandName(), dialog.getMyCommandPosition()))
