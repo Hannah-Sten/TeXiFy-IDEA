@@ -148,31 +148,17 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
 
         val names = settings.labelCommands.keys.toMutableList()
-        val removeRows = mutableListOf<Int>()
-
+        // check if each row is already stored and add or update it
         for (i in 0 until tableInfo.rowCount) {
             val command = tableInfo.getValueAt(i, 0) as String
-            val pos = tableInfo.getValueAt(i, 1)
-            var position = 0
-            if (pos is Int) {
-                position = pos
-            }
-            else if (pos is String){
-                val positionNull = pos.toIntOrNull()
-                if (positionNull != null && positionNull.toString() == pos) {
-                    position = positionNull
-                }
-            }
+            val position = tableInfo.getValueAt(i, 1) as Int
             if (position > 0 && command != "") {
                 settings.labelCommands[command] = position
-                names.remove(tableInfo.getValueAt(i, 0) as String)
-            }
-            else {
-                removeRows.add(i)
+                names.remove(command)
             }
         }
+        // remove removed entries from saved rows
         names.forEach{settings.labelCommands.remove(it)}
-        removeRows.forEach { tableInfo.removeRow(it) }
     }
 
     override fun reset() {
