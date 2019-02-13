@@ -34,7 +34,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     init {
         tableInfo.addColumn(NAME_LABEL)
         tableInfo.addColumn(POSITION_LABEL)
-        table = MySettingsTable(tableInfo, ActionListener { addCommand() })
+        table = LabelCommandSettingsTable(tableInfo, ActionListener { addCommand() })
         table.intercellSpacing = Dimension(0, 0)
         table.setShowGrid(false)
         table.dragEnabled = false

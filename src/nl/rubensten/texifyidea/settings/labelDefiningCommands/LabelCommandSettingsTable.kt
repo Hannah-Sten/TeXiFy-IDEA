@@ -9,7 +9,7 @@ import javax.swing.table.TableModel
 /**
  * JBTable is extended to set own text when table is empty and define action
  */
-class MySettingsTable(model: TableModel, private var listener: ActionListener) : JBTable(model) {
+class LabelCommandSettingsTable(model: TableModel, private var listener: ActionListener) : JBTable(model) {
 
     /**
      * create empty text and define a clickable link to add new command
