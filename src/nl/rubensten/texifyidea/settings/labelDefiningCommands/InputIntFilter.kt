@@ -4,13 +4,16 @@ import java.lang.StringBuilder
 import javax.swing.text.AttributeSet
 import javax.swing.text.DocumentFilter
 
-class MyIntFilter: DocumentFilter() {
+/**
+ * This class is used to prevent wrong input for the position of the label parameter
+ */
+class InputIntFilter: DocumentFilter() {
     override fun insertString(fb: FilterBypass?, offset: Int, string: String?, attr: AttributeSet?) {
         val doc = fb?.document ?: return
         val content = StringBuilder()
         content.append(doc.getText(0, doc.length))
         content.insert(offset, string)
-        if (content.toString().isConvertibleToInt()) {
+        if (content.toString().possiblePosition()) {
             super.insertString(fb, offset, string, attr)
         }
     }
@@ -20,7 +23,7 @@ class MyIntFilter: DocumentFilter() {
         val content = StringBuilder()
         content.append(doc.getText(0, doc.length))
         content.replace(offset, offset + length, text)
-        if (content.toString().isConvertibleToInt()) {
+        if (content.toString().possiblePosition()) {
             super.replace(fb, offset, length, text, attrs)
         }
     }
@@ -37,14 +40,17 @@ class MyIntFilter: DocumentFilter() {
     
     private fun String.isNumericOrEmpty(): Boolean {
         if (this.trim() == "") return true
-        return this.isConvertibleToInt()
+        return this.possiblePosition()
     }
 }
 
-fun String.isConvertibleToInt(): Boolean {
+/**
+ * this function verifies that a String is a possible position fo the label parameter
+ */
+fun String.possiblePosition(): Boolean {
     return try {
-        this.toInt()
-        true
+        val int = this.toInt()
+        (int >= 1)
     } catch (ex : NumberFormatException) {
         false
     }

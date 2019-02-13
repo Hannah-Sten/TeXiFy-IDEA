@@ -19,7 +19,7 @@ class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrappe
 
     init {
         title = "Define command with label"
-        (myCommandPosition.document as PlainDocument).documentFilter = MyIntFilter()
+        (myCommandPosition.document as PlainDocument).documentFilter = InputIntFilter()
         super.init()
     }
 
@@ -54,7 +54,7 @@ class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrappe
         if (myCommandName.text.trim().isEmpty()) {
             list.add(ValidationInfo("Name can not be empty"))
         }
-        if (!myCommandPosition.text.trim().isConvertibleToInt()) {
+        if (!myCommandPosition.text.trim().possiblePosition()) {
             list.add(ValidationInfo("Position must be convertible to Int"))
         }
         return list
