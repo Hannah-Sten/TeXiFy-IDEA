@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.LatexNormalText
-import nl.rubensten.texifyidea.util.findRelativeFile
+import nl.rubensten.texifyidea.util.findFile
 import nl.rubensten.texifyidea.util.findRootFile
 import nl.rubensten.texifyidea.util.firstChildOfType
 
@@ -49,7 +49,8 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 val parameter = parameters[i]
                 val fileName = parameter.requiredParam?.firstChildOfType(LatexNormalText::class)?.text ?: continue
                 val root = file.findRootFile()
-                val relative = root.findRelativeFile(fileName, extensions)
+                val containingDirectory = root.containingDirectory.virtualFile
+                val relative = containingDirectory.findFile(fileName, extensions)
 
                 if (relative != null) {
                     continue
