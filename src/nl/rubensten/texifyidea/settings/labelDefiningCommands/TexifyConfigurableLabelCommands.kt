@@ -11,6 +11,9 @@ import javax.swing.*
 import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.TableCellRenderer
 
+/**
+ * Excluded table for the settings page to get smaller and more meaningful classes
+ */
 class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     private var table: JBTable
     private val tableInfo: MyTableModel = MyTableModel()
@@ -63,10 +66,12 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
             add(label, gridBag)
         }
 
-
         updateTableSize()
     }
 
+    /**
+     * show dialog to add a command and after correct input add it to the table
+     */
     private fun addCommand() {
         val dialog = TexifyDefineLabelingCommand("", 1)
         if (dialog.showAndGet()) {
@@ -75,6 +80,9 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         }
     }
 
+    /**
+     * show the same dialog but with the selected values and update row
+     */
     private fun editCommand(table: JBTable, tableInfo: MyTableModel) {
         val row = table.selectedRow
         val name = tableInfo.getValueAt(row, 0) as String
@@ -84,13 +92,20 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
             tableInfo.setValueAt(dialog.getMyCommandName(), row, 0)
             tableInfo.setValueAt(dialog.getMyCommandPosition(), row, 1)
         }
+        updateTableSize()
     }
 
+    /**
+     * remove currently selected row
+     */
     private fun removeCommand(jTable: JBTable) {
         TableUtil.removeSelectedItems(jTable)
         updateTableSize()
     }
 
+    /**
+     * update the size of the table, to fit all the content
+     */
     private fun updateTableSize() {
         val fontMetrics = table.getFontMetrics(UIManager.getFont("Table.font").deriveFont(Font.BOLD))
 
@@ -120,21 +135,9 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
                 tableHeight)
     }
 
-    private class HeaderRenderer(table: JTable) : TableCellRenderer {
-        val renderer : DefaultTableCellRenderer = table.tableHeader.defaultRenderer as DefaultTableCellRenderer
-
-        init {
-            renderer.border = BorderFactory.createCompoundBorder(table.tableHeader.border,
-                    BorderFactory.createEmptyBorder(0, 100, 0, 0))
-            renderer.horizontalAlignment = JLabel.LEFT
-        }
-
-        override fun getTableCellRendererComponent(table: JTable?, value: Any?, isSelected: Boolean, hasFocus: Boolean,
-                                                   row: Int, column: Int): Component {
-            return renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
-        }
-    }
-
+    /**
+     * reset the table to the currently stored values
+     */
     fun reset() {
         while (tableInfo.rowCount > 0) {
             tableInfo.removeRow(0)
@@ -143,8 +146,12 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         updateTableSize()
     }
 
+    /**
+     * save the currently displayed settings
+     */
     fun apply() {
         val commands = settings.labelCommands.keys.toMutableSet()
+        // add or update each specified command
         for (i in 0 until tableInfo.rowCount) {
             val command = tableInfo.getValueAt(i, 0) as String
             val position = tableInfo.getValueAt(i, 1) as Int
@@ -156,6 +163,9 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         commands.forEach { settings.labelCommands.remove(it) }
     }
 
+    /**
+     * check if the table is modified
+     */
     fun isModified(): Boolean {
         if (tableInfo.rowCount != settings.labelCommands.size) {
             return true
@@ -176,4 +186,19 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
      */
     fun getTable() = tablePanel
 
+    /**
+     * own renderer for the table header to display them left aligned
+     */
+    private class HeaderRenderer(table: JTable) : TableCellRenderer {
+        val renderer : DefaultTableCellRenderer = table.tableHeader.defaultRenderer as DefaultTableCellRenderer
+
+        init {
+            renderer.horizontalAlignment = JLabel.LEFT
+        }
+
+        override fun getTableCellRendererComponent(table: JTable?, value: Any?, isSelected: Boolean, hasFocus: Boolean,
+                                                   row: Int, column: Int): Component {
+            return renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
+        }
+    }
 }
