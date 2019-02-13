@@ -15,11 +15,7 @@ class TexifyFileTypeFactory : FileTypeFactory() {
                 StyleFileType,
                 ClassFileType,
                 BibtexFileType,
-                TikzFileType,
-                PngFileType,
-                EpsFileType,
-                PdfFileType,
-                JpgFileType
+                TikzFileType
         )
     }
 
