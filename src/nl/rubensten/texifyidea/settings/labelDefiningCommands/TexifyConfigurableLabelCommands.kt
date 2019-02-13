@@ -16,7 +16,7 @@ import javax.swing.table.TableCellRenderer
  */
 class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     private var table: JBTable
-    private val tableInfo: MyTableModel = MyTableModel()
+    private val tableInfo: LabelCommandSettingsTableModel = LabelCommandSettingsTableModel()
     private val tablePanel = JPanel(GridBagLayout())
 
     companion object {
@@ -83,7 +83,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     /**
      * show the same dialog but with the selected values and update row
      */
-    private fun editCommand(table: JBTable, tableInfo: MyTableModel) {
+    private fun editCommand(table: JBTable, tableInfo: LabelCommandSettingsTableModel) {
         val row = table.selectedRow
         val name = tableInfo.getValueAt(row, 0) as String
         val position = tableInfo.getValueAt(row, 1) as Int
