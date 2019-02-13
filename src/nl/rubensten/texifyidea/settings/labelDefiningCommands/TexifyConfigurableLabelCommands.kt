@@ -14,7 +14,7 @@ import javax.swing.table.TableCellRenderer
 class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     private var table: JBTable
     private val tableInfo: MyTableModel = MyTableModel()
-    private val parentPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+    private val tablePanel = JPanel(GridBagLayout())
 
     companion object {
         private const val NAME_LABEL = " Name of command"
@@ -25,6 +25,9 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         private const val EMPTY_ROWS_TO_DISPLAY = 3
     }
 
+    /**
+     * create the table and all such things
+     */
     init {
         tableInfo.addColumn(NAME_LABEL)
         tableInfo.addColumn(POSITION_LABEL)
@@ -37,23 +40,29 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         table.selectionModel.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
         table.tableHeader.defaultRenderer = HeaderRenderer(table)
 
-        val tablePanel = JPanel(FlowLayout(FlowLayout.LEFT))
+        val gridBag = GridBagConstraints()
+        gridBag.anchor = GridBagConstraints.LINE_START
+        gridBag.insets = Insets(UIUtil.DEFAULT_VGAP, UIUtil.DEFAULT_HGAP, 0, 0)
+        gridBag.fill = GridBagConstraints.VERTICAL
+        // define the buttons for the actions
         val decorator = ToolbarDecorator.createDecorator(table)
                 .setAddAction { addCommand() }
                 .setRemoveAction { removeCommand(table) }
                 .setEditAction { editCommand(table, tableInfo) }
                 .createPanel()
-        tablePanel.apply { add(decorator) }
 
         val label = JLabel("Only required parameters count for the position", SwingConstants.LEFT)
         label.foreground = Color.GRAY
 
-        val labelPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(label)
+        tablePanel.apply {
+            gridBag.gridx = 0
+            gridBag.gridy = 0
+            add(decorator, gridBag)
+            gridBag.gridx = 0
+            gridBag.gridy = 1
+            add(label, gridBag)
         }
 
-        parentPanel.add(tablePanel)
-        parentPanel.add(labelPanel)
 
         updateTableSize()
     }
@@ -162,5 +171,9 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         return false
     }
 
-    fun getTable() = parentPanel
+    /**
+     * return the panel which holds the table to display it
+     */
+    fun getTable() = tablePanel
+
 }
