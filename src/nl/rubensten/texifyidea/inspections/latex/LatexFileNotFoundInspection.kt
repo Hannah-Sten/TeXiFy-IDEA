@@ -35,15 +35,16 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         for (command in commands) {
             // Only consider default commands with a file argument.
             val default = LatexCommand.lookup(command.name) ?: continue
-            val arguments = default.arguments
-            val parameters = command.parameterList
+            val arguments = default.arguments.filter { it is RequiredFileArgument }
+                    .map { it as RequiredFileArgument }
+            val parameters = command.parameterList.filter { it.requiredParam != null }
 
             for (i in 0 until arguments.size) {
                 if (i >= parameters.size) {
                     break
                 }
 
-                val fileArgument = arguments[i] as? RequiredFileArgument ?: continue
+                val fileArgument = arguments[i]
                 val extensions = fileArgument.supportedExtensions
                 val parameter = parameters[i]
                 val fileName = parameter.requiredParam?.firstChildOfType(LatexNormalText::class)?.text ?: continue
