@@ -13,7 +13,10 @@ import java.awt.event.WindowEvent
 import javax.swing.*
 import javax.swing.text.PlainDocument
 
-class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrapper(null, false) {
+/**
+ * window to enter the information about a label defining command
+ */
+class EditLabelDefiningCommand(cmdName: String, position: Int) : DialogWrapper(null, false) {
     private val myCommandName : JTextField = JTextField(cmdName, 25)
     private val myCommandPosition : JTextField = JTextField("$position", 5)
 
@@ -25,6 +28,9 @@ class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrappe
 
     override fun createCenterPanel(): JComponent? = null
 
+    /**
+     * create the layout of the window
+     */
     override fun createNorthPanel(): JComponent? {
         val remoteComponent = JPanel(GridBagLayout())
         val gridBag = GridBag().setDefaultAnchor(GridBagConstraints.LINE_START)
@@ -49,6 +55,9 @@ class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrappe
         return remoteComponent
     }
 
+    /**
+     * validate the input so it is not empty and the Int value is in possible range
+     */
     override fun doValidateAll(): MutableList<ValidationInfo> {
         val list = mutableListOf<ValidationInfo>()
         if (myCommandName.text.trim().isEmpty()) {
@@ -60,10 +69,16 @@ class TexifyDefineLabelingCommand(cmdName: String, position: Int) : DialogWrappe
         return list
     }
 
+    /**
+     * return the name of the command
+     */
     fun getMyCommandName() : String {
         return myCommandName.text
     }
 
+    /**
+     * return the position of the label
+     */
     fun getMyCommandPosition() : Int {
         return myCommandPosition.text.toInt()
     }
