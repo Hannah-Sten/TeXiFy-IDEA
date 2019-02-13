@@ -19,8 +19,6 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     companion object {
         private const val NAME_LABEL = " Name of command"
         private const val POSITION_LABEL = " Position of label parameter"
-        @JvmStatic fun getNameLabel() = NAME_LABEL
-        @JvmStatic fun getPositionLabel() = POSITION_LABEL
 
         private const val NAME_LABEL_WIDTH = 200
         private const val POSITION_LABEL_WIDTH = 150

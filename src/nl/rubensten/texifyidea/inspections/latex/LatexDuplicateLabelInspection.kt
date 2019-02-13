@@ -28,10 +28,13 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      * checks if any label is used more than once
      */
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+
         // save all labels defined by label commands
         val definedLabels = mutableMapOf<String, LatexCommands>()
+
         // save all labels defined by bibitem commands
         val definedBibitems = mutableMapOf<String, LatexCommands>()
+
         // store the markers identified by the marked command to prevent to mark a command twice
         val markedCommands = mutableMapOf<PsiElement, ProblemDescriptor>()
 

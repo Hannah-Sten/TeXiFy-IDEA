@@ -119,14 +119,10 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val nextIndex = order(currentCmd)
 
             // Same level.
-            if (currentIndex == nextIndex) {
-                registerSameLevel(sections, child, currentCmd, treeElements, numbering)
-            }
-            else if (nextIndex > currentIndex) {
-                registerDeeper(sections, child, numbering)
-            }
-            else {
-                registerHigher(sections, child, currentCmd, treeElements, numbering)
+            when {
+                currentIndex == nextIndex -> registerSameLevel(sections, child, currentCmd, treeElements, numbering)
+                nextIndex > currentIndex -> registerDeeper(sections, child, numbering)
+                else -> registerHigher(sections, child, currentCmd, treeElements, numbering)
             }
         }
 

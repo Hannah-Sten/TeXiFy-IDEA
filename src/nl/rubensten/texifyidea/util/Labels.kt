@@ -8,7 +8,6 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.settings.TexifySettings
-import kotlin.streams.toList
 
 /**
  * Finds all the defined labels in the fileset of the file.
@@ -73,8 +72,7 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
 /**
  * Finds all defined labels within a given file.
  *
- * @param file
- *         The file to analyse the file set of.
+ * @receiver The file to analyse the file set of.
  * @return The found label commands.
  */
 fun PsiFile.findLabelingCommands(): Collection<LatexCommands> = findLabelingCommandsSequence().toList()

@@ -25,7 +25,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     override fun createComponent(): JComponent? {
         table = TexifyConfigurableLabelCommands(settings)
 
-        val test = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+        return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
@@ -37,8 +37,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 add(table.getTable())
             })
         }
-
-        return test
     }
 
     private fun JPanel.addCheckbox(message: String): JCheckBox {
