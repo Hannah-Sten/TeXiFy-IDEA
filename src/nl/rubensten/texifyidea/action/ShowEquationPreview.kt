@@ -15,6 +15,7 @@ import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.ui.EquationPreviewToolWindow
 import nl.rubensten.texifyidea.ui.PreviewFormUpdater
 import nl.rubensten.texifyidea.util.inMathContext
+import nl.rubensten.texifyidea.util.findOuterMathEnvironment
 
 /**
  * @author Sergei Izmailov
@@ -30,7 +31,7 @@ class ShowEquationPreview : EditorAction("Equation preview", TexifyIcons.EQUATIO
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         val element: PsiElement? = getElement(file, project, textEditor) ?: return
 
-        val outerMathEnvironment = findOuterMathEnvironment(element) ?: return
+        val outerMathEnvironment = element.findOuterMathEnvironment() ?: return
 
         val toolWindowId = "Equation Preview"
         val toolWindowManager = ToolWindowManager.getInstance(project)
