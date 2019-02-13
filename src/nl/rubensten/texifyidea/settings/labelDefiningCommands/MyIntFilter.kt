@@ -13,9 +13,6 @@ class MyIntFilter: DocumentFilter() {
         if (content.toString().isConvertibleToInt()) {
             super.insertString(fb, offset, string, attr)
         }
-        else {
-            TODO("Weiß der Geier was da hin soll...")
-        }
     }
 
     override fun replace(fb: FilterBypass?, offset: Int, length: Int, text: String?, attrs: AttributeSet?) {
@@ -26,9 +23,6 @@ class MyIntFilter: DocumentFilter() {
         if (content.toString().isConvertibleToInt()) {
             super.replace(fb, offset, length, text, attrs)
         }
-        else {
-            TODO("Weiß der Geier was da hin soll...")
-        }
     }
 
     override fun remove(fb: FilterBypass?, offset: Int, length: Int) {
@@ -38,9 +32,6 @@ class MyIntFilter: DocumentFilter() {
         content.delete(offset, offset + length)
         if (content.toString().isNumericOrEmpty()) {
             super.remove(fb, offset, length)
-        }
-        else {
-            TODO("Weiß der Geier was da hin soll...")
         }
     }
     
