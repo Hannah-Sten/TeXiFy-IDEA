@@ -7,7 +7,7 @@ import javax.swing.text.DocumentFilter
 /**
  * This class is used to prevent wrong input for the position of the label parameter
  */
-class InputIntFilter: DocumentFilter() {
+class InputPosiblePositionFilter: DocumentFilter() {
     override fun insertString(fb: FilterBypass?, offset: Int, string: String?, attr: AttributeSet?) {
         val doc = fb?.document ?: return
         val content = StringBuilder()

@@ -22,7 +22,8 @@ class EditLabelDefiningCommand(cmdName: String, position: Int) : DialogWrapper(n
 
     init {
         title = "Define command with label"
-        (myCommandPosition.document as PlainDocument).documentFilter = InputIntFilter()
+        (myCommandName.document as PlainDocument).documentFilter = InputCommandNoSpaceFilter()
+        (myCommandPosition.document as PlainDocument).documentFilter = InputPosiblePositionFilter()
         super.init()
     }
 
