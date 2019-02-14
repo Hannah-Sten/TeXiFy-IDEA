@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.settings.labelDefiningCommands
+package nl.rubensten.texifyidea.settings.labeldefiningcommands
 
 import com.intellij.util.ui.ItemRemovable
 import javax.swing.table.DefaultTableModel

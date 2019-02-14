@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.settings.labelDefiningCommands
+package nl.rubensten.texifyidea.settings.labeldefiningcommands
 
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator

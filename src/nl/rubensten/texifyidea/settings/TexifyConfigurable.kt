@@ -1,7 +1,7 @@
 package nl.rubensten.texifyidea.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
-import nl.rubensten.texifyidea.settings.labelDefiningCommands.TexifyConfigurableLabelCommands
+import nl.rubensten.texifyidea.settings.labeldefiningcommands.TexifyConfigurableLabelCommands
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JCheckBox

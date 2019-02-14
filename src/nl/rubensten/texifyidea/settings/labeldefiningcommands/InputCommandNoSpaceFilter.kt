@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.settings.labelDefiningCommands
+package nl.rubensten.texifyidea.settings.labeldefiningcommands
 
 import javax.swing.text.AttributeSet
 import javax.swing.text.DocumentFilter

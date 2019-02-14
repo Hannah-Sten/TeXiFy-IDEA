@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.settings.labelDefiningCommands
+package nl.rubensten.texifyidea.settings.labeldefiningcommands
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
@@ -23,7 +23,7 @@ class EditLabelDefiningCommand(cmdName: String, position: Int) : DialogWrapper(n
     init {
         title = "Define command with label"
         (myCommandName.document as PlainDocument).documentFilter = InputCommandNoSpaceFilter()
-        (myCommandPosition.document as PlainDocument).documentFilter = InputPosiblePositionFilter()
+        (myCommandPosition.document as PlainDocument).documentFilter = InputPossiblePositionFilter()
         super.init()
     }
 
