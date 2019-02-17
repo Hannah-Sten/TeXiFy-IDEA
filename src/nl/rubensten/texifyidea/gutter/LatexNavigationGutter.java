@@ -10,14 +10,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.FilesKt;
 import nl.rubensten.texifyidea.util.PsiCommandsKt;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,9 +53,9 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         boolean ignoreFileArgument = "\\RequirePackage".equals(fullCommand) ||
                 "\\usepackage".equals(fullCommand);
 
-        // Fetch the corresponding LatexNoMathCommand object.
+        // Fetch the corresponding LatexRegularCommand object.
         String commandName = fullCommand.substring(1);
-        LatexNoMathCommand commandHuh = LatexNoMathCommand.get(commandName);
+        LatexRegularCommand commandHuh = LatexRegularCommand.get(commandName);
         if (commandHuh == null && !ignoreFileArgument) {
             return;
         }
@@ -117,5 +119,16 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
                 .setTooltipText("Go to referenced file '" + file.getName() + "'");
 
         result.add(builder.createLineMarkerInfo(element));
+    }
+
+    @Override
+    public String getName() {
+        return "Navigate to referenced file";
+    }
+
+    @Nullable
+    @Override
+    public Icon getIcon() {
+        return TexifyIcons.LATEX_FILE;
     }
 }

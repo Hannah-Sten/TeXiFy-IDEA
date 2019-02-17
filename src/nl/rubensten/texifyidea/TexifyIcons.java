@@ -14,344 +14,344 @@ public class TexifyIcons {
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_FILE_BIG = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/latex-file-big.png"
+            "/nl/rubensten/texifyidea/icons/latex-file-big.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/latex-file.png"
+            "/nl/rubensten/texifyidea/icons/latex-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon PDF_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/pdf-file.png"
+            "/nl/rubensten/texifyidea/icons/pdf-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DVI_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dvi-file.png"
+            "/nl/rubensten/texifyidea/icons/dvi-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BIBLIOGRAPHY_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/bibliography-file.png"
+            "/nl/rubensten/texifyidea/icons/bibliography-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon CLASS_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/class-file.png"
+            "/nl/rubensten/texifyidea/icons/class-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOCUMENTED_LATEX_SOURCE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/doc-latex-file.png"
+            "/nl/rubensten/texifyidea/icons/doc-latex-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon STYLE_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/style-file.png"
+            "/nl/rubensten/texifyidea/icons/style-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/file.png"
+            "/nl/rubensten/texifyidea/icons/file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon TEMP_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/temp.png"
+            "/nl/rubensten/texifyidea/icons/temp.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon SYNCTEX_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/synctex-file.png"
+            "/nl/rubensten/texifyidea/icons/synctex-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon AUX_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/aux-file.png"
+            "/nl/rubensten/texifyidea/icons/aux-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon TABLE_OF_CONTENTS_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/toc-file.png"
+            "/nl/rubensten/texifyidea/icons/toc-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BBL_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/bbl-file.png"
+            "/nl/rubensten/texifyidea/icons/bbl-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon TEXT_FILE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/text-file.png"
+            "/nl/rubensten/texifyidea/icons/text-file.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BUILD = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/build.png"
+            "/nl/rubensten/texifyidea/icons/build.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon BUILD_BIB = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/bib-build.png"
+            "/nl/rubensten/texifyidea/icons/bib-build.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon LATEX_MODULE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/latex-module.png"
+            "/nl/rubensten/texifyidea/icons/latex-module.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_LATEX = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-tex.png"
+            "/nl/rubensten/texifyidea/icons/dot-tex.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_COMMAND = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-cmd.png"
+            "/nl/rubensten/texifyidea/icons/dot-cmd.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_LABEL = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-lbl.png"
+            "/nl/rubensten/texifyidea/icons/dot-lbl.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_BIB = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-bib.png"
+            "/nl/rubensten/texifyidea/icons/dot-bib.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_INCLUDE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-incl.png"
+            "/nl/rubensten/texifyidea/icons/dot-incl.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_ENVIRONMENT = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-env.png"
+            "/nl/rubensten/texifyidea/icons/dot-env.svg"
     );
 
     /**
      * Copyright (c) 2018 Ruben Schellekens
      */
     public static final Icon DOT_CLASS = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-cls.png"
+            "/nl/rubensten/texifyidea/icons/dot-cls.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_NUMBER = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-num.png"
+            "/nl/rubensten/texifyidea/icons/dot-num.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_CHAPTER = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-chap.png"
+            "/nl/rubensten/texifyidea/icons/dot-chap.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_PART = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-part.png"
+            "/nl/rubensten/texifyidea/icons/dot-part.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_SECTION = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-sec.png"
+            "/nl/rubensten/texifyidea/icons/dot-sec.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_SUBSECTION = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-subsec.png"
+            "/nl/rubensten/texifyidea/icons/dot-subsec.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_SUBSUBSECTION = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-subsubsec.png"
+            "/nl/rubensten/texifyidea/icons/dot-subsubsec.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_PARAGRAPH = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-par.png"
+            "/nl/rubensten/texifyidea/icons/dot-par.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon DOT_SUBPARAGRAPH = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/dot-subpar.png"
+            "/nl/rubensten/texifyidea/icons/dot-subpar.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_BOLD = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-bold.png"
+            "/nl/rubensten/texifyidea/icons/font-bold.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_ITALICS = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-italics.png"
+            "/nl/rubensten/texifyidea/icons/font-italics.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_UNDERLINE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-underline.png"
+            "/nl/rubensten/texifyidea/icons/font-underline.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_OVERLINE = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-overline.png"
+            "/nl/rubensten/texifyidea/icons/font-overline.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_SMALLCAPS = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-smallcaps.png"
+            "/nl/rubensten/texifyidea/icons/font-smallcaps.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_TYPEWRITER = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-mono.png"
+            "/nl/rubensten/texifyidea/icons/font-mono.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_STRIKETHROUGH = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-strike.png"
+            "/nl/rubensten/texifyidea/icons/font-strike.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon FONT_SLANTED = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/font-slanted.png"
+            "/nl/rubensten/texifyidea/icons/font-slanted.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon SUMATRA = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/sumatra.png"
+            "/nl/rubensten/texifyidea/icons/sumatra.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon WORD_COUNT = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/word-count.png"
+            "/nl/rubensten/texifyidea/icons/word-count.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon TOGGLE_STAR = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/toggle-star.png"
+            "/nl/rubensten/texifyidea/icons/toggle-star.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon STATS = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/stats.png"
+            "/nl/rubensten/texifyidea/icons/stats.svg"
     );
 
     /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon RIGHT = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/right.png"
+            "/nl/rubensten/texifyidea/icons/right.svg"
     );
 
     /**
-     * Copyright (c) 2017 Ruben Schellekens
+     * Copyright (c) 2018 Ruben Schellekens
      */
-    public static final Icon SETTINGS = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/settings.png"
+    public static final Icon EQUATION_PREVIEW = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/equation-preview.svg"
     );
 
     // From IntelliJ
     public static final Icon STRING = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/string.png"
+            "/nl/rubensten/texifyidea/icons/string.svg"
     );
 
     // From IntelliJ (modified)
     public static final Icon KEY_REQUIRED = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/key-required.png"
+            "/nl/rubensten/texifyidea/icons/key-required.svg"
     );
 
     // From IntelliJ (modified)
     public static final Icon KEY_USER_DEFINED = IconLoader.getIcon(
-            "/nl/rubensten/texifyidea/icons/key-user.png"
+            "/nl/rubensten/texifyidea/icons/key-user.svg"
     );
 
     /**

@@ -11,12 +11,12 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.InvalidDataException;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler;
-import nl.rubensten.texifyidea.util.OperatingSystem;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
     private String compilerArguments = null;
     private VirtualFile mainFile;
     // Enable auxDir by default on Windows only
-    private boolean auxDir = OperatingSystem.getType().equals(OperatingSystem.Type.WINDOWS);
+    private boolean auxDir = SystemInfo.isWindows;
     private boolean outDir = true;
     private Format outputFormat = Format.PDF;
     private String bibRunConfigId = "";
@@ -205,7 +205,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
      */
     void generateBibRunConfig(BibliographyCompiler defaultCompiler) {
         // On non-Windows systems, disable the out/ directory by default for bibtex to work
-        if (OperatingSystem.getType() != OperatingSystem.Type.WINDOWS) {
+        if (!SystemInfo.isWindows) {
             this.outDir = false;
         }
 
@@ -284,7 +284,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
      * Only enabled by default on Windows, because -aux-directory is MikTeX only.
      */
     public void setDefaultAuxiliaryDirectories() {
-        setAuxiliaryDirectories(OperatingSystem.getType() == OperatingSystem.Type.WINDOWS);
+        this.auxDir = SystemInfo.isWindows;
     }
 
     public void setDefaultOutputFormat() {
