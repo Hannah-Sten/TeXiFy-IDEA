@@ -19,19 +19,15 @@ class LatexLineMarkerProvider(private val daemonSettings: DaemonCodeAnalyzerSett
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         // Method separators before sectioning commands
-        if (daemonSettings.SHOW_METHOD_SEPARATORS && element is LatexCommands) {
-            val commandToken = element.commandToken.text
+        if (!daemonSettings.SHOW_METHOD_SEPARATORS || element !is LatexCommands) return null
 
-            if (commandToken in Magic.Command.sectionMarkers) {
-                return LineMarkersPass.createMethodSeparatorLineMarker(element, colorsManager)
-            }
+        val commandToken = element.commandToken.text
+        return if (commandToken in Magic.Command.sectionMarkers) {
+            LineMarkersPass.createMethodSeparatorLineMarker(element.commandToken, colorsManager)
         }
-
-        return null
+        else null
     }
 
     override fun collectSlowLineMarkers(elements: MutableList<PsiElement>,
-                                        result: MutableCollection<LineMarkerInfo<PsiElement>>) {
-
-    }
+                                        result: MutableCollection<LineMarkerInfo<PsiElement>>) = Unit
 }
