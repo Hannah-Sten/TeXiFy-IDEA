@@ -104,7 +104,7 @@ fun LatexCommands.isKnown(): Boolean {
 }
 
 /**
- * Get the `index+1`th required parameter of the command.
+ * Get the text contents of the `index+1`th required parameter of the command.
  *
  * @throws IllegalArgumentException When the index is negative.
  */
