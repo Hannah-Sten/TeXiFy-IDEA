@@ -12,7 +12,7 @@ class GotoSectionDefinitionSymbolContributor : TexifyGotoSymbolBase<LatexCommand
 
     override fun Project.findElements() = findSectionMarkers()
 
-    override fun LatexCommands.extractName() = (this as? LatexCommands)?.requiredParameter(0)
+    override fun LatexCommands.extractName() = requiredParameter(0)
 
     override fun LatexCommands.createNavigationItem() = NavigationItemUtil.createSectionMarkerNavigationItem(this)
 }
