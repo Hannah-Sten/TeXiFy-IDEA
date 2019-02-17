@@ -401,11 +401,6 @@ public class TexifyIcons {
                 return PDF_FILE;
             case "synctex.gz":
                 return SYNCTEX_FILE;
-            case "png":
-            case "jpg":
-            case "eps":
-                return FILE;
-                // TODO: add own icon for images
             default:
                 return FILE;
         }
