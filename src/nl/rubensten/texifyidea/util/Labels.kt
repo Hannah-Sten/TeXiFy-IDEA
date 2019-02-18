@@ -129,3 +129,12 @@ fun PsiElement.extractLabelName(): String = when (this) {
     is LatexCommands -> requiredParameter(0) ?: ""
     else -> text
 }
+
+/**
+ * Finds all section marker commands (as defined in [Magic.Command.sectionMarkers]) in the project.
+ *
+ * @return A list containing all the section marker [LatexCommands].
+ */
+fun Project.findSectionMarkers() = LatexCommandsIndex.getItems(this).filter {
+    it.commandToken.text in Magic.Command.sectionMarkers
+}

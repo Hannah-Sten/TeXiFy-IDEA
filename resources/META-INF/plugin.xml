@@ -348,8 +348,10 @@
         <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoLabelSymbolContributor"/>
         <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoCommandDefinitionSymbolContributor"/>
         <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoEnvironmentDefinitionSymbolContributor"/>
+        <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoSectionDefinitionSymbolContributor"/>
 
         <!-- Line markers -->
+        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexNavigationGutter"/>
         <runLineMarkerContributor language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexCompileGutter"/>
 

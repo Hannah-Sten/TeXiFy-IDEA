@@ -193,6 +193,19 @@ The current implementation of the Equation Preview was contributed by Sergei Izm
 * Add both `C:\Program Files\Inkscape` and `C:\Program Files\pdf2svg` to your PATH environment variable, for example by searching for Environment Variables on your computer, clicking 'Edit the system environment variables', clicking 'Environment Variables', and under System variables find the one named Path, edit it and insert the paths here. Make sure the paths are separated by a `;`.
 * Reboot your system.
 
+## Alpha channel: subscribing to the very latest features
+
+This plugin also has an alpha channel besides the default stable channel.
+The alpha channel contains the latest build with the latest features available, and is updated much more frequently than the stable channel.
+It is used for testing features before they are released in the stable channel, so alpha versions of the plugin may be more unstable.
+
+#### Subscribing to the alpha channel
+
+More detailed information is at https://www.jetbrains.com/help/idea/managing-plugins.html#repos but we will quickly summarize the steps.
+* Uninstall the plugin
+* Subscribe to the alpha channel by going to Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon, then use the url https://plugins.jetbrains.com/plugins/alpha/list
+* Install the plugin by going to Marketplace and searching for `TeXiFy-IDEA`, you should see the version next to the name is the alpha version.
+
 ## <a name="build-from-source">Building from source using IntelliJ</a>
 
 #### I know what I'm doing
