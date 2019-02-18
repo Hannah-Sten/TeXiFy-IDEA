@@ -119,6 +119,8 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
                 .setTooltipText("Go to referenced file '" + file.getName() + "'");
 
         result.add(builder.createLineMarkerInfo(element));
+
+        throw new RuntimeException("Test! Remove this exception pls.");
     }
 
     @Override
