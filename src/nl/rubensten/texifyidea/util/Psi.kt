@@ -108,7 +108,7 @@ fun PsiElement.inMathContext(): Boolean {
 }
 
 /**
- * Returns the outer math environment
+ * Returns the outer math environment.
  */
 fun PsiElement?.findOuterMathEnvironment(): PsiElement? {
     var element1 = this

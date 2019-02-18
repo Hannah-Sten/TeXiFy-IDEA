@@ -568,5 +568,11 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
         </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.latexmathtoggle.LatexMathToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexDisplayAlignToggle</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 </idea-plugin>
