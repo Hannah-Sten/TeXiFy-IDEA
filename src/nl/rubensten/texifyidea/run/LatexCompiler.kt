@@ -90,6 +90,43 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
     },
 
+    XELATEX("XeLaTeX", "xelatex") {
+
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+            val command = mutableListOf(runConfig.compilerPath ?: "xelatex")
+
+            // As usual, available command line options can be viewed with xelatex --help
+            //
+            command.add("-file-line-error")
+            command.add("-interaction=nonstopmode")
+            command.add("-synctex=1")
+
+            val outputFormatName = runConfig.outputFormat.name.toLowerCase()
+            if (outputFormatName == "dvi") {
+                command.add("-no-pdf") // Generates XDV output instead of PDF
+            }
+
+            if (runConfig.hasOutputDirectories()) {
+                command.add("-output-directory=" + moduleRoot.path + "/out")
+            }
+
+            // todo test next ones on Windows
+            // -aux-directory only exists on MikTeX
+            if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
+                command.add("-aux-directory=" + moduleRoot.path + "/auxil")
+            }
+
+            // Prepend root paths to the input search path
+            if (SystemInfo.isWindows) {
+                moduleRoots.forEach {
+                    command.add("-include-directory=${it.path}")
+                }
+            }
+
+            return command
+        }
+    },
+
     TEXLIVEONFLY("Texliveonfly", "texliveonfly") {
 
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
