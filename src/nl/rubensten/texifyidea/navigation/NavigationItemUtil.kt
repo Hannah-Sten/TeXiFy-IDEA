@@ -42,4 +42,20 @@ object NavigationItemUtil {
         val environmentName = psiElement.requiredParameter(0) ?: return null
         return GoToSymbolProvider.BaseNavigationItem(psiElement, environmentName, TexifyIcons.DOT_ENVIRONMENT)
     }
+
+    @JvmStatic
+    fun createSectionMarkerNavigationItem(psiElement: LatexCommands): NavigationItem? {
+        val sectionName = psiElement.requiredParameter(0) ?: return null
+        val icon = when (psiElement.commandToken.text) {
+            "\\part" -> TexifyIcons.DOT_PART
+            "\\chapter" -> TexifyIcons.DOT_CHAPTER
+            "\\subsection" -> TexifyIcons.DOT_SUBSECTION
+            "\\subsubsection" -> TexifyIcons.DOT_SUBSUBSECTION
+            "\\paragraph" -> TexifyIcons.DOT_PARAGRAPH
+            "\\subparagraph" -> TexifyIcons.DOT_SUBPARAGRAPH
+            // Also catches \section.
+            else -> TexifyIcons.DOT_SECTION
+        }
+        return GoToSymbolProvider.BaseNavigationItem(psiElement, sectionName, icon)
+    }
 }
