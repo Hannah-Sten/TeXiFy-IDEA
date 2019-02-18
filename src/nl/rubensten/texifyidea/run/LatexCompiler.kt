@@ -96,7 +96,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             val command = mutableListOf(runConfig.compilerPath ?: "xelatex")
 
             // As usual, available command line options can be viewed with xelatex --help
-            //
+            // On TeX Live, installing collection-xetex should be sufficient to get xelatex
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
@@ -110,7 +110,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-output-directory=" + moduleRoot.path + "/out")
             }
 
-            // todo test next ones on Windows
             // -aux-directory only exists on MikTeX
             if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
                 command.add("-aux-directory=" + moduleRoot.path + "/auxil")
