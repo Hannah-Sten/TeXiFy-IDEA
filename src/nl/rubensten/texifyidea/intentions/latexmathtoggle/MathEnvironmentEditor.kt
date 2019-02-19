@@ -16,9 +16,9 @@ class MathEnvironmentEditor(private val oldEnvName: String,
         val indent = document.lineIndentationByOffset(environment.textOffset)
 
         val body = if (isOneLineEnvironment(newEnvName)) {
-            OneLiner(getBody(environment.text)).getOneLiner()
+            OneLiner(getBody(indent)).getOneLiner()
         } else {
-            getBody(environment.text)
+            getBody(indent)
         }
         println(body)
         val newText = beginBlock(indent) + body.replace("\n", "\n$indent    ") + endBlock(indent)
@@ -49,7 +49,8 @@ class MathEnvironmentEditor(private val oldEnvName: String,
         "inline" -> environment.text.trimRange(1, 1).trim()
         "display" -> environment.text.trimRange(2, 2).replace("$indent    ", "").trim()
         else -> {
-            environment.text.trimRange("\\begin{}".length + oldEnvName.length, "\\end{}".length + oldEnvName.length).replace("\n$indent    ", "\n").trim()
+            environment.text.trimRange("\\begin{}".length + oldEnvName.length, "\\end{}".length + oldEnvName.length)
+                    .replace("$indent    ", "").trim()
         }
     }
 }
