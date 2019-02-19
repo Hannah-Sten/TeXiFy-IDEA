@@ -12,6 +12,13 @@ class OneLinerTest {
     }
 
     @Test
+    fun oneLineAlign() {
+        val equation = "\\alpha \\beta & asdf \\\\"
+        val goal = "\\alpha \\beta  asdf "
+        assertEquals(goal, OneLiner(equation).getOneLiner())
+    }
+
+    @Test
     fun simpleAlign() {
         val equation = "f(x, y) &= 3x + y \\\\\n" +
                 "&= 3x + 2y - y"

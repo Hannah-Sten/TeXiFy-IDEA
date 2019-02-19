@@ -1,7 +1,7 @@
 package nl.rubensten.texifyidea.intentions.latexmathtoggle
 
 class OneLiner(private val equation: String) {
-    fun getOneLiner(): String = if (isMultiLine()) reduce() else equation
+    fun getOneLiner(): String = reduce()
 
     private fun isMultiLine(): Boolean = equation.contains("\n")
 
