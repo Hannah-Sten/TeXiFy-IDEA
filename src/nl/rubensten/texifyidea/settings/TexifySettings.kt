@@ -38,10 +38,6 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
         XmlSerializerUtil.copyBean(state, this)
     }
 
-    @Deprecated(message = "Deprecated because of using more Kotlin like getters and setters",
-            replaceWith = ReplaceWith("labelCommands"))
-    fun getLabelCommandsLeadingSlash() = labelCommands
-
     fun addCommand(cmd: LabelingCommandInformation) {
         _labelCommands[cmd.commandName] = cmd
     }
@@ -49,6 +45,8 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     fun removeCommand(cmdName: String) {
         _labelCommands.remove(cmdName)
     }
+
+    fun getLabelAnyCommands(): Map<String, LabelingCommandInformation> = labelCommands.filter { it.value.labelPrevCmd }
 
     private fun String.addLeadingSlash(): String {
         return if (this[0] == '\\') this else "\\" + this
