@@ -133,7 +133,7 @@ fun PsiElement.extractLabelName(): String {
         is BibtexId -> idName()
         is LatexCommands -> {
             val position = labelingCommands[this.name]?.position ?: return ""
-            this.requiredParameter(position) ?: ""
+            this.requiredParameter(position - 1) ?: ""
         }
         else -> text
     }
