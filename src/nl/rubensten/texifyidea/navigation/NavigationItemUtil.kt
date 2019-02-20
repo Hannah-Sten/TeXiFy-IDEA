@@ -6,7 +6,9 @@ import com.intellij.util.xml.model.gotosymbol.GoToSymbolProvider
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.util.Magic
+import nl.rubensten.texifyidea.util.extractLabelName
 import nl.rubensten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.rubensten.texifyidea.util.requiredParameter
 
@@ -17,18 +19,25 @@ object NavigationItemUtil {
 
     @JvmStatic
     fun createLabelNavigationItem(psiElement: PsiElement): NavigationItem? {
-        when (psiElement) {
-            is LatexCommands -> return GoToSymbolProvider.BaseNavigationItem(psiElement,
-                    psiElement.requiredParameter(0) ?: return null,
-                    if (psiElement.name in Magic.Command.labels) TexifyIcons.DOT_LABEL else TexifyIcons.DOT_BIB
-            )
-            is BibtexId -> return GoToSymbolProvider.BaseNavigationItem(psiElement,
+        return when (psiElement) {
+            is LatexCommands -> {
+                val text = psiElement.extractLabelName()
+                if (text == "")  {
+                    return null
+                }
+                return GoToSymbolProvider.BaseNavigationItem(psiElement,
+                        text,
+                        if (psiElement.name in Magic.Command.labels ||
+                                TexifySettings.getInstance().getLabelCommandsLeadingSlash().containsKey(psiElement.name))
+                            TexifyIcons.DOT_LABEL else TexifyIcons.DOT_BIB
+                )
+            }
+            is BibtexId -> GoToSymbolProvider.BaseNavigationItem(psiElement,
                     psiElement.name ?: return null,
                     TexifyIcons.DOT_BIB
             )
+            else -> null
         }
-
-        return null
     }
 
     @JvmStatic

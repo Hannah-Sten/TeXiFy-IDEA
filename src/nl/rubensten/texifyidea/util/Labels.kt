@@ -93,9 +93,12 @@ fun PsiFile.findLabelingCommandsSequence(): Sequence<LatexCommands> {
  * @return The found label commands.
  */
 fun Project.findLabels(): Collection<PsiElement> {
+    val commandNames = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+
     val commands = LatexCommandsIndex.getItems(this)
+    val commandsFiltered = commands.filter { commandNames.containsKey(it.name) }
     val bibtexIds = BibtexIdIndex.getIndexedIds(this)
-    val result = ArrayList<PsiElement>(commands)
+    val result = ArrayList<PsiElement>(commandsFiltered)
     result.addAll(bibtexIds)
     return result.findLabels()
 }
@@ -124,10 +127,16 @@ fun Project.findLabels(key: String?): Collection<PsiElement> = findLabels().filt
 /**
  * Extracts the label name from the PsiElement given that the PsiElement represents a label.
  */
-fun PsiElement.extractLabelName(): String = when (this) {
-    is BibtexId -> idName()
-    is LatexCommands -> requiredParameter(0) ?: ""
-    else -> text
+fun PsiElement.extractLabelName(): String {
+    val labelingCommands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+    return when (this) {
+        is BibtexId -> idName()
+        is LatexCommands -> {
+            val position = labelingCommands[this.name] ?: return ""
+            this.requiredParameter(position - 1) ?: ""
+        }
+        else -> text
+    }
 }
 
 /**
