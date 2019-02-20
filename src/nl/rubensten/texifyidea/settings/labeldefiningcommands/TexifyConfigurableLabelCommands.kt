@@ -78,7 +78,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
      * show dialog to add a command and after correct input add it to the table
      */
     private fun addCommand() {
-        val dialog = EditLabelDefiningCommand("", 1, false)
+        val dialog = EditLabelDefiningCommand("\\", 1, false)
         if (dialog.showAndGet()) {
             tableInfo.addRow(arrayOf(dialog.getCommandName(), dialog.getCommandPosition(), dialog.getLabelAnyPrevCommand()))
             updateTableSize()

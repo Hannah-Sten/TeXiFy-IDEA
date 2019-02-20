@@ -3,8 +3,6 @@ package nl.rubensten.texifyidea.settings.labeldefiningcommands
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.components.JBLabel
-import com.intellij.util.ui.GridBag
-import com.intellij.util.ui.UIUtil
 import java.awt.Color
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -25,7 +23,7 @@ class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevComma
 
     init {
         title = "Define command with label"
-        (commandName.document as PlainDocument).documentFilter = InputCommandNoSpaceFilter()
+        (commandName.document as PlainDocument).documentFilter = InputCommandFilter()
         (commandPosition.document as PlainDocument).documentFilter = InputPossiblePositionFilter()
         super.init()
     }
