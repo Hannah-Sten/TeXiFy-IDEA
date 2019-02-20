@@ -12,7 +12,7 @@ object LatexPresentationFactory {
 
     @JvmStatic
     fun getPresentation(commands: LatexCommands) : ItemPresentation {
-        val labelingCommands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+        val labelingCommands = TexifySettings.getInstance().labelCommands
         if (labelingCommands.containsKey(commands.commandToken.text)) {
             return LatexLabelPresentation(commands)
         }

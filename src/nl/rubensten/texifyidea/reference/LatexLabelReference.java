@@ -10,6 +10,7 @@ import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
+import nl.rubensten.texifyidea.settings.LabelingCommandInformation;
 import nl.rubensten.texifyidea.settings.TexifySettings;
 import nl.rubensten.texifyidea.util.LabelsKt;
 import nl.rubensten.texifyidea.util.Magic;
@@ -56,7 +57,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
     @Override
     public Object[] getVariants() {
         PsiFile file = myElement.getContainingFile().getOriginalFile();
-        Map<String, Integer> commands = TexifySettings.getInstance().getLabelCommandsLeadingSlash();
+        Map<String, LabelingCommandInformation> commands = TexifySettings.getInstance().getLabelCommands();
 
         String command = myElement.getCommandToken().getText();
 
@@ -95,8 +96,9 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
             return LabelsKt.findLabelingCommands(file).stream().map(labelingCommand -> {
                 if (labelingCommand != null) {
                     List<String> parameters = labelingCommand.getRequiredParameters();
-                    if (parameters != null && parameters.size() >= commands.get(labelingCommand.getName())) {
-                        String label = parameters.get(commands.get(labelingCommand.getName()) - 1);
+                    LabelingCommandInformation cmdInfo = commands.get(labelingCommand.getName());
+                    if (parameters != null && cmdInfo != null && parameters.size() >= cmdInfo.getPosition()) {
+                        String label = parameters.get(cmdInfo.getPosition() - 1);
                         return LookupElementBuilder.create(label)
                                 .bold()
                                 .withInsertHandler(new LatexReferenceInsertHandler())

@@ -16,13 +16,13 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val presentableText: String
 
     init {
-        val labelingCommands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+        val labelingCommands = TexifySettings.getInstance().labelCommands
         if (!labelingCommands.containsKey(labelCommand.commandToken.text)) {
             val token = labelCommand.commandToken.text
             throw IllegalArgumentException("command '$token' is no \\label-command")
         }
 
-        val position = labelingCommands[labelCommand.commandToken.text ?: ""] ?: 1
+        val position = labelingCommands[labelCommand.commandToken.text ?: ""]?.position ?: 1
         presentableText = labelCommand.requiredParameter(position - 1) ?: "no label found"
 
         // Location string.

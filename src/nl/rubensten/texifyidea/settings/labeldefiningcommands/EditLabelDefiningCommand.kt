@@ -16,14 +16,17 @@ import javax.swing.text.PlainDocument
 /**
  * window to enter the information about a label defining command
  */
-class EditLabelDefiningCommand(cmdName: String, position: Int) : DialogWrapper(null, false) {
-    private val myCommandName : JTextField = JTextField(cmdName, 25)
-    private val myCommandPosition : JTextField = JTextField("$position", 5)
+class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevCommandStatus: Boolean) :
+        DialogWrapper(null, false) {
+    private val commandName: JTextField = JTextField(cmdName, 25)
+    private val commandPosition: JTextField = JTextField("$position", 5)
+    private val labelAnyPrevCommand: JCheckBox = JCheckBox("Labels a previous command like \\section",
+            labelAnyPrevCommandStatus)
 
     init {
         title = "Define command with label"
-        (myCommandName.document as PlainDocument).documentFilter = InputCommandNoSpaceFilter()
-        (myCommandPosition.document as PlainDocument).documentFilter = InputPossiblePositionFilter()
+        (commandName.document as PlainDocument).documentFilter = InputCommandNoSpaceFilter()
+        (commandPosition.document as PlainDocument).documentFilter = InputPossiblePositionFilter()
         super.init()
     }
 
@@ -34,22 +37,32 @@ class EditLabelDefiningCommand(cmdName: String, position: Int) : DialogWrapper(n
      */
     override fun createNorthPanel(): JComponent? {
         val remoteComponent = JPanel(GridBagLayout())
-        val gridBag = GridBag().setDefaultAnchor(GridBagConstraints.LINE_START)
-                .setDefaultInsets(UIUtil.DEFAULT_VGAP, UIUtil.DEFAULT_HGAP, 0, 0)
-                .setDefaultFill(GridBagConstraints.HORIZONTAL)
-        remoteComponent.add(JBLabel("Name: ", SwingConstants.RIGHT), gridBag.nextLine().next().weightx(0.0))
-        remoteComponent.add(myCommandName, gridBag.next().weightx(1.0))
-        remoteComponent.add(JBLabel("Position: ", SwingConstants.RIGHT), gridBag.nextLine().next().weightx(0.0))
-        remoteComponent.add(myCommandPosition, gridBag.next().weightx(1.0))
-
-        remoteComponent.add(JLabel("", SwingConstants.LEFT), gridBag.nextLine().next().weightx(0.0))
+        val gridBag = GridBagConstraints()
+        gridBag.fill = GridBagConstraints.HORIZONTAL
+        gridBag.gridx = 0
+        gridBag.gridy = 0
+        remoteComponent.add(JBLabel("Name: ", SwingConstants.RIGHT), gridBag)
+        gridBag.gridx = 1
+        remoteComponent.add(commandName, gridBag)
+        gridBag.gridx = 0
+        gridBag.gridy = 1
+        remoteComponent.add(JBLabel("Position: ", SwingConstants.RIGHT), gridBag)
+        gridBag.gridx = 1
+        remoteComponent.add(commandPosition, gridBag)
+        gridBag.gridx = 1
+        gridBag.gridy = 2
         val label = JLabel("Only required parameters count for the position", SwingConstants.LEFT)
         label.foreground = Color.GRAY
-        remoteComponent.add(label, gridBag.next().weightx(1.0))
+        remoteComponent.add(label, gridBag)
 
-        peer.window.addWindowListener(object: WindowAdapter() {
+        gridBag.gridx = 1
+        gridBag.gridy = 3
+        gridBag.gridwidth = 2
+        remoteComponent.add(labelAnyPrevCommand, gridBag)
+
+        peer.window.addWindowListener(object : WindowAdapter() {
             override fun windowOpened(e: WindowEvent?) {
-                myCommandName.requestFocus()
+                commandName.requestFocus()
             }
         })
 
@@ -61,10 +74,10 @@ class EditLabelDefiningCommand(cmdName: String, position: Int) : DialogWrapper(n
      */
     override fun doValidateAll(): MutableList<ValidationInfo> {
         val list = mutableListOf<ValidationInfo>()
-        if (myCommandName.text.trim().isEmpty()) {
+        if (commandName.text.trim().isEmpty()) {
             list.add(ValidationInfo("Name can not be empty"))
         }
-        if (!myCommandPosition.text.trim().possiblePosition()) {
+        if (!commandPosition.text.trim().possiblePosition()) {
             list.add(ValidationInfo("Position must be convertible to Int"))
         }
         return list
@@ -73,14 +86,21 @@ class EditLabelDefiningCommand(cmdName: String, position: Int) : DialogWrapper(n
     /**
      * return the name of the command
      */
-    fun getMyCommandName() : String {
-        return myCommandName.text
+    fun getCommandName(): String {
+        return commandName.text
     }
 
     /**
      * return the position of the label
      */
-    fun getMyCommandPosition() : Int {
-        return myCommandPosition.text.toInt()
+    fun getCommandPosition(): Int {
+        return commandPosition.text.toInt()
+    }
+
+    /**
+     * return whether the command labels any previous command or not
+     */
+    fun getLabelAnyPrevCommand(): Boolean {
+        return labelAnyPrevCommand.isSelected ?: false
     }
 }

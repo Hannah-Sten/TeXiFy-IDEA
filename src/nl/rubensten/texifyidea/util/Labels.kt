@@ -22,12 +22,12 @@ fun PsiFile.findLabelsInFileSet(): Set<String> = (findAllLabelsInFileSet() + fin
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
 fun PsiFile.findAllLabelsInFileSet(): Sequence<String> {
-    val commands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+    val commands = TexifySettings.getInstance().labelCommands
     return findLabelingCommandsSequence()
             .map { it.name to it.requiredParameters }
             .filter { it.second.isNotEmpty() }
             .mapNotNull {
-                val position = commands[it.first]
+                val position = commands[it.first]?.position
                 if (position != null && it.second.size >= position)
                     it.second[position - 1] else null
             }.filterNot { it == "" }
@@ -58,7 +58,7 @@ fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String>  = findBibtexItems().a
  * @return A collection of all label commands.
  */
 fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
-    val commandNames = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+    val commandNames = TexifySettings.getInstance().labelCommands
     return filter {
         if (it is LatexCommands) {
             commandNames.containsKey(it.name)
@@ -81,7 +81,7 @@ fun PsiFile.findLabelingCommands(): Collection<LatexCommands> = findLabelingComm
  * make a sequence of all commands which specify an label
  */
 fun PsiFile.findLabelingCommandsSequence(): Sequence<LatexCommands> {
-    val commandNames = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+    val commandNames = TexifySettings.getInstance().labelCommands
 
     return LatexCommandsIndex.getItemsInFileSet(this).asSequence()
             .filter { commandNames.containsKey(it.name) }
@@ -93,7 +93,7 @@ fun PsiFile.findLabelingCommandsSequence(): Sequence<LatexCommands> {
  * @return The found label commands.
  */
 fun Project.findLabels(): Collection<PsiElement> {
-    val commandNames = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+    val commandNames = TexifySettings.getInstance().labelCommands
 
     val commands = LatexCommandsIndex.getItems(this)
     val commandsFiltered = commands.filter { commandNames.containsKey(it.name) }
@@ -128,12 +128,12 @@ fun Project.findLabels(key: String?): Collection<PsiElement> = findLabels().filt
  * Extracts the label name from the PsiElement given that the PsiElement represents a label.
  */
 fun PsiElement.extractLabelName(): String {
-    val labelingCommands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+    val labelingCommands = TexifySettings.getInstance().labelCommands
     return when (this) {
         is BibtexId -> idName()
         is LatexCommands -> {
-            val position = labelingCommands[this.name] ?: return ""
-            this.requiredParameter(position - 1) ?: ""
+            val position = labelingCommands[this.name]?.position ?: return ""
+            this.requiredParameter(position) ?: ""
         }
         else -> text
     }

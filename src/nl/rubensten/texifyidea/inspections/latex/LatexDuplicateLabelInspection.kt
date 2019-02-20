@@ -39,11 +39,11 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         val markedCommands = mutableMapOf<PsiElement, ProblemDescriptor>()
 
         // list of defined commands
-        val commands = TexifySettings.getInstance().getLabelCommandsLeadingSlash()
+        val commands = TexifySettings.getInstance().labelCommands
 
         // nearly same code twice, one time for labeling commands and one time for \bibitem
         file.findLabelingCommandsSequence().forEach {
-            val position = commands[it.name] ?: return@forEach
+            val position = commands[it.name]?.position ?: return@forEach
             val label = it.requiredParameter(position - 1) ?: return@forEach
             // when the label is already in the list, mark both, the older and the actual command
             if (definedLabels.contains(label)) {

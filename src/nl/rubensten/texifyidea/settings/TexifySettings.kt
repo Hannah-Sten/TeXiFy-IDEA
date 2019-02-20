@@ -5,6 +5,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import java.awt.Label
 
 /**
  *
@@ -24,7 +25,12 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
 
-    var labelCommands = hashMapOf("\\label" to 1)
+    private var _labelCommands: HashMap<String, LabelingCommandInformation> =
+            hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true))
+    val labelCommands: Map<String, LabelingCommandInformation>
+    get() {
+        return _labelCommands.mapKeys { it.key.addLeadingSlash() }
+    }
 
     override fun getState() = this
 
@@ -32,9 +38,19 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
         XmlSerializerUtil.copyBean(state, this)
     }
 
-    fun getLabelCommandsLeadingSlash() = labelCommands.mapKeys { addLeadingSlash(it.key) }
+    @Deprecated(message = "Deprecated because of using more Kotlin like getters and setters",
+            replaceWith = ReplaceWith("labelCommands"))
+    fun getLabelCommandsLeadingSlash() = labelCommands
 
-    private fun addLeadingSlash(command: String): String {
-        return if (command[0] == '\\') command else "\\" + command
+    fun addCommand(cmd: LabelingCommandInformation) {
+        _labelCommands[cmd.commandName] = cmd
+    }
+
+    fun removeCommand(cmdName: String) {
+        _labelCommands.remove(cmdName)
+    }
+
+    private fun String.addLeadingSlash(): String {
+        return if (this[0] == '\\') this else "\\" + this
     }
 }
