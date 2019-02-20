@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.*
+import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.util.*
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -52,7 +53,8 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                               descriptors: MutableList<ProblemDescriptor>) {
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (cmd.name != "\\label") {
+            val labelAnyCommands = TexifySettings.getInstance().getLabelAnyCommands()
+            if (!labelAnyCommands.containsKey(cmd.name)) {
                 continue
             }
 
@@ -67,7 +69,9 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             }
 
             val prefix = Magic.Command.labeled[context.name]!!
-            if (!required[0].startsWith("$prefix:")) {
+            val position = labelAnyCommands[cmd.name]?.position ?: continue
+            val label = required[position - 1]
+            if (!label.startsWith("$prefix:")) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
                         "Unconventional label prefix",
