@@ -13,7 +13,6 @@ import nl.rubensten.texifyidea.util.requiredParameter
 
 open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label defining command to list") {
     private val settings = TexifySettings.getInstance()
-    override fun startInWriteAction(): Boolean = true
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {
