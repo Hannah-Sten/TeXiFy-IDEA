@@ -108,7 +108,8 @@ fun List<String>.removeIndents(): List<String> {
 
         if (originalLine.isBlank()) {
             list.add("")
-        } else {
+        }
+        else {
             noContentYet = false
             list.add(originalLine.substring(maxIndent))
         }
