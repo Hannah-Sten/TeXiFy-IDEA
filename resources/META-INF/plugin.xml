@@ -570,5 +570,11 @@
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
         </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 </idea-plugin>
