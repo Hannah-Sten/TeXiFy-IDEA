@@ -94,6 +94,11 @@ object Magic {
         )
 
         /**
+         * LaTeX commands that increase an counter which could be labeled
+         */
+        @JvmField val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeled.keys
+
+        /**
          * All commands that represent a reference to a label.
          */
         @JvmField val labelReference = hashSetOf(

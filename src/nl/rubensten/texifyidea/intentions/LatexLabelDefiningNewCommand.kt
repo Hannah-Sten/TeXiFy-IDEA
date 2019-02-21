@@ -7,9 +7,7 @@ import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.settings.LabelingCommandInformation
 import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.settings.labeldefiningcommands.EditLabelDefiningCommand
-import nl.rubensten.texifyidea.util.isLatexFile
-import nl.rubensten.texifyidea.util.parentOfType
-import nl.rubensten.texifyidea.util.requiredParameter
+import nl.rubensten.texifyidea.util.*
 
 open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label defining command to list") {
     private val settings = TexifySettings.getInstance()
@@ -53,11 +51,17 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
             return
         }
 
+        val childCommands = parent.childrenOfType(LatexCommands::class)
+        val firstLabel = childCommands.indexOfFirst { it.name == "\\label" }
+        val childCommandBeforeLabel = childCommands.take(firstLabel)
+
+
         val commandName = parent.requiredParameter(0) ?: return
         val position = selected.requiredParameter(0)?.replace("#", "")
                 ?.toIntOrNull() ?: 1
+        val labelAnyCommand = childCommandBeforeLabel.none { it.name in Magic.Command.increasesCounter }
 
-        val newCommand = EditLabelDefiningCommand(commandName, position, false)
+        val newCommand = EditLabelDefiningCommand(commandName, position, labelAnyCommand)
         if (newCommand.showAndGet()) {
             settings.addCommand(LabelingCommandInformation(newCommand.getCommandName(), newCommand.getCommandPosition(),
                     newCommand.getLabelAnyPrevCommand()))
