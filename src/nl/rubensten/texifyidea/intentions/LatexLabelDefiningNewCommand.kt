@@ -26,7 +26,10 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
             return false
         }
 
-        val parent = selected.parentOfType(LatexCommands::class) ?: return false
+        val parentElement = selected.parent
+        val parent = parentElement as? LatexCommands ?:
+                    parentElement.parentOfType(LatexCommands::class) ?: return false
+
         if (parent.name != "\\newcommand") {
             return false
         }
@@ -53,7 +56,7 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
 
         val commandName = parent.requiredParameter(0) ?: return
         val position = selected.requiredParameter(0)?.replace("#", "")
-                ?.toIntOrNull() ?: return
+                ?.toIntOrNull() ?: 1
 
         val newCommand = EditLabelDefiningCommand(commandName, position, false)
         if (newCommand.showAndGet()) {
