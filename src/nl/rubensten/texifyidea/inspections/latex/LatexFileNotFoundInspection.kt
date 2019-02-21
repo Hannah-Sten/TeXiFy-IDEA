@@ -36,9 +36,10 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         for (command in commands) {
             // Only consider default commands with a file argument.
             val default = LatexCommand.lookup(command.name) ?: continue
+
             // Remove optional arguments from list of commands
-            val arguments = default.arguments.filter { it is RequiredArgument }
-                    .map { it as RequiredArgument }
+            val arguments = default.arguments.mapNotNull { it as? RequiredArgument }
+
             // Remove optional parameters from list of parameters
             val parameters = command.parameterList.filter { it.requiredParam != null }
 
@@ -52,12 +53,16 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 val fileArgument = arguments[i] as? RequiredFileArgument ?: continue
                 val extensions = fileArgument.supportedExtensions
                 val parameter = parameters[i]
+
                 // get file name of the command or continue with next parameter
                 val fileName = parameter.requiredParam?.firstChildOfType(LatexNormalText::class)?.text ?: continue
+
                 // get root file of the document actual worked with
                 val root = file.findRootFile()
+
                 // get the virtual file of the root file
                 val containingDirectory = root.containingDirectory.virtualFile
+
                 // check if the given name is reachable form the root file
                 val relative = containingDirectory.findFile(fileName, extensions)
 
