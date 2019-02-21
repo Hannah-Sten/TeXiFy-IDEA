@@ -99,6 +99,6 @@ class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevComma
      * return whether the command labels any previous command or not
      */
     fun getLabelAnyPrevCommand(): Boolean {
-        return labelAnyPrevCommand.isSelected ?: false
+        return labelAnyPrevCommand.isSelected
     }
 }
