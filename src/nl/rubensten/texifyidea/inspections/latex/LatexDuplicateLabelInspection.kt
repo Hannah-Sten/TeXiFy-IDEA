@@ -43,6 +43,12 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
         // nearly same code twice, one time for labeling commands and one time for \bibitem
         file.findLabelingCommandsSequence().forEach {
+            // when label is defined in \newcommand ignore it, because there could be mor than one with #1 as parameter
+            val parent = it.parentOfType(LatexCommands::class)
+            if (parent != null && parent.name == "\\newcommand") {
+                return@forEach
+            }
+
             val position = commands[it.name]?.position ?: return@forEach
             val label = it.requiredParameter(position - 1) ?: return@forEach
             // when the label is already in the list, mark both, the older and the actual command
