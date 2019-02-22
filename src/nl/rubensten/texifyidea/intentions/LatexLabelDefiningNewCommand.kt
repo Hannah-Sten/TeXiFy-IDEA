@@ -20,24 +20,34 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         // check if selected part is \label
         val element = file.findElementAt(editor.caretModel.offset) ?: return false
         var selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
-        // check if command is in \newcommand command
 
+        // get parent element
         val parentElement = selected.parent
         val parent = parentElement as? LatexCommands
                 ?: parentElement.parentOfType(LatexCommands::class)
 
+        // when element is \label and parent is \newcommand check if command is already in list
         if (selected.name == "\\label" && parent?.name == "\\newcommand") {
-            val parameter = parent.requiredParameter(0) ?: return false
+            // get name of the defined command
+            val cmdName = parent.requiredParameter(0) ?: return false
             // check if there is already an entry wih this name
-            return !settings.labelCommands.containsKey(parameter)
+            return !settings.labelCommands.containsKey(cmdName)
         }
 
+        // check if the parent of the current position is \newcommand, if true, set the selected command to the parent
+        // command
         if (parent?.name == "\\newcommand") {
             selected = parent
         }
 
+        // when command is \newcommand, check if it contains a \label
         if (selected.name == "\\newcommand") {
-            return true
+            val children = selected.childrenOfType(LatexCommands::class)
+            if (children.none { it.name == "\\label" }) {
+                return false
+            }
+            val cmdName = selected.requiredParameter(0) ?: return false
+            return !settings.labelCommands.containsKey(cmdName)
         }
 
         return false
