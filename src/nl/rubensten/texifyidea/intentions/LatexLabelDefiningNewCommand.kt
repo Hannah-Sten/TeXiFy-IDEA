@@ -58,40 +58,54 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
             return
         }
 
-        // get current label
+        // check if selected part is \label
         val element = file.findElementAt(editor.caretModel.offset) ?: return
         val selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return
-        if (selected.name != "\\label") {
+
+        // get parent element
+        val parentElement = selected.parent
+        val parent = parentElement as? LatexCommands
+                ?: parentElement.parentOfType(LatexCommands::class)
+
+        val label: LatexCommands
+        val newCommand: LatexCommands
+
+        // map correct values to label and newCommand
+        if (selected.name == "\\label" && parent?.name == "\\newcommand") {
+            label = selected
+            newCommand = parent
+        }
+        else if (selected.name == "\\newcommand") {
+            label = selected.childrenOfType(LatexCommands::class)
+                    .firstOrNull { it.name == "\\label" } ?: return
+            newCommand = selected
+        }
+        else if (parent?.name == "\\newcommand") {
+            label = parent.childrenOfType(LatexCommands::class)
+                    .firstOrNull { it.name == "\\label" } ?: return
+            newCommand = parent
+        }
+        else {
             return
         }
-
-        // get parent command
-        val parent = selected.parentOfType(LatexCommands::class) ?: return
-        if (parent.name != "\\newcommand") {
-            return
-        }
-
-        // get position of label command in children list
-        val childCommands = parent.childrenOfType(LatexCommands::class)
-        val firstLabel = childCommands.indexOfFirst { it.name == "\\label" }
-        val childCommandBeforeLabel = childCommands.take(firstLabel)
 
         // get the name of the command
-        val commandName = parent.requiredParameter(0) ?: return
+        val commandName = newCommand.requiredParameter(0) ?: return
         // get the position of the label in new command, identified by the argument number of the first required parameter
         // of label command
-        val position = selected.requiredParameter(0)?.replace("#", "")
+        val position = label.requiredParameter(0)?.replace("#", "")
                 ?.toIntOrNull() ?: 1
         // check if any command before the label command increases an counter which could be labeled to set the checkbox
         // to a possible correct status
-        val labelAnyCommand = childCommandBeforeLabel.none { it.name in Magic.Command.increasesCounter }
+        val labelAnyCommand = newCommand.childrenOfType(LatexCommands::class)
+                .none { it.name in Magic.Command.increasesCounter }
 
         // initialize the dialog with computed values
-        val newCommand = EditLabelDefiningCommand(commandName, position, labelAnyCommand)
-        if (newCommand.showAndGet()) {
+        val newCommandPopUp = EditLabelDefiningCommand(commandName, position, labelAnyCommand)
+        if (newCommandPopUp.showAndGet()) {
             // save the computed values
-            settings.addCommand(LabelingCommandInformation(newCommand.getCommandName(), newCommand.getCommandPosition(),
-                    newCommand.getLabelAnyPrevCommand()))
+            settings.addCommand(LabelingCommandInformation(newCommandPopUp.getCommandName(),
+                    newCommandPopUp.getCommandPosition(), newCommandPopUp.getLabelAnyPrevCommand()))
         }
     }
 
