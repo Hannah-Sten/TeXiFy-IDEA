@@ -91,6 +91,9 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     private fun editCommand(table: JBTable, tableInfo: LabelCommandSettingsTableModel) {
         val row = table.selectedRow
         val command = rowToCommand(row)
+        if (command.commandName == "\\label") {
+            return
+        }
         val dialog = EditLabelDefiningCommand(command.commandName, command.position, command.labelPrevCmd)
         if (dialog.showAndGet()) {
             tableInfo.setValueAt(dialog.getCommandName(), row, 0)
@@ -104,6 +107,11 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
      * remove currently selected row
      */
     private fun removeCommand(jTable: JBTable) {
+        val row = table.selectedRow
+        val command = rowToCommand(row)
+        if (command.commandName == "\\label") {
+            return
+        }
         TableUtil.removeSelectedItems(jTable)
         updateTableSize()
     }
