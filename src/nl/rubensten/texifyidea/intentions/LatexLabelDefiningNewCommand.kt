@@ -19,23 +19,28 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
 
         // check if selected part is \label
         val element = file.findElementAt(editor.caretModel.offset) ?: return false
-        val selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
-        if (selected.name != "\\label") {
-            return false
-        }
-
+        var selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
         // check if command is in \newcommand command
-        val parentElement = selected.parent
-        val parent = parentElement as? LatexCommands ?:
-                    parentElement.parentOfType(LatexCommands::class) ?: return false
 
-        if (parent.name != "\\newcommand") {
-            return false
+        val parentElement = selected.parent
+        val parent = parentElement as? LatexCommands
+                ?: parentElement.parentOfType(LatexCommands::class)
+
+        if (selected.name == "\\label" && parent?.name == "\\newcommand") {
+            val parameter = parent.requiredParameter(0) ?: return false
+            // check if there is already an entry wih this name
+            return !settings.labelCommands.containsKey(parameter)
         }
 
-        val parameter = parent.requiredParameter(0) ?: return false
-        // check if there is already an entry wih this name
-        return !settings.labelCommands.containsKey(parameter)
+        if (parent?.name == "\\newcommand") {
+            selected = parent
+        }
+
+        if (selected.name == "\\newcommand") {
+            return true
+        }
+
+        return false
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
