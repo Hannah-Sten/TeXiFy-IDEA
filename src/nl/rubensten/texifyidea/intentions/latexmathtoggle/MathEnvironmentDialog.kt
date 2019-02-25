@@ -4,7 +4,11 @@ import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Package
-import javax.swing.*
+import java.awt.BorderLayout
+import java.awt.Color
+import javax.swing.JComboBox
+import javax.swing.JLabel
+import javax.swing.JPanel
 
 class MathEnvironmentDialog(private val envName: String?,
                             var result: String? = null) {
@@ -14,14 +18,9 @@ class MathEnvironmentDialog(private val envName: String?,
             setTitle("Convert math environment")
 
             // Create components.
-            val label = JLabel(
-                    """|<html>
-                        |<table>
-                        |<tr><td>Please select a math environment from the list.</tr>
-                        |</table>
-                        |</html>""".trimMargin(),
-                    SwingConstants.LEADING
-            )
+            val label = JLabel("Please select a math environment from the list.")
+            val hint = JLabel("Use Tab, then arrow keys for easy selection.")
+            hint.foreground = Color.GRAY
 
             // Get all the math environments.
             val environments: Array<String> = arrayOf(DefaultEnvironment.values()
@@ -39,9 +38,10 @@ class MathEnvironmentDialog(private val envName: String?,
 
             // Create panel.
             val panel = JPanel()
-            panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-            panel.add(label)
-            panel.add(comboBox)
+            panel.layout = BorderLayout()
+            panel.add(label, BorderLayout.NORTH)
+            panel.add(comboBox, BorderLayout.CENTER)
+            panel.add(hint, BorderLayout.SOUTH)
             setCenterPanel(panel)
 
             // Dialog stuff.
