@@ -23,7 +23,7 @@ open class LatexMathToggle : TexifyIntentionBase("Convert to other math environm
         }
 
         val element = file.findElementAt(editor.caretModel.offset) ?: return false
-        return element.inMathContext()
+        return element.inMathContext() || element.hasParent(LatexInlineMath::class)
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {

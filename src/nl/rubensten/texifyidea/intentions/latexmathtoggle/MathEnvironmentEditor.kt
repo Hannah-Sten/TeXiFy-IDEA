@@ -1,11 +1,9 @@
 package nl.rubensten.texifyidea.intentions.latexmathtoggle
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import nl.rubensten.texifyidea.util.endOffset
-import nl.rubensten.texifyidea.util.lineIndentationByOffset
-import nl.rubensten.texifyidea.util.runWriteAction
-import nl.rubensten.texifyidea.util.trimRange
+import nl.rubensten.texifyidea.util.*
 
 class MathEnvironmentEditor(private val oldEnvName: String,
                             private val newEnvName: String,
@@ -18,15 +16,38 @@ class MathEnvironmentEditor(private val oldEnvName: String,
         val document = editor.document
         val indent = document.lineIndentationByOffset(environment.textOffset)
 
-        // The number of characters to replace after the end block of the old environment ends.
-        val extra = if (newEnvName == "inline") indent.length else if (oldEnvName == "inline") 1 else 0
-        // Extra new line to be added at the end of the new environment if the old environment was inline.
-        val extraNewLine = if (oldEnvName == "inline") "\n$indent" else ""
-
         // The number of characters to replace before the begin block of the old environment starts.
-        val whitespace = if (newEnvName == "inline") indent.length + 1 else if (oldEnvName == "inline") 1 else 0
+        val whitespace = when {
+            newEnvName == "inline" -> indent.length + 1
+            oldEnvName == "inline" -> 1
+            else -> 0
+        }
         // Extra white space to be added to the beginning of the new environment, when converting from/to inline.
-        val extraWhiteSpace = if (newEnvName == "inline") " " else if (oldEnvName == "inline") "\n$indent" else ""
+        val extraWhiteSpace = when {
+            newEnvName == "inline" -> " "
+            oldEnvName == "inline" -> "\n$indent"
+            else -> ""
+        }
+
+        // The number of characters to replace after the end block of the old environment ends.
+        val extra = when {
+            newEnvName == "inline" -> {
+                // Only add the indentation if the next line is indented by at least the same amount as the end command
+                // of the old environment.
+                val nextLineIndent = document.lineIndentation(
+                        document.getLineNumber(environment.endOffset()) + 1)
+                if (nextLineIndent.length < indent.length) 0 else indent.length
+            }
+            oldEnvName == "inline" -> 1
+            else -> 0
+        }
+        // Extra new line to be added at the end of the new environment if the old environment was inline.
+        val extraNewLine = if (oldEnvName == "inline") {
+            // If the rest of the line is empty, add a new line without indentation.
+            val restOfLine = document.getText(TextRange(environment.endOffset(),
+                    document.getLineEndOffset(document.getLineNumber(environment.endOffset()))))
+            if (restOfLine.matches(Regex("^\\s*"))) "\n" else "\n$indent"
+        } else ""
 
         // Convert the body to one line if necessary.
         val body = if (isOneLineEnvironment(newEnvName)) {
