@@ -24,8 +24,16 @@ class MathEnvironmentEditor(private val oldEnvName: String,
         }
         // Extra white space to be added to the beginning of the new environment, when converting from/to inline.
         val extraWhiteSpace = when {
-            newEnvName == "inline" -> " "
-            oldEnvName == "inline" -> "\n$indent"
+            newEnvName == "inline" -> {
+                // Add indentation if indentation of old environment is bigger than the previous line.
+                val indentOfPreviousLine = document.lineIndentation(document.getLineNumber(environment.textOffset) - 1)
+                if (indentOfPreviousLine.length < indent.length) "\n$indent" else " "
+            }
+            oldEnvName == "inline" -> {
+                // Add a newline if there is no text on the line before the inline environment.
+                val prefixOnLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset)), environment.textOffset))
+                if (prefixOnLine.matches(Regex("^\\s*"))) " " else "\n$indent"
+            }
             else -> ""
         }
 
@@ -64,6 +72,9 @@ class MathEnvironmentEditor(private val oldEnvName: String,
             document.replaceString(environment.textOffset - whitespace,
                     environment.endOffset() + extra,
                     newText)
+            // Place caret at the end of math content (works most of the time).
+            editor.caretModel.moveToOffset(environment.textOffset +
+                    newText.length - extra - extraWhiteSpace.length - extraNewLine.length - endBlock(indent).length)
         }
     }
 

@@ -19,7 +19,7 @@ class MathEnvironmentDialog(private val envName: String?,
 
             // Create components.
             val label = JLabel("Please select a math environment from the list.")
-            val hint = JLabel("Use Tab, then arrow keys for easy selection.")
+            val hint = JLabel("Use the arrow keys for easy selection.")
             hint.foreground = Color.GRAY
 
             // Get all the math environments.
@@ -41,8 +41,10 @@ class MathEnvironmentDialog(private val envName: String?,
             panel.layout = BorderLayout()
             panel.add(label, BorderLayout.NORTH)
             panel.add(comboBox, BorderLayout.CENTER)
-            panel.add(hint, BorderLayout.SOUTH)
+//            panel.add(hint, BorderLayout.SOUTH)
             setCenterPanel(panel)
+
+            setPreferredFocusComponent(comboBox)
 
             // Dialog stuff.
             addOkAction()
