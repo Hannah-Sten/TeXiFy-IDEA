@@ -29,14 +29,15 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Syntax highlighting
 * Autocomplete of labels, (custom defined) commands and environments
 * Writer ergonomics - writing LaTeX made less cumbersome
-* Run configurations for LaTeX and BibTeX (pdfLaTeX, bibtex)
-* Inspections. Intentions. And heaps more inspections.
+* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
+* Inspections. Intentions. And heaps more inspections
 * Full BibTeX support
 * Formatter for LaTeX and BibTeX
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
 * SumatraPDF support with forward and backward search
 * Unicode math preview
+* Equation preview
 * Gutter icons for quick compilation and file includes
 * Fancy icons that fit in with the IntelliJ style
 * Brace matching
