@@ -125,7 +125,7 @@ test {
 
 // Set the attributes in the idea-version tag, otherwise they will get overwritten with a too narrow compatibility range.
 patchPluginXml {
-    sinceBuild '141.*'
+    sinceBuild '173.*'
     untilBuild ''
 }
 
