@@ -41,7 +41,6 @@ class MathEnvironmentDialog(private val envName: String?,
             panel.layout = BorderLayout()
             panel.add(label, BorderLayout.NORTH)
             panel.add(comboBox, BorderLayout.CENTER)
-//            panel.add(hint, BorderLayout.SOUTH)
             setCenterPanel(panel)
 
             setPreferredFocusComponent(comboBox)
