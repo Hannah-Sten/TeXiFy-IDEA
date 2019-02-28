@@ -1,7 +1,8 @@
-[![Build Status](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA.svg?branch=master)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
-[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/TeXiFy-IDEA)
-[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
-[![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png)](https://www.paypal.me/RubenSchellekens)
+[![Travis (.org)](https://img.shields.io/travis/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
+![GitHub release](https://img.shields.io/github/release/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)
+[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
+[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
+[![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/RubenSchellekens)
 
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
