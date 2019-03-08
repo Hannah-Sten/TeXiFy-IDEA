@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
 import java.util.*
@@ -28,6 +29,8 @@ object PackageUtils {
             .toList()
 
     private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
+    private val TIKZ_IMPORT_COMMANDS = setOf("\\usetikzlibrary")
+    private val PGF_IMPORT_COMMANDS = setOf("\\usepgfplotslibrary")
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
@@ -123,7 +126,19 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedPackages(baseFile: PsiFile): Set<String> {
         val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
-        return getIncludedPackages(commands, HashSet()) as Set<String>
+        return getIncludedPackages(commands, HashSet())
+    }
+
+    @JvmStatic
+    fun getIncludedTikzLibraries(baseFile: PsiFile): Set<String> {
+        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        return getIncludedTikzLibraries(commands, HashSet())
+    }
+
+    @JvmStatic
+    fun getIncludedPgfLibraries(baseFile: PsiFile): Set<String> {
+        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        return getIncludedPgfLibraries(commands, HashSet())
     }
 
     /**
@@ -134,7 +149,7 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedPackagesList(baseFile: PsiFile): List<String> {
         val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
-        return getIncludedPackages(commands, ArrayList()) as List<String>
+        return getIncludedPackages(commands, ArrayList())
     }
 
     /**
@@ -145,7 +160,7 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedPackagesOfSingleFile(baseFile: PsiFile): Set<String> {
         val commands = LatexCommandsIndex.getItems(baseFile)
-        return getIncludedPackages(commands, HashSet()) as Set<String>
+        return getIncludedPackages(commands, HashSet())
     }
 
     /**
@@ -156,16 +171,37 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedPackagesOfSingleFileList(baseFile: PsiFile): List<String> {
         val commands = LatexCommandsIndex.getItems(baseFile)
-        return getIncludedPackages(commands, ArrayList()) as List<String>
+        return getIncludedPackages(commands, ArrayList())
     }
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
      */
     @JvmStatic
-    fun getIncludedPackages(commands: Collection<LatexCommands>, result: MutableCollection<String>): Collection<String> {
+    fun <T : MutableCollection<String>> getIncludedPackages(
+        commands: Collection<LatexCommands>,
+        result: T
+    ) = getPackagesFromCommands(commands, PACKAGE_COMMANDS, result)
+
+    @JvmStatic
+    fun <T : MutableCollection<String>> getIncludedTikzLibraries(
+        commands: Collection<LatexCommands>,
+        result: T
+    ) = getPackagesFromCommands(commands, TIKZ_IMPORT_COMMANDS, result)
+
+    @JvmStatic
+    fun <T : MutableCollection<String>> getIncludedPgfLibraries(
+        commands: Collection<LatexCommands>,
+        result: T
+    ) = getPackagesFromCommands(commands, PGF_IMPORT_COMMANDS, result)
+
+    private fun <T : MutableCollection<String>> getPackagesFromCommands(
+        commands: Collection<LatexCommands>,
+        packageCommands: Set<String>,
+        initial: T
+    ): T {
         for (cmd in commands) {
-            if (cmd.commandToken.text !in PACKAGE_COMMANDS) {
+            if (cmd.commandToken.text !in packageCommands) {
                 continue
             }
 
@@ -178,15 +214,15 @@ object PackageUtils {
 
             // Multiple includes.
             if (packageName.contains(",")) {
-                Collections.addAll(result, *packageName.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+                initial.addAll(packageName.split(",").dropLastWhile(String::isNullOrEmpty))
             }
             // Single include.
             else {
-                result.add(packageName)
+                initial.add(packageName)
             }
         }
 
-        return result
+        return initial
     }
 }
 

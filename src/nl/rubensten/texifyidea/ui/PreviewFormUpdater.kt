@@ -10,17 +10,18 @@ import javax.imageio.ImageIO
 /**
  * @author Sergei Izmailov
  */
-class PreviewFormUpdater(val previewForm: PreviewForm) {
+class PreviewFormUpdater(private val previewForm: PreviewForm) {
 
     var preamble = """
-        \usepackage{amsmath,amsthm,amssymb,amsfonts}
-        \usepackage{color}
-
         \pagestyle{empty}
+
+        \usepackage{color}
     """.trimIndent()
 
-    fun setEquationText(equationText: String) {
-        previewForm.setEquation(equationText)
+    var waitTime = 3L
+
+    fun setPreviewCode(previewCode: String) {
+        previewForm.setEquation(previewCode)
 
         try {
             val tempDirectory = createTempDir()
@@ -33,7 +34,7 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
                     $preamble
 
                     \begin{document}
-                    $equationText
+                    $previewCode
 
                     \end{document}
                 """.trimIndent()
@@ -92,7 +93,7 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
 
         executable.outputStream.close()
 
-        if (!executable.waitFor(3, TimeUnit.SECONDS)) {
+        if (!executable.waitFor(waitTime, TimeUnit.SECONDS)) {
             executable.destroy()
             previewForm.setLatexErrorMessage("$command took more than 3 seconds. Terminated.")
             return null
