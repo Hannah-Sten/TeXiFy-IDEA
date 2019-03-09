@@ -194,7 +194,7 @@
             </action>
 
             <!-- Show tikz preview -->
-            <action class="nl.rubensten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz _Picture">
+            <action class="nl.rubensten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz Picture">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
         </group>
