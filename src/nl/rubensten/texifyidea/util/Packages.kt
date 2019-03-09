@@ -4,12 +4,8 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
-import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 /**
  * @author Ruben Schellekens

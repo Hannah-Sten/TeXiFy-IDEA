@@ -12,6 +12,8 @@ import nl.rubensten.texifyidea.ui.PreviewFormUpdater
 import nl.rubensten.texifyidea.util.inMathContext
 
 /**
+ * Show a preview of a LaTeX equation in a separate window.
+ *
  * @author Sergei Izmailov
  */
 class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATION_PREVIEW) {

@@ -31,7 +31,7 @@ abstract class PreviewAction(name: String?, val icon: Icon?) : EditorAction(name
         val psiDocumentManager = PsiDocumentManager.getInstance(project)
         val document = psiDocumentManager.getDocument(containingFile)
         val textOffset = element.textOffset
-        val lineNumber = document?.getLineNumber(textOffset) ?: 0;
+        val lineNumber = document?.getLineNumber(textOffset) ?: 0
         val displayName = "${containingFile.name}:${lineNumber + 1}"
 
         val contentCount = toolWindow.contentManager.contentCount
