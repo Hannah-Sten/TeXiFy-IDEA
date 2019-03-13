@@ -125,12 +125,22 @@ object PackageUtils {
         return getIncludedPackages(commands, HashSet())
     }
 
+    /**
+     * Analyses the given file to finds all the imported tikz libraries in the included file set.
+     *
+     * @return A set containing all used package names.
+     */
     @JvmStatic
     fun getIncludedTikzLibraries(baseFile: PsiFile): Set<String> {
         val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
         return getIncludedTikzLibraries(commands, HashSet())
     }
 
+    /**
+     * Analyses the given file to finds all the imported pgfplots libraries in the included file set.
+     *
+     * @return A set containing all used package names.
+     */
     @JvmStatic
     fun getIncludedPgfLibraries(baseFile: PsiFile): Set<String> {
         val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
@@ -171,7 +181,7 @@ object PackageUtils {
     }
 
     /**
-     * Analyses all the given commands and reduces it to a set of all included packages.
+     * Gets all packages imported with [PACKAGE_COMMANDS].
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPackages(
@@ -179,18 +189,27 @@ object PackageUtils {
         result: T
     ) = getPackagesFromCommands(commands, PACKAGE_COMMANDS, result)
 
+    /**
+     * Gets all packages imported with [TIKZ_IMPORT_COMMANDS].
+     */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedTikzLibraries(
         commands: Collection<LatexCommands>,
         result: T
     ) = getPackagesFromCommands(commands, TIKZ_IMPORT_COMMANDS, result)
 
+    /**
+     * Gets all packages imported with [PGF_IMPORT_COMMANDS].
+     */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPgfLibraries(
         commands: Collection<LatexCommands>,
         result: T
     ) = getPackagesFromCommands(commands, PGF_IMPORT_COMMANDS, result)
 
+    /**
+     * Analyses all the given commands and reduces it to a set of all included packages.
+     */
     private fun <T : MutableCollection<String>> getPackagesFromCommands(
         commands: Collection<LatexCommands>,
         packageCommands: Set<String>,

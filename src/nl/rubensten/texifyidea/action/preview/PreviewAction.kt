@@ -12,7 +12,29 @@ import nl.rubensten.texifyidea.ui.EquationPreviewToolWindow
 import nl.rubensten.texifyidea.ui.PreviewFormUpdater
 import javax.swing.Icon
 
+/**
+ * The [PreviewAction] class is a wrapper around an action that displays a preview to the user.
+ *
+ * This preview is pretty general, you can display pretty much any part of the user's document, depending
+ * on the goal of the implementation. This class has been used to create both the [ShowEquationPreview] Action
+ * and the [ShowTikzPreview] Action for example.
+ *
+ * To create a new Preview Action, simply extend this class and call the [displayPreview] function
+ * when appropriate.
+ *
+ * @author Sergei Izmailov
+ * @author FalseHonesty
+ */
 abstract class PreviewAction(name: String?, val icon: Icon?) : EditorAction(name, icon) {
+
+    /**
+     * This function is used to display the preview requested as the name suggests.
+     *
+     * In order to configure the minimal document produced, pass in a lambda to [config].
+     * There you can change the document's preamble and content easily.
+     *
+     * @see [ShowTikzPreview.actionPerformed]
+     */
     protected fun displayPreview(
         project: Project,
         element: PsiElement,
