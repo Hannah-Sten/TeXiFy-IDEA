@@ -24,6 +24,9 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
 
+    // Index of selected combobox item
+    var automaticQuoteReplacement = 0
+
     override fun getState() = this
 
     override fun loadState(state: TexifySettings) {

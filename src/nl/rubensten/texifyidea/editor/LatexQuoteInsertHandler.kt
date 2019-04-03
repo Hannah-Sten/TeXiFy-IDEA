@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.settings.TexifySettings
 
 /**
  * This class performs smart quote substitution. When this is enabled, it will replace double quotes " and single quotes ' with the appropriate LaTeX symbols.
@@ -15,10 +16,9 @@ import nl.rubensten.texifyidea.file.LatexFileType
 open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        // todo check if enabled and which replacement
 
-        // Only do this for latex files
-        if (file.fileType != LatexFileType) {
+        // Only do this for latex files and if the option is enabled
+        if (file.fileType != LatexFileType || TexifySettings.getInstance().automaticQuoteReplacement == 0) {
             return super.charTyped(char, project, editor, file)
         }
 
@@ -39,8 +39,28 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         // This behaviour is inspired by the smart quotes functionality of TeXworks, source:
         // https://github.com/TeXworks/texworks/blob/2f902e2e429fad3e2bbb56dff07c823d1108adf4/src/CompletingEdit.cpp#L762
 
-        val openingQuotes = "``"
-        val closingQuotes = "''"
+        var openingQuotes = ""
+        var closingQuotes = ""
+
+        // Use hard-coded order of options: 0 is off, 1 is TeX ligatures, 2 is TeX commands
+        val quoteSetting = TexifySettings.getInstance().automaticQuoteReplacement
+
+        if (quoteSetting == 1 && char == '"') {
+            openingQuotes = "``"
+            closingQuotes = "''"
+        }
+        else if (quoteSetting == 2 && char == '"') {
+            openingQuotes = "\\lq\\lq{}"
+            closingQuotes = "\\rq\\rq{}"
+        }
+        else if (quoteSetting == 1 && char == '\'') {
+            openingQuotes = "`"
+            closingQuotes = "'"
+        }
+        else if (quoteSetting == 2 && char == '\'') {
+            openingQuotes = "\\lq{}"
+            closingQuotes = "\\rq{}"
+        }
 
         // The default replacement of the typed double quotes is a pair of closing quotes
         var replacement = closingQuotes
@@ -69,7 +89,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         document.insertString(offset - 1, replacement)
 
         // Move the cursor behind the replacement which replaced the typed char
-        caret.moveToOffset(offset + 1)
+        caret.moveToOffset(offset + replacement.length - 1)
 
         return super.charTyped(char, project, editor, file)
     }

@@ -31,7 +31,6 @@ open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
             return super.charTyped(char, project, editor, file)
         }
 
-        // todo when is a two character range every equal to a double quote?
         if (document.getText((offset..offset + 1).toTextRange()) == "\"") {
             document.deleteString(offset, offset + 1)
             return Result.STOP
