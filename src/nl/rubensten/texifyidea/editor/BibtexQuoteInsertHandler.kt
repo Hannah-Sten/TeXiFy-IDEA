@@ -8,6 +8,8 @@ import nl.rubensten.texifyidea.file.BibtexFileType
 import nl.rubensten.texifyidea.util.toTextRange
 
 /**
+ * This class provides the auto-insertion of a second double quote when one double quote is typed in bibtex files.
+ *
  * @author Ruben Schellekens
  */
 open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
@@ -29,6 +31,7 @@ open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
             return super.charTyped(char, project, editor, file)
         }
 
+        // todo when is a two character range every equal to a double quote?
         if (document.getText((offset..offset + 1).toTextRange()) == "\"") {
             document.deleteString(offset, offset + 1)
             return Result.STOP
