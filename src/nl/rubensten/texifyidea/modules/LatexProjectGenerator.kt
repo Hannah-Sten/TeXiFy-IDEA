@@ -30,7 +30,10 @@ class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
 
     // This behaviour was inspired by the Julia plugin, see
     // https://github.com/JuliaEditorSupport/julia-intellij/blob/master/src/org/ice1000/julia/lang/module/julia-projects.kt
-    override fun createStep(projectGenerator: DirectoryProjectGenerator<TexifySettings>?, callback: AbstractNewProjectStep.AbstractCallback<TexifySettings>?) = ProjectSettingsStepBase(projectGenerator, AbstractNewProjectStep.AbstractCallback<TexifySettings>())
+    override fun createStep(
+            projectGenerator: DirectoryProjectGenerator<TexifySettings>,
+            callback: AbstractNewProjectStep.AbstractCallback<TexifySettings>
+    ) = ProjectSettingsStepBase(projectGenerator, AbstractNewProjectStep.AbstractCallback<TexifySettings>())
 
     override fun getName() = "LaTeX"
 
