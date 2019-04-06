@@ -77,7 +77,7 @@ class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
             val isBibtexEnabled = false // todo
 
             // Add a default LaTeX file
-            val sourcePath = baseDir.path + File.pathSeparator + "src"
+            val sourcePath = baseDir.path + File.separator + "src"
             addMainFile(project, sourcePath, isBibtexEnabled)
 
 //        if (isBibtexEnabled) {
