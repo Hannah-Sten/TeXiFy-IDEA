@@ -3,18 +3,26 @@ package nl.rubensten.texifyidea.modules
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep
 import com.intellij.ide.util.projectWizard.CustomStepProjectGenerator
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.externalSystem.model.project.settings.ConfigurationData
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.ModifiableModelsProvider
 import com.intellij.openapi.roots.ModifiableRootModel
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.AbstractActionWithPanel
 import com.intellij.platform.DirectoryProjectGenerator
 import com.intellij.platform.DirectoryProjectGeneratorBase
 import com.intellij.platform.ProjectGeneratorPeer
+import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.settings.TexifySettings
+import nl.rubensten.texifyidea.templates.LatexTemplatesFactory
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import javax.swing.Icon
 
 /**
@@ -44,10 +52,103 @@ class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
     override fun createPeer(): ProjectGeneratorPeer<TexifySettings> = LatexProjectGeneratorPeer()
 
     override fun generateProject(project: Project, baseDir: VirtualFile, settings: TexifySettings, module: Module) {
+
         val modifiableModel: ModifiableRootModel = ModifiableModelsProvider.SERVICE.getInstance().getModuleModifiableModel(module)
 
-        // Reuse the setup for IntelliJ
-        LatexModuleBuilder().setupRootModel(modifiableModel)
+        val rootModel = module.rootManager.modifiableModel
+
+        // Behaviour inspired by LatexModuleBuilder, but it is slightly different (based on the Julia plugin)
+        val fileSystem = LocalFileSystem.getInstance()
+
+        /** Create a directory in a base directory unless it already exists. */
+        fun findOrCreate(baseDir: VirtualFile, dir: String, module: Module) =
+                baseDir.findChild(dir) ?: baseDir.createChildDirectory(module, dir)
+
+        // We can only write to disk in a runWriteAction
+        ApplicationManager.getApplication().runWriteAction {
+
+            // Add source, auxil and output directories
+            rootModel.contentEntries.firstOrNull()?.apply {
+                addSourceFolder(findOrCreate(baseDir, "src", module), false)
+                addExcludeFolder(findOrCreate(baseDir, "auxil", module))
+                addExcludeFolder(findOrCreate(baseDir, "out", module))
+            }
+
+            val isBibtexEnabled = false // todo
+
+            // Add a default LaTeX file
+            val sourcePath = baseDir.path + File.pathSeparator + "src"
+            addMainFile(project, sourcePath, isBibtexEnabled)
+
+//        if (isBibtexEnabled) {
+//            addBibFile(project, sourcePath)
+//        }
+
+
+            ModifiableModelsProvider.SERVICE.getInstance().commitModuleModifiableModel(modifiableModel)
+        }
+    }
+
+
+    // todo refactor duplicate code
+    /**
+     * Creates the main.tex file and applies the default file template.
+     *
+     * @param project
+     *      The project to add the file to.
+     * @param path
+     *      The directory path of the file (no seperator and no file name).
+     */
+    private fun addMainFile(project: Project, path: String, isBibtexEnabled: Boolean) {
+        val mainFilePath = path + File.separator + "main.tex"
+        val mainFile = File(mainFilePath)
+
+        // Create main file.
+        try {
+            mainFile.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw TeXception("Problem with creating main .tex file.", e)
+        }
+
+        // Apply template.
+        val template = if (isBibtexEnabled) {
+            LatexTemplatesFactory.fileTemplateTexWithBib
+        } else {
+            LatexTemplatesFactory.fileTemplateTex
+        }
+        val templateText = LatexTemplatesFactory.getTemplateText(project, template)
+
+        try {
+            FileOutputStream(mainFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw TeXception("Could not apply .tex template to main file.", e)
+        }
+
+    }
+
+    private fun addBibFile(project: Project, path: String) {
+        val bibFilePath = path + File.separator + "main.bib"
+        val bibFile = File(bibFilePath)
+
+        try {
+            bibFile.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw TeXception("Problem with creating main .bib file", e)
+        }
+
+        // Apply template.
+        val template = LatexTemplatesFactory.fileTemplateBib
+        val templateText = LatexTemplatesFactory.getTemplateText(project, template)
+
+        try {
+            FileOutputStream(bibFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw TeXception("Could not apply .bib template to main bibliography file.", e)
+        }
     }
 
 }

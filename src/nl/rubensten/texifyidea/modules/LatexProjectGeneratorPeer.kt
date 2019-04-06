@@ -42,6 +42,11 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
     override fun getComponent(): JComponent {
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             bibtexEnabled = JCheckBox("Configure with BibTeX support")
+
+            // todo In order to retrieve the value when creating project files, save to settings? But then it will never be updated again? How do other projects do this?
+//            bibtexEnabled.addActionListener {
+//
+//            }
             add(bibtexEnabled)
         }
     }
