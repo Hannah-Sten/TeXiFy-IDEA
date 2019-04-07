@@ -288,6 +288,26 @@ where the files `introduction.tex` and `example-theorems.tex` contain just the c
 \end{theorem}
 ```
 
+#### How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
+
+You can define a live template via File -> Settings... -> Editor -> Live Templates. For example, for the `itemize` environment, you could use the following template:
+
+```tex
+\begin{itemize}
+    \item $PARM1$
+\end{itemize}
+```
+
+Set the template to be applicable in LaTeX files.
+
+TODO: screenshot
+
+Once the live template is created, close the Settings dialog. Use Edit -> Macros -> Start Macro Recording and enter the live template abbreviation. Finish recording the macro, and name it. Via Settings -> Keymap, assign the macro a key binding such as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>.
+
+Now, you can use the macro key binding and hit <kbd>Enter</kbd> to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
+
+For commands, you can define templates for e.g. `\emph{$PARM1$}`.
+
 #### The Equation Preview does not work
 
 Make sure you have installed the dependencies, instructions are in the [Equation Preview](#equation-preview) section.
