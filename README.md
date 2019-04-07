@@ -300,7 +300,7 @@ You can define a live template via File -> Settings... -> Editor -> Live Templat
 
 Set the template to be applicable in LaTeX files.
 
-TODO: screenshot
+![Screenshot of live template UI, showing the template text above along with an abbreviation of itemize and a description of 'Add itemize env'. The macro is set to be 'Applicable in LaTeX' and expands with the Tab key.](doc/macro.png)
 
 Once the live template is created, close the Settings dialog. Use Edit -> Macros -> Start Macro Recording and enter the live template abbreviation. Finish recording the macro, and name it. Via Settings -> Keymap, assign the macro a key binding such as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>.
 
