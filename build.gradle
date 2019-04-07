@@ -131,13 +131,18 @@ task setupPycharm() {
     }
 }
 
-// Uncomment the following line and the line below in the intellij
-// block to debug against Pycharm instead of IntelliJ
-runIde.dependsOn(setupPycharm)
+// In order to debug with PyCharm, just add the -PusePycharm=true argument to your runIde run configuration.
+runIde {
+    if (project.hasProperty('usePycharm') && usePycharm == 'true') {
+        dependsOn(setupPycharm)
+    }
+}
 
 intellij {
-    alternativeIdePath ".gradle/ide/pycharm-${pycharmVersion}"
-    
+    if (project.hasProperty('usePycharm') && usePycharm == 'true') {
+        alternativeIdePath ".gradle/ide/pycharm-${pycharmVersion}"
+    }
+
     version '2018.3'
 }
 

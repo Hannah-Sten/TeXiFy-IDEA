@@ -9,8 +9,6 @@ import java.io.IOException
 
 /**
  * This class provides functionality to create default files from templates, which is useful for example when creating a new project.
- *
- * @author Thomas Schouten
  */
 class DefaultFileCreator(
         /** The project to add the file to. */
