@@ -36,8 +36,9 @@ import javax.swing.Icon
 class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
         CustomStepProjectGenerator<TexifySettings> {
 
-    // This behaviour was inspired by the Julia plugin, see
-    // https://github.com/JuliaEditorSupport/julia-intellij/blob/master/src/org/ice1000/julia/lang/module/julia-projects.kt
+    /** Keep a reference to the peer to get the value of the settings chosen by the user during project creation. */
+    private var peer: LatexProjectGeneratorPeer? = null
+
     override fun createStep(
             projectGenerator: DirectoryProjectGenerator<TexifySettings>,
             callback: AbstractNewProjectStep.AbstractCallback<TexifySettings>
@@ -49,10 +50,12 @@ class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
 
     override fun getLogo() = TexifyIcons.LATEX_MODULE!!
 
-    override fun createPeer(): ProjectGeneratorPeer<TexifySettings> = LatexProjectGeneratorPeer()
+    override fun createPeer(): ProjectGeneratorPeer<TexifySettings> = LatexProjectGeneratorPeer().also { peer = it }
 
     override fun generateProject(project: Project, baseDir: VirtualFile, settings: TexifySettings, module: Module) {
 
+        // This behaviour was inspired by the Julia plugin, see
+        // https://github.com/JuliaEditorSupport/julia-intellij/blob/master/src/org/ice1000/julia/lang/module/julia-projects.kt
         val modifiableModel: ModifiableRootModel = ModifiableModelsProvider.SERVICE.getInstance().getModuleModifiableModel(module)
 
         val rootModel = module.rootManager.modifiableModel
@@ -74,16 +77,17 @@ class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
                 addExcludeFolder(findOrCreate(baseDir, "out", module))
             }
 
-            val isBibtexEnabled = false // todo
+            val isBibtexEnabled: Boolean = peer?.bibtexEnabled?.isEnabled ?: false
 
             // Add a default LaTeX file
             val sourcePath = baseDir.path + File.separator + "src"
             addMainFile(project, sourcePath, isBibtexEnabled)
 
-//        if (isBibtexEnabled) {
-//            addBibFile(project, sourcePath)
-//        }
+            if (isBibtexEnabled) {
+                addBibFile(project, sourcePath)
+            }
 
+            rootModel.commit()
 
             ModifiableModelsProvider.SERVICE.getInstance().commitModuleModifiableModel(modifiableModel)
         }

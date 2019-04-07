@@ -1,10 +1,7 @@
 package nl.rubensten.texifyidea.modules
 
 import com.intellij.ide.util.projectWizard.SettingsStep
-import com.intellij.openapi.ui.ValidationInfo
-import com.intellij.platform.GeneratorPeerImpl
 import com.intellij.platform.ProjectGeneratorPeer
-import com.intellij.platform.WebProjectGenerator
 import nl.rubensten.texifyidea.settings.TexifySettings
 import java.awt.FlowLayout
 import javax.swing.JCheckBox
@@ -17,7 +14,7 @@ import javax.swing.JPanel
  */
 class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
 
-    private lateinit var bibtexEnabled: JCheckBox
+    lateinit var bibtexEnabled: JCheckBox
 
     private val settings = TexifySettings()
     private val listeners = ArrayList<ProjectGeneratorPeer.SettingsListener>()
@@ -42,17 +39,8 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
     override fun getComponent(): JComponent {
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             bibtexEnabled = JCheckBox("Configure with BibTeX support")
-
-            // todo In order to retrieve the value when creating project files, save to settings? But then it will never be updated again? How do other projects do this?
-//            bibtexEnabled.addActionListener {
-//
-//            }
             add(bibtexEnabled)
         }
     }
 
-    // todo save the setting?
-//    override fun updateDataModel() {
-//        builder.isBibtexEnabled = bibtexEnabled.isSelected
-//    }
 }
