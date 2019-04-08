@@ -257,6 +257,10 @@
                     text="S_lanted" description="Insert the command to make text appear slanted.">
                 <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default" />
             </action>
+
+            <action class="nl.rubensten.texifyidea.action.insert.InsertEmphasisAction" id="texify.insert.fontstyle.Emphasis"
+                    text="_Emphasis" description="Insert the command to emphasise text.">
+            </action>
         </group>
 
         <!-- SumatraPDF -->
