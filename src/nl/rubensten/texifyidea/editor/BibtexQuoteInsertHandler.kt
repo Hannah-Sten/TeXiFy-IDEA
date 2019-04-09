@@ -34,7 +34,7 @@ open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
 
         // Do not insert a quote when there is one right in front of the cursor
         if (document.getText(TextRange.from(offset, 1)) == "\"") {
-            document.deleteString(offset, offset)
+            document.deleteString(offset, offset + 1)
             return Result.STOP
         }
 
