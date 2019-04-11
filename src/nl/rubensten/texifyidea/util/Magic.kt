@@ -161,6 +161,11 @@ object Magic {
         @JvmField val classDefinitions = hashSetOf("\\ProvidesClass")
 
         /**
+         * All commands that define new packages.
+         */
+        @JvmField val packageDefinitions = hashSetOf("\\ProvidesPackage")
+
+        /**
          * All commands that define new environments.
          */
         @JvmField val environmentDefinitions = hashSetOf(
@@ -173,7 +178,7 @@ object Magic {
         /**
          * All commands that define stuff like classes, environments, and definitions.
          */
-        @JvmField val definitions = commandDefinitions + classDefinitions + environmentDefinitions
+        @JvmField val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
         /**
          * All commands that are able to redefine other commands.
