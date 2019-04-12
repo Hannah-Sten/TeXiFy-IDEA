@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.TexifyIcons
-import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.*
 import java.util.regex.Pattern
@@ -104,7 +103,7 @@ open class WordCountAction : AnAction(
      */
     private fun countWords(baseFile: PsiFile): Pair<Int, Int> {
         val fileSet = baseFile.referencedFileSet()
-                .filter { it.fileType == LatexFileType }
+                .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
