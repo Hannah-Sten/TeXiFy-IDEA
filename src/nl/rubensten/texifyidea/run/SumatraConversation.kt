@@ -4,6 +4,10 @@ import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.util.Log
+import java.io.InputStreamReader
+import java.io.BufferedReader
+
+
 
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
@@ -27,16 +31,43 @@ val isSumatraAvailable: Boolean by lazy {
 }
 
 private fun isSumatraInstalled(): Boolean {
+
+    val rt = Runtime.getRuntime()
+    val commands = arrayOf("start SumatraPDF")
+    val proc = rt.exec(commands)
+
+    val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
+
+    val stdError = BufferedReader(InputStreamReader(proc.errorStream))
+
+    // read the output from the command
+    println("Here is the standard output of the command:\n")
+    var s: String? = stdInput.readLine()
+    while (s != null) {
+        println(s)
+        s = stdInput.readLine()
+    }
+
+    // read any errors from the attempted command
+    println("Here is the standard error of the command (if any):\n")
+    s = stdError.readLine()
+    while (s != null) {
+        println(s)
+        s = stdError.readLine()
+    }
+
+    return false
+
     // Look up SumatraPDF registry key
-    val process = Runtime.getRuntime().exec(
-            "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
-    )
-
-    val br = process.inputStream.bufferedReader()
-    val firstLine = br.readLine() ?: return false
-    br.close()
-
-    return !firstLine.startsWith("ERROR:")
+//    val process = Runtime.getRuntime().exec(
+//            "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
+//    )
+//
+//    val br = process.inputStream.bufferedReader()
+//    val firstLine = br.readLine() ?: return false
+//    br.close()
+//
+//    return !firstLine.startsWith("ERROR:")
 }
 
 /**
@@ -66,12 +97,17 @@ object SumatraConversation {
 
     }
 
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
-            Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
+            // In case the user provided a custom path to SumatraPDF, add it to the path before executing
+            val processBuilder = ProcessBuilder("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath)
+            if (sumatraPath != null) {
+                processBuilder.environment()["Path"] = sumatraPath
+            }
+            processBuilder.start()
         }
     }
 

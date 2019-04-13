@@ -35,6 +35,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var outputFormat: LabeledComponent<ComboBox<LatexCompiler.Format>>
     private lateinit var bibliographyPanel: BibliographyPanel
 
+    /** Whether to enable the sumatraPath text field.  */
+    private var enableSumatraPath: JCheckBox? = null
+
+    /** Allow users to specify a custom path to SumatraPDF.  */
+    private var sumatraPath: TextFieldWithBrowseButton? = null
+
     override fun resetEditorFrom(runConfiguration: LatexRunConfiguration) {
         // Reset the selected compiler.
         compiler.component.selectedItem = runConfiguration.compiler
@@ -42,6 +48,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Reset the custom compiler path
         compilerPath.text = runConfiguration.compilerPath
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
+
+        // Reset the custom SumatraPDF path
+//        sumatraPath.text = runConfiguration.sumatraPath
 
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
