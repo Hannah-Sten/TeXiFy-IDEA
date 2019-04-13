@@ -67,7 +67,6 @@ dependencies {
     // From Kotlin documentation
     compile "org.jetbrains.kotlin:kotlin-stdlib"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "org.jetbrains.kotlin:kotlin-reflect"
 
     // just in case, version number specified in buildscript is used by default
     compile "org.jetbrains.kotlin:kotlin-reflect"
