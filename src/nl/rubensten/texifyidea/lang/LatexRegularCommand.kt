@@ -129,6 +129,8 @@ enum class LatexRegularCommand(
     LISTOFFIGURES("listoffigures"),
     LISTOFTABLES("listoftables"),
     LISTTABLENAME("listtablename", "name".asRequired(Type.TEXT)),
+    LOADCLASS("LoadClass", "options".asOptional(), "class".asRequired()),
+    LOADCLASSWITHOPTIONS("LoadClassWithOptions", "class".asRequired()),
     LOWERCASE("lowercase", "text".asRequired(Type.TEXT)),
     MAKEGLOSSARY("makeglossary"),
     MAKEINDEX("makeindex"),
