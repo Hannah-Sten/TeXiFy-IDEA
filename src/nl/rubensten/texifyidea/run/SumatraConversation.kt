@@ -56,18 +56,16 @@ private fun isSumatraInstalled(): Boolean {
         s = stdError.readLine()
     }
 
-    return false
-
     // Look up SumatraPDF registry key
-//    val process = Runtime.getRuntime().exec(
-//            "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
-//    )
-//
-//    val br = process.inputStream.bufferedReader()
-//    val firstLine = br.readLine() ?: return false
-//    br.close()
-//
-//    return !firstLine.startsWith("ERROR:")
+    val process = Runtime.getRuntime().exec(
+            "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
+    )
+
+    val br = process.inputStream.bufferedReader()
+    val firstLine = br.readLine() ?: return false
+    br.close()
+
+    return !firstLine.startsWith("ERROR:")
 }
 
 /**
@@ -85,11 +83,8 @@ object SumatraConversation {
     private val conversation: DDEClientConversation?
 
     init {
-        conversation = if (!isSumatraAvailable) {
-            null
-        }
-        else try {
-            DDEClientConversation()
+        try {
+            conversation = DDEClientConversation()
         }
         catch (e: NoClassDefFoundError) {
             throw TeXception("Native library DLLs could not be found.", e)

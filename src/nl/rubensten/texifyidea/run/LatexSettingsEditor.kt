@@ -32,14 +32,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     // The following options may or may not exist.
     private var auxDir: JCheckBox? = null
     private var outDir: JCheckBox? = null
-    private lateinit var outputFormat: LabeledComponent<ComboBox<LatexCompiler.Format>>
+    private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private lateinit var bibliographyPanel: BibliographyPanel
 
-    /** Whether to enable the sumatraPath text field.  */
-    private var enableSumatraPath: JCheckBox? = null
+    /** Whether to enable the sumatraPath text field. */
+    private lateinit var enableSumatraPath: JCheckBox
 
     /** Allow users to specify a custom path to SumatraPDF.  */
-    private var sumatraPath: TextFieldWithBrowseButton? = null
+    private lateinit var sumatraPath: TextFieldWithBrowseButton
 
     override fun resetEditorFrom(runConfiguration: LatexRunConfiguration) {
         // Reset the selected compiler.
@@ -50,7 +50,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
 
         // Reset the custom SumatraPDF path
-//        sumatraPath.text = runConfiguration.sumatraPath
+        sumatraPath.text = runConfiguration.sumatraPath
 
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
@@ -90,6 +90,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Apply custom compiler path if applicable
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
+
+        // Apply custom SumatraPDF path if applicable
+        runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
 
         // Apply custom compiler arguments
         runConfiguration.compilerArguments = compilerArguments.component.text
@@ -155,6 +158,34 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         panel.add(compilerPath)
 
+        // Optional custom path for SumatraPDF
+        if (SystemInfo.isWindows) {
+            enableSumatraPath = JCheckBox("Select custom path to SumatraPDF")
+            panel.add(enableSumatraPath)
+
+
+            sumatraPath = TextFieldWithBrowseButton().apply {
+                addBrowseFolderListener(
+                    TextBrowseFolderListener(
+                            FileChooserDescriptor(false, true, false, false, false, false)
+                                    .withTitle("Choose the folder which contains SumatraPDF.exe")
+                    )
+                )
+
+                isEnabled = false
+
+                addPropertyChangeListener("enabled") { e ->
+                    if (!(e.newValue as Boolean)) {
+                        this.setText(null)
+                    }
+                }
+            }
+
+            enableSumatraPath.addItemListener { e -> sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
+
+            panel.add(sumatraPath)
+        }
+
         // Optional custom compiler arguments
         val argumentsTitle = "Custom compiler arguments"
         val argumentsField = RawCommandLineEditor()
@@ -195,7 +226,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Output format.
         val cboxFormat = ComboBox(Format.values())
-        outputFormat = LabeledComponent.create<ComboBox<LatexCompiler.Format>>(cboxFormat, "Output format")
+        outputFormat = LabeledComponent.create<ComboBox<Format>>(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
 
