@@ -51,6 +51,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
             "\\label", "\\bibitem" -> return Result.CONTINUE
         }
 
+        // Only insert when a valid symbol has been typed.
+        val afterSymbol = c.toString()
+        if (!insertOnly.matches(afterSymbol)) {
+            return Result.CONTINUE
+        }
+
         // Insert squiggly brackets.
         if (element is LatexNormalText) {
             handleNormalText(element, editor, c)
@@ -125,12 +131,6 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         val relative = caret.offset - normalText.textOffset
 
         if (relative < 3 || text.length < relative - 1) {
-            return
-        }
-
-        // Only insert when a valid symbol has been typed.
-        val afterSymbol = char.toString()
-        if (!insertOnly.matches(afterSymbol)) {
             return
         }
 
