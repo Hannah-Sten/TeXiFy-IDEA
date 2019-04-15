@@ -10,8 +10,7 @@ import javax.swing.JComboBox
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class MathEnvironmentDialog(private val envName: String?,
-                            var result: String? = null) {
+class MathEnvironmentDialog(private val environmentName: String?, var result: String? = null) {
 
     init {
         DialogBuilder().apply {
@@ -31,7 +30,7 @@ class MathEnvironmentDialog(private val envName: String?,
                     arrayOf("inline", "display"))
                     .flatten()
                     // Remove split/cases, and current environments.
-                    .filter { it != "split" && it != "cases" && it != envName}
+                    .filter { it != "split" && it != "cases" && it != environmentName}
                     .toTypedArray()
 
             val comboBox = JComboBox(environments)

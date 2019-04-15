@@ -111,26 +111,26 @@ fun PsiElement.inMathContext(): Boolean {
  * Returns the outer math environment.
  */
 fun PsiElement?.findOuterMathEnvironment(): PsiElement? {
-    var element1 = this
+    var element = this
     var outerMathEnvironment: PsiElement? = null
 
-    while (element1 != null) {
+    while (element != null) {
         // get to parent which is *IN* math content
-        while (element1 != null && element1.inMathContext().not()) {
-            element1 = element1.parent
+        while (element != null && element.inMathContext().not()) {
+            element = element.parent
         }
         // find the marginal element which is NOT IN math content
-        while (element1 != null && element1.inMathContext()) {
-            element1 = element1.parent
+        while (element != null && element.inMathContext()) {
+            element = element.parent
         }
 
-        if (element1 != null) {
-            outerMathEnvironment = when (element1.parent) {
-                is LatexInlineMath -> element1.parent
-                is LatexDisplayMath -> element1.parent
-                else -> element1
+        if (element != null) {
+            outerMathEnvironment = when (element.parent) {
+                is LatexInlineMath -> element.parent
+                is LatexDisplayMath -> element.parent
+                else -> element
             }
-            element1 = element1.parent
+            element = element.parent
         }
     }
     return outerMathEnvironment
