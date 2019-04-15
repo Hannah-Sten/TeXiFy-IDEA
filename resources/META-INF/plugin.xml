@@ -342,6 +342,7 @@
         <typedHandler implementation="nl.rubensten.texifyidea.editor.ShiftTracker"/>
         <typedHandler implementation="nl.rubensten.texifyidea.editor.UpDownAutoBracket"/>
         <typedHandler implementation="nl.rubensten.texifyidea.editor.BibtexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.rubensten.texifyidea.editor.LatexQuoteInsertHandler"/>
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoLabelSymbolContributor"/>
