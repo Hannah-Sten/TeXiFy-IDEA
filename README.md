@@ -1,7 +1,8 @@
-[![Build Status](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA.svg?branch=master)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
-[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/TeXiFy-IDEA)
-[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
-[![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png)](https://www.paypal.me/RubenSchellekens)
+[![Travis (.org)](https://img.shields.io/travis/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
+[![GitHub release](https://img.shields.io/github/release/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.6.4)
+[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
+[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
+[![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/RubenSchellekens)
 
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
@@ -29,14 +30,15 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Syntax highlighting
 * Autocomplete of labels, (custom defined) commands and environments
 * Writer ergonomics - writing LaTeX made less cumbersome
-* Run configurations for LaTeX and BibTeX (pdfLaTeX, bibtex)
-* Inspections. Intentions. And heaps more inspections.
+* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
+* Inspections. Intentions. And heaps more inspections
 * Full BibTeX support
 * Formatter for LaTeX and BibTeX
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
 * SumatraPDF support with forward and backward search
 * Unicode math preview
+* Equation preview
 * Gutter icons for quick compilation and file includes
 * Fancy icons that fit in with the IntelliJ style
 * Brace matching
@@ -285,6 +287,26 @@ where the files `introduction.tex` and `example-theorems.tex` contain just the c
     If the meanings of 'true' and 'false' were switched, then this sentence wouldn't be false.
 \end{theorem}
 ```
+
+#### How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
+
+You can define a live template via File -> Settings... -> Editor -> Live Templates. For example, for the `itemize` environment, you could use the following template:
+
+```tex
+\begin{itemize}
+    \item $PARM1$
+\end{itemize}
+```
+
+Set the template to be applicable in LaTeX files.
+
+![Screenshot of live template UI, showing the template text above along with an abbreviation of itemize and a description of 'Add itemize env'. The macro is set to be 'Applicable in LaTeX' and expands with the Tab key.](doc/macro.png)
+
+Once the live template is created, close the Settings dialog. Use Edit -> Macros -> Start Macro Recording and enter the live template abbreviation. Finish recording the macro, and name it. Via Settings -> Keymap, assign the macro a key binding such as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>.
+
+Now, you can use the macro key binding and hit <kbd>Enter</kbd> to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
+
+For commands, you can define templates for e.g. `\emph{$PARM1$}`.
 
 #### The Equation Preview does not work
 

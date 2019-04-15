@@ -17,11 +17,11 @@ open class LatexGroupedSubSupScriptInspection : TexifyRegexInspection(
             val subSup = if (it.group(1) == "_") "Sub" else "Super"
             "${subSup}script is not grouped"
         },
-        pattern = Pattern.compile("([_^])([a-zA-Z0-9][a-zA-Z0-9]+)"),
+        pattern = Pattern.compile("((?<!(\\\\)|(\\\\string))[_^])([a-zA-Z0-9][a-zA-Z0-9]+)"),
         mathMode = true,
         highlightRange = { TextRange(it.start() - 1, it.end()) },
-        replacement = { it, _ -> "{${it.group(2)}}" },
-        replacementRange = { it.groupRange(2) },
+        replacement = { it, _ -> "{${it.group(4)}}" },
+        replacementRange = { it.groupRange(4) },
         quickFixName = { "Insert curly braces" }
 ) {
 
