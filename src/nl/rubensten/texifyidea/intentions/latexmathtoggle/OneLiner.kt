@@ -6,8 +6,6 @@ class OneLiner(private val equation: String) {
 
     fun getOneLiner(): String = reduce()
 
-    private fun isMultiLine(): Boolean = equation.contains("\n")
-
     /**
      * Reduce the content of a multi line environment to 'one' line.
      *

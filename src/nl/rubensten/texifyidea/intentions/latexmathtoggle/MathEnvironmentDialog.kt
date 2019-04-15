@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.intentions.latexmathtoggle
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
+import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.lang.Package
 import java.awt.BorderLayout
 import java.awt.Color
@@ -23,15 +24,16 @@ class MathEnvironmentDialog(private val environmentName: String?, var result: St
 
             // Get all the math environments.
             val environments: Array<String> = arrayOf(DefaultEnvironment.values()
-                    .filter { it.dependency == Package.AMSMATH }
+                    .filter { it.context == Environment.Context.MATH }
                     .map { it.environmentName }
                     .toTypedArray(),
                     // Add the inline and display environments.
                     arrayOf("inline", "display"))
                     .flatten()
-                    // Remove split/cases, and current environments.
-                    .filter { it != "split" && it != "cases" && it != environmentName}
+                    // Remove eqation*/displaymath, split/cases, and current environments.
+                    .filter { it != "split" && it != "cases" && it != "equation*" && it != "displaymath" && it != environmentName}
                     .toTypedArray()
+                    .sortedArray()
 
             val comboBox = JComboBox(environments)
 

@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.intentions.TexifyIntentionBase
+import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
@@ -33,7 +34,7 @@ open class LatexMathToggle : TexifyIntentionBase("Convert to other math environm
 
         var element = file.findElementAt(editor.caretModel.offset) ?: return
         // Get the environment and its name of the (outer) math environment.
-        val envName = when {
+        val environmentName = when {
             element.hasParent(LatexInlineMath::class) -> {
                 element = element.parentOfType(LatexInlineMath::class) ?: return
                 "inline"
@@ -49,8 +50,8 @@ open class LatexMathToggle : TexifyIntentionBase("Convert to other math environm
         } ?: return
 
         // Ask for the new environment name.
-        val newEnvName = MathEnvironmentDialog(envName).result ?: return
+        val newEnvironmentName = MathEnvironmentDialog(environmentName).result ?: return
         // Apply the new environment.
-        MathEnvironmentEditor(envName, newEnvName, editor, element).apply()
+        MathEnvironmentEditor(environmentName, newEnvironmentName, editor, element).apply()
     }
 }

@@ -3,6 +3,9 @@ package nl.rubensten.texifyidea.intentions.latexmathtoggle
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import nl.rubensten.texifyidea.lang.DefaultEnvironment
+import nl.rubensten.texifyidea.lang.Environment
+import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.util.*
 
 class MathEnvironmentEditor(
@@ -76,7 +79,19 @@ class MathEnvironmentEditor(
             editor.caretModel.moveToOffset(environment.textOffset +
                     newText.length - extra - extraWhiteSpace.length - extraNewLine.length - endBlock(indent).length
             )
+            val file = environment.containingFile ?: return@runWriteAction
+            if (isAmsMathEnvironment(newEnvironmentName) && Package.AMSMATH.name !in file.includedPackages()) {
+                file.insertUsepackage(Package.AMSMATH)
+            }
         }
+    }
+
+    private fun isAmsMathEnvironment(environmentName: String): Boolean {
+        val amsMathEnvironments: Array<String> = DefaultEnvironment.values()
+                .filter { it.dependency == Package.AMSMATH }
+                .map { it.environmentName }
+                .toTypedArray()
+        return amsMathEnvironments.contains(environmentName)
     }
 
     /**
