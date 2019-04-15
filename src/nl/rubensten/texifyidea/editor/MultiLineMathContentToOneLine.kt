@@ -1,8 +1,8 @@
-package nl.rubensten.texifyidea.intentions.latexmathtoggle
+package nl.rubensten.texifyidea.editor
 
 import nl.rubensten.texifyidea.util.Magic
 
-class OneLiner(private val equation: String) {
+class MultiLineMathContentToOneLine(private val equation: String) {
 
     fun getOneLiner(): String = reduce()
 

@@ -1,10 +1,9 @@
-package nl.rubensten.texifyidea.intentions.latexmathtoggle
+package nl.rubensten.texifyidea.editor
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
-import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.util.*
 
@@ -59,7 +58,7 @@ class MathEnvironmentEditor(
 
         // Convert the body to one line if necessary.
         val body = if (isOneLineEnvironment(newEnvironmentName)) {
-            OneLiner(getBody(indent)).getOneLiner()
+            MultiLineMathContentToOneLine(getBody(indent)).getOneLiner()
         }
         else {
             getBody(indent)

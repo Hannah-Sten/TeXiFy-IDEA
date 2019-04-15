@@ -1,10 +1,9 @@
-package nl.rubensten.texifyidea.intentions.latexmathtoggle
+package nl.rubensten.texifyidea.ui
 
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
-import nl.rubensten.texifyidea.lang.Package
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.JComboBox

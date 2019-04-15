@@ -1,10 +1,10 @@
-package nl.rubensten.texifyidea.intentions.latexmathtoggle
+package nl.rubensten.texifyidea.intentions
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.intentions.TexifyIntentionBase
-import nl.rubensten.texifyidea.lang.Package
+import nl.rubensten.texifyidea.editor.MathEnvironmentEditor
+import nl.rubensten.texifyidea.ui.MathEnvironmentDialog
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
