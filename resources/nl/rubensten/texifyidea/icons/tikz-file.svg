@@ -45,5 +45,10 @@
 		<use xlink:href="#SVGID_7_"  overflow="visible"/>
 	</clipPath>
 </g>
-<text transform="matrix(1 0 0 1 1.5869 14.959)" opacity="0.7" fill="#231F20" font-family="'Gotham-Bold'" font-size="7">TiZ</text>
+<g>
+	<path opacity="0.7" fill="#231F20" d="M4.396,11.051v3.908H3.316v-3.908H1.825v-0.994h4.062v0.994H4.396z"/>
+	<path opacity="0.7" fill="#231F20" d="M6.55,10.792V9.847h1.12v0.945H6.55z M6.578,14.959v-3.754h1.064v3.754H6.578z"/>
+	<path opacity="0.7" fill="#231F20" d="M8.608,14.959V14.14l2.696-3.138H8.692v-0.945h3.999v0.819l-2.696,3.138h2.696v0.945H8.608z"
+		/>
+</g>
 </svg>
