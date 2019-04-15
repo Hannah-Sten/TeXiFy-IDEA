@@ -61,7 +61,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
-                || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement
+                || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
     }
 
     override fun apply() {
@@ -69,7 +69,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
-        settings.automaticQuoteReplacement = automaticQuoteReplacement.selectedIndex
+        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
     }
 
     override fun reset() {
@@ -77,6 +77,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
-        automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement
+        automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
     }
 }

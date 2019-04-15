@@ -18,7 +18,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
 
         // Only do this for latex files and if the option is enabled
-        if (file.fileType != LatexFileType || TexifySettings.getInstance().automaticQuoteReplacement == 0) {
+        if (file.fileType != LatexFileType || TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.NONE) {
             return super.charTyped(char, project, editor, file)
         }
 
@@ -42,22 +42,22 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         var openingQuotes = ""
         var closingQuotes = ""
 
-        // Use hard-coded order of options: 0 is off, 1 is TeX ligatures, 2 is TeX commands
+        // Get the saved value to find the correct replacement
         val quoteSetting = TexifySettings.getInstance().automaticQuoteReplacement
 
-        if (quoteSetting == 1 && char == '"') {
+        if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '"') {
             openingQuotes = "``"
             closingQuotes = "''"
         }
-        else if (quoteSetting == 2 && char == '"') {
+        else if (quoteSetting == TexifySettings.QuoteReplacement.COMMANDS && char == '"') {
             openingQuotes = "\\lq\\lq{}"
             closingQuotes = "\\rq\\rq{}"
         }
-        else if (quoteSetting == 1 && char == '\'') {
+        else if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '\'') {
             openingQuotes = "`"
             closingQuotes = "'"
         }
-        else if (quoteSetting == 2 && char == '\'') {
+        else if (quoteSetting == TexifySettings.QuoteReplacement.COMMANDS && char == '\'') {
             openingQuotes = "\\lq{}"
             closingQuotes = "\\rq{}"
         }
