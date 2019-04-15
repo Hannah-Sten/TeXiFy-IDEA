@@ -566,6 +566,12 @@
         </intentionAction>
 
         <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexInlineDisplayToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
             <className>nl.rubensten.texifyidea.intentions.latexmathtoggle.LatexMathToggle</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
