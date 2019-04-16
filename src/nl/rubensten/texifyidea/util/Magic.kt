@@ -406,7 +406,7 @@ object Magic {
                 "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
                 "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
-                "tikz" to TexifyIcons.LATEX_FILE
+                "tikz" to TexifyIcons.TIKZ_FILE
         )
     }
 }

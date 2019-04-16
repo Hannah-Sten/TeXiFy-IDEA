@@ -45,7 +45,7 @@ public class NewLatexFileAction extends CreateElementActionBase {
         builder.addKind("Bibliography (.bib)", TexifyIcons.BIBLIOGRAPHY_FILE, OPTION_BIB_FILE);
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE);
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE);
-        builder.addKind("TikZ (.tikz)", TexifyIcons.LATEX_FILE, OPTION_TIKZ_FILE);
+        builder.addKind("TikZ (.tikz)", TexifyIcons.TIKZ_FILE, OPTION_TIKZ_FILE);
         builder.show("", null, fileCreator);
 
         return fileCreator.getCreatedElements();
