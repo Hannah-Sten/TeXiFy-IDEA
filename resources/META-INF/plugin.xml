@@ -261,15 +261,15 @@
 
         <!-- SumatraPDF -->
         <group id="texify.LatexMenu.Sumatra" class="nl.rubensten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF"
-               description="Interact with SumatraPDF." popup="true">
+               description="Interact with SumatraPDF." popup="true" icon="/nl/rubensten/texifyidea/icons/sumatra.svg">
             <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
 
             <action class="nl.rubensten.texifyidea.action.sumatra.ForwardSearchAction" id="texify.sumatra.ForwardSearch"
-                    text="Go to _line in PDF" description="Find the content on cursor in the PDF.">
+                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
                 <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
             </action>
             <action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
-                    text="_Configure inverse search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
+                    text="_Configure Inverse Search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
         </group>
     </actions>
 
