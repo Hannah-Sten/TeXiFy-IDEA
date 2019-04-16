@@ -9,6 +9,7 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.ui.PreviewFormUpdater
+import nl.rubensten.texifyidea.util.findOuterMathEnvironment
 import nl.rubensten.texifyidea.util.inMathContext
 
 /**
@@ -30,7 +31,7 @@ class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATI
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         val element: PsiElement = getElement(file, project, textEditor) ?: return
 
-        val outerMathEnvironment = findOuterMathEnvironment(element) ?: return
+        val outerMathEnvironment = element.findOuterMathEnvironment() ?: return
 
         displayPreview(project, outerMathEnvironment, FORM_KEY) {
             preamble += MATH_PREAMBLE
