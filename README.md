@@ -35,6 +35,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
 * SumatraPDF support with forward and backward search
+* Smart Quotes
 * Unicode math preview
 * Equation preview
 * Gutter icons for quick compilation and file includes
