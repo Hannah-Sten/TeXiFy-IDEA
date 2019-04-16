@@ -64,7 +64,7 @@ $previewCode
                                 "-halt-on-error",
                                 "$tempBasename.tex"),
                         tempDirectory
-                )?.second ?: return
+                ) ?: return
 
                 runCommand(
                         pdf2svgExecutable(),
@@ -101,7 +101,7 @@ $previewCode
 
     }
 
-    private fun runCommand(command: String, args: Array<String>, workDirectory: File): Triple<Int, String, String>? {
+    private fun runCommand(command: String, args: Array<String>, workDirectory: File): String? {
 
         val executable = Runtime.getRuntime().exec(
                 arrayOf(command) + args,
@@ -114,11 +114,15 @@ $previewCode
                 Pair(stdout.readText(), stderr.readText())
             }
         }
+
+        executable.waitFor(waitTime, TimeUnit.SECONDS)
+
         if (executable.exitValue() != 0) {
             previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n$stdout\n$stderr")
             return null
         }
-        return Triple(executable.exitValue(), stdout, stderr)
+
+        return stdout
     }
 
     private fun inkscapeExecutable(): String {
