@@ -4,6 +4,7 @@ import com.intellij.openapi.util.SystemInfo
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
@@ -21,13 +22,12 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
         \pagestyle{empty}
 
         \usepackage{color}
+
     """.trimIndent()
 
     /**
      * Controls how long (in seconds) we will wait for the document compilation. If the time taken exceeds this,
      * we will return an error and not output a preview.
-     *
-     * Defaults to 3 seconds.
      */
     var waitTime = 3L
 
@@ -44,26 +44,25 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
         try {
             val tempDirectory = createTempDir()
             try {
-                val tempBasename = "${tempDirectory.path}/equation"
+                val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
                 val writer = PrintWriter("$tempBasename.tex", "UTF-8")
 
-                val tmpContent = """
-                    \documentclass{article}
-                    $preamble
+                val tmpContent = """\documentclass{article}
+$preamble
 
-                    \begin{document}
-                    $previewCode
+\begin{document}
 
-                    \end{document}
-                """.trimIndent()
+$previewCode
+
+\end{document}"""
                 writer.println(tmpContent)
                 writer.close()
 
                 val latexStdoutText = runCommand("pdflatex",
                         arrayOf(
+                                "-interaction=nonstopmode",
                                 "-halt-on-error",
-                                "$tempBasename.tex",
-                                "-interaction=nonstopmode"),
+                                "$tempBasename.tex"),
                         tempDirectory
                 )?.second ?: return
 
@@ -113,7 +112,7 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
 
         if (!executable.waitFor(waitTime, TimeUnit.SECONDS)) {
             executable.destroy()
-            previewForm.setLatexErrorMessage("$command took more than 3 seconds. Terminated.")
+            previewForm.setLatexErrorMessage("$command took more than $waitTime seconds. Terminated.")
             return null
         }
 
