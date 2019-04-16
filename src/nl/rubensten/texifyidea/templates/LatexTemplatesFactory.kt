@@ -84,7 +84,7 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
         descriptor.addTemplate(FileTemplateDescriptor(fileTemplateSty, TexifyIcons.STYLE_FILE))
         descriptor.addTemplate(FileTemplateDescriptor(fileTemplateCls, TexifyIcons.CLASS_FILE))
         descriptor.addTemplate(FileTemplateDescriptor(fileTemplateBib, TexifyIcons.BIBLIOGRAPHY_FILE))
-        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTikz, TexifyIcons.LATEX_FILE))
+        descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTikz, TexifyIcons.TIKZ_FILE))
 
         return descriptor
     }

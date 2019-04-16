@@ -15,5 +15,5 @@ object TikzFileType : LanguageFileType(LatexLanguage.INSTANCE) {
 
     override fun getDefaultExtension() = "tikz"
 
-    override fun getIcon() = TexifyIcons.LATEX_FILE!!
+    override fun getIcon() = TexifyIcons.TIKZ_FILE!!
 }

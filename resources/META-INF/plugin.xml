@@ -287,6 +287,9 @@
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
         <fileTypeFactory implementation="nl.rubensten.texifyidea.file.TexifyFileTypeFactory"/>
 
+        <!-- Register module type for new project creation in non-IntelliJ IDEs -->
+        <directoryProjectGenerator implementation="nl.rubensten.texifyidea.modules.LatexProjectGenerator"/>
+
         <!-- Templates -->
         <internalFileTemplate name="LaTeX Source"/>
         <internalFileTemplate name="LaTeX Package"/>
@@ -347,6 +350,7 @@
         <typedHandler implementation="nl.rubensten.texifyidea.editor.ShiftTracker"/>
         <typedHandler implementation="nl.rubensten.texifyidea.editor.UpDownAutoBracket"/>
         <typedHandler implementation="nl.rubensten.texifyidea.editor.BibtexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.rubensten.texifyidea.editor.LatexQuoteInsertHandler"/>
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoLabelSymbolContributor"/>
@@ -573,6 +577,12 @@
             <className>nl.rubensten.texifyidea.intentions.LatexInlineDisplayToggle</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexMathToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>

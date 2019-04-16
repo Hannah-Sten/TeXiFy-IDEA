@@ -13,8 +13,6 @@ Create the most beautiful LaTeX documents with the user friendliness of the Inte
 This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin
 
 ## Feedback and support
-***We are currently extremely busy IRL, so there might be some delay in support and development.***
-
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
 1. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account). Gitter also has a nice app, we use it to get notified of new activity.
 2. [Issues](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, user support, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advice using the gitter.
@@ -37,6 +35,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
 * SumatraPDF support with forward and backward search
+* Smart Quotes
 * Unicode math preview
 * Equation preview
 * Gutter icons for quick compilation and file includes
@@ -236,7 +235,8 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
 * Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
 * The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
-* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
+* You can also debug against other IDEs. At the moment only PyCharm is set up, but it is easy to add others. You can use it by specifying the argument `-PusePycharm=true` in your runIde run configuration.
+* Use the option Tools - LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
 * To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
 * Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
 
@@ -290,6 +290,26 @@ where the files `introduction.tex` and `example-theorems.tex` contain just the c
     If the meanings of 'true' and 'false' were switched, then this sentence wouldn't be false.
 \end{theorem}
 ```
+
+#### How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
+
+You can define a live template via File -> Settings... -> Editor -> Live Templates. For example, for the `itemize` environment, you could use the following template:
+
+```tex
+\begin{itemize}
+    \item $PARM1$
+\end{itemize}
+```
+
+Set the template to be applicable in LaTeX files.
+
+![Screenshot of live template UI, showing the template text above along with an abbreviation of itemize and a description of 'Add itemize env'. The macro is set to be 'Applicable in LaTeX' and expands with the Tab key.](doc/macro.png)
+
+Once the live template is created, close the Settings dialog. Use Edit -> Macros -> Start Macro Recording and enter the live template abbreviation. Finish recording the macro, and name it. Via Settings -> Keymap, assign the macro a key binding such as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>.
+
+Now, you can use the macro key binding and hit <kbd>Enter</kbd> to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
+
+For commands, you can define templates for e.g. `\emph{$PARM1$}`.
 
 #### The Equation Preview does not work
 

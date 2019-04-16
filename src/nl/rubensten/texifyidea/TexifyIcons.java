@@ -25,6 +25,13 @@ public class TexifyIcons {
     );
 
     /**
+     * Copyright (c) 2019 Ruben Schellekens
+     */
+    public static final Icon TIKZ_FILE = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/tikz-file.svg"
+    );
+
+    /**
      * Copyright (c) 2017 Ruben Schellekens
      */
     public static final Icon PDF_FILE = IconLoader.getIcon(
