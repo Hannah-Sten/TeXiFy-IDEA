@@ -43,5 +43,4 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
             add(bibtexEnabled)
         }
     }
-
 }

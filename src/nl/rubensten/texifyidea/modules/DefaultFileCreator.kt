@@ -14,7 +14,8 @@ class DefaultFileCreator(
         /** The project to add the file to. */
         val project: Project,
         /** The directory path of the file (no seperator and no file name). */
-        val path: String) {
+        val path: String
+) {
 
     /**
      * Creates the main.tex file and applies the default file template.
@@ -26,7 +27,8 @@ class DefaultFileCreator(
         // Create main file.
         try {
             mainFile.createNewFile()
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
             throw TeXception("Problem with creating main .tex file.", e)
         }
@@ -34,18 +36,19 @@ class DefaultFileCreator(
         // Apply template.
         val template = if (isBibtexEnabled) {
             LatexTemplatesFactory.fileTemplateTexWithBib
-        } else {
+        }
+        else {
             LatexTemplatesFactory.fileTemplateTex
         }
         val templateText = LatexTemplatesFactory.getTemplateText(project, template)
 
         try {
             FileOutputStream(mainFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
             throw TeXception("Could not apply .tex template to main file.", e)
         }
-
     }
 
     /**
@@ -57,7 +60,8 @@ class DefaultFileCreator(
 
         try {
             bibFile.createNewFile()
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
             throw TeXception("Problem with creating main .bib file", e)
         }
@@ -68,10 +72,10 @@ class DefaultFileCreator(
 
         try {
             FileOutputStream(bibFile).use { outputStream -> outputStream.write(templateText.toByteArray()) }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
             throw TeXception("Could not apply .bib template to main bibliography file.", e)
         }
     }
-
 }
