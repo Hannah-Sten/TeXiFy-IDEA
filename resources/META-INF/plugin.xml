@@ -282,6 +282,9 @@
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
         <fileTypeFactory implementation="nl.rubensten.texifyidea.file.TexifyFileTypeFactory"/>
 
+        <!-- Register module type for new project creation in non-IntelliJ IDEs -->
+        <directoryProjectGenerator implementation="nl.rubensten.texifyidea.modules.LatexProjectGenerator"/>
+
         <!-- Templates -->
         <internalFileTemplate name="LaTeX Source"/>
         <internalFileTemplate name="LaTeX Package"/>
