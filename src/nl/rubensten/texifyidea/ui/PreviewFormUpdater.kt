@@ -102,19 +102,12 @@ $previewCode
     }
 
     private fun runCommand(command: String, args: Array<String>, workDirectory: File): Triple<Int, String, String>? {
+
         val executable = Runtime.getRuntime().exec(
                 arrayOf(command) + args,
                 null,
                 workDirectory
         )
-
-        executable.outputStream.close()
-
-        if (!executable.waitFor(waitTime, TimeUnit.SECONDS)) {
-            executable.destroy()
-            previewForm.setLatexErrorMessage("$command took more than $waitTime seconds. Terminated.")
-            return null
-        }
 
         val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->
             executable.errorStream.bufferedReader().use { stderr ->
