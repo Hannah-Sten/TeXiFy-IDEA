@@ -17,7 +17,7 @@ import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
  * @author Thomas Schouten
  */
 open class ForwardSearchAction : EditorAction(
-        "ForwardSearch",
+        "_ForwardSearch",
         TexifyIcons.RIGHT
 ) {
 
