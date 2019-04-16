@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
 import nl.rubensten.texifyidea.psi.*
@@ -33,7 +32,7 @@ fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> 
 inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
 
 /**
- * Finds the fierst element that matches a given predicate.
+ * Finds the first element that matches a given predicate.
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
@@ -106,6 +105,35 @@ fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfT
  */
 fun PsiElement.inMathContext(): Boolean {
     return hasParent(LatexMathContent::class) || hasParent(LatexDisplayMath::class) || inDirectEnvironmentContext(Environment.Context.MATH)
+}
+
+/**
+ * Returns the outer math environment.
+ */
+fun PsiElement?.findOuterMathEnvironment(): PsiElement? {
+    var element = this
+    var outerMathEnvironment: PsiElement? = null
+
+    while (element != null) {
+        // get to parent which is *IN* math content
+        while (element != null && element.inMathContext().not()) {
+            element = element.parent
+        }
+        // find the marginal element which is NOT IN math content
+        while (element != null && element.inMathContext()) {
+            element = element.parent
+        }
+
+        if (element != null) {
+            outerMathEnvironment = when (element.parent) {
+                is LatexInlineMath -> element.parent
+                is LatexDisplayMath -> element.parent
+                else -> element
+            }
+            element = element.parent
+        }
+    }
+    return outerMathEnvironment
 }
 
 /**

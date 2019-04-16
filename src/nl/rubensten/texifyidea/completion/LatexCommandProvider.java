@@ -62,7 +62,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
     private void addNormalCommands(CompletionResultSet result) {
         result.addAllElements(ContainerUtil.map2List(
-                LatexNoMathCommand.values(),
+                LatexRegularCommand.values(),
                 cmd -> LookupElementBuilder.create(cmd, cmd.getCommand())
                         .withPresentableText(cmd.getCommandDisplay())
                         .bold()
@@ -78,15 +78,16 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         // Find all commands.
         List<LatexCommand> commands = new ArrayList<>();
         Collections.addAll(commands, LatexMathCommand.values());
-        commands.add(LatexNoMathCommand.BEGIN);
+        commands.add(LatexRegularCommand.BEGIN);
 
         // Create autocomplete elements.
         result.addAllElements(ContainerUtil.map2List(
                 commands,
                 cmd -> {
-                    InsertHandler<LookupElement> handler = cmd instanceof LatexNoMathCommand ?
+                    InsertHandler<LookupElement> handler = cmd instanceof LatexRegularCommand ?
                             new LatexNoMathInsertHandler() :
                             new LatexMathInsertHandler();
+
 
                     return LookupElementBuilder.create(cmd, cmd.getCommand())
                             .withPresentableText(cmd.getCommandDisplay())
@@ -105,7 +106,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         Collections.addAll(environments, DefaultEnvironment.values());
 
         LatexDefinitionIndex.Companion.getItemsInFileSet(parameters.getOriginalFile()).stream()
-                .filter(cmd -> "\\newenvironment".equals(cmd.getName()))
+                .filter(cmd -> Magic.Command.environmentDefinitions.contains(cmd.getName()))
                 .map(cmd -> PsiCommandsKt.requiredParameter(cmd, 0))
                 .filter(Objects::nonNull)
                 .map(SimpleEnvironment::new)

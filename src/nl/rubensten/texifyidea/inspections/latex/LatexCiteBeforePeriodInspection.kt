@@ -29,7 +29,7 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         val cite = file.findElementAt(replacementRange.endInclusive + 3)?.parentOfType(LatexCommands::class) ?: return
         val char = groups[0]
 
-        if (document[cite.endOffset()] != char) {
+        if (cite.endOffset() >= document.textLength || document[cite.endOffset()] != char) {
             document.insertString(cite.endOffset(), char)
         }
 

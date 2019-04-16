@@ -20,7 +20,7 @@ import nl.rubensten.texifyidea.run.isSumatraAvailable
  * @since b0.4
  */
 open class ForwardSearchAction : EditorAction(
-        "ForwardSearch",
+        "_Forward Search",
         TexifyIcons.RIGHT
 ) {
 

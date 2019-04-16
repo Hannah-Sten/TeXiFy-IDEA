@@ -1,5 +1,5 @@
 # Global owners, automatically request review when pull request is submitted
-*       @rubenschellekens @stenwessel
+*       @rubenschellekens @stenwessel @PHPirates
 
 # Patterns below override the rules above
 /src/org/gnome/evince/ @PHPirates @rubenschellekens @stenwessel

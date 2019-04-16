@@ -27,10 +27,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
         // Get command name.
         val required = newCommand.requiredParameters
-        if (required.isEmpty()) {
-            throw IllegalArgumentException("\\newcommand has no command name")
-        }
-        this.newCommandName = required[0] + suffix
+        this.newCommandName = required.firstOrNull() ?: "" + suffix
 
         // Get value.
         locationString = if (required.size > 1) {
