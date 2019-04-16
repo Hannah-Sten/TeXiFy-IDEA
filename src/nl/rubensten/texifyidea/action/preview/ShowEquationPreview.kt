@@ -37,31 +37,4 @@ class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATI
             preamble += MATH_PREAMBLE
         }
     }
-
-    private fun findOuterMathEnvironment(innerElement: PsiElement?): PsiElement? {
-        var currElement = innerElement
-        var outerMathEnvironment: PsiElement? = null
-
-        while (currElement != null) {
-            // get to the first parent in a math context
-            while (currElement != null && !currElement.inMathContext()) {
-                currElement = currElement.parent
-            }
-
-            // find the first parent that is no longer in a math context
-            while (currElement != null && currElement.inMathContext()) {
-                currElement = currElement.parent
-            }
-
-            if (currElement != null) {
-                outerMathEnvironment = when (currElement.parent) {
-                    is LatexInlineMath -> currElement.parent
-                    is LatexDisplayMath -> currElement.parent
-                    else -> currElement
-                }
-                currElement = currElement.parent
-            }
-        }
-        return outerMathEnvironment
-    }
 }
