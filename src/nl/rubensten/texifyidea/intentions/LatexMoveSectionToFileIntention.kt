@@ -1,12 +1,14 @@
 package nl.rubensten.texifyidea.intentions
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileChooser.PathChooserDialog
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection.Companion.findNextSection
 import nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection.InspectionFix.Companion.findLabel
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.ui.CreateFileDialog
 import nl.rubensten.texifyidea.util.*
 
 /**
@@ -56,15 +58,16 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
                 .formatAsFileName()
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
 
+        val folder = CreateFileDialog(file.containingDirectory.toString(), fileName).newFileFullPath ?: return
         // Execute write actions.
         val filePath = "$root/$fileName.tex"
-        val createdFile = createFile(filePath, text)
-        document.deleteString(start, end)
-        val createdFileName = createdFile.name
-                ?.substring(0, createdFile.name.length - 4)
-                ?.replace(" ", "-")
-                ?.decapitalize()
-        val indent = sectionCommand.findIndentation()
-        document.insertString(start, "\n$indent\\input{$createdFileName}\n\n")
+//        val createdFile = createFile(filePath, text)
+//        document.deleteString(start, end)
+//        val createdFileName = createdFile.name
+//                ?.substring(0, createdFile.name.length - 4)
+//                ?.replace(" ", "-")
+//                ?.decapitalize()
+//        val indent = sectionCommand.findIndentation()
+//        document.insertString(start, "\n$indent\\input{$createdFileName}\n\n")
     }
 }
