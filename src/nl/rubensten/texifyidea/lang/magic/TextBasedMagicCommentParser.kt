@@ -45,7 +45,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
         }
 
         comments.forEach { comment ->
-            val line = comment.trimStart().replace(COMMENT_PREFIX, "")
+            val line = comment.trimStart().replace(COMMENT_PREFIX, "").trimEnd()
 
             // Finish the key-value pair after an empty line is found.
             if (line.isEmpty()) {
