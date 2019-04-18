@@ -1,5 +1,6 @@
-Home 1.
-
 = Welcome to the TeXiFy-IDEA wiki!
 
 Content will be added to these pages [.line-through]#soon# _very soon_ ~at~ ~least~ ~not~ ~too~ ~far~ ~away~
+
+
+[Features](Features.asciidoc)
