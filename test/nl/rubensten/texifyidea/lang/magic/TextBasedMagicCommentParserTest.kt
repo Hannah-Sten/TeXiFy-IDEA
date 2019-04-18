@@ -82,6 +82,11 @@ open class TextBasedMagicCommentParserTest {
         }
     }
 
+    @Test
+    fun `Multiple assignments on one line`() {
+        "%! test =       broodje =  saus ".assertValue("test", "broodje =  saus")
+    }
+
     private fun MagicComment<String, String>.assertValue(key: String, expectedValue: String? = null, index: Int = 0) {
         val magicKey = CustomMagicKey(key)
         assertTrue(magicKey in this, "<$magicKey> is in not in the comment <$this>.")

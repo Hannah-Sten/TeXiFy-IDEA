@@ -66,7 +66,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
                 key = keyMatcher.group(1).toLowerCase()
 
                 val parts = line.split("=")
-                val contents = parts.subList(1, parts.size).joinToString(" ") { it.trim() }
+                val contents = parts.subList(1, parts.size).joinToString("=")
                 contentBuffer.append(contents).append(' ')
             }
             // There is no key assignment.
