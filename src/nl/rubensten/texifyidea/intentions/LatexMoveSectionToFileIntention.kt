@@ -1,7 +1,6 @@
 package nl.rubensten.texifyidea.intentions
 
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileChooser.PathChooserDialog
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
@@ -21,7 +20,8 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         private val affectedCommands = setOf("\\section", "\\chapter")
     }
 
-    override fun startInWriteAction() = true
+    // Focusing new dialogs when in write action throws an exception.
+    override fun startInWriteAction() = false
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {
@@ -56,18 +56,23 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         // Remove the braces of the LaTeX command before creating a filename of it
         val fileName = fileNameBraces.removeAll("{", "}")
                 .formatAsFileName()
-        val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
+        val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
 
-        val folder = CreateFileDialog(file.containingDirectory.toString(), fileName).newFileFullPath ?: return
+        val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath!!, fileName)
+                .newFileFullPath ?: return
+
         // Execute write actions.
-        val filePath = "$root/$fileName.tex"
-//        val createdFile = createFile(filePath, text)
-//        document.deleteString(start, end)
-//        val createdFileName = createdFile.name
-//                ?.substring(0, createdFile.name.length - 4)
-//                ?.replace(" ", "-")
-//                ?.decapitalize()
-//        val indent = sectionCommand.findIndentation()
-//        document.insertString(start, "\n$indent\\input{$createdFileName}\n\n")
+        runWriteAction {
+            val createdFile = createFile(filePath, text)
+            document.deleteString(start, end)
+            val pathRelativeToRoot = createdFile.absolutePath.replace("$root/", "")
+
+            val createdFileName = pathRelativeToRoot
+                    .substring(0, pathRelativeToRoot.length - 4)
+                    .replace(" ", "-")
+                    .decapitalize()
+            val indent = sectionCommand.findIndentation()
+            document.insertString(start, "\n$indent\\input{$createdFileName}\n\n")
+        }
     }
 }
