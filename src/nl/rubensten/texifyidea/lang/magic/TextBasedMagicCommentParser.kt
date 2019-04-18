@@ -7,6 +7,8 @@ import nl.rubensten.texifyidea.lang.magic.TextBasedMagicCommentParser.Companion.
  *
  * Assumes that all provided comments start with the prefix [COMMENT_PREFIX].
  *
+ * All keys are stored in lowercase.
+ *
  * @author Ruben Schellekens
  */
 open class TextBasedMagicCommentParser(private val comments: List<String>) : MagicCommentParser<String, String> {
@@ -34,11 +36,22 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
         // Collects the value of a key-value pair.
         var contentBuffer = StringBuilder()
 
-        comments.forEach { comment ->
-            val line = comment.replace(COMMENT_PREFIX, "")
+        /** Adds the current key with convents to the magic comment. Also resets the key and content. */
+        fun pushKeyValuePair() {
+            if (key == null) return
+            addValue(key!!.asKey(), contentBuffer.toString().trim())
+            contentBuffer = StringBuilder()
+            key = null
+        }
 
-            // Only consider proper lines.
-            if (line.isEmpty()) return@forEach
+        comments.forEach { comment ->
+            val line = comment.trimStart().replace(COMMENT_PREFIX, "")
+
+            // Finish the key-value pair after an empty line is found.
+            if (line.isEmpty()) {
+                pushKeyValuePair()
+                return@forEach
+            }
 
             // Tries to find the beginning of a key assignment in the form of 'Key ='
             val keyMatcher = KEY_ASSIGNMENT.toPattern().matcher(line)
@@ -47,11 +60,10 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
             if (keyMatcher.find()) {
                 // Register previous key/value pair.
                 if (key != null) {
-                    addValue(key!!.asKey(), contentBuffer.toString().trimEnd())
-                    contentBuffer = StringBuilder()
+                    pushKeyValuePair()
                 }
 
-                key = keyMatcher.group(1)
+                key = keyMatcher.group(1).toLowerCase()
 
                 val parts = line.split("=")
                 val contents = parts.subList(1, parts.size).joinToString(" ") { it.trim() }
@@ -69,10 +81,13 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
             }
         }
 
-        key?.let {
-            addValue(it.asKey(), contentBuffer.toString().trimEnd())
-        }
+        pushKeyValuePair()
     }
 
     private fun String.asKey() = DefaultMagicKeys.values().find { it.key == this } ?: CustomMagicKey(this)
 }
+
+/**
+ * Creates a new [TextBasedMagicCommentParser] from the list of magic comments.
+ */
+fun List<String>.textBasedMagicCommentParser() = TextBasedMagicCommentParser(this)

@@ -26,14 +26,14 @@ abstract class MagicComment<Key, Value> {
      *
      * @see [MagicComment]
      */
-    protected val keyValueStore: MutableMap<MagicKey<Key>, MutableList<Value>> = HashMap()
+    protected val keyValueStore: MutableMap<Key, MutableList<Value>> = HashMap()
 
     /**
      * Checks if a key-value pair with the given key is present in the magic comment.
      *
      * @return `true` if present, `false` if absent.
      */
-    fun containsKey(key: MagicKey<Key>): Boolean = keyValueStore.containsKey(key)
+    fun containsKey(key: MagicKey<Key>): Boolean = keyValueStore.containsKey(key.key)
 
     /**
      * Get the value of the first key-value pair with the given key.
@@ -41,12 +41,20 @@ abstract class MagicComment<Key, Value> {
      * @return The value of the first key-value pair, or `null` when the key is absent, or when there are no values
      * available for the given key.
      */
-    fun value(key: MagicKey<Key>): Value? = keyValueStore[key]?.firstOrNull()
+    fun value(key: MagicKey<Key>): Value? = keyValueStore[key.key]?.firstOrNull()
 
     /**
      * Get all the values of the key-value pairs with the given key.
+     *
+     * @return The list of all stored values for the given key (empty list if the key is registered without a value),
+     * or `null` when the key is absent.
      */
-    fun values(key: MagicKey<Key>): List<Value>? = keyValueStore[key]
+    fun values(key: MagicKey<Key>): List<Value>? = keyValueStore[key.key]
+
+    /**
+     * The total number of keys in the magic comment.
+     */
+    fun size() = keyValueStore.size
 
     /**
      * @see [containsKey]
@@ -70,9 +78,9 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
      * When the value is `null`, no value is added, but the key is.
      */
     fun addValue(key: MagicKey<Key>, value: Value?) {
-        val list = keyValueStore[key] ?: ArrayList()
+        val list = keyValueStore[key.key] ?: ArrayList()
         value?.let { list.add(it) }
-        keyValueStore[key] = list
+        keyValueStore[key.key] = list
     }
 
     /**
@@ -80,7 +88,7 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
      *
      * @return The previous value associated with the key, or `null` if the key was not present in the map.
      */
-    fun removeKey(key: MagicKey<Key>): List<Value>? = keyValueStore.remove(key)
+    fun removeKey(key: MagicKey<Key>): List<Value>? = keyValueStore.remove(key.key)
 
     /**
      * Removes all key-value pairs from the magic comment.
