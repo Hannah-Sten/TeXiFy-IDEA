@@ -1,5 +1,9 @@
-
 == Features
+
+[NOTE]
+===
+This is a work in progress. More features should be added, and each should have its own page with docmentation.
+===
 
 * Syntax highlighting
 * Autocomplete of labels, (custom defined) commands and environments

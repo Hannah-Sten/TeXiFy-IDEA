@@ -1,6 +1,24 @@
+// Document attributes
+
+// Enable links of sections
+:sectlinks:
+
+// Draw icons in admonitions
+:icons: font
+
 = Welcome to the TeXiFy-IDEA wiki!
 
 Content will be added to these pages [.line-through]#soon# _very soon_ ~at~ ~least~ ~not~ ~too~ ~far~ ~away~
 
+:toc:
 
-[Features](Features.asciidoc)
+== Pages
+
+[NOTE}
+===
+This is a work in progress. This home page should probably have a different layout.
+===
+
+[%hardbreaks]
+link:Features.asciidoc[Documentation of features]
+link:Contributing.asciidoc[Contributing help]
