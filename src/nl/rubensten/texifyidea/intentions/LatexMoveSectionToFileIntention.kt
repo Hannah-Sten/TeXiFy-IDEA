@@ -59,7 +59,7 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
 
         // Display a dialog to ask for the location and name of the new file.
-        val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName)
+        val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName.formatAsFileName())
                 .newFileFullPath ?: return
 
         // Execute write actions.
