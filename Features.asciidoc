@@ -3,6 +3,7 @@
 [NOTE]
 
 This is a work in progress. More features should be added, and each should have its own page with documentation.
+The idea is to first find a list of all relevant features, group them and then document them.
 
 
 * Syntax highlighting
