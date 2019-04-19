@@ -2,10 +2,19 @@ package nl.rubensten.texifyidea.ui
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.*
+import nl.rubensten.texifyidea.util.formatAsFileName
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-class CreateFileDialog(private val currentFilePath: String, private val newFileName: String, var newFileFullPath: String? = null) {
+/**
+ * Dialog to ask the user for a file name and location when creating a new file.
+ *
+ * @param currentFilePath The path of the file we are currently in, e.g., the file from which an intention was triggered
+ *      that creates a new file.
+ * @param newFileName The name of the new file, with or without the '.tex' extension.
+ * @param newFileFullPath The full path of the new file, without tex extension.
+ */
+class CreateFileDialog(private val currentFilePath: String?, private val newFileName: String, var newFileFullPath: String? = null) {
     init {
         DialogBuilder().apply {
             setTitle("Create new tex file")
@@ -13,16 +22,16 @@ class CreateFileDialog(private val currentFilePath: String, private val newFileN
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Field to enter the name of the new file.
-            val nameField = JTextField("$newFileName.tex")
+            val nameField = JTextField(newFileName)
             // Field to select the folder/location of the new file.
             val pathField = TextFieldWithBrowseButton()
-            pathField.text = currentFilePath
+            pathField.text = currentFilePath ?: return@apply
             pathField.addBrowseFolderListener(
                     TextBrowseFolderListener(
                             FileChooserDescriptor(false, true, false, false, false, false)
                                     .withTitle("Select path of new file")))
 
-            panel.add(LabeledComponent.create(nameField, "File name"))
+            panel.add(LabeledComponent.create(nameField, "File name (.tex optional)"))
             panel.add(LabeledComponent.create(pathField, "Location"))
 
 
@@ -34,7 +43,8 @@ class CreateFileDialog(private val currentFilePath: String, private val newFileN
             }
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
-                newFileFullPath = "${pathField.text}/${nameField.text}"
+                newFileFullPath = "${pathField.text}/${nameField.text.formatAsFileName()}"
+                        .replace(Regex("(\\.tex)+$", RegexOption.IGNORE_CASE), "")
             }
         }
     }

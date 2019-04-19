@@ -58,21 +58,16 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
                 .formatAsFileName()
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
 
-        val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath!!, fileName)
+        val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName)
                 .newFileFullPath ?: return
 
         // Execute write actions.
         runWriteAction {
-            val createdFile = createFile(filePath, text)
+            val createdFile = createFile("$filePath.tex", text)
             document.deleteString(start, end)
-            val pathRelativeToRoot = createdFile.absolutePath.replace("$root/", "")
-
-            val createdFileName = pathRelativeToRoot
-                    .substring(0, pathRelativeToRoot.length - 4)
-                    .replace(" ", "-")
-                    .decapitalize()
+            val fileNameRelativeToRoot = createdFile.absolutePath.replace("$root/", "")
             val indent = sectionCommand.findIndentation()
-            document.insertString(start, "\n$indent\\input{$createdFileName}\n\n")
+            document.insertString(start, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
         }
     }
 }
