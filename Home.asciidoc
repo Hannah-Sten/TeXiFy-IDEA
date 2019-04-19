@@ -14,11 +14,11 @@ Content will be added to these pages [.line-through]#soon# _very soon_ ~at~ ~lea
 
 == Pages
 
-[NOTE}
-===
+[NOTE]
+
 This is a work in progress. This home page should probably have a different layout.
-===
+
 
 [%hardbreaks]
-link:Features.asciidoc[Documentation of features]
-link:Contributing.asciidoc[Contributing help]
+link:Features[Documentation of features]
+link:Contributing[Contributing help]
