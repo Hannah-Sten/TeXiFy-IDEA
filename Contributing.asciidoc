@@ -1,0 +1,8 @@
+=== Useful AsciiDoc links
+
+This wiki uses AsciiDoc.
+GitHub uses AsciiDoctor to render `.asciidoc` files.
+
+https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
+
+https://asciidoctor.org/docs/user-manual/
