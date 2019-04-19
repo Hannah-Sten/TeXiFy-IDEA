@@ -47,6 +47,8 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         // Ask the user for a new file name.
         val offsets = selectionOffsets(editor)
         val document = editor.document
+
+        // Display a dialog to ask for the location and name of the new file.
         val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, "")
                 .newFileFullPath ?: return
 

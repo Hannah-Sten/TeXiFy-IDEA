@@ -16,6 +16,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEndCommand
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
+import nl.rubensten.texifyidea.ui.CreateFileDialog
 import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
 import java.util.regex.Pattern
@@ -151,7 +152,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val startIndex = command.textOffset + command.textLength
         val endIndex = nextCommand?.textOffset ?: file.textLength
 
-        return (endIndex - startIndex) >= TOO_LONG_LIMIT
+        return (endIndex - startIndex) >=  TOO_LONG_LIMIT
     }
 
     /**
@@ -172,6 +173,8 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             }
         }
 
+        override fun startInWriteAction() = false
+
         override fun getFamilyName() = "Move section to another file"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
@@ -186,7 +189,6 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val endIndex = (nextCmd?.textOffset ?: document.textLength ?: return) - cmdIndent.length
             val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
 
-            document.deleteString(startIndex, endIndex)
 
             // Create new file.
             val fileNameBraces = if (cmd.parameterList.size > 0) cmd.parameterList[0].text else return
@@ -194,15 +196,20 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
                     .formatAsFileName()
-            val createdFile = createFile(file.findRootFile().containingDirectory.virtualFile.path + "/" + fileName + ".tex", text)
-            LocalFileSystem.getInstance().refresh(true)
+            val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
 
-            val createdFileName = createdFile.name
-                    ?.substring(0, createdFile.name.length - 4)
-                    ?.replace(" ", "-")
-                    ?.decapitalize()
-            val indent = cmd.findIndentation()
-            document.insertString(startIndex, "\n$indent\\input{$createdFileName}\n\n")
+            // Display a dialog to ask for the location and name of the new file.
+            val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName)
+                    .newFileFullPath ?: return
+
+            runWriteAction {
+                val createdFile = createFile("$filePath.tex", text)
+                document.deleteString(startIndex, endIndex)
+                LocalFileSystem.getInstance().refresh(true)
+                val fileNameRelativeToRoot = createdFile.absolutePath.replace("$root/", "")
+                val indent = cmd.findIndentation()
+                document.insertString(startIndex, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
+            }
         }
     }
 }

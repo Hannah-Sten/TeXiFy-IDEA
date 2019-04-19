@@ -20,9 +20,6 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         private val affectedCommands = setOf("\\section", "\\chapter")
     }
 
-    // Focusing new dialogs when in write action throws an exception.
-    override fun startInWriteAction() = false
-
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || !file.isLatexFile()) {
             return false
@@ -32,6 +29,9 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
         return selected.name in affectedCommands
     }
+
+    // Focusing new dialogs when in write action throws an exception.
+    override fun startInWriteAction() = false
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         if (editor == null || file == null) {
@@ -53,11 +53,12 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
 
         // Create new file.
         val fileNameBraces = sectionCommand.requiredParameter(0) ?: return
-        // Remove the braces of the LaTeX command before creating a filename of it
+        // Remove the braces of the LaTeX command before creating a filename of it.
         val fileName = fileNameBraces.removeAll("{", "}")
                 .formatAsFileName()
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
 
+        // Display a dialog to ask for the location and name of the new file.
         val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName)
                 .newFileFullPath ?: return
 
