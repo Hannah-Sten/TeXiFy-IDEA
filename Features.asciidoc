@@ -2,6 +2,7 @@
 // The automatic placement of the toc doesn't work on github, we have to place it manually.
 // See https://gist.github.com/dcode/0cfbf2699a1fe9b46ff04c41721dda74#table-of-contents.
 :toc:
+:toclevels: 4
 :toc-placement!:
 
 [NOTE]
@@ -11,7 +12,7 @@ The idea is to first find a list of all relevant features, group them and then d
 
 toc::[]
 
-=== Installation
+==== Installation
 
 * Support for Windows, Mac and Unix
 * MIT license
