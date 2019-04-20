@@ -103,26 +103,42 @@ toc::[]
 * Same bibliography is included multiple times
 
 === LaTeX
-* link:Inspections#ins:avoid-eqnarray[Avoid `eqnarray`]
-* Non-escaped common math operators
-* Command is already defined
-* Might break TeXiFy functionality
-* Unsupported Unicode character
+
+
+==== Discouraged use of TeX or obsolete LaTeX
 * Use of `\over` discouraged
-* Redundant escape when Unicode is enabled
+* TeX styling primitives usage is discouraged
+* Discouraged use of `\def` and `\let`
+* link:Inspections#ins:avoid-eqnarray[Avoid `eqnarray`]
+* Discouraged use of primitive TeX display math
+* Discouraged use of `\makeatletter` in tex sources
+
+==== Probable bugs
+* Unsupported Unicode character
 * Missing documentclass
 * Missing document environment
-* Too large sections
-* TeX styling primitives usage is discouraged
-* Start sentences on a new line
-* Non-breaking spaces before references
-* Discouraged use of `\def` and `\let`
-* Missing labels
-* Duplicate labels
-* Label conventions
 * Missing imports
 * Unresolved references
 * Non matching environment commands
+* Open if-then-else control sequence
+* File not found
+* Inclusion loops
+* Nested includes
+
+==== Duplicates
+* Command is already defined
+* Duplicate labels
+* Package has been imported multiple times
+
+==== Redundant LaTeX
+* Redundant escape when Unicode is enabled
+* Redundant use of `\par`
+* Unnecessary whitespace in section commands
+* Duplicate command definitions
+
+==== Writing style recommendations
+* Non-escaped common math operators
+* Non-breaking spaces before references
 * Ellipsis with `...` instead of `\ldots` or `\dots`
 * Normal space after abbreviation
 * En dash in number ranges
@@ -130,24 +146,25 @@ toc::[]
 * Use of `.` instead of `\cdot`
 * Use of `x` instead of `\times`
 * Grouped superscript and subscript
-* Redundant use of `\par`
-* Open if-then-else control sequence
 * Insert `\qedhere` in trailing displaymath environment
 * Use the matching amssymb symbol for extreme inequalities
-* File not found
-* Inclusion loops
-* Discouraged use of primitive TeX display math
-* Collapse cite commands
 * Dotless versions of i and j must be used with diacritics
-* Package has been imported multiple times
-* Unnecessary whitespace in section commands
 * Enclose high commands with `\leftX..\rightX`
 * Citations must be placed before interpunction
-* Duplicate command definitions
 * Gather equations
-* Discouraged use of `\makeatletter` in tex sources
+
+==== LaTeX recommendations
+* Start sentences on a new line
+* Collapse cite commands
 * File argument should not include the extension
-* Nested includes
+
+==== Writing organisation recommendations
+* Might break TeXiFy functionality
+* Too large sections
+
+==== Conventions
+* Missing labels
+* Label conventions
 
 == Intentions
 
