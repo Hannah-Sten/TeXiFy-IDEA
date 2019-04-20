@@ -1,11 +1,17 @@
-== Features
+= Features
+// The automatic placement of the toc doesn't work on github, we have to place it manually.
+// See https://gist.github.com/dcode/0cfbf2699a1fe9b46ff04c41721dda74#table-of-contents.
+:toc:
+:toc-placement!:
 
 [NOTE]
 
 This is a work in progress. More features should be added, and each should have its own page with documentation.
 The idea is to first find a list of all relevant features, group them and then document them.
 
+toc::[]
 
+== All Features
 * Syntax highlighting
 * Equation preview
 * Autocomplete of labels, (custom defined) commands and environments
