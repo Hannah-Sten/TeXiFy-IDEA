@@ -104,38 +104,6 @@ toc::[]
 
 === LaTeX
 
-
-==== Discouraged use of TeX or obsolete LaTeX
-* Use of `\over` discouraged
-* TeX styling primitives usage is discouraged
-* Discouraged use of `\def` and `\let`
-* link:Inspections#ins:avoid-eqnarray[Avoid `eqnarray`]
-* Discouraged use of primitive TeX display math
-* Discouraged use of `\makeatletter` in tex sources
-
-==== Probable bugs
-* Unsupported Unicode character
-* Missing documentclass
-* Missing document environment
-* Missing imports
-* Unresolved references
-* Non matching environment commands
-* Open if-then-else control sequence
-* File not found
-* Inclusion loops
-* Nested includes
-
-==== Duplicates
-* Command is already defined
-* Duplicate labels
-* Package has been imported multiple times
-
-==== Redundant LaTeX
-* Redundant escape when Unicode is enabled
-* Redundant use of `\par`
-* Unnecessary whitespace in section commands
-* Duplicate command definitions
-
 ==== Writing style recommendations
 * Non-escaped common math operators
 * Non-breaking spaces before references
@@ -153,6 +121,41 @@ toc::[]
 * Citations must be placed before interpunction
 * Gather equations
 
+==== Duplicates
+* Command is already defined
+* Duplicate labels
+* Package has been imported multiple times
+* Duplicate command definitions
+
+==== Probable bugs
+* Unsupported Unicode character
+* Missing documentclass
+* Missing document environment
+* Missing imports
+* Unresolved references
+* Non matching environment commands
+* Open if-then-else control sequence
+* File not found
+* Inclusion loops
+* Nested includes
+
+==== Redundant LaTeX
+* Redundant escape when Unicode is enabled
+* Redundant use of `\par`
+* Unnecessary whitespace in section commands
+
+==== Conventions
+* Missing labels
+* Label conventions
+
+==== Discouraged use of TeX or obsolete LaTeX
+* Use of `\over` discouraged
+* TeX styling primitives usage is discouraged
+* Discouraged use of `\def` and `\let`
+* link:Inspections#ins:avoid-eqnarray[Avoid `eqnarray`]
+* Discouraged use of primitive TeX display math
+* Discouraged use of `\makeatletter` in tex sources
+
 ==== LaTeX recommendations
 * Start sentences on a new line
 * Collapse cite commands
@@ -161,10 +164,6 @@ toc::[]
 ==== Writing organisation recommendations
 * Might break TeXiFy functionality
 * Too large sections
-
-==== Conventions
-* Missing labels
-* Label conventions
 
 == Intentions
 
