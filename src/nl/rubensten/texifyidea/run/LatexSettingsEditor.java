@@ -63,12 +63,12 @@ public class LatexSettingsEditor extends SettingsEditor<LatexRunConfiguration> {
         String path = (virtualFile == null ? "" : virtualFile.getPath());
         txtFile.setText(path);
 
-        // Reset seperate auxiliary files.
+        // Reset separate auxiliary files.
         if (auxDir != null) {
             auxDir.setSelected(runConfiguration.hasAuxiliaryDirectories());
         }
 
-        // Reset seperate output files.
+        // Reset separate output files.
         if (outDir != null) {
             outDir.setSelected(runConfiguration.hasOutputDirectories());
         }

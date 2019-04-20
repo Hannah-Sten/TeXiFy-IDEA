@@ -21,7 +21,7 @@ import javax.swing.*
 /**
  * @author Ruben Schellekens
  */
-open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selection contents to seperate file") {
+open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selection contents to separate file") {
 
     companion object {
 

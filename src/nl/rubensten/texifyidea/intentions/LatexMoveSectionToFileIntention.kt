@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.util.*
 /**
  * @author Ruben Schellekens
  */
-open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section contents to seperate file") {
+open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section contents to separate file") {
 
     companion object {
 
