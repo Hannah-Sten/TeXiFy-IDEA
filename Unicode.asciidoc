@@ -1,0 +1,1 @@
+Here some description and example of unicode support.
