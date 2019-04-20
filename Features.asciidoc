@@ -1,4 +1,3 @@
-= Features
 // The automatic placement of the toc doesn't work on github, we have to place it manually.
 // See https://gist.github.com/dcode/0cfbf2699a1fe9b46ff04c41721dda74#table-of-contents.
 :toc:
@@ -12,17 +11,18 @@ The idea is to first find a list of all relevant features, group them and then d
 
 toc::[]
 
-==== Installation
+== Installation
 
 * Support for Windows, Mac and Unix
 * MIT license
 * Built on the IntelliJ IDE which has many features
 
-==== Writing LaTeX
+== Writing LaTeX
 
+== Typing
 //* Spellchecking?
 * Unicode support
-* Autocomplete of labels, (custom defined) commands and environments
+* Autocomplete of labels, many common commands, custom defined commands and (custom) environments
 * Formatter
 * Smart Quotes
 * Automagically import packages of common commands
@@ -31,43 +31,50 @@ toc::[]
 * Support for user-created document classes and packages
 * Toggle star action
 * Custom shortcuts
+* Brace matching
+* Live templates
+* Macros with shortcuts
 
-==== Reading LaTeX
-* Code folding for imports, sections, and environments
-* Syntax highlighting
+== Reading
+* Code folding for imports, (sub(sub))sections, and environments
+* Customizable syntax highlighting
+* Method separator lines for sections
+
+== Preview
+* Unicode math preview
+* Equation preview
+* TikZ preview
+
+== Navigation
 * Structure view with filters
 * Go to declaration of labels
+* "Goto Symbol" support for section names, labels, bibitems, new environments and new commands
 
-==== Running LaTeX
+== Running
 * Gutter icons for quick compilation and file includes
 * Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
 * SumatraPDF support with forward and backward search
 
-==== BibTeX
+== BibTeX
 * Full BibTeX support
 * Formatter
 * Structure view with filters
 
-==== Managing LaTeX
+== Managing LaTeX
 * Project management
 
-==== Preview
-* Unicode math preview
-* Equation preview
-* TikZ preview
-* Brace matching
 
-==== UI
+== UI
 //* UI languages?
 //* RTL/bidirectional support?
 * Fancy icons that fit in with the IntelliJ style
 * Words of encouragement
 * Split screen editing
 
-==== Utilities
+== Utilities
 * Word counting tool
 * File templates for .tex, .sty, .cls and .bib files
 
-==== Inspections
+== Inspections
 
-==== Intentions
+== Intentions
