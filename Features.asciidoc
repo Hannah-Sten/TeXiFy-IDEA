@@ -84,6 +84,7 @@ toc::[]
 * Same bibliography is included multiple times
 
 === LaTeX
+* <<ins:avoid-eqnarray, Avoid `eqnarray`>>
 * Non-escaped common math operators
 * Command is already defined
 * Might break TeXiFy functionality
@@ -104,7 +105,6 @@ toc::[]
 * Unresolved references
 * Non matching environment commands
 * Ellipsis with `...` instead of `\ldots` or `\dots`
-* Avoid `eqnarray`
 * Normal space after abbreviation
 * En dash in number ranges
 * End-of-sentence space after sentences ending with capitals
