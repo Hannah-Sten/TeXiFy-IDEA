@@ -1,8 +1,5 @@
 // Document attributes
 
-// Enable links of sections
-:sectlinks:
-
 // Draw icons in admonitions
 :icons: font
 
