@@ -1,3 +1,3 @@
-Avoid `eqnarray`:: The `eqnarray` and `eqnarray*` environments are not recommended because they produce inconsistent spacing of the equal signs and make no attempt to prevent overprinting of the equation body and equation number.
+[[ins:avoid-eqnarray]]Avoid `eqnarray`:: The `eqnarray` and `eqnarray*` environments are not recommended because they produce inconsistent spacing of the equal signs and make no attempt to prevent overprinting of the equation body and equation number.
 
 Use of `.` instead of `\cdot`:: When multiplying numbers, use `\cdot` instead of `.`.
