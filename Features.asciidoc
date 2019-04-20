@@ -34,9 +34,10 @@ toc::[]
 * Brace matching
 * Live templates
 * Macros with shortcuts
+* Automatic insertion of \item in list environments like itemize and enumerate
 
 == Reading
-* Code folding for imports, (sub(sub))sections, and environments
+* Code folding for imports, (sub(sub))sections and environments
 * Customizable syntax highlighting
 * Method separator lines for sections
 
@@ -49,20 +50,28 @@ toc::[]
 * Structure view with filters
 * Go to declaration of labels
 * "Goto Symbol" support for section names, labels, bibitems, new environments and new commands
+* Gutter icons for file includes including \input, \includegraphic, \usepackage
+* Breadcrumbs for environments and commands
 
 == Running
-* Gutter icons for quick compilation and file includes
+* Gutter icons for quick compilation
 * Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
 * SumatraPDF support with forward and backward search
+* The pdf will appear in a separate out/ directory to avoid cluttering the source directory
+* Auxiliary files will be put in a separate auxil/ directory on Windows
+* Custom compiler path
+* Option to choose between PDF or DVI output
 
 == BibTeX
-* Full BibTeX support
+* Syntax highlighting
 * Formatter
+* Autocomplete
 * Structure view with filters
 
 == Managing LaTeX
 * Project management
-
+* VCS integration including Git
+* Support for multiple content roots
 
 == UI
 //* UI languages?
@@ -71,9 +80,19 @@ toc::[]
 * Words of encouragement
 * Split screen editing
 
+== Custom options
+=== Project
+* Option to disable auto-insertion of \item
+* Option to disable automatic brace insertion for sub and super scripts
+* Option to disable automatic insertion of second $
+
+=== Run configuration
+* Option to disable use of out/ directory
+
 == Utilities
 * Word counting tool
 * File templates for .tex, .sty, .cls and .bib files
+* Crash reporting dialog
 
 == Inspections
 
