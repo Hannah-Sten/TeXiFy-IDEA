@@ -77,4 +77,66 @@ toc::[]
 
 == Inspections
 
+=== BibTeX
+* Duplicate ID
+* Missing bibliography style
+* Duplicate bibliography style commands
+* Same bibliography is included multiple times
+
+=== LaTeX
+* Non-escaped common math operators
+* Command is already defined
+* Might break TeXiFy functionality
+* Unsupported Unicode character
+* Use of `\over` discouraged
+* Redundant escape when Unicode is enabled
+* Missing documentclass
+* Missing document environment
+* Too large sections
+* TeX styling primitives usage is discouraged
+* Start sentences on a new line
+* Non-breaking spaces before references
+* Discouraged use of `\def` and `\let`
+* Missing labels
+* Duplicate labels
+* Label conventions
+* Missing imports
+* Unresolved references
+* Non matching environment commands
+* Ellipsis with `...` instead of `\ldots` or `\dots`
+* Avoid `eqnarray`
+* Normal space after abbreviation
+* En dash in number ranges
+* End-of-sentence space after sentences ending with capitals
+* Use of `.` instead of `\cdot`
+* Use of `x` instead of `\times`
+* Grouped superscript and subscript
+* Redundant use of `\par`
+* Open if-then-else control sequence
+* Insert `\qedhere` in trailing displaymath environment
+* Use the matching amssymb symbol for extreme inequalities
+* File not found
+* Inclusion loops
+* Discouraged use of primitive TeX display math
+* Collapse cite commands
+* Dotless versions of i and j must be used with diacritics
+* Package has been imported multiple times
+* Unnecessary whitespace in section commands
+* Enclose high commands with `\leftX..\rightX`
+* Citations must be placed before interpunction
+* Duplicate command definitions
+* Gather equations
+* Discouraged use of `\makeatletter` in tex sources
+* File argument should not include the extension
+* Nested includes
+
 == Intentions
+
+=== LaTeX
+* Add label defining command to list
+* Change equation*/displaymath environment to `\[..\]`
+* Change to `\left..\right`
+* Convert to other math environment
+* Move section contents to separate file
+* Move selection contents to separate file
+* Split into multiple `\usepackage` commands
