@@ -15,4 +15,3 @@ https://asciidoctor.org/docs/user-manual/
 
 
 
-link:https://tex.stackexchange.com/a/485125/98850[TeX StackExchange big list]
