@@ -27,7 +27,7 @@ toc::[]
 == Writing LaTeX
 
 == Typing
-* Unicode support
+* link:Unicode[Unicode support]
 * Autocomplete of labels, many common commands, custom defined commands and (custom) environments
 * Formatter
 * Smart Quotes
