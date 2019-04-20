@@ -1,11 +1,14 @@
 :experimental:
+
+This wiki uses AsciiDoc.
+You can clone this wiki and edit in IntelliJ using the AsciiDoc plugin.
+
 === AsciiDoc guidelines/tips/cheatsheet
-* Display keyboard shortcuts: kbd:[Ctrl + \]]
+* Display keyboard shortcuts: kbd:[Ctrl + \]], requires adding the `:experimental:` attribute at the top of the file
 * Display menu selections: menu:File[New > LaTeX File]
 
 === Useful AsciiDoc links
 
-This wiki uses AsciiDoc.
 GitHub uses AsciiDoctor to render `.asciidoc` files.
 
 https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
