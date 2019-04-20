@@ -7,6 +7,7 @@ The idea is to first find a list of all relevant features, group them and then d
 
 
 * Syntax highlighting
+* Equation preview
 * Autocomplete of labels, (custom defined) commands and environments
 * Writer ergonomics - writing LaTeX made less cumbersome
 * Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
