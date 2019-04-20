@@ -11,30 +11,62 @@ The idea is to first find a list of all relevant features, group them and then d
 
 toc::[]
 
-== All Features
-* Syntax highlighting
-* Equation preview
+=== Installation
+
+* Support for Windows, Mac and Unix
+* MIT license
+* Built on the IntelliJ IDE which has many features
+
+==== Writing LaTeX
+
+//* Spellchecking?
+* Unicode support
 * Autocomplete of labels, (custom defined) commands and environments
-* Writer ergonomics - writing LaTeX made less cumbersome
-* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
-* Inspections. Intentions. And heaps more inspections
-* Full BibTeX support
-* Formatter for LaTeX and BibTeX
-* Structure view for LaTeX and BibTeX with filters
-* Code folding for imports, sections, and environments
-* SumatraPDF support with forward and backward search
+* Formatter
 * Smart Quotes
-* Unicode math preview
-* Equation preview
-* Gutter icons for quick compilation and file includes
-* Fancy icons that fit in with the IntelliJ style
-* Brace matching
-* Word counting tool
-* File templates for .tex, .sty, .cls and .bib files
 * Automagically import packages of common commands
-* Go to declaration of labels
 * Shortcuts for styling text
-* Line commenter
+* Line and block commenting shortcut
 * Support for user-created document classes and packages
 * Toggle star action
+* Custom shortcuts
+
+==== Reading LaTeX
+* Code folding for imports, sections, and environments
+* Syntax highlighting
+* Structure view with filters
+* Go to declaration of labels
+
+==== Running LaTeX
+* Gutter icons for quick compilation and file includes
+* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
+* SumatraPDF support with forward and backward search
+
+==== BibTeX
+* Full BibTeX support
+* Formatter
+* Structure view with filters
+
+==== Managing LaTeX
+* Project management
+
+==== Preview
+* Unicode math preview
+* Equation preview
+* TikZ preview
+* Brace matching
+
+==== UI
+//* UI languages?
+//* RTL/bidirectional support?
+* Fancy icons that fit in with the IntelliJ style
 * Words of encouragement
+* Split screen editing
+
+==== Utilities
+* Word counting tool
+* File templates for .tex, .sty, .cls and .bib files
+
+==== Inspections
+
+==== Intentions
