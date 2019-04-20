@@ -103,7 +103,7 @@ toc::[]
 * Same bibliography is included multiple times
 
 === LaTeX
-* <<Insections.asciidoc#ins:avoid-eqnarray, Avoid `eqnarray`>>
+* <<Inspections.asciidoc#ins:avoid-eqnarray, Avoid `eqnarray`>>
 * Non-escaped common math operators
 * Command is already defined
 * Might break TeXiFy functionality
