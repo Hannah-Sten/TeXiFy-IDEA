@@ -45,13 +45,11 @@ toc::[]
 * Soft wraps and wrap on typing
 // Include: ctrl+d, alt+shift+arrow, etc.
 * Many useful shortcuts
-
-=== Automatic insertions
 * Automatic insertion of `\item` in list environments like itemize and enumerate
-* On typing `\begin{environment}` + kbd:[Enter], automatic insertion of `\end{environment}` with correct indentation
-* On typing `\[` + kbd:[Enter], automatic insertion of `\]` with correct indentation
+* Automatic insertion of of `\end` when typing `\begin` for environments
+* On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
 * Automatic insertion of braces of first required parameter
-* Typing `}` at closing brace skips over it
+* Typing `}` at closing brace skips over it, same for `$..$`
 
 == Reading
 * Code folding for imports, (sub(sub))sections and environments
@@ -102,8 +100,13 @@ toc::[]
 * Change display font
 * Custom color scheme
 * RTL/bidirectional support
-//* UI languages?
 * Words of encouragement
+
+== Utilities
+* Word counting tool
+* Customizable file templates for .tex, .sty, .cls and .bib files
+* Crash reporting dialog
+* Suggested updates of TeXiFy and one click to update
 
 == Settings and preferences
 === Project
@@ -126,12 +129,6 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Choose output format
 * Choose BibTeX run configuration
 * Other tasks to run before the run configuration, including other run configurations or external tools
-
-== Utilities
-* Word counting tool
-* Customizable file templates for .tex, .sty, .cls and .bib files
-* Crash reporting dialog
-* Suggested updates of TeXiFy and one click to update
 
 == Inspections
 
@@ -241,8 +238,3 @@ menu:Tools[LaTeX > SumatraPDF]:: (Windows only) Forward search and configuration
 menu:Right-click on any file[New > LaTeX File]:: Create a new LaTeX file.
 
 menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
-
-
-== Relevant links
-
-link:https://tex.stackexchange.com/a/485125/98850[TeXiFy on the TeX StackExchange big list]
