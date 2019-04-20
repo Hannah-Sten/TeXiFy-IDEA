@@ -4,23 +4,29 @@
 :toclevels: 4
 :toc-placement!:
 
+// Enable features like kbd:[Ctrl]
+:experimental:
+
+
 [NOTE]
 
-This is a work in progress. More features should be added, and each should have its own page with documentation.
-The idea is to first find a list of all relevant features, group them and then document them.
+This is a work in progress. More features should be added, and each should link to its own page with documentation. Link to IJ docs where possible and useful
 
 toc::[]
+
+
+// todo: each features which has a menu entry/shortcut should mention it (at the top of the description page?)
 
 == Installation
 
 * Support for Windows, Mac and Unix
 * MIT license
+// todo link to IJ docs
 * Built on the IntelliJ IDE which has many features
 
 == Writing LaTeX
 
 == Typing
-//* Spellchecking?
 * Unicode support
 * Autocomplete of labels, many common commands, custom defined commands and (custom) environments
 * Formatter
@@ -30,16 +36,28 @@ toc::[]
 * Line and block commenting shortcut
 * Support for user-created document classes and packages
 * Toggle star action
-* Custom shortcuts
+* Custom shortcuts for menu items
 * Brace matching
-* Live templates
-* Macros with shortcuts
-* Automatic insertion of \item in list environments like itemize and enumerate
+* Live template for `\frac` with `tab` skip to next braces pair
+* Custom live templates
+* Custom macros with shortcuts
+* Spellchecking with custom dictionaries
+* Soft wraps and wrap on typing
+// Include: ctrl+d, alt+shift+arrow, etc.
+* Many useful shortcuts
+
+=== Automatic insertions
+* Automatic insertion of `\item` in list environments like itemize and enumerate
+* On typing `\begin{environment}` + kbd:[Enter], automatic insertion of `\end{environment}` with correct indentation
+* On typing `\[` + kbd:[Enter], automatic insertion of `\]` with correct indentation
+* Automatic insertion of braces of first required parameter
+* Typing `}` at closing brace skips over it
 
 == Reading
 * Code folding for imports, (sub(sub))sections and environments
 * Customizable syntax highlighting
 * Method separator lines for sections
+* Special highlighting and marker for `todo` comments, customizable
 
 == Preview
 * Unicode math preview
@@ -70,29 +88,50 @@ toc::[]
 
 == Managing LaTeX
 * Project management
-* VCS integration including Git
 * Support for multiple content roots
 
-== UI
-//* UI languages?
-//* RTL/bidirectional support?
-* Fancy icons that fit in with the IntelliJ style
-* Words of encouragement
-* Split screen editing
+== Tools
+* VCS integration including Git
+* Terminal window
+* Running external tools before compiling
 
-== Custom options
+== UI
+* Fancy icons that fit in with the IntelliJ style
+* Editor tabs
+* Split screen editing
+* Change display font
+* Custom color scheme
+* RTL/bidirectional support
+//* UI languages?
+* Words of encouragement
+
+== Settings and preferences
 === Project
-* Option to disable auto-insertion of \item
-* Option to disable automatic brace insertion for sub and super scripts
+
+These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy]
+
+* Option to enable use of soft wraps when opening LaTeX files
 * Option to disable automatic insertion of second $
+* Option to disable automatic brace insertion around text in subscript and superscript
+* Option to disable auto-insertion of \item
+* Option to enable smart quote substitution
 
 === Run configuration
+* Separate BibTeX run configuration
+* Choose compiler
+* Custom compiler path
+* Custom compiler arguments
+* Choose LaTeX source file to compile
 * Option to disable use of out/ directory
+* Choose output format
+* Choose BibTeX run configuration
+* Other tasks to run before the run configuration, including other run configurations or external tools
 
 == Utilities
 * Word counting tool
-* File templates for .tex, .sty, .cls and .bib files
+* Customizable file templates for .tex, .sty, .cls and .bib files
 * Crash reporting dialog
+* Suggested updates of TeXiFy and one click to update
 
 == Inspections
 
@@ -175,3 +214,35 @@ toc::[]
 * Move section contents to separate file
 * Move selection contents to separate file
 * Split into multiple `\usepackage` commands
+
+== Menu entries
+
+If any shortcut is assigned to a menu entry, it will be shown next to it.
+
+menu:File[New > LaTeX File]:: Create a new LaTeX file of type Source (`.tex`), Bibliography(`.bib`), Package (`.sty`), Document class (`.cls`) or TikZ (`.tikz`)
+
+menu:Edit[LaTeX > Sectioning]:: Insert sectioning commands like `\part` or `\subsection`. If any text is selected, it will be used as argument to the command.
+
+menu:Edit[LaTeX > Font Style]:: Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
+
+// todo link to description pages for the next entries
+menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
+
+menu:Analyze[LaTeX > Word Count]:: Word counting tool.
+
+menu:Tools[LaTeX > Equation Preview]:: Preview equations.
+
+menu:Tools[LaTeX > TikZ Preview]:: Preview TikZ pictures.
+
+menu:Tools[LaTeX > SumatraPDF]:: (Windows only) Forward search and configuration of inverse search
+
+=== Context menu entries
+
+menu:Right-click on any file[New > LaTeX File]:: Create a new LaTeX file.
+
+menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
+
+
+== Relevant links
+
+link:https://tex.stackexchange.com/a/485125/98850[TeXiFy on the TeX StackExchange big list]
