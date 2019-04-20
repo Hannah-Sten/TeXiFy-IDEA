@@ -1,3 +1,8 @@
+:experimental:
+=== AsciiDoc guidelines/tips/cheatsheet
+* Display keyboard shortcuts: kbd:[Ctrl + \]]
+* Display menu selections: menu:File[New > LaTeX File]
+
 === Useful AsciiDoc links
 
 This wiki uses AsciiDoc.
