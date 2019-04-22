@@ -197,6 +197,11 @@
             <action class="nl.rubensten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz Picture">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
+
+            <!-- Clear auxiliary files -->
+            <action class="nl.rubensten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+
+            </action>
         </group>
 
         <!-- Insert: Sectioning -->
