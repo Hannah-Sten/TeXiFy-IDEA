@@ -15,7 +15,7 @@ import java.io.InputStreamReader
  *
  * @author Thomas Schouten
  */
-class InverseSearchListener {
+class EvinceInverseSearchListener {
 
     /**
      * Starts a listener which listens for inverse search actions from Evince.

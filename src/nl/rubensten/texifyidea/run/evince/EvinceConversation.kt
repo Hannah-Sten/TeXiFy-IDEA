@@ -74,9 +74,6 @@ object EvinceConversation {
      * Open a file in Evince, starting it if it is not running yet. This also finds the process owner of the pdf, so we can execute forward search later.
      */
     fun openFile(pdfFilePath: String) {
-        // todo what happens when the command fails?
-        // todo possibly use the default document viewer if evince not available?
-        // todo focus (always on top) or not depends on DE? https://unix.stackexchange.com/questions/36998/open-pdf-previewer-width-specific-size-and-position-and-always-on-top-from-com
         // Will do nothing if file is already open in Evince
         findProcessOwner(pdfFilePath)
     }
