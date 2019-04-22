@@ -152,7 +152,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val startIndex = command.textOffset + command.textLength
         val endIndex = nextCommand?.textOffset ?: file.textLength
 
-        return (endIndex - startIndex) >=  TOO_LONG_LIMIT
+        return (endIndex - startIndex) >= TOO_LONG_LIMIT
     }
 
     /**
