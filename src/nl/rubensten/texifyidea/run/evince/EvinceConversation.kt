@@ -1,18 +1,16 @@
 package nl.rubensten.texifyidea.run.evince
 
 import com.intellij.openapi.util.SystemInfo
+import nl.rubensten.texifyidea.TeXception
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.gnome.evince.Daemon
-import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import com.github.hypfvieh.util.SystemUtil
-import nl.rubensten.texifyidea.TeXception
 
 /**
  * Indicates whether Evince is installed and available.
  *
- * todo check if this doesn't hurt performance too much (otherwise can be computed on start and saved, see sumatra)
+ * For debugging, the self-contained project at https://github.com/PHPirates/evince_dbus may be helpful.
  */
 fun isEvinceAvailable(): Boolean {
     // Only support Evince on Linux, although it can be installed on other systems like Mac
@@ -75,10 +73,9 @@ object EvinceConversation {
     /**
      * Open a file in Evince, starting it if it is not running yet. This also finds the process owner of the pdf, so we can execute forward search later.
      */
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+    fun openFile(pdfFilePath: String) {
         // todo what happens when the command fails?
         // todo possibly use the default document viewer if evince not available?
-        // todo is filepath full path or relative? need working dir in second case
         // todo focus (always on top) or not depends on DE? https://unix.stackexchange.com/questions/36998/open-pdf-previewer-width-specific-size-and-position-and-always-on-top-from-com
         // Will do nothing if file is already open in Evince
         findProcessOwner(pdfFilePath)

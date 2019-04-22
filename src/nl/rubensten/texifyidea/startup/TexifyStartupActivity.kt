@@ -3,7 +3,9 @@ package nl.rubensten.texifyidea.startup
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.util.SystemInfo
 import nl.rubensten.texifyidea.editor.LatexSoftWrapEditorListener
+import nl.rubensten.texifyidea.run.evince.InverseSearchListener
 
 /**
  * @author Sten Wessel
@@ -15,5 +17,9 @@ class TexifyStartupActivity : StartupActivity {
                 LatexSoftWrapEditorListener(),
                 project
         )
+        // todo is this also run for non-LaTeX projects? When should it run?
+        if (SystemInfo.isLinux) {
+            InverseSearchListener().start()
+        }
     }
 }
