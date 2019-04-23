@@ -1,0 +1,3 @@
+
+
+Note that to use `\chapter` in your document you need to use `\documentclass{book}`, so they will only appear in the structure view if you do have the `book` documentclass.
