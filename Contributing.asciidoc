@@ -4,8 +4,26 @@ This wiki uses AsciiDoc.
 You can clone this wiki and edit in IntelliJ using the AsciiDoc plugin.
 
 === AsciiDoc guidelines/tips/cheatsheet
-* Display keyboard shortcuts: kbd:[Ctrl + \]], requires adding the `:experimental:` attribute at the top of the file
-* Display menu selections: menu:File[New > LaTeX File]
+* Display keyboard shortcuts:
+
+[source, subs="verbatim"]
+kbd:[Ctrl + \]]
+
+results in kbd:[Ctrl + \]]
+which requires adding the `:experimental:` attribute at the top of the file
+
+* Display menu selections:
+
+[source, subs="verbatim"]
+menu:File[New > LaTeX File]
+
+results in menu:File[New > LaTeX File]
+
+
+* To link to pages with spaces in the filename, use
+
+[source,subs="verbatim"]
+link:++Page name++[Link text]
 
 === Useful AsciiDoc links
 
