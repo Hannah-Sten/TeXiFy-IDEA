@@ -105,7 +105,7 @@ toc::[]
 == Utilities
 * Word counting tool
 * Customizable file templates for .tex, .sty, .cls and .bib files
-* link:MenuEntries#clear-aux-files[Menu button to delete generated auxiliary files]
+* link:++Menu entries#clear-aux-files++[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
 * Suggested updates of TeXiFy and one click to update
 
