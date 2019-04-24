@@ -105,6 +105,7 @@ toc::[]
 == Utilities
 * Word counting tool
 * Customizable file templates for .tex, .sty, .cls and .bib files
+* link:MenuEntries#clear-aux-files[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
 * Suggested updates of TeXiFy and one click to update
 
@@ -230,6 +231,8 @@ menu:Analyze[LaTeX > Word Count]:: Word counting tool.
 menu:Tools[LaTeX > Equation Preview]:: Preview equations.
 
 menu:Tools[LaTeX > TikZ Preview]:: Preview TikZ pictures.
+
+menu:Tools[LaTeX > link:MenuEntries#clear-aux-files[Clear Auxiliary Files]]:: Clear the generated auxiliary files.
 
 menu:Tools[LaTeX > SumatraPDF]:: (Windows only) Forward search and configuration of inverse search
 

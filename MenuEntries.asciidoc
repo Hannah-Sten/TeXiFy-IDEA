@@ -1,0 +1,5 @@
+==== [[clear-aux-files]]Clear Auxiliary Files
+Searches the entire project, i.e., every folder in the project module, for auxiliary files and deletes them. The files with the following extensions are defined as auxiliary files:
+
+[source, subs="verbatim"]
+aux, bbl, bcf, brf, fls, idx, ind, lot, lot, nav, out, snm, toc
