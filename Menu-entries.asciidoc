@@ -8,3 +8,5 @@ Searches the entire project, i.e., every folder in the project module, for auxil
 
 [source, subs="verbatim"]
 aux, bbl, bcf, brf, fls, idx, ind, lot, lot, nav, out, snm, toc
+
+If auxiliary files in a certain directory do not get deleted, make sure you mark that directory as a source directory by right-clicking on it and selecting menu:Mark Directory as[Sources Root].
