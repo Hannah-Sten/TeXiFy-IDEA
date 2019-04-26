@@ -198,6 +198,7 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
 
+            <separator/>
             <!-- Clear auxiliary files -->
             <action class="nl.rubensten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
 
