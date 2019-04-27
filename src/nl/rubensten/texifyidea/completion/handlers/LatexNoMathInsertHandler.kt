@@ -27,6 +27,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
             LatexCommandArgumentInsertHandler().handleInsert(context, item)
         }
 
+        RightInsertHandler().handleInsert(context, item)
         LatexCommandPackageIncludeHandler().handleInsert(context, item)
     }
 

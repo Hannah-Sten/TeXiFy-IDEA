@@ -19,10 +19,20 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
         fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
     }
 
+    // Options for smart quote replacement, in the order as they appear in the combobox
+    enum class QuoteReplacement {
+        NONE,
+        LIGATURES,
+        COMMANDS
+    }
+
     var automaticSoftWraps = false
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
+
+    // Index of selected combobox item
+    var automaticQuoteReplacement = QuoteReplacement.NONE
 
     override fun getState() = this
 

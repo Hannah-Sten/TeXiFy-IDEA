@@ -4,49 +4,67 @@ import com.intellij.openapi.util.SystemInfo
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 /**
  * @author Sergei Izmailov
  */
-class PreviewFormUpdater(val previewForm: PreviewForm) {
+class PreviewFormUpdater(private val previewForm: PreviewForm) {
 
+    /**
+     * Modify this variable to include more packages.
+     *
+     * Unless you are going to set your own \pagestyle{}, simply append to this variable.
+     */
     var preamble = """
-        \usepackage{amsmath,amsthm,amssymb,amsfonts}
+        \pagestyle{empty}
+
         \usepackage{color}
 
-        \pagestyle{empty}
     """.trimIndent()
 
-    fun setEquationText(equationText: String) {
-        previewForm.setEquation(equationText)
+    /**
+     * Controls how long (in seconds) we will wait for the document compilation. If the time taken exceeds this,
+     * we will return an error and not output a preview.
+     */
+    var waitTime = 3L
+
+    /**
+     * Sets the code that will be previewed, whether that be an equation, a tikz picture, or whatever else
+     * you are trying to preview.
+     *
+     * This function also starts the creation and compilation of the temporary preview document, and will then
+     * either display the preview, or if something failed, the error produced.
+     */
+    fun setPreviewCode(previewCode: String) {
+        previewForm.setEquation(previewCode)
 
         try {
             val tempDirectory = createTempDir()
             try {
-                val tempBasename = "${tempDirectory.path}/equation"
+                val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
                 val writer = PrintWriter("$tempBasename.tex", "UTF-8")
 
-                val tmpContent = """
-                    \documentclass{article}
-                    $preamble
+                val tmpContent = """\documentclass{article}
+$preamble
 
-                    \begin{document}
-                    $equationText
+\begin{document}
 
-                    \end{document}
-                """.trimIndent()
+$previewCode
+
+\end{document}"""
                 writer.println(tmpContent)
                 writer.close()
 
                 val latexStdoutText = runCommand("pdflatex",
                         arrayOf(
+                                "-interaction=nonstopmode",
                                 "-halt-on-error",
-                                "$tempBasename.tex",
-                                "-interaction=nonstopmode"),
+                                "$tempBasename.tex"),
                         tempDirectory
-                )?.second ?: return
+                ) ?: return
 
                 runCommand(
                         pdf2svgExecutable(),
@@ -83,31 +101,28 @@ class PreviewFormUpdater(val previewForm: PreviewForm) {
 
     }
 
-    private fun runCommand(command: String, args: Array<String>, workDirectory: File): Triple<Int, String, String>? {
+    private fun runCommand(command: String, args: Array<String>, workDirectory: File): String? {
+
         val executable = Runtime.getRuntime().exec(
                 arrayOf(command) + args,
                 null,
                 workDirectory
         )
 
-        executable.outputStream.close()
-
-        if (!executable.waitFor(3, TimeUnit.SECONDS)) {
-            executable.destroy()
-            previewForm.setLatexErrorMessage("$command took more than 3 seconds. Terminated.")
-            return null
-        }
-
         val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->
             executable.errorStream.bufferedReader().use { stderr ->
                 Pair(stdout.readText(), stderr.readText())
             }
         }
+
+        executable.waitFor(waitTime, TimeUnit.SECONDS)
+
         if (executable.exitValue() != 0) {
             previewForm.setLatexErrorMessage("$command exited with ${executable.exitValue()}\n$stdout\n$stderr")
             return null
         }
-        return Triple(executable.exitValue(), stdout, stderr)
+
+        return stdout
     }
 
     private fun inkscapeExecutable(): String {

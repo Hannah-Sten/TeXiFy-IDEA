@@ -88,6 +88,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                             new LatexNoMathInsertHandler() :
                             new LatexMathInsertHandler();
 
+
                     return LookupElementBuilder.create(cmd, cmd.getCommand())
                             .withPresentableText(cmd.getCommandDisplay())
                             .bold()

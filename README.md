@@ -13,8 +13,6 @@ Create the most beautiful LaTeX documents with the user friendliness of the Inte
 This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin
 
 ## Feedback and support
-***We are currently extremely busy IRL, so there might be some delay in support and development.***
-
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
 1. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account). Gitter also has a nice app, we use it to get notified of new activity.
 2. [Issues](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, user support, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advice using the gitter.
@@ -37,6 +35,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
 * SumatraPDF support with forward and backward search
+* Smart Quotes
 * Unicode math preview
 * Equation preview
 * Gutter icons for quick compilation and file includes
@@ -133,7 +132,7 @@ Note that we didn't have the opportunity yet to test these instructions, so plea
 * But some standard LaTeX commands are available in the LaTeX menu.
 * Pay attention to squiggles (wavey lines) under text you typed, they indicate that something is wrong. Hovering over it gives extra information. In some cases, a ready-made fix is waiting to be applied: hit the lightbulb that appears on the left, or hit <kbd>Alt</kbd>+<kbd>Enter</kbd> to view and apply it. A quick overview of useful shortcuts is [below](#installation-shortcuts-overview).
 * If your LaTeX indentation (the number of spaces that is in front of each line) looks messy, try to reformat with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd>.
-* This plugin contains an Equation Preview, which lets you preview equations without having to compile the entire document. It does however require other software, for which you can find installation instructions [below](#equation-preview).
+* This plugin contains an Equation Preview, which lets you preview equations without having to compile the entire document. It does however require other software, for which you can find installation instructions [below](#equation-preview). The same software requirements hold for the TikZ Preview, with which you can preview TikZ pictures.
 * If you are searching how a particular symbol has to be written in LaTeX, the [Detexify](http://detexify.kirelabs.org/classify.html) tool can probably help you. Just draw your symbol in the `draw here` box and the command will be listed on the right.
 * If you want a proper explanation of what LaTeX and its philosophy is about, read the [Not So Short Introduction To LaTeX2e](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf).
 
@@ -178,10 +177,13 @@ when you do not recognize the file.
 
 Any suggestions for improvements of the installation instructions, however small? Please let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
-## <a name="equation-preview">Equation preview</a>
+## <a name="equation-preview">Equation preview and TikZ Preview</a>
 
-You can use the Equation Preview by making sure your cursor is in a math environment and clicking the LaTeX | Equation Preview menu, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>.
-It works by putting your equation in a new temporary (fairly minimal) document and compiling that, so custom commands and packages from your document will not be taken into account.
+You can use the Equation Preview by making sure your cursor is in a math environment and clicking the Tools | LaTeX | Preview Equation menu, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>.
+You can use the TikZ Preview by placing your cursor in a `tikzpicture` environment and click the Tools | LaTeX | Preview TikZ Picture, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>.
+It works by putting your equation or TikZ picture in a new temporary (fairly minimal) document and compiling that, so custom commands and packages from your document will not be taken into account, but it ensures the preview is really fast.
+The TikZ Preview will take TikZ and pgf libraries into account.
+
 The current implementation of the Equation Preview was contributed by Sergei Izmailov and requires external dependencies, for which installation instructions follow.
 
 ### Instructions for Linux
@@ -233,7 +235,8 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
 * Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
 * The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
-* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
+* You can also debug against other IDEs. At the moment only PyCharm is set up, but it is easy to add others. You can use it by specifying the argument `-PusePycharm=true` in your runIde run configuration.
+* Use the option Tools - LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
 * To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
 * Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
 
@@ -287,6 +290,26 @@ where the files `introduction.tex` and `example-theorems.tex` contain just the c
     If the meanings of 'true' and 'false' were switched, then this sentence wouldn't be false.
 \end{theorem}
 ```
+
+#### How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
+
+You can define a live template via File -> Settings... -> Editor -> Live Templates. For example, for the `itemize` environment, you could use the following template:
+
+```tex
+\begin{itemize}
+    \item $PARM1$
+\end{itemize}
+```
+
+Set the template to be applicable in LaTeX files.
+
+![Screenshot of live template UI, showing the template text above along with an abbreviation of itemize and a description of 'Add itemize env'. The macro is set to be 'Applicable in LaTeX' and expands with the Tab key.](doc/macro.png)
+
+Once the live template is created, close the Settings dialog. Use Edit -> Macros -> Start Macro Recording and enter the live template abbreviation. Finish recording the macro, and name it. Via Settings -> Keymap, assign the macro a key binding such as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>.
+
+Now, you can use the macro key binding and hit <kbd>Enter</kbd> to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
+
+For commands, you can define templates for e.g. `\emph{$PARM1$}`.
 
 #### The Equation Preview does not work
 

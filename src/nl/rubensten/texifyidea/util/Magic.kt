@@ -161,10 +161,16 @@ object Magic {
         @JvmField val classDefinitions = hashSetOf("\\ProvidesClass")
 
         /**
+         * All commands that define new packages.
+         */
+        @JvmField val packageDefinitions = hashSetOf("\\ProvidesPackage")
+
+        /**
          * All commands that define new environments.
          */
         @JvmField val environmentDefinitions = hashSetOf(
                 "\\newenvironment",
+                "\\newtheorem",
                 "\\NewDocumentEnvironment",
                 "\\ProvideDocumentEnvironment",
                 "\\DeclareDocumentEnvironment"
@@ -173,7 +179,7 @@ object Magic {
         /**
          * All commands that define stuff like classes, environments, and definitions.
          */
-        @JvmField val definitions = commandDefinitions + classDefinitions + environmentDefinitions
+        @JvmField val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
         /**
          * All commands that are able to redefine other commands.
@@ -345,6 +351,14 @@ object Magic {
          * Matches a LaTeX command that is the start of an \if-\fi structure.
          */
         @JvmField val ifCommand = RegexPattern.compile("\\\\if[a-zA-Z@]*")!!
+
+        /**
+         * Matches the begin and end commands of the cases and split environments.
+         */
+        @JvmField val casesOrSplitCommands = Regex("((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
+                "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
+                "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
+                "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))")
     }
 
     /**
@@ -401,7 +415,7 @@ object Magic {
                 "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
                 "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
-                "tikz" to TexifyIcons.LATEX_FILE
+                "tikz" to TexifyIcons.TIKZ_FILE
         )
     }
 }
