@@ -72,7 +72,8 @@ toc::[]
 == Running
 * Gutter icons for quick compilation
 * Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
-* SumatraPDF support with forward and backward search
+* SumatraPDF (Windows) support with forward and backward search
+* link:Evince-support[Evince (Linux) support with forward and backward search]
 * The pdf will appear in a separate out/ directory to avoid cluttering the source directory
 * Auxiliary files will be put in a separate auxil/ directory on Windows
 * Custom compiler path
