@@ -85,6 +85,7 @@ toc::[]
 * Structure view with filters
 
 == Managing LaTeX
+* Never press kbd:[Ctrl + S] again: saves while you type
 * Project management
 * Support for multiple content roots
 
