@@ -2,5 +2,3 @@
 *       @rubenschellekens @stenwessel @PHPirates
 
 # Patterns below override the rules above
-/src/org/gnome/evince/ @PHPirates @rubenschellekens @stenwessel
-/src/nl/rubensten/texifyidea/run/evince/ @PHPirates @rubenschellekens @stenwessel

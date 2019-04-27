@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.run.evince
+package nl.rubensten.texifyidea.run.sumatra
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
@@ -7,16 +7,14 @@ import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.run.LatexRunConfiguration
 
 /**
- * Opens Evince after the compile process terminated (correctly).
- *
- * @author Thomas Schouten
+ * @author Sten Wessel
  */
-class OpenEvinceListener(val runConfig: LatexRunConfiguration) : ProcessListener {
+class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        if (event.exitCode == 0 && isEvinceAvailable()) {
+        if (event.exitCode == 0 && isSumatraAvailable) {
             try {
-                EvinceConversation.openFile(runConfig.outputFilePath)
+                SumatraConversation.openFile(runConfig.outputFilePath)
             }
             catch (ignored: TeXception) {
             }

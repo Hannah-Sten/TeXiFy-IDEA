@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.run
+package nl.rubensten.texifyidea.run.sumatra
 
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation

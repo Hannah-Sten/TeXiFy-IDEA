@@ -6,6 +6,7 @@ import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.util.SystemInfo
 import nl.rubensten.texifyidea.editor.LatexSoftWrapEditorListener
 import nl.rubensten.texifyidea.run.evince.EvinceInverseSearchListener
+import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
 
 /**
  * @author Sten Wessel
@@ -18,7 +19,7 @@ class TexifyStartupActivity : StartupActivity {
                 project
         )
 
-        if (SystemInfo.isLinux) {
+        if (SystemInfo.isLinux && isEvinceAvailable()) {
             EvinceInverseSearchListener().start()
         }
     }

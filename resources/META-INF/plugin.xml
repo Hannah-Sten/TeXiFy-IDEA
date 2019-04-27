@@ -281,8 +281,6 @@
                     text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
                 <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
             </action>
-            <!--<action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"-->
-                    <!--text="_Configure Inverse Search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>-->
         </group>
     </actions>
 

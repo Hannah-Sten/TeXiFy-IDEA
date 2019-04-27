@@ -61,11 +61,9 @@ class EvinceInverseSearchListener {
 
                 line = bufferedReader.readLine()
             }
-
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
 
     /**
@@ -76,7 +74,7 @@ class EvinceInverseSearchListener {
      */
     private fun syncSource(filePath: String, lineNumber: Int) {
         val path = PathManager.getBinPath()
-        var name = ApplicationNamesInfo.getInstance().scriptName
+        val name = ApplicationNamesInfo.getInstance().scriptName
 
         val command = "$path/$name.sh --line $lineNumber \"$filePath\""
 
@@ -85,7 +83,5 @@ class EvinceInverseSearchListener {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
-
 }
