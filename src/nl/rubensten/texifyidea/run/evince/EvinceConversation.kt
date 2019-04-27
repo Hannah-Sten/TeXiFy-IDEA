@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.run.evince
 import com.intellij.openapi.util.SystemInfo
 import nl.rubensten.texifyidea.TeXception
 import org.freedesktop.dbus.connections.impl.DBusConnection
+import org.freedesktop.dbus.errors.NoReply
 import org.gnome.evince.Daemon
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -116,7 +117,10 @@ object EvinceConversation {
         val daemon = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Daemon::class.java)
 
         // Call the method on the D-Bus by using the function we defined in the Daemon interface
-        processOwner = daemon.FindDocument("file://$pdfFilePath", true)
+        // Catch a NoReply, because it is unknown why Evince cannot start so we don't try to fix that
+        try {
+            processOwner = daemon.FindDocument("file://$pdfFilePath", true)
+        } catch (ignored: NoReply) {}
     }
 
 }

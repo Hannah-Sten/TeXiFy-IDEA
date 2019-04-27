@@ -51,7 +51,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Toggle star action
 * Words of encouragement
 
-We could make a detailed list, but that would take up your whole screen! We might add one later though :)
+A more extensive (but not complete) list can be found in the [Wiki](https://github.com/Ruben-Sten/TeXiFy-IDEA/wiki/Features).
 
 ## <a name="installation-instructions">Installation instructions: installing IntelliJ and the TeXiFy-IDEA plugin</a>
 
@@ -79,7 +79,7 @@ These instructions were tested on Windows 7, 8.1 and 10.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd> on Windows.
 
 #### Configuring forward and inverse search
-* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the Tools - LaTeX menu in the top menu bar and clicking  SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
+* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the Tools - LaTeX menu in the top menu bar and clicking SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
 This shortcut can also be used to bring the SumatraPDF window in view when you do not see it.
 * If you don't see a SumatraPDF option, reboot your computer.
 * You can also do the reverse: you have to configure it once by clicking Tools - LaTeX - SumatraPDF - Configure inverse search. Then double-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
@@ -87,7 +87,7 @@ This shortcut can also be used to bring the SumatraPDF window in view when you d
 
 ### <a name="linux-instructions">Installation instructions for linux</a>
 
-These instructions were tested on Ubuntu 16.04 and Arch Linux 4.18.16.
+These instructions were tested on at least Ubuntu 16.04, 18.04, Fedora and Arch Linux.
 
 * If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to use the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well). Download and save the `.tar.gz` file to your Downloads folder.
 * You can extract in your Downloads folder with, in case you downloaded IntelliJ, (change the exactly version number to the correct one, you can use tab for autocompletion) `sudo tar xf ideaIU-2018.1.5.tar.gz -C /opt/`, then run `/opt/idea-IU-181.5281.24/bin/idea.sh`, or in case you downloaded the toolbox, `sudo tar xf jetbrains-toolbox-1.11.4269.tar.gz -C /opt/` and run `/opt/jetbrains-toolbox-1.11.4269/jetbrains-toolbox`, then install IntelliJ.
@@ -105,9 +105,14 @@ These instructions were tested on Ubuntu 16.04 and Arch Linux 4.18.16.
 * Click on Create New Project (in welcome menu) or File - New - Project, select LaTeX in the left column and click next. Specify a name for your project, and a location. A project can contain multiple LaTeX files, so for example if you make a new document for each new homework you get, place them all in the same project.
 * Double-click or click on the arrow next to your project name on the left to open the directory.
 * A standard document is already made for you, you can find it in the `src/` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
-* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. The resulting pdf file is hiding in the `output/` folder.
+* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. The resulting pdf file is hiding in the `out/` folder.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd>.
-* Have a look at the [tips](#tips).
+
+#### Forward and inverse search
+* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the Tools - LaTeX menu in the top menu bar and clicking Evince - Forward Search, or using the shortcut which is listed there.
+This shortcut can also be used to bring the Evince window in view when you do not see it.
+* You can also do the reverse: press <kbd>Ctrl</kbd> and click in Evince in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
+* Also have a look at the [tips](#tips).
 
 ### <a name="mac-instructions">Installation instructions for Mac</a>
 Note that we didn't have the opportunity yet to test these instructions, so please let us know if you did.
@@ -139,7 +144,7 @@ Note that we didn't have the opportunity yet to test these instructions, so plea
 ### When you want to work together: install git
 * Often you will be working together on one document. In that case, use git to make this go smoothly. We use git because git is awesome, but there exist other tools as well.
 * But sometimes you cannot use IntelliJ, for example because you are at school. For that, we use Overleaf. 
-* Note that this Overleaf feature will become paid in Overleaf v2, and direct git access will stop end of 2018. If you find an other service that can do this for free, please let us know.
+* Note that this Overleaf feature will become paid in Overleaf v2, and direct git access will stop end of 2018. If you find an other service that can do this for free, please let us know. As an alternative you can use a git hosting service without LaTeX editing, like GitHub (see below).
 * Install [git](https://git-scm.com/downloads), during installation just click `next` everywhere.
 * Restart your computer.
 * Go to [Overleaf](https://www.overleaf.com/signup) and sign up.
@@ -168,6 +173,7 @@ when you do not recognize the file.
 * Want to know even more of advanced use of git? Read the excellent [Pro Git book](https://git-scm.com/book/en/v2) for free.
 
 ### <a name="installation-shortcuts-overview"></a> Overview of some useful IntelliJ shortcuts
+<!-- This section has been copied to the wiki -->
 * Double <kbd>Shift</kbd> Search for any IntelliJ command, like Reformat.
 * <kbd>Alt</kbd>+<kbd>Enter</kbd> View the quick fix, if there is one. Apply the fix with <kbd>Enter</kbd>.
 * <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> Reformat your LaTeX.
