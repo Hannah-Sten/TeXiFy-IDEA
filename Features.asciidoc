@@ -44,7 +44,7 @@ toc::[]
 * Spellchecking with custom dictionaries
 * Soft wraps and wrap on typing
 // Include: ctrl+d, alt+shift+arrow, etc.
-* Many useful shortcuts
+* link:Shortcuts[Many useful shortcuts]
 * Automatic insertion of `\item` in list environments like itemize and enumerate
 * Automatic insertion of of `\end` when typing `\begin` for environments
 * On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation

@@ -1,0 +1,18 @@
+:experimental:
+
+Note that all shortcuts are customizable, you can change them in menu:File[Settings > Keymap].
+
+== General IntelliJ shortcuts
+
+* Double kbd:[Shift]: Search for any IntelliJ command, like Reformat.
+* kbd:[Alt + Enter]: When your cursor is in a place where an inspection ribbon is shown, view the quick fix, if there is one. Apply the fix with kbd:[Enter].
+* kbd:[Ctrl + Alt + L]: Reformat the file.
+* kbd:[Ctrl + K]: Commit and push changes with git.
+* kbd:[Ctrl + T] Pull changes with git.
+
+== TeXiFy-IDEA shortcuts
+
+// Shortcuts should possibly be gathered here
+
+See the link:Features#menu-entries[Menu entries], of which many have shortcuts.
+ In the menu in IntelliJ you can see the shortcuts.
