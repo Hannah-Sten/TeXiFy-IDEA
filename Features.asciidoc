@@ -19,7 +19,7 @@ toc::[]
 
 == Installation
 
-* Support for Windows, Mac and Unix
+* Support for Windows, Mac and Unix (via MiKTeX or link:Installation#texlive[TeX Live])
 * MIT license
 // todo link to IJ docs
 * Built on the IntelliJ IDE which has many features

@@ -1,0 +1,7 @@
+== [[texlive]]TeX Live
+When not doing a full TeX Live install (e.g., to save space) not all tex engines are installed. To install one later on, use `tlmgr` to install the needed packages.
+Note that when using `tlmgr` to search for the necessary packages, e.g., `tlmgr search xetex`, they might not show up.
+// TODO why the hell not?
+// TODO list packages for other engines.
+
+* For XeLaTeX: `collection-xetex`.
