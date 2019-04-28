@@ -96,7 +96,8 @@ public class LatexRunConfiguration extends RunConfigurationBase
         String compilerName = parent.getChildText(COMPILER);
         try {
             this.compiler = LatexCompiler.valueOf(compilerName);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             this.compiler = null;
         }
 

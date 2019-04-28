@@ -6,7 +6,6 @@ import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.util.Log
 import java.io.IOException
 
-
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
  *
@@ -19,7 +18,8 @@ val isSumatraAvailable: Boolean by lazy {
     // Try if native bindings are available
     try {
         DDEClientConversation()
-    } catch (e: NoClassDefFoundError) {
+    }
+    catch (e: NoClassDefFoundError) {
         Log.logf("Native library DLLs could not be found.")
         return@lazy false
     }
@@ -48,7 +48,8 @@ private fun isSumatraInstalled(): Boolean {
     return try {
         Runtime.getRuntime().exec("start SumatraPDF")
         true
-    } catch (e: IOException) {
+    }
+    catch (e: IOException) {
         false
     }
 }
@@ -70,7 +71,8 @@ object SumatraConversation {
     init {
         try {
             conversation = DDEClientConversation()
-        } catch (e: NoClassDefFoundError) {
+        }
+        catch (e: NoClassDefFoundError) {
             throw TeXception("Native library DLLs could not be found.", e)
         }
 
@@ -79,7 +81,8 @@ object SumatraConversation {
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
-        } catch (e: TeXception) {
+        }
+        catch (e: TeXception) {
             // In case the user provided a custom path to SumatraPDF, add it to the path before executing
             val processBuilder = ProcessBuilder("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath)
             if (sumatraPath != null) {
@@ -111,9 +114,11 @@ object SumatraConversation {
         try {
             conversation!!.connect(server, topic)
             conversation.execute(commands.joinToString(separator = "") { "[$it]" })
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
-        } finally {
+        }
+        finally {
             conversation?.disconnect()
         }
     }

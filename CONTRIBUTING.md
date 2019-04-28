@@ -94,7 +94,7 @@ If you want to know more or if anything is unclear, never be afraid [to ask](#i-
 - The language-of-choice is Kotlin, but Java is accepted as well.
 - Indentation is 4 spaces, continuation indent 8 spaces.
 - Split in multiple lines when it will be more readable (100 characters per line is a _guideline_).
-- `else` must be put on a newline (e.g. `} else if (...) {` is wrong).
+- `else` must be put on a newline (e.g. `} else if (...) {` is wrong). Same for `catch` and `finally`.
 
 
 ## Helpful resources
