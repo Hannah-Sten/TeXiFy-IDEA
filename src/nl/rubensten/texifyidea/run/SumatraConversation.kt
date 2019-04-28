@@ -4,9 +4,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.util.Log
-import java.io.InputStreamReader
-import java.io.BufferedReader
-
+import java.io.IOException
 
 
 /**
@@ -21,8 +19,7 @@ val isSumatraAvailable: Boolean by lazy {
     // Try if native bindings are available
     try {
         DDEClientConversation()
-    }
-    catch (e: NoClassDefFoundError) {
+    } catch (e: NoClassDefFoundError) {
         Log.logf("Native library DLLs could not be found.")
         return@lazy false
     }
@@ -31,30 +28,6 @@ val isSumatraAvailable: Boolean by lazy {
 }
 
 private fun isSumatraInstalled(): Boolean {
-
-    val rt = Runtime.getRuntime()
-    val commands = arrayOf("start SumatraPDF")
-    val proc = rt.exec(commands)
-
-    val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
-
-    val stdError = BufferedReader(InputStreamReader(proc.errorStream))
-
-    // read the output from the command
-    println("Here is the standard output of the command:\n")
-    var s: String? = stdInput.readLine()
-    while (s != null) {
-        println(s)
-        s = stdInput.readLine()
-    }
-
-    // read any errors from the attempted command
-    println("Here is the standard error of the command (if any):\n")
-    s = stdError.readLine()
-    while (s != null) {
-        println(s)
-        s = stdError.readLine()
-    }
 
     // Look up SumatraPDF registry key
     val process = Runtime.getRuntime().exec(
@@ -65,7 +38,19 @@ private fun isSumatraInstalled(): Boolean {
     val firstLine = br.readLine() ?: return false
     br.close()
 
-    return !firstLine.startsWith("ERROR:")
+    val sumatraInRegistry = !firstLine.startsWith("ERROR:")
+
+    if (sumatraInRegistry) {
+        return true
+    }
+
+    // Try if Sumatra is in PATH
+    return try {
+        Runtime.getRuntime().exec("start SumatraPDF")
+        true
+    } catch (e: IOException) {
+        false
+    }
 }
 
 /**
@@ -85,8 +70,7 @@ object SumatraConversation {
     init {
         try {
             conversation = DDEClientConversation()
-        }
-        catch (e: NoClassDefFoundError) {
+        } catch (e: NoClassDefFoundError) {
             throw TeXception("Native library DLLs could not be found.", e)
         }
 
@@ -95,8 +79,7 @@ object SumatraConversation {
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
-        }
-        catch (e: TeXception) {
+        } catch (e: TeXception) {
             // In case the user provided a custom path to SumatraPDF, add it to the path before executing
             val processBuilder = ProcessBuilder("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath)
             if (sumatraPath != null) {
@@ -128,11 +111,9 @@ object SumatraConversation {
         try {
             conversation!!.connect(server, topic)
             conversation.execute(commands.joinToString(separator = "") { "[$it]" })
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
-        }
-        finally {
+        } finally {
             conversation?.disconnect()
         }
     }
