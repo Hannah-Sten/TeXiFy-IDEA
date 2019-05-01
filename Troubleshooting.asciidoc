@@ -6,7 +6,9 @@
 
 Make sure you have followed all the installation instructions at https://github.com/Ruben-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin
 
-. Check if `pdflatex` is properly installed by running in a terminal or command prompt `pdflatex -v`. Probably this is not the case.
+. Check if `pdflatex` is properly installed by running in a terminal or command prompt `pdflatex -v`. Probably this is not the case. If it is the case, then for some reason pdflatex cannot run. Test this with `pdflatex small2e` in a location where you have write access.
 . Check if `pdflatex` is installed: if you have MikTeX start the MikTeX console and check that the `pdftex` package is installed. If you have TeX Live, check with `tlmgr install pdftex`.
 . If so, make sure you have logged in and out to complete the installation of LaTeX, and especially with TeX Live make sure that TeX Live is added to your PATH.
-.
+. Make sure you did install MikTeX or TeX Live _for your user only_, so not for all users. If not, uninstall, install the right way and reboot.
+. If you are on Windows or Mac and installing MikTeX, you can also try installing TeX Live instead.
+. Ask on https://tex.stackexchange.com, providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
