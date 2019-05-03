@@ -94,8 +94,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply custom compiler path if applicable
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
 
-        // Apply custom SumatraPDF path if applicable
-        runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
+        if (::sumatraPath.isInitialized) {
+            // Apply custom SumatraPDF path if applicable
+            runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
+        }
 
         // Apply custom compiler arguments
         runConfiguration.compilerArguments = compilerArguments.component.text
