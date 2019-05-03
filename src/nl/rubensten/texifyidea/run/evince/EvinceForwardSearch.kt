@@ -25,15 +25,6 @@ class EvinceForwardSearch {
                 return@run
             }
 
-            // Do not do forward search when editing the preamble.
-            if (psiFile.isRoot()) {
-                val element = psiFile.findElementAt(editor.caretOffset()) ?: return@run
-                val environment = element.parentOfType(LatexEnvironment::class) ?: return@run
-                if (environment.name()?.text != "document") {
-                    return@run
-                }
-            }
-
             val line = document.getLineNumber(editor.caretOffset()) + 1
 
             runAsync {
