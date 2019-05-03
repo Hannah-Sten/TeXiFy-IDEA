@@ -49,9 +49,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compilerPath.text = runConfiguration.compilerPath
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
 
-        // Reset the custom SumatraPDF path
-        sumatraPath.text = runConfiguration.sumatraPath
-        enableSumatraPath.isSelected = runConfiguration.sumatraPath != null
+        if (::sumatraPath.isInitialized) {
+            // Reset the custom SumatraPDF path
+            sumatraPath.text = runConfiguration.sumatraPath
+            enableSumatraPath.isSelected = runConfiguration.sumatraPath != null
+        }
 
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
