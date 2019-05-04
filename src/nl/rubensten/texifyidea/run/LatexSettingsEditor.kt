@@ -46,12 +46,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compiler.component.selectedItem = runConfiguration.compiler
 
         // Reset the custom compiler path
-        compilerPath.text = runConfiguration.compilerPath
+        compilerPath.text = runConfiguration.compilerPath ?: ""
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
 
         if (::sumatraPath.isInitialized) {
             // Reset the custom SumatraPDF path
-            sumatraPath.text = runConfiguration.sumatraPath
+            sumatraPath.text = runConfiguration.sumatraPath ?: ""
             enableSumatraPath.isSelected = runConfiguration.sumatraPath != null
         }
 
@@ -67,12 +67,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset seperate auxiliary files.
         if (auxDir != null) {
-            auxDir!!.isSelected = runConfiguration.hasAuxiliaryDirectories()
+            auxDir!!.isSelected = runConfiguration.hasAuxiliaryDirectories
         }
 
         // Reset seperate output files.
         if (outDir != null) {
-            outDir!!.isSelected = runConfiguration.hasOutputDirectories()
+            outDir!!.isSelected = runConfiguration.hasOutputDirectories
         }
 
         // Reset output format.
@@ -110,12 +110,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply auxiliary files, only if the option exists.
         if (auxDir != null) {
             val auxDirectories = auxDir!!.isSelected
-            runConfiguration.setAuxiliaryDirectories(auxDirectories)
+            runConfiguration.hasAuxiliaryDirectories = auxDirectories
         }
 
         if (outDir != null) {
             val outDirectories = outDir!!.isSelected
-            runConfiguration.setOutputDirectories(outDirectories)
+            runConfiguration.hasOutputDirectories = outDirectories
         }
 
         // Apply output format.

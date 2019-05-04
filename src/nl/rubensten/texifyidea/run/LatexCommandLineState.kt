@@ -48,10 +48,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 this.mainFile = mainFile
                 // Check if the aux, out, or src folder should be used as bib working dir.
                 when {
-                    runConfig.hasAuxiliaryDirectories() -> {
+                    runConfig.hasAuxiliaryDirectories -> {
                         this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
                     }
-                    runConfig.hasOutputDirectories() -> {
+                    runConfig.hasOutputDirectories -> {
                         this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
                     }
                     else -> {
@@ -72,7 +72,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // Inverse search.
             run {
-                val psiFile = runConfig.mainFile.psiFile(environment.project) ?: return@run
+                val psiFile = runConfig.mainFile?.psiFile(environment.project) ?: return@run
                 val document = psiFile.document() ?: return@run
                 val editor = psiFile.openedEditor() ?: return@run
 
