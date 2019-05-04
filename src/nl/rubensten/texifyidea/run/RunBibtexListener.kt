@@ -31,9 +31,13 @@ class RunBibtexListener(
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration)
                     ?: return
 
-            repeat(2) {
-                RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-            }
+            // Compile twice to fix references etc
+            // Mark the next latex run as not being the final one, to avoid for instance opening the pdf viewer too early (with possible multiple open pdfs as a result, or a second open would fail because of a write lock)
+            latexConfiguration.isLastRunConfig = false
+            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+            latexConfiguration.isLastRunConfig = true
+            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+
         }
         finally {
             latexConfiguration.isSkipBibtex = false

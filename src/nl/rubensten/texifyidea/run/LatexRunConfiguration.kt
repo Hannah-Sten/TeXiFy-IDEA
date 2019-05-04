@@ -63,6 +63,9 @@ class LatexRunConfiguration constructor(project: Project,
     private var bibRunConfigId = ""
     var isSkipBibtex = false
 
+    /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
+    var isLastRunConfig = true
+
     var bibRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)
                 .getConfigurationById(bibRunConfigId)

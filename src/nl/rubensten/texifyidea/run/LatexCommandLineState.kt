@@ -66,6 +66,11 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             return handler
         }
 
+        // Do not open the pdf viewer when this is not the last run config in the chain
+        if (!runConfig.isLastRunConfig) {
+            return handler
+        }
+
         // Open Sumatra after compilation & execute inverse search.
         if (runConfig.sumatraPath != null || isSumatraAvailable) {
             handler.addProcessListener(OpenSumatraListener(runConfig))
@@ -102,24 +107,27 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     }
                 }
             }
-        } else if (!runConfig.viewerCommand.isNullOrEmpty()) {
+        }
+        else if (!runConfig.viewerCommand.isNullOrEmpty()) {
             // Open custom pdf viewer after finishing
             var pdfCommand: String = runConfig.viewerCommand!!
             if (pdfCommand.contains("{pdf}")) {
-                pdfCommand.replace("{pdf}", runConfig.outputFilePath)
+                pdfCommand = pdfCommand.replace("{pdf}", runConfig.outputFilePath)
             } else {
                 pdfCommand += " " + runConfig.outputFilePath
             }
-            // todo only run when last run config terminates
-            handler.addProcessListener(CommandProcessListener(pdfCommand))
-        } else if (SystemInfo.isMac) {
+            handler.addProcessListener(OpenPdfViewerListener(pdfCommand))
+        }
+        else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
             val pdfCommand = "open " + runConfig.outputFilePath
-            handler.addProcessListener(CommandProcessListener(pdfCommand))
-        } else if (SystemInfo.isLinux) {
-            // Open default system viewer todo catch error if command fails
-            val pdfCommand = "xdg-open " + runConfig.outputFilePath
-            handler.addProcessListener(CommandProcessListener(pdfCommand))
+            // Fail silently, otherwise users who have set up something themselves get an exception every time when this command fails
+            handler.addProcessListener(OpenPdfViewerListener(pdfCommand, failSilently = true))
+        }
+        else if (SystemInfo.isLinux) {
+            // Open default system viewer using xdg-open, since this is available in almost all desktop environments
+            val pdfCommand = "blabla xdg-open " + runConfig.outputFilePath
+            handler.addProcessListener(OpenPdfViewerListener(pdfCommand, failSilently = true))
         }
 
         return handler
