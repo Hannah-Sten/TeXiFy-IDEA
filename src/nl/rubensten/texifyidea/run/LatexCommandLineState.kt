@@ -113,7 +113,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             var pdfCommand: String = runConfig.viewerCommand!!
             if (pdfCommand.contains("{pdf}")) {
                 pdfCommand = pdfCommand.replace("{pdf}", runConfig.outputFilePath)
-            } else {
+            }
+            else {
                 pdfCommand += " " + runConfig.outputFilePath
             }
             handler.addProcessListener(OpenPdfViewerListener(pdfCommand))

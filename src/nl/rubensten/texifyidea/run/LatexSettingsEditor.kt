@@ -221,11 +221,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         compilerPath = TextFieldWithBrowseButton()
         compilerPath.addBrowseFolderListener(
-                TextBrowseFolderListener(
-                        FileChooserDescriptor(true, false, false, false, false, false)
-                                .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as LatexCompiler).executableName }
-                                .withTitle("Choose " + compilerField.selectedItem + " executable")
-                )
+            TextBrowseFolderListener(
+                    FileChooserDescriptor(true, false, false, false, false, false)
+                            .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as LatexCompiler).executableName }
+                            .withTitle("Choose " + compilerField.selectedItem + " executable")
+            )
         )
         compilerPath.isEnabled = false
         compilerPath.addPropertyChangeListener("enabled") { e ->
@@ -291,5 +291,4 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(viewerCommand)
 
     }
-
 }

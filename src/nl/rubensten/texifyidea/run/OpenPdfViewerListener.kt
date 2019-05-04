@@ -31,5 +31,4 @@ class OpenPdfViewerListener(val command: String, val failSilently: Boolean = fal
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
     }
-
 }

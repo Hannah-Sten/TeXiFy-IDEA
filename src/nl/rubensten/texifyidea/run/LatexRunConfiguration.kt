@@ -15,7 +15,6 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import gherkin.lexer.Vi
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import org.jdom.Element
@@ -107,7 +106,8 @@ class LatexRunConfiguration constructor(project: Project,
         val compilerName = parent.getChildText(COMPILER)
         try {
             this.compiler = LatexCompiler.valueOf(compilerName)
-        } catch (e: IllegalArgumentException) {
+        }
+        catch (e: IllegalArgumentException) {
             this.compiler = null
         }
 
@@ -312,7 +312,6 @@ class LatexRunConfiguration constructor(project: Project,
         else {
             mainFile!!.nameWithoutExtension
         }
-
     }
 
     override fun toString(): String {
