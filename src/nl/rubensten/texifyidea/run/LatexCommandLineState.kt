@@ -126,7 +126,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
         else if (SystemInfo.isLinux) {
             // Open default system viewer using xdg-open, since this is available in almost all desktop environments
-            val pdfCommand = "blabla xdg-open " + runConfig.outputFilePath
+            val pdfCommand = "xdg-open " + runConfig.outputFilePath
             handler.addProcessListener(OpenPdfViewerListener(pdfCommand, failSilently = true))
         }
 
