@@ -110,19 +110,19 @@ class LatexRunConfiguration constructor(project: Project,
 
         // Read compiler custom path.
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
-        this.compilerPath = if (compilerPathRead == null || compilerPathRead.isEmpty()) null else compilerPathRead
+        this.compilerPath = if (compilerPathRead.isNullOrEmpty()) null else compilerPathRead
 
         // Read SumatraPDF custom path
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
-        this.sumatraPath = if (sumatraPathRead == null || sumatraPathRead.isEmpty()) null else sumatraPathRead
+        this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
 
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
-        this.viewerCommand = if (viewerCommandRead == null || viewerCommandRead.isEmpty()) null else viewerCommandRead
+        this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
 
         // Read compiler arguments.
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
-        compilerArguments = if (compilerArgumentsRead.isEmpty()) null else compilerArgumentsRead
+        compilerArguments = if (compilerArgumentsRead.isNullOrEmpty()) null else compilerArgumentsRead
 
         // Read main file.
         val fileSystem = LocalFileSystem.getInstance()

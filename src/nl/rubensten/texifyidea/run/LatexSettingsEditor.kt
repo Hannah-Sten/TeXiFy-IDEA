@@ -274,7 +274,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        enableViewerCommand = JBCheckBox("Select custom PDF viewer command")
+        enableViewerCommand = JBCheckBox("Select custom PDF viewer command, using {pdf} for the pdf file if not the last argument")
         panel.add(enableViewerCommand)
 
         viewerCommand = JBTextField().apply {

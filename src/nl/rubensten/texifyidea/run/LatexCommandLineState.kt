@@ -9,11 +9,11 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.psi.LatexEnvironment
-import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.util.*
 import org.jetbrains.concurrency.runAsync
 import java.io.File
@@ -102,6 +102,24 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     }
                 }
             }
+        } else if (!runConfig.viewerCommand.isNullOrEmpty()) {
+            // Open custom pdf viewer after finishing
+            var pdfCommand: String = runConfig.viewerCommand!!
+            if (pdfCommand.contains("{pdf}")) {
+                pdfCommand.replace("{pdf}", runConfig.outputFilePath)
+            } else {
+                pdfCommand += " " + runConfig.outputFilePath
+            }
+            // todo only run when last run config terminates
+            handler.addProcessListener(CommandProcessListener(pdfCommand))
+        } else if (SystemInfo.isMac) {
+            // Open default system viewer, source: https://ss64.com/osx/open.html
+            val pdfCommand = "open " + runConfig.outputFilePath
+            handler.addProcessListener(CommandProcessListener(pdfCommand))
+        } else if (SystemInfo.isLinux) {
+            // Open default system viewer todo catch error if command fails
+            val pdfCommand = "xdg-open " + runConfig.outputFilePath
+            handler.addProcessListener(CommandProcessListener(pdfCommand))
         }
 
         return handler
