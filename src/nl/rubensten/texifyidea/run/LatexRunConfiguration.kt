@@ -15,6 +15,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import gherkin.lexer.Vi
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import org.jdom.Element
@@ -27,9 +28,24 @@ class LatexRunConfiguration constructor(project: Project,
                                         name: String
 ) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
 
+    companion object {
+        private const val TEXIFY_PARENT = "texify"
+        private const val COMPILER = "compiler"
+        private const val COMPILER_PATH = "compiler-path"
+        private const val SUMATRA_PATH = "sumatra-path"
+        private const val VIEWER_COMMAND = "viewer-command"
+        private const val COMPILER_ARGUMENTS = "compiler-arguments"
+        private const val MAIN_FILE = "main-file"
+        private const val AUX_DIR = "aux-dir"
+        private const val OUT_DIR = "out-dir"
+        private const val OUTPUT_FORMAT = "output-format"
+        private const val BIB_RUN_CONFIG = "bib-run-config"
+    }
+
     var compiler: LatexCompiler? = null
     var compilerPath: String? = null
     var sumatraPath: String? = null
+    var viewerCommand: String? = null
 
     var compilerArguments: String? = null
         set(compilerArguments) {
@@ -94,25 +110,19 @@ class LatexRunConfiguration constructor(project: Project,
 
         // Read compiler custom path.
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
-        this.compilerPath = if (compilerPathRead == null || compilerPathRead.isEmpty()) {
-            null
-        }
-        else {
-            compilerPathRead
-        }
+        this.compilerPath = if (compilerPathRead == null || compilerPathRead.isEmpty()) null else compilerPathRead
 
         // Read SumatraPDF custom path
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead == null || sumatraPathRead.isEmpty()) null else sumatraPathRead
 
+        // Read custom pdf viewer command
+        val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
+        this.viewerCommand = if (viewerCommandRead == null || viewerCommandRead.isEmpty()) null else viewerCommandRead
+
         // Read compiler arguments.
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
-        compilerArguments = if ("" == compilerArgumentsRead) {
-            null
-        }
-        else {
-            compilerArgumentsRead
-        }
+        compilerArguments = if (compilerArgumentsRead.isEmpty()) null else compilerArgumentsRead
 
         // Read main file.
         val fileSystem = LocalFileSystem.getInstance()
@@ -174,6 +184,11 @@ class LatexRunConfiguration constructor(project: Project,
         val sumatraPathElt = Element(SUMATRA_PATH)
         sumatraPathElt.text = sumatraPath ?: ""
         parent.addContent(sumatraPathElt)
+
+        // Write pdf viewer command
+        val viewerCommandElt = Element(VIEWER_COMMAND)
+        viewerCommandElt.text = viewerCommand ?: ""
+        parent.addContent(viewerCommandElt)
 
         // Write compiler arguments
         val compilerArgsElt = Element(COMPILER_ARGUMENTS)
@@ -305,18 +320,5 @@ class LatexRunConfiguration constructor(project: Project,
                 ", bibWorkingDir=" + hasAuxiliaryDirectories +
                 ", outputFormat=" + outputFormat +
                 '}'.toString()
-    }
-
-    companion object {
-        private const val TEXIFY_PARENT = "texify"
-        private const val COMPILER = "compiler"
-        private const val COMPILER_PATH = "compiler-path"
-        private const val SUMATRA_PATH = "sumatra-path"
-        private const val COMPILER_ARGUMENTS = "compiler-arguments"
-        private const val MAIN_FILE = "main-file"
-        private const val AUX_DIR = "aux-dir"
-        private const val OUT_DIR = "out-dir"
-        private const val OUTPUT_FORMAT = "output-format"
-        private const val BIB_RUN_CONFIG = "bib-run-config"
     }
 }
