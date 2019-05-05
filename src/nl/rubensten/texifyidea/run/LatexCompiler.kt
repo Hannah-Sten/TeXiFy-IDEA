@@ -141,6 +141,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             return command
         }
+    },
+
+    TECTONIC("Tectonic", "tectonic") {
+
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+            // Tectonic does not have any (documented) arguments
+            return mutableListOf(runConfig.compilerPath ?: "tectonic")
+        }
     };
 
     /**
