@@ -75,7 +75,7 @@ toc::[]
 == Running
 * Gutter icons for quick compilation
 * link:Run-configurations[One run configuration per fileset]
-* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
+* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, Tectonic, bibtex, and biber
 * link:SumatraPDF-support[SumatraPDF (Windows) support with forward and backward search]
 * link:Evince-support[Evince (Linux) support with forward and backward search]
 * The pdf will appear in a separate out/ directory to avoid cluttering the source directory
