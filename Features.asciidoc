@@ -22,7 +22,8 @@ toc::[]
 * Support for Windows, Mac and Unix (via MiKTeX or link:Installation#texlive[TeX Live])
 * MIT license
 // todo link to IJ docs
-* Built on the IntelliJ IDE which has many features
+* Built on the IntelliJ IDE which has many features built in
+* Works with all Jetbrains IDEs, including IntelliJ, PyCharm, PhpStorm, DataGrip, Rider, GoLand, RubyMine, Android Studio, WebStorm and CLion.
 
 == Writing LaTeX
 
@@ -71,8 +72,9 @@ toc::[]
 
 == Running
 * Gutter icons for quick compilation
+* link:Running/Run-configurations[One run configuration per fileset]
 * Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
-* SumatraPDF (Windows) support with forward and backward search
+* link:SumatraPDF-support[SumatraPDF (Windows) support with forward and backward search]
 * link:Evince-support[Evince (Linux) support with forward and backward search]
 * The pdf will appear in a separate out/ directory to avoid cluttering the source directory
 * Auxiliary files will be put in a separate auxil/ directory on Windows
@@ -127,6 +129,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Choose compiler
 * Custom compiler path
 * Custom compiler arguments
+* link:Running/SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
 * Choose LaTeX source file to compile
 * Option to disable use of out/ directory
 * Choose output format
