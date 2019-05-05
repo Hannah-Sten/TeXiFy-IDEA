@@ -10,6 +10,8 @@
 
 === Texliveonfly
 
+Have a look at https://tex.stackexchange.com/a/463842/98850
+
 === Tectonic
 
 Please leave a comment at https://github.com/tectonic-typesetting/tectonic/issues/62 to vote for documentation. Or better yet, help them writing it.
