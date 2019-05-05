@@ -9,5 +9,5 @@
 
 [%hardbreaks]
 link:Features[Documentation of features]
-link:Troubleshooting[Troubleshooting: when TeXiFy-IDEA does not work
+link:Troubleshooting[Troubleshooting: when TeXiFy-IDEA does not work]
 link:Contributing[Wiki contributing help]
