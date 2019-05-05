@@ -24,6 +24,8 @@ toc::[]
 // todo link to IJ docs
 * Built on the IntelliJ IDE which has many features built in
 * Works with all Jetbrains IDEs, including IntelliJ, PyCharm, PhpStorm, DataGrip, Rider, GoLand, RubyMine, Android Studio, WebStorm and CLion.
+* Suggested updates of TeXiFy and one click to update
+* link:Alpha-builds[Prerelease alpha builds available]
 
 == Writing LaTeX
 
@@ -111,7 +113,6 @@ toc::[]
 * Customizable file templates for .tex, .sty, .cls and .bib files
 * link:++Menu entries#clear-aux-files++[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
-* Suggested updates of TeXiFy and one click to update
 
 == Settings and preferences
 === Project
