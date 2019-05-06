@@ -1,1 +1,26 @@
+== About run configurations
+
 See https://www.jetbrains.com/help/idea/creating-and-editing-run-debug-configurations.html
+
+== Run configuration settings
+
+=== Separate BibTeX run configuration
+=== Choose compiler
+=== Custom compiler path
+=== Custom compiler arguments
+=== Custom SumatraPDF path
+
+See link:Running/SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
+
+=== Custom pdf viewer
+
+In the Custom pdf viewer field you can specify the command for your favourite pdf viewer, so for example if the command is `okular somefile.pdf` then you can fill in `okular`  here.
+If the pdf file is not the last argument, you can use the `{pdf}` placeholder, so `okular {pdf}`.
+
+Then when you run the run configuration, when the compilation has finished the pdf will open in the viewer you specified.
+
+=== Choose LaTeX source file to compile
+=== Option to disable use of out/ directory
+=== Choose output format
+=== Choose BibTeX run configuration
+=== Other tasks to run before the run configuration, including other run configurations or external tools
