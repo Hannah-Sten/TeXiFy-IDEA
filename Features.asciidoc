@@ -29,7 +29,6 @@ toc::[]
 
 == Writing LaTeX
 
-== Typing
 * link:Unicode[Unicode support]
 * Autocomplete of labels, many common commands, custom defined commands and (custom) environments
 * Formatter
@@ -78,6 +77,8 @@ toc::[]
 * link:Compilers[Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, Tectonic, bibtex, and biber]
 * link:SumatraPDF-support[SumatraPDF (Windows) support with forward and backward search]
 * link:Evince-support[Evince (Linux) support with forward and backward search]
+* link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
+* Opens system default pdf viewer when no custom or supported pdf viewer is known
 * The pdf will appear in a separate out/ directory to avoid cluttering the source directory
 * Auxiliary files will be put in a separate auxil/ directory on Windows
 * Custom compiler path
@@ -130,7 +131,8 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Choose compiler
 * Custom compiler path
 * Custom compiler arguments
-* link:Running/SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
+* link:SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
+* link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
 * Choose LaTeX source file to compile
 * Option to disable use of out/ directory
 * Choose output format
