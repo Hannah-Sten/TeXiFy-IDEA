@@ -109,26 +109,43 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
         else if (!runConfig.viewerCommand.isNullOrEmpty()) {
-            // Open custom pdf viewer after finishing
-            var pdfCommand: String = runConfig.viewerCommand!!
-            if (pdfCommand.contains("{pdf}")) {
-                pdfCommand = pdfCommand.replace("{pdf}", runConfig.outputFilePath)
+
+            // Split user command on spaces, then replace {pdf} if needed?
+            val commandString = runConfig.viewerCommand!!
+
+            // Split on spaces
+            val commandList = commandString.split(" ")
+
+            // Replace placeholder
+            var containsPlaceholder = false
+            val mappedList = commandList.map {
+                if (it.contains("{pdf}")) {
+                    containsPlaceholder = true
+                    val replacement: String = it.replace("{pdf}", runConfig.outputFilePath)
+                    replacement
+                }
+                else {
+                    it
+                }
+            }.toMutableList()
+
+            // If no placeholder was used, append path to the command
+            if (!containsPlaceholder) {
+                mappedList += runConfig.outputFilePath
             }
-            else {
-                pdfCommand += " " + runConfig.outputFilePath
-            }
-            handler.addProcessListener(OpenPdfViewerListener(pdfCommand))
+
+            handler.addProcessListener(OpenPdfViewerListener(mappedList.toTypedArray()))
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
-            val pdfCommand = "open " + runConfig.outputFilePath
+            val commandList = arrayListOf("open", runConfig.outputFilePath)
             // Fail silently, otherwise users who have set up something themselves get an exception every time when this command fails
-            handler.addProcessListener(OpenPdfViewerListener(pdfCommand, failSilently = true))
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
         }
         else if (SystemInfo.isLinux) {
             // Open default system viewer using xdg-open, since this is available in almost all desktop environments
-            val pdfCommand = "xdg-open " + runConfig.outputFilePath
-            handler.addProcessListener(OpenPdfViewerListener(pdfCommand, failSilently = true))
+            val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
         }
 
         return handler

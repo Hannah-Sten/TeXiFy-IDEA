@@ -9,11 +9,11 @@ import java.io.IOException
 /**
  * Run the given command after the process has succeeded.
  */
-class OpenPdfViewerListener(val command: String, val failSilently: Boolean = false) : ProcessListener {
+class OpenPdfViewerListener(val command: Array<String>, val failSilently: Boolean = false) : ProcessListener {
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
             try {
-                Runtime.getRuntime().exec(command)
+                ProcessBuilder(*command).start()
             }
             catch (e: IOException) {
                 if (!failSilently) {
