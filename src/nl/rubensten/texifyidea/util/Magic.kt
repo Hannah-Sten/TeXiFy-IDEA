@@ -66,6 +66,11 @@ object Magic {
                 "equation", "eq",
                 "algorithm", "alg"
         )
+
+        /**
+         * Environments that introduce figures
+         */
+        val figures = hashSetOf("figure")
     }
 
     /**
