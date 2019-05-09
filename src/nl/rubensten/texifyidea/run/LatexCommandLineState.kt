@@ -79,15 +79,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             return handler
         }
 
-        // Open Sumatra after compilation & execute inverse search.
-        if (runConfig.sumatraPath != null || isSumatraAvailable) {
-            SumatraForwardSearch().execute(handler, runConfig, environment)
-        }
-
-        if(isEvinceAvailable()) {
-            EvinceForwardSearch().execute(runConfig, environment)
-        }
-        else if (!runConfig.viewerCommand.isNullOrEmpty()) {
+        // First check if the user specified a custom viewer, if not then try other supported viewers
+        if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
             // Split user command on spaces, then replace {pdf} if needed?
             val commandString = runConfig.viewerCommand!!
@@ -114,6 +107,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
 
             handler.addProcessListener(OpenPdfViewerListener(mappedList.toTypedArray()))
+        }
+        else if (runConfig.sumatraPath != null || isSumatraAvailable) {
+            // Open Sumatra after compilation & execute inverse search.
+            SumatraForwardSearch().execute(handler, runConfig, environment)
+        }
+        else if(isEvinceAvailable()) {
+            EvinceForwardSearch().execute(runConfig, environment)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
