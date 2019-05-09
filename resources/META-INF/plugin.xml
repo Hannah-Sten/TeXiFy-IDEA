@@ -173,6 +173,11 @@
                class="nl.rubensten.texifyidea.action.group.LatexToolsMenuGroup">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
+            <!-- Clear auxiliary files -->
+            <action class="nl.rubensten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+            </action>
+
+            <separator/>
             <!-- Show equation preview -->
             <action class="nl.rubensten.texifyidea.action.preview.ShowEquationPreview" id="texify.ShowEquationPreview" text="Preview _Equation">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
@@ -182,6 +187,7 @@
             <action class="nl.rubensten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz Picture">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
+
         </group>
 
         <!-- Insert: Sectioning -->
