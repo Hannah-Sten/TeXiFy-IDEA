@@ -1,0 +1,3 @@
+```
+TeXiFy IDEA // LaTeX support for the IntelliJ platform by JetBrains.
+```
