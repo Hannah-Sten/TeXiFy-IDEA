@@ -30,6 +30,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
     private static final String TEXIFY_PARENT = "texify";
     private static final String COMPILER = "compiler";
     private static final String COMPILER_PATH = "compiler-path";
+    private static final String SUMATRA_PATH = "sumatra-path";
     private static final String COMPILER_ARGUMENTS = "compiler-arguments";
     private static final String MAIN_FILE = "main-file";
     private static final String AUX_DIR = "aux-dir";
@@ -39,6 +40,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
 
     private LatexCompiler compiler;
     private String compilerPath = null;
+    private String sumatraPath = null;
     private String compilerArguments = null;
     private VirtualFile mainFile;
     // Enable auxDir by default on Windows only
@@ -94,7 +96,8 @@ public class LatexRunConfiguration extends RunConfigurationBase
         String compilerName = parent.getChildText(COMPILER);
         try {
             this.compiler = LatexCompiler.valueOf(compilerName);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             this.compiler = null;
         }
 
@@ -103,6 +106,10 @@ public class LatexRunConfiguration extends RunConfigurationBase
         this.compilerPath =
                 (compilerPathRead == null || compilerPathRead.isEmpty()) ?
                 null : compilerPathRead;
+
+        // Read SumatraPDF custom path
+        String sumatraPathRead = parent.getChildText(SUMATRA_PATH);
+        this.sumatraPath = ((sumatraPathRead == null) || sumatraPathRead.isEmpty()) ? null : sumatraPathRead;
 
         // Read compiler arguments.
         String compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS);
@@ -165,6 +172,11 @@ public class LatexRunConfiguration extends RunConfigurationBase
         final Element compilerPathElt = new Element(COMPILER_PATH);
         compilerPathElt.setText(compilerPath == null ? "" : compilerPath);
         parent.addContent(compilerPathElt);
+
+        // Write SumatraPDF path
+        final Element sumatraPathElt = new Element(SUMATRA_PATH);
+        sumatraPathElt.setText((sumatraPath == null) ? "" : sumatraPath);
+        parent.addContent(sumatraPathElt);
 
         // Write compiler arguments
         final Element compilerArgsElt = new Element(COMPILER_ARGUMENTS);
@@ -303,6 +315,14 @@ public class LatexRunConfiguration extends RunConfigurationBase
         this.compilerPath = compilerPath;
     }
 
+    public String getSumatraPath() {
+        return sumatraPath;
+    }
+
+    public void setSumatraPath(String sumatraPath) {
+        this.sumatraPath = sumatraPath;
+    }
+
     public RunnerAndConfigurationSettings getBibRunConfig() {
         return RunManagerImpl.getInstanceImpl(getProject())
                 .getConfigurationById(bibRunConfigId);
@@ -372,6 +392,7 @@ public class LatexRunConfiguration extends RunConfigurationBase
     public String toString() {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
                 ", compilerPath=" + compilerPath +
+                ", sumatraPath=" + sumatraPath +
                 ", mainFile=" + mainFile +
                 ", bibWorkingDir=" + auxDir +
                 ", outputFormat=" + outputFormat +
