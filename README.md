@@ -1,5 +1,5 @@
 [![Travis (.org)](https://img.shields.io/travis/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
-[![GitHub release](https://img.shields.io/github/release/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://github.com/Ruben-Sten/TeXiFy-IDEA/releases/tag/b0.6.4)
+[![GitHub release](https://img.shields.io/github/release/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://github.com/Ruben-Sten/TeXiFy-IDEA/releases)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
 [![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/RubenSchellekens)
@@ -137,7 +137,7 @@ Note that we didn't have the opportunity yet to test these instructions, so plea
 * But some standard LaTeX commands are available in the LaTeX menu.
 * Pay attention to squiggles (wavey lines) under text you typed, they indicate that something is wrong. Hovering over it gives extra information. In some cases, a ready-made fix is waiting to be applied: hit the lightbulb that appears on the left, or hit <kbd>Alt</kbd>+<kbd>Enter</kbd> to view and apply it. A quick overview of useful shortcuts is [below](#installation-shortcuts-overview).
 * If your LaTeX indentation (the number of spaces that is in front of each line) looks messy, try to reformat with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd>.
-* This plugin contains an Equation Preview, which lets you preview equations without having to compile the entire document. It does however require other software, for which you can find installation instructions [below](#equation-preview).
+* This plugin contains an Equation Preview, which lets you preview equations without having to compile the entire document. It does however require other software, for which you can find installation instructions [below](#equation-preview). The same software requirements hold for the TikZ Preview, with which you can preview TikZ pictures.
 * If you are searching how a particular symbol has to be written in LaTeX, the [Detexify](http://detexify.kirelabs.org/classify.html) tool can probably help you. Just draw your symbol in the `draw here` box and the command will be listed on the right.
 * If you want a proper explanation of what LaTeX and its philosophy is about, read the [Not So Short Introduction To LaTeX2e](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf).
 
@@ -183,10 +183,13 @@ when you do not recognize the file.
 
 Any suggestions for improvements of the installation instructions, however small? Please let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
-## <a name="equation-preview">Equation preview</a>
+## <a name="equation-preview">Equation preview and TikZ Preview</a>
 
-You can use the Equation Preview by making sure your cursor is in a math environment and clicking the LaTeX | Equation Preview menu, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>.
-It works by putting your equation in a new temporary (fairly minimal) document and compiling that, so custom commands and packages from your document will not be taken into account.
+You can use the Equation Preview by making sure your cursor is in a math environment and clicking the Tools | LaTeX | Preview Equation menu, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>.
+You can use the TikZ Preview by placing your cursor in a `tikzpicture` environment and click the Tools | LaTeX | Preview TikZ Picture, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>.
+It works by putting your equation or TikZ picture in a new temporary (fairly minimal) document and compiling that, so custom commands and packages from your document will not be taken into account, but it ensures the preview is really fast.
+The TikZ Preview will take TikZ and pgf libraries into account.
+
 The current implementation of the Equation Preview was contributed by Sergei Izmailov and requires external dependencies, for which installation instructions follow.
 
 ### Instructions for Linux

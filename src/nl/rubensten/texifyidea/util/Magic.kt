@@ -170,6 +170,7 @@ object Magic {
          */
         @JvmField val environmentDefinitions = hashSetOf(
                 "\\newenvironment",
+                "\\newtheorem",
                 "\\NewDocumentEnvironment",
                 "\\ProvideDocumentEnvironment",
                 "\\DeclareDocumentEnvironment"

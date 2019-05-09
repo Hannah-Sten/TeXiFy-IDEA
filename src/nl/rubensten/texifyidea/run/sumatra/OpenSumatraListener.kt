@@ -12,9 +12,10 @@ import nl.rubensten.texifyidea.run.LatexRunConfiguration
 class OpenSumatraListener(val runConfig: LatexRunConfiguration) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        if (event.exitCode == 0 && isSumatraAvailable) {
+        // First check if the user provided a custom path to SumatraPDF, if not, check if it is installed
+        if (event.exitCode == 0 && (runConfig.sumatraPath != null || isSumatraAvailable)) {
             try {
-                SumatraConversation.openFile(runConfig.outputFilePath)
+                SumatraConversation.openFile(runConfig.outputFilePath, sumatraPath = runConfig.sumatraPath)
             }
             catch (ignored: TeXception) {
             }
