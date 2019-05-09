@@ -2,7 +2,7 @@ package nl.rubensten.texifyidea.action.group
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import nl.rubensten.texifyidea.run.isSumatraAvailable
+import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
 
 /**
  * @author Ruben Schellekens, Sten Wessel
