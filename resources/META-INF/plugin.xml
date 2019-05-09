@@ -274,7 +274,7 @@
 
         <!-- Evince -->
         <group id="texify.LatexMenu.Evince" class="nl.rubensten.texifyidea.action.group.EvinceActionGroup" text="Evince"
-               description="Interact with Evince." popup="true" icon="/nl/rubensten/texifyidea/icons/pdf-file.svg">
+               description="Interact with Evince." popup="true">
             <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
 
             <action class="nl.rubensten.texifyidea.action.evince.ForwardSearchAction" id="texify.evince.ForwardSearch"
