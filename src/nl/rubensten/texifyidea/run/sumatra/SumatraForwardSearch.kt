@@ -21,7 +21,7 @@ class SumatraForwardSearch {
 
         // Forward search.
         run {
-            val psiFile = runConfig.mainFile.psiFile(environment.project) ?: return@run
+            val psiFile = runConfig.mainFile?.psiFile(environment.project) ?: return@run
             val document = psiFile.document() ?: return@run
             val editor = psiFile.openedEditor() ?: return@run
 
