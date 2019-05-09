@@ -3,7 +3,10 @@ package nl.rubensten.texifyidea.startup
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.util.SystemInfo
 import nl.rubensten.texifyidea.editor.LatexSoftWrapEditorListener
+import nl.rubensten.texifyidea.run.evince.EvinceInverseSearchListener
+import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
 
 /**
  * @author Sten Wessel
@@ -15,5 +18,9 @@ class TexifyStartupActivity : StartupActivity {
                 LatexSoftWrapEditorListener(),
                 project
         )
+
+        if (SystemInfo.isLinux && isEvinceAvailable()) {
+            EvinceInverseSearchListener().start()
+        }
     }
 }

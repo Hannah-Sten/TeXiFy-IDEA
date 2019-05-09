@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.run
+package nl.rubensten.texifyidea.run.sumatra
 
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
@@ -28,7 +28,6 @@ val isSumatraAvailable: Boolean by lazy {
 }
 
 private fun isSumatraInstalled(): Boolean {
-
     // Look up SumatraPDF registry key
     val process = Runtime.getRuntime().exec(
             "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
@@ -78,6 +77,9 @@ object SumatraConversation {
 
     }
 
+    /**
+     * Open a file in SumatraPDF, starting it if it is not running yet.
+     */
     fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
@@ -92,6 +94,9 @@ object SumatraConversation {
         }
     }
 
+    /**
+     * Execute forward search, highlighting a certain line in SumatraPDF.
+     */
     fun forwardSearch(pdfFilePath: String? = null, sourceFilePath: String, line: Int, newWindow: Boolean = false, focus: Boolean = false) {
         val pdfPath = if (pdfFilePath != null) "\"$pdfFilePath\", " else ""
         execute("ForwardSearch($pdfPath\"$sourceFilePath\", $line, 0, ${newWindow.bit}, ${focus.bit})")

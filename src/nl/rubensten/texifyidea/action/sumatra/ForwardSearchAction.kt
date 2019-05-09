@@ -7,8 +7,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.action.EditorAction
-import nl.rubensten.texifyidea.run.SumatraConversation
-import nl.rubensten.texifyidea.run.isSumatraAvailable
+import nl.rubensten.texifyidea.run.sumatra.SumatraConversation
+import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
 
 /**
  * Starts a forward search action in SumatraPDF.

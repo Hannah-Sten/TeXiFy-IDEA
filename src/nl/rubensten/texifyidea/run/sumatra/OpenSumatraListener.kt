@@ -1,9 +1,10 @@
-package nl.rubensten.texifyidea.run
+package nl.rubensten.texifyidea.run.sumatra
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.util.Key
 import nl.rubensten.texifyidea.TeXception
+import nl.rubensten.texifyidea.run.LatexRunConfiguration
 
 /**
  * @author Sten Wessel
