@@ -8,6 +8,7 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
@@ -23,6 +24,7 @@ import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import nl.rubensten.texifyidea.psi.LatexNormalText;
 import nl.rubensten.texifyidea.run.LatexCompiler;
+import nl.rubensten.texifyidea.settings.TexifyConfigurable;
 import nl.rubensten.texifyidea.settings.TexifySettings;
 import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.PackageUtils;
@@ -103,7 +105,8 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
                         ProblemHighlightType.ERROR,
                         isOntheFly,
                         new EscapeUnicodeFix(inMathMode),
-                        inMathMode ? null : new InsertUnicodePackageFix()
+                        inMathMode ? null : new InsertUnicodePackageFix(),
+                        new ChangeCompilerCompatibilityFix()
                 ));
             }
         }
@@ -171,6 +174,23 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
                         String.join(",", p.getParameters())
                 );
             });
+        }
+    }
+
+    /**
+     * Open the settings page so the user can change the compiler compability.
+     */
+    private static class ChangeCompilerCompatibilityFix implements LocalQuickFix {
+        @Nls
+        @NotNull
+        @Override
+        public String getFamilyName() {
+            return "Change compiler compatibility";
+        }
+
+        @Override
+        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyConfigurable.class);
         }
     }
 
