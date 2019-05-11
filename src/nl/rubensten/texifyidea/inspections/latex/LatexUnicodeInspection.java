@@ -22,7 +22,8 @@ import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import nl.rubensten.texifyidea.psi.LatexNormalText;
-import nl.rubensten.texifyidea.settings.TexifyConfigurable;
+import nl.rubensten.texifyidea.run.LatexCompiler;
+import nl.rubensten.texifyidea.settings.TexifySettings;
 import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.PackageUtils;
 import org.jetbrains.annotations.Nls;
@@ -113,7 +114,8 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
     /**
      * Checks whether Unicode support is enabled for the file.
      * <p>
-     * Support is assumed when the packages {@code inputenc} and {@code fontenc} are loaded. The
+     * Support is assumed when the packages {@code inputenc} and {@code fontenc} are
+     * loaded, or when a compiler is used which does not need these packages. The
      * loaded options are not checked.
      *
      * @param file
@@ -121,6 +123,10 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
      * @return Whether Unicode support is enabled.
      */
     static boolean unicodeEnabled(@NotNull PsiFile file) {
+        if (TexifySettings.getInstance().getCompilerCompatibility().equals(LatexCompiler.LUALATEX.getDisplayName())) {
+            return true;
+        }
+
         // TODO: check if options are correct as well
         Collection<String> included = PackageUtils.getIncludedPackages(file);
         return Magic.Package.unicode.stream().allMatch(p -> included.contains(p.getName()));
