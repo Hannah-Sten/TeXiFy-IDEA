@@ -170,6 +170,7 @@ object Magic {
          */
         @JvmField val environmentDefinitions = hashSetOf(
                 "\\newenvironment",
+                "\\newtheorem",
                 "\\NewDocumentEnvironment",
                 "\\ProvideDocumentEnvironment",
                 "\\DeclareDocumentEnvironment"
@@ -380,8 +381,16 @@ object Magic {
                 StyleFileType,
                 TikzFileType
         )
+
+        /**
+         * All file extensions that have to be deleted when clearing auxiliary files.
+         *
+         * This list is the union of @generated_exts in latexmk and the defined Auxiliary files in TeXWorks.
+         * (https://github.com/TeXworks/texworks/blob/9c8cc8b88505103cb8f43fe4105638c77c7e7303/res/resfiles/configuration/texworks-config.txt#L37).
+         */
+        @JvmField val auxiliaryFileTypes = arrayOf("aux", "bbl", "bcf", "brf", "fls", "idx", "ind", "lof", "lot", "nav", "out", "snm", "toc")
     }
-    
+
     /**
      * @author Ruben Schellekens
      */

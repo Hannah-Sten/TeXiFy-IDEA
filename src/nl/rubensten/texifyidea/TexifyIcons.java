@@ -346,6 +346,13 @@ public class TexifyIcons {
             "/nl/rubensten/texifyidea/icons/equation-preview.svg"
     );
 
+    /**
+     * Copyright (c) 2019 Ruben Schellekens
+     */
+    public static final Icon TIKZ_PREVIEW = IconLoader.getIcon(
+            "/nl/rubensten/texifyidea/icons/tikz-preview.svg"
+    );
+
     // From IntelliJ
     public static final Icon STRING = IconLoader.getIcon(
             "/nl/rubensten/texifyidea/icons/string.svg"

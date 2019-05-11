@@ -19,7 +19,14 @@ import nl.rubensten.texifyidea.util.parentOfType
  *
  * @author FalseHonesty
  */
-class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.EQUATION_PREVIEW) {
+class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_PREVIEW) {
+
+    companion object {
+
+        @JvmStatic
+        val FORM_KEY = Key<PreviewFormUpdater>("updater")
+    }
+
     override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
         val element: PsiElement = getElement(file, project, editor) ?: return
 
@@ -58,9 +65,4 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.EQUATI
     }
 
     private fun LatexEnvironment.isTikz() = beginCommand.environmentName()?.toLowerCase() == "tikzpicture"
-
-    companion object {
-        @JvmStatic
-        val FORM_KEY = Key<PreviewFormUpdater>("updater")
-    }
 }
