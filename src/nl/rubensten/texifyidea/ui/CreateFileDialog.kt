@@ -28,7 +28,10 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             // Field to select the folder/location of the new file.
             val pathField = TextFieldWithBrowseButton()
             pathField.text = currentFilePath ?: return@apply
-            // Add a listener to the browse button to browse a folder
+            // Make sure the dialog is wide enough to fit the whole path in the text field.
+            pathField.textField.columns = pathField.text.length
+
+                    // Add a listener to the browse button to browse a folder
             pathField.addBrowseFolderListener(
                     TextBrowseFolderListener(
                             FileChooserDescriptor(false, true, false, false, false, false)
@@ -45,6 +48,9 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             setOkOperation {
                 dialogWrapper.close(0)
             }
+
+            // Focus the filename field.
+            setPreferredFocusComponent(nameField)
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
                 // Format the text from the name field as a file name (e.g. " " -> "-") and remove the (double) tex extension.

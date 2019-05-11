@@ -206,7 +206,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 val createdFile = createFile("$filePath.tex", text)
                 document.deleteString(startIndex, endIndex)
                 LocalFileSystem.getInstance().refresh(true)
-                val fileNameRelativeToRoot = createdFile.absolutePath.replace("$root/", "")
+                val fileNameRelativeToRoot = createdFile.absolutePath.replace(root, "")
                 val indent = cmd.findIndentation()
                 document.insertString(startIndex, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
             }
