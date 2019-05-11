@@ -22,6 +22,7 @@ import nl.rubensten.texifyidea.lang.LatexMathCommand;
 import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import nl.rubensten.texifyidea.psi.LatexNormalText;
+import nl.rubensten.texifyidea.settings.TexifyConfigurable;
 import nl.rubensten.texifyidea.util.Magic;
 import nl.rubensten.texifyidea.util.PackageUtils;
 import org.jetbrains.annotations.Nls;

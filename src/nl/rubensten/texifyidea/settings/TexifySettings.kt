@@ -5,6 +5,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import nl.rubensten.texifyidea.run.LatexCompiler
 
 /**
  *
@@ -30,9 +31,8 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
-
-    // Index of selected combobox item
     var automaticQuoteReplacement = QuoteReplacement.NONE
+    var compilerCompatibility = LatexCompiler.PDFLATEX.displayName
 
     override fun getState() = this
 

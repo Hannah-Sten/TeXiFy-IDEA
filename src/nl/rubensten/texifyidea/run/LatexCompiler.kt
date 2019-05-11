@@ -9,7 +9,7 @@ import nl.rubensten.texifyidea.util.splitWhitespace
 /**
  * @author Ruben Schellekens, Sten Wessel
  */
-enum class LatexCompiler(private val displayName: String, val executableName: String) {
+enum class LatexCompiler(val displayName: String, val executableName: String) {
 
     PDFLATEX("pdfLaTeX", "pdflatex") {
 
