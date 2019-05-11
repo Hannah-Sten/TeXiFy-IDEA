@@ -52,12 +52,14 @@ toc::[]
 * On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
 * Automatic insertion of braces of first required parameter
 * Typing `}` at closing brace skips over it, same for `$..$`
+* Multi-cursors
 
 == Reading
 * Code folding for imports, (sub(sub))sections and environments
 * Customizable syntax highlighting
 * Method separator lines for sections
 * Special highlighting and marker for `todo` comments, customizable
+* Links (in comments) are clickable
 
 == Preview
 * Unicode math preview
