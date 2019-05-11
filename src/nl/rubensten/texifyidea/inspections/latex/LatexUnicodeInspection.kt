@@ -1,9 +1,11 @@
 package nl.rubensten.texifyidea.inspections.latex
 
+import com.intellij.codeInsight.hint.HintManager
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -26,6 +28,8 @@ import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.PackageUtils
 import org.jetbrains.annotations.Nls
+import java.text.Normalizer
+import java.util.regex.Pattern
 
 /**
  * Checks whether Unicode is enabled in the file and flags illegal characters when they are not
@@ -183,26 +187,63 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
             // Try to find in lookup for special command
             val replacement: String?
-            val command: LatexCommand = if (inMathMode) {
-                LatexMathCommand.findByDisplay(c) as LatexCommand
+            val command: LatexCommand? = if (inMathMode) {
+                LatexMathCommand.findByDisplay(c)
             }
             else {
-                LatexRegularCommand.findByDisplay(c) as LatexCommand
+                LatexRegularCommand.findByDisplay(c)
             }
 
             // Replace with found command or with standard substitution
-            replacement = "\\" + command.command
+            replacement = if (command != null) {
+                "\\" + command.command
+            }
+            else {
+                findReplacement(c)
+            }
 
             // When no replacement is found, show error message
             val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+            if (replacement == null) {
+                val editor = FileEditorManager.getInstance(project).selectedTextEditor
+                if (editor != null) {
+                    HintManager.getInstance().showErrorHint(editor, "Character could not be converted")
+                }
+                return
+            }
 
             // Fill in replacement
             val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
             document?.replaceString(range.startOffset, range.endOffset, replacement)
         }
+
+        private fun findReplacement(c: String): String? {
+            val n = Normalizer.normalize(c, Normalizer.Form.NFD)
+
+            // Extract base characters
+            val matcher = BASE_PATTERN.matcher(n)
+            matcher.find()
+            val base = matcher.group()
+
+            // Extract modifiers
+            val mods = n.substring(matcher.end()).split("".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
+            val diacritics = (0 until mods.size)
+                    // Modifiers in reversed order
+                    .map { mods[mods.size - 1 - it] }
+                    .map { if (inMathMode)
+                        Diacritic.Math.fromUnicode(it) as Diacritic
+                    else
+                        Diacritic.Normal.fromUnicode(it) }
+
+            return Diacritic.buildChain(base, diacritics)
+        }
     }
 
     companion object {
+
+        private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
+
 
         /**
          * Checks whether Unicode support is enabled for the file.
