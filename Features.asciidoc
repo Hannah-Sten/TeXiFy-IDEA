@@ -167,6 +167,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Enclose high commands with `\leftX..\rightX`
 * Citations must be placed before interpunction
 * Gather equations
+* link:Writing-style-recommendations#Figure-not-referenced[Figure not referenced]
 
 ==== Duplicates
 * Command is already defined
@@ -199,7 +200,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Use of `\over` discouraged
 * TeX styling primitives usage is discouraged
 * Discouraged use of `\def` and `\let`
-* link:Inspections#ins:avoid-eqnarray[Avoid `eqnarray`]
+* link:Obsolete-LaTeX#ins:avoid-eqnarray[Avoid `eqnarray`]
 * Discouraged use of primitive TeX display math
 * Discouraged use of `\makeatletter` in tex sources
 

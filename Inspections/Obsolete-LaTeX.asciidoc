@@ -1,0 +1,10 @@
+== Use of `\over` discouraged
+== TeX styling primitives usage is discouraged
+== Discouraged use of `\def` and `\let`
+
+== [[ins:avoid-eqnarray]]Avoid `eqnarray`
+The `eqnarray` and `eqnarray==` environments are not recommended because they produce inconsistent spacing of the equal signs and make no attempt to prevent overprinting of the equation body and equation number.
+
+
+== Discouraged use of primitive TeX display math
+== Discouraged use of `\makeatletter` in tex sources

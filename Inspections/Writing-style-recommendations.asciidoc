@@ -1,0 +1,41 @@
+:pygmentize:
+
+== Non-escaped common math operators
+== Non-breaking spaces before references
+== Ellipsis with `...` instead of `\ldots` or `\dots`
+== Normal space after abbreviation
+== En dash in number ranges
+== End-of-sentence space after sentences ending with capitals
+== Use of `.` instead of `\cdot`
+
+When multiplying numbers, use `\cdot` instead of `.`.
+
+== Use of `x` instead of `\times`
+== Grouped superscript and subscript
+== Insert `\qedhere` in trailing displaymath environment
+== Use the matching amssymb symbol for extreme inequalities
+== Dotless versions of i and j must be used with diacritics
+== Enclose high commands with `\leftX..\rightX`
+== Citations must be placed before interpunction
+== Gather equations
+== Figure not referenced
+
+You should always reference your figures, otherwise you have figure floating around in your document with no connection to the text.
+This is undesirable, because then it may not be clear why the figure is there.
+
+Because figures float around (LaTeX determines the location automatically) you should never refer to figures as 'The figure below'.
+
+.Example file which triggers the inspection.
+[source,latex]
+----
+\documentclass{article}
+
+\begin{document}
+
+    \begin{figure}
+        A figuring float.
+        \label{fig:not-referenced}
+    \end{figure}
+
+\end{document}
+----
