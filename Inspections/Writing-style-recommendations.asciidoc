@@ -20,6 +20,9 @@ When multiplying numbers, use `\cdot` instead of `.`.
 == Gather equations
 == Figure not referenced
 
+_Since b0.6.6_
+
+
 You should always reference your figures, otherwise you have figure floating around in your document with no connection to the text.
 This is undesirable, because then it may not be clear why the figure is there.
 

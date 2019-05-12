@@ -1,0 +1,16 @@
+:experimental:
+
+These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy]
+
+== Option to enable use of soft wraps when opening LaTeX files
+== Option to disable automatic insertion of second $
+== Option to disable automatic brace insertion around text in subscript and superscript
+== Option to disable auto-insertion of \item
+== Option to enable smart quote substitution
+
+[#compiler-compatibility]
+== Option to change compiler for which to check compatibility
+
+In some cases, certain LaTeX can be valid when using one compiler but incorrect when using another.
+For these cases, you can change the compiler to which your LaTeX is validated.
+The inspections for which this is relevant have a quickfix which opens this settings page.
