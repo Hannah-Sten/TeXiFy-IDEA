@@ -3,7 +3,7 @@
 == Change to `\left..\right`
 == Convert to other math environment
 == [[move-section-to-file]]Move section contents to separate file
-Similar to link:Intentions#selection-to-file[Move selection contents to separate file], except that it is triggered on
+Similar to link:Intentions#selection-to-file[move selection contents to separate file], except that it is triggered on
 a section heading. Any `\section{...}` command will trigger this. It turns
 
 .main.tex
