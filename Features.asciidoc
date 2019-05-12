@@ -114,7 +114,7 @@ toc::[]
 == Utilities
 * Word counting tool
 * Customizable file templates for .tex, .sty, .cls and .bib files
-* link:++Menu entries#clear-aux-files++[Menu button to delete generated auxiliary files]
+* link:++Menu-entries#clear-aux-files++[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
 * File creation dialog
 
@@ -213,7 +213,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 
 ==== Writing organisation recommendations
 * Might break TeXiFy functionality
-* Too large sections
+* link:Writing-organisation-recommendations#too-large-section[Too large section]
 
 == Intentions
 
@@ -245,7 +245,7 @@ menu:Tools[LaTeX > Equation Preview]:: Preview equations.
 
 menu:Tools[LaTeX > TikZ Preview]:: Preview TikZ pictures.
 
-menu:Tools[LaTeX > link:MenuEntries#clear-aux-files[Clear Auxiliary Files]]:: Clear the generated auxiliary files.
+menu:Tools[LaTeX > link:Menu-ntries#clear-aux-files[Clear Auxiliary Files]]:: Clear the generated auxiliary files.
 
 menu:Tools[LaTeX > SumatraPDF]:: (Windows only) Forward search and configuration of inverse search
 
