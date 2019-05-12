@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.rubensten.texifyidea.run.LatexCompiler.Format;
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler;
+import nl.rubensten.texifyidea.util.LatexDistribution;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,8 +44,8 @@ public class LatexRunConfiguration extends RunConfigurationBase
     private String sumatraPath = null;
     private String compilerArguments = null;
     private VirtualFile mainFile;
-    // Enable auxDir by default on Windows only
-    private boolean auxDir = SystemInfo.isWindows;
+    // Enable auxDir by default on MiKTeX only
+    private boolean auxDir = LatexDistribution.Companion.isMiktex();
     private boolean outDir = true;
     private Format outputFormat = Format.PDF;
     private String bibRunConfigId = "";
@@ -216,8 +217,8 @@ public class LatexRunConfiguration extends RunConfigurationBase
      * @param defaultCompiler Compiler to set selected as default.
      */
     void generateBibRunConfig(BibliographyCompiler defaultCompiler) {
-        // On non-Windows systems, disable the out/ directory by default for bibtex to work
-        if (!SystemInfo.isWindows) {
+        // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
+        if (!LatexDistribution.Companion.isMiktex()) {
             this.outDir = false;
         }
 
@@ -293,10 +294,10 @@ public class LatexRunConfiguration extends RunConfigurationBase
     }
 
     /**
-     * Only enabled by default on Windows, because -aux-directory is MikTeX only.
+     * Only enabled by default on MiKTeX, because -aux-directory is MikTeX only.
      */
     public void setDefaultAuxiliaryDirectories() {
-        this.auxDir = SystemInfo.isWindows;
+        this.auxDir = LatexDistribution.Companion.isMiktex();
     }
 
     public void setDefaultOutputFormat() {

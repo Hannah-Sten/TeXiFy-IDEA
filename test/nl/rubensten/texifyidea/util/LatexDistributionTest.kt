@@ -1,6 +1,7 @@
 package nl.rubensten.texifyidea.util
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -50,7 +51,6 @@ class LatexDistributionTest {
             compiled with zlib version 1.2.11; using 1.2.11
         """.trimIndent()
 
-        assertEquals("MikTeX 2.9.6880 64-bit", LatexDistribution.parsePdflatexOutput(output))
+        assertEquals("MiKTeX 2.9.6880 64-bit", LatexDistribution.parsePdflatexOutput(output))
     }
-
 }

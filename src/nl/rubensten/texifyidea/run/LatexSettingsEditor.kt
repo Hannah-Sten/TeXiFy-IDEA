@@ -12,6 +12,7 @@ import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
+import nl.rubensten.texifyidea.util.LatexDistribution
 import java.awt.event.ItemEvent
 import javax.swing.JCheckBox
 import javax.swing.JComponent
@@ -218,8 +219,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
             // Auxiliary files
             auxDir = JCheckBox("Separate auxiliary files from output (MiKTeX only)")
-            // Only enable by default on Windows.
-            auxDir!!.isSelected = SystemInfo.isWindows
+            // Only enable by default on MiKTeX.
+            auxDir!!.isSelected = LatexDistribution.isMiktex()
             panel.add(auxDir)
         }
 

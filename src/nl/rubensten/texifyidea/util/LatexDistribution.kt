@@ -1,5 +1,8 @@
 package nl.rubensten.texifyidea.util
 
+import java.io.IOException
+import java.util.concurrent.TimeUnit
+
 /**
  * Represents the LaTeX Distribution of the user, e.g. MikTeX or TeX Live.
  */
@@ -10,20 +13,34 @@ class LatexDistribution {
          * Check whether the user is using TeX Live or not.
          */
         fun isTexlive(): Boolean {
-            return false
+            return getDistribution().contains("TeX Live")
         }
 
         /**
          * Check whether the user is using MikTeX or not.
          */
         fun isMiktex(): Boolean {
-            return false
+            return getDistribution().contains("MiKTeX")
         }
 
         /**
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
         fun getDistribution(): String {
+            try {
+                val command = arrayListOf("pdflatex", "--version")
+                val proc = ProcessBuilder(command)
+                        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                        .redirectError(ProcessBuilder.Redirect.PIPE)
+                        .start()
+
+                // Timeout value
+                proc.waitFor(10, TimeUnit.SECONDS)
+                val output = proc.inputStream.bufferedReader().readText()
+                return parsePdflatexOutput(output)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
             return ""
         }
 
