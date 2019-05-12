@@ -9,6 +9,7 @@ import nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection.
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.ui.CreateFileDialog
 import nl.rubensten.texifyidea.util.*
+import java.io.File
 
 /**
  * @author Ruben Schellekens
@@ -66,7 +67,9 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         runWriteAction {
             val createdFile = createFile("$filePath.tex", text)
             document.deleteString(start, end)
-            val fileNameRelativeToRoot = createdFile.absolutePath.replace("$root/", "")
+            val fileNameRelativeToRoot = createdFile.absolutePath
+                    .replace(File.separator, "/")
+                    .replace("$root/", "")
             val indent = sectionCommand.findIndentation()
             document.insertString(start, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
         }

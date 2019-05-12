@@ -16,6 +16,7 @@ import nl.rubensten.texifyidea.util.removeIndents
 import org.intellij.lang.annotations.Language
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
+import java.io.File
 import javax.swing.*
 
 /**
@@ -62,6 +63,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         // Manage paths/file names.
         @Language("RegExp")
         // Note that we do not override the user-specified filename to be LaTeX-like.
+        // Path of virtual file always contains '/' as file separators.
         val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
 
         // Execute write actions.
@@ -72,7 +74,11 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
                 document.deleteString(start, end)
             }
 
-            val fileNameRelativeToRoot = createdFile.absolutePath.replace("$root/", "")
+            // The path of the created file contains the system's file separators, whereas the path of the root
+            // (virtual file) always contains '/' as file separators.
+            val fileNameRelativeToRoot = createdFile.absolutePath
+                    .replace(File.separator, "/")
+                    .replace("$root/", "")
             document.insertString(offsets.first().first, "\\input{${fileNameRelativeToRoot.dropLast(4)}}")
         }
     }

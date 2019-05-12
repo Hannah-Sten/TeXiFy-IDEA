@@ -19,6 +19,7 @@ import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.ui.CreateFileDialog
 import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
+import java.io.File
 import java.util.regex.Pattern
 
 /**
@@ -206,7 +207,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 val createdFile = createFile("$filePath.tex", text)
                 document.deleteString(startIndex, endIndex)
                 LocalFileSystem.getInstance().refresh(true)
-                val fileNameRelativeToRoot = createdFile.absolutePath.replace(root, "")
+                val fileNameRelativeToRoot = createdFile.absolutePath
+                        .replace(File.separator, "/")
+                        .replace(root, "")
                 val indent = cmd.findIndentation()
                 document.insertString(startIndex, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
             }
