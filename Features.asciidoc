@@ -128,6 +128,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Option to disable automatic brace insertion around text in subscript and superscript
 * Option to disable auto-insertion of \item
 * Option to enable smart quote substitution
+* link:Project-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 
 === Run configuration
 * Separate BibTeX run configuration
@@ -177,7 +178,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Duplicate command definitions
 
 ==== Probable bugs
-* Unsupported Unicode character
+* link:Probable-bugs#Unsupported-Unicode-character[Unsupported Unicode character]
 * Missing documentclass
 * Missing document environment
 * Missing imports

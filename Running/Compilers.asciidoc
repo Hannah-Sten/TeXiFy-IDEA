@@ -4,9 +4,13 @@
 
 === LuaLaTeX
 
+To use LuaLaTeX, install the `luatex` package.
+
 === Latexmk
 
 === XeLaTeX
+
+to use XeLaTeX, install the `xetex` package.
 
 === Texliveonfly
 

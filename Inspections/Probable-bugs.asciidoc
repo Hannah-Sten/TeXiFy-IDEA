@@ -1,0 +1,72 @@
+
+
+== Unsupported Unicode character
+
+This inspections highlights Unicode characters which are likely to cause incorrect output if you have not explicitly chosen the right packages and compiler.
+
+In general, you should use LuaLaTeX or XeLaTeX when working with Unicode characters.
+
+An example file which uses Unicode characters and is compilable with LuaLaTeX:
+
+[source,latex]
+----
+\documentclass{article}
+
+% For this document you may need the following (texlive) packages: luatex luaotfload fontspec babel-greek greek-fontenc gfsporson
+
+\usepackage[no-math]{fontspec}
+
+\usepackage[main=english,greek]{babel}
+\languageattribute{greek}{ancient}
+
+\newfontfamily\greekfont{GFS Porson}[Ligatures=TeX,%
+ItalicFont = GFSPorson-Regular,%
+SmallCapsFont = GFSPorson-Regular]
+
+\addto\extrasgreek{\greekfont}
+
+\newcommand\textgreek[1]{\foreignlanguage{greek}{#1}}
+
+\begin{document}
+    English and \textgreek{ελληνικά} and {\greekfont πιο ελληνικό}
+\end{document}
+----
+
+=== Quick fixes
+
+==== Escape Unicode character
+
+In some cases, there is a plain LaTeX equivalent available.
+This will change for example `ö` into `\"o`.
+
+Note that since TeX Live 2018 this is unnecessary: UTF-8 is assumed as the default input encoding (source: https://tex.stackexchange.com/a/370280/98850).
+
+
+==== Include Unicode support packages
+
+This will load
+
+[source,latex]
+----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+----
+
+Note that since TeX Live 2018 loading `inputenc` does not solve anything: UTF-8 is assumed as the default input encoding (source: https://tex.stackexchange.com/a/370280/98850).
+
+Also note that in general it is better to use `\usepackage[T1]{fontenc}`, see https://tex.stackexchange.com/questions/664/why-should-i-use-usepackaget1fontenc
+
+==== Change compiler compatibility
+
+Opens the settings page with the link:Project-settings#compiler-compatibility[option to change compiler for which to check compatibility].
+
+
+== Missing documentclass
+== Missing document environment
+== Missing imports
+== Unresolved references
+== Non matching environment commands
+== Open if-then-else control sequence
+== File not found
+== Inclusion loops
+== Nested includes
