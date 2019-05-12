@@ -1,1 +1,3 @@
-Here some description and example of unicode support.
+IntelliJ supports Unicode, see for example https://blog.jetbrains.com/idea/2013/03/use-the-utf-8-luke-file-encodings-in-intellij-idea/
+
+Also see the link:Probable-bugs#Unsupported-Unicode-character[Unicode inspection].
