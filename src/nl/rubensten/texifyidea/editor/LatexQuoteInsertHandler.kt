@@ -53,6 +53,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             openingQuotes = "\\lq\\lq{}"
             closingQuotes = "\\rq\\rq{}"
         }
+        else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '"') {
+            openingQuotes = "\\enquote{"
+            closingQuotes = "}"
+        }
         else if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '\'') {
             openingQuotes = "`"
             closingQuotes = "'"
@@ -60,6 +64,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         else if (quoteSetting == TexifySettings.QuoteReplacement.COMMANDS && char == '\'') {
             openingQuotes = "\\lq{}"
             closingQuotes = "\\rq{}"
+        }
+        else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '\'') {
+            openingQuotes = "\\enquote*{"
+            closingQuotes = "}"
         }
 
         // The default replacement of the typed double quotes is a pair of closing quotes

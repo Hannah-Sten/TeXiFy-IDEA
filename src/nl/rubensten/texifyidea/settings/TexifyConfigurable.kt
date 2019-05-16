@@ -31,8 +31,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
             automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
             automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
-            automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands")
-
+            automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
         })
     }
 
