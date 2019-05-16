@@ -17,7 +17,7 @@ You have multiple options of acquiring a zip file with the plugin.
 3. You could also build from source, see https://github.com/Ruben-Sten/TeXiFy-IDEA#building-from-source-using-intellij
 4. Possibly someone else gave you a zip file.
 
-Now you can install it.
+==== Installing the plugin from a zip file
 
 * Go to menu:Settings[Plugins] and click the gear icon, click Install Plugin from Disk, select the zip file and install.
 * Make sure to restart IntelliJ.
