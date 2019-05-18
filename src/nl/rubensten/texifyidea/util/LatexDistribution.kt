@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.util
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
+
 /**
  * Represents the LaTeX Distribution of the user, e.g. MikTeX or TeX Live.
  */
@@ -10,23 +11,25 @@ class LatexDistribution {
 
     companion object {
         /**
-         * Check whether the user is using TeX Live or not.
+         * Whether the user is using MikTeX or not.
+         * This value is lazy, so only computed when first accessed, because it is unlikely that the user will change LaTeX distribution while using IntelliJ.
          */
-        fun isTexlive(): Boolean {
-            return getDistribution().contains("TeX Live")
+        val isMiktex: Boolean by lazy {
+            getDistribution().contains("MiKTeX")
         }
 
         /**
-         * Check whether the user is using MikTeX or not.
+         * Whether the user is using TeX Live or not.
+         * This value is only computed once.
          */
-        fun isMiktex(): Boolean {
-            return getDistribution().contains("MiKTeX")
+        val isTexlive: Boolean by lazy {
+            getDistribution().contains("TeX Live")
         }
 
         /**
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
-        fun getDistribution(): String {
+        private fun getDistribution(): String {
             try {
                 val command = arrayListOf("pdflatex", "--version")
                 val proc = ProcessBuilder(command)

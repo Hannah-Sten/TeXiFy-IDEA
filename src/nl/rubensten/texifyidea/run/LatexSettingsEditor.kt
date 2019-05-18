@@ -220,7 +220,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             // Auxiliary files
             auxDir = JCheckBox("Separate auxiliary files from output (MiKTeX only)")
             // Only enable by default on MiKTeX.
-            auxDir!!.isSelected = LatexDistribution.isMiktex()
+            auxDir!!.isSelected = LatexDistribution.isMiktex
             panel.add(auxDir)
         }
 
