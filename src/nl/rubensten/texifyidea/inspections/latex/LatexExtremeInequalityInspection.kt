@@ -54,6 +54,10 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         }
     }
 
+    override fun runForWholeFile(): Boolean {
+        return true
+    }
+
     override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>) {
         super.applyFix(project, descriptor, replacementRange, replacement, groups)
 
