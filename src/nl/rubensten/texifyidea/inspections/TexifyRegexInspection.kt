@@ -232,7 +232,6 @@ abstract class TexifyRegexInspection(
         val document = file.document() ?: return
 
         document.replaceString(replacementRange.start, replacementRange.endInclusive, replacement)
-
     }
 
     /**
@@ -256,9 +255,6 @@ abstract class TexifyRegexInspection(
 
             accumulatedDisplacement += replacement.length - (replacementRange.endInclusive - replacementRange.start)
         }
-
-        val file = descriptor.psiElement.containingFile ?: return
-        file.insertUsepackage(Package.AMSSYMB)
     }
 
     /**
