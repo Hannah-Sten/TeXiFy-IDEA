@@ -41,8 +41,10 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
     fun setPreviewCode(previewCode: String) {
         previewForm.setEquation(previewCode)
 
-        try {
-            val tempDirectory = createTempDir()
+        // First define the function that actually does stuff in a temp folder. The usual temp directory might not be
+        // accessible by inkscape (e.g., when inkscape is a snap), and using function we can specify an alternative
+        // temp directory in case the usual fails.
+        fun setPreviewCodeInTemp(tempDirectory: File) {
             try {
                 val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
                 val writer = PrintWriter("$tempBasename.tex", "UTF-8")
@@ -84,18 +86,24 @@ $previewCode
                                 "--export-png", "$tempBasename.png"
                         ),
                         tempDirectory
-                ) ?: return
+                ) ?: throw AccessDeniedException(tempDirectory)
 
                 val image = ImageIO.read(File("$tempBasename.png"))
                 previewForm.setPreview(image, latexStdoutText)
-
-
-            }
-            finally {
+            } finally {
+                // Delete all the created temp files in the default temp directory.
                 tempDirectory.deleteRecursively()
             }
         }
-        catch (exception: IOException) {
+
+        try {
+            // Create the default temp directory.
+            setPreviewCodeInTemp(createTempDir())
+        } catch(exception: AccessDeniedException) {
+            // If pdf2svg or inkscape does not have access to the temp directory, try again with temp folder in the
+            // home directory.
+            setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
+        } catch (exception: IOException) {
             previewForm.setLatexErrorMessage("${exception.message}")
         }
 
