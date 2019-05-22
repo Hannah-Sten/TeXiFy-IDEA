@@ -23,16 +23,20 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         groupFetcher = { listOf(it.group(1)) }
 ) {
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>) {
-        val file = descriptor.psiElement.containingFile
-        val document = file.document() ?: return
-        val cite = file.findElementAt(replacementRange.endInclusive + 3)?.parentOfType(LatexCommands::class) ?: return
-        val char = groups[0]
+    override fun applyFixes(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<String>) {
+        for (i in 0 until replacements.size) {
+            val replacementRange = replacementRanges[i]
 
-        if (cite.endOffset() >= document.textLength || document[cite.endOffset()] != char) {
-            document.insertString(cite.endOffset(), char)
+            val file = descriptor.psiElement.containingFile
+            val document = file.document() ?: return
+            val cite = file.findElementAt(replacementRange.endInclusive + 3)?.parentOfType(LatexCommands::class) ?: return
+            val char = groups[0]
+
+            if (cite.endOffset() >= document.textLength || document[cite.endOffset()] != char) {
+                document.insertString(cite.endOffset(), char)
+            }
         }
 
-        super.applyFix(project, descriptor, replacementRange, replacement, groups)
+        super.applyFixes(project, descriptor, replacementRanges, replacements, groups)
     }
 }

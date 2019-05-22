@@ -54,13 +54,6 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         }
     }
 
-    override fun runForWholeFile(): Boolean {
-        // The quickfix of this inspection replaces text (like <<) by
-        // content with a different length (like \ll), so we have to make
-        // sure it is run for the whole file at once.
-        return true
-    }
-
     override fun applyFixes(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<String>) {
         super.applyFixes(project, descriptor, replacementRanges, replacements, groups)
 

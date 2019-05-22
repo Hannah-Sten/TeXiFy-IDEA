@@ -9,8 +9,10 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
-import nl.rubensten.texifyidea.lang.Package
-import nl.rubensten.texifyidea.util.*
+import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.hasParent
+import nl.rubensten.texifyidea.util.inMathContext
+import nl.rubensten.texifyidea.util.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -117,25 +119,29 @@ abstract class TexifyRegexInspection(
         val matcher = pattern.matcher(text)
 
 
-        // todo
+        // The file is inspected 'not on the fly' when the 'fix all problems in file' menu is used.
+        // If that is the case and we need to run the inspection for the
+        // whole file at once, we create only one problem descriptor for
+        // the whole file, which has all the problem locations.
+        // Then the problem descriptor will be applied and we can take
+        // control of handling the displacements of the fixed regex locations ourselves.
+        // The reason we do not always want one problem descriptor is
+        // that it would be rendered in IntelliJ as one global warning
+        // bar at the top of the file, instead of at the correct locations.
         if (!isOntheFly && runForWholeFile()) {
-            // todo
             val replacementRanges = arrayListOf<IntRange>()
             val replacements = arrayListOf<String>()
 
-            // Then the user is doing a 'fix all problems in file': because we are inspecting the file without doing it on the fly
-            // Find all patterns.
+            val groups = groupFetcher(matcher)
+
+            // For each pattern, just save the replacement location and value
             while (matcher.find()) {
                 // Pre-checks.
                 if (cancelIf(matcher, file)) {
                     continue
                 }
 
-                val groups = groupFetcher(matcher)
-                val textRange = highlightRange(matcher)
                 val range = replacementRange(matcher)
-                val error = errorMessage(matcher)
-                val quickFix = quickFixName(matcher)
                 val replacementContent = replacement(matcher, file)
 
                 // Correct context.
@@ -148,22 +154,29 @@ abstract class TexifyRegexInspection(
                 replacements.add(replacementContent)
             }
 
-            val problemDescriptor = manager.createProblemDescriptor(
-                    file,
-                    null as TextRange?,
-                    errorMessage(matcher),
-                    highlight,
-                    isOntheFly,
-                    RegexFix(
-                            quickFixName(matcher),
-                            replacements,
-                            replacementRanges,
-                            groupFetcher(matcher),
-                            this::applyFixes
-                    )
-                    )
+            if (replacementRanges.size > 0) {
 
-            return mutableListOf(problemDescriptor)
+                // We cannot give one TextRange because there are multiple,
+                // but it does not matter since the user won't see this anyway.
+                val problemDescriptor = manager.createProblemDescriptor(
+                        file,
+                        null as TextRange?,
+                        errorMessage(matcher),
+                        highlight,
+                        isOntheFly,
+                        RegexFix(
+                                quickFixName(matcher),
+                                replacements,
+                                replacementRanges,
+                                groups,
+                                this::applyFixes
+                        )
+                )
+
+                return mutableListOf(problemDescriptor)
+            } else {
+                return mutableListOf()
+            }
 
         } else {
             val descriptors = SmartList<ProblemDescriptor>()
@@ -222,11 +235,20 @@ abstract class TexifyRegexInspection(
         return mathMode == element.inMathContext() && checkContext(element)
     }
 
+    override fun runForWholeFile(): Boolean {
+        // We assume the quickfix of this inspection replaces text (like <<) by
+        // content with a different length (like \ll), so we have to make
+        // sure it is run for the whole file at once.
+        // It can be disabled by overriding this method.
+        return true
+    }
+
     /**
      * Replaces all text in the replacementRange by the correct replacement.
      *
-     * @param groups todo
+     * todo is not used?
      */
+    @Deprecated(message = "Use applyFixes instead")
     open fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>) {
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return
@@ -237,13 +259,18 @@ abstract class TexifyRegexInspection(
     /**
      * Replaces all text for all replacementRanges by the correct replacements.
      *
-     * todo now inspections cannot override applyfix
+     * We assume the quickfix of an inspection performs replacements which could
+     * have a different length than the original text, the inspection
+     * should override [runForWholeFile] to explicitly refute this assumption.
      */
     open fun applyFixes(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<String>) {
         assert(replacementRanges.size == replacements.size)
 
+        // Remember how much a replacement changed the locations of the fixes still to be applied.
+        // This is cumulative, but may be negative.
         var accumulatedDisplacement = 0
 
+        // Loop over all fixes manually, in order to fix the regex locations
         for (i in 0 until replacements.size) {
             val replacementRange = replacementRanges[i]
             val replacement = replacements[i]
@@ -251,8 +278,10 @@ abstract class TexifyRegexInspection(
             val file = descriptor.psiElement as PsiFile
             val document = file.document() ?: return
 
+            // Move both the start and end offsite with the displacement to find the current location of the problem
             document.replaceString(replacementRange.start + accumulatedDisplacement, replacementRange.endInclusive + accumulatedDisplacement, replacement)
 
+            // Fix the locations of the next fixes
             accumulatedDisplacement += replacement.length - (replacementRange.endInclusive - replacementRange.start)
         }
     }
