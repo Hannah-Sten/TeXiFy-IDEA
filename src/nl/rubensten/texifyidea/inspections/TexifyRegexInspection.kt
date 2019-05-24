@@ -132,8 +132,6 @@ abstract class TexifyRegexInspection(
             val replacementRanges = arrayListOf<IntRange>()
             val replacements = arrayListOf<String>()
 
-            val groups = groupFetcher(matcher)
-
             // For each pattern, just save the replacement location and value
             while (matcher.find()) {
                 // Pre-checks.
@@ -168,7 +166,7 @@ abstract class TexifyRegexInspection(
                                 quickFixName(matcher),
                                 replacements,
                                 replacementRanges,
-                                groups,
+                                listOf(),
                                 this::applyFixes
                         )
                 )
