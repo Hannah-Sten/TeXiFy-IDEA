@@ -30,7 +30,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         /**
          * All commands that should not have a forced breaking space.
          */
-        val IGNORED_COMMANDS = setOf("\\citet", "\\citet*", "\\Citet", "\\Citet*")
+        val IGNORED_COMMANDS = setOf("\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\cpageref", "\\autoref")
     }
 
     override fun getInspectionGroup() = InsightGroup.LATEX
