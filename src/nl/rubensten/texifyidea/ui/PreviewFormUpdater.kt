@@ -90,7 +90,8 @@ $previewCode
 
                 val image = ImageIO.read(File("$tempBasename.png"))
                 previewForm.setPreview(image, latexStdoutText)
-            } finally {
+            }
+            finally {
                 // Delete all the created temp files in the default temp directory.
                 tempDirectory.deleteRecursively()
             }
@@ -99,11 +100,13 @@ $previewCode
         try {
             // Create the default temp directory.
             setPreviewCodeInTemp(createTempDir())
-        } catch(exception: AccessDeniedException) {
+        }
+        catch(exception: AccessDeniedException) {
             // If pdf2svg or inkscape does not have access to the temp directory, try again with temp folder in the
             // home directory.
             setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
-        } catch (exception: IOException) {
+        }
+        catch (exception: IOException) {
             previewForm.setLatexErrorMessage("${exception.message}")
         }
 
