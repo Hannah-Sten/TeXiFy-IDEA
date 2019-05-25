@@ -97,7 +97,8 @@ object EvinceConversation {
             // not succeed with a NoReply exception, so we will execute a command via the shell
             val command = "gdbus call --session --dest $processOwner --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView $sourceFilePath '($line, 1)' 0"
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
-        } else {
+        }
+        else {
             throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file.")
         }
     }

@@ -118,7 +118,6 @@ abstract class TexifyRegexInspection(
         val text = file.text
         val matcher = pattern.matcher(text)
 
-
         // The file is inspected 'not on the fly' when the 'fix all problems in file' menu is used.
         // If that is the case and we need to run the inspection for the
         // whole file at once, we create only one problem descriptor for
@@ -177,11 +176,13 @@ abstract class TexifyRegexInspection(
                 )
 
                 return mutableListOf(problemDescriptor)
-            } else {
+            }
+            else {
                 return mutableListOf()
             }
 
-        } else {
+        }
+        else {
             val descriptors = SmartList<ProblemDescriptor>()
 
             while (matcher.find()) {
