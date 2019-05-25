@@ -2,22 +2,39 @@
 
 === pdfLaTeX
 
+pdfLaTeX is the default compiler for TeXiFy. It is the most simple compiler, but one which is very stable.
+
 === LuaLaTeX
 
 To use LuaLaTeX, install the `luatex` package.
+When using custom fonts, use either LuaLaTeX or XeLaTeX.
+LuaLaTeX has the advantage that you can use Lua (a programming language) in your LaTeX.
 
 === Latexmk
 
+To use latexmk, install the `latexmk` package.
+The main advantage of latexmk is that it compiles just as much times as needed, and handles bibtex automatically.
+It uses pdflatex by default, but you can use an other compiler as well.
+
 === XeLaTeX
 
-to use XeLaTeX, install the `xetex` package.
+To use XeLaTeX, install the `xetex` package.
+When using custom fonts, use either LuaLaTeX or XeLaTeX.
 
 === Texliveonfly
 
-Have a look at https://tex.stackexchange.com/a/463842/98850
+To use texliveonfly, install the `texliveonfly` package.
+The purpose of texliveonfly is to install TeX Live packages automatically during compilation of a document, like the on the fly installation of MiKTeX but then much slower.
+So it is only relevant if you have TeX Live, and if you do not have a full install with all the packages already installed.
+You can use texliveonfly with any other LaTeX compiler.
+
+For more info have a look at https://tex.stackexchange.com/a/463842/98850
 
 === Tectonic
 _Since b0.6.6_
+
+See https://tectonic-typesetting.github.io/en-US/ for installation and more info.
+Tectonic has the advantage that it downloads packages automatically, compiles just as much times as needed and handles BibTeX, but it often only works for not too complicated LaTeX documents.
 
 Please leave a comment at https://github.com/tectonic-typesetting/tectonic/issues/62 to vote for documentation. Or better yet, help them writing it.
 
@@ -29,4 +46,8 @@ If you are confused about the differences between BibTeX, BibTeX and Biber, as w
 
 === bibtex
 
+bibtex is the default compiler.
+
 === biber
+
+biber is an improvement over bibtex and can be used with the biblatex package.
