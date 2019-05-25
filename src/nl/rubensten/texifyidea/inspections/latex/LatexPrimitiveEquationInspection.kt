@@ -31,11 +31,14 @@ open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
         fun replaceRange(it: Matcher) = (it.groupRange(1).start..it.groupRange(2).endInclusive)
     }
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>) {
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
-        val document = file.document() ?: return
+        val document = file.document() ?: return 0
 
         document.replaceString(replacementRange.start, replacementRange.start + 2, "\\[")
         document.replaceString(replacementRange.endInclusive - 2, replacementRange.endInclusive, "\\]")
+
+        // $$ were replaced by \[ or \] so the length did not change
+        return 0
     }
 }
