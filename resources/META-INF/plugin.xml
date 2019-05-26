@@ -149,6 +149,10 @@
                class="nl.rubensten.texifyidea.action.group.LatexEditMenuGroup">
             <add-to-group group-id="EditSmartGroup" anchor="first"/>
 
+            <!-- Table Creation Wizard-->
+            <action class="nl.rubensten.texifyidea.action.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
+                    description="Shows popup to create and insert a table."/>
+
             <!-- Toggle Star -->
             <action class="nl.rubensten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
                     description="Adds/removes a star from a LaTeX command.">
