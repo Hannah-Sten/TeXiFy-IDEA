@@ -209,6 +209,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 ==== LaTeX recommendations
 * Start sentences on a new line
 * Collapse cite commands
+* link:LaTeX-recommendations#ins:eqref[Use `\eqref{...}` instead of `(\ref{...})`]
 * File argument should not include the extension
 
 ==== Writing organisation recommendations

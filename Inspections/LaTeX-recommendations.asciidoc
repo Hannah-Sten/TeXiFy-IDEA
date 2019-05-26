@@ -1,0 +1,9 @@
+== Start sentences on a new line
+== Collapse cite commands
+== [[ins:eqref]] Use `\eqref{...}` instead of `(\ref{...})`
+_Since b0.6.6_
+
+Equations should be referenced using `\eqref{...}` rather than `(\ref{...})` to ensure that all your equation references
+are formatted in the same way.
+
+== File argument should not include the extension
