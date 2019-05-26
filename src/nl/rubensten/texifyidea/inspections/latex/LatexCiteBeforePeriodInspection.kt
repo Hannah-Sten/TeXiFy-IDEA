@@ -23,10 +23,13 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         groupFetcher = { listOf(it.group(1)) }
 ) {
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>) {
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
+
         val file = descriptor.psiElement.containingFile
-        val document = file.document() ?: return
-        val cite = file.findElementAt(replacementRange.endInclusive + 3)?.parentOfType(LatexCommands::class) ?: return
+        val document = file.document() ?: return 0
+        val cite = file.findElementAt(replacementRange.endInclusive + 3)?.parentOfType(LatexCommands::class) ?: return 0
+
+        // Find the interpunction character (the first regex group) in order to move it after the cite
         val char = groups[0]
 
         if (cite.endOffset() >= document.textLength || document[cite.endOffset()] != char) {
@@ -34,5 +37,8 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         }
 
         super.applyFix(project, descriptor, replacementRange, replacement, groups)
+
+        // The document length did not change, so the increase is 0
+        return 0
     }
 }
