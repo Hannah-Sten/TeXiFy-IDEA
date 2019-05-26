@@ -11,12 +11,12 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.InvalidDataException
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
+import nl.rubensten.texifyidea.util.LatexDistribution
 import org.jdom.Element
 
 /**
@@ -55,8 +55,8 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
     var mainFile: VirtualFile? = null
-    // Enable auxiliary directories by default on Windows only
-    var hasAuxiliaryDirectories = SystemInfo.isWindows
+    // Enable auxiliary directories by default on MiKTeX only
+    var hasAuxiliaryDirectories = LatexDistribution.isMiktex
     var hasOutputDirectories = true
     var outputFormat: Format = Format.PDF
     private var bibRunConfigId = ""
@@ -230,8 +230,8 @@ class LatexRunConfiguration constructor(project: Project,
      * @param defaultCompiler Compiler to set selected as default.
      */
     internal fun generateBibRunConfig(defaultCompiler: BibliographyCompiler) {
-        // On non-Windows systems, disable the out/ directory by default for bibtex to work
-        if (!SystemInfo.isWindows) {
+        // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
+        if (!LatexDistribution.isMiktex) {
             this.hasOutputDirectories = false
         }
 
@@ -266,10 +266,10 @@ class LatexRunConfiguration constructor(project: Project,
     }
 
     /**
-     * Only enabled by default on Windows, because -aux-directory is MikTeX only.
+     * Only enabled by default on MiKTeX, because -aux-directory is MikTeX only.
      */
     fun setDefaultAuxiliaryDirectories() {
-        this.hasAuxiliaryDirectories = SystemInfo.isWindows
+        this.hasAuxiliaryDirectories = LatexDistribution.isMiktex
     }
 
     fun setDefaultOutputFormat() {
