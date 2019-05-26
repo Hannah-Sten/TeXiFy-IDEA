@@ -448,6 +448,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexUnresolvedReferenceInspection"
                          groupName="LaTeX" displayName="Unresolved references"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEquationReferenceInspection"
+                         groupName="LaTeX" displayName="Use \eqref{...} instead of (\ref{...})"
+                         enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNonMatchingEnvironmentInspection"
                          groupName="LaTeX" displayName="Non matching environment commands"
                          enabledByDefault="true"/>
