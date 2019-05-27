@@ -2,10 +2,8 @@ package nl.rubensten.texifyidea.ui.tablecreationdialog
 
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
-import javax.swing.JButton
-import javax.swing.JPanel
-import javax.swing.JScrollPane
-import javax.swing.JTable
+import java.awt.event.ActionEvent
+import javax.swing.*
 import javax.swing.table.DefaultTableModel
 
 class TableCreationDialog(var tableAsLatex: String? = "bloop",
@@ -18,8 +16,10 @@ class TableCreationDialog(var tableAsLatex: String? = "bloop",
             val addColumnButton = JButton("Add column")
             addColumnButton.addActionListener { TableCreationAddColumnDialog(tableModel) }
 
+
             // The table.
             val table = JTable(tableModel)
+            table.addTabCreatesNewRowAction()
 
             // Add all elements to the panel view.
             // TODO beautify gui
@@ -39,4 +39,37 @@ class TableCreationDialog(var tableAsLatex: String? = "bloop",
         }
     }
 
+    /**
+     * Adds an empty row to the table.
+     */
+    private fun addEmptyRow() {
+        val emptyRow = (0 until tableModel.columnCount).map { "" }.toTypedArray()
+        tableModel.addRow(emptyRow)
+    }
+
+    /**
+     * Sets the action when pressing TAB on the last cell in the last row to create a new (empty) row and set the
+     * selection on the first cell of the new row.
+     */
+    private fun JTable.addTabCreatesNewRowAction() {
+        // Get the key stroke for pressing TAB.
+        val keyStroke = KeyStroke.getKeyStroke("TAB")
+        val actionKey = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(keyStroke)
+        // Get the action that currently is under the TAB key.
+        val action = actionMap[actionKey]
+
+        val actionWrapper = object : AbstractAction() {
+            override fun actionPerformed(e: ActionEvent?) {
+                val table = this@addTabCreatesNewRowAction
+                // When we're in the last column of the last row, add a new row before calling the usual action.
+                if (table.selectionModel.leadSelectionIndex == table.rowCount - 1
+                        && table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1) {
+                    addEmptyRow()
+                }
+                action.actionPerformed(e)
+            }
+        }
+        // Map the new action to the TAB key.
+        actionMap.put(actionKey, actionWrapper)
+    }
 }

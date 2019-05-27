@@ -28,8 +28,9 @@ class TableCreationAddColumnDialog(private val tableModel: DefaultTableModel) {
             }
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
-                // TODO if table is currently empty, add one row to this new column.
                 tableModel.addColumn(columnNameField.text)
+                // If table is currently empty, add one row to this new column.
+                if (tableModel.columnCount == 1) tableModel.addRow(arrayOf(""))
             }
         }
     }
