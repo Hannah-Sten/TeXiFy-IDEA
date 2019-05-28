@@ -14,7 +14,7 @@ class InputPossiblePositionFilter : DocumentFilter() {
         val content = StringBuilder()
         content.append(doc.getText(0, doc.length))
         content.insert(offset, string)
-        if (content.toString().possiblePosition()) {
+        if (content.toString().toIntOrNull() == null) {
             super.insertString(fb, offset, string, attr)
         }
     }
@@ -24,7 +24,7 @@ class InputPossiblePositionFilter : DocumentFilter() {
         val content = StringBuilder()
         content.append(doc.getText(0, doc.length))
         content.replace(offset, offset + length, text)
-        if (content.toString().possiblePosition()) {
+        if (content.toString().toIntOrNull() != null) {
             super.replace(fb, offset, length, text, attrs)
         }
     }
@@ -41,18 +41,7 @@ class InputPossiblePositionFilter : DocumentFilter() {
     
     private fun String.isNumericOrEmpty(): Boolean {
         if (this.trim() == "") return true
-        return this.possiblePosition()
-    }
-}
-
-/**
- * this function verifies that a String is a possible position fo the label parameter
- */
-private fun String.possiblePosition(): Boolean {
-    return try {
-        val int = this.toInt()
-        (int >= 1)
-    } catch (ex : NumberFormatException) {
-        false
+        if (this.toIntOrNull() == null) return false
+        return true
     }
 }

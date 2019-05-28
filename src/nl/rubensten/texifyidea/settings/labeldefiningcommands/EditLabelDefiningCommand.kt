@@ -75,7 +75,7 @@ class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevComma
         if (commandName.text.trim().isEmpty()) {
             list.add(ValidationInfo("Name can not be empty"))
         }
-        if (!commandPosition.text.trim().possiblePosition()) {
+        if (commandPosition.text.trim().toIntOrNull() == null) {
             list.add(ValidationInfo("Position must be convertible to Int"))
         }
         return list
