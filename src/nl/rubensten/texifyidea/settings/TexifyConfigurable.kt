@@ -2,6 +2,9 @@ package nl.rubensten.texifyidea.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
 import nl.rubensten.texifyidea.settings.labeldefiningcommands.TexifyConfigurableLabelCommands
+import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBLabel
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JCheckBox
@@ -13,10 +16,11 @@ import javax.swing.JPanel
  */
 class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
 
-    private lateinit var automaticSoftWraps: JCheckBox
-    private lateinit var automaticSecondInlineMathSymbol: JCheckBox
-    private lateinit var automaticUpDownBracket: JCheckBox
-    private lateinit var automaticItemInItemize: JCheckBox
+    private lateinit var automaticSoftWraps: JBCheckBox
+    private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
+    private lateinit var automaticUpDownBracket: JBCheckBox
+    private lateinit var automaticItemInItemize: JBCheckBox
+    private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var labelDefiningCommands: TexifyConfigurableLabelCommands
 
     override fun getId() = "TexifyConfigurable"
@@ -34,14 +38,27 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
                 automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                 automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
+                automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands")
 
                 add(labelDefiningCommands.getTable())
             })
         }
     }
 
-    private fun JPanel.addCheckbox(message: String): JCheckBox {
-        val checkBox = JCheckBox(message)
+    /**
+     * Add the options for the smart quote substitution.
+     */
+    private fun JPanel.addSmartQuotesOptions(vararg values: String): ComboBox<String> {
+        val list = ComboBox(values)
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply{
+            add(JBLabel("Smart quote substitution: "))
+            add(list)
+        })
+        return list
+    }
+
+    private fun JPanel.addCheckbox(message: String): JBCheckBox {
+        val checkBox = JBCheckBox(message)
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(checkBox)
         })
@@ -54,6 +71,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || labelDefiningCommands.isModified()
+                || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
     }
 
     override fun apply() {
@@ -61,7 +79,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
-
+        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         labelDefiningCommands.apply()
     }
 
@@ -71,5 +89,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         labelDefiningCommands.reset()
+        automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
     }
 }

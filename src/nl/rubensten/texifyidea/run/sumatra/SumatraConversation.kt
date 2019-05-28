@@ -1,9 +1,10 @@
-package nl.rubensten.texifyidea.run
+package nl.rubensten.texifyidea.run.sumatra
 
 import com.intellij.openapi.util.SystemInfo
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.rubensten.texifyidea.TeXception
 import nl.rubensten.texifyidea.util.Log
+import java.io.IOException
 
 /**
  * Indicates whether SumatraPDF is installed and DDE communication is enabled.
@@ -36,7 +37,20 @@ private fun isSumatraInstalled(): Boolean {
     val firstLine = br.readLine() ?: return false
     br.close()
 
-    return !firstLine.startsWith("ERROR:")
+    val sumatraInRegistry = !firstLine.startsWith("ERROR:")
+
+    if (sumatraInRegistry) {
+        return true
+    }
+
+    // Try if Sumatra is in PATH
+    return try {
+        Runtime.getRuntime().exec("start SumatraPDF")
+        true
+    }
+    catch (e: IOException) {
+        false
+    }
 }
 
 /**
@@ -54,11 +68,8 @@ object SumatraConversation {
     private val conversation: DDEClientConversation?
 
     init {
-        conversation = if (!isSumatraAvailable) {
-            null
-        }
-        else try {
-            DDEClientConversation()
+        try {
+            conversation = DDEClientConversation()
         }
         catch (e: NoClassDefFoundError) {
             throw TeXception("Native library DLLs could not be found.", e)
@@ -66,15 +77,26 @@ object SumatraConversation {
 
     }
 
-    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false) {
+    /**
+     * Open a file in SumatraPDF, starting it if it is not running yet.
+     */
+    fun openFile(pdfFilePath: String, newWindow: Boolean = false, focus: Boolean = false, forceRefresh: Boolean = false, sumatraPath: String? = null) {
         try {
             execute("Open(\"$pdfFilePath\", ${newWindow.bit}, ${focus.bit}, ${forceRefresh.bit})")
         }
         catch (e: TeXception) {
-            Runtime.getRuntime().exec("cmd.exe /c start SumatraPDF -reuse-instance \"$pdfFilePath\"")
+            // In case the user provided a custom path to SumatraPDF, add it to the path before executing
+            val processBuilder = ProcessBuilder("cmd.exe", "/C", "start", "SumatraPDF", "-reuse-instance", pdfFilePath)
+            if (sumatraPath != null) {
+                processBuilder.environment()["Path"] = sumatraPath
+            }
+            processBuilder.start()
         }
     }
 
+    /**
+     * Execute forward search, highlighting a certain line in SumatraPDF.
+     */
     fun forwardSearch(pdfFilePath: String? = null, sourceFilePath: String, line: Int, newWindow: Boolean = false, focus: Boolean = false) {
         val pdfPath = if (pdfFilePath != null) "\"$pdfFilePath\", " else ""
         execute("ForwardSearch($pdfPath\"$sourceFilePath\", $line, 0, ${newWindow.bit}, ${focus.bit})")

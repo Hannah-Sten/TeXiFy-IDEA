@@ -9,10 +9,14 @@ plugins {
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id 'se.patrikerdes.use-latest-versions' version '0.2.9'
+
+    // Used to debug in a different IDE
+    id 'maven'
+    id 'de.undercouch.download' version '3.4.3'
 }
 
 group 'nl.rubensten'
-version '0.6.4'
+version '0.6.5'
 
 repositories {
     mavenCentral()
@@ -41,8 +45,6 @@ compileKotlin {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        apiVersion = "1.2"
-        languageVersion = "1.2"
     }
 }
 
@@ -53,8 +55,6 @@ compileTestKotlin {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        apiVersion = "1.2"
-        languageVersion = "1.2"
     }
 }
 
@@ -70,6 +70,13 @@ dependencies {
 
     // just in case, version number specified in buildscript is used by default
     compile "org.jetbrains.kotlin:kotlin-reflect"
+
+    // D-Bus Java bindings
+    compile "com.github.hypfvieh:dbus-java:3.0.1"
+    compile "org.slf4j:slf4j-simple:1.8.0-beta2"
+
+    // Kotlin coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"
 
     // Test dependencies
 
@@ -109,7 +116,35 @@ task zip(type: Zip) {
 
 }
 
+def pycharmVersion = '2019.1'
+
+// This task is used to debug the plugin in a different IDE, in this case Pycharm
+// Source: https://gist.github.com/thomas15v/716ea57261855bf61d8b6131be419c26
+task setupPycharm() {
+    if (!new File(".gradle/ide/pycharm-${pycharmVersion}").exists()){
+        download {
+            src "https://download.jetbrains.com/python/pycharm-professional-${pycharmVersion}.tar.gz"
+            dest '.gradle/downloads/py.tar.gz'
+        }
+        copy {
+            from tarTree(resources.gzip('.gradle/downloads/py.tar.gz'))
+            into '.gradle/ide'
+        }
+    }
+}
+
+// In order to debug with PyCharm, just add the -PusePycharm=true argument to your runIde run configuration.
+runIde {
+    if (project.hasProperty('usePycharm') && usePycharm == 'true') {
+        dependsOn(setupPycharm)
+    }
+}
+
 intellij {
+    if (project.hasProperty('usePycharm') && usePycharm == 'true') {
+        alternativeIdePath ".gradle/ide/pycharm-${pycharmVersion}"
+    }
+
     version '2019.1'
 }
 

@@ -175,6 +175,7 @@ object Magic {
          */
         @JvmField val environmentDefinitions = hashSetOf(
                 "\\newenvironment",
+                "\\newtheorem",
                 "\\NewDocumentEnvironment",
                 "\\ProvideDocumentEnvironment",
                 "\\DeclareDocumentEnvironment"
@@ -355,6 +356,14 @@ object Magic {
          * Matches a LaTeX command that is the start of an \if-\fi structure.
          */
         @JvmField val ifCommand = RegexPattern.compile("\\\\if[a-zA-Z@]*")!!
+
+        /**
+         * Matches the begin and end commands of the cases and split environments.
+         */
+        @JvmField val casesOrSplitCommands = Regex("((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
+                "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
+                "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
+                "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))")
     }
 
     /**
@@ -377,8 +386,16 @@ object Magic {
                 StyleFileType,
                 TikzFileType
         )
+
+        /**
+         * All file extensions that have to be deleted when clearing auxiliary files.
+         *
+         * This list is the union of @generated_exts in latexmk and the defined Auxiliary files in TeXWorks.
+         * (https://github.com/TeXworks/texworks/blob/9c8cc8b88505103cb8f43fe4105638c77c7e7303/res/resfiles/configuration/texworks-config.txt#L37).
+         */
+        @JvmField val auxiliaryFileTypes = arrayOf("aux", "bbl", "bcf", "brf", "fls", "idx", "ind", "lof", "lot", "nav", "out", "snm", "toc")
     }
-    
+
     /**
      * @author Ruben Schellekens
      */
@@ -411,7 +428,7 @@ object Magic {
                 "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
                 "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
-                "tikz" to TexifyIcons.LATEX_FILE
+                "tikz" to TexifyIcons.TIKZ_FILE
         )
     }
 }

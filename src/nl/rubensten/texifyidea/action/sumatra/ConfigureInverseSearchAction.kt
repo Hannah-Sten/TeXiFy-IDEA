@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.ui.DialogBuilder
-import nl.rubensten.texifyidea.run.isSumatraAvailable
+import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
@@ -14,13 +14,13 @@ import javax.swing.SwingConstants
 /**
  * Sets up inverse search integration with SumatraPDF.
  *
- * This action attempts to set the permanent inverse search command setting in SumatraPDF. This action is Windows-only.
+ * This action attempts to set the permanent inverse search (backward search) command setting in SumatraPDF. This action is Windows-only.
  *
  * @author Sten Wessel
  * @since b0.4
  */
 open class ConfigureInverseSearchAction : AnAction(
-        "ConfigureInverseSearch",
+        "_Configure Inverse Search",
         "Setup inverse search integration with SumatraPDF and TeXiFy IDEA.",
         null
 ) {
