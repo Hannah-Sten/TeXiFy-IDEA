@@ -71,7 +71,7 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
  * @receiver The file to analyse the file set of.
  * @return The found label commands.
  */
-fun PsiFile.findLabelingCommands(): Collection<LatexCommands> = findLabelingCommandsSequence().toList()
+fun PsiFile.findLabels(): Collection<PsiElement> = findLabelingCommandsSequence().toList()
 
 /**
  * Make a sequence of all commands that specify a label.
