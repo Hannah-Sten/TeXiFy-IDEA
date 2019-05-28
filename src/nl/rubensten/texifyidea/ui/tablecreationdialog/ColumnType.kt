@@ -1,0 +1,7 @@
+package nl.rubensten.texifyidea.ui.tablecreationdialog
+
+enum class ColumnType(val displayName: String) {
+    TEXT_COLUMN("Text"),
+    MATH_COLUMN("Math"),
+    NUMBERS_COLUMN("Numbers")
+}

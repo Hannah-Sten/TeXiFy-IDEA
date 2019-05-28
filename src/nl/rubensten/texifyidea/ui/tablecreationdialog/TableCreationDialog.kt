@@ -2,23 +2,35 @@ package nl.rubensten.texifyidea.ui.tablecreationdialog
 
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.table.JBTable
 import java.awt.event.ActionEvent
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
 
-class TableCreationDialog(var tableAsLatex: String? = "bloop",
-                          private val tableModel: DefaultTableModel = DefaultTableModel()) {
+class TableCreationDialog(var tableAsLatex: String? = "",
+                          private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
+                          private val tableModel: TableCreationTableModel = TableCreationTableModel()) {
     init {
         DialogBuilder().apply {
             setTitle("Table Creation Wizard")
 
             // Button to add another column.
             val addColumnButton = JButton("Add column")
-            addColumnButton.addActionListener { TableCreationAddColumnDialog(tableModel) }
+            addColumnButton.addActionListener { TableCreationAddColumnDialog(tableModel, columnTypes) }
 
 
             // The table.
-            val table = JTable(tableModel)
+            val table = JBTable(tableModel)
+            val decorator = ToolbarDecorator.createDecorator(table)
+                    .setAddAction { TableCreationAddColumnDialog(tableModel, columnTypes) }
+                    .setAddActionName("Add Column")
+                    .setRemoveAction { tableModel.removeColumn(table.selectedColumn) }
+                    .setRemoveActionName("Remove Column")
+                    .setEditAction {  }
+                    .setEditActionName("Edit Column Type")
+                    .createPanel()
+
             table.addTabCreatesNewRowAction()
 
             // Add all elements to the panel view.
@@ -26,6 +38,7 @@ class TableCreationDialog(var tableAsLatex: String? = "bloop",
             val panel = JPanel()
             panel.add(addColumnButton)
             panel.add(JScrollPane(table))
+            panel.add(decorator)
             setCenterPanel(panel)
 
             addOkAction()
@@ -34,7 +47,7 @@ class TableCreationDialog(var tableAsLatex: String? = "bloop",
             }
             if (show() == DialogWrapper.OK_EXIT_CODE) {
                 // TODO convert the table to latex
-                tableAsLatex = "tex table"
+                tableAsLatex = columnTypes.toString()
             }
         }
     }
