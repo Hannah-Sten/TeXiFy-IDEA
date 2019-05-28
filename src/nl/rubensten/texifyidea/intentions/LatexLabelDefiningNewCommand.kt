@@ -10,6 +10,7 @@ import nl.rubensten.texifyidea.settings.labeldefiningcommands.EditLabelDefiningC
 import nl.rubensten.texifyidea.util.*
 
 open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label defining command to list") {
+
     private val settings = TexifySettings.getInstance()
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
