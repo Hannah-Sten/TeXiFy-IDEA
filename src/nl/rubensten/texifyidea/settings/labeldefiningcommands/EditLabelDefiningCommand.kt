@@ -14,12 +14,17 @@ import javax.swing.text.PlainDocument
 /**
  * Window to enter the information about a label defining command.
  */
-class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevCommandStatus: Boolean) :
-        DialogWrapper(null, false) {
+class EditLabelDefiningCommand(
+        cmdName: String,
+        position: Int,
+        labelAnyPrevCommandStatus: Boolean
+) : DialogWrapper(null, false) {
     private val commandName = JTextField(cmdName, 25)
     private val commandPosition = JTextField("$position", 5)
-    private val labelAnyPrevCommand: JCheckBox = JCheckBox("Labels a previous command like \\section",
-            labelAnyPrevCommandStatus)
+    private val labelAnyPrevCommand = JCheckBox(
+            "Labels a previous command like \\section",
+            labelAnyPrevCommandStatus
+    )
 
     init {
         title = "Define command with label"
@@ -81,23 +86,14 @@ class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevComma
         return list
     }
 
-    /**
-     * return the name of the command
-     */
     fun getCommandName(): String {
         return commandName.text
     }
 
-    /**
-     * return the position of the label
-     */
     fun getCommandPosition(): Int {
         return commandPosition.text.toInt()
     }
 
-    /**
-     * return whether the command labels any previous command or not
-     */
     fun getLabelAnyPrevCommand(): Boolean {
         return labelAnyPrevCommand.isSelected
     }

@@ -95,7 +95,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         if (command.commandName == "\\label") {
             return
         }
-        val dialog = EditLabelDefiningCommand(command.commandName, command.position, command.labelPrevCmd)
+        val dialog = EditLabelDefiningCommand(command.commandName, command.position, command.labelsPreviousCommand)
         if (dialog.showAndGet()) {
             tableInfo.setValueAt(dialog.getCommandName(), row, 0)
             tableInfo.setValueAt(dialog.getCommandPosition(), row, 1)
@@ -163,7 +163,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
             tableInfo.removeRow(0)
         }
         settings.labelCommands.forEach { _, definingCommand ->
-            tableInfo.addRow(arrayOf(definingCommand.commandName, definingCommand.position, definingCommand.labelPrevCmd))
+            tableInfo.addRow(arrayOf(definingCommand.commandName, definingCommand.position, definingCommand.labelsPreviousCommand))
         }
         updateTableSize()
     }

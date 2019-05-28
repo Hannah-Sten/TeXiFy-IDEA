@@ -17,14 +17,14 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticSecondInlineMathSymbol: JCheckBox
     private lateinit var automaticUpDownBracket: JCheckBox
     private lateinit var automaticItemInItemize: JCheckBox
-    private lateinit var table: TexifyConfigurableLabelCommands
+    private lateinit var labelDefiningCommands: TexifyConfigurableLabelCommands
 
     override fun getId() = "TexifyConfigurable"
 
     override fun getDisplayName() = "TeXiFy"
 
     override fun createComponent(): JComponent? {
-        table = TexifyConfigurableLabelCommands(settings)
+        labelDefiningCommands = TexifyConfigurableLabelCommands(settings)
 
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(JPanel().apply {
@@ -35,7 +35,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                 automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
 
-                add(table.getTable())
+                add(labelDefiningCommands.getTable())
             })
         }
     }
@@ -53,7 +53,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
-                || table.isModified()
+                || labelDefiningCommands.isModified()
     }
 
     override fun apply() {
@@ -62,7 +62,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
 
-        table.apply()
+        labelDefiningCommands.apply()
     }
 
     override fun reset() {
@@ -70,6 +70,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
-        table.reset()
+        labelDefiningCommands.reset()
     }
 }

@@ -27,7 +27,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     /**
      * internal list which stores the commands data
      */
-    private val _labelCommands: HashMap<String, LabelingCommandInformation> =
+    private val labelCommandsInternal: HashMap<String, LabelingCommandInformation> =
             hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true))
 
     /**
@@ -35,7 +35,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
      */
     val labelCommands: Map<String, LabelingCommandInformation>
         get() {
-            return _labelCommands.mapKeys { it.key.addLeadingSlash() }
+            return labelCommandsInternal.mapKeys { it.key.addLeadingSlash() }
         }
 
     /**
@@ -44,10 +44,10 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
      */
     var labelCommandsAsString: Map<String, String>
         get() {
-            return _labelCommands.mapValues { it.value.toSerializableString() }
+            return labelCommandsInternal.mapValues { it.value.toSerializableString() }
         }
         set(value) {
-            value.forEach { key, info -> _labelCommands[key] = LabelingCommandInformation.fromString(info) }
+            value.forEach { (key, info) -> labelCommandsInternal[key] = LabelingCommandInformation.fromString(info) }
         }
 
     override fun getState() = this
@@ -57,15 +57,15 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     }
 
     fun addCommand(cmd: LabelingCommandInformation) {
-        _labelCommands[cmd.commandName] = cmd
+        labelCommandsInternal[cmd.commandName] = cmd
     }
 
     fun removeCommand(cmdName: String) {
-        _labelCommands.remove(cmdName)
+        labelCommandsInternal.remove(cmdName)
     }
 
     val labelAnyCommands: Map<String, LabelingCommandInformation>
-        get() = labelCommands.filter { it.value.labelPrevCmd }
+        get() = labelCommands.filter { it.value.labelsPreviousCommand }
 
     private fun String.addLeadingSlash(): String {
         return if (this[0] == '\\') this else "\\" + this
