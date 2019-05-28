@@ -92,7 +92,9 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         val commandName = newCommand.requiredParameter(0) ?: return
         // get the position of the label in new command, identified by the argument number of the first required parameter
         // of label command
-        val position = label.requiredParameter(0)?.replace("#", "")
+        val position = label
+                .requiredParameter(0)
+                ?.replace("#", "")
                 ?.toIntOrNull() ?: 1
         // check if any command before the label command increases an counter which could be labeled to set the checkbox
         // to a possible correct status

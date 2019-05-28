@@ -108,7 +108,11 @@ fun PsiFile.findBibtexItems(): Collection<PsiElement> {
     return (bibtex + bibitem)
 }
 
-fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this).asSequence()
+/**
+ * Finds all \\bibitem-commands in the document
+ */
+fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = LatexCommandsIndex
+        .getItemsInFileSet(this).asSequence()
         .filter { it.name == "\\bibitem" }
 
 /**
