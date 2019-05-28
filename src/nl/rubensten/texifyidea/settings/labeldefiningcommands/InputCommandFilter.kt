@@ -1,10 +1,10 @@
 package nl.rubensten.texifyidea.settings.labeldefiningcommands
 
-import java.lang.StringBuilder
 import javax.swing.text.AttributeSet
 import javax.swing.text.DocumentFilter
 
 class InputCommandFilter: DocumentFilter() {
+
     override fun insertString(fb: FilterBypass?, offset: Int, string: String?, attr: AttributeSet?) {
         val stringWithOutSpaces = string?.replace(" ", "")
         super.insertString(fb, offset, stringWithOutSpaces, attr)

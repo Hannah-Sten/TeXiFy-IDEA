@@ -12,12 +12,12 @@ import javax.swing.*
 import javax.swing.text.PlainDocument
 
 /**
- * window to enter the information about a label defining command
+ * Window to enter the information about a label defining command.
  */
 class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevCommandStatus: Boolean) :
         DialogWrapper(null, false) {
-    private val commandName: JTextField = JTextField(cmdName, 25)
-    private val commandPosition: JTextField = JTextField("$position", 5)
+    private val commandName = JTextField(cmdName, 25)
+    private val commandPosition = JTextField("$position", 5)
     private val labelAnyPrevCommand: JCheckBox = JCheckBox("Labels a previous command like \\section",
             labelAnyPrevCommandStatus)
 
@@ -31,7 +31,7 @@ class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevComma
     override fun createCenterPanel(): JComponent? = null
 
     /**
-     * create the layout of the window
+     * Create the layout of the window.
      */
     override fun createNorthPanel(): JComponent? {
         val remoteComponent = JPanel(GridBagLayout())
@@ -68,7 +68,7 @@ class EditLabelDefiningCommand(cmdName: String, position: Int, labelAnyPrevComma
     }
 
     /**
-     * validate the input so it is not empty and the Int value is in possible range
+     * Validate the input so it is not empty and the Int value is in possible range.
      */
     override fun doValidateAll(): MutableList<ValidationInfo> {
         val list = mutableListOf<ValidationInfo>()

@@ -12,6 +12,7 @@ import javax.swing.JPanel
  * @author Ruben Schellekens, Sten Wessel
  */
 class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
+
     private lateinit var automaticSoftWraps: JCheckBox
     private lateinit var automaticSecondInlineMathSymbol: JCheckBox
     private lateinit var automaticUpDownBracket: JCheckBox

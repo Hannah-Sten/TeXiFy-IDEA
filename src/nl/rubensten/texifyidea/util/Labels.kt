@@ -78,7 +78,7 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
 fun PsiFile.findLabelingCommands(): Collection<LatexCommands> = findLabelingCommandsSequence().toList()
 
 /**
- * make a sequence of all commands which specify an label
+ * Make a sequence of all commands that specify a label.
  */
 fun PsiFile.findLabelingCommandsSequence(): Sequence<LatexCommands> {
     val commandNames = TexifySettings.getInstance().labelCommands

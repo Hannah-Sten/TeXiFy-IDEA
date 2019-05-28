@@ -12,7 +12,7 @@ import javax.swing.table.TableModel
 class LabelCommandSettingsTable(model: TableModel, private var listener: ActionListener) : JBTable(model) {
 
     /**
-     * create empty text and define a clickable link to add new command
+     * Create empty text and define a clickable link to add a new command.
      */
     override fun getEmptyText(): StatusText {
         val test = object: StatusText(this) {

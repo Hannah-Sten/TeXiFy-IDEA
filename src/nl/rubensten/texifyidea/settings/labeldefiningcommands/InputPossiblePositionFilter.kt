@@ -7,7 +7,8 @@ import javax.swing.text.DocumentFilter
 /**
  * This class is used to prevent wrong input for the position of the label parameter
  */
-class InputPossiblePositionFilter: DocumentFilter() {
+class InputPossiblePositionFilter : DocumentFilter() {
+
     override fun insertString(fb: FilterBypass?, offset: Int, string: String?, attr: AttributeSet?) {
         val doc = fb?.document ?: return
         val content = StringBuilder()
@@ -47,7 +48,7 @@ class InputPossiblePositionFilter: DocumentFilter() {
 /**
  * this function verifies that a String is a possible position fo the label parameter
  */
-fun String.possiblePosition(): Boolean {
+private fun String.possiblePosition(): Boolean {
     return try {
         val int = this.toInt()
         (int >= 1)

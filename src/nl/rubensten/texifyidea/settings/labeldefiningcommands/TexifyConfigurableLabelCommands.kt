@@ -16,8 +16,9 @@ import javax.swing.table.TableCellRenderer
  * Excluded table for the settings page to get smaller and more meaningful classes
  */
 class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
+
     private var table: JBTable
-    private val tableInfo: LabelCommandSettingsTableModel = LabelCommandSettingsTableModel()
+    private val tableInfo = LabelCommandSettingsTableModel()
     private val tablePanel = JPanel(GridBagLayout())
 
     companion object {

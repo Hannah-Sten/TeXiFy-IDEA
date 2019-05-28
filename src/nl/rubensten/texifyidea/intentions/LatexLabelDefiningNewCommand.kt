@@ -9,7 +9,7 @@ import nl.rubensten.texifyidea.settings.TexifySettings
 import nl.rubensten.texifyidea.settings.labeldefiningcommands.EditLabelDefiningCommand
 import nl.rubensten.texifyidea.util.*
 
-open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label defining command to list") {
+open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label defining command to settings") {
 
     private val settings = TexifySettings.getInstance()
 
