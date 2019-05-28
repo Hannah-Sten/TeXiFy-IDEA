@@ -23,9 +23,8 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         var selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
 
         // get parent element
-        val parentElement = selected.parent
-        val parent = parentElement as? LatexCommands
-                ?: parentElement.parentOfType(LatexCommands::class)
+        val parent = selected.parent as? LatexCommands
+                ?: selected.parent.parentOfType(LatexCommands::class)
 
         // when element is \label and parent is \newcommand check if command is already in list
         if (selected.name == "\\label" && parent?.name == "\\newcommand") {
@@ -64,9 +63,8 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         val selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return
 
         // get parent element
-        val parentElement = selected.parent
-        val parent = parentElement as? LatexCommands
-                ?: parentElement.parentOfType(LatexCommands::class)
+        val parent = selected.parent as? LatexCommands
+                ?: selected.parent.parentOfType(LatexCommands::class)
 
         val label: LatexCommands
         val newCommand: LatexCommands

@@ -38,10 +38,6 @@ fun PsiFile.findAllLabelsInFileSet(): Sequence<String> {
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-//fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String> = BibtexIdIndex.getIndexedIdsInFileSet(this)
-//        .asSequence()
-//        .map { it.text.substringEnd(1) }
-
 fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String>  = findBibtexItems().asSequence()
             .mapNotNull {
                 when (it) {

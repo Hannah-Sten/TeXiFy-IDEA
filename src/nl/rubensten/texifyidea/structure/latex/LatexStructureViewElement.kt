@@ -209,10 +209,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
         val labelingCommands = TexifySettings.getInstance().labelCommands
         commands.filter { labelingCommands.containsKey(it.commandToken.text) }
+                .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
                 .forEach {
-                    val element = LatexStructureViewCommandElement.newCommand(it)
-                            ?: return@forEach
-                    treeElements.add(element)
+                    treeElements.add(it)
                 }
     }
 
