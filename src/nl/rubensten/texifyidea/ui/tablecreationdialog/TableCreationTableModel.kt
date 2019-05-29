@@ -16,4 +16,8 @@ class TableCreationTableModel : DefaultTableModel() {
         // Let the table now that its structure has changed.
         fireTableStructureChanged()
     }
+
+    fun setHeaderName(name: String, column: Int) {
+        columnIdentifiers[column] = name
+    }
 }

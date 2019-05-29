@@ -6,28 +6,61 @@ import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
 import java.awt.event.ActionEvent
 import javax.swing.*
-import javax.swing.table.DefaultTableModel
 
 class TableCreationDialog(var tableAsLatex: String? = "",
                           private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
                           private val tableModel: TableCreationTableModel = TableCreationTableModel()) {
+
+    /**
+     * Add a table column.
+     *
+     * @param title of the column.
+     * @param typedColumnIndex is the column type of the column.
+     */
+    private val addColumnFun = fun(title: String, typedColumnIndex: Int, _: Int) {
+        // Add the column to the table.
+        tableModel.addColumn(title)
+        // Add the column type to the list of column types.
+        val selectedColumnType = ColumnType.values()[typedColumnIndex]
+        columnTypes.add(selectedColumnType)
+        // If table is currently empty, add one row to this new column.
+        if (tableModel.columnCount == 1) tableModel.addRow(arrayOf(""))
+    }
+
+    /**
+     * Edit the table column, i.e., udpate the header title and the column type.
+     *
+     * @param title is the new title of the header.
+     * @param typedColumnIndex is the index of the column type.
+     * @param columnIndex is the index of the edited column in the table, starting at 0.
+     */
+    private val editColumnFun = fun(title: String, typedColumnIndex: Int, columnIndex: Int) {
+        tableModel.setHeaderName(title, columnIndex)
+        // Edit the column type of the edited column.
+        columnTypes[columnIndex] = ColumnType.values()[typedColumnIndex]
+        tableModel.fireTableStructureChanged()
+    }
+
     init {
         DialogBuilder().apply {
             setTitle("Table Creation Wizard")
 
-            // Button to add another column.
-            val addColumnButton = JButton("Add column")
-            addColumnButton.addActionListener { TableCreationAddColumnDialog(tableModel, columnTypes) }
-
-
             // The table.
             val table = JBTable(tableModel)
             val decorator = ToolbarDecorator.createDecorator(table)
-                    .setAddAction { TableCreationAddColumnDialog(tableModel, columnTypes) }
+                    .setAddAction {
+                        TableCreationEditColumnDialog(addColumnFun, tableModel.columnCount)
+                    }
                     .setAddActionName("Add Column")
                     .setRemoveAction { tableModel.removeColumn(table.selectedColumn) }
                     .setRemoveActionName("Remove Column")
-                    .setEditAction {  }
+                    .setEditAction {
+                        TableCreationEditColumnDialog(
+                                editColumnFun,
+                                table.selectedColumn,
+                                table.getColumnName(table.selectedColumn),
+                                columnTypes[table.selectedColumn])
+                    }
                     .setEditActionName("Edit Column Type")
                     .createPanel()
 
@@ -36,7 +69,6 @@ class TableCreationDialog(var tableAsLatex: String? = "",
             // Add all elements to the panel view.
             // TODO beautify gui
             val panel = JPanel()
-            panel.add(addColumnButton)
             panel.add(JScrollPane(table))
             panel.add(decorator)
             setCenterPanel(panel)
