@@ -28,8 +28,10 @@ object NavigationItemUtil {
                 return GoToSymbolProvider.BaseNavigationItem(psiElement,
                         text,
                         if (psiElement.name in Magic.Command.labels ||
-                                TexifySettings.getInstance().labelCommands.containsKey(psiElement.name))
-                            TexifyIcons.DOT_LABEL else TexifyIcons.DOT_BIB
+                                TexifySettings.getInstance().labelCommands.containsKey(psiElement.name)) {
+                            TexifyIcons.DOT_LABEL
+                        }
+                        else TexifyIcons.DOT_BIB
                 )
             }
             is BibtexId -> GoToSymbolProvider.BaseNavigationItem(psiElement,

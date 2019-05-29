@@ -59,9 +59,7 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
         if (it is LatexCommands) {
             commandNames.containsKey(it.name)
         }
-        else {
-            true
-        }
+        else true
     }
 }
 
