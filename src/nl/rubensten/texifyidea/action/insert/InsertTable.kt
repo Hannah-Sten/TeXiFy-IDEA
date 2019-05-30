@@ -4,4 +4,4 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.action.InsertEditorAction
 
 class InsertTable(before: String? = "", after: String? = "") :
-        InsertEditorAction("Table", TexifyIcons.TABLE_OF_CONTENTS_FILE, before, after)
+        InsertEditorAction("Table", TexifyIcons.STATS, before, after)

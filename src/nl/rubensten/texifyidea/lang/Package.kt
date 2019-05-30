@@ -22,6 +22,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val MATHABX = Package("mathabx")
         @JvmField val ULEM = Package("ulem")
         @JvmField val HYPERREF = Package("hyperref")
+        @JvmField val BOOKTABS = Package("booktabs")
         @JvmField val LATEXSYMB = Package("latexsymb")
         @JvmField val COMMENT = Package("comment")
         @JvmField val BIBLATEX = Package("biblatex")
