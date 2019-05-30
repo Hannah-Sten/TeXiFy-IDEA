@@ -150,7 +150,7 @@
             <add-to-group group-id="EditSmartGroup" anchor="first"/>
 
             <!-- Table Creation Wizard-->
-            <action class="nl.rubensten.texifyidea.action.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
+            <action class="nl.rubensten.texifyidea.action.tablewizard.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
                     description="Shows popup to create and insert a table."/>
 
             <!-- Toggle Star -->

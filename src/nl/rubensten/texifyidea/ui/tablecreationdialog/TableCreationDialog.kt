@@ -7,17 +7,13 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
-import javafx.scene.shape.Box
-import java.awt.FlowLayout
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.GridLayout
+import nl.rubensten.texifyidea.action.tablewizard.TableInformation
 import java.awt.event.ActionEvent
 import javax.swing.*
 
-class TableCreationDialog(var tableAsLatex: String? = "",
-                          private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
-                          private val tableModel: TableCreationTableModel = TableCreationTableModel()) {
+class TableCreationDialog(private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
+                          private val tableModel: TableCreationTableModel = TableCreationTableModel(),
+                          var tableInformation: TableInformation = TableInformation(tableModel, columnTypes, "", "")) {
 
     /**
      * Add a table column.
@@ -109,7 +105,7 @@ class TableCreationDialog(var tableAsLatex: String? = "",
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
                 // TODO convert the table to latex
-                tableAsLatex = columnTypes.toString()
+                tableInformation = TableInformation(tableModel, columnTypes, caption.text, reference.text)
             }
         }
     }

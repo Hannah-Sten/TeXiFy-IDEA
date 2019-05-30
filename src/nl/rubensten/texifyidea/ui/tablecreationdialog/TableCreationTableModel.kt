@@ -20,4 +20,6 @@ class TableCreationTableModel : DefaultTableModel() {
     fun setHeaderName(name: String, column: Int) {
         columnIdentifiers[column] = name
     }
+
+    fun getColumnNames() = columnIdentifiers
 }
