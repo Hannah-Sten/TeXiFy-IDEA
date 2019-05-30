@@ -3,7 +3,15 @@ package nl.rubensten.texifyidea.ui.tablecreationdialog
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBTextArea
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
+import javafx.scene.shape.Box
+import java.awt.FlowLayout
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.GridLayout
 import java.awt.event.ActionEvent
 import javax.swing.*
 
@@ -47,6 +55,7 @@ class TableCreationDialog(var tableAsLatex: String? = "",
 
             // The table.
             val table = JBTable(tableModel)
+            // Decorator that contains the add/remove/edit buttons.
             val decorator = ToolbarDecorator.createDecorator(table)
                     .setAddAction {
                         TableCreationEditColumnDialog(addColumnFun, tableModel.columnCount)
@@ -66,17 +75,38 @@ class TableCreationDialog(var tableAsLatex: String? = "",
 
             table.addTabCreatesNewRowAction()
 
+            val caption = JBTextArea(5, 50)
+            val captionLabel = JBLabel("Caption:")
+            captionLabel.labelFor = caption
+
+            val reference = JBTextField("tab:")
+            val referenceLabel = JBLabel("Label:")
+            referenceLabel.labelFor = reference
+
             // Add all elements to the panel view.
             // TODO beautify gui
             val panel = JPanel()
-            panel.add(JScrollPane(table))
-            panel.add(decorator)
+            panel.apply {
+                layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                val tablePanel = JPanel()
+                tablePanel.apply {
+                    add(JScrollPane(table))
+                    add(decorator)
+                }
+                add(tablePanel)
+                add(captionLabel)
+                add(caption)
+                add(referenceLabel)
+                add(reference)
+            }
             setCenterPanel(panel)
 
             addOkAction()
             setOkOperation {
                 dialogWrapper.close(0)
             }
+
+
             if (show() == DialogWrapper.OK_EXIT_CODE) {
                 // TODO convert the table to latex
                 tableAsLatex = columnTypes.toString()
