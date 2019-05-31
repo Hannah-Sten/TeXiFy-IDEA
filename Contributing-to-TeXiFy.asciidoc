@@ -1,0 +1,12 @@
+See https://github.com/Ruben-Sten/TeXiFy-IDEA/blob/master/CONTRIBUTING.md for the general contributing guide.
+
+== Debugging performance issues
+
+If you do not have a favourite profiler yet, you can use VisualVM. Install it using your package manager or go to https://visualvm.github.io/.
+
+* First, just run TeXiFy like usual.
+* Start VisualVM.
+* In the Applications panel on the left, identify the instance of IntelliJ where TeXiFy is running, probably it is named Idea. Right-click on it and open.
+* Go to the Sampler tab.
+* Click Settings, and click Profile only packages. Specify `nl.rubensten.**` or a specific class you want to filter on.
+* Click CPU to start profiling, you can take a Snapshot to view and save results. Note that you may have to click a few more levels open to see the actual methods.
