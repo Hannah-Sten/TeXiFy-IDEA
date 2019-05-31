@@ -1,6 +1,7 @@
 :experimental:
 
 === [[table-creation-wizard]]Table Creation Wizard
+_Since b0.6.6_
 
 menu:Edit[LaTeX > Table Creation Wizard]
 
