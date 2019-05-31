@@ -50,4 +50,5 @@ bibtex is the default compiler.
 
 === biber
 
+To use biber, install the biber latex package.
 biber is an improvement over bibtex and can be used with the biblatex package.
