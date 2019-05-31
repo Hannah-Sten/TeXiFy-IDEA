@@ -1,6 +1,22 @@
 :experimental:
 
-==== [[clear-aux-files]]Clear Auxiliary Files
+=== [[table-creation-wizard]]Table Creation Wizard
+
+menu:Edit[LaTeX > Table Creation Wizard]
+
+Displays a dialog with a table creation wizard with a table, caption, and label. Click the plus to add a column, the
+minus to remove the column of the currently selected cell, and the pencil to edit this column.
+
+Each column has a name, and a type.
+The available column types are:
+
+- Text: This is normal text, aligned left.
+- Math: Use this to display math symbols in your table. All entries in this column will be enclosed in `$..$` when generating
+LaTeX.
+- Numbers: As per convention, numbers are aligned on the right.
+
+
+=== [[clear-aux-files]]Clear Auxiliary Files
 
 menu:Tools[LaTeX > Clear Auxiliary Files]
 

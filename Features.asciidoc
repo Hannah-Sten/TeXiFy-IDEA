@@ -114,6 +114,7 @@ toc::[]
 == Utilities
 * Word counting tool
 * Customizable file templates for .tex, .sty, .cls and .bib files
+* link:++Menu-entries#table-creation-wizard++[Table Creation Wizard]
 * link:++Menu-entries#clear-aux-files++[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
 * File creation dialog
@@ -237,6 +238,8 @@ menu:Edit[LaTeX > Sectioning]:: Insert sectioning commands like `\part` or `\sub
 
 menu:Edit[LaTeX > Font Style]:: Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
 
+menu:Edit[LaTeX > link:Menu-entries#table-creation-wizard[Table Creation Wizard]]:: Displays a table creation wizard that generates a LaTeX table.
+
 // todo link to description pages for the next entries
 menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
 
@@ -246,7 +249,7 @@ menu:Tools[LaTeX > Equation Preview]:: Preview equations.
 
 menu:Tools[LaTeX > TikZ Preview]:: Preview TikZ pictures.
 
-menu:Tools[LaTeX > link:Menu-ntries#clear-aux-files[Clear Auxiliary Files]]:: Clear the generated auxiliary files.
+menu:Tools[LaTeX > link:Menu-entries#clear-aux-files[Clear Auxiliary Files]]:: Clear the generated auxiliary files.
 
 menu:Tools[LaTeX > SumatraPDF]:: (Windows only) Forward search and configuration of inverse search
 
