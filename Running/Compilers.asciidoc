@@ -12,7 +12,7 @@ LuaLaTeX has the advantage that you can use Lua (a programming language) in your
 
 === Latexmk
 
-To use latexmk, install the `latexmk` package.
+To use latexmk, install the `latexmk` package. You also need to install Perl, for example on Windows using Strawberry Perl.
 The main advantage of latexmk is that it compiles just as much times as needed, and handles bibtex automatically.
 It uses pdflatex by default, but you can use an other compiler as well.
 
