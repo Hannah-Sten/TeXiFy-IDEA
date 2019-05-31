@@ -15,12 +15,15 @@ import javax.swing.JPanel
  * @param columnName The name of the column that is being edited. Default is the empty string, the title of a column that does
  *          not yet exist.
  * @param columnType The [ColumnType] of the column that is being edited. Default is a text column.
+ *
+ * @author Abby Berkers
  */
 class TableCreationEditColumnDialog(
         private val onOkFunction: (String, Int, Int) -> Unit,
         private val editingColumn: Int,
         private val columnName: String = "",
         private val columnType: ColumnType = ColumnType.TEXT_COLUMN) {
+
     init {
         DialogBuilder().apply {
             // Text field for the name of the column, with the old name of the editing column filled in.

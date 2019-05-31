@@ -9,13 +9,15 @@ import com.intellij.openapi.fileEditor.TextEditor
 import nl.rubensten.texifyidea.action.insert.InsertTable
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.ui.tablecreationdialog.ColumnType
-import nl.rubensten.texifyidea.ui.tablecreationdialog.TableCreationDialog
+import nl.rubensten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
 import nl.rubensten.texifyidea.util.*
 import java.util.*
 
 /**
  * Action that shows a dialog with a table creation wizard, and inserts the table as latex at the location of the
  * cursor when clicking OK.
+ *
+ * @author Abby Berkers
  */
 class LatexTableWizardAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -27,17 +29,26 @@ class LatexTableWizardAction : AnAction() {
 
         // Get the indentation from the current line.
         val indent = document.lineIndentation(document.getLineNumber(editor.editor.caretOffset()))
-        val tableTextToInsert = convertTableToLatex(TableCreationDialog().tableInformation, indent)
-        // Use an insert action to insert the table.
-        InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
 
-        // Insert the booktabs package.
-        WriteCommandAction.runWriteCommandAction(project,
-                "Insert table",
-                "LaTeX",
-                Runnable { file!!.psiFile(project)!!.insertUsepackage(Package.BOOKTABS) },
-                file!!.psiFile(project)
-        )
+        // Create the dialog.
+        val dialogWrapper = TableCreationDialogWrapper()
+        // If the user pressed OK, do stuff.
+        if (dialogWrapper.showAndGet()) {
+
+            // Get the table information from the dialog, and convert it to latex.
+            val tableTextToInsert = convertTableToLatex(dialogWrapper.tableInformation, indent)
+
+            // Use an insert action to insert the table.
+            InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
+
+            // Insert the booktabs package.
+            WriteCommandAction.runWriteCommandAction(project,
+                    "Insert table",
+                    "LaTeX",
+                    Runnable { file!!.psiFile(project)!!.insertUsepackage(Package.BOOKTABS) },
+                    file!!.psiFile(project)
+            )
+        }
 
     }
 
