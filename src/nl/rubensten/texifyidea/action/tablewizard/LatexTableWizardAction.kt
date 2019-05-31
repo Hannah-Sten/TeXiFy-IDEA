@@ -32,7 +32,12 @@ class LatexTableWizardAction : AnAction() {
         InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
 
         // Insert the booktabs package.
-        WriteCommandAction.runWriteCommandAction(project) { file!!.psiFile(project)!!.insertUsepackage(Package.BOOKTABS) }
+        WriteCommandAction.runWriteCommandAction(project,
+                "Insert table",
+                "LaTeX",
+                Runnable { file!!.psiFile(project)!!.insertUsepackage(Package.BOOKTABS) },
+                file!!.psiFile(project)
+        )
 
     }
 

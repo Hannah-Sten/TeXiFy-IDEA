@@ -4,12 +4,13 @@ import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
 import nl.rubensten.texifyidea.action.tablewizard.TableInformation
+import java.awt.*
 import java.awt.event.ActionEvent
 import javax.swing.*
+import javax.swing.border.EmptyBorder
 
 class TableCreationDialog(private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
                           private val tableModel: TableCreationTableModel = TableCreationTableModel(),
@@ -71,7 +72,7 @@ class TableCreationDialog(private val columnTypes: MutableList<ColumnType> = emp
 
             table.addTabCreatesNewRowAction()
 
-            val caption = JBTextArea(5, 50)
+            val caption = JBTextField()
             val captionLabel = JBLabel("Caption:")
             captionLabel.labelFor = caption
 
@@ -80,20 +81,45 @@ class TableCreationDialog(private val columnTypes: MutableList<ColumnType> = emp
             referenceLabel.labelFor = reference
 
             // Add all elements to the panel view.
-            // TODO beautify gui
             val panel = JPanel()
             panel.apply {
+                // Add some air around the elements.
+                border = EmptyBorder(8, 8, 8, 8)
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+                // Create a panel for the table and its decorator.
                 val tablePanel = JPanel()
                 tablePanel.apply {
-                    add(JScrollPane(table))
-                    add(decorator)
+                    layout = BorderLayout()
+                    add(JScrollPane(table), BorderLayout.WEST)
+                    add(decorator, BorderLayout.EAST)
                 }
+
+                // Create a panel for the caption box and its label.
+                val captionPanel = JPanel()
+                captionPanel.apply {
+                    layout = BoxLayout(this, BoxLayout.X_AXIS)
+                    captionLabel.preferredSize = Dimension(80, captionLabel.height)
+                    add(captionLabel)
+                    add(caption)
+                }
+
+                // Create a panel for the label/reference box and its label.
+                val referencePanel = JPanel()
+                referencePanel.apply {
+                    layout = BoxLayout(this, BoxLayout.X_AXIS)
+                    referenceLabel.preferredSize = Dimension(80, referenceLabel.height)
+                    add(referenceLabel)
+                    add(reference)
+                }
+
+                // Actually add all the panels to the main panel.
                 add(tablePanel)
-                add(captionLabel)
-                add(caption)
-                add(referenceLabel)
-                add(reference)
+                // Add some air between components.
+                add(Box.createRigidArea(Dimension(0, 8)))
+                add(captionPanel)
+                add(Box.createRigidArea(Dimension(0, 8)))
+                add(referencePanel)
             }
             setCenterPanel(panel)
 
@@ -104,18 +130,9 @@ class TableCreationDialog(private val columnTypes: MutableList<ColumnType> = emp
 
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
-                // TODO convert the table to latex
                 tableInformation = TableInformation(tableModel, columnTypes, caption.text, reference.text)
             }
         }
-    }
-
-    /**
-     * Adds an empty row to the table.
-     */
-    private fun addEmptyRow() {
-        val emptyRow = (0 until tableModel.columnCount).map { "" }.toTypedArray()
-        tableModel.addRow(emptyRow)
     }
 
     /**
@@ -135,7 +152,7 @@ class TableCreationDialog(private val columnTypes: MutableList<ColumnType> = emp
                 // When we're in the last column of the last row, add a new row before calling the usual action.
                 if (table.selectionModel.leadSelectionIndex == table.rowCount - 1
                         && table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1) {
-                    addEmptyRow()
+                    tableModel.addEmptyRow()
                 }
                 action.actionPerformed(e)
             }
