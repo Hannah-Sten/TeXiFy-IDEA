@@ -9,6 +9,7 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.TeXception
@@ -55,10 +56,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 this.mainFile = mainFile
                 // Check if the aux, out, or src folder should be used as bib working dir.
                 when {
-                    runConfig.hasAuxiliaryDirectories() -> {
+                    runConfig.hasAuxiliaryDirectories -> {
                         this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
                     }
-                    runConfig.hasOutputDirectories() -> {
+                    runConfig.hasOutputDirectories -> {
                         this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
                     }
                     else -> {
@@ -73,13 +74,57 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             return handler
         }
 
-        // Open Sumatra after compilation & execute inverse search.
-        if (runConfig.sumatraPath != null || isSumatraAvailable) {
-            SumatraForwardSearch().execute(handler, runConfig, environment)
+        // Do not open the pdf viewer when this is not the last run config in the chain
+        if (!runConfig.isLastRunConfig) {
+            return handler
         }
 
-        if(isEvinceAvailable()) {
+        // First check if the user specified a custom viewer, if not then try other supported viewers
+        if (!runConfig.viewerCommand.isNullOrEmpty()) {
+
+            // Split user command on spaces, then replace {pdf} if needed?
+            val commandString = runConfig.viewerCommand!!
+
+            // Split on spaces
+            val commandList = commandString.split(" ")
+
+            // Replace placeholder
+            var containsPlaceholder = false
+            val mappedList = commandList.map {
+                if (it.contains("{pdf}")) {
+                    containsPlaceholder = true
+                    val replacement: String = it.replace("{pdf}", runConfig.outputFilePath)
+                    replacement
+                }
+                else {
+                    it
+                }
+            }.toMutableList()
+
+            // If no placeholder was used, append path to the command
+            if (!containsPlaceholder) {
+                mappedList += runConfig.outputFilePath
+            }
+
+            handler.addProcessListener(OpenPdfViewerListener(mappedList.toTypedArray()))
+        }
+        else if (runConfig.sumatraPath != null || isSumatraAvailable) {
+            // Open Sumatra after compilation & execute inverse search.
+            SumatraForwardSearch().execute(handler, runConfig, environment)
+        }
+        else if(isEvinceAvailable()) {
             EvinceForwardSearch().execute(runConfig, environment)
+        }
+        else if (SystemInfo.isMac) {
+            // Open default system viewer, source: https://ss64.com/osx/open.html
+            val commandList = arrayListOf("open", runConfig.outputFilePath)
+            // Fail silently, otherwise users who have set up something themselves get an exception every time when this command fails
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
+        }
+        else if (SystemInfo.isLinux) {
+            // Open default system viewer using xdg-open, since this is available in almost all desktop environments
+            val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
         }
 
         return handler
