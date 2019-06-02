@@ -41,12 +41,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
         // checking for bibliography commands
-        // todo only create new if not exists
-        if (runConfig.psiFile?.hasBibliography() == true) {
-            runConfig.generateBibRunConfig(BibliographyCompiler.BIBTEX)
-        }
-        else if (runConfig.psiFile?.usesBiber() == true) {
-            runConfig.generateBibRunConfig(BibliographyCompiler.BIBER)
+        if (runConfig.bibRunConfig == null) {
+            if (runConfig.psiFile?.hasBibliography() == true) {
+                runConfig.generateBibRunConfig(BibliographyCompiler.BIBTEX)
+            } else if (runConfig.psiFile?.usesBiber() == true) {
+                runConfig.generateBibRunConfig(BibliographyCompiler.BIBER)
+            }
         }
 
         createOutDirs(mainFile)
