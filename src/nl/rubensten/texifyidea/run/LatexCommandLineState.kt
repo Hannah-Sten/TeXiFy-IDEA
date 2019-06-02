@@ -12,17 +12,12 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.TeXception
-import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.run.evince.EvinceForwardSearch
 import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
-import nl.rubensten.texifyidea.run.sumatra.OpenSumatraListener
-import nl.rubensten.texifyidea.run.sumatra.SumatraConversation
 import nl.rubensten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.rubensten.texifyidea.util.*
-import org.jetbrains.concurrency.runAsync
 import java.io.File
 
 /**
@@ -44,7 +39,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (runConfig.bibRunConfig == null) {
             if (runConfig.psiFile?.hasBibliography() == true) {
                 runConfig.generateBibRunConfig(BibliographyCompiler.BIBTEX)
-            } else if (runConfig.psiFile?.usesBiber() == true) {
+            }
+            else if (runConfig.psiFile?.usesBiber() == true) {
                 runConfig.generateBibRunConfig(BibliographyCompiler.BIBER)
             }
         }
