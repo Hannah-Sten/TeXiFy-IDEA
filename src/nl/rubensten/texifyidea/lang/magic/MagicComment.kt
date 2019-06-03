@@ -58,10 +58,14 @@ abstract class MagicComment<Key, Value> {
 
     /**
      * Converts the magic comment to the lines that the MagicComment would represent in a magic comment code block.
-     * Does not include the magic comment prefix.
+     * Does not include the magic comment prefix and each line has no trailing or leading whitespace.
      */
-    fun toCommentString(): List<String> {
-        return emptyList()
+    fun toCommentString(): List<String> = ArrayList<String>().apply {
+        keyValueStore.entries.forEach { (key, values) ->
+            values.forEach { value ->
+                add("$key = $value")
+            }
+        }
     }
 
     /**
