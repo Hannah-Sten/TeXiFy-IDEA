@@ -41,6 +41,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
             return Result.CONTINUE
         }
 
+        // Only insert when a valid symbol has been typed.
+        val afterSymbol = c.toString()
+        if (!insertOnly.matches(afterSymbol)) {
+            return Result.CONTINUE
+        }
+
         // Find selected element.
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset - 1) ?: return Result.CONTINUE
@@ -49,12 +55,6 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         val parent = element.parentOfType(LatexCommands::class)
         when (parent?.name) {
             "\\label", "\\bibitem" -> return Result.CONTINUE
-        }
-
-        // Only insert when a valid symbol has been typed.
-        val afterSymbol = c.toString()
-        if (!insertOnly.matches(afterSymbol)) {
-            return Result.CONTINUE
         }
 
         // Insert squiggly brackets.
