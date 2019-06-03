@@ -57,6 +57,14 @@ abstract class MagicComment<Key, Value> {
     fun size() = keyValueStore.size
 
     /**
+     * Converts the magic comment to the lines that the MagicComment would represent in a magic comment code block.
+     * Does not include the magic comment prefix.
+     */
+    fun toCommentString(): List<String> {
+        return emptyList()
+    }
+
+    /**
      * @see [containsKey]
      */
     operator fun contains(key: MagicKey<Key>) = containsKey(key)

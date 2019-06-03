@@ -36,7 +36,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
         // Collects the value of a key-value pair.
         var contentBuffer = StringBuilder()
 
-        /** Adds the current key with convents to the magic comment. Also resets the key and content. */
+        /** Adds the current key with converts to the magic comment. Also resets the key and content. */
         fun pushKeyValuePair() {
             if (key == null) return
             addValue(key!!.asKey(), contentBuffer.toString().trim())
