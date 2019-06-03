@@ -12,6 +12,7 @@ class MagicCommentTest {
     @Test
     fun toCommentString() {
         val magicCommentSource = """
+            %! single
             %! info = Some text
             %!    TeX with overflow to
             %!  new lines.
@@ -30,6 +31,7 @@ class MagicCommentTest {
         assertTrue("param = second value" in lines)
         assertTrue("param = third value" in lines)
         assertTrue("year = 2019" in lines)
-        assertEquals(5, lines.size, "Expected exactly 5 lines.")
+        assertTrue("single" in lines)
+        assertEquals(6, lines.size, "Expected exactly 5 lines.")
     }
 }

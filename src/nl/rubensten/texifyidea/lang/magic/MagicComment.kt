@@ -62,6 +62,10 @@ abstract class MagicComment<Key, Value> {
      */
     fun toCommentString(): List<String> = ArrayList<String>().apply {
         keyValueStore.entries.forEach { (key, values) ->
+            if (values.isEmpty()) {
+                add(key.toString())
+            }
+
             values.forEach { value ->
                 add("$key = $value")
             }
