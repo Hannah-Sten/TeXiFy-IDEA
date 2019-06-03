@@ -8,7 +8,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.TextRange;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 
 import java.util.List;
@@ -28,8 +28,8 @@ public class LatexCommandArgumentInsertHandler implements InsertHandler<LookupEl
         else if (object instanceof LatexMathCommand) {
             insertMathCommand((LatexMathCommand)object, insertionContext);
         }
-        else if (object instanceof LatexNoMathCommand) {
-            insertNoMathCommand((LatexNoMathCommand)object, insertionContext);
+        else if (object instanceof LatexRegularCommand) {
+            insertNoMathCommand((LatexRegularCommand)object, insertionContext);
         }
     }
 
@@ -59,7 +59,7 @@ public class LatexCommandArgumentInsertHandler implements InsertHandler<LookupEl
         }
     }
 
-    private void insertNoMathCommand(LatexNoMathCommand noMathCommand, InsertionContext context) {
+    private void insertNoMathCommand(LatexRegularCommand noMathCommand, InsertionContext context) {
         if (noMathCommand.autoInsertRequired()) {
             insert(context, noMathCommand.getCommand());
         }

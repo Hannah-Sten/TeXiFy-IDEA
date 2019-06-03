@@ -3,11 +3,14 @@ package nl.rubensten.texifyidea.editor
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.BibtexFileType
 import nl.rubensten.texifyidea.util.toTextRange
 
 /**
+ * This class provides the auto-insertion of a second double quote when one double quote is typed in bibtex files.
+ *
  * @author Ruben Schellekens
  */
 open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
@@ -29,7 +32,8 @@ open class BibtexQuoteInsertHandler : TypedHandlerDelegate() {
             return super.charTyped(char, project, editor, file)
         }
 
-        if (document.getText((offset..offset + 1).toTextRange()) == "\"") {
+        // Do not insert a quote when there is one right in front of the cursor
+        if (document.getText(TextRange.from(offset, 1)) == "\"") {
             document.deleteString(offset, offset + 1)
             return Result.STOP
         }

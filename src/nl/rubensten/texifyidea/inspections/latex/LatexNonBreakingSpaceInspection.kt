@@ -25,9 +25,17 @@ import nl.rubensten.texifyidea.util.parentOfType
  */
 open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
+    companion object {
+
+        /**
+         * All commands that should not have a forced breaking space.
+         */
+        val IGNORED_COMMANDS = setOf("\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\cpageref", "\\autoref")
+    }
+
     override fun getInspectionGroup() = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Start sentences on a new line"
+    override fun getDisplayName() = "Non-breaking spaces before references"
 
     override fun getInspectionId() = "NonBreakingSpace"
 
@@ -36,9 +44,11 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
         val commands = LatexCommandsIndex.getItems(file)
         for (command in commands) {
-            if (!Magic.Command.reference.contains(command.name)) {
-                continue
-            }
+            // Only target references.
+            if (!Magic.Command.reference.contains(command.name)) continue
+
+            // Don't consider certain commands.
+            if (command.name in IGNORED_COMMANDS) continue
 
             // Get the NORMAL_TEXT in front of the command.
             val sibling = command.parentOfType(LatexContent::class)?.prevSibling ?: continue

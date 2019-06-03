@@ -88,6 +88,59 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // -include-directory does not work with latexmk
             return command
         }
+    },
+
+    XELATEX("XeLaTeX", "xelatex") {
+
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+            val command = mutableListOf(runConfig.compilerPath ?: "xelatex")
+
+            // As usual, available command line options can be viewed with xelatex --help
+            // On TeX Live, installing collection-xetex should be sufficient to get xelatex
+            command.add("-file-line-error")
+            command.add("-interaction=nonstopmode")
+            command.add("-synctex=1")
+
+            val outputFormatName = runConfig.outputFormat.name.toLowerCase()
+            if (outputFormatName == "dvi") {
+                command.add("-no-pdf") // Generates XDV output instead of PDF
+            }
+
+            if (runConfig.hasOutputDirectories()) {
+                command.add("-output-directory=" + moduleRoot.path + "/out")
+            }
+
+            // -aux-directory only exists on MikTeX
+            if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
+                command.add("-aux-directory=" + moduleRoot.path + "/auxil")
+            }
+
+            // Prepend root paths to the input search path
+            if (SystemInfo.isWindows) {
+                moduleRoots.forEach {
+                    command.add("-include-directory=${it.path}")
+                }
+            }
+
+            return command
+        }
+    },
+
+    TEXLIVEONFLY("Texliveonfly", "texliveonfly") {
+
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+            val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")
+
+            // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
+            // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
+            // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
+            // Since adding one will work without any quotes, we choose the output directory.
+            if (runConfig.hasOutputDirectories()) {
+                command.add("--arguments=--output-directory=${moduleRoot.path}/out")
+            }
+
+            return command
+        }
     };
 
     /**

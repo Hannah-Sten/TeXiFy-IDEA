@@ -10,8 +10,9 @@ import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.LatexCommand
+import nl.rubensten.texifyidea.lang.RequiredArgument
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
-import nl.rubensten.texifyidea.util.findRelativeFile
+import nl.rubensten.texifyidea.util.findFile
 import nl.rubensten.texifyidea.util.findRootFile
 import nl.rubensten.texifyidea.util.splitContent
 
@@ -33,19 +34,35 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         for (command in commands) {
             // Only consider default commands with a file argument.
             val default = LatexCommand.lookup(command.name) ?: continue
-            val arguments = default.arguments
-            val parameters = command.parameterList
+
+            // Remove optional arguments from list of commands
+            val arguments = default.arguments.mapNotNull { it as? RequiredArgument }
+
+            // Remove optional parameters from list of parameters
+            val parameters = command.parameterList.filter { it.requiredParam != null }
 
             for (i in 0 until arguments.size) {
+                // when there are more required arguments than actual present break the loop
                 if (i >= parameters.size) {
                     break
                 }
 
+                // check if actual argument is a file argument or continue with next argument
                 val fileArgument = arguments[i] as? RequiredFileArgument ?: continue
                 val extensions = fileArgument.supportedExtensions
                 val parameter = parameters[i]
+
+                // get file name of the command or continue with next parameter
                 val fileNames = parameter.splitContent() ?: continue
+
+                // get root file of the document actual worked with
                 val root = file.findRootFile()
+
+                // get the virtual file of the root file
+                val containingDirectory = root.containingDirectory.virtualFile
+
+                // check if the given name is reachable form the root file
+                val relative = containingDirectory.findFile(fileName, extensions)
 
                 for (fileName in fileNames) {
                     root.findRelativeFile(fileName, extensions) ?: continue

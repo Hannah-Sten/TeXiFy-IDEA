@@ -19,7 +19,7 @@ import javax.swing.SwingConstants
  * @author Ruben Schellekens
  */
 open class WordCountAction : AnAction(
-        "Word Count",
+        "_Word Count",
         "Estimate the word count of the currently active .tex file and inclusions.",
         TexifyIcons.WORD_COUNT
 ) {
@@ -33,7 +33,7 @@ open class WordCountAction : AnAction(
                 "\\usepackage", "\\documentclass", "\\label", "\\linespread", "\\ref", "\\cite", "\\eqref", "\\nameref",
                 "\\autoref", "\\fullref", "\\pageref", "\\newcounter", "\\newcommand", "\\renewcommand",
                 "\\setcounter", "\\resizebox", "\\includegraphics", "\\include", "\\input", "\\refstepcounter",
-                "\\counterwithins", "\\RequirePackage"
+                "\\counterwithins", "\\RequirePackage", "\\bibliography", "\\bibliographystyle"
         )
 
         /**
@@ -103,6 +103,7 @@ open class WordCountAction : AnAction(
      */
     private fun countWords(baseFile: PsiFile): Pair<Int, Int> {
         val fileSet = baseFile.referencedFileSet()
+                .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
@@ -197,29 +198,23 @@ open class WordCountAction : AnAction(
     /**
      * `I've` counts for two words: `I` and `have`. This function gives you the number of original words.
      */
-    private fun contractionCount(text: String): Int {
-        val split = CONTRACTION_CHARACTERS.split(text)
+    private fun contractionCount(word: String): Int {
+        val split = CONTRACTION_CHARACTERS.split(word)
         var count = 0
         for (i in 0 until split.size) {
             val string = split[i]
 
             // Only count contractions: so do not count start or end single quotes :)
-            if (string.isEmpty()) {
-                continue
-            }
+            if (string.isEmpty()) continue
 
             if (string.toLowerCase() == "s") {
-                if (split.size == 1) {
-                    return 1
-                }
+                if (split.size == 1) return 1
 
-                if (CONTRACTION_S.contains(split[i - 1].toLowerCase())) {
+                if (i > 0 && CONTRACTION_S.contains(split[i - 1].toLowerCase())) {
                     count++
                 }
             }
-            else {
-                count++
-            }
+            else count++
         }
 
         return count

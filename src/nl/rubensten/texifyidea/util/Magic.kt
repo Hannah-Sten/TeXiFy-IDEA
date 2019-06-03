@@ -128,6 +128,11 @@ object Magic {
         @JvmField val bibliographyItems = setOf("\\bibitem")
 
         /**
+         * All label definition commands.
+         */
+        @JvmField val labels = setOf("\\label")
+
+        /**
          * All math operators without a leading slash.
          */
         @JvmField val slashlessMathOperators = hashSetOf(
@@ -139,15 +144,42 @@ object Magic {
         /**
          * All commands that define new commands.
          */
-        @JvmField val definitions = hashSetOf(
+        @JvmField val commandDefinitions = hashSetOf(
                 "\\newcommand",
                 "\\let",
                 "\\def",
                 "\\DeclareMathOperator",
-                "\\newenvironment",
                 "\\newif",
-                "\\ProvidesClass"
+                "\\NewDocumentCommand",
+                "\\ProvideDocumentCommand",
+                "\\DeclareDocumentCommand"
         )
+
+        /**
+         * All commands that define new documentclasses.
+         */
+        @JvmField val classDefinitions = hashSetOf("\\ProvidesClass")
+
+        /**
+         * All commands that define new packages.
+         */
+        @JvmField val packageDefinitions = hashSetOf("\\ProvidesPackage")
+
+        /**
+         * All commands that define new environments.
+         */
+        @JvmField val environmentDefinitions = hashSetOf(
+                "\\newenvironment",
+                "\\newtheorem",
+                "\\NewDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
+                "\\DeclareDocumentEnvironment"
+        )
+
+        /**
+         * All commands that define stuff like classes, environments, and definitions.
+         */
+        @JvmField val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
         /**
          * All commands that are able to redefine other commands.
@@ -158,7 +190,7 @@ object Magic {
          * All commands that include other files.
          */
         @JvmField val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\RequirePackage", "\\usepackage"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage"
         )
 
         /**
@@ -170,7 +202,13 @@ object Magic {
                 "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
                 "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
                 "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
-                "\\newenvironment", "\\bibitem"
+                "\\newenvironment", "\\bibitem",
+                "\\NewDocumentCommand",
+                "\\ProvideDocumentCommand",
+                "\\DeclareDocumentCommand",
+                "\\NewDocumentEnvironment",
+                "\\ProvideDocumentEnvironment",
+                "\\DeclareDocumentEnvironment"
         )
 
         /**
@@ -188,6 +226,7 @@ object Magic {
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
+                "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
                 "\\usepackage" to hashSetOf("sty")
         )
@@ -312,6 +351,14 @@ object Magic {
          * Matches a LaTeX command that is the start of an \if-\fi structure.
          */
         @JvmField val ifCommand = RegexPattern.compile("\\\\if[a-zA-Z@]*")!!
+
+        /**
+         * Matches the begin and end commands of the cases and split environments.
+         */
+        @JvmField val casesOrSplitCommands = Regex("((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
+                "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
+                "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
+                "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))")
     }
 
     /**
@@ -334,8 +381,16 @@ object Magic {
                 StyleFileType,
                 TikzFileType
         )
+
+        /**
+         * All file extensions that have to be deleted when clearing auxiliary files.
+         *
+         * This list is the union of @generated_exts in latexmk and the defined Auxiliary files in TeXWorks.
+         * (https://github.com/TeXworks/texworks/blob/9c8cc8b88505103cb8f43fe4105638c77c7e7303/res/resfiles/configuration/texworks-config.txt#L37).
+         */
+        @JvmField val auxiliaryFileTypes = arrayOf("aux", "bbl", "bcf", "brf", "fls", "idx", "ind", "lof", "lot", "nav", "out", "snm", "toc")
     }
-    
+
     /**
      * @author Ruben Schellekens
      */
@@ -368,7 +423,7 @@ object Magic {
                 "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
                 "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
-                "tikz" to TexifyIcons.LATEX_FILE
+                "tikz" to TexifyIcons.TIKZ_FILE
         )
     }
 }

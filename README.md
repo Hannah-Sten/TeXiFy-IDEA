@@ -1,7 +1,8 @@
-[![Build Status](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA.svg?branch=master)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
-[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/TeXiFy-IDEA)
-[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
-[![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png)](https://www.paypal.me/RubenSchellekens)
+[![Travis (.org)](https://img.shields.io/travis/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
+[![GitHub release](https://img.shields.io/github/release/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://github.com/Ruben-Sten/TeXiFy-IDEA/releases)
+[![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
+[![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
+[![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/RubenSchellekens)
 
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
@@ -12,8 +13,6 @@ Create the most beautiful LaTeX documents with the user friendliness of the Inte
 This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin
 
 ## Feedback and support
-***We are currently extremely busy IRL, so there might be some delay in support and development.***
-
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
 1. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account). Gitter also has a nice app, we use it to get notified of new activity.
 2. [Issues](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, user support, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advice using the gitter.
@@ -29,14 +28,16 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Syntax highlighting
 * Autocomplete of labels, (custom defined) commands and environments
 * Writer ergonomics - writing LaTeX made less cumbersome
-* Run configurations for LaTeX and BibTeX (pdfLaTeX, bibtex)
-* Inspections. Intentions. And heaps more inspections.
+* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
+* Inspections. Intentions. And heaps more inspections
 * Full BibTeX support
 * Formatter for LaTeX and BibTeX
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
-* SumatraPDF support with forward and backward search
+* SumatraPDF (Windows) and Evince (Linux) support with forward and backward search
+* Smart Quotes
 * Unicode math preview
+* Equation preview
 * Gutter icons for quick compilation and file includes
 * Fancy icons that fit in with the IntelliJ style
 * Brace matching
@@ -50,7 +51,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Toggle star action
 * Words of encouragement
 
-We could make a detailed list, but that would take up your whole screen! We might add one later though :)
+A more extensive (but not complete) list can be found in the [Wiki](https://github.com/Ruben-Sten/TeXiFy-IDEA/wiki/Features).
 
 ## <a name="installation-instructions">Installation instructions: installing IntelliJ and the TeXiFy-IDEA plugin</a>
 
@@ -76,15 +77,17 @@ These instructions were tested on Windows 7, 8.1 and 10.
 * Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run, or use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>. If you see a pdf appearing, congratulations! 
 * If you see `LaTeX error: file a4.sty not found` then you did not restart your pc. Do it now.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd> on Windows.
-* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the `LaTeX` menu in the top menu bar and clicking  SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
+
+#### Configuring forward and inverse search
+* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the Tools - LaTeX menu in the top menu bar and clicking SumatraPDF - Go to line in PDF, or using the shortcut which is listed there.
+This shortcut can also be used to bring the SumatraPDF window in view when you do not see it.
 * If you don't see a SumatraPDF option, reboot your computer.
-* You can also do the reverse: you have to configure it once by clicking LaTeX - SumatraPDF - Configure inverse search. Then double-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
-* If you get the error `Error launching IDEA No JVM installation found. Please install a 32-bit JDK`,  then you have to install a 32-bit JDK. Download the Windows x86 installer from [oracle.com](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and install, then reboot, configure inverse search, compile your pdf and try double-clicking again.
+* You can also do the reverse: you have to configure it once by clicking Tools - LaTeX - SumatraPDF - Configure inverse search. Then double-click in SumatraPDF in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
 * Have a look at the [tips](#tips).
 
 ### <a name="linux-instructions">Installation instructions for linux</a>
 
-These instructions were tested on Ubuntu 16.04 and Arch Linux 4.18.16.
+These instructions were tested on at least Ubuntu 16.04, 18.04, Fedora and Arch Linux.
 
 * If you don't have the latest version yet, download and install [IntelliJ IDEA](https://www.jetbrains.com/idea/download/), the Community edition is free. You may want to use the [Jetbrains toolbox](https://www.jetbrains.com/toolbox/app/) instead, so you can manage projects and editors easily (Jetbrains has editors for more programming languages as well). Download and save the `.tar.gz` file to your Downloads folder.
 * You can extract in your Downloads folder with, in case you downloaded IntelliJ, (change the exactly version number to the correct one, you can use tab for autocompletion) `sudo tar xf ideaIU-2018.1.5.tar.gz -C /opt/`, then run `/opt/idea-IU-181.5281.24/bin/idea.sh`, or in case you downloaded the toolbox, `sudo tar xf jetbrains-toolbox-1.11.4269.tar.gz -C /opt/` and run `/opt/jetbrains-toolbox-1.11.4269/jetbrains-toolbox`, then install IntelliJ.
@@ -102,9 +105,14 @@ These instructions were tested on Ubuntu 16.04 and Arch Linux 4.18.16.
 * Click on Create New Project (in welcome menu) or File - New - Project, select LaTeX in the left column and click next. Specify a name for your project, and a location. A project can contain multiple LaTeX files, so for example if you make a new document for each new homework you get, place them all in the same project.
 * Double-click or click on the arrow next to your project name on the left to open the directory.
 * A standard document is already made for you, you can find it in the `src/` folder. This folder will contain all your LaTeX. Double-click on the `.tex` file to open it. If you cannot see any directory structure (the folders on the left side), hit Project (it's written on its side) on the left of your screen.
-* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. The resulting pdf file is hiding in the `output/` folder.
+* Type some text between the `\begin{document}` and `\end{document}` lines, hit the compile icon next to the `\begin{document}` line and click Run. The resulting pdf file is hiding in the `out/` folder.
 * The next time you can also compile using the Run button (looks like a Play button) in the top-right menu, or using <kbd>Shift</kbd>+<kbd>F10</kbd>.
-* Have a look at the [tips](#tips).
+
+#### Forward and inverse search
+* When your cursor is in IntelliJ and you have just compiled a document, you can look up which line in the pdf corresponds to the line your cursor is at by going in IntelliJ to the Tools - LaTeX menu in the top menu bar and clicking Evince - Forward Search, or using the shortcut which is listed there.
+This shortcut can also be used to bring the Evince window in view when you do not see it.
+* You can also do the reverse: press <kbd>Ctrl</kbd> and click in Evince in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ. 
+* Also have a look at the [tips](#tips).
 
 ### <a name="mac-instructions">Installation instructions for Mac</a>
 Note that we didn't have the opportunity yet to test these instructions, so please let us know if you did.
@@ -129,14 +137,14 @@ Note that we didn't have the opportunity yet to test these instructions, so plea
 * But some standard LaTeX commands are available in the LaTeX menu.
 * Pay attention to squiggles (wavey lines) under text you typed, they indicate that something is wrong. Hovering over it gives extra information. In some cases, a ready-made fix is waiting to be applied: hit the lightbulb that appears on the left, or hit <kbd>Alt</kbd>+<kbd>Enter</kbd> to view and apply it. A quick overview of useful shortcuts is [below](#installation-shortcuts-overview).
 * If your LaTeX indentation (the number of spaces that is in front of each line) looks messy, try to reformat with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd>.
-* This plugin contains an Equation Preview, which lets you preview equations without having to compile the entire document. It does however require other software, for which you can find installation instructions [below](#equation-preview).
+* This plugin contains an Equation Preview, which lets you preview equations without having to compile the entire document. It does however require other software, for which you can find installation instructions [below](#equation-preview). The same software requirements hold for the TikZ Preview, with which you can preview TikZ pictures.
 * If you are searching how a particular symbol has to be written in LaTeX, the [Detexify](http://detexify.kirelabs.org/classify.html) tool can probably help you. Just draw your symbol in the `draw here` box and the command will be listed on the right.
 * If you want a proper explanation of what LaTeX and its philosophy is about, read the [Not So Short Introduction To LaTeX2e](http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf).
 
 ### When you want to work together: install git
 * Often you will be working together on one document. In that case, use git to make this go smoothly. We use git because git is awesome, but there exist other tools as well.
 * But sometimes you cannot use IntelliJ, for example because you are at school. For that, we use Overleaf. 
-* Note that this Overleaf feature will become paid in Overleaf v2, and direct git access will stop end of 2018. If you find an other service that can do this for free, please let us know.
+* Note that this Overleaf feature will become paid in Overleaf v2, and direct git access will stop end of 2018. If you find an other service that can do this for free, please let us know. As an alternative you can use a git hosting service without LaTeX editing, like GitHub (see below).
 * Install [git](https://git-scm.com/downloads), during installation just click `next` everywhere.
 * Restart your computer.
 * Go to [Overleaf](https://www.overleaf.com/signup) and sign up.
@@ -165,6 +173,7 @@ when you do not recognize the file.
 * Want to know even more of advanced use of git? Read the excellent [Pro Git book](https://git-scm.com/book/en/v2) for free.
 
 ### <a name="installation-shortcuts-overview"></a> Overview of some useful IntelliJ shortcuts
+<!-- This section has been copied to the wiki -->
 * Double <kbd>Shift</kbd> Search for any IntelliJ command, like Reformat.
 * <kbd>Alt</kbd>+<kbd>Enter</kbd> View the quick fix, if there is one. Apply the fix with <kbd>Enter</kbd>.
 * <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> Reformat your LaTeX.
@@ -174,10 +183,13 @@ when you do not recognize the file.
 
 Any suggestions for improvements of the installation instructions, however small? Please let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
-## <a name="equation-preview">Equation preview</a>
+## <a name="equation-preview">Equation preview and TikZ Preview</a>
 
-You can use the Equation Preview by making sure your cursor is in a math environment and clicking the LaTeX | Equation Preview menu, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>.
-It works by putting your equation in a new temporary (fairly minimal) document and compiling that, so custom commands and packages from your document will not be taken into account.
+You can use the Equation Preview by making sure your cursor is in a math environment and clicking the Tools | LaTeX | Preview Equation menu, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>.
+You can use the TikZ Preview by placing your cursor in a `tikzpicture` environment and click the Tools | LaTeX | Preview TikZ Picture, or using <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>.
+It works by putting your equation or TikZ picture in a new temporary (fairly minimal) document and compiling that, so custom commands and packages from your document will not be taken into account, but it ensures the preview is really fast.
+The TikZ Preview will take TikZ and pgf libraries into account.
+
 The current implementation of the Equation Preview was contributed by Sergei Izmailov and requires external dependencies, for which installation instructions follow.
 
 ### Instructions for Linux
@@ -189,6 +201,20 @@ The current implementation of the Equation Preview was contributed by Sergei Izm
 * Install Inkscape from [inkscape.org/release](https://inkscape.org/release), suppose you install it in `C:\Program Files\Inkscape`.
 * Install pdf2svg from [github.com/textext/pdf2svg/releases](https://github.com/textext/pdf2svg/releases), suppose you install it in `C:\Program Files\pdf2svg`.
 * Add both `C:\Program Files\Inkscape` and `C:\Program Files\pdf2svg` to your PATH environment variable, for example by searching for Environment Variables on your computer, clicking 'Edit the system environment variables', clicking 'Environment Variables', and under System variables find the one named Path, edit it and insert the paths here. Make sure the paths are separated by a `;`.
+* Reboot your system.
+
+## Alpha channel: subscribing to the very latest features
+
+This plugin also has an alpha channel besides the default stable channel.
+The alpha channel contains the latest build with the latest features available, and is updated much more frequently than the stable channel.
+It is used for testing features before they are released in the stable channel, so alpha versions of the plugin may be more unstable.
+
+#### Subscribing to the alpha channel
+
+More detailed information is at https://www.jetbrains.com/help/idea/managing-plugins.html#repos but we will quickly summarize the steps.
+* Uninstall the plugin
+* Subscribe to the alpha channel by going to Settings | Plugins | gear icon | Manage Plugin Repositories | plus icon, then use the url https://plugins.jetbrains.com/plugins/alpha/list
+* Install the plugin by going to Marketplace and searching for `TeXiFy-IDEA`, you should see the version next to the name is the alpha version.
 
 ## <a name="build-from-source">Building from source using IntelliJ</a>
 
@@ -206,13 +232,17 @@ It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the 
 * Select 'Use auto-import'.
 * Thank Gradle that you're done now!
 * Check that in Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
+* Test it worked by executing the 'build' task in Tasks - build - build.
+* You can ignore deprecation warnings in the build output.
+* If something doesn't work, try looking at the [FAQ](#FAQ) first.
 
 #### To run directly from source
 * Click the Gradle button on the right, the gradle task is located in Tasks - intellj - runIde. Right-click and run.
 * If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
 * Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
 * The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
-* Use the option LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
+* You can also debug against other IDEs. At the moment only PyCharm is set up, but it is easy to add others. You can use it by specifying the argument `-PusePycharm=true` in your runIde run configuration.
+* Use the option Tools - LaTeX - SumatraPDF - Configure Inverse Search to enable the option to go directly to the right line in your source file when you double-click in the pdf.
 * To make a new project but also to open existing `.tex` files, use New Project - LaTeX.
 * Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
 
@@ -267,12 +297,41 @@ where the files `introduction.tex` and `example-theorems.tex` contain just the c
 \end{theorem}
 ```
 
-#### SumatraPDF inverse search: _Error launching IDEA. No JVM installation found_
-* Please make sure you have a 32-bit JDK installed. This solved the issue before ([#104](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/104)). If installing a 32-bit JDK is resolving the problem for you, please report this on the issue tracker.
+#### How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
+
+You can define a live template via File -> Settings... -> Editor -> Live Templates. For example, for the `itemize` environment, you could use the following template:
+
+```tex
+\begin{itemize}
+    \item $PARM1$
+\end{itemize}
+```
+
+Set the template to be applicable in LaTeX files.
+
+![Screenshot of live template UI, showing the template text above along with an abbreviation of itemize and a description of 'Add itemize env'. The macro is set to be 'Applicable in LaTeX' and expands with the Tab key.](doc/macro.png)
+
+Once the live template is created, close the Settings dialog. Use Edit -> Macros -> Start Macro Recording and enter the live template abbreviation. Finish recording the macro, and name it. Via Settings -> Keymap, assign the macro a key binding such as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>.
+
+Now, you can use the macro key binding and hit <kbd>Enter</kbd> to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
+
+For commands, you can define templates for e.g. `\emph{$PARM1$}`.
 
 #### The Equation Preview does not work
 
 Make sure you have installed the dependencies, instructions are in the [Equation Preview](#equation-preview) section.
+
+#### makeindex or bibtex not writing to file (`openout_any = p`)
+When you get during compilation the error
+```
+makeindex: Not writing to /path/to/project/latexfile.ind (openout_any = p).
+Can't create output index file /path/to/project/latexfile.ind.
+```
+or
+```
+bibtex: Not writing to ../out/latexfile.blg (openout_any = p).
+```
+this probably happens because you are trying to use makeindex or bibtex with a separate output directory. You should either disable the out directory in the run config or change the security setting in `texmf.cnf`, see [this tex.stackexchange.com answer](https://tex.stackexchange.com/questions/12686/how-do-i-run-bibtex-after-using-the-output-directory-flag-with-pdflatex-when-f/289336#289336).
 
 #### How to integrate a latex compiler other than pdflatex:
 Most tex distributions contain a commandline tool called [arara](https://github.com/cereda/arara).
@@ -312,12 +371,15 @@ For example, to use lualatex:
     
 You can run this run configuration by pressing <kbd>Shift</kbd>+<kbd>F10</kbd> (on Windows), by clicking the play button, or by clicking the gutter icon.
 
-#### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine",`
+#### `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
 
-If you get this warning, you have to install the mentioned gtk engine, in this case Murrine.
+If you get this warning, it is not critical so you could ignore it but to solve it you can install the mentioned gtk engine, in this case Murrine.
 For example on Arch Linux, install the `gtk-engine-murrine` package. Arch Linux sets the default theme to Adwaita, so install that with the `gnome-themes-extra` package.
 For more information see [wiki.archlinux.org](https://wiki.archlinux.org/index.php/GTK+).
 
+#### `Unable to find method 'sun.misc.Unsafe.defineClass'` or `Please provide the path to the Android SDK` when syncing Gradle
+
+This probably means your Gradle cache is corrupt, delete (on Windows) `C:\Users\username\.gradle\caches` and `C:\Users\username\.gradle\wrapper\dists` or (on Linux) `~/.gradle/caches` and `~/.gradle/wrapper/dists`, then reboot your system.
 
 #### `Error: java: package com.google.common.base does not exist`
 

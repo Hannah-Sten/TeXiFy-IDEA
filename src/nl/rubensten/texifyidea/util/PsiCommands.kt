@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.lang.LatexMathCommand
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand
+import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.psi.*
 
 /**
@@ -54,7 +54,7 @@ fun LatexCommands?.isEnvironmentDefinition(): Boolean {
 /**
  * Get the command that gets defined by a definition (`\let` or `\def` command).
  */
-fun LatexCommands.definitionCommand(): LatexCommands? = nextCommand()
+fun LatexCommands.definitionCommand(): LatexCommands? = forcedFirstRequiredParameterAsCommand()
 
 /**
  * Checks whether the command has a star or not.
@@ -100,11 +100,11 @@ fun LatexCommands.definedCommandName() = when (name) {
  */
 fun LatexCommands.isKnown(): Boolean {
     val name = name?.substring(1) ?: ""
-    return LatexNoMathCommand[name] != null || LatexMathCommand[name] != null
+    return LatexRegularCommand[name] != null || LatexMathCommand[name] != null
 }
 
 /**
- * Get the `index+1`th required parameter of the command.
+ * Get the text contents of the `index+1`th required parameter of the command.
  *
  * @throws IllegalArgumentException When the index is negative.
  */

@@ -19,7 +19,7 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
 import nl.rubensten.texifyidea.lang.Diacritic;
 import nl.rubensten.texifyidea.lang.LatexCommand;
 import nl.rubensten.texifyidea.lang.LatexMathCommand;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment;
 import nl.rubensten.texifyidea.psi.LatexNormalText;
 import nl.rubensten.texifyidea.util.Magic;
@@ -172,7 +172,7 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
      * <p>
      * The following attempts are made, in order, to determine a suitable replacement: <ol> <li> The
      * character is matched against the <em>display</em> attribute of either {@link
-     * LatexNoMathCommand} or {@link LatexMathCommand} (where appropiate). When there is a match,
+     * LatexRegularCommand} or {@link LatexMathCommand} (where appropiate). When there is a match,
      * the corresponding command is used as replacement. </li> <li> The character is decomposed to
      * separate combining marks (see also <a href="http://unicode.org/reports/tr15/">Unicode</a>).
      * An attempt is made to match the combining sequence against LaTeX character diacritical
@@ -208,7 +208,7 @@ public class LatexUnicodeInspection extends TexifyInspectionBase {
             // Try to find in lookup for special command
             String replacement;
             LatexCommand command = inMathMode ? LatexMathCommand.findByDisplay(c) :
-                    LatexNoMathCommand.findByDisplay(c);
+                    LatexRegularCommand.findByDisplay(c);
 
             // Replace with found command or with standard substitution
             if (command != null) {

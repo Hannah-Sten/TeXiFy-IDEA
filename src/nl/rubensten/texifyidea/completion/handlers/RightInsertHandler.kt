@@ -4,36 +4,41 @@ import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.editor.Editor
-import nl.rubensten.texifyidea.lang.LatexMathCommand
+import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.util.Magic
 
 /**
+ * Inserts the right part of left-right command pairs, like `\left( \right)`.
+ *
  * @author Ruben Schellekens
  */
 open class RightInsertHandler : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, element: LookupElement) {
         val editor = context.editor
-        val command = element.`object` as? LatexMathCommand ?: return
+        val command = element.`object` as? LatexCommand ?: return
         val name = command.command
 
         if (name.startsWith("left")) {
-            insertRight(name, editor)
+            insertRightBraceCommand(name, editor)
         }
         else if (name == "langle") {
-            insertRangle(editor)
+            insertRightCommand(editor, "\\rangle", spacing = " ")
+        }
+        else if (name == "lq") {
+            insertRightCommand(editor, "\\rq", spacing = "", suffix = "{}")
         }
     }
 
-    private fun insertRight(commandName: String, editor: Editor) {
+    private fun insertRightBraceCommand(commandName: String, editor: Editor) {
         val char = commandName.substring(4)
         val opposite = Magic.Typography.braceOpposites[char] ?: return
         editor.document.insertString(editor.caretModel.offset, "  \\right$opposite")
         editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
     }
 
-    private fun insertRangle(editor: Editor) {
-        editor.document.insertString(editor.caretModel.offset, "  \\rangle")
-        editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
+    private fun insertRightCommand(editor: Editor, rightCommand: String, spacing: String = "", suffix: String = "") {
+        editor.document.insertString(editor.caretModel.offset, "$suffix$spacing$spacing$rightCommand$suffix")
+        editor.caretModel.moveToOffset(editor.caretModel.offset + spacing.length + suffix.length)
     }
 }

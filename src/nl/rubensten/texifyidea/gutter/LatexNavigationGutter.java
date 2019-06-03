@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.lang.LatexNoMathCommand;
+import nl.rubensten.texifyidea.lang.LatexRegularCommand;
 import nl.rubensten.texifyidea.lang.RequiredFileArgument;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
@@ -23,10 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -34,6 +31,11 @@ import java.util.stream.Collectors;
  * @author Ruben Schellekens
  */
 public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
+
+    private static final Set<String> IGNORE_FILE_ARGUMENTS = new HashSet<>(Arrays.asList(
+            "\\RequirePackage", "\\usepackage", "\\documentclass", "\\LoadClass",
+            "\\LoadClassWithOptions"
+    ));
 
     @Override
     protected void collectNavigationMarkers(@NotNull PsiElement element,
@@ -54,13 +56,12 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
             return;
         }
 
-        // True when it doesnt have a required file argument, but must be handled.
-        boolean ignoreFileArgument = "\\RequirePackage".equals(fullCommand) ||
-                "\\usepackage".equals(fullCommand);
+        // True when it doesnt have a required _file_ argument, but must be handled.
+        boolean ignoreFileArgument = IGNORE_FILE_ARGUMENTS.contains(fullCommand);
 
-        // Fetch the corresponding LatexNoMathCommand object.
+        // Fetch the corresponding LatexRegularCommand object.
         String commandName = fullCommand.substring(1);
-        LatexNoMathCommand commandHuh = LatexNoMathCommand.get(commandName);
+        LatexRegularCommand commandHuh = LatexRegularCommand.get(commandName);
         if (commandHuh == null && !ignoreFileArgument) {
             return;
         }
@@ -73,7 +74,7 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         // Get the required file arguments.
         RequiredFileArgument argument;
         if (ignoreFileArgument) {
-            argument = new RequiredFileArgument("", "sty");
+            argument = new RequiredFileArgument("", "sty", "cls");
         }
         else {
             argument = arguments.get(0);

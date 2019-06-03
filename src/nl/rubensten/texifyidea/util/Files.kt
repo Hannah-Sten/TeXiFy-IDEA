@@ -14,10 +14,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
 import nl.rubensten.texifyidea.algorithm.IsChildDFS
-import nl.rubensten.texifyidea.file.BibtexFileType
-import nl.rubensten.texifyidea.file.ClassFileType
-import nl.rubensten.texifyidea.file.LatexFileType
-import nl.rubensten.texifyidea.file.StyleFileType
+import nl.rubensten.texifyidea.file.*
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.lang.Package
