@@ -43,7 +43,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
                     "Figure is not referenced",
                     isOntheFly,
                     emptyArray(),
-                    ProblemHighlightType.LIKE_UNUSED_SYMBOL
+                    ProblemHighlightType.WEAK_WARNING
             )
 
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
