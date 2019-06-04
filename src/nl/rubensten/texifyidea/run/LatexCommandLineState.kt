@@ -89,7 +89,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Replace placeholder
             var containsPlaceholder = false
 
-            for (i in 0..commandList.size) {
+            for (i in 0 until commandList.size) {
                 if (commandList[i].contains("{pdf}")) {
                     containsPlaceholder = true
                     commandList[i] = commandList[i].replace("{pdf}", runConfig.outputFilePath)
