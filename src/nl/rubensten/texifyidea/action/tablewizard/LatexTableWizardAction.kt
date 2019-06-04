@@ -24,7 +24,7 @@ class LatexTableWizardAction : AnAction() {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE)
         val project = e.getData(PlatformDataKeys.PROJECT)
         val editors = FileEditorManager.getInstance(project!!).selectedEditors
-        val editor = editors.filter { it is TextEditor }.map { it as TextEditor }.first()
+        val editor = editors.first { it is TextEditor } as TextEditor
         val document = editor.editor.document
 
         // Get the indentation from the current line.
