@@ -46,10 +46,6 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         }
 
         LatexCommands commands = (LatexCommands)element;
-        PsiElement commandToken = commands.getCommandToken();
-        if (commandToken == null) {
-            return;
-        }
 
         String fullCommand = commands.getCommandToken().getText();
         if (fullCommand == null) {
@@ -105,12 +101,14 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
         ProjectRootManager rootManager = ProjectRootManager.getInstance(element.getProject());
         Collections.addAll(roots, rootManager.getContentSourceRoots());
 
-        List<VirtualFile> files = fileNames.stream()
+        PsiManager psiManager = PsiManager.getInstance(element.getProject());
+
+        List<PsiFile> files = fileNames.stream()
             .map(fileName -> {
                 for (VirtualFile root : roots) {
                     VirtualFile foundFile = FilesKt.findFile(root, fileName, argument.getSupportedExtensions());
                     if (foundFile != null) {
-                        return foundFile;
+                        return psiManager.findFile(foundFile);
                     }
                 }
                 return null;
@@ -120,14 +118,12 @@ public class LatexNavigationGutter extends RelatedItemLineMarkerProvider {
 
         if (files.isEmpty()) return;
 
-        PsiManager psiManager = PsiManager.getInstance(element.getProject());
-
         // Build gutter icon.
         int maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject()).getSize().width;
 
         NavigationGutterIconBuilder<PsiElement> builder = NavigationGutterIconBuilder
                 .create(TexifyIcons.getIconFromExtension(argument.getDefaultExtension()))
-                .setTargets(files.stream().map(psiManager::findFile).collect(Collectors.toList()))
+                .setTargets(files)
                 .setPopupTitle("Navigate to Referenced File")
                 .setTooltipText("Go to referenced file")
                 .setCellRenderer(new GotoFileCellRenderer(maxSize));
