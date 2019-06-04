@@ -82,31 +82,28 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // First check if the user specified a custom viewer, if not then try other supported viewers
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
-            // Split user command on spaces, then replace {pdf} if needed?
+            // Split user command on spaces, then replace {pdf} if needed
             val commandString = runConfig.viewerCommand!!
 
             // Split on spaces
-            val commandList = commandString.split(" ")
+            val commandList = commandString.split(" ").toMutableList()
 
             // Replace placeholder
             var containsPlaceholder = false
-            val mappedList = commandList.map {
-                if (it.contains("{pdf}")) {
+
+            for (i in 0..commandList.size) {
+                if (commandList[i].contains("{pdf}")) {
                     containsPlaceholder = true
-                    val replacement: String = it.replace("{pdf}", runConfig.outputFilePath)
-                    replacement
+                    commandList[i] = commandList[i].replace("{pdf}", runConfig.outputFilePath)
                 }
-                else {
-                    it
-                }
-            }.toMutableList()
+            }
 
             // If no placeholder was used, append path to the command
             if (!containsPlaceholder) {
-                mappedList += runConfig.outputFilePath
+                commandList += runConfig.outputFilePath
             }
 
-            handler.addProcessListener(OpenPdfViewerListener(mappedList.toTypedArray()))
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray()))
         }
         else if (runConfig.sumatraPath != null || isSumatraAvailable) {
             // Open Sumatra after compilation & execute inverse search.
