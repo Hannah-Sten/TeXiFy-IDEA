@@ -61,11 +61,11 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 // get the virtual file of the root file
                 val containingDirectory = root.containingDirectory.virtualFile
 
-                // check if the given name is reachable form the root file
-                val relative = containingDirectory.findFile(fileName, extensions)
-
                 for (fileName in fileNames) {
-                    root.findRelativeFile(fileName, extensions) ?: continue
+                    // check if the given name is reachable form the root file
+                    val relative = containingDirectory.findFile(fileName, extensions)
+
+                    if (relative != null) continue
 
                     val fixes = mutableListOf(CreateFileFix(false, fileName, root.containingDirectory))
 
