@@ -86,18 +86,18 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Split on spaces
             val commandList = commandString.split(" ").toMutableList()
 
-            // Replace placeholder
-            var containsPlaceholder = false
+            val containsPlaceholder = commandList.contains("{pdf}")
 
-            for (i in 0 until commandList.size) {
-                if (commandList[i].contains("{pdf}")) {
-                    containsPlaceholder = true
-                    commandList[i] = commandList[i].replace("{pdf}", runConfig.outputFilePath)
+            if (containsPlaceholder) {
+                // Replace placeholder
+                for (i in 0 until commandList.size) {
+                    if (commandList[i].contains("{pdf}")) {
+                        commandList[i] = commandList[i].replace("{pdf}", runConfig.outputFilePath)
+                    }
                 }
             }
-
-            // If no placeholder was used, append path to the command
-            if (!containsPlaceholder) {
+            else if (!containsPlaceholder) {
+                // If no placeholder was used, assume the path is the final argument
                 commandList += runConfig.outputFilePath
             }
 
