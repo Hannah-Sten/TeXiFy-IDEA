@@ -49,8 +49,8 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
      * @param typedColumnIndex is the column type of the column.
      */
     private val addColumnFun = fun(title: String, typedColumnIndex: Int, _: Int) {
-        // Add the column to the table.
-        tableModel.addColumn(title)
+        // Add the column to the table, with an empty cell for each row (instead of the default null).
+        tableModel.addColumn(title, (0 until tableModel.rowCount).map { "" }.toTypedArray())
         // Add the column type to the list of column types.
         val selectedColumnType = ColumnType.values()[typedColumnIndex]
         columnTypes.add(selectedColumnType)
