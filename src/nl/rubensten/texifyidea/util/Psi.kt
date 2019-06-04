@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.util
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
@@ -299,6 +300,18 @@ fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean
  */
 inline fun PsiElement.forEachChild(action: (PsiElement) -> Unit) {
     for (child in children) action(child)
+}
+
+/**
+ * Finds the first child of the PsiElement that is not whitespace.
+ * When there is no first child that is not whitespace, this function returns `null`.
+ */
+fun PsiElement.firstChildIgnoringWhitespaceOrNull(): PsiElement? {
+    var child: PsiElement? = children.firstOrNull() ?: return null
+    while (child is PsiWhiteSpace) {
+        child = child.nextSiblingIgnoreWhitespace()
+    }
+    return child
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -21,6 +21,14 @@ package nl.rubensten.texifyidea.lang.magic
  */
 abstract class MagicComment<Key, Value> {
 
+    companion object {
+
+        /**
+         * Creates a new empty magic comment.
+         */
+        fun <Key, Value> empty() = MutableMagicComment<Key, Value>()
+    }
+
     /**
      * Maps all keys in the magic comment to their values.
      *

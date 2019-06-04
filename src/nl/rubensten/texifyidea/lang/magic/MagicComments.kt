@@ -2,14 +2,13 @@
 
 package nl.rubensten.texifyidea.lang.magic
 
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.psi.LatexGroup
-import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.lineIndentationByOffset
-import nl.rubensten.texifyidea.util.parentOfType
+import nl.rubensten.texifyidea.util.*
 
 /**
  * Adds the given magic comment as an actual comment to the file.
@@ -77,4 +76,31 @@ fun <Key, Value> PsiElement.addMagicComment(magicComment: MagicComment<Key, Valu
         MagicCommentScope.COMMAND -> parentOfType(LatexCommands::class)?.addMagicComment(magicComment)
         MagicCommentScope.GROUP -> parentOfType(LatexGroup::class)?.addMagicComment(magicComment)
     }
+}
+
+/**
+ * Get the magic comment that directly targets this psi file.
+ */
+fun PsiFile.magicComment(): MagicComment<String, String> {
+    val commentLines = ArrayList<String>()
+
+    // Scan through all the header comments for magic comments.
+    var currentComment: PsiElement? = firstChildIgnoringWhitespaceOrNull() ?: return MagicComment.empty()
+    while (currentComment != null) {
+
+        // Stop searching when a non PsiComment is found (the scan ends at the first non-comment).
+        if (currentComment !is PsiComment) break
+
+        // Only consider magic comments.
+        val commentText = currentComment.text
+        currentComment = currentComment.nextSiblingIgnoreWhitespace()
+        if (TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(commentText).not()) continue
+
+        // Collect magic comment contents.
+        commentLines += commentText
+    }
+
+    // Parse all collected magic comments.
+    val parser = TextBasedMagicCommentParser(commentLines)
+    return parser.parse()
 }
