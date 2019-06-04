@@ -27,12 +27,7 @@ enum class MagicCommentScope {
     /**
      * Targets the following content group.
      */
-    GROUP,
-
-    /**
-     * Targets the following paragraph/normal text.
-     */
-    NORMAL_TEXT;
+    GROUP;
 
     companion object {
 
