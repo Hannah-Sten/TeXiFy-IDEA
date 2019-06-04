@@ -26,7 +26,7 @@ abstract class MagicComment<Key, Value> {
         /**
          * Creates a new empty magic comment.
          */
-        fun <Key, Value> empty() = MutableMagicComment<Key, Value>()
+        fun <Key, Value> empty(): MagicComment<Key, Value> = MutableMagicComment()
     }
 
     /**
