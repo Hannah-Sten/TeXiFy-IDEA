@@ -14,9 +14,13 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
 import nl.rubensten.texifyidea.algorithm.IsChildDFS
-import nl.rubensten.texifyidea.file.*
+import nl.rubensten.texifyidea.file.BibtexFileType
+import nl.rubensten.texifyidea.file.ClassFileType
+import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.file.StyleFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex
+import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
 import org.codehaus.plexus.util.FileUtils
@@ -153,7 +157,7 @@ fun PsiFile.findRootFile(): PsiFile {
         return this
     }
 
-    val inclusions = project.allFileinclusions()
+    val inclusions = project.allFileInclusions()
     inclusions.forEach { (file, _) ->
         // For each root, IsChildDFS until found.
         if (!file.isRoot()) {
@@ -191,8 +195,8 @@ private fun PsiFile.isIncludedBy(childMaybe: PsiFile, mapping: Map<PsiFile, Set<
  * @return A map that maps each file to a set of all files that get included by said file. E.g.
  * when `A`↦{`B`,`C`}. Then the files `B` and `C` get included by `A`.
  */
-fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
-    val commands = LatexCommandsIndex.getItems(this)
+fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
+    val commands = LatexIncludesIndex.getItems(this)
 
     // Maps every file to all the files it includes.
     val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
@@ -308,11 +312,11 @@ fun PsiFile.referencedFiles(): Set<PsiFile> {
  */
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val scope = fileSearchScope
-    val commands = LatexCommandsIndex.getItems(project, scope)
+    val commands = LatexIncludesIndex.getItems(project, scope)
+    val rootFile = findRootFile()
 
     commands.forEach { command ->
         val fileNames = command.includedFileNames() ?: return@forEach
-        val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
 
         for (fileName in fileNames) {
@@ -371,7 +375,7 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexedCommands]
+ * @see [LatexCommandsIndex.getItems]
  */
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 
