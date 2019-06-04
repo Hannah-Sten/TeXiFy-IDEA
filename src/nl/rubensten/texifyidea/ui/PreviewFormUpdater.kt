@@ -101,7 +101,7 @@ $previewCode
             // Create the default temp directory.
             setPreviewCodeInTemp(createTempDir())
         }
-        catch(exception: AccessDeniedException) {
+        catch (exception: AccessDeniedException) {
             // If pdf2svg or inkscape does not have access to the temp directory, try again with temp folder in the
             // home directory.
             setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
