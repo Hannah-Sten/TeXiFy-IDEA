@@ -29,6 +29,11 @@ abstract class MagicComment<Key, Value> {
     protected val keyValueStore: MutableMap<Key, MutableList<Value>> = HashMap()
 
     /**
+     * Get all the keys in the key value store.
+     */
+    fun keySet(): Set<Key> = keyValueStore.keys.toSet()
+
+    /**
      * Checks if a key-value pair with the given key is present in the magic comment.
      *
      * @return `true` if present, `false` if absent.
@@ -57,6 +62,13 @@ abstract class MagicComment<Key, Value> {
     fun size() = keyValueStore.size
 
     /**
+     * Combines the keys and their values of both comments in a new magic comment.
+     * If both comments share the same value for the same key, the value will appear multiple times.
+     * The value order is: values from `this` before values from `mergeWith`.
+     */
+    abstract fun merge(mergeWith: MagicComment<Key, Value>): MagicComment<Key, Value>
+
+    /**
      * Converts the magic comment to the lines that the MagicComment would represent in a magic comment code block.
      * Does not include the magic comment prefix and each line has no trailing or leading whitespace.
      */
@@ -76,6 +88,11 @@ abstract class MagicComment<Key, Value> {
      * @see [containsKey]
      */
     operator fun contains(key: MagicKey<Key>) = containsKey(key)
+
+    /**
+     *  @see [merge]
+     */
+    operator fun plus(mergeWith: MagicComment<Key, Value>) = merge(mergeWith)
 
     override fun toString() = keyValueStore.toString()
 }
@@ -110,4 +127,45 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
      * Removes all key-value pairs from the magic comment.
      */
     fun clear() = keyValueStore.clear()
+
+    /**
+     * See [merge], but then modifies `this` comment instead of creating a new one.
+     */
+    fun mergeModify(mergeWith: MagicComment<Key, Value>) {
+        mergeWith.keySet().forEach keyLoop@ { key ->
+            val magicKey = CustomMagicKey(key)
+            val values = mergeWith.values(magicKey) ?: return@keyLoop
+
+            values.forEach { value ->
+                addValue(magicKey, value)
+            }
+
+            // There are no values, so just add the key
+            if (values.isEmpty()) {
+                addValue(magicKey, null)
+            }
+        }
+    }
+
+    override fun merge(mergeWith: MagicComment<Key, Value>): MagicComment<Key, Value> {
+        val result = MutableMagicComment<Key, Value>()
+        result += this
+        result += mergeWith
+        return result
+    }
+
+    /**
+     * @see [mergeModify]
+     */
+    operator fun plusAssign(mergeWith: MagicComment<Key, Value>) = mergeModify(mergeWith)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is MutableMagicComment<*, *>) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }

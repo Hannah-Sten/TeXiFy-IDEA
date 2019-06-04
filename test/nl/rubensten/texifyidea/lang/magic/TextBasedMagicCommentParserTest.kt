@@ -2,8 +2,6 @@ package nl.rubensten.texifyidea.lang.magic
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 /**
  * @author Ruben Schellekens
@@ -85,24 +83,6 @@ open class TextBasedMagicCommentParserTest {
     @Test
     fun `Multiple assignments on one line`() {
         "%! test =       broodje =  saus ".assertValue("test", "broodje =  saus")
-    }
-
-    private fun MagicComment<String, String>.assertValue(key: String, expectedValue: String? = null, index: Int = 0) {
-        val magicKey = CustomMagicKey(key)
-        assertTrue(magicKey in this, "<$magicKey> is in not in the comment <$this>.")
-
-        val values = values(magicKey)
-        if (expectedValue != null) {
-            assertNotNull(values, "<$magicKey> is not present as key in comment <$this>.")
-            assertTrue(index < values!!.size,
-                    "Index <$index> is not present in value list <$values> of comment <$this>."
-            )
-        }
-
-        val actualValue = values?.getOrNull(index)
-        assertEquals(expectedValue, actualValue,
-                "Check if the key has the right first value at index <$index> of comment <$this>."
-        )
     }
 
     private fun String.asInput() = trimIndent().trim().split("\n")
