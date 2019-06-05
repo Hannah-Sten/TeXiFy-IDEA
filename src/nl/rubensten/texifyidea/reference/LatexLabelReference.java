@@ -9,7 +9,6 @@ import nl.rubensten.texifyidea.TexifyIcons;
 import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
-import nl.rubensten.texifyidea.psi.LatexRequiredParam;
 import nl.rubensten.texifyidea.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,12 +24,12 @@ import java.util.Objects;
 public class LatexLabelReference extends PsiReferenceBase<LatexCommands> implements PsiPolyVariantReference {
     private final String key;
 
-    public LatexLabelReference(@NotNull LatexCommands element, LatexRequiredParam param, TextRange range) {
+    public LatexLabelReference(@NotNull LatexCommands element, TextRange range) {
         super(element);
-        key = range.substring(param.getText());
+        key = range.substring(element.getText());
 
         // Only show Ctrl+click underline under the reference name
-        setRangeInElement(range.shiftRight(param.getTextOffset() - element.getTextOffset()));
+        setRangeInElement(range);
     }
 
     @NotNull
