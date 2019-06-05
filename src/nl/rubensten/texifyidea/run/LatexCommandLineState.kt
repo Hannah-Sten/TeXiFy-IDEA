@@ -12,6 +12,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.run.evince.EvinceForwardSearch
 import nl.rubensten.texifyidea.run.evince.OpenEvinceListener
 import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
@@ -33,6 +34,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")
+
+        // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
+        // checking for bibliography commands
+        if (runConfig.bibRunConfig == null) {
+            if (runConfig.psiFile?.hasBibliography() == true) {
+                runConfig.generateBibRunConfig(BibliographyCompiler.BIBTEX)
+            }
+            else if (runConfig.psiFile?.usesBiber() == true) {
+                runConfig.generateBibRunConfig(BibliographyCompiler.BIBER)
+            }
+        }
 
         createOutDirs(mainFile)
 

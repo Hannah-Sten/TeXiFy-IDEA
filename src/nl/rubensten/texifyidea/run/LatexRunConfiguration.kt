@@ -14,6 +14,7 @@ import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.util.LatexDistribution
@@ -55,6 +56,10 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
     var mainFile: VirtualFile? = null
+    // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
+    // This is not done when creating the template run configuration in order to delay the expensive bibtex check
+    var psiFile: PsiFile? = null
+
     // Enable auxiliary directories by default on MiKTeX only
     var hasAuxiliaryDirectories = LatexDistribution.isMiktex
     var hasOutputDirectories = true
