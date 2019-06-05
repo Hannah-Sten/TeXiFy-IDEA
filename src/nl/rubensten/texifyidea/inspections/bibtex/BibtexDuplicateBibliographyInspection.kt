@@ -42,11 +42,9 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                 }
 
         groupedIncludes.asSequence()
-                .filter { it.value.size > 1 }
-                .forEach {
-                    val fileName = it.key
-                    val commands = it.value.distinct()
-                    for (command in commands) {
+                .filter { (_, commands) -> commands.size > 1 }
+                .forEach { (fileName, commands) ->
+                    for (command in commands.distinct()) {
                         if (command.containingFile != file) continue
 
                         descriptors.add(manager.createProblemDescriptor(

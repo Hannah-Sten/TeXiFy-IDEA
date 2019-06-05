@@ -399,7 +399,15 @@ fun PsiFile.hasBibliography() = this.commandsInFileSet().any { it.name == "\\bib
  */
 fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibliography"}
 
-private fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter)
+/**
+ * Splits the first normal text child element of [element] on [delimiter].
+ *
+ * Note that only the first [LatexNormalText] child content is processed.
+ * When other PSI children are present in the parameter, these are ignored.
+ *
+ * @return The split contents.
+ */
+private fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter) ?: emptyList()
 
 /**
  * Splits the plain text contents on [delimiter].

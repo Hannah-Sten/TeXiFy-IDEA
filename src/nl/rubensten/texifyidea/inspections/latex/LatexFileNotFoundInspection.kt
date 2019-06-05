@@ -53,7 +53,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 val parameter = parameters[i]
 
                 // get file name of the command or continue with next parameter
-                val fileNames = parameter.splitContent() ?: continue
+                val fileNames = parameter.splitContent()
 
                 // get root file of the document actual worked with
                 val root = file.findRootFile()
