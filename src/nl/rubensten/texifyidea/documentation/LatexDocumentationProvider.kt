@@ -3,11 +3,13 @@ package nl.rubensten.texifyidea.documentation
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import nl.rubensten.texifyidea.lang.Described
 import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.rubensten.texifyidea.psi.BibtexId
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException
 import java.io.InputStream
 
@@ -20,6 +22,11 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
     }
+
+    /**
+     * The currently active lookup item.
+     */
+    private var lookup: Described? = null
 
     override fun getQuickNavigateInfo(psiElement: PsiElement, originalElement: PsiElement) = when (psiElement) {
         is LatexCommands -> LabelDeclarationLabel(psiElement).makeLabel()
@@ -43,6 +50,11 @@ class LatexDocumentationProvider : DocumentationProvider {
     }
 
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
+        if (element.previousSiblingIgnoreWhitespace() != null) {
+            return lookup?.description
+        }
+        else lookup = null
+
         originalElement ?: return null
         val urls = getUrlFor(element, originalElement) ?: return null
 
@@ -58,7 +70,15 @@ class LatexDocumentationProvider : DocumentationProvider {
         return sb.toString()
     }
 
-    override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, o: Any?, psiElement: PsiElement?): PsiElement? = null
+    override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, obj: Any?, psiElement: PsiElement?): PsiElement? {
+        if (obj == null || obj !is Described) {
+            lookup = null
+            return null
+        }
+
+        lookup = obj
+        return psiElement
+    }
 
     override fun getDocumentationElementForLink(psiManager: PsiManager?, s: String?, psiElement: PsiElement?): PsiElement? = null
 

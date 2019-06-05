@@ -1,5 +1,6 @@
 package nl.rubensten.texifyidea.lang.magic
 
+import nl.rubensten.texifyidea.lang.Described
 import nl.rubensten.texifyidea.run.LatexCompiler
 
 /**
@@ -9,7 +10,7 @@ enum class DefaultMagicKeys(
         override val key: String,
         override val documentation: String,
         override val targets: Set<MagicCommentScope> = MagicCommentScope.ALL_SCOPES
-) : MagicKey<String> {
+) : MagicKey<String>, Described {
 
     // TeXworks-esque relevant keys.
     PROGRAM("Program", """
@@ -58,6 +59,8 @@ enum class DefaultMagicKeys(
         A comma separated list of command names (including backslash) and environments to link to in the documentation.
         These commands and environments are related to the documented command or environment.
     """.trimIndent().trim(), MagicCommentScope.COMMAND.singleScope());
+
+    override val description: String = documentation
 
     override fun toString(): String = key
 }
