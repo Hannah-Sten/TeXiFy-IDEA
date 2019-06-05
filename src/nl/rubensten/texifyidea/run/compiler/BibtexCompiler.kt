@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import nl.rubensten.texifyidea.run.BibtexRunConfiguration
+import nl.rubensten.texifyidea.util.LatexDistribution
 
 /**
  * @author Sten Wessel
@@ -24,7 +25,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 
             // Include files from auxiliary directory on Windows
-            if (SystemInfo.isWindows) {
+            if (LatexDistribution.isMiktex) {
                 add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }

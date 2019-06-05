@@ -20,5 +20,5 @@ object Log {
      *         The objects to bind to the format.
      */
     @JvmStatic
-    fun logf(format: String, vararg objects: Any?) = logger.info("TEXIFY-IDEA - " + format.format(objects))
+    fun logf(format: String, vararg objects: Any?) = logger.info("TEXIFY-IDEA - " + format.format(*objects))
 }

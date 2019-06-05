@@ -2,20 +2,22 @@ package nl.rubensten.texifyidea.run
 
 import com.intellij.execution.Location
 import com.intellij.execution.actions.ConfigurationContext
-import com.intellij.execution.actions.RunConfigurationProducer
+import com.intellij.execution.actions.LazyRunConfigurationProducer
+import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
-import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
-import nl.rubensten.texifyidea.util.hasBibliography
-import nl.rubensten.texifyidea.util.usesBiber
 
 /**
  * @author Ruben Schellekens
  */
-class LatexRunConfigurationProducer : RunConfigurationProducer<LatexRunConfiguration>(LatexRunConfigurationType.instance) {
+class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfiguration>() {
+
+    override fun getConfigurationFactory(): ConfigurationFactory {
+        return LatexConfigurationFactory(LatexRunConfigurationType())
+    }
 
     override fun setupConfigurationFromContext(runConfiguration: LatexRunConfiguration,
                                                context: ConfigurationContext,
@@ -33,17 +35,11 @@ class LatexRunConfigurationProducer : RunConfigurationProducer<LatexRunConfigura
 
         // Setup run configuration.
         runConfiguration.mainFile = mainFile
+        runConfiguration.psiFile = container
         runConfiguration.setDefaultAuxiliaryDirectories()
         runConfiguration.setDefaultCompiler()
         runConfiguration.setDefaultOutputFormat()
         runConfiguration.setSuggestedName()
-
-        if (container.hasBibliography()) {
-            runConfiguration.generateBibRunConfig(BibliographyCompiler.BIBTEX)
-        }
-        else if (container.usesBiber()) {
-            runConfiguration.generateBibRunConfig(BibliographyCompiler.BIBER)
-        }
 
         return true
     }

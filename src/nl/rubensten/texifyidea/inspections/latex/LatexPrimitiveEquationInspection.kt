@@ -22,7 +22,7 @@ open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
         replacement = { _, _ -> "" },
         replacementRange = this::replaceRange,
         highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-        highlightRange = { replaceRange(it).toTextRange() },
+        highlightRange = { replaceRange(it).toTextRange().grown(-1) },
         quickFixName = { "Replace with '\\[..\\]'" }
 ) {
 
