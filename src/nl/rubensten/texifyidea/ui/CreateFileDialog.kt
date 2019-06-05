@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.ui
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.*
 import nl.rubensten.texifyidea.util.formatAsFileName
+import java.io.File
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -53,8 +54,20 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             setPreferredFocusComponent(nameField)
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
+                val pathEndIndex = nameField.text.lastIndexOf('/')
+                // If there is no '/' in the file name, we can use the path from the path field box.
+                val path = if (pathEndIndex == -1) {
+                    pathField.text
+                }
+                // If there is a '/' in the file name, we have to append the path with the folders given in the file name.
+                else {
+                    pathField.text + "/" + nameField.text.substring(0, pathEndIndex)
+                }
+
+                // Create the directories, if they do not yet exist.
+                File(path).mkdirs()
                 // Format the text from the name field as a file name (e.g. " " -> "-") and remove the (double) tex extension.
-                newFileFullPath = "${pathField.text}/${nameField.text.formatAsFileName()}"
+                newFileFullPath = "$path/${nameField.text.substring(pathEndIndex + 1).formatAsFileName()}"
                         .replace(Regex("(\\.tex)+$", RegexOption.IGNORE_CASE), "")
             }
         }
