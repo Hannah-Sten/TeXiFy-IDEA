@@ -179,24 +179,24 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val argument = latexCommandHuh
                     .getArgumentsOf(RequiredFileArgument::class.java)[0]
 
-            val fileName = required[0]
+            val fileNames = cmd.includedFileNames() ?: continue
             val containingFile = element.containingFile
             val directory = containingFile.findRootFile()
                     .containingDirectory.virtualFile
 
-            val file = directory.findFile(fileName, argument.supportedExtensions) ?: continue
-            val psiFile = PsiManager.getInstance(element.project).findFile(file) ?: continue
+            val elt = LatexStructureViewCommandElement(cmd)
+            for (fileName in fileNames) {
+                val file = directory.findFile(fileName, argument.supportedExtensions) ?: continue
+                val psiFile = PsiManager.getInstance(element.project).findFile(file) ?: continue
 
-            if (BibtexFileType == psiFile.fileType) {
-                val elt = LatexStructureViewCommandElement(cmd)
-                elt.addChild(BibtexStructureViewElement(psiFile))
-                treeElements.add(elt)
+                if (BibtexFileType == psiFile.fileType) {
+                    elt.addChild(BibtexStructureViewElement(psiFile))
+                }
+                else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
+                    elt.addChild(LatexStructureViewElement(psiFile))
+                }
             }
-            else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
-                val elt = LatexStructureViewCommandElement(cmd)
-                elt.addChild(LatexStructureViewElement(psiFile))
-                treeElements.add(elt)
-            }
+            treeElements.add(elt)
         }
     }
 
