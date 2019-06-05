@@ -6,13 +6,13 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.algorithm.BFS
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
+import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.util.findInclusions
 import nl.rubensten.texifyidea.util.findRelativeFile
 import nl.rubensten.texifyidea.util.findRootFile
-import nl.rubensten.texifyidea.util.requiredParameter
+import nl.rubensten.texifyidea.util.includedFileNames
 
 /**
  * @author Ruben Schellekens
@@ -51,27 +51,29 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
         }
         bfs.execute()
 
-        // Look through all commands to see if they include duplicates.
-        val commands = LatexCommandsIndex.getItems(file)
+        // Look through all inclusion commands to see if they include duplicates.
+        val commands = LatexIncludesIndex.getItems(file)
         for (command in commands) {
             val name = command.name
             if ("\\input" != name && "\\include" != name && "\\includeonly" != name) {
                 continue
             }
 
-            val param = command.requiredParameter(0) ?: continue
-            val targetFile = root.findRelativeFile(param)
-            if (!duplicate.contains(targetFile)) {
-                continue
+            val fileNames = command.includedFileNames() ?: continue
+            for (fileName in fileNames) {
+                val targetFile = root.findRelativeFile(fileName)
+                if (duplicate.contains(targetFile)) {
+                    descriptors.add(manager.createProblemDescriptor(
+                            command,
+                            TextRange(name.length + 1, command.textLength - 1),
+                            "File inclusion loop found.",
+                            ProblemHighlightType.GENERIC_ERROR,
+                            isOntheFly
+                    ))
+                    break
+                }
             }
 
-            descriptors.add(manager.createProblemDescriptor(
-                    command,
-                    TextRange(name.length + 1, command.textLength - 1),
-                    "File inclusion loop found.",
-                    ProblemHighlightType.GENERIC_ERROR,
-                    isOntheFly
-            ))
         }
 
         return descriptors

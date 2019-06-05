@@ -241,13 +241,10 @@ fun PsiFile.isRoot(): Boolean {
  */
 fun PsiFile.findInclusions(): List<PsiFile> {
     val root = findRootFile()
-    return commandsInFile().asSequence()
+    return LatexIncludesIndex.getItems(this).asSequence()
             .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
-            .map { it.requiredParameter(0) }
-            .filter(Objects::nonNull)
-            .map { root.findRelativeFile(it!!) }
-            .filter(Objects::nonNull)
-            .map { it!! }
+            .flatMap { it.includedFileNames()?.asSequence() ?: emptySequence() }
+            .mapNotNull { root.findRelativeFile(it) }
             .toList()
 }
 
