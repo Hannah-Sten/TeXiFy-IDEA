@@ -13,13 +13,11 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.run.evince.EvinceForwardSearch
+import nl.rubensten.texifyidea.run.evince.OpenEvinceListener
 import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
 import nl.rubensten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
-import nl.rubensten.texifyidea.util.FileUtil
-import nl.rubensten.texifyidea.util.createExcludedDir
-import nl.rubensten.texifyidea.util.psiFile
-import nl.rubensten.texifyidea.util.referencedFileSet
+import nl.rubensten.texifyidea.util.*
 import java.io.File
 
 /**
@@ -108,7 +106,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             SumatraForwardSearch().execute(handler, runConfig, environment)
         }
         else if(isEvinceAvailable()) {
-            EvinceForwardSearch().execute(runConfig, environment)
+            EvinceForwardSearch().execute(handler, runConfig, environment)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
