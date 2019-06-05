@@ -37,7 +37,8 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
         val strings = bibtexIds.map { it.idName() }.toList()
 
         val added = HashSet<BibtexId>()
-        for (bibtexId in bibtexIds) {
+        // Check the bibtexIds in the current file
+        for (bibtexId in BibtexIdIndex.getIndexedIds(file)) {
             val idName = bibtexId.idName()
 
             // Check if defined as bibitem.
