@@ -86,7 +86,8 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                 // If we handle the current command, find the first occurrence of bibName and leave it intact
                 val firstBibIndex = if (command == currentCommand) {
                     param.text.splitToSequence(',').indexOfFirst { it.matchesBibName() }
-                } else -1
+                }
+                else -1
 
                 val replacement = param.text.trimRange(1, 1).splitToSequence(',')
                         .filterIndexed { i, it -> i <= firstBibIndex || it.matchesBibName() }
