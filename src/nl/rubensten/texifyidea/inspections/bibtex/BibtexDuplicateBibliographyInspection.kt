@@ -94,7 +94,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                         .joinToString(",", prefix = "{", postfix = "}")
 
                 // When no arguments are left, just delete the command
-                if (replacement.trimRange(1, 1).trim().isEmpty()) {
+                if (replacement.trimRange(1, 1).isBlank()) {
                     command.delete()
                 }
                 else {
