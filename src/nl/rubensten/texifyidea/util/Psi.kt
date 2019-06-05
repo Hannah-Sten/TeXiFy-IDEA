@@ -8,6 +8,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.lang.DefaultEnvironment
 import nl.rubensten.texifyidea.lang.Environment
+import nl.rubensten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.rubensten.texifyidea.psi.*
 import kotlin.reflect.KClass
 
@@ -313,6 +314,13 @@ fun PsiElement.firstChildIgnoringWhitespaceOrNull(): PsiElement? {
     }
     return child
 }
+
+/**
+ * Checks if the PsiComment is actually a Magic Comment.
+ *
+ * @return `true` if it is a magic comment, `false` otherwise.
+ */
+fun PsiElement.isMagicComment(): Boolean = TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(text)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
