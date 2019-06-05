@@ -97,15 +97,15 @@ public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub
 
     @NotNull
     private static List<TextRange> splitToRanges(String text, Pattern pattern) {
-        String[] subParameters = pattern.split(text);
+        String[] parts = pattern.split(text);
 
         List<TextRange> ranges = new ArrayList<>();
 
         int currentOffset = 0;
-        for (String subParameter : subParameters) {
-            final int subParameterStartOffset = text.indexOf(subParameter, currentOffset);
-            ranges.add(TextRange.from(subParameterStartOffset, subParameter.length()));
-            currentOffset = subParameterStartOffset + subParameter.length();
+        for (String part : parts) {
+            final int partStartOffset = text.indexOf(part, currentOffset);
+            ranges.add(TextRange.from(partStartOffset, part.length()));
+            currentOffset = partStartOffset + part.length();
         }
 
         return ranges;
