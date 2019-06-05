@@ -1,11 +1,13 @@
 package nl.rubensten.texifyidea.lang.magic
 
+import nl.rubensten.texifyidea.lang.Described
+
 /**
  * Represents a key from a [MagicComment]s.
  *
  * @author Ruben Schellekens
  */
-interface MagicKey<Key> {
+interface MagicKey<Key> : Described {
 
     /**
      * The key used in [MagicComment].
@@ -25,4 +27,7 @@ interface MagicKey<Key> {
      */
     val targets: Set<MagicCommentScope>
         get() = MagicCommentScope.ALL_SCOPES
+
+    override val description: String
+        get() = documentation
 }
