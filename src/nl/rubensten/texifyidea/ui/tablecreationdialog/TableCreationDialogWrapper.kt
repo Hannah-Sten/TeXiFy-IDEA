@@ -48,12 +48,11 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
      * @param title of the column.
      * @param typedColumnIndex is the column type of the column.
      */
-    private val addColumnFun = fun(title: String, typedColumnIndex: Int, _: Int) {
+    private val addColumnFun = fun(title: String, columnType: ColumnType, _: Int) {
         // Add the column to the table, with an empty cell for each row (instead of the default null).
         tableModel.addColumn(title, (0 until tableModel.rowCount).map { "" }.toTypedArray())
         // Add the column type to the list of column types.
-        val selectedColumnType = ColumnType.values()[typedColumnIndex]
-        columnTypes.add(selectedColumnType)
+        columnTypes.add(columnType)
         // If table is currently empty, add one row to this new column.
         if (tableModel.columnCount == 1) tableModel.addRow(arrayOf(""))
     }
@@ -65,10 +64,10 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
      * @param typedColumnIndex is the index of the column type.
      * @param columnIndex is the index of the edited column in the table, starting at 0.
      */
-    private val editColumnFun = fun(title: String, typedColumnIndex: Int, columnIndex: Int) {
+    private val editColumnFun = fun(title: String, columnType: ColumnType, columnIndex: Int) {
         tableModel.setHeaderName(title, columnIndex)
         // Edit the column type of the edited column.
-        columnTypes[columnIndex] = ColumnType.values()[typedColumnIndex]
+        columnTypes[columnIndex] = columnType
         tableModel.fireTableStructureChanged()
     }
 

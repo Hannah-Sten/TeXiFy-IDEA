@@ -19,7 +19,7 @@ import javax.swing.JPanel
  * @author Abby Berkers
  */
 class TableCreationEditColumnDialog(
-        private val onOkFunction: (String, Int, Int) -> Unit,
+        private val onOkFunction: (String, ColumnType, Int) -> Unit,
         private val editingColumn: Int,
         private val columnName: String = "",
         private val columnType: ColumnType = ColumnType.TEXT_COLUMN) {
@@ -55,7 +55,7 @@ class TableCreationEditColumnDialog(
             }
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
-                onOkFunction(columnNameField.text, columnTypeComboBox.selectedIndex, editingColumn)
+                onOkFunction(columnNameField.text, ColumnType.values()[columnTypeComboBox.selectedIndex], editingColumn)
             }
         }
     }
