@@ -177,15 +177,13 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
         panel.add(mainFile)
 
-        // Only add options to disable aux and out folder on Windows.
-        // (Disabled on other systems by default.)
-        if (SystemInfo.isWindows) {
+        // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
+        if (LatexDistribution.isMiktex) {
             panel.add(TitledSeparator("Options"))
 
             // Auxiliary files
-            auxDir = JBCheckBox("Separate auxiliary files from output (MiKTeX only)")
-            // Only enable by default on MiKTeX.
-            auxDir!!.isSelected = LatexDistribution.isMiktex
+            auxDir = JBCheckBox("Separate auxiliary files from output")
+            auxDir!!.isSelected = true
             panel.add(auxDir)
         }
 

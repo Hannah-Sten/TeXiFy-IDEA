@@ -14,16 +14,10 @@ import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.rubensten.texifyidea.run.LatexCompiler.Format
-import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
-import nl.rubensten.texifyidea.util.LatexDistribution
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.util.WriteExternalException
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
+import nl.rubensten.texifyidea.util.LatexDistribution
 import org.jdom.Element
 
 /**
