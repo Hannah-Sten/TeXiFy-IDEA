@@ -306,7 +306,7 @@ object Magic {
         @JvmField val endsWithNonBreakingSpace = RegexPattern.compile("~$")!!
 
         /**
-         * Finds all abbreviations that have at least two letters seperated by comma's.
+         * Finds all abbreviations that have at least two letters separated by comma's.
          *
          * It might be more parts, like `b.v.b.d.` is a valid abbreviation. Likewise are `sajdflkj.asdkfj.asdf` and
          * `i.e.`. Single period abbreviations are not being detected as they can easily be confused with two letter words
