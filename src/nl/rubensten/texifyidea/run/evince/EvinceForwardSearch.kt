@@ -1,11 +1,12 @@
 package nl.rubensten.texifyidea.run.evince
 
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
-import nl.rubensten.texifyidea.TeXception
-import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.run.LatexRunConfiguration
-import nl.rubensten.texifyidea.util.*
-import org.jetbrains.concurrency.runAsync
+import nl.rubensten.texifyidea.util.caretOffset
+import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.openedEditor
+import nl.rubensten.texifyidea.util.psiFile
 
 /**
  * Provides forward search for Evince.
@@ -13,27 +14,17 @@ import org.jetbrains.concurrency.runAsync
 class EvinceForwardSearch {
 
     /**
-     * Execute forward search based on the given environment.
+     * Execute forward search when the process is done.
      */
-    fun execute(runConfig: LatexRunConfiguration, environment: ExecutionEnvironment) {
-        run {
-            val psiFile = runConfig.mainFile?.psiFile(environment.project) ?: return@run
-            val document = psiFile.document() ?: return@run
-            val editor = psiFile.openedEditor() ?: return@run
+    fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment) {
+        // We have to find the file and line number before scheduling the forward search
+        val psiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
+        val document = psiFile.document() ?: return
+        val editor = psiFile.openedEditor() ?: return
 
-            if (document != editor.document) {
-                return@run
-            }
+        val line = document.getLineNumber(editor.caretOffset()) + 1
 
-            val line = document.getLineNumber(editor.caretOffset()) + 1
-
-            runAsync {
-                try {
-                    // This will start Evince if it is not running yet
-                    EvinceConversation.forwardSearch(pdfFilePath = runConfig.outputFilePath, sourceFilePath = psiFile.virtualFile.path, line = line)
-                } catch (ignored: TeXception) {
-                }
-            }
-        }
+        // Set the OpenEvinceListener to execute when the compilation is done
+        handler.addProcessListener(OpenEvinceListener(runConfig, environment, psiFile, line))
     }
 }

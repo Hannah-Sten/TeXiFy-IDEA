@@ -2,8 +2,8 @@ package nl.rubensten.texifyidea.run
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import nl.rubensten.texifyidea.util.LatexDistribution
 import nl.rubensten.texifyidea.util.splitWhitespace
 
 /**
@@ -27,12 +27,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories && SystemInfo.isWindows) {
+            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex) {
                 command.add("-aux-directory=" + moduleRoot.path + "/auxil")
             }
 
             // Prepend root paths to the input search path
-            if (SystemInfo.isWindows) {
+            if (LatexDistribution.isMiktex) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -81,7 +81,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories && SystemInfo.isWindows) {
+            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex) {
                 command.add("-aux-directory=${moduleRoot.path}/auxil")
             }
 
@@ -111,12 +111,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories && SystemInfo.isWindows) {
+            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex) {
                 command.add("-aux-directory=" + moduleRoot.path + "/auxil")
             }
 
             // Prepend root paths to the input search path
-            if (SystemInfo.isWindows) {
+            if (LatexDistribution.isMiktex) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }

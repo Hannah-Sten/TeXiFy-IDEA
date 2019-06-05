@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.run.evince.EvinceForwardSearch
+import nl.rubensten.texifyidea.run.evince.OpenEvinceListener
 import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
 import nl.rubensten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
@@ -89,38 +90,35 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // First check if the user specified a custom viewer, if not then try other supported viewers
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
-            // Split user command on spaces, then replace {pdf} if needed?
+            // Split user command on spaces, then replace {pdf} if needed
             val commandString = runConfig.viewerCommand!!
 
             // Split on spaces
-            val commandList = commandString.split(" ")
+            val commandList = commandString.split(" ").toMutableList()
 
-            // Replace placeholder
-            var containsPlaceholder = false
-            val mappedList = commandList.map {
-                if (it.contains("{pdf}")) {
-                    containsPlaceholder = true
-                    val replacement: String = it.replace("{pdf}", runConfig.outputFilePath)
-                    replacement
-                }
-                else {
-                    it
-                }
-            }.toMutableList()
+            val containsPlaceholder = commandList.contains("{pdf}")
 
-            // If no placeholder was used, append path to the command
-            if (!containsPlaceholder) {
-                mappedList += runConfig.outputFilePath
+            if (containsPlaceholder) {
+                // Replace placeholder
+                for (i in 0 until commandList.size) {
+                    if (commandList[i].contains("{pdf}")) {
+                        commandList[i] = commandList[i].replace("{pdf}", runConfig.outputFilePath)
+                    }
+                }
+            }
+            else if (!containsPlaceholder) {
+                // If no placeholder was used, assume the path is the final argument
+                commandList += runConfig.outputFilePath
             }
 
-            handler.addProcessListener(OpenPdfViewerListener(mappedList.toTypedArray()))
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray()))
         }
         else if (runConfig.sumatraPath != null || isSumatraAvailable) {
             // Open Sumatra after compilation & execute inverse search.
             SumatraForwardSearch().execute(handler, runConfig, environment)
         }
         else if(isEvinceAvailable()) {
-            EvinceForwardSearch().execute(runConfig, environment)
+            EvinceForwardSearch().execute(handler, runConfig, environment)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
