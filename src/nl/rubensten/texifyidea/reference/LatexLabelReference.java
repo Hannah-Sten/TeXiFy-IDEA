@@ -10,10 +10,7 @@ import nl.rubensten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.rubensten.texifyidea.psi.BibtexId;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexRequiredParam;
-import nl.rubensten.texifyidea.util.FileSetKt;
-import nl.rubensten.texifyidea.util.LabelsKt;
-import nl.rubensten.texifyidea.util.Magic;
-import nl.rubensten.texifyidea.util.StringsKt;
+import nl.rubensten.texifyidea.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,15 +23,14 @@ import java.util.Objects;
  * @author Ruben Schellekens, Sten Wessel
  */
 public class LatexLabelReference extends PsiReferenceBase<LatexCommands> implements PsiPolyVariantReference {
+    private final String key;
 
-    private String key;
-
-    public LatexLabelReference(@NotNull LatexCommands element, LatexRequiredParam param) {
+    public LatexLabelReference(@NotNull LatexCommands element, LatexRequiredParam param, TextRange range) {
         super(element);
-        key = param.getText().substring(1, param.getText().length() - 1);
+        key = range.substring(param.getText());
 
         // Only show Ctrl+click underline under the reference name
-        setRangeInElement(new TextRange(param.getTextOffset() - element.getTextOffset() + 1, param.getTextOffset() - element.getTextOffset() + key.length() + 1));
+        setRangeInElement(range.shiftRight(param.getTextOffset() - element.getTextOffset()));
     }
 
     @NotNull
