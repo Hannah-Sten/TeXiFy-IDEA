@@ -7,16 +7,12 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
-import nl.rubensten.texifyidea.util.Magic
-import nl.rubensten.texifyidea.util.childrenOfType
-import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.parentOfType
+import nl.rubensten.texifyidea.util.*
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -42,7 +38,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
         for (command in commands) {
             // Only target references.
             if (!Magic.Command.reference.contains(command.name)) continue

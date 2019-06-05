@@ -3,7 +3,6 @@ package nl.rubensten.texifyidea.util
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
 
@@ -40,7 +39,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
 
@@ -121,7 +120,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackages(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedPackages(commands, HashSet())
     }
 
@@ -132,7 +131,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedTikzLibraries(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedTikzLibraries(commands, HashSet())
     }
 
@@ -143,7 +142,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPgfLibraries(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedPgfLibraries(commands, HashSet())
     }
 
@@ -154,7 +153,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesList(baseFile: PsiFile): List<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedPackages(commands, ArrayList())
     }
 
@@ -165,7 +164,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesOfSingleFile(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItems(baseFile)
+        val commands = baseFile.commandsInFile()
         return getIncludedPackages(commands, HashSet())
     }
 
@@ -176,7 +175,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesOfSingleFileList(baseFile: PsiFile): List<String> {
-        val commands = LatexCommandsIndex.getItems(baseFile)
+        val commands = baseFile.commandsInFile()
         return getIncludedPackages(commands, ArrayList())
     }
 

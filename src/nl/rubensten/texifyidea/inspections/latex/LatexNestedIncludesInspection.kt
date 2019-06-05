@@ -7,7 +7,6 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexIncludesIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
@@ -37,7 +36,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        LatexCommandsIndex.getItems(file).asSequence()
+        file.commandsInFile().asSequence()
                 .filter { it.name == "\\include" }
                 .forEach {
                     descriptors.add(manager.createProblemDescriptor(

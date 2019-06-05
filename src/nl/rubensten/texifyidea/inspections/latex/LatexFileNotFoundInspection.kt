@@ -6,12 +6,12 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.LatexCommand
 import nl.rubensten.texifyidea.lang.RequiredArgument
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
+import nl.rubensten.texifyidea.util.commandsInFile
 import nl.rubensten.texifyidea.util.findFile
 import nl.rubensten.texifyidea.util.findRootFile
 import nl.rubensten.texifyidea.util.splitContent
@@ -30,7 +30,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
         for (command in commands) {
             // Only consider default commands with a file argument.
             val default = LatexCommand.lookup(command.name) ?: continue

@@ -150,7 +150,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val root = baseFile.findRootFile()
             val documentClass = root.documentClassFile()
             if (documentClass != null) {
-                val command = LatexCommandsIndex.getItems(baseFile).asSequence()
+                val command = baseFile.commandsInFile().asSequence()
                         .filter { cmd -> "\\documentclass" == cmd.name }
                         .firstOrNull()
                 if (command != null) {

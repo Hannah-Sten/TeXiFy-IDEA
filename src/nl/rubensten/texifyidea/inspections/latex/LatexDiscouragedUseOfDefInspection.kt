@@ -8,11 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
+import nl.rubensten.texifyidea.util.commandsInFile
 import nl.rubensten.texifyidea.util.document
 
 /**
@@ -31,7 +31,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
         for (cmd in commands) {
             // Only consider \let and \def.
             if (cmd.name == "\\let" || cmd.name == "\\def") {

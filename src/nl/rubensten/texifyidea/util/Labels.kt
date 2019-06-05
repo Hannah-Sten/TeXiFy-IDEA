@@ -24,7 +24,7 @@ fun PsiFile.findLabelsInFileSet(): Set<String> {
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexLabelsInFileSet(): Sequence<String> = LatexCommandsIndex.getItemsInFileSet(this)
+fun PsiFile.findLatexLabelsInFileSet(): Sequence<String> = this.commandsInFileSet()
         .asSequence()
         .filter { "\\label" == it.name || "\\bibitem" == it.name }
         .mapNotNull(LatexCommands::getRequiredParameters)
@@ -63,7 +63,7 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
  * @return The found label commands.
  */
 fun PsiFile.findLabels(): Collection<PsiElement> {
-    val commands = LatexCommandsIndex.getItems(this)
+    val commands = this.commandsInFile()
     val bibtexIds = BibtexIdIndex.getIndexedIds(this)
     val result = ArrayList<PsiElement>(commands)
     result.addAll(bibtexIds)

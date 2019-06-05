@@ -153,7 +153,7 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
-    if (LatexCommandsIndex.getItems(this).any { "\\documentclass" == it.name }) {
+    if (this.commandsInFile().any { "\\documentclass" == it.name }) {
         return this
     }
 

@@ -10,7 +10,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
@@ -48,7 +47,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
          */
         fun findNextSection(command: LatexCommands): PsiElement? {
             // Scan all commands.
-            val commands = LatexCommandsIndex.getItems(command.containingFile).toList()
+            val commands = command.containingFile.commandsInFile().toList()
 
             for (i in 0 until commands.size) {
                 val cmd = commands[i]

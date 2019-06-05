@@ -7,14 +7,10 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.util.Magic
-import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.replaceString
-import nl.rubensten.texifyidea.util.requiredParameter
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Sten Wessel
@@ -30,7 +26,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        LatexCommandsIndex.getItems(file).asSequence()
+        file.commandsInFile().asSequence()
                 .filter { it.name in Magic.Command.illegalExtensions }
                 .filter { command ->
                     Magic.Command.illegalExtensions[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }

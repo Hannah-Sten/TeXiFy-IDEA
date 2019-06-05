@@ -8,9 +8,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
-import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.util.commandsInFileSet
 
 /**
  * @author Ruben Schellekens
@@ -31,7 +31,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        val hasDocumentclass = LatexCommandsIndex.getItemsInFileSet(file).asSequence()
+        val hasDocumentclass = file.commandsInFileSet().asSequence()
                 .filter { cmd -> cmd.name == "\\documentclass" }
                 .count() > 0
 
