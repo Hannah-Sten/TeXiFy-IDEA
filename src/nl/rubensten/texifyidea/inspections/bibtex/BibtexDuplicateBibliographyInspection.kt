@@ -36,7 +36,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         LatexIncludesIndex.getItemsInFileSet(file).asSequence()
                 .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
                 .forEach {
-                    for (fileName in it.includedFileNames() ?: emptyList()) {
+                    for (fileName in it.includedFileNames() ?: return@forEach) {
                         groupedIncludes.getOrPut(fileName) { mutableListOf() }.add(it)
                     }
                 }
