@@ -169,11 +169,65 @@ fun LatexEnvironment.magicComment(): MagicComment<String, String> {
 fun LatexEnvironment.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
 
+    // Direct comments.
+    result += magicComment()
+
     // Magic comment of the containing file.
     result += containingFile.magicComment()
 
+    // All parent environments.
+    parentsOfType(LatexEnvironment::class.java).forEach { parent ->
+        result += parent.magicComment()
+    }
+
+    return result
+}
+
+/**
+ * Get the magic comment that directly targets this command.
+ */
+fun LatexCommands.magicComment(): MagicComment<String, String> {
+    // TODO: Implement
+    return MagicComment.empty()
+}
+
+/**
+ * Get the (merged) magic cbomments that are targetted to this command, and all parent environments and the whole file.
+ */
+fun LatexCommands.allMagicComments(): MagicComment<String, String> {
+    // TODO: Implement
+    return MagicComment.empty()
+}
+
+/**
+ * Get the magic comment that directly targets this group.
+ */
+fun LatexGroup.magicComment(): MagicComment<String, String> {
+    return forwardMagicCommentLookup { firstChild.nextSiblingIgnoreWhitespace() }
+}
+
+/**
+ * Get the (merged) magic cbomments that are targetted to this group, all parent goups, commands,
+ * environments and the whole file.
+ */
+fun LatexGroup.allMagicComments(): MagicComment<String, String> {
+    val result = MutableMagicComment<String, String>()
+
     // Direct comments.
     result += magicComment()
+
+    // Magic comment of the containing file.
+    result += containingFile.magicComment()
+
+    // All parent groups.
+    parentsOfType(LatexGroup::class.java).forEach { parent ->
+        result += parent.magicComment()
+    }
+
+    // All parent commands.
+    parentsOfType(LatexCommands::class.java).forEach { parent ->
+        result += parent.magicComment()
+    }
 
     // All parent environments.
     parentsOfType(LatexEnvironment::class.java).forEach { parent ->
