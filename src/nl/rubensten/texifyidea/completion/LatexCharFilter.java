@@ -15,10 +15,15 @@ public class LatexCharFilter extends CharFilter {
     @Nullable
     @Override
     public Result acceptChar(char c, int prefixLength, Lookup lookup) {
-        if (isInLatexContext(lookup) && c == '$') {
-            return Result.HIDE_LOOKUP;
+        if (!isInLatexContext(lookup)) {
+            return null;
         }
-        return null;
+
+        switch (c) {
+            case '$': return Result.HIDE_LOOKUP;
+            case ':': return Result.ADD_TO_PREFIX;
+            default: return null;
+        }
     }
 
     private static boolean isInLatexContext(Lookup lookup) {
