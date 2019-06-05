@@ -62,7 +62,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
             val fileNames = command.includedFileNames() ?: continue
             for (fileName in fileNames) {
                 val targetFile = root.findRelativeFile(fileName)
-                if (duplicate.contains(targetFile)) {
+                if (targetFile in duplicate) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,
                             TextRange(name.length + 1, command.textLength - 1),
