@@ -5,10 +5,13 @@ package nl.rubensten.texifyidea.lang.magic
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.parentsOfType
 import nl.rubensten.texifyidea.psi.LatexCommands
+import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.psi.LatexGroup
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 /**
  * Adds the given magic comment as an actual comment to the file.
@@ -79,28 +82,103 @@ fun <Key, Value> PsiElement.addMagicComment(magicComment: MagicComment<Key, Valu
 }
 
 /**
- * Get the magic comment that directly targets this psi file.
+ * Finds all the consecutive (sibling) magic comments relative to a PsiElement.
+ * Ignores regular comments.
+ *
+ * @param initial
+ *          Fetches the first candidate comment.
+ * @param next
+ *          Fetches the next candidate comment.
+ * @param reversed
+ *          Whether the magic comments must be inserted in reversed order (`true`) or in regular walking order (`false`).
+ * @return The parsed magic comment.
  */
-fun PsiFile.magicComment(): MagicComment<String, String> {
-    val commentLines = ArrayList<String>()
+fun PsiElement.magicCommentLookup(
+        initial: PsiElement.() -> PsiElement?,
+        next: PsiElement.() -> PsiElement?,
+        reversed: Boolean = false
+): MagicComment<String, String> {
 
-    // Scan through all the header comments for magic comments.
-    var currentComment: PsiElement? = firstChildIgnoringWhitespaceOrNull() ?: return MagicComment.empty()
-    while (currentComment != null) {
+    val commentLines = LinkedList<String>()
 
-        // Stop searching when a non PsiComment is found (the scan ends at the first non-comment).
-        if (currentComment !is PsiComment) break
+    // Scan (backward) through all the magic comments preceding the element.
+    var current: PsiElement? = initial() ?: return MagicComment.empty()
+
+    // Stop searching when a non PsiComment is found or null (the scan ends at the first non-comment).
+    while (current is PsiComment) {
 
         // Only consider magic comments.
-        val commentText = currentComment.text
-        currentComment = currentComment.nextSiblingIgnoreWhitespace()
+        val commentText = current.text
+        current = current.next()
         if (TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(commentText).not()) continue
 
         // Collect magic comment contents.
-        commentLines += commentText
+        if (reversed) {
+            commentLines.addFirst(commentText)
+        }
+        else commentLines.add(commentText)
     }
 
     // Parse all collected magic comments.
     val parser = TextBasedMagicCommentParser(commentLines)
     return parser.parse()
+}
+
+/**
+ * Parses the magic comments that supercede this psi element.
+ *
+ * @param initial
+ *          Fetches the first candidate comment.
+ */
+fun PsiElement.forwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?) = magicCommentLookup(
+        initial,
+        PsiElement::nextSiblingIgnoreWhitespace,
+        reversed = false
+)
+
+/**
+ * Parses the magic comments that precede this psi element.
+ *
+ * @param initial
+ *          Fetches the first candidate comment.
+ */
+fun PsiElement.backwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?) = magicCommentLookup(
+        initial,
+        PsiElement::previousSiblingIgnoreWhitespace,
+        reversed = true
+)
+
+/**
+ * Get the magic comment that directly targets this psi file.
+ */
+fun PsiFile.magicComment(): MagicComment<String, String> {
+    return forwardMagicCommentLookup { firstChildIgnoringWhitespaceOrNull() }
+}
+
+/**
+ * Get the magic comment that directly precedes the environment.
+ */
+fun LatexEnvironment.magicComment(): MagicComment<String, String> {
+    val outerContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    return outerContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
+}
+
+/**
+ * Get the (merged) magic cbomments that are targetted to this environment, all parent environments and the whole file.
+ */
+fun LatexEnvironment.allMagicComments(): MagicComment<String, String> {
+    val result = MutableMagicComment<String, String>()
+
+    // Magic comment of the containing file.
+    result += containingFile.magicComment()
+
+    // Direct comments.
+    result += magicComment()
+
+    // All parent environments.
+    parentsOfType(LatexEnvironment::class.java).forEach { parent ->
+        result += parent.magicComment()
+    }
+
+    return result
 }
