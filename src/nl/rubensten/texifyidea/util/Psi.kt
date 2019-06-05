@@ -404,7 +404,8 @@ private fun splitContent(element: PsiElement, delimiter: String = ",") = element
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed. When other PSI children are present in the parameter, these are ignored.
+ * Note that only the first [LatexNormalText] child content is processed.
+ * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
  */
@@ -413,7 +414,8 @@ fun LatexRequiredParam.splitContent(delimiter: String = ",") = splitContent(this
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed. When other PSI children are present in the parameter, these are ignored.
+ * Note that only the first [LatexNormalText] child content is processed.
+ * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
  */
@@ -422,7 +424,8 @@ fun LatexOptionalParam.splitContent(delimiter: String = ",") = splitContent(this
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed. When other PSI children are present in the parameter, these are ignored.
+ * Note that only the first [LatexNormalText] child content is processed.
+ * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
  */

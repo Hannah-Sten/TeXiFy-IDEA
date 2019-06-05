@@ -73,7 +73,6 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                     break
                 }
             }
-
         }
 
         return descriptors
