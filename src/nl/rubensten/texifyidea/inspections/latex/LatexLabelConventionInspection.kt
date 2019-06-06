@@ -53,7 +53,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                               descriptors: MutableList<ProblemDescriptor>) {
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            val labelAnyCommands = TexifySettings.getInstance().labelAnyCommands
+            val labelAnyCommands = TexifySettings.getInstance().labelPreviousCommands
             if (!labelAnyCommands.containsKey(cmd.name)) {
                 continue
             }
@@ -116,7 +116,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             val position =
                     TexifySettings
                             .getInstance()
-                            .labelAnyCommands
+                            .labelPreviousCommands
                             .getOrDefault(command.name, null)
                             ?.position
                             ?: return

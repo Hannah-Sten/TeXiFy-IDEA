@@ -11,7 +11,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * @author Sten Wessel
  */
 @State(name = "TexifySettings", storages = [(Storage("texifySettings.xml"))])
-class TexifySettings : PersistentStateComponent<TexifySettings> {
+class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     companion object {
 
@@ -32,52 +32,45 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticItemInItemize = true
 
     // Index of selected combobox item
-    var automaticQuoteReplacement = QuoteReplacement.NONE
+    lateinit var automaticQuoteReplacement : QuoteReplacement
 
     /**
      * internal list which stores the commands data
      */
-    private val labelCommandsInternal: HashMap<String, LabelingCommandInformation> =
+    val labelCommands: HashMap<String, LabelingCommandInformation> =
             hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true))
 
-    /**
-     * Verify that any key in the list has a leading backslash
-     */
-    val labelCommands: Map<String, LabelingCommandInformation>
-        get() {
-            return labelCommandsInternal.mapKeys { it.key.addLeadingSlash() }
-        }
+    override fun getState(): TexifySettingsState? {
+        return TexifySettingsState(
+                labelCommands = labelCommands.mapValues { it.value.toSerializableString() },
+                automaticSoftWraps = automaticSoftWraps,
+                automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
+                automaticUpDownBracket = automaticUpDownBracket,
+                automaticItemInItemize = automaticItemInItemize,
+                automaticQuoteReplacement = automaticQuoteReplacement
+        )
+    }
 
-    /**
-     * Do not use this field anywhere! It is only needed to persist the data of the commands to the settings.
-     * It maps any command to its string representation and on first load back to the object
-     */
-    var labelCommandsAsString: Map<String, String>
-        get() {
-            return labelCommandsInternal.mapValues { it.value.toSerializableString() }
-        }
-        set(value) {
-            value.forEach { (key, info) -> labelCommandsInternal[key] = LabelingCommandInformation.fromString(info) }
-        }
-
-    override fun getState() = this
-
-    override fun loadState(state: TexifySettings) {
-        XmlSerializerUtil.copyBean(state, this)
+    override fun loadState(state: TexifySettingsState) {
+        state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }
+        automaticSoftWraps = state.automaticSoftWraps
+        automaticSecondInlineMathSymbol = state.automaticSecondInlineMathSymbol
+        automaticUpDownBracket = state.automaticUpDownBracket
+        automaticItemInItemize = state.automaticItemInItemize
+        automaticQuoteReplacement = state.automaticQuoteReplacement
     }
 
     fun addCommand(cmd: LabelingCommandInformation) {
-        labelCommandsInternal[cmd.commandName] = cmd
+        labelCommands[cmd.commandName] = cmd
     }
 
     fun removeCommand(cmdName: String) {
-        labelCommandsInternal.remove(cmdName)
+        labelCommands.remove(cmdName)
     }
 
-    val labelAnyCommands: Map<String, LabelingCommandInformation>
+    /**
+     * all commands in this map could be used to label a previous command like 'section'
+     */
+    val labelPreviousCommands: Map<String, LabelingCommandInformation>
         get() = labelCommands.filter { it.value.labelsPreviousCommand }
-
-    private fun String.addLeadingSlash(): String {
-        return if (this[0] == '\\') this else "\\" + this
-    }
 }

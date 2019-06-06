@@ -106,6 +106,6 @@ public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, P
         }
 
         LatexCommands labelMaybe = children.iterator().next();
-        return TexifySettings.getInstance().getLabelAnyCommands().containsKey(labelMaybe.getName());
+        return TexifySettings.getInstance().getLabelPreviousCommands().containsKey(labelMaybe.getName());
     }
 }
