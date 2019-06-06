@@ -11,9 +11,11 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBTextField
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
+import nl.rubensten.texifyidea.util.LatexDistribution
 import java.awt.event.ItemEvent
-import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -24,36 +26,46 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
     private lateinit var panel: JPanel
     private lateinit var compiler: LabeledComponent<ComboBox<LatexCompiler>>
-    private lateinit var enableCompilerPath: JCheckBox
+    private lateinit var enableCompilerPath: JBCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
 
     // The following options may or may not exist.
-    private var auxDir: JCheckBox? = null
-    private var outDir: JCheckBox? = null
+    private var auxDir: JBCheckBox? = null
+    private var outDir: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private lateinit var bibliographyPanel: BibliographyPanel
 
     /** Whether to enable the sumatraPath text field. */
-    private lateinit var enableSumatraPath: JCheckBox
+    private lateinit var enableSumatraPath: JBCheckBox
 
     /** Allow users to specify a custom path to SumatraPDF.  */
     private lateinit var sumatraPath: TextFieldWithBrowseButton
+
+    /** Whether to enable the custom pdf viewer command text field. */
+    private lateinit var enableViewerCommand: JBCheckBox
+
+    /** Allow users to specify a custom pdf viewer command. */
+    private lateinit var viewerCommand: JBTextField
 
     override fun resetEditorFrom(runConfiguration: LatexRunConfiguration) {
         // Reset the selected compiler.
         compiler.component.selectedItem = runConfiguration.compiler
 
         // Reset the custom compiler path
-        compilerPath.text = runConfiguration.compilerPath
+        compilerPath.text = runConfiguration.compilerPath ?: ""
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
 
         if (::sumatraPath.isInitialized) {
             // Reset the custom SumatraPDF path
-            sumatraPath.text = runConfiguration.sumatraPath
+            sumatraPath.text = runConfiguration.sumatraPath ?: ""
             enableSumatraPath.isSelected = runConfiguration.sumatraPath != null
         }
+
+        // Reset the pdf viewer command
+        viewerCommand.text = runConfiguration.viewerCommand ?: ""
+        enableViewerCommand.isSelected = runConfiguration.viewerCommand != null
 
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
@@ -67,12 +79,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset seperate auxiliary files.
         if (auxDir != null) {
-            auxDir!!.isSelected = runConfiguration.hasAuxiliaryDirectories()
+            auxDir!!.isSelected = runConfiguration.hasAuxiliaryDirectories
         }
 
         // Reset seperate output files.
         if (outDir != null) {
-            outDir!!.isSelected = runConfiguration.hasOutputDirectories()
+            outDir!!.isSelected = runConfiguration.hasOutputDirectories
         }
 
         // Reset output format.
@@ -99,6 +111,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             runConfiguration.sumatraPath = if (enableSumatraPath.isSelected) sumatraPath.text else null
         }
 
+        // Apply custom pdf viewer command
+        runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
+
         // Apply custom compiler arguments
         runConfiguration.compilerArguments = compilerArguments.component.text
 
@@ -110,12 +125,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply auxiliary files, only if the option exists.
         if (auxDir != null) {
             val auxDirectories = auxDir!!.isSelected
-            runConfiguration.setAuxiliaryDirectories(auxDirectories)
+            runConfiguration.hasAuxiliaryDirectories = auxDirectories
         }
 
         if (outDir != null) {
             val outDirectories = outDir!!.isSelected
-            runConfiguration.setOutputDirectories(outDirectories)
+            runConfiguration.hasOutputDirectories = outDirectories
         }
 
         // Apply output format.
@@ -136,60 +151,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel = JPanel()
         panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
-        // Compiler
-        val compilerField = ComboBox(LatexCompiler.values())
-        compiler = LabeledComponent.create<ComboBox<LatexCompiler>>(compilerField, "Compiler")
-        panel.add(compiler)
+        addCompilerPathField(panel)
 
-        // Optional custom path for compiler executable
-        enableCompilerPath = JCheckBox("Select custom compiler executable path (required on Mac OS X)")
-        panel.add(enableCompilerPath)
+        addSumatraPathField(panel)
 
-        compilerPath = TextFieldWithBrowseButton()
-        compilerPath.addBrowseFolderListener(
-                TextBrowseFolderListener(
-                        FileChooserDescriptor(true, false, false, false, false, false)
-                                .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as LatexCompiler).executableName }
-                                .withTitle("Choose " + compilerField.selectedItem + " executable")
-                )
-        )
-        compilerPath.isEnabled = false
-        compilerPath.addPropertyChangeListener("enabled") { e ->
-            if (!(e.newValue as Boolean)) {
-                compilerPath.setText(null)
-            }
-        }
-        enableCompilerPath.addItemListener { e -> compilerPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
-
-        panel.add(compilerPath)
-
-        // Optional custom path for SumatraPDF
-        if (SystemInfo.isWindows) {
-            enableSumatraPath = JCheckBox("Select custom path to SumatraPDF")
-            panel.add(enableSumatraPath)
-
-
-            sumatraPath = TextFieldWithBrowseButton().apply {
-                addBrowseFolderListener(
-                    TextBrowseFolderListener(
-                            FileChooserDescriptor(false, true, false, false, false, false)
-                                    .withTitle("Choose the folder which contains SumatraPDF.exe")
-                    )
-                )
-
-                isEnabled = false
-
-                addPropertyChangeListener("enabled") { e ->
-                    if (!(e.newValue as Boolean)) {
-                        this.setText(null)
-                    }
-                }
-            }
-
-            enableSumatraPath.addItemListener { e -> sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
-
-            panel.add(sumatraPath)
-        }
+        addPdfViewerCommandField(panel)
 
         // Optional custom compiler arguments
         val argumentsTitle = "Custom compiler arguments"
@@ -211,20 +177,18 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
         panel.add(mainFile)
 
-        // Only add options to disable aux and out folder on Windows.
-        // (Disabled on other systems by default.)
-        if (SystemInfo.isWindows) {
+        // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
+        if (LatexDistribution.isMiktex) {
             panel.add(TitledSeparator("Options"))
 
             // Auxiliary files
-            auxDir = JCheckBox("Separate auxiliary files from output (MiKTeX only)")
-            // Only enable by default on Windows.
-            auxDir!!.isSelected = SystemInfo.isWindows
+            auxDir = JBCheckBox("Separate auxiliary files from output")
+            auxDir!!.isSelected = true
             panel.add(auxDir)
         }
 
         // Output folder
-        outDir = JCheckBox("Separate output files from source " + "(disable this when using BiBTeX without MiKTeX)")
+        outDir = JBCheckBox("Separate output files from source " + "(disable this when using BiBTeX without MiKTeX)")
         // Enable by default.
         outDir!!.isSelected = true
         panel.add(outDir)
@@ -240,5 +204,90 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Extension panels
         bibliographyPanel = BibliographyPanel(project!!)
         panel.add(bibliographyPanel)
+    }
+
+    /**
+     * Compiler with optional custom path for compiler executable.
+     */
+    private fun addCompilerPathField(panel: JPanel) {
+        // Compiler
+        val compilerField = ComboBox(LatexCompiler.values())
+        compiler = LabeledComponent.create<ComboBox<LatexCompiler>>(compilerField, "Compiler")
+        panel.add(compiler)
+
+        enableCompilerPath = JBCheckBox("Select custom compiler executable path (required on Mac OS X)")
+        panel.add(enableCompilerPath)
+
+        compilerPath = TextFieldWithBrowseButton()
+        compilerPath.addBrowseFolderListener(
+            TextBrowseFolderListener(
+                    FileChooserDescriptor(true, false, false, false, false, false)
+                            .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as LatexCompiler).executableName }
+                            .withTitle("Choose " + compilerField.selectedItem + " executable")
+            )
+        )
+        compilerPath.isEnabled = false
+        compilerPath.addPropertyChangeListener("enabled") { e ->
+            if (!(e.newValue as Boolean)) {
+                compilerPath.setText(null)
+            }
+        }
+        enableCompilerPath.addItemListener { e -> compilerPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
+
+        panel.add(compilerPath)
+    }
+
+    /**
+     * Optional custom path for SumatraPDF.
+     */
+    private fun addSumatraPathField(panel: JPanel) {
+        if (SystemInfo.isWindows) {
+            enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
+            panel.add(enableSumatraPath)
+
+
+            sumatraPath = TextFieldWithBrowseButton().apply {
+                addBrowseFolderListener(
+                        TextBrowseFolderListener(
+                                FileChooserDescriptor(false, true, false, false, false, false)
+                                        .withTitle("Choose the folder which contains SumatraPDF.exe")
+                        )
+                )
+
+                isEnabled = false
+
+                addPropertyChangeListener("enabled") { e ->
+                    if (!(e.newValue as Boolean)) {
+                        this.setText(null)
+                    }
+                }
+            }
+
+            enableSumatraPath.addItemListener { e -> sumatraPath.isEnabled = e.stateChange == ItemEvent.SELECTED }
+
+            panel.add(sumatraPath)
+        }
+    }
+
+    /**
+     * Optional custom pdf viewer command text field.
+     */
+    private fun addPdfViewerCommandField(panel: JPanel) {
+        enableViewerCommand = JBCheckBox("Select custom PDF viewer command, using {pdf} for the pdf file if not the last argument")
+        panel.add(enableViewerCommand)
+
+        viewerCommand = JBTextField().apply {
+            isEnabled = false
+            addPropertyChangeListener("enabled") { e ->
+                if (!(e.newValue as Boolean)) {
+                    this.text = null
+                }
+            }
+        }
+
+        enableViewerCommand.addItemListener { e -> viewerCommand.isEnabled = e.stateChange == ItemEvent.SELECTED }
+
+        panel.add(viewerCommand)
+
     }
 }
