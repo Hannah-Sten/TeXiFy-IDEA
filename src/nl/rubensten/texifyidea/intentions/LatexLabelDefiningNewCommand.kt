@@ -20,14 +20,16 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
 
         // check if selected part is \label
         val element = file.findElementAt(editor.caretModel.offset) ?: return false
-        var selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
+        var selected = element as? LatexCommands
+                ?: element.parentOfType(LatexCommands::class)
+                ?: return false
 
         // get parent element
         val parent = selected.parent as? LatexCommands
                 ?: selected.parent.parentOfType(LatexCommands::class)
 
         // when element is \label and parent is \newcommand check if command is already in list
-        if (selected.name == "\\label" && parent?.name == "\\newcommand") {
+        if (settings.labelPreviousCommands.containsKey(selected.name) && parent?.name == "\\newcommand") {
             // get name of the defined command
             val cmdName = parent.requiredParameter(0) ?: return false
             // check if there is already an entry wih this name
@@ -43,7 +45,7 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         // when command is \newcommand, check if it contains a \label
         if (selected.name == "\\newcommand") {
             val children = selected.childrenOfType(LatexCommands::class)
-            if (children.none { it.name == "\\label" }) {
+            if (children.none { settings.labelPreviousCommands.containsKey(it.name) }) {
                 return false
             }
             val cmdName = selected.requiredParameter(0) ?: return false
@@ -70,18 +72,18 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         val newCommand: LatexCommands
 
         // map correct values to label and newCommand
-        if (selected.name == "\\label" && parent?.name == "\\newcommand") {
+        if (settings.labelPreviousCommands.containsKey(selected.name) && parent?.name == "\\newcommand") {
             label = selected
             newCommand = parent
         }
         else if (selected.name == "\\newcommand") {
             label = selected.childrenOfType(LatexCommands::class)
-                    .firstOrNull { it.name == "\\label" } ?: return
+                    .firstOrNull { settings.labelPreviousCommands.containsKey(it.name) } ?: return
             newCommand = selected
         }
         else if (parent?.name == "\\newcommand") {
             label = parent.childrenOfType(LatexCommands::class)
-                    .firstOrNull { it.name == "\\label" } ?: return
+                    .firstOrNull { settings.labelPreviousCommands.containsKey(it.name) } ?: return
             newCommand = parent
         }
         else {
