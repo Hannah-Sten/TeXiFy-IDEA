@@ -308,7 +308,7 @@ inline fun PsiElement.forEachChild(action: (PsiElement) -> Unit) {
  * When there is no first child that is not whitespace, this function returns `null`.
  */
 fun PsiElement.firstChildIgnoringWhitespaceOrNull(): PsiElement? {
-    var child: PsiElement? = children.firstOrNull() ?: return null
+    var child: PsiElement? = firstChild ?: return null
     while (child is PsiWhiteSpace) {
         child = child.nextSiblingIgnoreWhitespace()
     }
