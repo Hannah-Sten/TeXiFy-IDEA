@@ -21,11 +21,11 @@ import nl.rubensten.texifyidea.util.name
  */
 open class LatexQedHereInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Insert \\qedhere in trailing displaymath environment"
 
-    override fun getInspectionId() = "QedHere"
+    override val inspectionId = "QedHere"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

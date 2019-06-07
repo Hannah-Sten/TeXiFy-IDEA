@@ -19,9 +19,9 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "CollapseCite"
+    override val inspectionId = "CollapseCite"
 
     override fun getDisplayName() = "Collapce cite commands"
 

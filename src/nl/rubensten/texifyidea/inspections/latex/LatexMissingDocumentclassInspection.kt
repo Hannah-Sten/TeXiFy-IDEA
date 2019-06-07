@@ -17,11 +17,11 @@ import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
  */
 open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Missing documentclass"
 
-    override fun getInspectionId() = "MissingDocumentclass"
+    override val inspectionId = "MissingDocumentclass"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

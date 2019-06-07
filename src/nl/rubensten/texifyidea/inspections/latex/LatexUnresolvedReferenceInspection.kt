@@ -17,11 +17,11 @@ import nl.rubensten.texifyidea.util.hasStar
  */
 open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Unresolved reference"
 
-    override fun getInspectionId() = "UnresolvedReference"
+    override val inspectionId = "UnresolvedReference"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

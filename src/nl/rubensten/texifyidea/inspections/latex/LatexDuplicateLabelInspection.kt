@@ -14,11 +14,11 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Duplicate labels"
 
-    override fun getInspectionId(): String = "DuplicateLabel"
+    override val inspectionId: String = "DuplicateLabel"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

@@ -27,11 +27,11 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexMissingImportInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Missing imports"
 
-    override fun getInspectionId() = "MissingImport"
+    override val inspectionId = "MissingImport"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

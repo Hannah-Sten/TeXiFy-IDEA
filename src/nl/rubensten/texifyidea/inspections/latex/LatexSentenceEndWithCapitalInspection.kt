@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  */
 open class LatexSentenceEndWithCapitalInspection : TexifyRegexInspection(
         inspectionDisplayName = "End-of-sentence space after sentences ending with capitals",
-        myInspectionId = "SentenceEndWithCapital",
+        inspectionId = "SentenceEndWithCapital",
         errorMessage = { "Sentences ending with a capital letter should end with an end-of-sentence space" },
         pattern = Pattern.compile("[A-ZÀ-Ý](\\.)[ \\t]*\\n"),
         replacement = { _, _ -> "\\@." },

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author Sten Wessel
  */
-public abstract class TexifyInspectionBase extends LocalInspectionTool {
+public abstract class TexifyInspectionBaseBambi extends LocalInspectionTool {
 
     @NotNull
     public abstract InsightGroup getInspectionGroup();

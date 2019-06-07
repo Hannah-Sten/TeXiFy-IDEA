@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  */
 open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         inspectionDisplayName = "Citations must be placed before interpunction",
-        myInspectionId = "CiteBeforePeriod",
+        inspectionId = "CiteBeforePeriod",
         errorMessage = { "\\cite is placed after interpunction" },
         pattern = Pattern.compile("([.,?!;:])~(\\\\cite)"),
         mathMode = false,

@@ -23,9 +23,9 @@ import nl.rubensten.texifyidea.util.firstChildOfType
  */
 open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "FileNotFound"
+    override val inspectionId = "FileNotFound"
 
     override fun getDisplayName() = "File not found"
 

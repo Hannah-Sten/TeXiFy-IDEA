@@ -25,11 +25,11 @@ import java.text.Normalizer
  */
 open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Redundant escape when Unicode is enabled"
 
-    override fun getInspectionId() = "RedundantEscape"
+    override val inspectionId = "RedundantEscape"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

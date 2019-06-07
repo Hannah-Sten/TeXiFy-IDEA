@@ -29,11 +29,12 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
         )
     }
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup: InsightGroup
+        get() = InsightGroup.LATEX
 
     override fun getDisplayName() = "Enclose high lines with \\leftX..\\rightX"
 
-    override fun getInspectionId() = "EncloseWithLeftRight"
+    override val inspectionId = "EncloseWithLeftRight"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -79,12 +80,12 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     }
 
     private fun ignore(document: Document, offset: Int): Boolean {
-        if (document.textLength < 6 || offset + 6 >= document.textLength ) {
+        if (document.textLength < 6 || offset + 6 >= document.textLength) {
             return false
         }
 
         // Lookbehind for \left or \right.
-        if (document[offset - 5 until offset]  == "\\left" || document[offset - 6 until offset]  == "\\right") {
+        if (document[offset - 5 until offset] == "\\left" || document[offset - 6 until offset] == "\\right") {
             return true
         }
 

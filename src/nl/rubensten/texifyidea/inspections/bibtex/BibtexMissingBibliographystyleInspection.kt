@@ -20,9 +20,9 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
     // Manual override to match short name in plugin.xml
     override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "MissingBibliographystyle"
+    override val inspectionId = "MissingBibliographystyle"
 
     override fun getDisplayName() = "Missing bibliography style"
 

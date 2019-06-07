@@ -19,9 +19,9 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexNestedIncludesInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "NestedIncludes"
+    override val inspectionId = "NestedIncludes"
 
     override fun getDisplayName() = "Nested includes"
 

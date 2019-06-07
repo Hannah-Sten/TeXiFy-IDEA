@@ -18,11 +18,11 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Avoid eqnarray"
 
-    override fun getInspectionId() = "AvoidEqnarray"
+    override val inspectionId = "AvoidEqnarray"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

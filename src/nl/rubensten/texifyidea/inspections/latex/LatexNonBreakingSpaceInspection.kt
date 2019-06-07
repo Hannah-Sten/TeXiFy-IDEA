@@ -33,11 +33,11 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         val IGNORED_COMMANDS = setOf("\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\cpageref", "\\autoref")
     }
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Non-breaking spaces before references"
 
-    override fun getInspectionId() = "NonBreakingSpace"
+    override val inspectionId = "NonBreakingSpace"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

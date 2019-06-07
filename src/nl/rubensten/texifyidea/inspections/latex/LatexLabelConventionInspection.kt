@@ -33,11 +33,11 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         }
     }
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Label conventions"
 
-    override fun getInspectionId() = "LabelConvention"
+    override val inspectionId = "LabelConvention"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()

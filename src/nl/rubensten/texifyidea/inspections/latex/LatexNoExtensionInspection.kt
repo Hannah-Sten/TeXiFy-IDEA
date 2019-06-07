@@ -21,9 +21,9 @@ import nl.rubensten.texifyidea.util.requiredParameter
  */
 open class LatexNoExtensionInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "NoExtension"
+    override val inspectionId = "NoExtension"
 
     override fun getDisplayName() = "File argument should not include the extension"
 

@@ -76,11 +76,11 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         }
     }
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Too large sections"
 
-    override fun getInspectionId() = "TooLargeSection"
+    override val inspectionId = "TooLargeSection"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

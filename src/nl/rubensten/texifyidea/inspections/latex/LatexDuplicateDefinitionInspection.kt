@@ -17,9 +17,9 @@ import nl.rubensten.texifyidea.util.isCommandDefinition
  */
 open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "DuplicateDefinition"
+    override val inspectionId = "DuplicateDefinition"
 
     override fun getDisplayName() = "Duplicate command definitions"
 

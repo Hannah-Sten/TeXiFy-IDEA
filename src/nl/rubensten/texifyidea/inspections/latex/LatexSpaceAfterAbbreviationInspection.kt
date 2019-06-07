@@ -22,11 +22,11 @@ import nl.rubensten.texifyidea.util.inMathContext
  */
 open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Normal space after abbreviation"
 
-    override fun getInspectionId() = "SpaceAfterAbbreviation"
+    override val inspectionId = "SpaceAfterAbbreviation"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

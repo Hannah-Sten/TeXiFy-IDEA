@@ -18,9 +18,9 @@ import nl.rubensten.texifyidea.util.requiredParameter
  */
 open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "MultipleIncludes"
+    override val inspectionId = "MultipleIncludes"
 
     override fun getDisplayName() = "Package has been imported multiple times"
 

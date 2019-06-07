@@ -17,11 +17,11 @@ import java.util.*
  */
 open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Open if-then-else control sequence"
 
-    override fun getInspectionId() = "NonMatchingIf"
+    override val inspectionId = "NonMatchingIf"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

@@ -18,9 +18,9 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "TrimWhitespace"
+    override val inspectionId = "TrimWhitespace"
 
     override fun getDisplayName() = "Unnecessary whitespace in section commands"
 

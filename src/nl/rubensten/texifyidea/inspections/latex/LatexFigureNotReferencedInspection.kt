@@ -10,9 +10,10 @@ import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
-    override fun getInspectionGroup(): InsightGroup = InsightGroup.LATEX
 
-    override fun getInspectionId(): String = "FigureNotReferenced"
+    override val inspectionGroup: InsightGroup = InsightGroup.LATEX
+
+    override val inspectionId: String = "FigureNotReferenced"
 
     override fun getDisplayName(): String = "Figure Not Referenced"
 

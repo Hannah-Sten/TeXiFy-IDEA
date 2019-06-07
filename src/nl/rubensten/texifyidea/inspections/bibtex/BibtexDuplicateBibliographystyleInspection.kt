@@ -22,9 +22,9 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
     // Manual override to match short name in plugin.xml
     override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "DuplicateBibliographystyle"
+    override val inspectionId = "DuplicateBibliographystyle"
 
     override fun getDisplayName() = "Duplicate bibliography style commands"
 

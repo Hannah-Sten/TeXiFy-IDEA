@@ -19,11 +19,11 @@ import nl.rubensten.texifyidea.util.referencedFileSet
  */
 open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Missing document environment"
 
-    override fun getInspectionId() = "MissingDocumentEnvironment"
+    override val inspectionId = "MissingDocumentEnvironment"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

@@ -17,11 +17,11 @@ import nl.rubensten.texifyidea.util.*
  */
 open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.BIBTEX
+    override val inspectionGroup = InsightGroup.BIBTEX
 
     override fun getDisplayName() = "Duplicate ID"
 
-    override fun getInspectionId() = "DuplicateId"
+    override val inspectionId = "DuplicateId"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

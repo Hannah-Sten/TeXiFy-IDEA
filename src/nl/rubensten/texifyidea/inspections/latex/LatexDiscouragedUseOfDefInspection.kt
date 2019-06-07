@@ -22,11 +22,11 @@ import nl.rubensten.texifyidea.util.document
  */
 open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Use \\(re)newcommand instead of \\let and \\def"
 
-    override fun getInspectionId() = "DiscouragedUseOfDef"
+    override val inspectionId = "DiscouragedUseOfDef"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
