@@ -32,7 +32,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
     var automaticQuoteReplacement = QuoteReplacement.NONE
-    var compilerCompatibility = LatexCompiler.PDFLATEX.displayName
+    var compilerCompatibility = LatexCompiler.PDFLATEX
 
     override fun getState() = this
 

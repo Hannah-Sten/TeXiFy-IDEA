@@ -49,6 +49,30 @@ import java.util.regex.Pattern
  */
 class LatexUnicodeInspection : TexifyInspectionBase() {
 
+    companion object {
+        private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
+
+        /**
+         * Checks whether Unicode support is enabled for the file.
+         *
+         * Support is assumed when the packages `inputenc` and `fontenc` are
+         * loaded, or when a compiler is used which does not need these packages. The
+         * loaded options are not checked.
+         *
+         * @param file The file to check support for.
+         * @return Whether Unicode support is enabled.
+         */
+        internal fun unicodeEnabled(file: PsiFile): Boolean {
+            if (TexifySettings.getInstance().compilerCompatibility == LatexCompiler.LUALATEX) {
+                return true
+            }
+
+            // TODO: check if options are correct as well
+            val included = PackageUtils.getIncludedPackages(file)
+            return Magic.Package.unicode.stream().allMatch { p -> included.contains(p.name) }
+        }
+    }
+
     override fun getInspectionGroup(): InsightGroup {
         return InsightGroup.LATEX
     }
@@ -237,34 +261,6 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                         Diacritic.Normal.fromUnicode(it) }
 
             return Diacritic.buildChain(base, diacritics)
-        }
-    }
-
-    companion object {
-
-        private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
-
-
-        /**
-         * Checks whether Unicode support is enabled for the file.
-         *
-         *
-         * Support is assumed when the packages `inputenc` and `fontenc` are
-         * loaded, or when a compiler is used which does not need these packages. The
-         * loaded options are not checked.
-         *
-         * @param file
-         * The file to check support for.
-         * @return Whether Unicode support is enabled.
-         */
-        internal fun unicodeEnabled(file: PsiFile): Boolean {
-            if (TexifySettings.getInstance().compilerCompatibility == LatexCompiler.LUALATEX.displayName) {
-                return true
-            }
-
-            // TODO: check if options are correct as well
-            val included = PackageUtils.getIncludedPackages(file)
-            return Magic.Package.unicode.stream().allMatch { p -> included.contains(p.name) }
         }
     }
 }

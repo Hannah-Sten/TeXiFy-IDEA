@@ -19,7 +19,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticUpDownBracket: JBCheckBox
     private lateinit var automaticItemInItemize: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
-    private lateinit var compilerCompatibility: ComboBox<String>
+    private lateinit var compilerCompatibility: ComboBox<LatexCompiler>
 
     override fun getId() = "TexifyConfigurable"
 
@@ -54,11 +54,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     /**
      * Add the options for the compiler compatibility.
      */
-    private fun JPanel.addCompilerCompatibility(): ComboBox<String> {
-        // Get available compilers
-        val compilerNames = LatexCompiler.values().map { it.displayName }
-
-        val list = ComboBox(compilerNames.toTypedArray())
+    private fun JPanel.addCompilerCompatibility(): ComboBox<LatexCompiler> {
+        // Show available compilers
+        val list = ComboBox(LatexCompiler.values())
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply{
             add(JBLabel("Check for compatibility with compiler: "))
             add(list)
@@ -80,7 +78,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
-                || compilerCompatibility.selectedItem.toString() != settings.compilerCompatibility
+                || compilerCompatibility.selectedItem != settings.compilerCompatibility
     }
 
     override fun apply() {
@@ -89,7 +87,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
-        settings.compilerCompatibility = compilerCompatibility.selectedItem.toString()
+        settings.compilerCompatibility = compilerCompatibility.selectedItem as LatexCompiler
     }
 
     override fun reset() {
