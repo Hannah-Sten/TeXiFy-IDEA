@@ -164,7 +164,7 @@ fun LatexEnvironment.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic cbomments that are targetted to this environment, all parent environments and the whole file.
+ * Get the (merged) magic comments that are targetted to this environment, all parent environments and the whole file.
  */
 fun LatexEnvironment.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
@@ -203,7 +203,7 @@ fun LatexCommands.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic cbomments that are targetted to this command, and all parent environments and the whole file.
+ * Get the (merged) magic comments that are targetted to this command, and all parent environments and the whole file.
  */
 fun LatexCommands.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
@@ -225,7 +225,7 @@ fun LatexGroup.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic cbomments that are targetted to this group, all parent goups, commands,
+ * Get the (merged) magic comments that are targetted to this group, all parent goups, commands,
  * environments and the whole file.
  */
 fun LatexGroup.allMagicComments(): MagicComment<String, String> {
@@ -238,6 +238,13 @@ fun LatexGroup.allMagicComments(): MagicComment<String, String> {
     addParentMagicComments(result)
 
     return result
+}
+
+/**
+ * Get the (merged) magic comments that are targetted to all the element's parents (including the whole file).
+ */
+fun PsiElement.allParentMagicComments(): MagicComment<String, String> = MutableMagicComment<String, String>().apply {
+    addParentMagicComments(this)
 }
 
 /**
@@ -263,4 +270,13 @@ private fun PsiElement.addParentMagicComments(result: MutableMagicComment<String
     parentsOfType<LatexEnvironment>().filter { it != this }.forEach { environment ->
         result += environment.magicComment()
     }
+}
+
+/**
+ * Checks if the magic comment has a key `key` which has at least one occurence of the value `value`.
+ */
+fun MagicComment<String, String>.containsPair(key: String, value: String): Boolean {
+    val magicKey = CustomMagicKey(key)
+    val magicValues = values(magicKey) ?: return false
+    return value in magicValues
 }

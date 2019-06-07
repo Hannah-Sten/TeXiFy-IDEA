@@ -107,7 +107,7 @@ abstract class TexifyRegexInspection(
 
     override fun getDisplayName() = inspectionDisplayName
 
-    override fun checkContext(element: PsiElement) = true
+    override fun checkContext(element: PsiElement) = element.isSuppressed().not()
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()

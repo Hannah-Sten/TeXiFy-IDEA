@@ -36,9 +36,7 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         else if (it.group(3) != null) {
             "\\gg"
         }
-        else {
-            "\\ggg"
-        }
+        else "\\ggg"
 
         /**
          * Determines what range must be replaced.

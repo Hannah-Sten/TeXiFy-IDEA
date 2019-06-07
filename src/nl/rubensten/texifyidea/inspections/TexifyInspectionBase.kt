@@ -7,6 +7,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.SmartList
 import nl.rubensten.texifyidea.insight.InsightGroup
+import nl.rubensten.texifyidea.lang.magic.allParentMagicComments
+import nl.rubensten.texifyidea.lang.magic.containsPair
 import nl.rubensten.texifyidea.util.isComment
 
 /**
@@ -41,12 +43,20 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
      *
      * @return `true` if the inspection is allowed for this element in its context, `false` otherwise.
      */
-    open fun checkContext(element: PsiElement) = element.isComment().not()
+    open fun checkContext(element: PsiElement) = element.isComment().not() && element.isSuppressed().not()
 
     /**
      * Creates an empty list to store problem descriptors in.
      */
     protected open fun descriptorList(): MutableList<ProblemDescriptor> = SmartList()
+
+    /**
+     * Checks whether the inspection must be suppressed (`true`) or not (`false`) based on the position of the given
+     * PsiElement.
+     */
+    protected open fun PsiElement.isSuppressed(): Boolean {
+        return allParentMagicComments().containsPair("suppress", inspectionId)
+    }
 
     override fun getShortName() = inspectionGroup.prefix + inspectionId
 
@@ -55,6 +65,12 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         // Only inspect the right file types.
         if (file.fileType !in inspectionGroup.fileTypes) {
+            return null
+        }
+
+        // Check for file inspection suppression seperately as it is relatively cheap.
+        // Do not execute the (relative expensive) inspection when it is suppressed globally.
+        if (file.isSuppressed()) {
             return null
         }
 
