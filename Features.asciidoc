@@ -120,7 +120,7 @@ toc::[]
 * File creation dialog
 
 == Settings and preferences
-=== Project
+=== Global settings
 
 These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy]
 
@@ -131,7 +131,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Option to enable smart quote substitution
 * link:Project-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 
-=== Run configuration
+=== Run configuration settings
 * Separate BibTeX run configuration
 * Choose compiler
 * Custom compiler path
