@@ -16,6 +16,7 @@ import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 /**
  * @author Sten Wessel, Ruben Schellekens
@@ -106,6 +107,20 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexMagicCommentKeyProvider
+        )
+
+        // Inspection list for magic comment suppress.
+        val suppressRegex = Regex("""suppress\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(PsiComment::class.java)
+                        .with(object : PatternCondition<PsiElement>("Magic comment suppress pattern") {
+                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
+                                return comment.isMagicComment() && comment.text.contains(suppressRegex)
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexInspectionIdProvider
         )
 
         // Package names

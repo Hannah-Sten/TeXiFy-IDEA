@@ -27,5 +27,13 @@ enum class InsightGroup(
 ) {
 
     LATEX("LaTeX", "Latex", setOf(LatexFileType, StyleFileType)),
-    BIBTEX("BibTeX", "Bibtex", setOf(BibtexFileType))
+    BIBTEX("BibTeX", "Bibtex", setOf(BibtexFileType));
+
+    companion object {
+
+        @JvmStatic
+        fun byFileType(fileType: FileType): List<InsightGroup> {
+            return values().filter { fileType in it.fileTypes }
+        }
+    }
 }
