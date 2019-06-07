@@ -29,7 +29,7 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
                 ?: selected.parent.parentOfType(LatexCommands::class)
 
         // when element is \label and parent is \newcommand check if command is already in list
-        if (settings.labelPreviousCommands.containsKey(selected.name) && parent?.name == "\\newcommand") {
+        if (settings.labelCommands.containsKey(selected.name) && parent?.name == "\\newcommand") {
             // get name of the defined command
             val cmdName = parent.requiredParameter(0) ?: return false
             // check if there is already an entry wih this name
@@ -45,7 +45,7 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         // when command is \newcommand, check if it contains a \label
         if (selected.name == "\\newcommand") {
             val children = selected.childrenOfType(LatexCommands::class)
-            if (children.none { settings.labelPreviousCommands.containsKey(it.name) }) {
+            if (children.none { settings.labelCommands.containsKey(it.name) }) {
                 return false
             }
             val cmdName = selected.requiredParameter(0) ?: return false
@@ -72,18 +72,18 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         val newCommand: LatexCommands
 
         // map correct values to label and newCommand
-        if (settings.labelPreviousCommands.containsKey(selected.name) && parent?.name == "\\newcommand") {
+        if (settings.labelCommands.containsKey(selected.name) && parent?.name == "\\newcommand") {
             label = selected
             newCommand = parent
         }
         else if (selected.name == "\\newcommand") {
             label = selected.childrenOfType(LatexCommands::class)
-                    .firstOrNull { settings.labelPreviousCommands.containsKey(it.name) } ?: return
+                    .firstOrNull { settings.labelCommands.containsKey(it.name) } ?: return
             newCommand = selected
         }
         else if (parent?.name == "\\newcommand") {
             label = parent.childrenOfType(LatexCommands::class)
-                    .firstOrNull { settings.labelPreviousCommands.containsKey(it.name) } ?: return
+                    .firstOrNull { settings.labelCommands.containsKey(it.name) } ?: return
             newCommand = parent
         }
         else {
@@ -95,13 +95,15 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
         // get the position of the label in new command, identified by the argument number of the first required parameter
         // of label command
         val position = label
-                .requiredParameter(0)
+                .requiredParameter((settings.labelCommands[label.name]?.position ?: 1) - 1)
                 ?.replace("#", "")
                 ?.toIntOrNull() ?: 1
         // check if any command before the label command increases an counter which could be labeled to set the checkbox
         // to a possible correct status
-        val labelAnyCommand = newCommand.childrenOfType(LatexCommands::class)
-                .none { it.name in Magic.Command.increasesCounter }
+        val labelAnyCommand = newCommand
+                .childrenOfType(LatexCommands::class)
+                .none { it.name in Magic.Command.increasesCounter } &&
+                settings.labelPreviousCommands.containsKey(label.name)
 
         // initialize the dialog with computed values
         val newCommandPopUp = EditLabelDefiningCommand(commandName, position, labelAnyCommand)
