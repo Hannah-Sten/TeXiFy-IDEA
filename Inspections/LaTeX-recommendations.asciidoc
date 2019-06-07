@@ -4,6 +4,6 @@
 _Since b0.6.6_
 
 Equations should be referenced using `\eqref{...}` rather than `(\ref{...})` to ensure that all your equation references
-are formatted in the same way.
+are formatted in the same way. This inspection is only triggered when the corresponding label was defined in a math environment.
 
 == File argument should not include the extension

@@ -1,12 +1,14 @@
 :experimental:
 
 === [[table-creation-wizard]]Table Creation Wizard
-_Since b0.6.6_
+_alpha versions_
 
 menu:Edit[LaTeX > Table Creation Wizard]
 
 Displays a dialog with a table creation wizard with a table, caption, and label. Click the plus to add a column, the
 minus to remove the column of the currently selected cell, and the pencil to edit this column.
+Hit kbd:[tab] to edit the next cell (same row, column on the right of the current cell).
+Hit kbd:[tab] on the last cell of a column to add a new row.
 
 Each column has a name, and a type.
 The available column types are:
