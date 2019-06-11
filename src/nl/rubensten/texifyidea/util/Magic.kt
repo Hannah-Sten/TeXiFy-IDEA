@@ -6,6 +6,7 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.file.*
 import nl.rubensten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.rubensten.texifyidea.lang.Package
+import java.awt.Color
 import java.util.regex.Pattern
 
 typealias LatexPackage = Package
@@ -268,6 +269,19 @@ object Magic {
                 "\\part", "\\chapter",
                 "\\section", "\\subsection", "\\subsubsection",
                 "\\paragraph", "\\subparagraph"
+        )
+
+        /**
+         * The colours that each section separator has.
+         */
+        @JvmField val sectionSeparatorColors = mapOf(
+                "\\part" to Color(152, 152, 152),
+                "\\chapter" to Color(172, 172, 172),
+                "\\section" to Color(182, 182, 182),
+                "\\subsection" to Color(202, 202, 202),
+                "\\subsubsection" to Color(212, 212, 212),
+                "\\paragraph" to Color(222, 222, 222),
+                "\\subparagraph" to Color(232, 232, 232)
         )
     }
 
