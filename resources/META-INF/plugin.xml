@@ -309,6 +309,7 @@
 
         <!-- Settings -->
         <applicationService serviceInterface="nl.rubensten.texifyidea.settings.TexifySettings" serviceImplementation="nl.rubensten.texifyidea.settings.TexifySettings"/>
+        <applicationService serviceInterface="nl.rubensten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.rubensten.texifyidea.settings.TexifyProjectSettings"/>
         <applicationConfigurable instance="nl.rubensten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.BibtexColorSettingsPage"/>

@@ -24,7 +24,7 @@ import nl.rubensten.texifyidea.psi.LatexMathEnvironment
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.run.LatexCompiler
 import nl.rubensten.texifyidea.settings.TexifyConfigurable
-import nl.rubensten.texifyidea.settings.TexifySettings
+import nl.rubensten.texifyidea.settings.TexifyProjectSettings
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.PackageUtils
 import org.jetbrains.annotations.Nls
@@ -63,7 +63,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          * @return Whether Unicode support is enabled.
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
-            if (TexifySettings.getInstance().compilerCompatibility == LatexCompiler.LUALATEX) {
+            if (TexifyProjectSettings.getInstance().compilerCompatibility == LatexCompiler.LUALATEX) {
                 return true
             }
 

@@ -15,7 +15,6 @@ import nl.rubensten.texifyidea.run.LatexCompiler
 class TexifySettings : PersistentStateComponent<TexifySettings> {
 
     companion object {
-
         @JvmStatic
         fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
     }
@@ -32,7 +31,6 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
     var automaticQuoteReplacement = QuoteReplacement.NONE
-    var compilerCompatibility = LatexCompiler.PDFLATEX
 
     override fun getState() = this
 

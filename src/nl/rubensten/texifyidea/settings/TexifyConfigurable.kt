@@ -12,7 +12,7 @@ import javax.swing.JPanel
 /**
  * @author Ruben Schellekens, Sten Wessel
  */
-class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
+class TexifyConfigurable(private val settings: TexifySettings, private val projectSettings: TexifyProjectSettings) : SearchableConfigurable {
 
     private lateinit var automaticSoftWraps: JBCheckBox
     private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
@@ -78,7 +78,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
-                || compilerCompatibility.selectedItem != settings.compilerCompatibility
+                || compilerCompatibility.selectedItem != projectSettings.compilerCompatibility
     }
 
     override fun apply() {
@@ -87,7 +87,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
-        settings.compilerCompatibility = compilerCompatibility.selectedItem as LatexCompiler
+        projectSettings.compilerCompatibility = compilerCompatibility.selectedItem as LatexCompiler
     }
 
     override fun reset() {
@@ -96,6 +96,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
-        compilerCompatibility.selectedItem = settings.compilerCompatibility
+        compilerCompatibility.selectedItem = projectSettings.compilerCompatibility
     }
 }
