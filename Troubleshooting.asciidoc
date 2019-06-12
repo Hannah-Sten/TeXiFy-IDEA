@@ -1,7 +1,6 @@
 = Troubleshooting
 ==== What to do when TeXiFy-IDEA does not work
 
-
 == Error running 'main': Cannot run program "pdflatex"
 
 Make sure you have followed all the installation instructions at https://github.com/Ruben-Sten/TeXiFy-IDEA#installation-instructions-installing-intellij-and-the-texify-idea-plugin
@@ -12,3 +11,28 @@ Make sure you have followed all the installation instructions at https://github.
 . Make sure you did install MikTeX or TeX Live _for your user only_, so not for all users. If not, uninstall, install the right way and reboot.
 . If you are on Windows or Mac and installing MikTeX, you can also try installing TeX Live instead.
 . Ask on https://tex.stackexchange.com, providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
+
+== My index is not generated correctly
+
+Note that you _have_ to disable both the `auxil/` (in case of MiKTeX) and `out/` directories in the run configuration, otherwise the `.idx` file will not be found by the index package.
+
+In general we would recommend using the `imakeidx` package like below, but equivalent index packages should also work.
+
+Example:
+[source,latex]
+----
+\documentclass{article}
+\usepackage{imakeidx}
+\makeindex
+
+\begin{document}
+    \section{Introduction}
+    Some \index{keywords} here
+    for the \index{Index}.
+
+    Another line with \index{words}.
+
+    \printindex
+\end{document}
+----
+
