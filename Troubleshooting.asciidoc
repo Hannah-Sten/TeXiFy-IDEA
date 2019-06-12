@@ -1,4 +1,5 @@
 = Troubleshooting
+
 Have a look at the https://github.com/Ruben-Sten/TeXiFy-IDEA#faq[FAQ] in the readme as well.
 
 == Error running 'main': Cannot run program "pdflatex"
