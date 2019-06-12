@@ -1,5 +1,5 @@
 = Troubleshooting
-==== What to do when TeXiFy-IDEA does not work
+Have a look at the https://github.com/Ruben-Sten/TeXiFy-IDEA#faq[FAQ] in the readme as well.
 
 == Error running 'main': Cannot run program "pdflatex"
 
