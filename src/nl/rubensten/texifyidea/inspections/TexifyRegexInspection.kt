@@ -15,7 +15,6 @@ import nl.rubensten.texifyidea.util.inMathContext
 import nl.rubensten.texifyidea.util.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Ruben Schellekens
@@ -166,7 +165,7 @@ abstract class TexifyRegexInspection(
             replacements.add(replacementContent)
         }
 
-        if (replacementRanges.size > 0) {
+        if (replacementRanges.isNotEmpty()) {
 
             // We cannot give one TextRange because there are multiple,
             // but it does not matter since the user won't see this anyway.
@@ -197,7 +196,7 @@ abstract class TexifyRegexInspection(
      * Inspect the file and create a list of all problem descriptors.
      */
     private fun inspectFileOnTheFly(file: PsiFile, manager: InspectionManager, matcher: Matcher): MutableList<ProblemDescriptor> {
-        val descriptors = SmartList<ProblemDescriptor>()
+        val descriptors = descriptorList()
 
         while (matcher.find()) {
             // Pre-checks.
@@ -263,7 +262,8 @@ abstract class TexifyRegexInspection(
     /**
      * Replaces all text in the replacementRange by the correct replacement.
      *
-     * @return The total increase in document length, e.g. if << is replaced by \ll and \usepackage{amsmath} is added then the total increase is 3 + 20 - 2.
+     * @return The total increase in document length, e.g. if << is replaced by
+     * \ll and \usepackage{amsmath} is added then the total increase is 3 + 20 - 2.
      */
     open fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
@@ -283,8 +283,13 @@ abstract class TexifyRegexInspection(
      *
      * @param groups Regex groups as matched by the regex matcher.
      */
-    open fun applyFixes(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>) {
-        assert(replacementRanges.size == replacements.size)
+    open fun applyFixes(project: Project,
+                        descriptor: ProblemDescriptor,
+                        replacementRanges: List<IntRange>,
+                        replacements: List<String>,
+                        groups: List<List<String>>
+    ) {
+        require(replacementRanges.size == replacements.size) { "The number of replacement values has to equal the number of ranges of those replacements." }
 
         // Remember how much a replacement changed the locations of the fixes still to be applied.
         // This is cumulative, but may be negative.
