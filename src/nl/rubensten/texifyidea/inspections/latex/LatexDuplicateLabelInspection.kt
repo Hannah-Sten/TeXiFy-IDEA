@@ -7,7 +7,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 /**
  * @author Ruben Schellekens, Sten Wessel
@@ -16,9 +18,11 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Duplicate labels"
-
     override val inspectionId: String = "DuplicateLabel"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
+
+    override fun getDisplayName() = "Duplicate labels"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

@@ -14,11 +14,13 @@ import com.intellij.psi.util.PsiTreeUtil
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
 import nl.rubensten.texifyidea.lang.Diacritic
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexMathEnvironment
 import nl.rubensten.texifyidea.util.allCommands
 import java.text.Normalizer
+import java.util.*
 
 /**
  * @author Sten Wessel
@@ -27,9 +29,11 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Redundant escape when Unicode is enabled"
-
     override val inspectionId = "RedundantEscape"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
+
+    override fun getDisplayName() = "Redundant escape when Unicode is enabled"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

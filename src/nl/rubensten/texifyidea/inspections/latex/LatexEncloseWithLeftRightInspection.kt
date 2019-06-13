@@ -12,9 +12,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyLineOptionsInspection
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 /**
  * @author Ruben Schellekens
@@ -32,9 +34,11 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     override val inspectionGroup: InsightGroup
         get() = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Enclose high lines with \\leftX..\\rightX"
-
     override val inspectionId = "EncloseWithLeftRight"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
+
+    override fun getDisplayName() = "Enclose high lines with \\leftX..\\rightX"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

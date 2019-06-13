@@ -10,6 +10,7 @@ import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
@@ -17,6 +18,7 @@ import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.parentOfType
+import java.util.*
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -35,9 +37,11 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Non-breaking spaces before references"
-
     override val inspectionId = "NonBreakingSpace"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
+
+    override fun getDisplayName() = "Non-breaking spaces before references"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

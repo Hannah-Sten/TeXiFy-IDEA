@@ -6,14 +6,18 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
 
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String = "FigureNotReferenced"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName(): String = "Figure Not Referenced"
 

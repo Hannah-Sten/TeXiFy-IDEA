@@ -7,11 +7,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexRequiredParam
 import nl.rubensten.texifyidea.util.PackageUtils
 import nl.rubensten.texifyidea.util.commandsInFile
 import nl.rubensten.texifyidea.util.firstChildOfType
 import nl.rubensten.texifyidea.util.requiredParameter
+import java.util.*
+import kotlin.collections.HashSet
 
 /**
  * @author Ruben Schellekens
@@ -21,6 +24,10 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
     override val inspectionGroup = InsightGroup.LATEX
 
     override val inspectionId = "MultipleIncludes"
+
+    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.ENVIRONMENT, MagicCommentScope.MATH_ENVIRONMENT)!!
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName() = "Package has been imported multiple times"
 
