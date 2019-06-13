@@ -8,8 +8,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.*
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -35,9 +39,11 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Label conventions"
-
     override val inspectionId = "LabelConvention"
+
+    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND, MagicCommentScope.GROUP)!!
+
+    override fun getDisplayName() = "Label conventions"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = SmartList<ProblemDescriptor>()

@@ -9,10 +9,13 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.util.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Ruben Schellekens
@@ -22,6 +25,10 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     override val inspectionGroup = InsightGroup.LATEX
 
     override val inspectionId = "CollapseCite"
+
+    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
     override fun getDisplayName() = "Collapce cite commands"
 

@@ -7,10 +7,12 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.commandsInFile
 import nl.rubensten.texifyidea.util.findLabelsInFileSet
 import nl.rubensten.texifyidea.util.hasStar
+import java.util.*
 
 /**
  * @author Ruben Schellekens
@@ -19,9 +21,11 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Unresolved reference"
-
     override val inspectionId = "UnresolvedReference"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND, MagicCommentScope.GROUP)!!
+
+    override fun getDisplayName() = "Unresolved reference"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

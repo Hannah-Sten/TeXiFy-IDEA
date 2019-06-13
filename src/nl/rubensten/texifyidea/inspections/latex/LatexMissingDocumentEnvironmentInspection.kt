@@ -10,9 +10,11 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.file.LatexFileType
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexBeginCommand
 import nl.rubensten.texifyidea.util.childrenOfType
 import nl.rubensten.texifyidea.util.referencedFileSet
+import java.util.*
 
 /**
  * @author Ruben Schellekens
@@ -21,9 +23,16 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Missing document environment"
-
     override val inspectionId = "MissingDocumentEnvironment"
+
+    override val ignoredSuppressionScopes = EnumSet.of(
+            MagicCommentScope.ENVIRONMENT,
+            MagicCommentScope.MATH_ENVIRONMENT,
+            MagicCommentScope.COMMAND,
+            MagicCommentScope.GROUP
+    )!!
+
+    override fun getDisplayName() = "Missing document environment"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
