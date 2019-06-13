@@ -6,12 +6,14 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
 import nl.rubensten.texifyidea.lang.Diacritic
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexMathContent
 import nl.rubensten.texifyidea.psi.LatexNormalText
 import nl.rubensten.texifyidea.psi.LatexTypes
 import nl.rubensten.texifyidea.util.hasParent
 import nl.rubensten.texifyidea.util.inMathContext
 import nl.rubensten.texifyidea.util.isComment
+import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -58,6 +60,8 @@ open class LatexDiacriticIJInspection : TexifyRegexInspection(
 
         fun letter(it: Matcher) = it.group(2)!!
     }
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         if (element.isComment()) return false

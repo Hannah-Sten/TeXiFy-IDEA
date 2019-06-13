@@ -183,7 +183,7 @@ fun LatexEnvironment.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic comments that are targetted to this environment, all parent environments and the whole file.
+ * Get the (merged) magic comments that are targeted to this environment, all parent environments and the whole file.
  */
 fun LatexEnvironment.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
@@ -206,7 +206,7 @@ fun LatexMathEnvironment.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic comments that are targetted to this math environment, all parent environments and the whole file.
+ * Get the (merged) magic comments that are targeted to this math environment, all parent environments and the whole file.
  */
 fun LatexMathEnvironment.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
@@ -245,7 +245,7 @@ fun LatexCommands.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic comments that are targetted to this command, and all parent environments and the whole file.
+ * Get the (merged) magic comments that are targeted to this command, and all parent environments and the whole file.
  */
 fun LatexCommands.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
@@ -267,7 +267,7 @@ fun LatexGroup.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic comments that are targetted to this group, all parent goups, commands,
+ * Get the (merged) magic comments that are targeted to this group, all parent goups, commands,
  * environments and the whole file.
  */
 fun LatexGroup.allMagicComments(): MagicComment<String, String> {
@@ -283,7 +283,20 @@ fun LatexGroup.allMagicComments(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic comments that are targetted to all the element's parents (including the whole file).
+ * Get the direct magic comment of this psi element, or `null` when magic comments are not supported for this element
+ * type.
+ */
+fun PsiElement.magicComment(): MagicComment<String, String>? = when (this) {
+    is PsiFile -> this.magicComment()
+    is LatexEnvironment -> this.magicComment()
+    is LatexMathEnvironment -> this.magicComment()
+    is LatexCommands -> this.magicComment()
+    is LatexGroup -> this.magicComment()
+    else -> null
+}
+
+/**
+ * Get the (merged) magic comments that are targeted to all the element's parents (including the whole file).
  */
 fun PsiElement.allParentMagicComments(): MagicComment<String, String> = MutableMagicComment<String, String>().apply {
     addParentMagicComments(this)
