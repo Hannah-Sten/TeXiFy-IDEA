@@ -118,110 +118,123 @@ abstract class TexifyRegexInspection(
         val text = file.text
         val matcher = pattern.matcher(text)
 
-        // The file is inspected 'not on the fly' when the 'fix all problems in file' menu is used.
-        // If that is the case and we need to run the inspection for the
-        // whole file at once, we create only one problem descriptor for
-        // the whole file, which has all the problem locations.
-        // Then the problem descriptor will be applied and we can take
-        // control of handling the displacements of the fixed regex locations ourselves.
-        // The reason we do not always want one problem descriptor is
-        // that it would be rendered in IntelliJ as one global warning
-        // bar at the top of the file, instead of at the correct locations.
-        if (!isOntheFly && runForWholeFile()) {
-            val replacementRanges = arrayListOf<IntRange>()
-            val replacements = arrayListOf<String>()
-            val groups = arrayListOf<List<String>>()
-
-            val quickFixName = quickFixName(matcher)
-
-            // For each pattern, just save the replacement location and value
-            while (matcher.find()) {
-                // Pre-checks.
-                if (cancelIf(matcher, file)) {
-                    continue
-                }
-
-                groups.add(groupFetcher(matcher))
-
-                val range = replacementRange(matcher)
-                val replacementContent = replacement(matcher, file)
-
-                // Correct context.
-                val element = file.findElementAt(matcher.start()) ?: continue
-                if (!checkContext(matcher, element)) {
-                    continue
-                }
-
-                replacementRanges.add(range)
-                replacements.add(replacementContent)
-            }
-
-            if (replacementRanges.size > 0) {
-
-                // We cannot give one TextRange because there are multiple,
-                // but it does not matter since the user won't see this anyway.
-                val problemDescriptor = manager.createProblemDescriptor(
-                        file,
-                        null as TextRange?,
-                        errorMessage(matcher),
-                        highlight,
-                        isOntheFly,
-                        RegexFixes(
-                                quickFixName,
-                                replacements,
-                                replacementRanges,
-                                groups,
-                                this::applyFixes
-                        )
-                )
-
-                return mutableListOf(problemDescriptor)
-            }
-            else {
-                return mutableListOf()
-            }
-
+        return if (!isOntheFly && runForWholeFile()) {
+            inspectFileNotOnTheFly(file, manager, matcher)
         }
         else {
-            val descriptors = SmartList<ProblemDescriptor>()
+            inspectFileOnTheFly(file, manager, matcher)
+        }
+    }
 
-            while (matcher.find()) {
-                // Pre-checks.
-                if (cancelIf(matcher, file)) {
-                    continue
-                }
+    /**
+     * The file is inspected 'not on the fly' when the 'fix all problems in file' menu is used.
+     * If that is the case and we need to run the inspection for the
+     * whole file at once, we create only one problem descriptor for
+     * the whole file, which has all the problem locations.
+     * Then the problem descriptor will be applied and we can take
+     * control of handling the displacements of the fixed regex locations ourselves.
+     * The reason we do not always want one problem descriptor is
+     * that it would be rendered in IntelliJ as one global warning
+     * bar at the top of the file, instead of at the correct locations.
+     */
+    private fun inspectFileNotOnTheFly(file: PsiFile, manager: InspectionManager, matcher: Matcher): MutableList<ProblemDescriptor> {
+        val replacementRanges = arrayListOf<IntRange>()
+        val replacements = arrayListOf<String>()
+        val groups = arrayListOf<List<String>>()
 
-                val groups = groupFetcher(matcher)
-                val textRange = highlightRange(matcher)
-                val range = replacementRange(matcher)
-                val error = errorMessage(matcher)
-                val quickFix = quickFixName(matcher)
-                val replacementContent = replacement(matcher, file)
+        val quickFixName = quickFixName(matcher)
 
-                // Correct context.
-                val element = file.findElementAt(matcher.start()) ?: continue
-                if (!checkContext(matcher, element)) {
-                    continue
-                }
-
-                descriptors.add(manager.createProblemDescriptor(
-                        file,
-                        textRange,
-                        error,
-                        highlight,
-                        isOntheFly,
-                        RegexFixes(
-                                quickFix,
-                                arrayListOf(replacementContent),
-                                arrayListOf(range),
-                                arrayListOf(groups),
-                                this::applyFixes
-                        )
-                ))
+        // For each pattern, just save the replacement location and value
+        while (matcher.find()) {
+            // Pre-checks.
+            if (cancelIf(matcher, file)) {
+                continue
             }
 
-            return descriptors
+            groups.add(groupFetcher(matcher))
+
+            val range = replacementRange(matcher)
+            val replacementContent = replacement(matcher, file)
+
+            // Correct context.
+            val element = file.findElementAt(matcher.start()) ?: continue
+            if (!checkContext(matcher, element)) {
+                continue
+            }
+
+            replacementRanges.add(range)
+            replacements.add(replacementContent)
         }
+
+        if (replacementRanges.size > 0) {
+
+            // We cannot give one TextRange because there are multiple,
+            // but it does not matter since the user won't see this anyway.
+            val problemDescriptor = manager.createProblemDescriptor(
+                    file,
+                    null as TextRange?,
+                    errorMessage(matcher),
+                    highlight,
+                    false,
+                    RegexFixes(
+                            quickFixName,
+                            replacements,
+                            replacementRanges,
+                            groups,
+                            this::applyFixes
+                    )
+            )
+
+            return mutableListOf(problemDescriptor)
+        }
+        else {
+            return mutableListOf()
+        }
+
+    }
+
+    /**
+     * Inspect the file and create a list of all problem descriptors.
+     */
+    private fun inspectFileOnTheFly(file: PsiFile, manager: InspectionManager, matcher: Matcher): MutableList<ProblemDescriptor> {
+        val descriptors = SmartList<ProblemDescriptor>()
+
+        while (matcher.find()) {
+            // Pre-checks.
+            if (cancelIf(matcher, file)) {
+                continue
+            }
+
+            val groups = groupFetcher(matcher)
+            val textRange = highlightRange(matcher)
+            val range = replacementRange(matcher)
+            val error = errorMessage(matcher)
+            val quickFix = quickFixName(matcher)
+            val replacementContent = replacement(matcher, file)
+
+            // Correct context.
+            val element = file.findElementAt(matcher.start()) ?: continue
+            if (!checkContext(matcher, element)) {
+                continue
+            }
+
+            descriptors.add(manager.createProblemDescriptor(
+                    file,
+                    textRange,
+                    error,
+                    highlight,
+                    true,
+                    RegexFixes(
+                            quickFix,
+                            arrayListOf(replacementContent),
+                            arrayListOf(range),
+                            arrayListOf(groups),
+                            this::applyFixes
+                    )
+            ))
+        }
+
+        return descriptors
     }
 
     /**
