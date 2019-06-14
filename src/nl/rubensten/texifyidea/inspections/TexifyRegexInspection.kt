@@ -9,10 +9,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
-import nl.rubensten.texifyidea.util.document
-import nl.rubensten.texifyidea.util.hasParent
-import nl.rubensten.texifyidea.util.inMathContext
-import nl.rubensten.texifyidea.util.isComment
+import nl.rubensten.texifyidea.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -144,6 +141,7 @@ abstract class TexifyRegexInspection(
         val quickFixName = quickFixName(matcher)
 
         // For each pattern, just save the replacement location and value
+        // We use the fact that the matcher finds issues in increasing order when applying fixes
         while (matcher.find()) {
             // Pre-checks.
             if (cancelIf(matcher, file)) {
@@ -265,13 +263,13 @@ abstract class TexifyRegexInspection(
      * @return The total increase in document length, e.g. if << is replaced by
      * \ll and \usepackage{amsmath} is added then the total increase is 3 + 20 - 2.
      */
-    open fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
+    open fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return 0
 
         document.replaceString(replacementRange.start, replacementRange.endInclusive, replacement)
 
-        return replacement.length - (replacementRange.endInclusive - replacementRange.start)
+        return replacement.length - replacementRange.length
     }
 
     /**
@@ -282,9 +280,9 @@ abstract class TexifyRegexInspection(
      * should override [runForWholeFile] to explicitly refute this assumption.
      *
      * @param groups Regex groups as matched by the regex matcher.
+     * @param replacementRanges These replacement ranges have to be ordered increasingly and have to be non-overlapping.
      */
-    open fun applyFixes(project: Project,
-                        descriptor: ProblemDescriptor,
+    open fun applyFixes(descriptor: ProblemDescriptor,
                         replacementRanges: List<IntRange>,
                         replacements: List<String>,
                         groups: List<List<String>>
@@ -301,7 +299,7 @@ abstract class TexifyRegexInspection(
             val replacement = replacements[i]
 
             val newRange = IntRange(replacementRange.start + accumulatedDisplacement, replacementRange.endInclusive + accumulatedDisplacement)
-            val replacementLength = applyFix(project, descriptor, newRange, replacement, groups[i])
+            val replacementLength = applyFix(descriptor, newRange, replacement, groups[i])
 
             // Fix the locations of the next fixes
             accumulatedDisplacement += replacementLength
@@ -316,13 +314,13 @@ abstract class TexifyRegexInspection(
             val replacements: List<String>,
             val replacementRanges: List<IntRange>,
             val groups: List<List<String>>,
-            val fixFunction: (Project, ProblemDescriptor, List<IntRange>, List<String>, List<List<String>>) -> Unit
+            val fixFunction: (ProblemDescriptor, List<IntRange>, List<String>, List<List<String>>) -> Unit
     ) : LocalQuickFix {
 
         override fun getFamilyName(): String = fixName
 
         override fun applyFix(project: Project, problemDescriptor: ProblemDescriptor) {
-            fixFunction(project, problemDescriptor, replacementRanges, replacements, groups)
+            fixFunction(problemDescriptor, replacementRanges, replacements, groups)
         }
     }
 }

@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.length
 import nl.rubensten.texifyidea.util.toTextRange
 import java.util.regex.Pattern
 
@@ -33,6 +34,6 @@ open class LatexEnDashInspection : TexifyRegexInspection(
         val dashReplacement = "$start--$end"
         document.replaceString(replacementRange.start, replacementRange.endInclusive, dashReplacement)
 
-        return dashReplacement.length - (replacementRange.endInclusive - replacementRange.start)
+        return dashReplacement.length - replacementRange.length
     }
 }
