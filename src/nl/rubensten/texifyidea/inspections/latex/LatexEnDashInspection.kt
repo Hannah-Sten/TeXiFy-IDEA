@@ -25,7 +25,7 @@ open class LatexEnDashInspection : TexifyRegexInspection(
         groupFetcher = { listOf(it.group(2), it.group(3)) }
 ) {
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
+    override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return 0
         val start = groups[0]

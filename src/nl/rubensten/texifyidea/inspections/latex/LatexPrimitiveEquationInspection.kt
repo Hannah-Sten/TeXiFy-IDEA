@@ -31,7 +31,7 @@ open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
         fun replaceRange(it: Matcher) = (it.groupRange(1).start..it.groupRange(2).endInclusive)
     }
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
+    override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return 0
 
