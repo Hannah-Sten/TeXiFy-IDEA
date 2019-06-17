@@ -321,7 +321,7 @@ abstract class TexifyRegexInspection(
     /**
      * @author Ruben Schellekens
      */
-    private class RegexFixes(
+    open class RegexFixes(
             val fixName: String,
             val replacements: List<String>,
             val replacementRanges: List<IntRange>,
