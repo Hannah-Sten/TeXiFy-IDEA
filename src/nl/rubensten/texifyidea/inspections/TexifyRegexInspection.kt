@@ -24,7 +24,7 @@ abstract class TexifyRegexInspection(
         val inspectionDisplayName: String,
 
         /**
-         * The short name of the inspection (same name as the html info file.
+         * The short name of the inspection (same name as the html info file).
          */
         val myInspectionId: String,
 
@@ -287,6 +287,18 @@ abstract class TexifyRegexInspection(
                         replacements: List<String>,
                         groups: List<List<String>>
     ) {
+        val fixFunction = { replacementRange: IntRange, replacement: String, group: List<String> -> applyFix(descriptor, replacementRange, replacement, group) }
+        applyFixes(fixFunction, replacementRanges, replacements, groups)
+    }
+
+    /**
+     * See [applyFixes].
+     */
+    open fun applyFixes(fixFunction: (IntRange, String, List<String>) -> Int,
+                        replacementRanges: List<IntRange>,
+                        replacements: List<String>,
+                        groups: List<List<String>>
+    ) {
         require(replacementRanges.size == replacements.size) { "The number of replacement values has to equal the number of ranges of those replacements." }
 
         // Remember how much a replacement changed the locations of the fixes still to be applied.
@@ -299,7 +311,7 @@ abstract class TexifyRegexInspection(
             val replacement = replacements[i]
 
             val newRange = IntRange(replacementRange.start + accumulatedDisplacement, replacementRange.endInclusive + accumulatedDisplacement)
-            val replacementLength = applyFix(descriptor, newRange, replacement, groups[i])
+            val replacementLength = fixFunction(newRange, replacement, groups[i])
 
             // Fix the locations of the next fixes
             accumulatedDisplacement += replacementLength
