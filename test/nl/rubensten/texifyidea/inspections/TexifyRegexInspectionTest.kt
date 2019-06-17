@@ -7,14 +7,13 @@ import java.util.regex.Pattern
 
 class TexifyRegexInspectionTest {
 
+    // Implement a mock inspection to test inherited methods.
     class MockRegexInspection : TexifyRegexInspection(
             inspectionDisplayName = "",
             myInspectionId = "",
             errorMessage = { "" },
-            pattern = Pattern.compile("a.a"),
-            replacement = { _, _ -> "The replacement" },
-            replacementRange = { IntRange(24, 42) }) {
-
+            pattern = Pattern.compile("bl.b")
+    ) {
         // Provide dummy document contents
         var dummyDocument = ""
 
@@ -23,17 +22,14 @@ class TexifyRegexInspectionTest {
          * For the tests, replacement ranges and replacements could also be done manually but this is slightly easier,
          * because the tests in this file do not aim to test [inspectFile] anyway.
          */
-        fun mockInspectFile() : RegexFixes {
+        fun mockInspectFile(replacementContent: String = "replacement") : RegexFixes {
             val replacementRanges = arrayListOf<IntRange>()
             val replacements = arrayListOf<String>()
             val groups = arrayListOf<List<String>>()
 
             val matcher = pattern.matcher(dummyDocument)
             while (matcher.find()) {
-                val range = replacementRange(matcher)
-                val replacementContent = "Replacement"
-
-                replacementRanges.add(range)
+                replacementRanges.add(replacementRange(matcher))
                 replacements.add(replacementContent)
                 groups.add(groupFetcher(matcher))
             }
@@ -53,10 +49,13 @@ class TexifyRegexInspectionTest {
         }
     }
 
+    /**
+     * Test replacements that have a larger length than the original text.
+     */
     @Test
-    fun testApplyFixesTwoReplacements() {
+    fun testApplyFixesTwoLargerReplacements() {
         val dummy = MockRegexInspection()
-        dummy.dummyDocument = "The words aba and aca should both be replaced in the correct location."
+        dummy.dummyDocument = "This sentence contains one blub and another blab which are both the same."
 
         val fixes = dummy.mockInspectFile()
         val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
@@ -64,6 +63,57 @@ class TexifyRegexInspectionTest {
 
         dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
 
-        assertEquals("The words Replacement1 and Replacement2 should both be replaced in the correct location.", dummy.dummyDocument)
+        assertEquals("This sentence contains one replacement and another replacement which are both the same.", dummy.dummyDocument)
+    }
+
+    /**
+     * Test replacements that have a larger length than the original text.
+     */
+    @Test
+    fun testApplyFixesTwoSmallerReplacements() {
+        val dummy = MockRegexInspection()
+        dummy.dummyDocument = "This sentence contains one blub and another blab which are both the same."
+
+        val fixes = dummy.mockInspectFile("r")
+        val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
+            dummy.mockApplyFix(replacementRange, replacement) }
+
+        dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
+
+        assertEquals("This sentence contains one r and another r which are both the same.", dummy.dummyDocument)
+    }
+
+    /**
+     * Test a case where nothing should be replaced.
+     */
+    @Test
+    fun testApplyFixesNoReplacements() {
+        val dummy = MockRegexInspection()
+        dummy.dummyDocument = "This sentence contains nothing that should be replaced."
+
+        val fixes = dummy.mockInspectFile()
+        val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
+            dummy.mockApplyFix(replacementRange, replacement) }
+
+        dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
+
+        assertEquals("This sentence contains nothing that should be replaced.", dummy.dummyDocument)
+    }
+
+    /**
+     * Test replacements which have the same length as the original.
+     */
+    @Test
+    fun testApplyFixesSameLengthReplacements() {
+        val dummy = MockRegexInspection()
+        dummy.dummyDocument = "This sentence contains one blub and another blab which are both the same."
+
+        val fixes = dummy.mockInspectFile("blob")
+        val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
+            dummy.mockApplyFix(replacementRange, replacement) }
+
+        dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
+
+        assertEquals("This sentence contains one blob and another blob which are both the same.", dummy.dummyDocument)
     }
 }
