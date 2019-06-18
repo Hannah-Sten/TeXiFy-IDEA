@@ -201,6 +201,20 @@ fun LatexEnvironment.allMagicComments(): MagicComment<String, String> {
  * Get the magic comment that directly precedes the math environment.
  */
 fun LatexMathEnvironment.magicComment(): MagicComment<String, String> {
+    // Because of current parser quirks, there are two scenarios to find the magic comments:
+    // 1. When the magic comment is the first element in an environment, they are the previous sibling of the
+    //    environment content element.
+    // 2. Otherwise they are previous siblings of the direct LatexContent parent of the math environment.
+
+    val parentEnvironmentContent = parentOfType(LatexEnvironmentContent::class)
+    val parentEnvironmentContentPreviousSibling = parentEnvironmentContent?.previousSiblingIgnoreWhitespace()
+
+    // Case 1.
+    if (parentEnvironmentContentPreviousSibling is PsiComment) {
+        return parentEnvironmentContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
+    }
+
+    // Case 2.
     val outerContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
     return outerContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
 }
@@ -225,7 +239,7 @@ fun LatexMathEnvironment.allMagicComments(): MagicComment<String, String> {
  */
 fun LatexCommands.magicComment(): MagicComment<String, String> {
     // Because of current parser quirks, there are two scenarios to find the magic comments:
-    // 1. When the magic comments are the first elements in an environment, they are next siblings of
+    // 1. When the magic comment are the first elements in an environment, they are next siblings of
     //    the LatexBeginCommand of the parent LatexEnvironment.
     // 2. Otherwise they are previous siblings of the direct LatexContent parent of the LatexCommands.
 
@@ -236,12 +250,11 @@ fun LatexCommands.magicComment(): MagicComment<String, String> {
     if (parentContentPreviousSibling is PsiComment) {
         return backwardMagicCommentLookup { parentContentPreviousSibling }
     }
+
     // Case 1.
-    else {
-        val parentEnvironment = parentOfType(LatexEnvironment::class) ?: return MagicComment.empty()
-        val beginCommand = parentEnvironment.firstChildIgnoringWhitespaceOrNull() ?: return MagicComment.empty()
-        return forwardMagicCommentLookup { beginCommand.nextSiblingIgnoreWhitespace() }
-    }
+    val parentEnvironment = parentOfType(LatexEnvironment::class) ?: return MagicComment.empty()
+    val beginCommand = parentEnvironment.firstChildIgnoringWhitespaceOrNull() ?: return MagicComment.empty()
+    return forwardMagicCommentLookup { beginCommand.nextSiblingIgnoreWhitespace() }
 }
 
 /**
