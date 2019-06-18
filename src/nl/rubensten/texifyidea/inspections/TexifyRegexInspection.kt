@@ -138,7 +138,8 @@ abstract class TexifyRegexInspection(
         val replacements = arrayListOf<String>()
         val groups = arrayListOf<List<String>>()
 
-        val quickFixName = quickFixName(matcher)
+        var quickFixName = ""
+        var errorMessage = ""
 
         // For each pattern, just save the replacement location and value
         // We use the fact that the matcher finds issues in increasing order when applying fixes
@@ -152,6 +153,11 @@ abstract class TexifyRegexInspection(
 
             val range = replacementRange(matcher)
             val replacementContent = replacement(matcher, file)
+
+            // Just take the last error/name even if it may not apply to all problems at once
+            // (they may each have a different error message) because we have to choose only one for the one problem descriptor.
+            errorMessage = errorMessage(matcher)
+            quickFixName = quickFixName(matcher)
 
             // Correct context.
             val element = file.findElementAt(matcher.start()) ?: continue
@@ -170,7 +176,7 @@ abstract class TexifyRegexInspection(
             val problemDescriptor = manager.createProblemDescriptor(
                     file,
                     null as TextRange?,
-                    errorMessage(matcher),
+                    errorMessage,
                     highlight,
                     false,
                     RegexFixes(
@@ -322,7 +328,7 @@ abstract class TexifyRegexInspection(
      * @author Ruben Schellekens
      */
     open class RegexFixes(
-            val fixName: String,
+            private val fixName: String,
             val replacements: List<String>,
             val replacementRanges: List<IntRange>,
             val groups: List<List<String>>,
