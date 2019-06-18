@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class BibtexKeyImpl extends ASTWrapperPsiElement implements BibtexKey {
 
-  public BibtexKeyImpl(ASTNode node) {
+  public BibtexKeyImpl(@NotNull ASTNode node) {
     super(node);
   }
 

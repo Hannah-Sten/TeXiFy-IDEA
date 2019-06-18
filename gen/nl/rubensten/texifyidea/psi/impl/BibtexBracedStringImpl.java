@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class BibtexBracedStringImpl extends ASTWrapperPsiElement implements BibtexBracedString {
 
-  public BibtexBracedStringImpl(ASTNode node) {
+  public BibtexBracedStringImpl(@NotNull ASTNode node) {
     super(node);
   }
 

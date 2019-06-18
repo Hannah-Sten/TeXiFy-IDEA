@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexInlineMath {
 
-  public LatexInlineMathImpl(ASTNode node) {
+  public LatexInlineMathImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -33,9 +33,9 @@ public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexIn
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getInlineMathEnd() {
-    return findNotNullChildByType(INLINE_MATH_END);
+    return findChildByType(INLINE_MATH_END);
   }
 
   @Override

@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class BibtexNormalTextImpl extends ASTWrapperPsiElement implements BibtexNormalText {
 
-  public BibtexNormalTextImpl(ASTNode node) {
+  public BibtexNormalTextImpl(@NotNull ASTNode node) {
     super(node);
   }
 

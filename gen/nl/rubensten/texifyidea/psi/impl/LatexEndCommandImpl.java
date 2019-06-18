@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexEndCommandImpl extends ASTWrapperPsiElement implements LatexEndCommand {
 
-  public LatexEndCommandImpl(ASTNode node) {
+  public LatexEndCommandImpl(@NotNull ASTNode node) {
     super(node);
   }
 

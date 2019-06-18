@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
 
-  public BibtexTagImpl(ASTNode node) {
+  public BibtexTagImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -33,9 +33,9 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public BibtexContent getContent() {
-    return findNotNullChildByClass(BibtexContent.class);
+    return findChildByClass(BibtexContent.class);
   }
 
   @Override

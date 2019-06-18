@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements LatexRequiredParam {
 
-  public LatexRequiredParamImpl(ASTNode node) {
+  public LatexRequiredParamImpl(@NotNull ASTNode node) {
     super(node);
   }
 

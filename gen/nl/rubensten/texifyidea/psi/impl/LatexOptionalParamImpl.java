@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexOptionalParamImpl extends ASTWrapperPsiElement implements LatexOptionalParam {
 
-  public LatexOptionalParamImpl(ASTNode node) {
+  public LatexOptionalParamImpl(@NotNull ASTNode node) {
     super(node);
   }
 

@@ -1,34 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
-import nl.rubensten.texifyidea.index.stub.LatexCommandsStubElementType;
-import nl.rubensten.texifyidea.psi.impl.LatexBeginCommandImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexCommandsImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexCommentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexContentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexDisplayMathImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexEndCommandImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexEnvironmentContentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexEnvironmentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexGroupImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexInlineMathImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexMathContentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexMathEnvironmentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexNoMathContentImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexNormalTextImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexOpenGroupImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexOptionalParamImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexParameterImpl;
-import nl.rubensten.texifyidea.psi.impl.LatexRequiredParamImpl;
+import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
+import nl.rubensten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
 
   IElementType BEGIN_COMMAND = new LatexElementType("BEGIN_COMMAND");
-  IStubElementType COMMANDS = new LatexCommandsStubElementType("COMMANDS");
+  IElementType COMMANDS = new LatexElementType("COMMANDS");
   IElementType COMMENT = new LatexElementType("COMMENT");
   IElementType CONTENT = new LatexElementType("CONTENT");
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");
@@ -68,7 +49,7 @@ public interface LatexTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == BEGIN_COMMAND) {
+      if (type == BEGIN_COMMAND) {
         return new LatexBeginCommandImpl(node);
       }
       else if (type == COMMANDS) {

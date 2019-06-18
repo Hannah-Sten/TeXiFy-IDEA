@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexCommentImpl extends ASTWrapperPsiElement implements LatexComment {
 
-  public LatexCommentImpl(ASTNode node) {
+  public LatexCommentImpl(@NotNull ASTNode node) {
     super(node);
   }
 

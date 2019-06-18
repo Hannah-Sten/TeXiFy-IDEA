@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexEnvironment {
 
-  public LatexEnvironmentImpl(ASTNode node) {
+  public LatexEnvironmentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -33,9 +33,9 @@ public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexE
   }
 
   @Override
-  @NotNull
+  @Nullable
   public LatexEndCommand getEndCommand() {
-    return findNotNullChildByClass(LatexEndCommand.class);
+    return findChildByClass(LatexEndCommand.class);
   }
 
   @Override

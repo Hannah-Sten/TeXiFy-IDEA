@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexOpenGroupImpl extends ASTWrapperPsiElement implements LatexOpenGroup {
 
-  public LatexOpenGroupImpl(ASTNode node) {
+  public LatexOpenGroupImpl(@NotNull ASTNode node) {
     super(node);
   }
 

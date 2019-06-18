@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class BibtexEntryContentImpl extends ASTWrapperPsiElement implements BibtexEntryContent {
 
-  public BibtexEntryContentImpl(ASTNode node) {
+  public BibtexEntryContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 

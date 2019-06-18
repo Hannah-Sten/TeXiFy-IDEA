@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class LatexContentImpl extends ASTWrapperPsiElement implements LatexContent {
 
-  public LatexContentImpl(ASTNode node) {
+  public LatexContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 

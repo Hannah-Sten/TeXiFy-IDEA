@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class BibtexCommentImpl extends ASTWrapperPsiElement implements BibtexComment {
 
-  public BibtexCommentImpl(ASTNode node) {
+  public BibtexCommentImpl(@NotNull ASTNode node) {
     super(node);
   }
 

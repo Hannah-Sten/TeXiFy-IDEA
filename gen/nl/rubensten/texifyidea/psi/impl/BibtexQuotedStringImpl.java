@@ -13,7 +13,7 @@ import nl.rubensten.texifyidea.psi.*;
 
 public class BibtexQuotedStringImpl extends ASTWrapperPsiElement implements BibtexQuotedString {
 
-  public BibtexQuotedStringImpl(ASTNode node) {
+  public BibtexQuotedStringImpl(@NotNull ASTNode node) {
     super(node);
   }
 
