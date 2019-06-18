@@ -35,7 +35,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
             }
 
             val star = name.substring("eqnarray".length)
-            descriptors.add(manager.createProblemDescriptor(
+            if (env.endCommand != null) descriptors.add(manager.createProblemDescriptor(
                     env,
                     TextRange(7, 7 + name.length),
                     "Avoid using the 'eqnarray$star' environment",
@@ -60,7 +60,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
             val file = environment.containingFile
             val document = file.document() ?: return
             val begin = environment.beginCommand
-            val end = environment.endCommand
+            val end = environment.endCommand ?: return
 
             document.replaceString(end.textOffset, end.endOffset(), "\\end{align$star}")
             document.replaceString(begin.textOffset, begin.endOffset(), "\\begin{align$star}")

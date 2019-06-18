@@ -1,13 +1,20 @@
 // This is a generated file. Not intended for manual editing.
 package nl.rubensten.texifyidea.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.StubBasedPsiElement;
+import nl.rubensten.texifyidea.index.stub.BibtexIdStub;
+import nl.rubensten.texifyidea.util.StringsKt;
+import org.jetbrains.annotations.NotNull;
 
-public interface BibtexId extends PsiElement {
+import java.util.List;
+
+public interface BibtexId extends StubBasedPsiElement<BibtexIdStub>, PsiNamedElement {
 
   @NotNull
   List<BibtexComment> getCommentList();
 
+  default String getName() {
+    return StringsKt.substringEnd(getText(), 1);
+  }
 }
