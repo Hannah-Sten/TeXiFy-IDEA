@@ -3,7 +3,7 @@
 === About alpha builds
 
 This plugin also has an alpha channel besides the default stable channel.
-The alpha channel contains the latest build with the latest features available, and is updated much more frequently than the stable channel.
+The alpha channel contains the latest build with the latest features available (of most open pull requests), and is updated much more frequently than the stable channel.
 
 It is used for testing features before they are released in the stable channel, so alpha versions of the plugin may be more unstable.
 There are multiple ways by which you can acquire an alpha build.
