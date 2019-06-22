@@ -145,6 +145,12 @@ intellij {
         alternativeIdePath ".gradle/ide/pycharm-${pycharmVersion}"
     }
 
+    // Use the since build number from plugin.xml
+    updateSinceUntilBuild = false
+    // Keep an open until build, to avoid automatic downgrades to very old versions of the plugin
+    sameSinceUntilBuild = true
+
+    // Comment out to use the latest EAP snapshot
     version '2019.1'
 }
 
@@ -158,12 +164,6 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
-}
-
-// Set the attributes in the idea-version tag, otherwise they will get overwritten with a too narrow compatibility range.
-patchPluginXml {
-    sinceBuild '173.*'
-    untilBuild ''
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task
