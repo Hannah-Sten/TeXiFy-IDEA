@@ -7,6 +7,10 @@ Note that all shortcuts are customizable, you can change them in menu:File[Setti
 
 == General IntelliJ shortcuts
 
+See https://www.jetbrains.com/help/idea/mastering-keyboard-shortcuts.html for more information.
+
+Some useful shortcuts are for example:
+
 * Double kbd:[Shift]: Search for any IntelliJ command, like Reformat.
 * kbd:[Alt + Enter]: When your cursor is in a place where an inspection ribbon is shown, view the quick fix, if there is one. Apply the fix with kbd:[Enter].
 * kbd:[Ctrl + Alt + L]: Reformat the file.
