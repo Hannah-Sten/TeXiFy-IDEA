@@ -1,6 +1,8 @@
 package nl.rubensten.texifyidea.editor
 
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
+import com.intellij.openapi.editor.CaretModel
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -36,9 +38,70 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             return super.charTyped(char, project, editor, file)
         }
 
-        // This behaviour is inspired by the smart quotes functionality of TeXworks, source:
-        // https://github.com/TeXworks/texworks/blob/2f902e2e429fad3e2bbb56dff07c823d1108adf4/src/CompletingEdit.cpp#L762
+        insertReplacement(document, caret, offset, char)
 
+        return super.charTyped(char, project, editor, file)
+    }
+
+    /**
+     * Insert either opening or closing quotes.
+     *
+     * This behaviour is inspired by the smart quotes functionality of TeXworks, source:
+     * https://github.com/TeXworks/texworks/blob/2f902e2e429fad3e2bbb56dff07c823d1108adf4/src/CompletingEdit.cpp#L762
+     */
+    private fun insertReplacement(document: Document, caret: CaretModel, offset: Int, char: Char) {
+        val replacementPair = getOpenAndCloseQuotes(char)
+        val openingQuotes = replacementPair.first
+        val closingQuotes = replacementPair.second
+
+        // The default replacement of the typed double quotes is a pair of closing quotes
+        var isOpeningQuotes = false
+
+        // Always use opening quotes at the beginning of the document
+        if (offset == 1) {
+            isOpeningQuotes = true
+        }
+        else {
+            // Character before the cursor
+            val previousChar = document.getText(TextRange.from(offset - 2, 1))
+
+            // Assume that if the previous char is a space, we are not closing anything
+            if (previousChar == " ") {
+                isOpeningQuotes = true
+            }
+
+            // After opening brackets, also use opening quotes
+            if (previousChar == "{" || previousChar == "[" || previousChar == "(") {
+                isOpeningQuotes = true
+            }
+        }
+
+        val replacement = if (isOpeningQuotes) openingQuotes else closingQuotes
+
+        // Insert the replacement of the typed character, recall the offset is now right behind the inserted char
+        document.deleteString(offset - 1, offset)
+        document.insertString(offset - 1, replacement)
+
+        // Move the cursor behind the replacement which replaced the typed char
+        caret.moveToOffset(offset + replacement.length - 1)
+
+        // Special behaviour for \enquote, because it is a command, not just opening and closing quotes
+        if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) {
+            if (isOpeningQuotes) {
+                // Insert } after cursor to close the command
+                document.insertString(caret.offset, "}")
+            }
+            else {
+                // Instead of typing closing quotes, skip over the closing }
+                caret.moveToOffset(caret.offset + 1)
+            }
+        }
+    }
+
+    /**
+     * Define what the replacements are for opening and closing quotes, in case that is relevant for the user setting.
+     */
+    private fun getOpenAndCloseQuotes(char: Char): Pair<String, String> {
         var openingQuotes = ""
         var closingQuotes = ""
 
@@ -55,7 +118,6 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         }
         else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '"') {
             openingQuotes = "\\enquote{"
-            closingQuotes = "}"
         }
         else if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '\'') {
             openingQuotes = "`"
@@ -67,38 +129,8 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         }
         else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '\'') {
             openingQuotes = "\\enquote*{"
-            closingQuotes = "}"
         }
 
-        // The default replacement of the typed double quotes is a pair of closing quotes
-        var replacement = closingQuotes
-
-        // Always use opening quotes at the beginning of the document
-        if (offset == 1) {
-            replacement = openingQuotes
-        }
-        else {
-            // Character before the cursor
-            val previousChar = document.getText(TextRange.from(offset - 2, 1))
-
-            // Assume that if the previous char is a space, we are not closing anything
-            if (previousChar == " ") {
-                replacement = openingQuotes
-            }
-
-            // After opening brackets, also use opening quotes
-            if (previousChar == "{" || previousChar == "[" || previousChar == "(") {
-                replacement = openingQuotes
-            }
-        }
-
-        // Insert the replacement of the typed character, recall the offset is now right behind the inserted char
-        document.deleteString(offset - 1, offset)
-        document.insertString(offset - 1, replacement)
-
-        // Move the cursor behind the replacement which replaced the typed char
-        caret.moveToOffset(offset + replacement.length - 1)
-
-        return super.charTyped(char, project, editor, file)
+        return Pair(openingQuotes, closingQuotes)
     }
 }
