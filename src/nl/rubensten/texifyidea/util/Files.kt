@@ -7,6 +7,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
@@ -14,12 +15,14 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
 import nl.rubensten.texifyidea.algorithm.IsChildDFS
-import nl.rubensten.texifyidea.file.*
+import nl.rubensten.texifyidea.file.BibtexFileType
+import nl.rubensten.texifyidea.file.ClassFileType
+import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.file.StyleFileType
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.index.LatexDefinitionIndex
 import nl.rubensten.texifyidea.lang.Package
 import nl.rubensten.texifyidea.psi.LatexCommands
-import org.codehaus.plexus.util.FileUtils
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -408,7 +411,7 @@ fun createFile(fileName: String, contents: String): File {
     var count = 0
     var currentFileName = fileName
     while (File(currentFileName).exists()) {
-        val extension = "." + FileUtils.getExtension(currentFileName)
+        val extension = "." + FileUtilRt.getExtension(currentFileName)
         var stripped = currentFileName.substring(0, currentFileName.length - extension.length)
 
         val countString = count.toString()
