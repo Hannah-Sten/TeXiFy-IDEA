@@ -125,8 +125,8 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 
 * link:Global-settings#soft-wraps[Option to enable use of soft wraps when opening LaTeX files]
 * link:Global-settings#closing-math[Option to disable automatic insertion of second $]
-* Option to disable automatic brace insertion around text in subscript and superscript
-* Option to disable auto-insertion of \item
+* link:Global-settings#brace-insertion[Option to disable automatic brace insertion around text in subscript and superscript]
+* link:Global-settings#item-insertion[Option to disable auto-insertion of \item]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
 * link:Global-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 

@@ -18,6 +18,7 @@ You can use this setting to disable this.
 
 Note that if your cursor is right before the closing `$`, so like `$ <cursor>$`, you can type `$` and IntelliJ will skip over the closing `$` just like with closing braces.
 
+[#brace-insertion]
 == Option to disable automatic brace insertion around text in subscript and superscript
 
 By default, TeXiFy will automatically insert braces around multiple letters/numbers when they are directly after a `_` or `^` without spaces inbetween.
@@ -26,6 +27,7 @@ This means that when you type `$a_bc$` it will result in `$a_{bc}$`, to ensure t
 
 You can disable this behaviour using this setting.
 
+[#item-insertion]
 == Option to disable auto-insertion of \item
 
 By default, when you press kbd:[Enter] when in an itemize or enumerate environment, TeXiFy will insert a new `\item` for you.
@@ -44,8 +46,8 @@ and you press kbd:[Enter], it will result in
 [source,latex]
 ----
 \begin{itemize}
-    \item <cursor>
     \item
+    \item <cursor>
 \end{itemize}
 ----
 
@@ -81,7 +83,7 @@ For example, nested quotations work properly.
 
 Typing `'quote'` will result in `\enquote*{quote}` and typing `"quote"` will result in `\enquote{quote}`.
 
-This also works for nested quotes, typing `"nested "quotes""` results in `\enquote{nested \enquote{quotes}}`, which is typeset equivalently to ```nested `quotes'''`
+This also works for nested quotes, typing `"nested "quotes""` results in `\enquote{nested \enquote{quotes}}`.
 
 Note that instead of typing the closing `'` or `"` you could also type the closing `}` and IntelliJ will skip over it like usual.
 
