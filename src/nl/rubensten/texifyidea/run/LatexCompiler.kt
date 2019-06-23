@@ -65,6 +65,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     LATEXMK("Latexmk", "latexmk") {
 
+        override val includesBibtex = true
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
@@ -145,6 +147,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     TECTONIC("Tectonic", "tectonic") {
 
+        override val includesBibtex = true
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
@@ -152,7 +156,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("--synctex")
 
-            if (runConfig.hasOutputDirectories()) {
+            if (runConfig.hasOutputDirectories) {
                 command.add("--outdir=${moduleRoot.path}/out")
             }
 
@@ -203,6 +207,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile,
             moduleRoots: Array<VirtualFile>
     ): MutableList<String> = error("Not implemented for $this")
+
+    /**
+     * Whether the compiler includes running bibtex/biber.
+     */
+    open val includesBibtex = false
 
     override fun toString() = this.displayName
 

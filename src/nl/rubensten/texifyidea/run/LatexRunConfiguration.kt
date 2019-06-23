@@ -18,6 +18,8 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.run.LatexCompiler.Format
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.util.LatexDistribution
+import nl.rubensten.texifyidea.util.hasBibliography
+import nl.rubensten.texifyidea.util.usesBiber
 import org.jdom.Element
 
 /**
@@ -230,11 +232,16 @@ class LatexRunConfiguration constructor(project: Project,
     }
 
     /**
-     * Generate a Bibtex run configuration, using a certain compiler as default (e.g. bibtex or biber).
-     *
-     * @param defaultCompiler Compiler to set selected as default.
+     * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
      */
-    internal fun generateBibRunConfig(defaultCompiler: BibliographyCompiler) {
+    internal fun generateBibRunConfig() {
+
+        val defaultCompiler = when {
+            psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
+            psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
+            else -> BibliographyCompiler.BIBTEX
+        }
+
         // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
         if (!LatexDistribution.isMiktex) {
             this.hasOutputDirectories = false

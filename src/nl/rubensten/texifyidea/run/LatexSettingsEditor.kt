@@ -35,6 +35,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private var auxDir: JBCheckBox? = null
     private var outDir: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
+    private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: BibliographyPanel
 
     /** Whether to enable the sumatraPath text field. */
@@ -102,6 +103,23 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply chosen compiler.
         val chosenCompiler = compiler.component.selectedItem as LatexCompiler
         runConfiguration.compiler = chosenCompiler
+
+        // Remove bibtex run config when switching to a compiler which includes running bibtex
+        if (runConfiguration.compiler?.includesBibtex == true) {
+            runConfiguration.bibRunConfig = null
+            extensionSeparator.isVisible = false
+            bibliographyPanel.isVisible = false
+        } else if (runConfiguration.compiler?.includesBibtex == false && runConfiguration.bibRunConfig == null) {
+            runConfiguration.generateBibRunConfig()
+            extensionSeparator.isVisible = true
+            bibliographyPanel.isVisible = true
+            // todo rerender
+//            component.validate()
+//            fireEditorStateChanged()
+//            component.revalidate()
+//            component.repaint()
+//            resetEditorFrom(runConfiguration)
+        }
 
         // Apply custom compiler path if applicable
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
@@ -199,7 +217,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
 
-        panel.add(TitledSeparator("Extensions"))
+        panel.add(extensionSeparator)
 
         // Extension panels
         bibliographyPanel = BibliographyPanel(project!!)
