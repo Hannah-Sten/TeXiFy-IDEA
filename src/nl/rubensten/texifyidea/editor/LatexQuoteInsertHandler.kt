@@ -7,7 +7,9 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.rubensten.texifyidea.completion.handlers.LatexCommandPackageIncludeHandler
 import nl.rubensten.texifyidea.file.LatexFileType
+import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.settings.TexifySettings
 
 /**
@@ -38,7 +40,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             return super.charTyped(char, project, editor, file)
         }
 
-        insertReplacement(document, caret, offset, char)
+        insertReplacement(document, file, caret, offset, char)
 
         return super.charTyped(char, project, editor, file)
     }
@@ -49,7 +51,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
      * This behaviour is inspired by the smart quotes functionality of TeXworks, source:
      * https://github.com/TeXworks/texworks/blob/2f902e2e429fad3e2bbb56dff07c823d1108adf4/src/CompletingEdit.cpp#L762
      */
-    private fun insertReplacement(document: Document, caret: CaretModel, offset: Int, char: Char) {
+    private fun insertReplacement(document: Document, file: PsiFile, caret: CaretModel, offset: Int, char: Char) {
         val replacementPair = getOpenAndCloseQuotes(char)
         val openingQuotes = replacementPair.first
         val closingQuotes = replacementPair.second
@@ -85,7 +87,13 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         // Move the cursor behind the replacement which replaced the typed char
         caret.moveToOffset(offset + replacement.length - 1)
 
-        // Special behaviour for \enquote, because it is a command, not just opening and closing quotes
+        handleCsquotesInsertion(document, file, isOpeningQuotes, caret, char)
+    }
+
+    /**
+     * Special behaviour for \enquote, because it is a command, not just opening and closing quotes.
+     */
+    private fun handleCsquotesInsertion(document: Document, file: PsiFile, isOpeningQuotes: Boolean, caret: CaretModel, char: Char) {
         if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) {
             if (isOpeningQuotes) {
                 // Insert } after cursor to close the command
@@ -94,6 +102,14 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             else {
                 // Instead of typing closing quotes, skip over the closing }
                 caret.moveToOffset(caret.offset + 1)
+            }
+
+            // Package dependencies
+            if (char == '"') {
+                LatexCommandPackageIncludeHandler().handleInsert(document, file, LatexRegularCommand.ENQUOTE)
+            }
+            else {
+                LatexCommandPackageIncludeHandler().handleInsert(document, file, LatexRegularCommand.ENQUOTE_STAR)
             }
         }
     }
