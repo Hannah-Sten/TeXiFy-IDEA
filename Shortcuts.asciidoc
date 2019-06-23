@@ -1,5 +1,8 @@
 :experimental:
 
+:arrowup: &#8593;
+:arrowdown: &#8595;
+
 Note that all shortcuts are customizable, you can change them in menu:File[Settings > Keymap].
 
 == General IntelliJ shortcuts
@@ -7,6 +10,8 @@ Note that all shortcuts are customizable, you can change them in menu:File[Setti
 * Double kbd:[Shift]: Search for any IntelliJ command, like Reformat.
 * kbd:[Alt + Enter]: When your cursor is in a place where an inspection ribbon is shown, view the quick fix, if there is one. Apply the fix with kbd:[Enter].
 * kbd:[Ctrl + Alt + L]: Reformat the file.
+* kbd:[Ctrl + D]: Duplicate the line or selection.
+* kbd:[Alt + Shift + {arrowup}] or kbd:[Alt + Shift + {arrowdown}]: Move the line up or down.
 * kbd:[Ctrl + K]: Commit and push changes with git.
 * kbd:[Ctrl + T] Pull changes with git.
 
