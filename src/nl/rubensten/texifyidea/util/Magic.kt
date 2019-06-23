@@ -6,6 +6,7 @@ import nl.rubensten.texifyidea.TexifyIcons
 import nl.rubensten.texifyidea.file.*
 import nl.rubensten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.rubensten.texifyidea.lang.Package
+import java.awt.Color
 import java.util.regex.Pattern
 
 typealias LatexPackage = Package
@@ -66,6 +67,11 @@ object Magic {
                 "equation", "eq",
                 "algorithm", "alg"
         )
+
+        /**
+         * Environments that introduce figures
+         */
+        val figures = hashSetOf("figure")
     }
 
     /**
@@ -264,6 +270,19 @@ object Magic {
                 "\\section", "\\subsection", "\\subsubsection",
                 "\\paragraph", "\\subparagraph"
         )
+
+        /**
+         * The colours that each section separator has.
+         */
+        @JvmField val sectionSeparatorColors = mapOf(
+                "\\part" to Color(152, 152, 152),
+                "\\chapter" to Color(172, 172, 172),
+                "\\section" to Color(182, 182, 182),
+                "\\subsection" to Color(202, 202, 202),
+                "\\subsubsection" to Color(212, 212, 212),
+                "\\paragraph" to Color(222, 222, 222),
+                "\\subparagraph" to Color(232, 232, 232)
+        )
     }
 
     /**
@@ -301,7 +320,7 @@ object Magic {
         @JvmField val endsWithNonBreakingSpace = RegexPattern.compile("~$")!!
 
         /**
-         * Finds all abbreviations that have at least two letters seperated by comma's.
+         * Finds all abbreviations that have at least two letters separated by comma's.
          *
          * It might be more parts, like `b.v.b.d.` is a valid abbreviation. Likewise are `sajdflkj.asdkfj.asdf` and
          * `i.e.`. Single period abbreviations are not being detected as they can easily be confused with two letter words
@@ -381,8 +400,16 @@ object Magic {
                 StyleFileType,
                 TikzFileType
         )
+
+        /**
+         * All file extensions that have to be deleted when clearing auxiliary files.
+         *
+         * This list is the union of @generated_exts in latexmk and the defined Auxiliary files in TeXWorks.
+         * (https://github.com/TeXworks/texworks/blob/9c8cc8b88505103cb8f43fe4105638c77c7e7303/res/resfiles/configuration/texworks-config.txt#L37).
+         */
+        @JvmField val auxiliaryFileTypes = arrayOf("aux", "bbl", "bcf", "brf", "fls", "idx", "ind", "lof", "lot", "nav", "out", "snm", "toc")
     }
-    
+
     /**
      * @author Ruben Schellekens
      */

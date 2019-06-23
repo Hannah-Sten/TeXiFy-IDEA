@@ -68,7 +68,8 @@ class LatexDocumentationProvider : DocumentationProvider {
         val stream: InputStream
         try {
             stream = Runtime.getRuntime().exec("texdoc -l $name").inputStream
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             return emptyList()
         }
 

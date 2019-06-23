@@ -47,7 +47,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
-            <li>SumatraPDF support with forward and backward search</li>
+            <li>SumatraPDF (Windows) and Evince (Linux) support with forward and backward search</li>
             <li>Smart quotes</li>
             <li>Unicode math preview</li>
             <li>Equation and TikZ picture preview</li>
@@ -173,6 +173,11 @@
                class="nl.rubensten.texifyidea.action.group.LatexToolsMenuGroup">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
+            <!-- Clear auxiliary files -->
+            <action class="nl.rubensten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+            </action>
+
+            <separator/>
             <!-- Show equation preview -->
             <action class="nl.rubensten.texifyidea.action.preview.ShowEquationPreview" id="texify.ShowEquationPreview" text="Preview _Equation">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
@@ -182,6 +187,7 @@
             <action class="nl.rubensten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz Picture">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
+
         </group>
 
         <!-- Insert: Sectioning -->
@@ -260,6 +266,17 @@
             </action>
             <action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
                     text="_Configure Inverse Search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
+        </group>
+
+        <!-- Evince -->
+        <group id="texify.LatexMenu.Evince" class="nl.rubensten.texifyidea.action.group.EvinceActionGroup" text="Evince"
+               description="Interact with Evince." popup="true">
+            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
+
+            <action class="nl.rubensten.texifyidea.action.evince.ForwardSearchAction" id="texify.evince.ForwardSearch"
+                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
+                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
+            </action>
         </group>
     </actions>
 
@@ -512,6 +529,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
                          groupName="LaTeX" displayName="Nested includes"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
+                         groupName="LaTeX" displayName="Figure not referenced"
+                         enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
@@ -568,6 +588,12 @@
             <className>nl.rubensten.texifyidea.intentions.LatexMathToggle</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexToggleSmartQuotes</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>

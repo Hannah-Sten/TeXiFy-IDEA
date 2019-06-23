@@ -9,16 +9,21 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.TeXception
-import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
+import nl.rubensten.texifyidea.run.evince.EvinceForwardSearch
+import nl.rubensten.texifyidea.run.evince.OpenEvinceListener
+import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
+import nl.rubensten.texifyidea.run.sumatra.SumatraForwardSearch
+import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.rubensten.texifyidea.util.*
-import org.jetbrains.concurrency.runAsync
 import java.io.File
 
 /**
+ * Run the run configuration: start the compile process and initiate forward search (when applicable).
+ *
  * @author Sten Wessel
  */
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
@@ -29,6 +34,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")
+
+        // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
+        // checking for bibliography commands
+        if (runConfig.bibRunConfig == null) {
+            if (runConfig.psiFile?.hasBibliography() == true) {
+                runConfig.generateBibRunConfig(BibliographyCompiler.BIBTEX)
+            }
+            else if (runConfig.psiFile?.usesBiber() == true) {
+                runConfig.generateBibRunConfig(BibliographyCompiler.BIBER)
+            }
+        }
 
         createOutDirs(mainFile)
 
@@ -48,10 +64,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 this.mainFile = mainFile
                 // Check if the aux, out, or src folder should be used as bib working dir.
                 when {
-                    runConfig.hasAuxiliaryDirectories() -> {
+                    runConfig.hasAuxiliaryDirectories -> {
                         this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
                     }
-                    runConfig.hasOutputDirectories() -> {
+                    runConfig.hasOutputDirectories -> {
                         this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
                     }
                     else -> {
@@ -66,42 +82,54 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             return handler
         }
 
-        // Open Sumatra after compilation & execute inverse search.
-        if (isSumatraAvailable) {
-            handler.addProcessListener(OpenSumatraListener(runConfig))
+        // Do not open the pdf viewer when this is not the last run config in the chain
+        if (!runConfig.isLastRunConfig) {
+            return handler
+        }
 
-            // Inverse search.
-            run {
-                val psiFile = runConfig.mainFile.psiFile(environment.project) ?: return@run
-                val document = psiFile.document() ?: return@run
-                val editor = psiFile.openedEditor() ?: return@run
+        // First check if the user specified a custom viewer, if not then try other supported viewers
+        if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
-                if (document != editor.document) {
-                    return@run
-                }
+            // Split user command on spaces, then replace {pdf} if needed
+            val commandString = runConfig.viewerCommand!!
 
-                // Do not do inverse search when editing the preamble.
-                if (psiFile.isRoot()) {
-                    val element = psiFile.findElementAt(editor.caretOffset()) ?: return@run
-                    val environment = element.parentOfType(LatexEnvironment::class) ?: return@run
-                    if (environment.name()?.text != "document") {
-                        return@run
-                    }
-                }
+            // Split on spaces
+            val commandList = commandString.split(" ").toMutableList()
 
-                val line = document.getLineNumber(editor.caretOffset()) + 1
+            val containsPlaceholder = commandList.contains("{pdf}")
 
-                runAsync {
-                    try {
-                        // Wait for sumatra pdf to start. 1250ms should be plenty.
-                        // Otherwise the person is out of luck ¯\_(ツ)_/¯
-                        Thread.sleep(1250)
-                        SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line)
-                    }
-                    catch (ignored: TeXception) {
+            if (containsPlaceholder) {
+                // Replace placeholder
+                for (i in 0 until commandList.size) {
+                    if (commandList[i].contains("{pdf}")) {
+                        commandList[i] = commandList[i].replace("{pdf}", runConfig.outputFilePath)
                     }
                 }
             }
+            else if (!containsPlaceholder) {
+                // If no placeholder was used, assume the path is the final argument
+                commandList += runConfig.outputFilePath
+            }
+
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray()))
+        }
+        else if (runConfig.sumatraPath != null || isSumatraAvailable) {
+            // Open Sumatra after compilation & execute inverse search.
+            SumatraForwardSearch().execute(handler, runConfig, environment)
+        }
+        else if(isEvinceAvailable()) {
+            EvinceForwardSearch().execute(handler, runConfig, environment)
+        }
+        else if (SystemInfo.isMac) {
+            // Open default system viewer, source: https://ss64.com/osx/open.html
+            val commandList = arrayListOf("open", runConfig.outputFilePath)
+            // Fail silently, otherwise users who have set up something themselves get an exception every time when this command fails
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
+        }
+        else if (SystemInfo.isLinux) {
+            // Open default system viewer using xdg-open, since this is available in almost all desktop environments
+            val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
+            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
         }
 
         return handler

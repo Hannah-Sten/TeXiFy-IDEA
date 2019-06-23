@@ -41,6 +41,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
             return Result.CONTINUE
         }
 
+        // Only insert when a valid symbol has been typed.
+        val afterSymbol = c.toString()
+        if (!insertOnly.matches(afterSymbol)) {
+            return Result.CONTINUE
+        }
+
         // Find selected element.
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset - 1) ?: return Result.CONTINUE
@@ -125,12 +131,6 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         val relative = caret.offset - normalText.textOffset
 
         if (relative < 3 || text.length < relative - 1) {
-            return
-        }
-
-        // Only insert when a valid symbol has been typed.
-        val afterSymbol = char.toString()
-        if (!insertOnly.matches(afterSymbol)) {
             return
         }
 
