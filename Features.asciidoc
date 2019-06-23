@@ -32,7 +32,7 @@ toc::[]
 * link:Unicode[Unicode support]
 * Autocomplete of labels, many common commands, custom defined commands and (custom) environments
 * Formatter
-* Smart Quotes
+* link:Smart-quotes[Smart quotes]
 * Automagically import packages of common commands
 * Shortcuts for styling text
 * Line and block commenting shortcut
@@ -121,14 +121,14 @@ toc::[]
 == Settings and preferences
 === Global settings
 
-These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy]
+These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy] and are global to your IntelliJ: they will be same for all projects.
 
-* Option to enable use of soft wraps when opening LaTeX files
-* Option to disable automatic insertion of second $
+* link:Global-settings#soft-wraps[Option to enable use of soft wraps when opening LaTeX files]
+* link:Global-settings#closing-math[Option to disable automatic insertion of second $]
 * Option to disable automatic brace insertion around text in subscript and superscript
 * Option to disable auto-insertion of \item
-* Option to enable smart quote substitution
-* link:Project-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
+* link:Global-settings#smart-quotes[Option to enable smart quote substitution]
+* link:Global-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 
 === Run configuration settings
 * Separate BibTeX run configuration
