@@ -1,5 +1,7 @@
 :experimental:
 
+_Since b0.6.6_
+
 On non-Windows systems, TeXiFy supports Evince as a pdf viewer with forward and inverse search.
 
 == Shortcuts
