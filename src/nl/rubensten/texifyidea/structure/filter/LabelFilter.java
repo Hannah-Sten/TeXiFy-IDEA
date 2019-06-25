@@ -4,6 +4,7 @@ import com.intellij.ide.util.treeView.smartTree.ActionPresentation;
 import com.intellij.ide.util.treeView.smartTree.Filter;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import nl.rubensten.texifyidea.TexifyIcons;
+import nl.rubensten.texifyidea.settings.TexifySettings;
 import nl.rubensten.texifyidea.structure.latex.LatexStructureViewCommandElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +22,7 @@ public class LabelFilter implements Filter {
         }
 
         LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !element.getCommandName().equals("\\label");
+        return !TexifySettings.getInstance().getLabelCommands().containsKey(element.getCommandName());
     }
 
     @Override
