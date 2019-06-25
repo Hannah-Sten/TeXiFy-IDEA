@@ -134,7 +134,7 @@ open class WordCountAction : AnAction(
      * @return A pair of the total amount of words, and the amount of characters that make up the words.
      */
     private fun countWords(latexNormalText: List<LatexNormalText>): Pair<Int, Int> {
-        // Seperate all latex words.
+        // separate all latex words.
         val latexWords: MutableSet<PsiElement> = HashSet()
         var characters = 0
         for (text in latexNormalText) {

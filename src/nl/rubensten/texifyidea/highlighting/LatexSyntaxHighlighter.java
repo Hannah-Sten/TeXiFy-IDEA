@@ -25,6 +25,7 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey COMMAND_MATH_INLINE = createKey("LATEX_COMMAND_MATH_INLINE", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
     public static final TextAttributesKey COMMAND_MATH_DISPLAY = createKey("LATEX_COMMAND_MATH_DISPLAY", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
     public static final TextAttributesKey COMMENT = createKey("LATEX_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
+    public static final TextAttributesKey MAGIC_COMMENT = createKey("LATEX_MAGIC_COMMENT", DefaultLanguageHighlighterColors.DOC_COMMENT);
     public static final TextAttributesKey INLINE_MATH = createKey("LATEX_INLINE_MATH", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey DISPLAY_MATH = createKey("LATEX_DISPLAY_MATH", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey STAR = createKey("LATEX_STAR", DefaultLanguageHighlighterColors.DOT);

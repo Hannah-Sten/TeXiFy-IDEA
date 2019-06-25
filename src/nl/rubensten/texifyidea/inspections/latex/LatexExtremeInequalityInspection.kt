@@ -54,8 +54,8 @@ open class LatexExtremeInequalityInspection : TexifyRegexInspection(
         }
     }
 
-    override fun applyFixes(project: Project, descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>) {
-        super.applyFixes(project, descriptor, replacementRanges, replacements, groups)
+    override fun applyFixes(descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>) {
+        super.applyFixes(descriptor, replacementRanges, replacements, groups)
 
         // We overrided applyFixes instead of applyFix because all fixes need to be applied together, and only after that we insert any required package.
         val file = descriptor.psiElement.containingFile ?: return

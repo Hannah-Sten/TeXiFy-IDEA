@@ -532,6 +532,9 @@
         <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
                          groupName="LaTeX" displayName="Nested includes"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
+                         groupName="LaTeX" displayName="Figure not referenced"
+                         enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
@@ -588,6 +591,12 @@
             <className>nl.rubensten.texifyidea.intentions.LatexMathToggle</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.rubensten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexToggleSmartQuotes</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>

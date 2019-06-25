@@ -42,6 +42,12 @@ fun runWriteAction(writeAction: () -> Unit) {
 fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
 
 /**
+ * Get the length of an [IntRange].
+ */
+val IntRange.length: Int
+    get() = endInclusive - start
+
+/**
  * Converts a [TextRange] to [IntRange].
  */
 fun TextRange.toIntRange() = startOffset..endOffset

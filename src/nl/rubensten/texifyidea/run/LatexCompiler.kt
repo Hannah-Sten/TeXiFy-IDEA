@@ -2,8 +2,8 @@ package nl.rubensten.texifyidea.run
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import nl.rubensten.texifyidea.util.LatexDistribution
 import nl.rubensten.texifyidea.util.splitWhitespace
 
 /**
@@ -22,17 +22,17 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             // -output-directory also exists on non-Windows systems
-            if (runConfig.hasOutputDirectories()) {
+            if (runConfig.hasOutputDirectories) {
                 command.add("-output-directory=" + moduleRoot.path + "/out")
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
+            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex) {
                 command.add("-aux-directory=" + moduleRoot.path + "/auxil")
             }
 
             // Prepend root paths to the input search path
-            if (SystemInfo.isWindows) {
+            if (LatexDistribution.isMiktex) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -54,7 +54,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             // -output-directory also exists on non-Windows systems
-            if (runConfig.hasOutputDirectories()) {
+            if (runConfig.hasOutputDirectories) {
                 command.add("-output-directory=${moduleRoot.path}/out")
             }
 
@@ -76,12 +76,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             // -output-directory also exists on non-Windows systems
-            if (runConfig.hasOutputDirectories()) {
+            if (runConfig.hasOutputDirectories) {
                 command.add("-output-directory=${moduleRoot.path}/out")
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
+            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex) {
                 command.add("-aux-directory=${moduleRoot.path}/auxil")
             }
 
@@ -106,17 +106,17 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-no-pdf") // Generates XDV output instead of PDF
             }
 
-            if (runConfig.hasOutputDirectories()) {
+            if (runConfig.hasOutputDirectories) {
                 command.add("-output-directory=" + moduleRoot.path + "/out")
             }
 
             // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories() && SystemInfo.isWindows) {
+            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex) {
                 command.add("-aux-directory=" + moduleRoot.path + "/auxil")
             }
 
             // Prepend root paths to the input search path
-            if (SystemInfo.isWindows) {
+            if (LatexDistribution.isMiktex) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -135,7 +135,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
             // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
             // Since adding one will work without any quotes, we choose the output directory.
-            if (runConfig.hasOutputDirectories()) {
+            if (runConfig.hasOutputDirectories) {
                 command.add("--arguments=--output-directory=${moduleRoot.path}/out")
             }
 
@@ -155,7 +155,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val rootManager = ProjectRootManager.getInstance(project)
         val fileIndex = rootManager.fileIndex
         val mainFile = runConfig.mainFile ?: return null
-        val moduleRoot = fileIndex.getContentRootForFile(runConfig.mainFile) ?: return null
+        val moduleRoot = fileIndex.getContentRootForFile(mainFile) ?: return null
         val moduleRoots = rootManager.contentSourceRoots
 
         val command = createCommand(runConfig, moduleRoot, moduleRoots)

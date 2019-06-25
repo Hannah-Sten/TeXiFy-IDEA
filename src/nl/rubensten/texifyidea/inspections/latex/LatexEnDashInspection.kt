@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.document
+import nl.rubensten.texifyidea.util.length
 import nl.rubensten.texifyidea.util.toTextRange
 import java.util.regex.Pattern
 
@@ -24,7 +25,7 @@ open class LatexEnDashInspection : TexifyRegexInspection(
         groupFetcher = { listOf(it.group(2), it.group(3)) }
 ) {
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
+    override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return 0
         val start = groups[0]
@@ -33,6 +34,6 @@ open class LatexEnDashInspection : TexifyRegexInspection(
         val dashReplacement = "$start--$end"
         document.replaceString(replacementRange.start, replacementRange.endInclusive, dashReplacement)
 
-        return dashReplacement.length - (replacementRange.endInclusive - replacementRange.start)
+        return dashReplacement.length - replacementRange.length
     }
 }

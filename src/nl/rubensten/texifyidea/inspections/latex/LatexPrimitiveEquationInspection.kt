@@ -22,7 +22,7 @@ open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
         replacement = { _, _ -> "" },
         replacementRange = this::replaceRange,
         highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-        highlightRange = { replaceRange(it).toTextRange() },
+        highlightRange = { replaceRange(it).toTextRange().grown(-1) },
         quickFixName = { "Replace with '\\[..\\]'" }
 ) {
 
@@ -31,7 +31,7 @@ open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
         fun replaceRange(it: Matcher) = (it.groupRange(1).start..it.groupRange(2).endInclusive)
     }
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
+    override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return 0
 

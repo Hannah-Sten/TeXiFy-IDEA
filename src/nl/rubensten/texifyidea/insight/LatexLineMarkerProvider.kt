@@ -12,22 +12,26 @@ import nl.rubensten.texifyidea.util.Magic
 /**
  * Provides line markers for the LaTeX language.
  *
- * @author Sten Wessel
+ * @author Ruben Schellekens, Sten Wessel
  */
-class LatexLineMarkerProvider(private val daemonSettings: DaemonCodeAnalyzerSettings,
-                              private val colorsManager: EditorColorsManager) : LineMarkerProvider {
+class LatexLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         // Method separators before sectioning commands
-        if (!daemonSettings.SHOW_METHOD_SEPARATORS || element !is LatexCommands) return null
+        if (!DaemonCodeAnalyzerSettings.getInstance().SHOW_METHOD_SEPARATORS || element !is LatexCommands) return null
 
+        val colourManager = EditorColorsManager.getInstance()
         val commandToken = element.commandToken.text
         return if (commandToken in Magic.Command.sectionMarkers) {
-            LineMarkersPass.createMethodSeparatorLineMarker(element.commandToken, colorsManager)
+            LineMarkersPass.createMethodSeparatorLineMarker(element.commandToken, colourManager).apply {
+                separatorColor = Magic.Command.sectionSeparatorColors[commandToken]
+            }
         }
         else null
     }
 
-    override fun collectSlowLineMarkers(elements: MutableList<PsiElement>,
-                                        result: MutableCollection<LineMarkerInfo<PsiElement>>) = Unit
+    override fun collectSlowLineMarkers(
+            elements: MutableList<PsiElement>,
+            result: MutableCollection<LineMarkerInfo<PsiElement>>
+    ) = Unit
 }

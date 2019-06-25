@@ -1,7 +1,6 @@
 package nl.rubensten.texifyidea.inspections.latex
 
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.openapi.project.Project
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.*
@@ -23,7 +22,7 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         groupFetcher = { listOf(it.group(1)) }
 ) {
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
+    override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
 
         val file = descriptor.psiElement.containingFile
         val document = file.document() ?: return 0
@@ -36,7 +35,7 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
             document.insertString(cite.endOffset(), char)
         }
 
-        super.applyFix(project, descriptor, replacementRange, replacement, groups)
+        super.applyFix(descriptor, replacementRange, replacement, groups)
 
         // The document length did not change, so the increase is 0
         return 0
