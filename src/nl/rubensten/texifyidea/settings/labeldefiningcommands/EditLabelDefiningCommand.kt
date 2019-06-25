@@ -19,7 +19,7 @@ class EditLabelDefiningCommand(
         position: Int,
         labelAnyPrevCommandStatus: Boolean
 ) : DialogWrapper(null, false) {
-    private val commandName = JTextField(cmdName, 25)
+    private val commandName: JTextField
     private val commandPosition = JTextField("$position", 5)
     private val labelAnyPrevCommand = JCheckBox(
             "Labels a previous command like \\section",
@@ -27,6 +27,13 @@ class EditLabelDefiningCommand(
     )
 
     init {
+        var cmdNameLeadingSlash = cmdName.trim()
+        cmdNameLeadingSlash =
+                if (cmdNameLeadingSlash.isNotEmpty() && cmdNameLeadingSlash[0] == '\\')
+                    cmdNameLeadingSlash
+                else
+                    "\\" + cmdNameLeadingSlash
+        commandName = JTextField(cmdNameLeadingSlash, 25)
         title = "Define command with label"
         (commandName.document as PlainDocument).documentFilter = InputCommandFilter()
         (commandPosition.document as PlainDocument).documentFilter = InputPossiblePositionFilter()
