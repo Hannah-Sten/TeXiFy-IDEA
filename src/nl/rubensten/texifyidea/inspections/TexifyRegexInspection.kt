@@ -273,7 +273,7 @@ abstract class TexifyRegexInspection(
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return 0
 
-        document.replaceString(replacementRange.start, replacementRange.endInclusive, replacement)
+        document.replaceString(replacementRange.first, replacementRange.last, replacement)
 
         return replacement.length - replacementRange.length
     }
@@ -288,10 +288,11 @@ abstract class TexifyRegexInspection(
      * @param groups Regex groups as matched by the regex matcher.
      * @param replacementRanges These replacement ranges have to be ordered increasingly and have to be non-overlapping.
      */
-    open fun applyFixes(descriptor: ProblemDescriptor,
-                        replacementRanges: List<IntRange>,
-                        replacements: List<String>,
-                        groups: List<List<String>>
+    open fun applyFixes(
+            descriptor: ProblemDescriptor,
+            replacementRanges: List<IntRange>,
+            replacements: List<String>,
+            groups: List<List<String>>
     ) {
         val fixFunction = { replacementRange: IntRange, replacement: String, group: List<String> -> applyFix(descriptor, replacementRange, replacement, group) }
         applyFixes(fixFunction, replacementRanges, replacements, groups)
@@ -300,10 +301,11 @@ abstract class TexifyRegexInspection(
     /**
      * See [applyFixes].
      */
-    open fun applyFixes(fixFunction: (IntRange, String, List<String>) -> Int,
-                        replacementRanges: List<IntRange>,
-                        replacements: List<String>,
-                        groups: List<List<String>>
+    open fun applyFixes(
+            fixFunction: (IntRange, String, List<String>) -> Int,
+            replacementRanges: List<IntRange>,
+            replacements: List<String>,
+            groups: List<List<String>>
     ) {
         require(replacementRanges.size == replacements.size) { "The number of replacement values has to equal the number of ranges of those replacements." }
 
@@ -316,7 +318,7 @@ abstract class TexifyRegexInspection(
             val replacementRange = replacementRanges[i]
             val replacement = replacements[i]
 
-            val newRange = IntRange(replacementRange.start + accumulatedDisplacement, replacementRange.endInclusive + accumulatedDisplacement)
+            val newRange = IntRange(replacementRange.first + accumulatedDisplacement, replacementRange.last + accumulatedDisplacement)
             val replacementLength = fixFunction(newRange, replacement, groups[i])
 
             // Fix the locations of the next fixes
