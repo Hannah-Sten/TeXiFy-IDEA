@@ -3,6 +3,7 @@ package nl.rubensten.texifyidea.lang
 import nl.rubensten.texifyidea.lang.Argument.Type
 import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.rubensten.texifyidea.lang.Package.Companion.CSQUOTES
 import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.rubensten.texifyidea.lang.Package.Companion.FONTENC
 import nl.rubensten.texifyidea.lang.Package.Companion.GRAPHICX
@@ -59,6 +60,8 @@ enum class LatexRegularCommand(
     EMPH("emph", "text".asRequired(Type.TEXT)),
     ENLARGETHISPAGE("enlargethispage", "size".asRequired()),
     ENLARGETHISPAGE_STAR("enlargethispage*", "size".asRequired()),
+    ENQUOTE("enquote", dependency = CSQUOTES),
+    ENQUOTE_STAR("enquote*", dependency = CSQUOTES),
     EQREF("eqref", "eqLabel".asRequired(Type.TEXT), dependency = AMSMATH),
     EVENSIDEMARGIN("evensidemargin"),
     FAMILY("family"),
@@ -328,7 +331,7 @@ enum class LatexRegularCommand(
     /**
      * Natbib citations
      */
-    CITEP("citep", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = Package.NATBIB),
+    CITEP("citep", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
     CITEP_STAR("citep*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
     CITET("citet", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
     CITET_STAR("citet*", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),

@@ -23,7 +23,8 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     enum class QuoteReplacement {
         NONE,
         LIGATURES,
-        COMMANDS
+        COMMANDS,
+        CSQUOTES // Context Sensitive quotes from the csquotes package
     }
 
     var automaticSoftWraps = false
