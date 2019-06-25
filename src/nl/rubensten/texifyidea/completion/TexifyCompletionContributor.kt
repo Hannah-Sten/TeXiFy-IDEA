@@ -6,6 +6,7 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
 import nl.rubensten.texifyidea.BibtexLanguage
@@ -14,10 +15,7 @@ import nl.rubensten.texifyidea.lang.LatexMode
 import nl.rubensten.texifyidea.lang.LatexRegularCommand
 import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
-import nl.rubensten.texifyidea.util.firstChildOfType
-import nl.rubensten.texifyidea.util.hasParent
-import nl.rubensten.texifyidea.util.inMathContext
-import nl.rubensten.texifyidea.util.parentOfType
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Sten Wessel, Ruben Schellekens
@@ -82,7 +80,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 CompletionType.BASIC,
                 PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
                         .inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>(null) {
+                        .with(object : PatternCondition<PsiElement>("File name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
                                 val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
 
@@ -90,11 +88,24 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
                                 val args = cmd.getArgumentsOf(RequiredFileArgument::class)
-                                return !args.isEmpty()
+                                return args.isNotEmpty()
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexFileProvider()
+        )
+
+        // Magic comments keys.
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(PsiComment::class.java)
+                        .with(object : PatternCondition<PsiElement>("Magic comment completion pattern") {
+                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
+                                return comment.isMagicComment() && comment.text.contains('=').not()
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexMagicCommentKeyProvider
         )
 
         // Package names
