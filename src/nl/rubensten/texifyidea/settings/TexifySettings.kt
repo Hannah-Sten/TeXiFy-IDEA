@@ -33,7 +33,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticItemInItemize = true
 
     // Index of selected combobox item
-    lateinit var automaticQuoteReplacement : QuoteReplacement
+    var automaticQuoteReplacement : QuoteReplacement = QuoteReplacement.NONE
 
     /**
      * internal list which stores the commands data

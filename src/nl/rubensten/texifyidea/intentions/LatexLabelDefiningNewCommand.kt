@@ -106,7 +106,7 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
                 settings.labelPreviousCommands.containsKey(label.name)
 
         // initialize the dialog with computed values
-        val newCommandPopUp = EditLabelDefiningCommand(commandName, position, labelAnyCommand)
+        val newCommandPopUp = EditLabelDefiningCommand("\\" + commandName, position, labelAnyCommand)
         if (newCommandPopUp.showAndGet()) {
             // save the computed values
             settings.addCommand(LabelingCommandInformation(newCommandPopUp.getCommandName(),
