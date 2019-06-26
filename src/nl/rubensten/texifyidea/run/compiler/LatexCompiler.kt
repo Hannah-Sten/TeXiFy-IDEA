@@ -95,6 +95,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     XELATEX("XeLaTeX", "xelatex") {
 
+        override val outputFormats = arrayOf(Format.PDF, Format.XDV)
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "xelatex")
 
@@ -104,9 +106,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
 
-            val outputFormatName = runConfig.outputFormat.name.toLowerCase()
-            if (outputFormatName == "dvi") {
-                command.add("-no-pdf") // Generates XDV output instead of PDF
+            if (runConfig.outputFormat == Format.XDV) {
+                command.add("-no-pdf")
             }
 
             if (runConfig.hasOutputDirectories) {
@@ -130,6 +131,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     },
 
     TEXLIVEONFLY("Texliveonfly", "texliveonfly") {
+
+        override val outputFormats = arrayOf(Format.PDF)
 
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")

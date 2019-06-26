@@ -90,12 +90,16 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         // Reset output format.
-        outputFormat.component.selectedItem = runConfiguration.outputFormat
         // Make sure to use the output formats relevant for the chosen compiler
         if (runConfiguration.compiler != null) {
-            outputFormat.component.removeAll()
+            outputFormat.component.removeAllItems()
             for (item in runConfiguration.compiler!!.outputFormats) {
                 outputFormat.component.addItem(item)
+            }
+            if (runConfiguration.compiler!!.outputFormats.contains(runConfiguration.outputFormat)) {
+                outputFormat.component.selectedItem = runConfiguration.outputFormat
+            } else {
+                outputFormat.component.selectedItem = Format.PDF
             }
         }
 
@@ -156,10 +160,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         // Apply output format.
-        val format = outputFormat.component.selectedItem as Format
-        runConfiguration.outputFormat = format
-
-        // todo applyEditorFrom?
+        val format = outputFormat.component.selectedItem as Format?
+        runConfiguration.outputFormat = format ?: Format.PDF
     }
 
     override fun createEditor(): JComponent {
