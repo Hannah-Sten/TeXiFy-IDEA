@@ -13,7 +13,8 @@ import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
-import nl.rubensten.texifyidea.run.LatexCompiler.Format
+import nl.rubensten.texifyidea.run.compiler.LatexCompiler
+import nl.rubensten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.rubensten.texifyidea.util.LatexDistribution
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
@@ -90,6 +91,13 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset output format.
         outputFormat.component.selectedItem = runConfiguration.outputFormat
+        // Make sure to use the output formats relevant for the chosen compiler
+        if (runConfiguration.compiler != null) {
+            outputFormat.component.removeAll()
+            for (item in runConfiguration.compiler!!.outputFormats) {
+                outputFormat.component.addItem(item)
+            }
+        }
 
         // Reset project.
         project = runConfiguration.project
@@ -109,16 +117,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             runConfiguration.bibRunConfig = null
             extensionSeparator.isVisible = false
             bibliographyPanel.isVisible = false
-        } else if (runConfiguration.compiler?.includesBibtex == false && runConfiguration.bibRunConfig == null) {
-            runConfiguration.generateBibRunConfig()
+        } else {
             extensionSeparator.isVisible = true
             bibliographyPanel.isVisible = true
-            // todo rerender
-//            component.validate()
-//            fireEditorStateChanged()
-//            component.revalidate()
-//            component.repaint()
-//            resetEditorFrom(runConfiguration)
+
+            // Apply bibliography, only if not hidden
+            runConfiguration.bibRunConfig = bibliographyPanel.configuration
         }
 
         // Apply custom compiler path if applicable
@@ -155,8 +159,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val format = outputFormat.component.selectedItem as Format
         runConfiguration.outputFormat = format
 
-        // Apply bibliography
-        runConfiguration.bibRunConfig = bibliographyPanel.configuration
+        // todo applyEditorFrom?
     }
 
     override fun createEditor(): JComponent {
@@ -212,7 +215,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(outDir)
 
         // Output format.
-        val cboxFormat = ComboBox(Format.values())
+        val selectedCompiler = compiler.component.selectedItem as LatexCompiler
+        val cboxFormat = ComboBox(selectedCompiler.outputFormats)
         outputFormat = LabeledComponent.create<ComboBox<Format>>(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)

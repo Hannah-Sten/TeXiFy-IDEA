@@ -15,8 +15,9 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.rubensten.texifyidea.run.LatexCompiler.Format
+import nl.rubensten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
+import nl.rubensten.texifyidea.run.compiler.LatexCompiler
 import nl.rubensten.texifyidea.util.LatexDistribution
 import nl.rubensten.texifyidea.util.hasBibliography
 import nl.rubensten.texifyidea.util.usesBiber
