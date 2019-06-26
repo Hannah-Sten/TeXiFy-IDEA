@@ -98,7 +98,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             }
             if (runConfiguration.compiler!!.outputFormats.contains(runConfiguration.outputFormat)) {
                 outputFormat.component.selectedItem = runConfiguration.outputFormat
-            } else {
+            }
+            else {
                 outputFormat.component.selectedItem = Format.PDF
             }
         }
@@ -121,7 +122,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             runConfiguration.bibRunConfig = null
             extensionSeparator.isVisible = false
             bibliographyPanel.isVisible = false
-        } else {
+        }
+        else {
             extensionSeparator.isVisible = true
             bibliographyPanel.isVisible = true
 
