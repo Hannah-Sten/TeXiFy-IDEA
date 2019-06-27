@@ -137,7 +137,10 @@ open class LatexAnnotator : Annotator {
         }
 
         val annotation = annotationHolder.createInfoAnnotation(comment, null)
-        annotation.textAttributes = LatexSyntaxHighlighter.COMMENT
+        annotation.textAttributes = if (comment.isMagicComment()) {
+            LatexSyntaxHighlighter.MAGIC_COMMENT
+        }
+        else LatexSyntaxHighlighter.COMMENT
     }
 
     /**

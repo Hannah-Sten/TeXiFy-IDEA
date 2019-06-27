@@ -24,7 +24,8 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 AttributesDescriptor("Commands//Commands in inline math mode", LatexSyntaxHighlighter.COMMAND_MATH_INLINE),
                 AttributesDescriptor("Commands//Commands in display math mode", LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY),
                 AttributesDescriptor("Commands//Stars", LatexSyntaxHighlighter.STAR),
-                AttributesDescriptor("Comments", LatexSyntaxHighlighter.COMMENT),
+                AttributesDescriptor("Comments//Regular comment", LatexSyntaxHighlighter.COMMENT),
+                AttributesDescriptor("Comments//Magic comment", LatexSyntaxHighlighter.MAGIC_COMMENT),
                 AttributesDescriptor("References//Label definition", LatexSyntaxHighlighter.LABEL_DEFINITION),
                 AttributesDescriptor("References//Label reference", LatexSyntaxHighlighter.LABEL_REFERENCE),
                 AttributesDescriptor("References//Bibliography item", LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION),
@@ -51,6 +52,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 "inlineMath" to LatexSyntaxHighlighter.INLINE_MATH,
                 "optionalParam" to LatexSyntaxHighlighter.OPTIONAL_PARAM,
                 "comment" to LatexSyntaxHighlighter.COMMENT,
+                "magicComment" to LatexSyntaxHighlighter.MAGIC_COMMENT,
                 "labelDefinition" to LatexSyntaxHighlighter.LABEL_DEFINITION,
                 "reference" to LatexSyntaxHighlighter.LABEL_REFERENCE,
                 "bibliographyDefinition" to LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION,
@@ -71,9 +73,8 @@ class LatexColorSettingsPage : ColorSettingsPage {
     override fun getHighlighter() = LatexSyntaxHighlighter()
 
     override fun getDemoText() = """
-                |%
+                |<magicComment>%! Compiler = pdfLaTeX</magicComment>
                 |%  An amazing example for LaTeX.
-                |%
                 |\documentclass[<optionalParam>12pt,a4paper</optionalParam>]{article}
                 |
                 |% Package imports.
@@ -81,6 +82,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |\usepackage{comment}
                 |
                 |% Start document.
+                |<magicComment>%! Suppress = NonBreakingSpace</magicComment>
                 |\begin{document}
                 |
                 |    % Make title.
