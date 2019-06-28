@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.5</version>
+    <version>0.6.6</version>
     <idea-version since-build="173.*"/>
     <vendor url="https://ruben-sten.github.io/home/index.html">Ruben-Sten</vendor>
 
@@ -75,10 +75,10 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.5</strong></p>
+        <p><strong>Beta 0.6.6</strong></p>
         <p>
-            We're continuing the bimonthly updates with a new release of TeXiFy IDEA with a handful of new features
-            and several bug fixes.
+            We welcome you to yet another instance of our bimestrial updates containing a plethora of changes and bug fixes.
+            Get excited about inspection suppression, Tectonic, Evince PDF viewer support and much more!
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -89,37 +89,43 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li>Added smart quotes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/848">#848</a>)</li>
-            <li>Added TikZ preview (thanks to <a href="https://github.com/FalseHonesty">FalseHonesty</a>). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/837">#837</a>)</li>
-            <li>Added support for LaTeX modules in non-IntelliJ IDEs. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/581">#581</a>)</li>
-            <li>Added toggle math environment intention. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/836">#836</a>)</li>
-            <li>Added custom package names to the autocompletion. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
-            <li>Added navigation gutter icon for custom classes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
-            <li>Added theorems defined by \newtheorem to the environment autocompletion. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/260">#260</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/879">#879</a>)</li>
-            <li>Added \LoadClass(WithOptions) to the autocompletion. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
-            <li>Added \lq and \rq to the autocompletion with auto-insertion of \rq. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/849">#849</a>)</li>
+            <li>Added inspection suppression. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/925">#925</a>)</li>
+            <li>Added basic support for magic comments. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/877">#877</a>)</li>
+            <li>Added support for the Tectonic compiler. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/888">#888</a>)</li>
+            <li>Added support for TeX Live on Windows. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/882">#882</a>)</li>
+            <li>Added action to clear auxiliary files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/859">#859</a>)</li>
+            <li>Added support for Evince PDF viewer. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/742">#742</a>)</li>
+            <li>Added option to open in a custom PDF viewer. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/122">#122</a>)</li>
+            <li>Added equation reference inspection. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/884">#884</a>)</li>
+            <li>Added figure not referenced inspection (thanks to <a href="https://github.com/pschuprikov">pschuprikov</a>). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/875">#875</a>)</li>
+            <li>Added file dialog when creating files using inspections and intentions. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/878">#878</a>)</li>
+            <li>Added intention to toggle smart quotes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/872">#872</a>)</li>
+            <li>Added brace matching for \begin and \end pairs (thanks to <a href="https://github.com/ice1000">ice1000</a>). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/933">#933</a>)</li>
+            <li>Added enquote as smart quote option. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/897">#897</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>Updated the plugin for 2019.1 (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/846">#846</a>)</li>
-            <li>Changed the icon of TikZ files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/870">#870</a>)</li>
-            <li>Text in \bibliography and \bibliographystyle now get ignored by the word count. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/862">#862</a>)</li>
-            <li>Updated CTAN package list. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
+            <li>Made the SumatraPDF path configurable. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/793">#793</a>)</li>
+            <li>Improved speed of up-down-autobracket. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/868">#868</a>)</li>
+            <li>The colour of method separators now changes based on the structure level. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/901">#901</a>)</li>
+            <li>Removed Plexus Utils library dependency. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/911">#911</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/920">#920</a>)</li>
+            <li>Several performance improvements.</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Fixed word count analysing non-source files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/860">#860</a>)</li>
-            <li>Fixed \citet commands (and variants) without non-breaking space being flagged. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/865">#865</a>)</li>
-            <li>Fixed (internal) display name of the LatexNonBreakingSpace inspection being wrong. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/866">#866</a>)</li>
-            <li>Fixed SumatraPDF menu group having no icon. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/857">#857</a>)</li>
-            <li>Fixed names of SumatraPDF menu items being wrong. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/857">#857</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/839">#839</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/843">#843</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/861">#861</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/867">#867</a>)</li>
+            <li>Fixed inspection 'fix all' not working for regex based inspections. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/826">#826</a>)</li>
+            <li>Fixed autocompletion not working for colons (thanks to <a href="https://github.com/pschuprikov">pschuprikov</a>). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/835">#835</a>)</li>
+            <li>Fixed previews not working when inkscape is installed as a snap app. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/886">#886</a>)</li>
+            <li>Removed unnecessary execution for bibliography checks when right-clicking files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/915">#915</a>)</li>
+            <li>Fixed groups disappearing after autocompletion of includes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/929">#929</a>)</li>
+            <li>Fixed NonBreakingSpace inspection triggering for \citeauthor. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/912">#912</a>)</li>
+            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/902">#902</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/913">#913</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/919">#919</a>)</li>
         </ul>
         <br>
         <p>
