@@ -22,6 +22,9 @@ class EvinceForwardSearch {
         val document = psiFile.document() ?: return
         val editor = psiFile.openedEditor() ?: return
 
+        // Don't forward search when the cursor is not in the main file
+        if (document != editor.document) return
+
         val line = document.getLineNumber(editor.caretOffset()) + 1
 
         // Set the OpenEvinceListener to execute when the compilation is done
