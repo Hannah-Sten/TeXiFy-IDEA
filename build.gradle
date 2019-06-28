@@ -15,7 +15,7 @@ plugins {
     id 'de.undercouch.download' version '3.4.3'
 }
 
-group 'nl.rubensten'
+group 'nl.hannahsten'
 version '0.6.6'
 
 repositories {
