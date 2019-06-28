@@ -18,16 +18,16 @@ class EvinceForwardSearch {
      */
     fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment) {
         // We have to find the file and line number before scheduling the forward search
-        val psiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
-        val document = psiFile.document() ?: return
-        val editor = psiFile.openedEditor() ?: return
+        val mainPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
+        val editor = mainPsiFile.openedEditor() ?: return
 
-        // Don't forward search when the cursor is not in the main file
-        if (document != editor.document) return
+        // Get the line number in the currently open file
+        val line = editor.document.getLineNumber(editor.caretOffset()) + 1
 
-        val line = document.getLineNumber(editor.caretOffset()) + 1
+        // Get the currently open file to use for forward search
+        val currentPsiFile = editor.document.psiFile(environment.project) ?: return
 
         // Set the OpenEvinceListener to execute when the compilation is done
-        handler.addProcessListener(OpenEvinceListener(runConfig, environment, psiFile, line))
+        handler.addProcessListener(OpenEvinceListener(runConfig, environment, currentPsiFile, line))
     }
 }
