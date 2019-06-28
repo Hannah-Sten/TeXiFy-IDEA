@@ -1,6 +1,6 @@
 package nl.rubensten.texifyidea.lang.magic
 
-import nl.rubensten.texifyidea.run.LatexCompiler
+import nl.rubensten.texifyidea.run.compiler.LatexCompiler
 
 /**
  * @author Ruben Schellekens

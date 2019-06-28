@@ -1,8 +1,9 @@
-package nl.rubensten.texifyidea.run
+package nl.rubensten.texifyidea.run.compiler
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import nl.rubensten.texifyidea.run.LatexRunConfiguration
 import nl.rubensten.texifyidea.util.LatexDistribution
 import nl.rubensten.texifyidea.util.splitWhitespace
 
@@ -65,6 +66,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     LATEXMK("Latexmk", "latexmk") {
 
+        override val includesBibtex = true
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
@@ -92,6 +95,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     XELATEX("XeLaTeX", "xelatex") {
 
+        override val outputFormats = arrayOf(Format.PDF, Format.XDV)
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "xelatex")
 
@@ -101,9 +106,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
 
-            val outputFormatName = runConfig.outputFormat.name.toLowerCase()
-            if (outputFormatName == "dvi") {
-                command.add("-no-pdf") // Generates XDV output instead of PDF
+            if (runConfig.outputFormat == Format.XDV) {
+                command.add("-no-pdf")
             }
 
             if (runConfig.hasOutputDirectories) {
@@ -128,6 +132,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     TEXLIVEONFLY("Texliveonfly", "texliveonfly") {
 
+        override val outputFormats = arrayOf(Format.PDF)
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")
 
@@ -137,6 +143,29 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // Since adding one will work without any quotes, we choose the output directory.
             if (runConfig.hasOutputDirectories) {
                 command.add("--arguments=--output-directory=${moduleRoot.path}/out")
+            }
+
+            return command
+        }
+    },
+
+    TECTONIC("Tectonic", "tectonic") {
+
+        override val includesBibtex = true
+
+        override val outputFormats = arrayOf(Format.PDF, Format.HTML, Format.XDV, Format.AUX)
+
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+
+            // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
+            val command = mutableListOf(runConfig.compilerPath ?: "tectonic")
+
+            command.add("--synctex")
+
+            command.add("--outfmt=${runConfig.outputFormat.name.toLowerCase()}")
+
+            if (runConfig.hasOutputDirectories) {
+                command.add("--outdir=${moduleRoot.path}/out")
             }
 
             return command
@@ -187,6 +216,16 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots: Array<VirtualFile>
     ): MutableList<String> = error("Not implemented for $this")
 
+    /**
+     * Whether the compiler includes running bibtex/biber.
+     */
+    open val includesBibtex = false
+
+    /**
+     * List of output formats supported by this compiler.
+     */
+    open val outputFormats: Array<Format> = arrayOf(Format.PDF, Format.DVI)
+
     override fun toString() = this.displayName
 
     /**
@@ -195,7 +234,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     enum class Format {
 
         PDF,
-        DVI;
+        DVI,
+        HTML,
+        XDV,
+        AUX;
 
         companion object {
 

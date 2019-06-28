@@ -14,7 +14,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.run.compiler.BibliographyCompiler
 import nl.rubensten.texifyidea.run.evince.EvinceForwardSearch
-import nl.rubensten.texifyidea.run.evince.OpenEvinceListener
 import nl.rubensten.texifyidea.run.evince.isEvinceAvailable
 import nl.rubensten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.rubensten.texifyidea.run.sumatra.isSumatraAvailable
@@ -37,13 +36,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
         // checking for bibliography commands
-        if (runConfig.bibRunConfig == null) {
-            if (runConfig.psiFile?.hasBibliography() == true) {
-                runConfig.generateBibRunConfig(BibliographyCompiler.BIBTEX)
-            }
-            else if (runConfig.psiFile?.usesBiber() == true) {
-                runConfig.generateBibRunConfig(BibliographyCompiler.BIBER)
-            }
+        if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
+            runConfig.generateBibRunConfig()
         }
 
         createOutDirs(mainFile)

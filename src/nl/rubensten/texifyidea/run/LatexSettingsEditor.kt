@@ -13,7 +13,8 @@ import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
-import nl.rubensten.texifyidea.run.LatexCompiler.Format
+import nl.rubensten.texifyidea.run.compiler.LatexCompiler
+import nl.rubensten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.rubensten.texifyidea.util.LatexDistribution
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
@@ -35,6 +36,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private var auxDir: JBCheckBox? = null
     private var outDir: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
+    private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: BibliographyPanel
 
     /** Whether to enable the sumatraPath text field. */
@@ -88,7 +90,19 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         // Reset output format.
-        outputFormat.component.selectedItem = runConfiguration.outputFormat
+        // Make sure to use the output formats relevant for the chosen compiler
+        if (runConfiguration.compiler != null) {
+            outputFormat.component.removeAllItems()
+            for (item in runConfiguration.compiler!!.outputFormats) {
+                outputFormat.component.addItem(item)
+            }
+            if (runConfiguration.compiler!!.outputFormats.contains(runConfiguration.outputFormat)) {
+                outputFormat.component.selectedItem = runConfiguration.outputFormat
+            }
+            else {
+                outputFormat.component.selectedItem = Format.PDF
+            }
+        }
 
         // Reset project.
         project = runConfiguration.project
@@ -102,6 +116,20 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply chosen compiler.
         val chosenCompiler = compiler.component.selectedItem as LatexCompiler
         runConfiguration.compiler = chosenCompiler
+
+        // Remove bibtex run config when switching to a compiler which includes running bibtex
+        if (runConfiguration.compiler?.includesBibtex == true) {
+            runConfiguration.bibRunConfig = null
+            extensionSeparator.isVisible = false
+            bibliographyPanel.isVisible = false
+        }
+        else {
+            extensionSeparator.isVisible = true
+            bibliographyPanel.isVisible = true
+
+            // Apply bibliography, only if not hidden
+            runConfiguration.bibRunConfig = bibliographyPanel.configuration
+        }
 
         // Apply custom compiler path if applicable
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
@@ -134,11 +162,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         // Apply output format.
-        val format = outputFormat.component.selectedItem as Format
-        runConfiguration.outputFormat = format
-
-        // Apply bibliography
-        runConfiguration.bibRunConfig = bibliographyPanel.configuration
+        val format = outputFormat.component.selectedItem as Format?
+        runConfiguration.outputFormat = format ?: Format.PDF
     }
 
     override fun createEditor(): JComponent {
@@ -194,12 +219,13 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(outDir)
 
         // Output format.
-        val cboxFormat = ComboBox(Format.values())
+        val selectedCompiler = compiler.component.selectedItem as LatexCompiler
+        val cboxFormat = ComboBox(selectedCompiler.outputFormats)
         outputFormat = LabeledComponent.create<ComboBox<Format>>(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
 
-        panel.add(TitledSeparator("Extensions"))
+        panel.add(extensionSeparator)
 
         // Extension panels
         bibliographyPanel = BibliographyPanel(project!!)
