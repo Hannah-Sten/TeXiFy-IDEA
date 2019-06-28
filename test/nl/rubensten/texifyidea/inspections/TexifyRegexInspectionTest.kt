@@ -10,7 +10,7 @@ class TexifyRegexInspectionTest {
     // Implement a mock inspection to test inherited methods.
     class MockRegexInspection : TexifyRegexInspection(
             inspectionDisplayName = "",
-            myInspectionId = "",
+            inspectionId = "",
             errorMessage = { "" },
             pattern = Pattern.compile("bl.b")
     ) {
