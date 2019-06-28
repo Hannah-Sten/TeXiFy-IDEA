@@ -17,6 +17,7 @@ import nl.rubensten.texifyidea.lang.RequiredFileArgument
 import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.*
 import java.util.*
+import nl.rubensten.texifyidea.util.*
 
 /**
  * @author Sten Wessel, Ruben Schellekens

@@ -239,7 +239,7 @@ fun LatexMathEnvironment.allMagicComments(): MagicComment<String, String> {
  */
 fun LatexCommands.magicComment(): MagicComment<String, String> {
     // Because of current parser quirks, there are two scenarios to find the magic comments:
-    // 1. When the magic comment are the first elements in an environment, they are next siblings of
+    // 1. When the magic comments are the first elements in an environment, they are next siblings of
     //    the LatexBeginCommand of the parent LatexEnvironment.
     // 2. Otherwise they are previous siblings of the direct LatexContent parent of the LatexCommands.
 
