@@ -1,7 +1,6 @@
 package nl.rubensten.texifyidea.inspections.latex
 
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.inspections.TexifyRegexInspection
 import nl.rubensten.texifyidea.lang.Package
@@ -13,7 +12,7 @@ import java.util.regex.Pattern
 
 open class LatexEquationReferenceInspection : TexifyRegexInspection(
         inspectionDisplayName = "Use of (\\ref{...}) instead of \\eqref{...}",
-        myInspectionId = "EquationReference",
+        inspectionId = "EquationReference",
         errorMessage = { "Use \\eqref" },
         pattern = Pattern.compile("(\\(\\\\ref\\{)([\\w:]+)(}\\))"),
         quickFixName = { "Replace with \\eqref" },
