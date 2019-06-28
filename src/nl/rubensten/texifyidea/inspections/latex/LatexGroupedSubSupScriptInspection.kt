@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  */
 open class LatexGroupedSubSupScriptInspection : TexifyRegexInspection(
         inspectionDisplayName = "Grouped superscript and subscript",
-        myInspectionId = "GroupedSubSupScript",
+        inspectionId = "GroupedSubSupScript",
         errorMessage = {
             val subSup = if (it.group(1) == "_") "Sub" else "Super"
             "${subSup}script is not grouped"

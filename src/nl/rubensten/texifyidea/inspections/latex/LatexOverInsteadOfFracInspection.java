@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile;
 import nl.rubensten.texifyidea.index.LatexCommandsIndex;
 import nl.rubensten.texifyidea.insight.InsightGroup;
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase;
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope;
 import nl.rubensten.texifyidea.psi.LatexCommands;
 import nl.rubensten.texifyidea.psi.LatexMathContent;
 import nl.rubensten.texifyidea.psi.LatexPsiUtil;
@@ -21,7 +22,9 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Ruben Schellekens
@@ -45,6 +48,12 @@ public class LatexOverInsteadOfFracInspection extends TexifyInspectionBase {
     @Override
     public String getInspectionId() {
         return "OverInsteadOfFrac";
+    }
+
+    @NotNull
+    @Override
+    public Set<MagicCommentScope> getOuterSuppressionScopes() {
+        return EnumSet.of(MagicCommentScope.COMMAND);
     }
 
     @NotNull

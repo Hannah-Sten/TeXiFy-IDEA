@@ -26,7 +26,7 @@ abstract class TexifyRegexInspection(
         /**
          * The short name of the inspection (same name as the html info file).
          */
-        val myInspectionId: String,
+        override val inspectionId: String,
 
         /**
          * The regex pattern that targets the text for the inspection.
@@ -79,16 +79,16 @@ abstract class TexifyRegexInspection(
         val highlightRange: (Matcher) -> TextRange = { TextRange(it.start(), it.end()) },
 
         /**
-         * In which inspection group the inspection lies.
+         * In which inspection inspectionGroup the inspection lies.
          */
-        val group: InsightGroup = InsightGroup.LATEX
+        override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
 ) : TexifyInspectionBase() {
 
     companion object {
 
         /**
-         * Get the IntRange that spans the group with the given id.
+         * Get the IntRange that spans the inspectionGroup with the given id.
          */
         fun Matcher.groupRange(groupId: Int): IntRange = start(groupId)..end(groupId)
 
@@ -103,11 +103,7 @@ abstract class TexifyRegexInspection(
 
     override fun getDisplayName() = inspectionDisplayName
 
-    override fun getInspectionId() = myInspectionId
-
-    override fun getInspectionGroup() = group
-
-    override fun checkContext(element: PsiElement) = true
+    override fun checkContext(element: PsiElement) = element.isSuppressed().not()
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         // Find all patterns.

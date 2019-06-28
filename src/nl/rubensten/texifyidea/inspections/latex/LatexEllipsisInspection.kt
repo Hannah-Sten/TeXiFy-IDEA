@@ -19,11 +19,11 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexEllipsisInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Ellipsis with ... instead of \\ldots or \\dots"
 
-    override fun getInspectionId() = "Ellipsis"
+    override val inspectionId = "Ellipsis"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

@@ -8,8 +8,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 /**
  * Currently only works for Chapters, Sections and Subsections.
@@ -20,11 +22,13 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
+
+    override val inspectionId = "MissingLabel"
+
+    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName() = "Missing labels"
-
-    override fun getInspectionId() = "MissingLabel"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

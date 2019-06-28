@@ -15,7 +15,7 @@ import java.util.regex.Pattern
  */
 open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
         inspectionDisplayName = "Discouraged use of primitive TeX display math",
-        myInspectionId = "PrimitiveEquation",
+        inspectionId = "PrimitiveEquation",
         errorMessage = { "Use '\\[..\\]' instead of primitive TeX display math." },
         pattern = Pattern.compile("(\\\$\\\$)[^\$]*\\\$?[^\$]*(\\\$\\\$)"),
         mathMode = false,

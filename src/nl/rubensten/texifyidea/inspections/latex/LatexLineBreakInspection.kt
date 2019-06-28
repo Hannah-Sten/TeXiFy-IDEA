@@ -19,11 +19,11 @@ import kotlin.math.min
  */
 open class LatexLineBreakInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Start sentences on a new line"
 
-    override fun getInspectionId() = "LineBreak"
+    override val inspectionId = "LineBreak"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

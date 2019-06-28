@@ -17,11 +17,11 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexGatherEquationsInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Gather equations"
 
-    override fun getInspectionId() = "GatherEquations"
+    override val inspectionId = "GatherEquations"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

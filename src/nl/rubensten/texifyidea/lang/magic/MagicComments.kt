@@ -6,10 +6,7 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.parentsOfType
-import nl.rubensten.texifyidea.psi.LatexCommands
-import nl.rubensten.texifyidea.psi.LatexContent
-import nl.rubensten.texifyidea.psi.LatexEnvironment
-import nl.rubensten.texifyidea.psi.LatexGroup
+import nl.rubensten.texifyidea.psi.*
 import nl.rubensten.texifyidea.util.*
 import java.util.*
 
@@ -25,6 +22,13 @@ fun <Key, Value> PsiFile.addMagicComment(magicComment: MagicComment<Key, Value>)
  * Adds the given magic comment as an actual comment to this environment.
  */
 fun <Key, Value> LatexEnvironment.addMagicComment(magicComment: MagicComment<Key, Value>) {
+    addMagicCommentOnPreviousLine(magicComment)
+}
+
+/**
+ * Adds the given magic comment as an actual comment to this math environment.
+ */
+fun <Key, Value> LatexMathEnvironment.addMagicComment(magicComment: MagicComment<Key, Value>) {
     addMagicCommentOnPreviousLine(magicComment)
 }
 
@@ -76,8 +80,23 @@ fun <Key, Value> PsiElement.addMagicComment(magicComment: MagicComment<Key, Valu
     when (scope) {
         MagicCommentScope.FILE -> containingFile?.addMagicComment(magicComment)
         MagicCommentScope.ENVIRONMENT -> parentOfType(LatexEnvironment::class)?.addMagicComment(magicComment)
+        MagicCommentScope.MATH_ENVIRONMENT -> parentOfType(LatexMathEnvironment::class)?.addMagicComment(magicComment)
         MagicCommentScope.COMMAND -> parentOfType(LatexCommands::class)?.addMagicComment(magicComment)
         MagicCommentScope.GROUP -> parentOfType(LatexGroup::class)?.addMagicComment(magicComment)
+    }
+}
+
+/**
+ * Adds a magic comment to this psi element based on its subtype.
+ */
+fun <Key, Value> PsiElement.addMagicCommentToPsiElement(magicComment: MagicComment<Key, Value>) {
+    when (this) {
+        is PsiFile -> this.addMagicComment(magicComment)
+        is LatexEnvironment -> this.addMagicComment(magicComment)
+        is LatexMathEnvironment -> this.addMagicComment(magicComment)
+        is LatexCommands -> this.addMagicComment(magicComment)
+        is LatexGroup -> this.addMagicComment(magicComment)
+        else -> error("Unsupported PsiElement type ${this.javaClass}")
     }
 }
 
@@ -164,9 +183,46 @@ fun LatexEnvironment.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic cbomments that are targetted to this environment, all parent environments and the whole file.
+ * Get the (merged) magic comments that are targeted to this environment, all parent environments and the whole file.
  */
 fun LatexEnvironment.allMagicComments(): MagicComment<String, String> {
+    val result = MutableMagicComment<String, String>()
+
+    // Direct comments.
+    result += magicComment()
+
+    // Parents.
+    addParentMagicComments(result)
+
+    return result
+}
+
+/**
+ * Get the magic comment that directly precedes the math environment.
+ */
+fun LatexMathEnvironment.magicComment(): MagicComment<String, String> {
+    // Because of current parser quirks, there are two scenarios to find the magic comments:
+    // 1. When the magic comment is the first element in an environment, they are the previous sibling of the
+    //    environment content element.
+    // 2. Otherwise they are previous siblings of the direct LatexContent parent of the math environment.
+
+    val parentEnvironmentContent = parentOfType(LatexEnvironmentContent::class)
+    val parentEnvironmentContentPreviousSibling = parentEnvironmentContent?.previousSiblingIgnoreWhitespace()
+
+    // Case 1.
+    if (parentEnvironmentContentPreviousSibling is PsiComment) {
+        return parentEnvironmentContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
+    }
+
+    // Case 2.
+    val outerContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
+    return outerContent.backwardMagicCommentLookup { previousSiblingIgnoreWhitespace() }
+}
+
+/**
+ * Get the (merged) magic comments that are targeted to this math environment, all parent environments and the whole file.
+ */
+fun LatexMathEnvironment.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
 
     // Direct comments.
@@ -194,16 +250,15 @@ fun LatexCommands.magicComment(): MagicComment<String, String> {
     if (parentContentPreviousSibling is PsiComment) {
         return backwardMagicCommentLookup { parentContentPreviousSibling }
     }
+
     // Case 1.
-    else {
-        val parentEnvironment = parentOfType(LatexEnvironment::class) ?: return MagicComment.empty()
-        val beginCommand = parentEnvironment.firstChildIgnoringWhitespaceOrNull() ?: return MagicComment.empty()
-        return forwardMagicCommentLookup { beginCommand.nextSiblingIgnoreWhitespace() }
-    }
+    val parentEnvironment = parentOfType(LatexEnvironment::class) ?: return MagicComment.empty()
+    val beginCommand = parentEnvironment.firstChildIgnoringWhitespaceOrNull() ?: return MagicComment.empty()
+    return forwardMagicCommentLookup { beginCommand.nextSiblingIgnoreWhitespace() }
 }
 
 /**
- * Get the (merged) magic cbomments that are targetted to this command, and all parent environments and the whole file.
+ * Get the (merged) magic comments that are targeted to this command, and all parent environments and the whole file.
  */
 fun LatexCommands.allMagicComments(): MagicComment<String, String> {
     val result = MutableMagicComment<String, String>()
@@ -225,7 +280,7 @@ fun LatexGroup.magicComment(): MagicComment<String, String> {
 }
 
 /**
- * Get the (merged) magic cbomments that are targetted to this group, all parent goups, commands,
+ * Get the (merged) magic comments that are targeted to this group, all parent goups, commands,
  * environments and the whole file.
  */
 fun LatexGroup.allMagicComments(): MagicComment<String, String> {
@@ -238,6 +293,26 @@ fun LatexGroup.allMagicComments(): MagicComment<String, String> {
     addParentMagicComments(result)
 
     return result
+}
+
+/**
+ * Get the direct magic comment of this psi element, or `null` when magic comments are not supported for this element
+ * type.
+ */
+fun PsiElement.magicComment(): MagicComment<String, String>? = when (this) {
+    is PsiFile -> this.magicComment()
+    is LatexEnvironment -> this.magicComment()
+    is LatexMathEnvironment -> this.magicComment()
+    is LatexCommands -> this.magicComment()
+    is LatexGroup -> this.magicComment()
+    else -> null
+}
+
+/**
+ * Get the (merged) magic comments that are targeted to all the element's parents (including the whole file).
+ */
+fun PsiElement.allParentMagicComments(): MagicComment<String, String> = MutableMagicComment<String, String>().apply {
+    addParentMagicComments(this)
 }
 
 /**
@@ -263,4 +338,18 @@ private fun PsiElement.addParentMagicComments(result: MutableMagicComment<String
     parentsOfType<LatexEnvironment>().filter { it != this }.forEach { environment ->
         result += environment.magicComment()
     }
+
+    // All parent math environments.
+    parentsOfType<LatexMathEnvironment>().filter { it != this }.forEach { mathEnvironment ->
+        result += mathEnvironment.magicComment()
+    }
+}
+
+/**
+ * Checks if the magic comment has a key `key` which has at least one occurence of the value `value`.
+ */
+fun MagicComment<String, String>.containsPair(key: String, value: String): Boolean {
+    val magicKey = CustomMagicKey(key)
+    val magicValues = values(magicKey) ?: return false
+    return value in magicValues
 }

@@ -91,6 +91,7 @@ object PackageUtils {
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
+     * Will not insert a new statement when the package has already been included.
      *
      * @param file
      *         The file to add the usepackage statement to.

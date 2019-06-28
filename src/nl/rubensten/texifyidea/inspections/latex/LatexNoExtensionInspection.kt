@@ -10,20 +10,24 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.util.Magic
 import nl.rubensten.texifyidea.util.document
 import nl.rubensten.texifyidea.util.replaceString
 import nl.rubensten.texifyidea.util.requiredParameter
+import java.util.*
 
 /**
  * @author Sten Wessel
  */
 open class LatexNoExtensionInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "NoExtension"
+    override val inspectionId = "NoExtension"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName() = "File argument should not include the extension"
 

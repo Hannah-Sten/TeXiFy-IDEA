@@ -11,9 +11,11 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
 import nl.rubensten.texifyidea.util.document
+import java.util.*
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -22,11 +24,13 @@ import nl.rubensten.texifyidea.util.document
  */
 open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
+
+    override val inspectionId = "DiscouragedUseOfDef"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName() = "Use \\(re)newcommand instead of \\let and \\def"
-
-    override fun getInspectionId() = "DiscouragedUseOfDef"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

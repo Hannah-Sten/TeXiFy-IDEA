@@ -16,9 +16,11 @@ import nl.rubensten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.rubensten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.rubensten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.rubensten.texifyidea.lang.Package.Companion.MATHTOOLS
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEnvironment
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 /**
  * Currently works for built-in commands and environments.
@@ -27,11 +29,13 @@ import nl.rubensten.texifyidea.util.*
  */
 open class LatexMissingImportInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
+
+    override val inspectionId = "MissingImport"
+
+    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName() = "Missing imports"
-
-    override fun getInspectionId() = "MissingImport"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

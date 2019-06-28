@@ -12,9 +12,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyLineOptionsInspection
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexDisplayMath
 import nl.rubensten.texifyidea.psi.LatexInlineMath
 import nl.rubensten.texifyidea.util.*
+import java.util.*
 
 /**
  * @author Ruben Schellekens
@@ -29,11 +31,14 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
         )
     }
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup: InsightGroup
+        get() = InsightGroup.LATEX
+
+    override val inspectionId = "EncloseWithLeftRight"
+
+    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
     override fun getDisplayName() = "Enclose high lines with \\leftX..\\rightX"
-
-    override fun getInspectionId() = "EncloseWithLeftRight"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -79,12 +84,12 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     }
 
     private fun ignore(document: Document, offset: Int): Boolean {
-        if (document.textLength < 6 || offset + 6 >= document.textLength ) {
+        if (document.textLength < 6 || offset + 6 >= document.textLength) {
             return false
         }
 
         // Lookbehind for \left or \right.
-        if (document[offset - 5 until offset]  == "\\left" || document[offset - 6 until offset]  == "\\right") {
+        if (document[offset - 5 until offset] == "\\left" || document[offset - 6 until offset] == "\\right") {
             return true
         }
 

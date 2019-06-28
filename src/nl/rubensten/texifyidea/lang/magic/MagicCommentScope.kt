@@ -20,6 +20,11 @@ enum class MagicCommentScope {
     ENVIRONMENT,
 
     /**
+     * Targets the following math environment (both inline and display).
+     */
+    MATH_ENVIRONMENT,
+
+    /**
      * Targets the following command.
      */
     COMMAND,

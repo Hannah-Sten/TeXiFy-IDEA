@@ -22,13 +22,13 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     // Manual override to match short name in plugin.xml
     override fun getShortName() = InsightGroup.BIBTEX.prefix + inspectionId
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "DuplicateBibliography"
+    override val inspectionId = "DuplicateBibliography"
 
     override fun getDisplayName() = "Same bibliography is included multiple times"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
+    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
         LatexIncludesIndex.getItemsInFileSet(file).asSequence()

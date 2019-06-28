@@ -19,9 +19,9 @@ import nl.rubensten.texifyidea.util.requiredParameter
  */
 open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getInspectionId() = "InclusionLoop"
+    override val inspectionId = "InclusionLoop"
 
     override fun getDisplayName() = "Inclusion loops"
 

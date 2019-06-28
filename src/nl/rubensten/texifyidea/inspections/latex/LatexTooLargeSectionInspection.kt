@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile
 import nl.rubensten.texifyidea.index.LatexCommandsIndex
 import nl.rubensten.texifyidea.insight.InsightGroup
 import nl.rubensten.texifyidea.inspections.TexifyInspectionBase
+import nl.rubensten.texifyidea.lang.magic.MagicCommentScope
 import nl.rubensten.texifyidea.psi.LatexCommands
 import nl.rubensten.texifyidea.psi.LatexEndCommand
 import nl.rubensten.texifyidea.psi.LatexPsiUtil
@@ -20,6 +21,7 @@ import nl.rubensten.texifyidea.ui.CreateFileDialog
 import nl.rubensten.texifyidea.util.*
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.util.*
 import java.util.regex.Pattern
 
 /**
@@ -76,11 +78,13 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         }
     }
 
-    override fun getInspectionGroup() = InsightGroup.LATEX
+    override val inspectionGroup = InsightGroup.LATEX
+
+    override val inspectionId = "TooLargeSection"
+
+    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName() = "Too large sections"
-
-    override fun getInspectionId() = "TooLargeSection"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
