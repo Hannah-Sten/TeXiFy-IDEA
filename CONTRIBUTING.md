@@ -28,12 +28,12 @@ When you spot unacceptable behavior, please report per the instructions in the C
 The fastest way to reach us is on the project's [Gitter chat](https://gitter.im/TeXiFy-IDEA) (just log in with your GitHub account).
 We will get notified directly if you post something there and we try to get back to you as soon as possible.
 
-As an alternative, you can always [submit an issue with the label 'support'](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/new?labels=support&body=).
+As an alternative, you can always [submit an issue with the label 'support'](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=support&body=).
 
 
 ## Your first contribution
 Unsure where to start?
-Look for issues that are labeled [_good-first-issue_](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues?q=is%3Aopen+is%3Aissue+label%3Agood-first-issue).
+Look for issues that are labeled [_good-first-issue_](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues?q=is%3Aopen+is%3Aissue+label%3Agood-first-issue).
 These issues should only require a small amount of work and are a good starting point.
 
 If you have another issue or idea in mind, that's great too!
