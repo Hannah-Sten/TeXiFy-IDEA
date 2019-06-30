@@ -1,7 +1,7 @@
-package nl.rubensten.texifyidea.action.insert;
+package nl.hannahsten.texifyidea.action.insert;
 
-import nl.rubensten.texifyidea.TexifyIcons;
-import nl.rubensten.texifyidea.action.InsertEditorAction;
+import nl.hannahsten.texifyidea.TexifyIcons;
+import nl.hannahsten.texifyidea.action.InsertEditorAction;
 
 /**
  * @author Adam Williams
