@@ -322,6 +322,23 @@ fun PsiElement.firstChildIgnoringWhitespaceOrNull(): PsiElement? {
  */
 fun PsiElement.isMagicComment(): Boolean = TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(text)
 
+/**
+ * Get a sequence of all the parents of this PsiElement with the given type.
+ */
+inline fun <reified Psi : PsiElement> PsiElement.parentsOfType(): Sequence<Psi> = parentsOfType(Psi::class)
+
+/**
+ * Get a sequence of all parents of this PsiElement that are of the given type.
+ */
+fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequence<Psi> {
+    return parents().filterIsInstance(klass.java)
+}
+
+/**
+ * Get a sequence of all parents of this element.
+ */
+fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.parent }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
