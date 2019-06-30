@@ -1,0 +1,75 @@
+package nl.hannahsten.texifyidea.ui
+
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.ui.*
+import nl.hannahsten.texifyidea.util.formatAsFileName
+import java.io.File
+import javax.swing.JPanel
+import javax.swing.JTextField
+
+/**
+ * @author Abby Berkers
+ *
+ * Dialog to ask the user for a file name and location when creating a new file.
+ *
+ * @param currentFilePath The path of the file we are currently in, e.g., the file from which an intention was triggered
+ *      that creates a new file.
+ * @param newFileName The name of the new file, with or without the '.tex' extension.
+ * @param newFileFullPath The full path of the new file, without tex extension.
+ */
+class CreateFileDialog(private val currentFilePath: String?, private val newFileName: String, var newFileFullPath: String? = null) {
+    init {
+        DialogBuilder().apply {
+            setTitle("Create new tex file")
+            val panel = JPanel()
+            panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
+
+            // Field to enter the name of the new file.
+            val nameField = JTextField(newFileName)
+            // Field to select the folder/location of the new file.
+            val pathField = TextFieldWithBrowseButton()
+            pathField.text = currentFilePath ?: return@apply
+            // Make sure the dialog is wide enough to fit the whole path in the text field.
+            pathField.textField.columns = pathField.text.length
+
+                    // Add a listener to the browse button to browse a folder
+            pathField.addBrowseFolderListener(
+                    TextBrowseFolderListener(
+                            FileChooserDescriptor(false, true, false, false, false, false)
+                                    .withTitle("Select folder of new file")))
+
+            // Add the fields to the panel, with a useful label.
+            panel.add(LabeledComponent.create(nameField, "File name (.tex optional)"))
+            panel.add(LabeledComponent.create(pathField, "Location"))
+
+
+            setCenterPanel(panel)
+            addCancelAction()
+            addOkAction()
+            setOkOperation {
+                dialogWrapper.close(0)
+            }
+
+            // Focus the filename field.
+            setPreferredFocusComponent(nameField)
+
+            if (show() == DialogWrapper.OK_EXIT_CODE) {
+                val pathEndIndex = nameField.text.lastIndexOf('/')
+                // If there is no '/' in the file name, we can use the path from the path field box.
+                val path = if (pathEndIndex == -1) {
+                    pathField.text
+                }
+                // If there is a '/' in the file name, we have to append the path with the folders given in the file name.
+                else {
+                    pathField.text + "/" + nameField.text.substring(0, pathEndIndex)
+                }
+
+                // Create the directories, if they do not yet exist.
+                File(path).mkdirs()
+                // Format the text from the name field as a file name (e.g. " " -> "-") and remove the (double) tex extension.
+                newFileFullPath = "$path/${nameField.text.substring(pathEndIndex + 1).formatAsFileName()}"
+                        .replace(Regex("(\\.tex)+$", RegexOption.IGNORE_CASE), "")
+            }
+        }
+    }
+}
