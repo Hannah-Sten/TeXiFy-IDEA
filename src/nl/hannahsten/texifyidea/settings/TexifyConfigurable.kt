@@ -4,7 +4,7 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
-import nl.rubensten.texifyidea.run.LatexCompiler
+import nl.hannahsten.texifyidea.run.LatexCompiler
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel

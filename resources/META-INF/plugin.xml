@@ -314,11 +314,11 @@
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 
         <!-- Settings -->
-        <applicationService serviceInterface="nl.rubensten.texifyidea.settings.TexifySettings" serviceImplementation="nl.rubensten.texifyidea.settings.TexifySettings"/>
-        <applicationService serviceInterface="nl.rubensten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.rubensten.texifyidea.settings.TexifyProjectSettings"/>
-        <applicationConfigurable instance="nl.rubensten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
-        <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
-        <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.BibtexColorSettingsPage"/>
+        <applicationService serviceInterface="nl.hannahsten.texifyidea.settings.TexifySettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
+        <applicationService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
+        <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
+        <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
+        <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
