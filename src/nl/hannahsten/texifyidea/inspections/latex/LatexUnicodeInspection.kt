@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.run.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.TexifyProjectSettings
 import nl.hannahsten.texifyidea.util.Magic
@@ -73,18 +73,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         }
     }
 
-    override fun getInspectionGroup(): InsightGroup {
-        return InsightGroup.LATEX
-    }
+    override val inspectionGroup = InsightGroup.LATEX
 
     @Nls
     override fun getDisplayName(): String {
         return "Unsupported non-ASCII character"
     }
 
-    override fun getInspectionId(): String {
-        return "Unicode"
-    }
+    override val inspectionId = "Unicode"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
 
