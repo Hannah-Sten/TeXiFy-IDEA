@@ -1,7 +1,5 @@
-%%
-%% Author: ${USER}
-%% ${DATE}
-%%
+%! Author = ${USER}
+%! Date = ${DATE}
 
 % Preamble
 \documentclass[11pt]{article}
