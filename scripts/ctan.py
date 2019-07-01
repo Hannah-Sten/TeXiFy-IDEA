@@ -21,7 +21,7 @@ def fetch_packages(letter):
 
 # MAIN #
 
-print("CTAN Fetcher 1.0 (Ruben Schellekens)\n")
+print("CTAN Fetcher 1.0 (Hannah Schellekens)\n")
 
 count = 0
 allPackages = []
