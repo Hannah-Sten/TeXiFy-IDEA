@@ -15,8 +15,8 @@ import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.findFile
-import nl.hannahsten.texifyidea.util.findRootFile
+import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import java.util.*
 

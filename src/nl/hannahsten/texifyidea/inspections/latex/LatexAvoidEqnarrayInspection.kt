@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
 
 /**

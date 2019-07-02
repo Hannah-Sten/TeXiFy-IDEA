@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexComment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
 import kotlin.math.min
 
 /**

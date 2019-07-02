@@ -8,6 +8,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
  * @author Hannah Schellekens

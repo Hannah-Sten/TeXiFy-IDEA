@@ -10,6 +10,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 
 /**
  * @author Hannah Schellekens
