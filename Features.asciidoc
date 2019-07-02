@@ -145,6 +145,8 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 
 == Inspections
 
+* link:Inspection-suppression[Inspection suppression]
+
 === BibTeX
 * Duplicate ID
 * Missing bibliography style
