@@ -18,7 +18,7 @@ class ReferencedFileSetCache(val project: Project) {
     private val valueManager = CachedValuesManager.getManager(project)
 
     /**
-     * Traks the modification counts for each base psi file.
+     * Tracks the modification counts for each base psi file.
      */
     private val modificationTracker = HashMap<PsiFile, MyModificationTracker>()
 
