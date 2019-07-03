@@ -22,7 +22,7 @@ It uses pdflatex by default, but you can use an other compiler as well.
 
 ==== Tip: compiling automatically on losing focus
 When you add the flag `-pvc` it watches the files and recompiles automatically on saved changes (in IntelliJ a save is
-triggered, when the window looses focus, or by [Ctrl + S]).
+triggered, when the window looses focus, or by kbd:[Ctrl +S]).
 
 For an automatic start of your pdf viewer you have to create a file in your users home directory.
 The path for the file is under Linux and Mac `$HOME/.latexmkrc` and under Windows `%USERPROFILE%\.latexmkrc`.
