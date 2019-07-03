@@ -18,7 +18,7 @@ See https://mg.readthedocs.io/latexmk.html for installation and more information
 With Latexmk the project is compiled just as much times as needed and handles BibTeX/Biber.
 It uses pdflatex by default, but you can use an other compiler as well.
 
-==== Tip: compiling automatically on losing focus
+==== Tip: compiling automatically when IntelliJ loses focus
 When you add the flag `-pvc` it watches the files and recompiles automatically on saved changes (in IntelliJ a save is
 triggered, when the window looses focus, or by kbd:[Ctrl +S]).
 
