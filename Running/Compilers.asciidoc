@@ -1,3 +1,5 @@
+:experimental:
+
 == LaTeX compilers
 
 === pdfLaTeX
@@ -12,9 +14,26 @@ LuaLaTeX has the advantage that you can use Lua (a programming language) in your
 
 === Latexmk
 
-To use latexmk, install the `latexmk` package. You also need to install Perl, for example on Windows using Strawberry Perl.
-The main advantage of latexmk is that it compiles just as much times as needed, and handles bibtex automatically.
+=== Latexmk
+
+See https://mg.readthedocs.io/latexmk.html for installation and more information.
+With Latexmk the project is compiled just as much times as needed and handles BibTeX/Biber.
 It uses pdflatex by default, but you can use an other compiler as well.
+
+==== Tip: compiling automatically on losing focus
+When you add the flag `-pvc` it watches the files and recompiles automatically on saved changes (in IntelliJ a save is
+triggered, when the window looses focus, or by [Ctrl + S]).
+
+For an automatic start of your pdf viewer you have to create a file in your users home directory.
+The path for the file is under Linux and Mac `$HOME/.latexmkrc` and under Windows `%USERPROFILE%\.latexmkrc`.
+In this file you need to add the following line:
+
+[source]
+----
+$pdf_previewer = '"/path to/your/favorite/viewer" %O %S';
+----
+
+The quotes are needed to handle whitespaces in the path properly.
 
 === XeLaTeX
 
