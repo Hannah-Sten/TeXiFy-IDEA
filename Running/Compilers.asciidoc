@@ -14,8 +14,6 @@ LuaLaTeX has the advantage that you can use Lua (a programming language) in your
 
 === Latexmk
 
-=== Latexmk
-
 See https://mg.readthedocs.io/latexmk.html for installation and more information.
 With Latexmk the project is compiled just as much times as needed and handles BibTeX/Biber.
 It uses pdflatex by default, but you can use an other compiler as well.
