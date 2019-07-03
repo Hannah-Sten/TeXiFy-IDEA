@@ -39,14 +39,16 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
             }
 
             val star = name.substring("eqnarray".length)
-            if (env.endCommand != null) descriptors.add(manager.createProblemDescriptor(
-                    env,
-                    TextRange(7, 7 + name.length),
-                    "Avoid using the 'eqnarray$star' environment",
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly,
-                    ChangeEnvironmentFix(star)
-            ))
+            if (env.endCommand != null) {
+                descriptors.add(manager.createProblemDescriptor(
+                        env,
+                        TextRange.from(7, name.length),
+                        "Avoid using the 'eqnarray$star' environment",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly,
+                        ChangeEnvironmentFix(star)
+                ))
+            }
         }
 
         return descriptors
