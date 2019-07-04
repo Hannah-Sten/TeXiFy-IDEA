@@ -81,7 +81,7 @@ An example of using bibtex:
 ----
 
 `references.bib`
-[source,latex]
+[source,bibtex]
 ----
 @Book{knuth1990,
     author    = {Knuth, Donald E.},
@@ -114,7 +114,7 @@ An example of using the biblatex package:
 ----
 
 `references.bib`
-[source,latex]
+[source,bibtex]
 ----
 @article{greenwade1993,
     author  = "George D. Greenwade",
