@@ -158,7 +158,7 @@ class LatexRunConfiguration constructor(project: Project,
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format ?: Format.PDF
+        this.outputFormat = format
 
         // Read bibliography run configuration
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
