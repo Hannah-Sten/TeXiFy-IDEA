@@ -5,7 +5,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.util.xmlb.XmlSerializerUtil
-import nl.hannahsten.texifyidea.run.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 
 /**
  * todo
