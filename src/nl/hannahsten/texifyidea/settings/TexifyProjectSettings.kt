@@ -5,14 +5,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 
 /**
- * todo
- * Project-level values are stored in the workspace file.
+ * Project-level settings are stored in the workspace file.
  */
-//@State(name = "TexifyProjectSettings")
-// storages optional for project settings
-@State(name = "TexifyProjectSettings", storages = [(Storage("texifyProjectSettings.xml"))])
-@Storage("texifyProjectSettings.xml")
-//@Storage(StoragePathMacros.WORKSPACE_FILE)
+@State(name = "TexifyProjectSettings", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class TexifyProjectSettings : PersistentStateComponent<TexifyProjectSettings> {
 
     companion object {

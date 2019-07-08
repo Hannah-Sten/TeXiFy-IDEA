@@ -315,8 +315,9 @@
 
         <!-- Settings -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.settings.TexifySettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
-        <applicationService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
+        <projectService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
+        <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="language" id="TexifyProjectConfigurable" />
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
 

@@ -4,7 +4,6 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel
@@ -12,14 +11,13 @@ import javax.swing.JPanel
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class TexifyConfigurable(private val settings: TexifySettings, private val projectSettings: TexifyProjectSettings) : SearchableConfigurable {
+class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
 
     private lateinit var automaticSoftWraps: JBCheckBox
     private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
     private lateinit var automaticUpDownBracket: JBCheckBox
     private lateinit var automaticItemInItemize: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
-    private lateinit var compilerCompatibility: ComboBox<LatexCompiler>
 
     override fun getId() = "TexifyConfigurable"
 
@@ -34,8 +32,6 @@ class TexifyConfigurable(private val settings: TexifySettings, private val proje
             automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
             automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
             automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
-            compilerCompatibility = addCompilerCompatibility()
-
         })
     }
 
@@ -46,19 +42,6 @@ class TexifyConfigurable(private val settings: TexifySettings, private val proje
         val list = ComboBox(values)
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply{
             add(JBLabel("Smart quote substitution: "))
-            add(list)
-        })
-        return list
-    }
-
-    /**
-     * Add the options for the compiler compatibility.
-     */
-    private fun JPanel.addCompilerCompatibility(): ComboBox<LatexCompiler> {
-        // Show available compilers
-        val list = ComboBox(LatexCompiler.values())
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply{
-            add(JBLabel("Check for compatibility with compiler: "))
             add(list)
         })
         return list
@@ -78,7 +61,6 @@ class TexifyConfigurable(private val settings: TexifySettings, private val proje
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
-                || compilerCompatibility.selectedItem != projectSettings.compilerCompatibility
     }
 
     override fun apply() {
@@ -87,7 +69,6 @@ class TexifyConfigurable(private val settings: TexifySettings, private val proje
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
-        projectSettings.compilerCompatibility = compilerCompatibility.selectedItem as LatexCompiler
     }
 
     override fun reset() {
@@ -96,6 +77,5 @@ class TexifyConfigurable(private val settings: TexifySettings, private val proje
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
-        compilerCompatibility.selectedItem = projectSettings.compilerCompatibility
     }
 }
