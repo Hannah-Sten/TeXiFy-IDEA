@@ -63,6 +63,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          * @return Whether Unicode support is enabled.
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
+            // todo how to get correct value for project?
             if (TexifyProjectSettings.instance.compilerCompatibility == LatexCompiler.LUALATEX) {
                 return true
             }
@@ -174,7 +175,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun startInWriteAction() = false
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable().id)
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable(TexifyProjectSettings()).id)
         }
     }
 

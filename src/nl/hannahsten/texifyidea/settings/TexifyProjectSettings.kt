@@ -13,10 +13,6 @@ data class TexifyProjectSettings(
         var compilerCompatibility: LatexCompiler = LatexCompiler.PDFLATEX
 ) : PersistentStateComponent<TexifyProjectSettings> {
 
-    companion object {
-        val instance = TexifyProjectSettings()
-    }
-
     override fun getState() = this
 
     override fun loadState(state: TexifyProjectSettings) {
