@@ -8,6 +8,9 @@ import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 
+/**
+ * Project-level settings UI.
+ */
 class TexifyProjectConfigurable(private val projectSettings: TexifyProjectSettings) : SearchableConfigurable {
     private lateinit var compilerCompatibility: ComboBox<LatexCompiler>
 

@@ -23,7 +23,7 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.settings.TexifyConfigurable
+import nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable
 import nl.hannahsten.texifyidea.settings.TexifyProjectSettings
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
@@ -171,7 +171,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyConfigurable::class.java)
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable::class.java)
         }
     }
 
