@@ -11,12 +11,12 @@ import javax.swing.JPanel
 /**
  * Project-level settings UI.
  */
-class TexifyProjectConfigurable(private val projectSettings: TexifyProjectSettings) : SearchableConfigurable {
+class TexifyProjectConfigurable : SearchableConfigurable {
     private lateinit var compilerCompatibility: ComboBox<LatexCompiler>
 
     override fun getId() = "TexifyProjectConfigurable"
 
-    override fun getDisplayName() = "TeXiFy Project Settings"
+    override fun getDisplayName() = "Project Settings"
 
     override fun createComponent() = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
         add(JPanel().apply {
@@ -41,15 +41,15 @@ class TexifyProjectConfigurable(private val projectSettings: TexifyProjectSettin
     }
 
     override fun isModified(): Boolean {
-        return compilerCompatibility.selectedItem != projectSettings.compilerCompatibility
+        return compilerCompatibility.selectedItem != TexifyProjectSettings.instance.compilerCompatibility
     }
 
     override fun apply() {
-        projectSettings.compilerCompatibility = compilerCompatibility.selectedItem as LatexCompiler
+        TexifyProjectSettings.instance.compilerCompatibility = compilerCompatibility.selectedItem as LatexCompiler
     }
 
     override fun reset() {
         super.reset()
-        compilerCompatibility.selectedItem = projectSettings.compilerCompatibility
+        compilerCompatibility.selectedItem = TexifyProjectSettings.instance.compilerCompatibility
     }
 }

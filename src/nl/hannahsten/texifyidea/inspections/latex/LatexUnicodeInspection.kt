@@ -63,7 +63,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          * @return Whether Unicode support is enabled.
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
-            if (TexifyProjectSettings.getInstance().compilerCompatibility == LatexCompiler.LUALATEX) {
+            if (TexifyProjectSettings.instance.compilerCompatibility == LatexCompiler.LUALATEX) {
                 return true
             }
 
@@ -170,8 +170,11 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             return "Change compiler compatibility"
         }
 
+        // We just want to open the settings window, but cannot do an AWT event inside a write action
+        override fun startInWriteAction() = false
+
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable::class.java)
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable().id)
         }
     }
 

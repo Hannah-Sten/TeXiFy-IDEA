@@ -6,16 +6,16 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 
 /**
  * Project-level settings are stored in the workspace file.
+ * For more information, see https://www.jetbrains.org/intellij/sdk/docs/basics/persisting_state_of_components.html
  */
 @State(name = "TexifyProjectSettings", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
-class TexifyProjectSettings : PersistentStateComponent<TexifyProjectSettings> {
+data class TexifyProjectSettings(
+        var compilerCompatibility: LatexCompiler = LatexCompiler.PDFLATEX
+) : PersistentStateComponent<TexifyProjectSettings> {
 
     companion object {
-        @JvmStatic
-        fun getInstance(): TexifyProjectSettings = ServiceManager.getService(TexifyProjectSettings::class.java)
+        val instance = TexifyProjectSettings()
     }
-
-    var compilerCompatibility = LatexCompiler.PDFLATEX
 
     override fun getState() = this
 

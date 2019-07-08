@@ -7,8 +7,6 @@ import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 
 /**
- * todo should be data class? https://www.jetbrains.org/intellij/sdk/docs/basics/persisting_state_of_components.html
- *
  * @author Sten Wessel
  */
 @State(name = "TexifySettings", storages = [(Storage("texifySettings.xml"))])
