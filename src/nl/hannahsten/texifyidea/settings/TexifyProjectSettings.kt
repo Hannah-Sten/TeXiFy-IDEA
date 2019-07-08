@@ -1,16 +1,18 @@
 package nl.hannahsten.texifyidea.settings
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.ServiceManager
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.StoragePathMacros
+import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.XmlSerializerUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 
 /**
  * todo
+ * Project-level values are stored in the workspace file.
  */
-@Storage(StoragePathMacros.WORKSPACE_FILE)
+//@State(name = "TexifyProjectSettings")
+// storages optional for project settings
+@State(name = "TexifyProjectSettings", storages = [(Storage("texifyProjectSettings.xml"))])
+@Storage("texifyProjectSettings.xml")
+//@Storage(StoragePathMacros.WORKSPACE_FILE)
 class TexifyProjectSettings : PersistentStateComponent<TexifyProjectSettings> {
 
     companion object {
