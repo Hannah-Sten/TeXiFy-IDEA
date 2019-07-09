@@ -163,7 +163,8 @@ fun PsiFile.findRootFile(): PsiFile {
             return@forEach
         }
 
-        if (file.isIncludedBy(file, inclusions)) {
+        // If the root file contains this, we have found the root file
+        if (file.contains(this, inclusions)) {
             return file
         }
     }
@@ -180,7 +181,7 @@ fun PsiFile.findRootFile(): PsiFile {
  *              Map that maps each psi file to all the files that get included by said file.
  * @return `true` when `childMaybe` is a child of `this` file, `false` otherwise.
  */
-private fun PsiFile.isIncludedBy(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiFile>>): Boolean {
+private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiFile>>): Boolean {
     return IsChildDFS(
             this,
             { mapping[it] ?: emptySet() },
