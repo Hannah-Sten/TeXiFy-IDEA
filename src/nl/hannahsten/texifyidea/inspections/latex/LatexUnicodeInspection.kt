@@ -27,6 +27,7 @@ import nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable
 import nl.hannahsten.texifyidea.settings.TexifyProjectSettings
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
+import nl.hannahsten.texifyidea.util.insertUsepackage
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -139,24 +140,10 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val element = descriptor.psiElement
-            val file = element.containingFile
-            val document = PsiDocumentManager.getInstance(project).getDocument(file)
-            val included = PackageUtils.getIncludedPackages(file)
-
-            if (document == null) {
-                return
-            }
+            val file = descriptor.psiElement.containingFile
 
             Magic.Package.unicode.forEach { p ->
-                if (included.contains(p.name)) {
-                    return
-                }
-
-                PackageUtils.insertUsepackage(
-                        document, file, p.name,
-                        p.parameters.joinToString(",")
-                )
+                file.insertUsepackage(p)
             }
         }
     }

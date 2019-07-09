@@ -40,7 +40,7 @@ object PackageUtils {
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
     @JvmStatic
-    fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
+    private fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
         val commands = LatexCommandsIndex.getItems(file)
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
@@ -250,14 +250,6 @@ object PackageUtils {
  * @see PackageUtils.insertUsepackage
  */
 fun PsiFile.insertUsepackage(pack: Package) = PackageUtils.insertUsepackage(this, pack)
-
-/**
- * @see PackageUtils.insertUsepackage
- */
-fun PsiFile.insertUsepackage(packageName: String, parameters: String?) {
-    val document = document() ?: return
-    PackageUtils.insertUsepackage(document, this, packageName, parameters)
-}
 
 /**
  * @see PackageUtils.getIncludedPackages
