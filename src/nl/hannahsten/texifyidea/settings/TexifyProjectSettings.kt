@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.settings
 
 import com.intellij.openapi.components.*
+import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 
@@ -12,6 +13,11 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 data class TexifyProjectSettings(
         var compilerCompatibility: LatexCompiler = LatexCompiler.PDFLATEX
 ) : PersistentStateComponent<TexifyProjectSettings> {
+
+    companion object {
+        @JvmStatic
+        fun getInstance(project: Project): TexifyProjectSettings = ServiceManager.getService(project, TexifyProjectSettings::class.java)
+    }
 
     override fun getState() = this
 

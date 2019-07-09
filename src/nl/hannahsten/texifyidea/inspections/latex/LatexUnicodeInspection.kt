@@ -63,8 +63,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          * @return Whether Unicode support is enabled.
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
-            // todo how to get correct value for project?
-            if (TexifyProjectSettings.instance.compilerCompatibility == LatexCompiler.LUALATEX) {
+            if (TexifyProjectSettings.getInstance(file.project).compilerCompatibility == LatexCompiler.LUALATEX) {
                 return true
             }
 
