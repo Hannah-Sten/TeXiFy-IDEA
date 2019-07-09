@@ -7,14 +7,12 @@ import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 
 /**
- *
  * @author Sten Wessel
  */
 @State(name = "TexifySettings", storages = [(Storage("texifySettings.xml"))])
 class TexifySettings : PersistentStateComponent<TexifySettings> {
 
     companion object {
-
         @JvmStatic
         fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
     }
@@ -31,8 +29,6 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
-
-    // Index of selected combobox item
     var automaticQuoteReplacement = QuoteReplacement.NONE
 
     override fun getState() = this
