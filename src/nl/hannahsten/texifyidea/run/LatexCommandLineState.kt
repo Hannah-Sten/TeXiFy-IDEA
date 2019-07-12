@@ -87,10 +87,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // Do not open the pdf viewer when this is not the last run config in the chain
-        if (!runConfig.isLastRunConfig) {
-            return handler
+        if (runConfig.isLastRunConfig) {
+            openPdfViewer(handler)
         }
 
+        return handler
+    }
+
+    /**
+     * Add a certain process listener for opening the right pdf viewer depending on settings and OS.
+     */
+    private fun openPdfViewer(handler: ProcessHandler) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
@@ -135,12 +142,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
             handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
         }
-
-        return handler
-    }
-
-    private fun openPdfViewer() {
-
     }
 
     /**

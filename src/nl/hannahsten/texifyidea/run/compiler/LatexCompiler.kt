@@ -68,6 +68,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val includesBibtex = true
 
+        override val handlesNumberOfCompiles = true
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
@@ -153,6 +155,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val includesBibtex = true
 
+        override val handlesNumberOfCompiles = true
+
         override val outputFormats = arrayOf(Format.PDF, Format.HTML, Format.XDV, Format.AUX)
 
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
@@ -220,6 +224,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      * Whether the compiler includes running bibtex/biber.
      */
     open val includesBibtex = false
+
+    /**
+     * Whether the compiler automatically determines the number of compiles needed.
+     */
+    open val handlesNumberOfCompiles = false
 
     /**
      * List of output formats supported by this compiler.

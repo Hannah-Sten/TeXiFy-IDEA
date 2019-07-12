@@ -35,6 +35,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     // The following options may or may not exist.
     private var auxDir: JBCheckBox? = null
     private var outDir: JBCheckBox? = null
+    private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: BibliographyPanel
@@ -87,6 +88,18 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Reset seperate output files.
         if (outDir != null) {
             outDir!!.isSelected = runConfiguration.hasOutputDirectories
+        }
+
+        // Reset whether to compile twice
+        if (compileTwice != null) {
+            if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
+                compileTwice!!.isVisible = false
+                runConfiguration.compileTwice = false
+            }
+            else {
+                compileTwice!!.isVisible = true
+            }
+            compileTwice!!.isSelected = runConfiguration.compileTwice
         }
 
         // Reset output format.
@@ -152,13 +165,23 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Apply auxiliary files, only if the option exists.
         if (auxDir != null) {
-            val auxDirectories = auxDir!!.isSelected
-            runConfiguration.hasAuxiliaryDirectories = auxDirectories
+            runConfiguration.hasAuxiliaryDirectories = auxDir!!.isSelected
         }
 
         if (outDir != null) {
-            val outDirectories = outDir!!.isSelected
-            runConfiguration.hasOutputDirectories = outDirectories
+            runConfiguration.hasOutputDirectories = outDir!!.isSelected
+        }
+
+        if (compileTwice != null) {
+            // Only show option to configure number of compiles when applicable
+            if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
+                compileTwice!!.isVisible = false
+                runConfiguration.compileTwice = false
+            }
+            else {
+                compileTwice!!.isVisible = true
+                runConfiguration.compileTwice = compileTwice!!.isSelected
+            }
         }
 
         // Apply output format.
@@ -213,10 +236,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         // Output folder
-        outDir = JBCheckBox("Separate output files from source " + "(disable this when using BiBTeX without MiKTeX)")
+        outDir = JBCheckBox("Separate output files from source (disable this when using BiBTeX without MiKTeX)")
         // Enable by default.
         outDir!!.isSelected = true
         panel.add(outDir)
+
+        compileTwice = JBCheckBox("Always compile twice")
+        compileTwice!!.isSelected = false
+        panel.add(compileTwice)
 
         // Output format.
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler
