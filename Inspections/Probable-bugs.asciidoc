@@ -60,6 +60,16 @@ Also note that in general it is better to use `\usepackage[T1]{fontenc}`, see ht
 
 Opens the settings page with the link:Project-settings#compiler-compatibility[option to change compiler for which to check compatibility].
 
+== File argument should not include the extension
+
+Some commands with which you include files, especially `\bibliography` and `\include`, should not include the file extension.
+For example if you want to include a file `section1.tex`, then `\include{section1.tex}` will not work.
+
+== File argument should include the extension
+
+Some commands with which you include files, especially `\addbibresource`, should include the file extension.
+For example if you want to include a bibliography in `references.bib` then `\addbibresource{references}` will not work, but `\addbibresource{references.bib}` will.
+
 
 == Missing documentclass
 == Missing document environment
