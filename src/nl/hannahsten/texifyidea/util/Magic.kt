@@ -226,6 +226,13 @@ object Magic {
         )
 
         /**
+         * Commands that should have the given file extensions.
+         */
+        @JvmField val requiredExtensions = mapOf(
+                "\\addbibresource" to listOf("bib")
+        )
+
+        /**
          * Extensions that should only be scanned for the provided include commands.
          */
         @JvmField val includeOnlyExtensions = mapOf(
