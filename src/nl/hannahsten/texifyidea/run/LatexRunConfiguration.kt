@@ -41,6 +41,7 @@ class LatexRunConfiguration constructor(project: Project,
         private const val MAIN_FILE = "main-file"
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
+        private const val COMPILE_TWICE = "compile-twice"
         private const val OUTPUT_FORMAT = "output-format"
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
@@ -67,12 +68,13 @@ class LatexRunConfiguration constructor(project: Project,
     // Enable auxiliary directories by default on MiKTeX only
     var hasAuxiliaryDirectories = LatexDistribution.isMiktex
     var hasOutputDirectories = true
+    var compileTwice = false
     var outputFormat: Format = Format.PDF
     private var bibRunConfigId = ""
     var isSkipBibtex = false
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
-    var isLastRunConfig = true
+    var isLastRunConfig = true // todo set to false if compile twice selected?
 
     // Whether the run configuration has already been run or not
     var hasBeenRun = false
@@ -159,6 +161,15 @@ class LatexRunConfiguration constructor(project: Project,
             this.hasOutputDirectories = java.lang.Boolean.parseBoolean(outDirBoolean)
         }
 
+        // Read whether to compile twice
+        val compileTwiceBoolean = parent.getChildText(COMPILE_TWICE)
+        if (compileTwiceBoolean == null) {
+            this.compileTwice = false
+        }
+        else {
+            this.compileTwice = compileTwiceBoolean.toBoolean()
+        }
+
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
@@ -228,6 +239,11 @@ class LatexRunConfiguration constructor(project: Project,
         val outDirElt = Element(OUT_DIR)
         outDirElt.text = java.lang.Boolean.toString(hasOutputDirectories)
         parent.addContent(outDirElt)
+
+        // Write whether to compile twice
+        val compileTwiceElt = Element(COMPILE_TWICE)
+        compileTwiceElt.text = compileTwice.toString()
+        parent.addContent(compileTwiceElt)
 
         // Write output format.
         val outputFormatElt = Element(OUTPUT_FORMAT)

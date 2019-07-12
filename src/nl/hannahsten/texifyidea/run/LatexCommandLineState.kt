@@ -33,17 +33,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")
 
-        // Some initial setup which is too expensive to do in LatexRunConfigurationProducer, which is called on e.g. every right-click in the document
-        if (!runConfig.hasBeenRun) {
-            runConfig.hasBeenRun = true
-
-            // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
-            // checking for bibliography commands
-            if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
-                runConfig.generateBibRunConfig()
-            }
-        }
-
         createOutDirs(mainFile)
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
@@ -51,6 +40,23 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
+
+        // Some initial setup
+        if (!runConfig.hasBeenRun) {
+            // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
+            // checking for bibliography commands
+            if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
+                runConfig.generateBibRunConfig()
+            }
+
+            // If we need to compile twice, schedule the second compile
+            if (runConfig.bibRunConfig == null && runConfig.compileTwice) {
+                handler.addProcessListener(RunLatexListener(runConfig, environment))
+                return handler
+            }
+
+            runConfig.hasBeenRun = true
+        }
 
         runConfig.bibRunConfig?.let {
             if (runConfig.isSkipBibtex) {
@@ -131,6 +137,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         return handler
+    }
+
+    private fun openPdfViewer() {
+
     }
 
     /**
