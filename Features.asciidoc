@@ -181,6 +181,8 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 
 ==== Probable bugs
 * link:Probable-bugs#Unsupported-Unicode-character[Unsupported Unicode character]
+* link:++Probable-bugs#File argument should not include the extension++[File argument should not include the extension]
+* link:++Probable-bugs#File argument should include the extension++[File argument should include the extension]
 * Missing documentclass
 * Missing document environment
 * Missing imports
@@ -212,7 +214,6 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Start sentences on a new line
 * Collapse cite commands
 * link:LaTeX-recommendations#ins:eqref[Use `\eqref{...}` instead of `(\ref{...})`]
-* File argument should not include the extension
 
 ==== Writing organisation recommendations
 * Might break TeXiFy functionality
