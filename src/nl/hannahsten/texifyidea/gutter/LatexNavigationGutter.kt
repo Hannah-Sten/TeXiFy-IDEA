@@ -23,7 +23,7 @@ import javax.swing.Icon
 class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
     companion object {
-        private val IGNORE_FILE_ARGUMENTS = HashSet(listOf("\\RequirePackage", "\\usepackage", "\\documentclass", "\\LoadClass", "\\LoadClassWithOptions", "\\input"))
+        private val IGNORE_FILE_ARGUMENTS = HashSet(listOf("\\RequirePackage", "\\usepackage", "\\documentclass", "\\LoadClass", "\\LoadClassWithOptions"))
     }
 
     override fun collectNavigationMarkers(element: PsiElement,

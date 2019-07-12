@@ -99,13 +99,13 @@ fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(pro
  */
 fun VirtualFile.findFile(fileName: String, extensions: Set<String>): VirtualFile? {
     var file = findFileByRelativePath(fileName)
-    if (file != null) return file
+    if (file != null && !file.isDirectory) return file
 
     extensions.forEach { extension ->
         val lookFor = if (fileName.endsWith(".$extension")) fileName else "$fileName.$extension"
         file = findFileByRelativePath(lookFor)
 
-        if (file != null) return file
+        if (file != null && !file!!.isDirectory) return file
     }
 
     return null
