@@ -102,14 +102,16 @@ open class WordCountAction : AnAction(
      * Counts all the words in the given base file.
      */
     private fun countWords(baseFile: PsiFile): Pair<Int, Int> {
-        val fileSet = baseFile.referencedFileSet()
+        val allNormalText = baseFile
+                .referencedFileSet()
+                .asSequence()
                 .filter { it.name.endsWith(".tex", ignoreCase = true) }
-        val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
+                .flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
                 .filter {
                     val children = it.childrenOfType(LatexBeginCommand::class)
-                    if (children.isEmpty()) {
+                    if (children.none()) {
                         return@filter false
                     }
 
@@ -133,7 +135,7 @@ open class WordCountAction : AnAction(
      *
      * @return A pair of the total amount of words, and the amount of characters that make up the words.
      */
-    private fun countWords(latexNormalText: List<LatexNormalText>): Pair<Int, Int> {
+    private fun countWords(latexNormalText: Sequence<LatexNormalText>): Pair<Int, Int> {
         // separate all latex words.
         val latexWords: MutableSet<PsiElement> = HashSet()
         var characters = 0

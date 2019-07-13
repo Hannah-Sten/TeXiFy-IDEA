@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.isEntryPoint
  */
 class LatexCompileGutter : RunLineMarkerContributor() {
 
-    override fun getInfo(element: PsiElement): RunLineMarkerContributor.Info? {
+    override fun getInfo(element: PsiElement): Info? {
         if (element !is LatexBeginCommand) return null
 
         // Break when not a valid command: don't show icon.
@@ -30,9 +30,9 @@ class LatexCompileGutter : RunLineMarkerContributor() {
         val actions = ExecutorAction.getActions(0)
 
         // Create icon.
-        return RunLineMarkerContributor.Info(
+        return Info(
                 TexifyIcons.BUILD,
-                Function { _ -> "Compile document" },
+                Function { "Compile document" },
                 actions[0],
                 editConfigs
         )

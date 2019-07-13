@@ -21,24 +21,24 @@ import kotlin.reflect.KClass
  */
 fun PsiElement.endOffset(): Int = textOffset + textLength
 
-/**
- * @see [PsiTreeUtil.getChildrenOfType]
- */
-fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
-    return PsiTreeUtil.findChildrenOfType(this, clazz.java)
+fun PsiElement.childrenWithLeaves() = generateSequence(firstChild) { it.nextSibling }
+
+fun PsiElement.childrenReversedWithLeaves() = generateSequence(lastChild) { it.prevSibling }
+
+fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Sequence<T> {
+    return childrenWithLeaves().filterIsInstance(clazz.java)
 }
 
-/**
- * @see [PsiTreeUtil.getChildrenOfType]
- */
-inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
+inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Sequence<T> {
+    return childrenWithLeaves().filterIsInstance<T>()
+}
 
 /**
  * Finds the first element that matches a given predicate.
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
-    for (child in children) {
+    for (child in childrenWithLeaves()) {
         if (predicate(this)) {
             return child as? T
         }
@@ -57,7 +57,7 @@ fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolea
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    for (child in this.children) {
+    for (child in this.childrenWithLeaves()) {
         if (clazz.java.isAssignableFrom(child.javaClass)) {
             return child as? T
         }
@@ -76,7 +76,7 @@ fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : PsiElement> PsiElement.lastChildOfType(clazz: KClass<T>): T? {
-    for (child in children.reversedArray()) {
+    for (child in childrenReversedWithLeaves()) {
         if (clazz.java.isAssignableFrom(child.javaClass)) {
             return child as? T
         }
@@ -141,8 +141,9 @@ fun PsiElement?.findOuterMathEnvironment(): PsiElement? {
 /**
  * Check if the element is in a comment or not.
  */
-fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMMENT) || when (this) {
-    is PsiComment -> true
+fun PsiElement.inComment() = when {
+    inDirectEnvironmentContext(Environment.Context.COMMENT) -> true
+    this is PsiComment -> true
     else -> this is LeafPsiElement && elementType == LatexTypes.COMMAND_TOKEN
 }
 
