@@ -7,6 +7,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SyntaxTraverser
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
@@ -106,7 +107,7 @@ open class LatexAnnotator : Annotator {
         val annotation = annotationHolder.createInfoAnnotation(inlineMathElement, null)
         annotation.textAttributes = LatexSyntaxHighlighter.INLINE_MATH
 
-        annotateMathCommands(LatexPsiUtil.getAllChildren(inlineMathElement), annotationHolder,
+        annotateMathCommands(SyntaxTraverser.psiTraverser().withRoot(inlineMathElement).asSequence(), annotationHolder,
                 LatexSyntaxHighlighter.COMMAND_MATH_INLINE)
     }
 
@@ -122,7 +123,7 @@ open class LatexAnnotator : Annotator {
         val annotation = annotationHolder.createInfoAnnotation(displayMathElement, null)
         annotation.textAttributes = LatexSyntaxHighlighter.DISPLAY_MATH
 
-        annotateMathCommands(displayMathElement.childrenOfType(LatexCommands::class), annotationHolder,
+        annotateMathCommands(displayMathElement.childrenOfType<LatexCommands>(), annotationHolder,
                 LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
     }
 
@@ -151,7 +152,7 @@ open class LatexAnnotator : Annotator {
      * @param highlighter
      *              The attributes to apply to all command tokens.
      */
-    private fun annotateMathCommands(elements: Collection<PsiElement>,
+    private fun annotateMathCommands(elements: Sequence<PsiElement>,
                                      annotationHolder: AnnotationHolder,
                                      highlighter: TextAttributesKey) {
         for (element in elements) {
@@ -188,26 +189,20 @@ open class LatexAnnotator : Annotator {
     private fun annotateCommands(command: LatexCommands, annotationHolder: AnnotationHolder) {
         annotateStyle(command, annotationHolder)
 
-        // Label references.
-        val style = if (command.name in Magic.Command.labelReference) {
-            LatexSyntaxHighlighter.LABEL_REFERENCE
+        val style = when {
+            // Label references.
+            command.name in Magic.Command.labelReference -> LatexSyntaxHighlighter.LABEL_REFERENCE
+            // Label definitions.
+            command.name in Magic.Command.labelDefinition -> LatexSyntaxHighlighter.LABEL_DEFINITION
+            // Bibliography references (citations).
+            command.name in Magic.Command.bibliographyReference -> LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
+            // Label definitions.
+            command.name in Magic.Command.bibliographyItems -> LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
+            else -> return
         }
-        // Label definitions.
-        else if (command.name in Magic.Command.labelDefinition) {
-            LatexSyntaxHighlighter.LABEL_DEFINITION
-        }
-        // Bibliography references (citations).
-        else if (command.name in Magic.Command.bibliographyReference) {
-            LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
-        }
-        // Label definitions.
-        else if (command.name in Magic.Command.bibliographyItems) {
-            LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
-        }
-        else return
 
         command.requiredParameters().firstOrNull()?.let {
-            annotationHolder.annotateRequiredParameter(it, style!!)
+            annotationHolder.annotateRequiredParameter(it, style)
         }
     }
 

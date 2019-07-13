@@ -1,9 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -195,10 +192,7 @@ fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
     return null
 }
 
-/**
- * @see LatexPsiUtil.getAllChildren
- */
-fun PsiElement.allChildren(): List<PsiElement> = LatexPsiUtil.getAllChildren(this)
+fun PsiElement.allChildren(): Sequence<PsiElement> = SyntaxTraverser.psiTraverser().withRoot(this).asSequence()
 
 /**
  * @see LatexPsiUtil.getChildren
