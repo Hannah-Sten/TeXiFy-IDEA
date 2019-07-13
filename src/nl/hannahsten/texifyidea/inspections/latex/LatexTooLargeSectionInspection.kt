@@ -73,8 +73,8 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             }
 
             // If no command was found, find the end of the document.
-            val children = command.containingFile.childrenOfType(LatexEndCommand::class)
-            return if (children.isEmpty()) null else children.last()
+            val children = command.containingFile.childrenOfType<LatexEndCommand>()
+            return children.lastOrNull()
         }
     }
 
@@ -191,7 +191,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             val startIndex = label?.endOffset() ?: cmd.endOffset()
             val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
-            val endIndex = (nextCmd?.textOffset ?: document.textLength ?: return) - cmdIndent.length
+            val endIndex = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
             val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
 
 

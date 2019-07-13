@@ -61,6 +61,6 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
             return emptyArray()
         }
 
-        return entry.tags().map { BibtexStructureViewTagElement(it) }.toTypedArray()
+        return entry.tags().map { BibtexStructureViewTagElement(it) }.toList().toTypedArray()
     }
 }

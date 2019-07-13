@@ -18,7 +18,7 @@ open class BibtexStructureViewEntriesElement(val file: PsiFile) : StructureViewT
 
     val entriesPresentation: ItemPresentation = object : ItemPresentation {
 
-        override fun getLocationString() = file.childrenOfType(BibtexEntry::class).size.toString()
+        override fun getLocationString() = file.childrenOfType<BibtexEntry>().count().toString()
 
         override fun getPresentableText() = "entries"
 
@@ -41,6 +41,7 @@ open class BibtexStructureViewEntriesElement(val file: PsiFile) : StructureViewT
         val entries = file.childrenOfType(BibtexEntry::class)
         return entries
                 .map { BibtexStructureViewEntryElement(it) }
+                .toList()
                 .toTypedArray()
     }
 }

@@ -124,7 +124,7 @@ object SumatraConversation {
             throw TeXception("Connection to SumatraPDF was disrupted.", e)
         }
         finally {
-            conversation.disconnect()
+            conversation!!.disconnect()
         }
     }
 
