@@ -78,11 +78,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      */
     private fun getLastLabel(environment: PsiElement): LatexCommands? {
         val commands = environment.childrenOfType(LatexCommands::class).filter { it.name == "\\item" }
-        if (commands.isEmpty()) {
-            return null
-        }
-
-        return commands.last()
+        return commands.lastOrNull()
     }
 
     /**

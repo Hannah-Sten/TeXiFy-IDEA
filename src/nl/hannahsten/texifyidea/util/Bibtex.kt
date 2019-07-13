@@ -20,28 +20,22 @@ fun BibtexEntry.identifier(): String? = firstChildOfType(BibtexId::class)?.text?
 /**
  * Get all the tags in the entry.
  */
-fun BibtexEntry.tags(): Collection<BibtexTag> = childrenOfType(BibtexTag::class)
+fun BibtexEntry.tags(): Sequence<BibtexTag> = childrenOfType(BibtexTag::class)
 
 /**
  * Get all the key objects in the entry.
  */
-fun BibtexEntry.keys(): Collection<BibtexKey> = childrenOfType(BibtexKey::class)
+fun BibtexEntry.keys(): Sequence<BibtexKey> = childrenOfType(BibtexKey::class)
 
 /**
  * Get the first key in the entry, or `null` when there are no keys in the entry.
  */
-fun BibtexEntry.firstKey(): BibtexKey? {
-    val keys = keys()
-    if (keys.isEmpty()) {
-        return null
-    }
-    return keys.first()
-}
+fun BibtexEntry.firstKey(): BibtexKey? = keys().firstOrNull()
 
 /**
  * Get all the names of all entry's keys.
  */
-fun BibtexEntry.keyNames(): Collection<String> = keys().map { it.text }
+fun BibtexEntry.keyNames(): Sequence<String> = keys().map { it.text }
 
 /**
  * Checks if the entry is a @string.
@@ -86,14 +80,10 @@ fun BibtexContent.evaluate(): String {
         val quoted = string.quotedString
         val defined = string.definedString
 
-        if (braced != null) {
-            result.append(braced.evaluate())
-        }
-        else if (quoted != null) {
-            result.append(quoted.evaluate())
-        }
-        else if (defined != null) {
-            result.append(defined.evaluate())
+        when {
+            braced != null -> result.append(braced.evaluate())
+            quoted != null -> result.append(quoted.evaluate())
+            defined != null -> result.append(defined.evaluate())
         }
     }
 
@@ -127,11 +117,8 @@ fun BibtexDefinedString.evaluate(): String {
         }
 
         val tags = entry.tags()
-        if (tags.isEmpty()) {
-            continue
-        }
 
-        val tag = tags.first()
+        val tag = tags.firstOrNull() ?: continue
         val key = tag.keyName() ?: continue
         if (key != stringName) {
             continue

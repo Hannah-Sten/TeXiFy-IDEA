@@ -14,10 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.document
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
 /**
@@ -92,10 +89,12 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             var replacement = "~"
 
             // First check if there already is a tilde in the normal text before.
-            val texts = whitespace.prevSibling.childrenOfType(LatexNormalText::class)
-            if (!texts.isEmpty()) {
-                val text = texts.reversed().iterator().next()
-
+            val text = whitespace
+                    .prevSibling
+                    .childrenReversedWithLeaves()
+                    .filterIsInstance<LatexNormalText>()
+                    .firstOrNull()
+            if (text != null) {
                 // When there is a tilde, destroy the whitespace.
                 if (Magic.Pattern.endsWithNonBreakingSpace.matcher(text.text).find()) {
                     replacement = ""

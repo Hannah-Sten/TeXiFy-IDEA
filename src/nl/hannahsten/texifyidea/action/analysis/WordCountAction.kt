@@ -106,23 +106,20 @@ open class WordCountAction : AnAction(
                 .referencedFileSet()
                 .asSequence()
                 .filter { it.name.endsWith(".tex", ignoreCase = true) }
-                .flatMap { it.childrenOfType(LatexNormalText::class) }
+                .flatMap { it.childrenOfType<LatexNormalText>() }
 
-        val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
+        val bibliographies = baseFile.childrenOfType<LatexEnvironment>()
                 .filter {
-                    val children = it.childrenOfType(LatexBeginCommand::class)
-                    if (children.none()) {
-                        return@filter false
-                    }
+                    val children = it.childrenOfType<LatexBeginCommand>()
 
-                    val parameters = children.first().parameterList
-                    if (parameters.isEmpty()) {
-                        return@filter false
-                    }
+                    val parameters = children
+                            .firstOrNull()
+                            ?.childrenOfType<LatexParameter>()
+                            ?: return@filter false
 
-                    return@filter parameters[0].text == "{thebibliography}"
+                    return@filter parameters.firstOrNull()?.text == "{thebibliography}"
                 }
-        val bibliography = bibliographies.flatMap { it.childrenOfType(LatexNormalText::class) }
+        val bibliography = bibliographies.flatMap { it.childrenOfType<LatexNormalText>() }
 
         val (wordsNormal, charsNormal) = countWords(allNormalText)
         val (wordsBib, charsBib) = countWords(bibliography)
