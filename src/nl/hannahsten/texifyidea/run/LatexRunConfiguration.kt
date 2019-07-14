@@ -74,9 +74,9 @@ class LatexRunConfiguration constructor(project: Project,
     var isSkipBibtex = false
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
-    var isLastRunConfig = true // todo set to false if compile twice selected?
+    var isLastRunConfig = false
 
-    // Whether the run configuration has already been run or not
+    // Whether the run configuration has already been run or not, since it has been created
     var hasBeenRun = false
 
     var bibRunConfig: RunnerAndConfigurationSettings?

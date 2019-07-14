@@ -8,12 +8,12 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.Key
 
 /**
- * Compile LaTeX (again) once a process is terminated.
+ * Compile LaTeX (again) once a process is terminated and initiate forward search.
  *
  * @author Thomas Schouten
  */
 class RunLatexListener(
-        private val latexConfiguration: LatexRunConfiguration,
+        private val runConfig: LatexRunConfiguration,
         private val environment: ExecutionEnvironment
 ) : ProcessListener {
 
@@ -22,9 +22,11 @@ class RunLatexListener(
             return
         }
 
-        val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration)
+        val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(runConfig)
                     ?: return
+        runConfig.isLastRunConfig = true
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+        runConfig.isLastRunConfig = false
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {

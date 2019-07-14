@@ -100,6 +100,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 compileTwice!!.isVisible = true
             }
             compileTwice!!.isSelected = runConfiguration.compileTwice
+
+            // If we need to compile twice, make sure the LatexCommandLineState knows
+            if (runConfiguration.compileTwice) {
+                runConfiguration.isLastRunConfig = false
+            }
         }
 
         // Reset output format.
@@ -181,6 +186,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             else {
                 compileTwice!!.isVisible = true
                 runConfiguration.compileTwice = compileTwice!!.isSelected
+            }
+
+            // If we need to compile twice, make sure the LatexCommandLineState knows
+            if (runConfiguration.compileTwice) {
+                runConfiguration.isLastRunConfig = false
             }
         }
 

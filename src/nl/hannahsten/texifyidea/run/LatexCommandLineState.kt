@@ -49,15 +49,22 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 runConfig.generateBibRunConfig()
             }
 
-            // If we need to compile twice, schedule the second compile
-            if (runConfig.bibRunConfig == null && runConfig.compileTwice) {
-                handler.addProcessListener(RunLatexListener(runConfig, environment))
-                return handler
-            }
-
             runConfig.hasBeenRun = true
         }
 
+        // If there is no bibtex involved and we don't need to compile twice, then this is the last compile
+        if (runConfig.bibRunConfig == null) {
+            if (!runConfig.compileTwice) {
+                runConfig.isLastRunConfig = true
+            }
+
+            // If we need to compile twice but we don't use bibtex, schedule the second compile if this is the first compile
+            if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
+                handler.addProcessListener(RunLatexListener(runConfig, environment))
+                return handler
+            }
+        }
+        
         runConfig.bibRunConfig?.let {
             if (runConfig.isSkipBibtex) {
                 return@let
