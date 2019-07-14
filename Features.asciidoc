@@ -138,7 +138,9 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
 * link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
 * Choose LaTeX source file to compile
+* (Windows) Option to disable use of auxil/ directory
 * Option to disable use of out/ directory
+* Option to always compile documents twice (e.g. to fix references)
 * Choose output format
 * Choose BibTeX run configuration
 * Other tasks to run before the run configuration, including other run configurations or external tools
