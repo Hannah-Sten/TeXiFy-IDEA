@@ -15,7 +15,7 @@ object PackageUtils {
     /**
      * List containing all the packages that are available on CTAN.
      *
-     * This is a static list for now, will be made dynamic (index CTAN programatically) in the future.
+     * This is a static list for now, will be made dynamic (index CTAN programmatically) in the future.
      */
     val CTAN_PACKAGE_NAMES: List<String> = javaClass
             .getResourceAsStream("/nl/hannahsten/texifyidea/packages/package.list")
@@ -24,7 +24,8 @@ object PackageUtils {
             .split(";")
             .toList()
 
-    private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
+    /** Commands which can include packages in optional or required arguments. **/
+    private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
     private val TIKZ_IMPORT_COMMANDS = setOf("\\usetikzlibrary")
     private val PGF_IMPORT_COMMANDS = setOf("\\usepgfplotslibrary")
 
@@ -210,6 +211,8 @@ object PackageUtils {
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
+     *
+     * Note that not all elements returned may be valid package names.
      */
     private fun <T : MutableCollection<String>> getPackagesFromCommands(
         commands: Collection<LatexCommands>,
@@ -221,20 +224,23 @@ object PackageUtils {
                 continue
             }
 
-            val list = cmd.requiredParameters
-            if (list.isEmpty()) {
-                continue
-            }
+            // Packages can be loaded both in optional and required parameters
+            for (list in setOf(cmd.requiredParameters, cmd.optionalParameters)) {
 
-            val packageName = list[0]
+                if (list.isEmpty()) {
+                    continue
+                }
 
-            // Multiple includes.
-            if (packageName.contains(",")) {
-                initial.addAll(packageName.split(",").dropLastWhile(String::isNullOrEmpty))
-            }
-            // Single include.
-            else {
-                initial.add(packageName)
+                val packageName = list[0]
+
+                // Multiple includes.
+                if (packageName.contains(",")) {
+                    initial.addAll(packageName.split(",").dropLastWhile(String::isNullOrEmpty))
+                }
+                // Single include.
+                else {
+                    initial.add(packageName)
+                }
             }
         }
 
