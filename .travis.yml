@@ -3,7 +3,7 @@ jdk: oraclejdk8
 dist: trusty
 sudo: false
 script:
-  - bash gradlew buildPlugin
+  - bash gradlew check
 cache:
   directories:
     - $HOME/.gradle/caches/
