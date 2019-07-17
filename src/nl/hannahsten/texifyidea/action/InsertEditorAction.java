@@ -52,7 +52,7 @@ public class InsertEditorAction extends EditorAction {
         final int start = selection.getSelectionStart();
         final int end = selection.getSelectionEnd();
 
-        runWriteAction(project, () -> insert(document, start, end, editor.getCaretModel()));
+        runWriteAction(project, { insert(document, start, end, editor.getCaretModel()) } );
     }
 
     private void insert(Document document, int start, int end, CaretModel caretModel) {
