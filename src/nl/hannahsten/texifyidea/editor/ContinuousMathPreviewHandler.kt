@@ -9,21 +9,22 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.action.preview.ShowEquationPreview
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.openedEditor
 import java.util.*
 
 class ContinuousMathPreviewHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
 
-        // Only do this for latex files and if the option is enabled
-        // todo only in math
-        if (file.fileType != LatexFileType || !TexifySettings.getInstance().continuousMathPreview) {
-            return super.charTyped(char, project, editor, file)
-        }
+        run {
+            // Only do this for latex files and if the option is enabled
+            // todo only in math
+            if (file.fileType != LatexFileType || !TexifySettings.getInstance().continuousMathPreview) {
+                return@run
+            }
 
-        val textEditor = getTextEditor(project, editor) ?: return super.charTyped(char, project, editor, file)
-        ShowEquationPreview().actionPerformed(file.virtualFile, project, textEditor)
+            val textEditor = getTextEditor(project, editor) ?: return@run
+            ShowEquationPreview().actionPerformed(file.virtualFile, project, textEditor)
+        }
 
         return super.charTyped(char, project, editor, file)
     }
