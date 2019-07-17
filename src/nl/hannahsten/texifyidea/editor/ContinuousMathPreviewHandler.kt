@@ -13,6 +13,7 @@ import java.util.*
 
 class ContinuousMathPreviewHandler : TypedHandlerDelegate() {
 
+    // todo also charRemoved
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
 
         run {
