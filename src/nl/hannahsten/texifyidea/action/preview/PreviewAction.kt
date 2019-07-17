@@ -86,11 +86,8 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
 
             newContent.putUserData(key, updater)
             updater.compilePreview(element.text)
-
-            // Show and focus the window (only when we created a new one)
-            toolWindow.activate(null)
-
-            // todo refocus
         }
+        // Show but not focus the window
+        toolWindow.activate(null, false)
     }
 }

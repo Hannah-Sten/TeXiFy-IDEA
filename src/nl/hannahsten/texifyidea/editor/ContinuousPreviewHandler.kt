@@ -12,7 +12,9 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
 
-// todo create setting UI
+/**
+ * On every added (or deleted, see [ContinuousPreviewBackspacehandler]) character, initiate a preview.
+ */
 class ContinuousPreviewHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {

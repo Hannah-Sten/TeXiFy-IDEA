@@ -27,11 +27,11 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
         CSQUOTES // Context Sensitive quotes from the csquotes package
     }
 
-    var continuousPreview = true
     var automaticSoftWraps = false
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
+    var continuousPreview = false
 
     // Index of selected combobox item
     var automaticQuoteReplacement = QuoteReplacement.NONE
