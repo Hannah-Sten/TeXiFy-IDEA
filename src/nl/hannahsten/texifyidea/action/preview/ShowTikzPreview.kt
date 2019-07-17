@@ -48,7 +48,7 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         }
     }
 
-    private fun findTikzEnvironment(innerElement: PsiElement): PsiElement? {
+    fun findTikzEnvironment(innerElement: PsiElement): PsiElement? {
         // If the selected element is already a tikz env, we're good.
         if (innerElement is LatexEnvironment && innerElement.isTikz()) return innerElement
 

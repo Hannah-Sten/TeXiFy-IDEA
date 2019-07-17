@@ -365,7 +365,8 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.UpDownAutoBracket"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.LatexQuoteInsertHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ContinuousMathPreviewHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewBackspacehandler" />
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>

@@ -99,7 +99,7 @@ public abstract class EditorAction extends AnAction {
     }
 
     @Nullable
-    private TextEditor getTextEditor(Project project, FileEditor fileEditor) {
+    public TextEditor getTextEditor(Project project, FileEditor fileEditor) {
         if (fileEditor instanceof TextEditor) {
             return (TextEditor)fileEditor;
         }

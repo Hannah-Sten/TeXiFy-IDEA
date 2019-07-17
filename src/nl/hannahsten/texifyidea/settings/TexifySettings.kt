@@ -27,7 +27,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
         CSQUOTES // Context Sensitive quotes from the csquotes package
     }
 
-    var continuousMathPreview = true
+    var continuousPreview = true
     var automaticSoftWraps = false
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
