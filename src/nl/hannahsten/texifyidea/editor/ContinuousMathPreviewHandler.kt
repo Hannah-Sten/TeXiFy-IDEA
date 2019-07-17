@@ -22,14 +22,8 @@ class ContinuousMathPreviewHandler : TypedHandlerDelegate() {
             return super.charTyped(char, project, editor, file)
         }
 
-        // todo call action
-        val textEditor = getTextEditor(project, editor)
-        if (textEditor == null) {
-            println("null!")
-        }
-        else {
-             ShowEquationPreview().actionPerformed(file.virtualFile, project, textEditor)
-        }
+        val textEditor = getTextEditor(project, editor) ?: return super.charTyped(char, project, editor, file)
+        ShowEquationPreview().actionPerformed(file.virtualFile, project, textEditor)
 
         return super.charTyped(char, project, editor, file)
     }

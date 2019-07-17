@@ -38,7 +38,7 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
      * This function also starts the creation and compilation of the temporary preview document, and will then
      * either display the preview, or if something failed, the error produced.
      */
-    fun setPreviewCode(previewCode: String) {
+    fun compilePreview(previewCode: String) {
         previewForm.setEquation(previewCode)
 
         // First define the function that actually does stuff in a temp folder. The usual temp directory might not be
