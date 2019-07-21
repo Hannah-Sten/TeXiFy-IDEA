@@ -185,8 +185,10 @@
                class="nl.hannahsten.texifyidea.action.group.LatexToolsMenuGroup">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
-            <!-- Clear auxiliary files -->
+            <!-- Clear files -->
             <action class="nl.hannahsten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+            </action>
+            <action class="nl.hannahsten.texifyidea.action.ClearGeneratedFiles" id="texify.ClearGeneratedFiles" text="Clear Generated Files">
             </action>
 
             <separator/>
