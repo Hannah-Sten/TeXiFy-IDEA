@@ -29,3 +29,15 @@ Searches the entire project, i.e., every folder in the project module, for auxil
 aux, bbl, bcf, brf, fls, idx, ind, lot, lot, nav, out, snm, toc
 
 If auxiliary files in a certain directory do not get deleted, make sure you mark that directory as a source directory by right-clicking on it and selecting menu:Mark Directory as[Sources Root].
+
+=== Clear generated files
+
+_Since b0.6.7_
+
+menu:Tools[LaTeX > Clear Generated Files]
+
+[NOTE]
+
+Be careful, you might not be able to fully undo this operation!
+
+This works the same as clearing auxiliary files, but will also delete other generated files like pdfs.
