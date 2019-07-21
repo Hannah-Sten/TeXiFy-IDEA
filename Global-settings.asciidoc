@@ -95,3 +95,12 @@ For more advantages, see https://tex.stackexchange.com/questions/39285/whats-the
 In some cases, certain LaTeX can be valid when using one compiler but incorrect when using another.
 For these cases, you can change the compiler to which your LaTeX is validated.
 The inspections for which this is relevant have a quickfix which opens this settings page.
+
+[#continuous-preview]
+== Option to enable continuous preview of math and TikZ environments
+_Since b0.6.7_
+
+When enabled and you are typing in a math environment (for example inline math `$..$` or display math `\[ ... \]`) then a preview window will pop up which will show how the math will look like. The same holds for `tikzpicture` environments.
+
+For more information about the preview, see link:Preview#Equation-preview[Equation preview].
+For continuous compilation of the complete document, see link:Compilers#Latexmk[Latexmk].]
