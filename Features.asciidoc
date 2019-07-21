@@ -128,8 +128,13 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#brace-insertion[Option to disable automatic brace insertion around text in subscript and superscript]
 * link:Global-settings#item-insertion[Option to disable auto-insertion of \item]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
-* link:Global-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 * link:Global-settings#continuous-preview[Option to enable continuous preview of math and TikZ environments]
+
+=== Project settings
+
+These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy > Project Settings] and can be configured per project.
+
+* link:Global-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 
 === Run configuration settings
 * Separate BibTeX run configuration
