@@ -61,9 +61,9 @@ toc::[]
 * Links (in comments) are clickable
 
 == Preview
-* Unicode math preview
-* Equation preview
-* TikZ preview
+* link:Preview#Unicode-math-preview[Unicode math preview]
+* link:Preview#Equation-preview[Equation preview]
+* link:Preview#TikZ-preview[TikZ preview]
 
 == Navigation
 * link:++Structure view++[Structure view with filters]
@@ -129,6 +129,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#item-insertion[Option to disable auto-insertion of \item]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
 * link:Global-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
+* link:Global-settings#continuous-preview[Option to enable continuous preview of math and TikZ environments]
 
 === Run configuration settings
 * Separate BibTeX run configuration
