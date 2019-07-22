@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.Location
 import com.intellij.execution.actions.ConfigurationContext

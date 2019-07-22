@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.bibtex
 
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
@@ -7,6 +7,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.Key
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 /**
  * @author Sten Wessel

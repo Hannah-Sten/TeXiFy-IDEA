@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.openapi.project.Project

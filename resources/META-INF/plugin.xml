@@ -380,9 +380,9 @@
         <runLineMarkerContributor language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>
 
         <!-- Run configurations -->
-        <configurationType implementation="nl.hannahsten.texifyidea.run.LatexRunConfigurationType"/>
-        <configurationType implementation="nl.hannahsten.texifyidea.run.BibtexRunConfigurationType"/>
-        <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.LatexRunConfigurationProducer"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType"/>
+        <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->
         <annotator language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexAnnotator"/>

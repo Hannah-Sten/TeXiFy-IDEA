@@ -4,7 +4,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 /**
  * @author Sten Wessel

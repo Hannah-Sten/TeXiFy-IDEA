@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
@@ -12,6 +12,9 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.run.OpenPdfViewerListener
+import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
 import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
@@ -36,7 +39,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         createOutDirs(mainFile)
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
-        val handler: ProcessHandler = KillableProcessHandler(commandLine)
+        val handler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
