@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
 import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
+import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.*
@@ -67,6 +68,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 return handler
             }
         }
+
+        handler.addProcessListener(RunMakeindexListener(runConfig, environment))
         
         runConfig.bibRunConfig?.let {
             if (runConfig.isSkipBibtex) {

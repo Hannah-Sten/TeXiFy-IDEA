@@ -12,13 +12,12 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 class MakeindexCommandLineState(
         environment: ExecutionEnvironment,
-        private val makeindexRunConfig: MakeindexRunConfiguration
+        private val runConfig: LatexRunConfiguration
 ) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val project = environment.project
-        val runConfig = makeindexRunConfig.latexRunConfig?.configuration as? LatexRunConfiguration ?: throw ExecutionException("Cannot get LaTeX run configuration.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file to compile is not found or missing.")
 
         fun findChild(name: String) = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(name)

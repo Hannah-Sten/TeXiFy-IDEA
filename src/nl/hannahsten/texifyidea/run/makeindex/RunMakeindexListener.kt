@@ -6,7 +6,6 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.Key
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
@@ -14,7 +13,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
  * Run makeindex and then latex again (twice).
  */
 class RunMakeindexListener(
-        private val runConfig: LatexRunConfiguration,
+        private val latexRunConfig: LatexRunConfiguration,
         private val environment: ExecutionEnvironment
 ) : ProcessListener {
 
@@ -30,10 +29,14 @@ class RunMakeindexListener(
 
         val makeindexRunConfiguration = makeindexSettings.configuration as MakeindexRunConfiguration
 
-        makeindexRunConfiguration.latexRunConfig = makeindexSettings
+        makeindexRunConfiguration.latexRunConfiguration = latexRunConfig
 
         // Run makeindex
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, makeindexSettings, null)
+
+        // todo copy .ind file
+
+        // todo run latex twice
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {}
