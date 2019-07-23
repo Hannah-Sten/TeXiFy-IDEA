@@ -30,7 +30,7 @@ class MakeindexCommandLineState(
         }
 
         val command = listOf("makeindex", mainFile.nameWithoutExtension)
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(workDir.toString())
+        val commandLine = GeneralCommandLine(command).withWorkDirectory(workDir?.path)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 
