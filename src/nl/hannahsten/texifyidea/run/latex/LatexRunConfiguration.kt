@@ -74,10 +74,10 @@ class LatexRunConfiguration constructor(project: Project,
     var compileTwice = false
     var outputFormat: Format = Format.PDF
     private var bibRunConfigId = ""
-    var isSkipBibtex = false
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
+    var isFirstRunConfig = true
 
     // Whether the run configuration has already been run or not, since it has been created
     var hasBeenRun = false
@@ -319,6 +319,23 @@ class LatexRunConfiguration constructor(project: Project,
 
     fun setDefaultOutputFormat() {
         outputFormat = Format.PDF
+    }
+
+    /**
+     * Find the directory where auxiliary files will be placed, depending on the run config settings.
+     *
+     * @return The auxil folder when used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
+     */
+    fun getAuxilDirectory(): VirtualFile? {
+        val mainFile = this.mainFile ?: return null
+
+        fun findChild(name: String) = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(name)
+
+        return when {
+            hasAuxiliaryDirectories -> findChild("auxil")
+            hasOutputDirectories -> findChild("out")
+            else -> findChild(mainFile.parent.name)
+        }
     }
 
     fun setSuggestedName() {

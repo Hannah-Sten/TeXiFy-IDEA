@@ -21,5 +21,11 @@ class MakeindexRunConfiguration(
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = throw NotImplementedError()
 
-    override fun isGeneratedName(): Boolean = throw NotImplementedError()
+    override fun isGeneratedName() = name == suggestedName()
+
+    override fun suggestedName() = "makeindex"
+
+    fun setSuggestedName() {
+        name = suggestedName()
+    }
 }

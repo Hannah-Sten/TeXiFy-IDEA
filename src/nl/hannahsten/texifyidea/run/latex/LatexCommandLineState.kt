@@ -69,10 +69,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
 
-        handler.addProcessListener(RunMakeindexListener(runConfig, environment))
+        // todo only in the right conditions (settings, bibtex, packages)
+        if (runConfig.isFirstRunConfig) {
+            handler.addProcessListener(RunMakeindexListener(runConfig, environment))
+        }
         
         runConfig.bibRunConfig?.let {
-            if (runConfig.isSkipBibtex) {
+            if (!runConfig.isFirstRunConfig) {
                 return@let
             }
 
@@ -80,17 +83,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             (it.configuration as? BibtexRunConfiguration)?.apply {
                 this.mainFile = mainFile
                 // Check if the aux, out, or src folder should be used as bib working dir.
-                when {
-                    runConfig.hasAuxiliaryDirectories -> {
-                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
-                    }
-                    runConfig.hasOutputDirectories -> {
-                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
-                    }
-                    else -> {
-                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(mainFile.parent.name)
-                    }
-                }
+                this.bibWorkingDir = runConfig.getAuxilDirectory()
             }
 
             handler.addProcessListener(RunBibtexListener(it, runConfig, environment))

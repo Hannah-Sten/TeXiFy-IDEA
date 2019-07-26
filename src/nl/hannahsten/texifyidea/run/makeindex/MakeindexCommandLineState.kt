@@ -7,7 +7,6 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.roots.ProjectRootManager
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 class MakeindexCommandLineState(
@@ -17,17 +16,8 @@ class MakeindexCommandLineState(
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
-        val project = environment.project
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file to compile is not found or missing.")
-
-        fun findChild(name: String) = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(name)
-
-        // Find working directory
-        val workDir = when {
-            runConfig.hasAuxiliaryDirectories -> findChild("auxil")
-            runConfig.hasOutputDirectories -> findChild("out")
-            else -> findChild(mainFile.parent.name)
-        }
+        val workDir = runConfig.getAuxilDirectory()
 
         val command = listOf("makeindex", mainFile.nameWithoutExtension)
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workDir?.path)
