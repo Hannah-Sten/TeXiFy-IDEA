@@ -1,5 +1,5 @@
-[![Travis (.org)](https://img.shields.io/travis/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://travis-ci.org/Ruben-Sten/TeXiFy-IDEA)
-[![GitHub release](https://img.shields.io/github/release/Ruben-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://github.com/Ruben-Sten/TeXiFy-IDEA/releases)
+[![Travis (.org)](https://img.shields.io/travis/Hannah-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://travis-ci.org/Hannah-Sten/TeXiFy-IDEA)
+[![Version](https://img.shields.io/jetbrains/plugin/v/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
 [![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/RubenSchellekens)
@@ -15,7 +15,7 @@ This plugin adds the tools to make creating LaTeX documents a breeze. We are cur
 ## Feedback and support
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
 1. Live chat via [gitter](https://gitter.im/TeXiFy-IDEA) (you can login with your GitHub account). Gitter also has a nice app, we use it to get notified of new activity.
-2. [Issues](https://github.com/Ruben-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, user support, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advice using the gitter.
+2. [Issues](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues). These may be bug reports, feature requests, user support, etc. Just generally anything you have a problem with/suggestion for. For general feedback we advice using the gitter.
 
 Please bear in mind that this is just a side project for us. It might take a while to fully process your feedback. We try our best :3
 
@@ -51,7 +51,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Toggle star action
 * Words of encouragement
 
-A more extensive (but not complete) list can be found in the [Wiki](https://github.com/Ruben-Sten/TeXiFy-IDEA/wiki/Features).
+A more extensive (but not complete) list can be found in the [Wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features).
 
 ## <a name="installation-instructions">Installation instructions: installing IntelliJ and the TeXiFy-IDEA plugin</a>
 
@@ -226,7 +226,7 @@ More detailed information is at https://www.jetbrains.com/help/idea/managing-plu
 
 It is assumed that git, IntelliJ, java and LaTeX are installed. If not, try the normal [installation instructions](#installation-instructions) first.
 * Make a new project from version control if you don't have it yet downloaded, or from existing sources if you have.
-* On the GitHub [home page](https://github.com/Ruben-Sten/TeXiFy-IDEA) of TeXiFy click 'clone or download' and copy the url to Git Repository Url.
+* On the GitHub [home page](https://github.com/Hannah-Sten/TeXiFy-IDEA) of TeXiFy click 'clone or download' and copy the url to Git Repository Url.
 * If the project opens and you get a popup 'Import Gradle project', click that.
 * If you are prompted to open the `build.gradle` file, do so.
 * Select 'Use auto-import'.
