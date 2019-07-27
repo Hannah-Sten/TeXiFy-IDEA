@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.ui.tablecreationdialog
+package nl.hannahsten.texifyidea.ui.tablecreationdialog
 
 import java.util.*
 import javax.swing.table.DefaultTableModel

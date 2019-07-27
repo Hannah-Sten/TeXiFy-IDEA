@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.ui.tablecreationdialog
+package nl.hannahsten.texifyidea.ui.tablecreationdialog
 
 /**
  * @author Abby Berkers

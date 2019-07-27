@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.action.tablewizard
+package nl.hannahsten.texifyidea.action.tablewizard
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -6,11 +6,11 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
-import nl.rubensten.texifyidea.action.insert.InsertTable
-import nl.rubensten.texifyidea.lang.Package
-import nl.rubensten.texifyidea.ui.tablecreationdialog.ColumnType
-import nl.rubensten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
-import nl.rubensten.texifyidea.util.*
+import nl.hannahsten.texifyidea.action.insert.InsertTable
+import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
+import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
 /**

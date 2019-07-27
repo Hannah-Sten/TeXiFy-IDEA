@@ -1,7 +1,7 @@
-package nl.rubensten.texifyidea.action.insert
+package nl.hannahsten.texifyidea.action.insert
 
-import nl.rubensten.texifyidea.TexifyIcons
-import nl.rubensten.texifyidea.action.InsertEditorAction
+import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.action.InsertEditorAction
 
 class InsertTable(tableAsString: String? = "") :
         InsertEditorAction("Table", TexifyIcons.STATS, tableAsString, "") // The icon is never used.

@@ -1,4 +1,4 @@
-package nl.rubensten.texifyidea.ui.tablecreationdialog
+package nl.hannahsten.texifyidea.ui.tablecreationdialog
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
@@ -6,7 +6,7 @@ import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
-import nl.rubensten.texifyidea.action.tablewizard.TableInformation
+import nl.hannahsten.texifyidea.action.tablewizard.TableInformation
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ActionEvent
