@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Magic.Package.index
 import java.io.File
 
 /**
@@ -69,11 +70,27 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
 
-        // todo only in the right conditions (settings, bibtex, packages)
         if (runConfig.isFirstRunConfig) {
-            handler.addProcessListener(RunMakeindexListener(runConfig, environment))
+            // todo settings
+            // todo does it work with compileTwice?
+
+            // If no index package is used, we assume we won't have to run makeindex
+            val includedPackages = runConfig.mainFile
+                    ?.psiFile(runConfig.project)
+                    ?.includedPackages()
+                    ?: setOf()
+            val usesIndexPackage = includedPackages.intersect(index).isNotEmpty()
+
+            if (usesIndexPackage) {
+                // Some packages do handle makeindex themselves
+                // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
+                val usesAuxDir = runConfig.hasAuxiliaryDirectories || runConfig.hasOutputDirectories
+                if (!includedPackages.contains("imakeidx") || usesAuxDir) {
+                    handler.addProcessListener(RunMakeindexListener(runConfig, environment))
+                }
+            }
         }
-        
+
         runConfig.bibRunConfig?.let {
             if (!runConfig.isFirstRunConfig) {
                 return@let

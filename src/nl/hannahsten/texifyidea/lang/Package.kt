@@ -21,6 +21,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val FONTENC = Package("fontenc")
         @JvmField val GRAPHICX = Package("graphicx")
         @JvmField val HYPERREF = Package("hyperref")
+        @JvmField val IMAKEIDX = Package("imakeidx")
         @JvmField val INPUTENC = Package("inputenc")
         @JvmField val LATEXSYMB = Package("latexsymb")
         @JvmField val LUACODE = Package("luacode")

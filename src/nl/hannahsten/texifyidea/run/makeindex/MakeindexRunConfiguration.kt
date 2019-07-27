@@ -7,6 +7,9 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
+/**
+ * Run configuration for running the makeindex tool.
+ */
 class MakeindexRunConfiguration(
         project: Project,
         factory: ConfigurationFactory,

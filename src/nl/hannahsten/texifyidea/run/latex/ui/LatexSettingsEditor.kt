@@ -11,12 +11,15 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.ToggleActionButton
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.TexifyIcons.LATEX_FILE
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.util.Magic
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -37,6 +40,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private var auxDir: JBCheckBox? = null
     private var outDir: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
+    private var makeindex: ToggleActionButton? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: BibliographyPanel
@@ -255,6 +259,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compileTwice = JBCheckBox("Always compile twice")
         compileTwice!!.isSelected = false
         panel.add(compileTwice)
+
+        makeindex = ToggleActionButton("text", LATEX_FILE)
 
         // Output format.
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler

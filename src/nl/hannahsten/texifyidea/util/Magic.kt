@@ -428,6 +428,13 @@ object Magic {
                 LatexPackage.INPUTENC.with("utf8"),
                 LatexPackage.FONTENC.with("T1")
         )
+
+        /**
+         * All packages which provide an index.
+         */
+        val index = hashSetOf(
+                "makeidx", "multind", "index", "splitidx", "splitindex", "imakeidx", "hvindex", "idxlayout", "repeatindex", "indextools"
+        )
     }
 
     /**

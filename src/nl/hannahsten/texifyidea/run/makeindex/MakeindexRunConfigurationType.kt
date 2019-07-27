@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import javax.swing.Icon
 
 /**
- * todo
+ * Type of [MakeindexRunConfiguration].
  */
 class MakeindexRunConfigurationType : ConfigurationType {
 
