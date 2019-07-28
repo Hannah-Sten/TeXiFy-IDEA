@@ -2,9 +2,9 @@
 
 Have a look at the https://github.com/Ruben-Sten/TeXiFy-IDEA#faq[FAQ] in the readme as well.
 
-== The equation/TikZ preview is not working.
+== The equation/TikZ preview is not working
 
-See the readme.
+Make sure you have installed the dependencies as described in link:Preview#Equation-preview[the Preview page].
 
 If that doesn't help and you can run Kotlin programs, you can run the program below and report the output in your (new) issue.
 
