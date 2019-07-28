@@ -82,8 +82,9 @@ toc::[]
 * Opens system default pdf viewer when no custom or supported pdf viewer is known
 * The pdf will appear in a separate out/ directory to avoid cluttering the source directory
 * Auxiliary files will be put in a separate auxil/ directory on Windows
+* link:Makeindex[Automatically runs makeindex when needed, also when auxil/ or out/ is used]
 * Custom compiler path
-* Option to choose between PDF or DVI output
+* Option to choose different output formats like PDF and DVI
 
 == BibTeX
 * Syntax highlighting
