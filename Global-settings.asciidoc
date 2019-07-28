@@ -103,4 +103,6 @@ _Since b0.6.7_
 When enabled and you are typing in a math environment (for example inline math `$..$` or display math `\[ ... \]`) then a preview window will pop up which will show how the math will look like. The same holds for `tikzpicture` environments.
 
 For more information about the preview and how to install dependencies, see link:Preview#Equation-preview[Equation preview].
-For continuous compilation of the complete document, see link:Compilers#Latexmk[Latexmk].]
+For continuous compilation of the complete document, see link:Compilers#Latexmk[Latexmk].
+
+image::continuous-preview.gif[Continuous preview]
