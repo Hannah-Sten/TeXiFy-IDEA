@@ -57,13 +57,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runConfig.hasBeenRun = true
         }
 
-        // If there is no bibtex involved and we don't need to compile twice, then this is the last compile
-        if (runConfig.bibRunConfig == null) {
+        // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
+        if (runConfig.bibRunConfig == null && !runConfig.isMakeindexEnabled) {
             if (!runConfig.compileTwice) {
                 runConfig.isLastRunConfig = true
             }
 
-            // If we need to compile twice but we don't use bibtex, schedule the second compile if this is the first compile
+            // Schedule the second compile only if this is the first compile
             if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
                 handler.addProcessListener(RunLatexListener(runConfig, environment))
                 return handler
@@ -71,14 +71,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         if (runConfig.isFirstRunConfig && runConfig.isMakeindexEnabled) {
-            // todo does it work with compileTwice?
-
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = runConfig.mainFile
                     ?.psiFile(runConfig.project)
                     ?.includedPackages()
                     ?: setOf()
-            val usesIndexPackage = includedPackages.intersect(index).isNotEmpty()
+            val usesIndexPackage = includedPackages.intersect(index.asIterable()).isNotEmpty()
 
             if (usesIndexPackage) {
                 // Some packages do handle makeindex themselves
