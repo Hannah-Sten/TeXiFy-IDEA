@@ -8,7 +8,9 @@ See the readme.
 
 If that doesn't help and you can run Kotlin programs, you can run the program below and report the output in your (new) issue.
 
-+++ <details><summary>`preview.kt`</summary> +++
++++ <details><summary> +++
+`preview.kt`
++++ </summary> +++
 
 [source,kotlin]
 ----
