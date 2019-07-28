@@ -45,6 +45,7 @@ class LatexRunConfiguration constructor(project: Project,
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
         private const val COMPILE_TWICE = "compile-twice"
+        private const val MAKEINDEX = "makeindex"
         private const val OUTPUT_FORMAT = "output-format"
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
@@ -72,6 +73,7 @@ class LatexRunConfiguration constructor(project: Project,
     var hasAuxiliaryDirectories = LatexDistribution.isMiktex
     var hasOutputDirectories = true
     var compileTwice = false
+    var isMakeindexEnabled = true
     var outputFormat: Format = Format.PDF
     private var bibRunConfigId = ""
 
@@ -173,6 +175,15 @@ class LatexRunConfiguration constructor(project: Project,
             this.compileTwice = compileTwiceBoolean.toBoolean()
         }
 
+        // Read whether to handle makeindex
+        val makeindexString = parent.getChildText(MAKEINDEX)
+        if (makeindexString == null) {
+            this.isMakeindexEnabled = true
+        }
+        else {
+            this.isMakeindexEnabled = makeindexString.toBoolean()
+        }
+
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
@@ -247,6 +258,11 @@ class LatexRunConfiguration constructor(project: Project,
         val compileTwiceElt = Element(COMPILE_TWICE)
         compileTwiceElt.text = compileTwice.toString()
         parent.addContent(compileTwiceElt)
+
+        // Write whether to handle makeindex
+        val makeindexElt = Element(MAKEINDEX)
+        makeindexElt.text = isMakeindexEnabled.toString()
+        parent.addContent(makeindexElt)
 
         // Write output format.
         val outputFormatElt = Element(OUTPUT_FORMAT)

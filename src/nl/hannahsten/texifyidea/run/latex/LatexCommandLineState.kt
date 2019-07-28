@@ -70,8 +70,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
 
-        if (runConfig.isFirstRunConfig) {
-            // todo settings
+        if (runConfig.isFirstRunConfig && runConfig.isMakeindexEnabled) {
             // todo does it work with compileTwice?
 
             // If no index package is used, we assume we won't have to run makeindex

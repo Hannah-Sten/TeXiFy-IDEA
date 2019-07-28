@@ -40,7 +40,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private var auxDir: JBCheckBox? = null
     private var outDir: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
-    private var makeindex: ToggleActionButton? = null
+    private var makeindex: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: BibliographyPanel
@@ -110,6 +110,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             if (runConfiguration.compileTwice) {
                 runConfiguration.isLastRunConfig = false
             }
+        }
+
+        // Reset whether to handle makeindex
+        if (makeindex != null) {
+            makeindex!!.isSelected = runConfiguration.isMakeindexEnabled
         }
 
         // Reset output format.
@@ -199,6 +204,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             }
         }
 
+        // Apply whether to handle makeindex
+        if (makeindex != null) {
+            runConfiguration.isMakeindexEnabled = makeindex!!.isSelected
+        }
+
         // Apply output format.
         val format = outputFormat.component.selectedItem as Format?
         runConfiguration.outputFormat = format ?: Format.PDF
@@ -260,7 +270,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compileTwice!!.isSelected = false
         panel.add(compileTwice)
 
-        makeindex = ToggleActionButton("text", LATEX_FILE)
+        makeindex = JBCheckBox("Enable automatic index creation using makeindex")
+        makeindex!!.isSelected = true
+        panel.add(makeindex)
 
         // Output format.
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler
