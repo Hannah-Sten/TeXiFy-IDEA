@@ -10,7 +10,7 @@ If that doesn't help and you can run Kotlin programs, you can run the program be
 
 +++ <details><summary> +++
 `preview.kt`
-+++ </summary> +++
++++ </summary><div> +++
 
 [source,kotlin]
 ----
@@ -152,7 +152,7 @@ $previewCode
 }
 ----
 
-+++ </details> +++
++++ </div></details> +++
 
 == Error running 'main': Cannot run program "pdflatex"
 
