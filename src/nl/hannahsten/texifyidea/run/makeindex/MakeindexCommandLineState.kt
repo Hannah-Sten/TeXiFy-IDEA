@@ -9,6 +9,9 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
+/**
+ * Run makeindex.
+ */
 class MakeindexCommandLineState(
         environment: ExecutionEnvironment,
         private val runConfig: LatexRunConfiguration

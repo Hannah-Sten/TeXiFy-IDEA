@@ -430,7 +430,7 @@ object Magic {
         )
 
         /**
-         * All packages which provide an index.
+         * All known packages which provide an index.
          */
         val index = hashSetOf(
                 "makeidx", "multind", "index", "splitidx", "splitindex", "imakeidx", "hvindex", "idxlayout", "repeatindex", "indextools"
