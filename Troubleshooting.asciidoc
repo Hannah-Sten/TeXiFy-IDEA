@@ -167,6 +167,10 @@ Make sure you have followed all the installation instructions at https://github.
 
 == My index is not generated correctly
 
+If you have TeXiFy version 0.6.7 or later, make sure that makeindex is run by TeXiFy, so you should see a run window called makeindex with the output.
+See link:Makeindex[Makeindex].
+
+=== Version 0.6.6 or older
 Note that you _have_ to disable both the `auxil/` (in case of MiKTeX) and `out/` directories in the run configuration, otherwise the `.idx` file will not be found by the index package.
 
 In general we would recommend using the `imakeidx` package like below, but equivalent index packages should also work.

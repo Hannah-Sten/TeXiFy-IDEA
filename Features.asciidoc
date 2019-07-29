@@ -148,6 +148,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * (Windows) Option to disable use of auxil/ directory
 * Option to disable use of out/ directory
 * Option to always compile documents twice (e.g. to fix references)
+* link:Makeindex[Enable/disable the automatic handling of makeindex]
 * Choose output format
 * Choose BibTeX run configuration
 * Other tasks to run before the run configuration, including other run configurations or external tools

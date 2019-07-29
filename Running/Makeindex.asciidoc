@@ -1,0 +1,20 @@
+When the makeindex setting in the run configuration is enabled, TeXiFy will handle makeindex for you.
+Makeindex is only run when you actually include an index package like `imakeidx`.
+
+Makeindex will be run as a separate configuration, so you will see the output in a window next to your normal LaTeX output window.
+When you use the `auxil/` or `out/` directories, makeindex will be run there and the `.ind` file will be copied next to your main file so that the index package can find it.
+
+Note that when you use `imakeidx` but no `auxil/` or `out/` then imakeidx will handle makeindex itself.
+
+Example:
+
+[source,latex]
+----
+\documentclass{article}
+\usepackage{imakeidx}
+\makeindex
+\begin{document}
+    Some random\index{random} text\index{text} which should be indexed\index{index}.
+    \printindex
+\end{document}
+----
