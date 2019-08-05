@@ -307,7 +307,7 @@ object Magic {
          *
          * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
          */
-        @JvmField val sentenceEnd = RegexPattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%])|(^\\. )")!!
+        @JvmField val sentenceEnd = RegexPattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%\\s])|(^\\. )")!!
 
         /**
          * Matches all interpunction that marks the end of a sentence.
