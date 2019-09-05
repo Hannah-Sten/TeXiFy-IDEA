@@ -253,7 +253,7 @@ class LatexRunConfiguration constructor(project: Project,
         val defaultCompiler = when {
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
-            else -> BibliographyCompiler.BIBTEX
+            else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
