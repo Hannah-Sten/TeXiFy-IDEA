@@ -99,7 +99,7 @@ object EvinceConversation {
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
         else {
-            throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file.")
+            throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $pdfFilePath")
         }
     }
 
