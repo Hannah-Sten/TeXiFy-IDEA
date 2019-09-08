@@ -207,6 +207,11 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
         val declaredIn = command.containingFile
         val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
 
+        // When it looks like a file includes itself, we skip it
+        if (referenced.viewProvider.virtualFile.nameWithoutExtension == includedName) {
+            continue
+        }
+
         val inclusionSet = inclusions[declaredIn] ?: HashSet()
         inclusionSet.add(referenced)
         inclusions[declaredIn] = inclusionSet
@@ -310,9 +315,10 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val scope = fileSearchScope
     val commands = LatexCommandsIndex.getItems(project, scope)
 
+    val rootFile = findRootFile()
+
     commands.forEach { command ->
         val fileName = command.includedFileName() ?: return@forEach
-        val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
         val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
         if (included in files) return@forEach
