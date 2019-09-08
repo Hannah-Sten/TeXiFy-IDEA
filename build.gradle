@@ -167,12 +167,12 @@ test {
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task
-// This requires to put your Jetbrains username and password, see http://www.jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html for more details
-// You should provide them either via environment variables (ORG_GRADLE_PROJECT_intellijPublishUsername and similar for password) or Gradle task parameters (-Dorg.gradle.project.intellijPublishUsername=myusername and password)
+// This requires to put a Jetbrains Hub token, see http://www.jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html for more details
+// Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
+// You should provide it either via environment variables (ORG_GRADLE_PROJECT_intellijPublishToken) or Gradle task parameters (-Dorg.gradle.project.intellijPublishToken=mytoken)
 publishPlugin {
 
-    username intellijPublishUsername
-    password intellijPublishPassword
+    token intellijPublishToken
 
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
