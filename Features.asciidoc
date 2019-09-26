@@ -87,6 +87,9 @@ toc::[]
 * Option to choose different output formats like PDF and DVI
 
 == BibTeX
+
+If you are new to BibTeX, see the link:Bibtex
+
 * Syntax highlighting
 * Formatter
 * Autocomplete
