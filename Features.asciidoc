@@ -88,7 +88,7 @@ toc::[]
 
 == BibTeX
 
-If you are new to BibTeX, see the link:Bibtex[BibTeX introduction].
+If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 
 * Syntax highlighting
 * Formatter
