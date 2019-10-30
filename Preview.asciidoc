@@ -25,7 +25,7 @@ The current implementation of the Equation Preview was contributed by Sergei Izm
 * Install Inkscape from https://inkscape.org/release[inkscape.org/release], suppose you install it in `C:\Program Files\Inkscape`.
 * Install pdf2svg from https://github.com/textext/pdf2svg/releases[github.com/textext/pdf2svg/releases], suppose you install it in `C:\Program Files\pdf2svg`.
 * Add both `C:\Program Files\Inkscape` and `C:\Program Files\pdf2svg` to your PATH environment variable, for example by searching for Environment Variables on your computer, clicking 'Edit the system environment variables', clicking 'Environment Variables', and under System variables find the one named Path, edit it and insert the paths here. Make sure the paths are separated by a `;` if using Windows 8 or lower.
-* Reboot your system.
+* Log out and back in.
 
 
 == TikZ preview
