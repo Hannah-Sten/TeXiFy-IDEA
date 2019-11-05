@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.util.commandsInFile
 import nl.hannahsten.texifyidea.util.findLabelsInFileSet
 import nl.hannahsten.texifyidea.util.hasStar
 import java.util.*
+import kotlin.math.min
 
 /**
  * @author Hannah Schellekens
@@ -43,7 +44,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             }
 
             val parts = required[0].split(",")
-            for (i in 0 until parts.size) {
+            for (i in parts.indices) {
                 val part = parts[i]
                 if (part == "*") continue
 
@@ -54,7 +55,10 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                     }
 
                     // Add offset change by optional parameters.
+                    // todo offset depends on whether optional parameters are included like [a][a][a] or [a,a,a] which makes in the second case the offset too large if you assume the first one
                     offset += command.optionalParameters.sumBy { it.length + 2 }
+
+                    // idea: get descriptor total length, or check for exception and then it must be the other case
 
                     // Add extra star offset
                     if (command.hasStar()) {
