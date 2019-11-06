@@ -3,6 +3,7 @@
 
 ## Additions
 - Project-specific setting to change compiler compatibility. (#891)
+- Specify custom commands that define a label. (#815)
 
 ## Changes
 - Performance improvements. (#932, #944)
