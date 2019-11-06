@@ -48,24 +48,17 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                 val part = parts[i]
                 if (part == "*") continue
 
+                // If there is no label with this required label parameter value
                 if (!labels.contains(part.trim())) {
-                    var offset = command.name!!.length + 1
+                    // We have to subtract from the total length, because we do not know whether optional
+                    // parameters were included with [a][b][c] or [a,b,c] in which case the
+                    // indices of the parts are different with respect to the start of the command
+                    var offset = command.textLength - parts.sumBy { it.length + 1 }
                     for (j in 0 until i) {
                         offset += parts[j].length + 1
                     }
 
-                    // Add offset change by optional parameters.
-                    // todo offset depends on whether optional parameters are included like [a][a][a] or [a,a,a] which makes in the second case the offset too large if you assume the first one
-                    offset += command.optionalParameters.sumBy { it.length + 2 }
-
-                    // idea: get descriptor total length, or check for exception and then it must be the other case
-
-                    // Add extra star offset
-                    if (command.hasStar()) {
-                        offset++
-                    }
-
-                    descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(manager.createProblemDescriptor(
                             command,
                             TextRange.from(offset, part.length),
                             "Unresolved reference '$part'",
