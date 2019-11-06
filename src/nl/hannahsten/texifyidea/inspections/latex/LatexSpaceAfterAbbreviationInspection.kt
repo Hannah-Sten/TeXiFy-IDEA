@@ -37,6 +37,13 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                 continue
             }
 
+            // todo Idea: find ranges of where text except comments (or comments) start and end, then check if matches are (not) in there
+            val noCommentMatcher = Magic.Pattern.noComments.matcher(text.text)
+            val noCommentParts = arrayListOf<IntRange>()
+            while (noCommentMatcher.find()) {
+                noCommentParts.add(noCommentMatcher.start()..noCommentMatcher.end())
+            }
+
             val matcher = Magic.Pattern.abbreviation.matcher(text.text)
             while (matcher.find()) {
                 val matchRange = matcher.start()..matcher.end()

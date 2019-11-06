@@ -329,6 +329,16 @@ object Magic {
         @JvmField val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.|\\s)")!!
 
         /**
+         * Matches all comments, starting with % and ending with a newline.
+         */
+        val comments: RegexPattern = RegexPattern.compile("%(.*)\$")
+
+        /**
+         * Matches everything except comments which start with % and end with a newline.
+         */
+        @JvmField val noComments: RegexPattern = RegexPattern.compile("(?<=^|\\n)[^%]+")
+
+        /**
          * Matches leading and trailing whitespace on a string.
          */
         @JvmField val excessWhitespace = RegexPattern.compile("(^(\\s+).*(\\s*)\$)|(^(\\s*).*(\\s+)\$)")!!
