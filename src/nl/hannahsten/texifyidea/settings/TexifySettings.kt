@@ -6,14 +6,12 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 
 /**
- *
  * @author Sten Wessel
  */
 @State(name = "TexifySettings", storages = [(Storage("texifySettings.xml"))])
 class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     companion object {
-
         @JvmStatic
         fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
     }
@@ -30,9 +28,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
-
-    // Index of selected combobox item
-    var automaticQuoteReplacement : QuoteReplacement = QuoteReplacement.NONE
+    var automaticQuoteReplacement = QuoteReplacement.NONE
 
     /**
      * internal list which stores the commands data
