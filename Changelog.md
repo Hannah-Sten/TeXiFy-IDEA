@@ -2,6 +2,7 @@
 
 
 ## Additions
+- Table creation wizard. (#907)
 - Project-specific setting to change compiler compatibility. (#891)
 - Specify custom commands that define a label. (#815)
 
