@@ -11,9 +11,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.commandsInFile
 import nl.hannahsten.texifyidea.util.findLabelsInFileSet
-import nl.hannahsten.texifyidea.util.hasStar
 import java.util.*
-import kotlin.math.min
 
 /**
  * @author Hannah Schellekens
