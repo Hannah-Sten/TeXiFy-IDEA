@@ -31,22 +31,7 @@ import javax.swing.Icon
  */
 open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement {
 
-    /**
-     * Executes the given action on all elements between start and end (inclusive) that have the same level in the
-     * tree.
-     */
-    inline fun iterateElements(action: (PsiElement) -> Unit) {
-        var element: PsiElement? = start
-        while (element != null) {
-            action(element)
-
-            if (element == end) {
-                break
-            }
-
-            element = element.nextSibling
-        }
-    }
+    fun elements() = generateSequence(start) { it.nextSibling?.takeIf { it != end } }
 
     /**
      * Only returns `true` when `another`
@@ -57,16 +42,14 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun copy() = PsiContainer(start, end)
 
-    override fun getText() = buildString {
-        iterateElements { append(it.text) }
-    }
+    override fun getText() = elements().joinToString(separator = "") { it.text }
 
     override fun getStartOffsetInParent() = start.startOffsetInParent
 
     override fun getPrevSibling(): PsiElement? = start.prevSibling
 
     override fun <T : Any?> putUserData(key: Key<T>, value: T?) {
-        iterateElements { it.putUserData(key, value) }
+        elements().forEach { it.putUserData(key, value) }
     }
 
     /**
@@ -76,17 +59,9 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getContainingFile(): PsiFile? = start.containingFile
 
-    override fun getReferences(): Array<PsiReference> {
-        val list = ArrayList<PsiReference>()
-        iterateElements {
-            list.addAll(it.references)
-        }
-        return list.toTypedArray()
-    }
+    override fun getReferences(): Array<PsiReference> = elements().flatMap { it.references.asSequence() }.toList().toTypedArray()
 
-    override fun checkAdd(element: PsiElement) = iterateElements {
-        it.checkAdd(element)
-    }
+    override fun checkAdd(element: PsiElement) = elements().forEach { it.checkAdd(element) }
 
     override fun getLanguage() = start.language
 
@@ -105,12 +80,10 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
     override fun addAfter(element: PsiElement, anchor: PsiElement?): PsiElement? = end.addAfter(element, anchor)
 
     override fun processDeclarations(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement): Boolean {
-        return start.processDeclarations(processor, state, lastParent, place)
+        return elements().all { it.processDeclarations(processor, state, lastParent, place) }
     }
 
-    override fun accept(visitor: PsiElementVisitor) = iterateElements {
-        start.accept(visitor)
-    }
+    override fun accept(visitor: PsiElementVisitor) = elements().forEach { it.accept(visitor) }
 
     override fun getNextSibling(): PsiElement? = end.nextSibling
 
@@ -118,13 +91,13 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getTextRange() = TextRange(start.textOffset, end.endOffset())
 
-    override fun <T : Any?> putCopyableUserData(key: Key<T>?, value: T?) = iterateElements {
+    override fun <T : Any?> putCopyableUserData(key: Key<T>?, value: T?) = elements().forEach {
         it.putCopyableUserData(key, value)
     }
 
     override fun getOriginalElement(): PsiElement? = start.originalElement
 
-    override fun checkDelete() = iterateElements {
+    override fun checkDelete() = elements().forEach {
         it.checkDelete()
     }
 
@@ -158,13 +131,13 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun isValid() = start.isValid
 
-    override fun delete() = iterateElements {
+    override fun delete() = elements().forEach {
         it.delete()
     }
 
     override fun getIcon(flags: Int): Icon? = start.getIcon(flags)
 
-    override fun deleteChildRange(first: PsiElement?, last: PsiElement?) = iterateElements {
+    override fun deleteChildRange(first: PsiElement?, last: PsiElement?) = elements().forEach {
         it.deleteChildRange(first, last)
     }
 
@@ -172,18 +145,11 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getChildren(): Array<PsiElement> = emptyArray()
 
-    override fun acceptChildren(visitor: PsiElementVisitor) = iterateElements {
+    override fun acceptChildren(visitor: PsiElementVisitor) =  elements().forEach {
         it.accept(visitor)
     }
 
-    override fun isWritable(): Boolean {
-        iterateElements {
-            if (!it.isWritable) {
-                return false
-            }
-        }
-        return true
-    }
+    override fun isWritable() =  elements().all { it.isWritable }
 
     override fun <T : Any?> getUserData(key: Key<T>): T? = start.getUserData(key)
 

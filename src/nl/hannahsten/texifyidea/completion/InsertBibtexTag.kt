@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.editor.ShiftTracker
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
 
 /**
  * @author Hannah Schellekens

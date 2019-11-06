@@ -4,6 +4,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
 import java.util.regex.Pattern
 
 /**

@@ -9,6 +9,9 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.bibtexIdsInFileSet
+import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import java.util.*
 
 /**

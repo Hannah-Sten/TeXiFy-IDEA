@@ -8,6 +8,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.endOffset
 import java.util.*
 
 /**
@@ -30,8 +31,8 @@ class LatexEnvironmentFoldingBuilder : FoldingBuilderEx() {
         for (environment in environments) {
             // Get content offsets.
             // Uses the commands instead of the actual contents as they may be empty.
-            val start = environment.beginCommand.textRange.endOffset
-            val end = environment.endCommand.textRange.startOffset
+            val start = environment.beginCommand.endOffset()
+            val end = environment.endCommand?.textOffset ?: environment.endOffset()
 
             if (end <= start) {
                 continue

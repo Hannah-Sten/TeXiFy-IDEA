@@ -14,8 +14,8 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand;
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam;
-import nl.hannahsten.texifyidea.util.FilesKt;
 import nl.hannahsten.texifyidea.util.PsiCommandsKt;
+import nl.hannahsten.texifyidea.util.files.FilesKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

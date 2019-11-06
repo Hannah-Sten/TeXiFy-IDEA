@@ -23,6 +23,8 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex;
 import nl.hannahsten.texifyidea.lang.*;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
 import nl.hannahsten.texifyidea.util.*;
+import nl.hannahsten.texifyidea.util.files.FileSetKt;
+import nl.hannahsten.texifyidea.util.files.FilesKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
