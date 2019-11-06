@@ -14,7 +14,7 @@ import com.intellij.util.Consumer;
 import nl.hannahsten.texifyidea.TexifyIcons;
 import nl.hannahsten.texifyidea.file.*;
 import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory;
-import nl.hannahsten.texifyidea.util.FileUtil;
+import nl.hannahsten.texifyidea.util.files.FileUtil;
 import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;

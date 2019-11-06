@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.BibtexIdIndex
@@ -6,11 +6,15 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.isDefinition
 
 /**
  * Finds all the files in the project that are somehow related using includes.
- * <p>
+ *
  * When A includes B and B includes C then A, B & C will all return a set containing A, B & C.
+ *
+ * Be careful when using this function directly over something like [ReferencedFileSetService] where the result
+ * values are cached.
  *
  * @param baseFile
  *         The file to find the reference set of.
@@ -57,7 +61,9 @@ fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
  *
  * @return All the files that are cross referenced between each other.
  */
-fun PsiFile.referencedFileSet(): Set<PsiFile> = findReferencedFileSet(this)
+fun PsiFile.referencedFileSet(): Set<PsiFile> {
+    return ReferencedFileSetService.getInstance(project).referencedFileSetOf(this)
+}
 
 /**
  * @see [BibtexIdIndex.getIndexedIdsInFileSet]

@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
 
 /**
@@ -39,14 +40,16 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
             }
 
             val star = name.substring("eqnarray".length)
-            descriptors.add(manager.createProblemDescriptor(
-                    env,
-                    TextRange(7, 7 + name.length),
-                    "Avoid using the 'eqnarray$star' environment",
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly,
-                    ChangeEnvironmentFix(star)
-            ))
+            if (env.endCommand != null) {
+                descriptors.add(manager.createProblemDescriptor(
+                        env,
+                        TextRange.from(7, name.length),
+                        "Avoid using the 'eqnarray$star' environment",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly,
+                        ChangeEnvironmentFix(star)
+                ))
+            }
         }
 
         return descriptors
@@ -64,7 +67,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
             val file = environment.containingFile
             val document = file.document() ?: return
             val begin = environment.beginCommand
-            val end = environment.endCommand
+            val end = environment.endCommand ?: return
 
             document.replaceString(end.textOffset, end.endOffset(), "\\end{align$star}")
             document.replaceString(begin.textOffset, begin.endOffset(), "\\begin{align$star}")
