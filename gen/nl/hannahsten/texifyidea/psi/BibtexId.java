@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface BibtexId extends StubBasedPsiElement<BibtexIdStub>, PsiNamedElement {
 
-    @NotNull
-    List<BibtexComment> getCommentList();
+  @NotNull
+  List<BibtexComment> getCommentList();
 
-    default String getName() {
-        return StringsKt.substringEnd(getText(), 1);
-    }
+  default String getName() {
+    return StringsKt.substringEnd(getText(), 1);
+  }
 }
