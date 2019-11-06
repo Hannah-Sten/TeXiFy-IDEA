@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.settings.labeldefiningcommands
 
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.UIUtil
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -14,7 +15,7 @@ import javax.swing.*
  */
 class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
 
-    private var table: JTable
+    private var table: JBTable
     private val tableInfo = LabelCommandSettingsTableModel()
     private val tablePanel = JPanel(GridBagLayout())
 
@@ -85,7 +86,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     /**
      * show the same dialog but with the selected values and update row
      */
-    private fun editCommand(table: JTable, tableInfo: LabelCommandSettingsTableModel) {
+    private fun editCommand(table: JBTable, tableInfo: LabelCommandSettingsTableModel) {
         val row = table.selectedRow
         val command = rowToCommand(row)
         if (command.commandName == "\\label") {
@@ -103,13 +104,13 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     /**
      * remove currently selected row
      */
-    private fun removeCommand(jTable: JTable) {
+    private fun removeCommand(JBTable: JBTable) {
         val row = table.selectedRow
         val command = rowToCommand(row)
         if (command.commandName == "\\label") {
             return
         }
-        TableUtil.removeSelectedItems(jTable)
+        TableUtil.removeSelectedItems(JBTable)
         updateTableSize()
     }
 
