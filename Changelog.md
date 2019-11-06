@@ -4,8 +4,8 @@
 ## Additions
 
 ## Changes
-* Performance improvements. (#932, #944)
-* Internal improvements
+- Performance improvements. (#932, #944)
+- Internal improvements
 
 ## Bug fixes
 
