@@ -9,7 +9,7 @@ public interface LatexEnvironment extends PsiElement {
   @NotNull
   LatexBeginCommand getBeginCommand();
 
-  @NotNull
+  @Nullable
   LatexEndCommand getEndCommand();
 
   @Nullable

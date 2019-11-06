@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexGroupImpl extends ASTWrapperPsiElement implements LatexGroup {
 
-  public LatexGroupImpl(ASTNode node) {
+  public LatexGroupImpl(@NotNull ASTNode node) {
     super(node);
   }
 

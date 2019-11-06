@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
 /**
  * @author Hannah Schellekens

@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
 import kotlin.collections.ArrayList
 

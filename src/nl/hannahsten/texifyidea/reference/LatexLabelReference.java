@@ -10,10 +10,10 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.hannahsten.texifyidea.psi.BibtexId;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam;
-import nl.hannahsten.texifyidea.util.FileSetKt;
 import nl.hannahsten.texifyidea.util.LabelsKt;
 import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.StringsKt;
+import nl.hannahsten.texifyidea.util.files.FileSetKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
