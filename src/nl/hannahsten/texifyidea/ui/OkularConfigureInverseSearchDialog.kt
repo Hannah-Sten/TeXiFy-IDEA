@@ -6,6 +6,11 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 
+/**
+ * A dialog that contains a brief explanation about configuring inverse search with Okular.
+ *
+ * @author Abby Berkers
+ */
 class OkularConfigureInverseSearchDialog {
     init {
         DialogBuilder().apply {
