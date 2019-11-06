@@ -137,12 +137,14 @@ fun BibtexDefinedString.evaluate(): String {
             continue
         }
 
+        val content = tag.content ?: continue
+
         // Prevent perpetual recursion.
-        if (key == tag.content.text) {
+        if (key == content.text) {
             continue
         }
 
-        return tag.content.evaluate()
+        return content.evaluate()
     }
 
     return "${'$'}$stringName${'$'}"

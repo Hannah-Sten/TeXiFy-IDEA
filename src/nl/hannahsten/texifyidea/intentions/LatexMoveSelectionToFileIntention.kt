@@ -6,9 +6,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
-import nl.hannahsten.texifyidea.util.createFile
-import nl.hannahsten.texifyidea.util.findRootFile
-import nl.hannahsten.texifyidea.util.isLatexFile
+import nl.hannahsten.texifyidea.util.files.createFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.removeIndents
 import org.intellij.lang.annotations.Language
 import java.io.File

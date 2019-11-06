@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.document
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*

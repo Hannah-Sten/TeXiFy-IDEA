@@ -9,6 +9,8 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
  * @author Hannah Schellekens

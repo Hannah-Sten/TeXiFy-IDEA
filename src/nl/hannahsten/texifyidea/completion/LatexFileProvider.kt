@@ -15,6 +15,9 @@ import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import java.util.*
 import java.util.regex.Pattern
 

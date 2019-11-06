@@ -9,7 +9,7 @@ import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.util.ArrayUtil
 import nl.hannahsten.texifyidea.psi.BibtexId
-import nl.hannahsten.texifyidea.util.referencedFileSet
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 /**
  * @author Hannah Schellekens
