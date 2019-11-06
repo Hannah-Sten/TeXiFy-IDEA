@@ -8,7 +8,7 @@
 == Pages
 
 [%hardbreaks]
-link:Features[Documentation of features]
+link:Features[Features]
 link:Troubleshooting[Troubleshooting: when TeXiFy-IDEA does not work]
 link:Contributing[Wiki contributing help]
 link:Contributing-to-TeXiFy[Contributing to TeXiFy]
