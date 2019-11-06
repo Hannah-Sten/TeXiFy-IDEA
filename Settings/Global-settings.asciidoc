@@ -99,3 +99,19 @@ For more information about the preview and how to install dependencies, see link
 For continuous compilation of the complete document, see link:Compilers#Latexmk[Latexmk].
 
 image::continuous-preview.gif[Continuous preview]
+
+[#labeldefining-commands]
+== Option to specify custom commands that also define a label
+
+Because TeXiFy does not automatically detect if your custom LaTeX command (defined with `\newcommand`) also includes a `\label` command using one of the parameters, you can enter the names of these commands manually in the settings.
+This will make sure that TeXiFy understands that your custom command specifies a label, and thus other features will work correctly, including the duplicate label inspection, the missing label inspection, structure view and autocomplete.
+//There also is an intention on `\newcommand`
+
+In the table, each entry has the following values.
+
+* Name of command: the LaTeX command
+* Position of label parameter: which (required) parameter of your custom command is input as value to the `\label`, so if you use `\label{#42}` then this number should be 42
+* Label previous command: should be true if your custom command labels the LaTeX command/environment that is right before that, for example using `\captionof` from the `caption` package.
+
+
+
