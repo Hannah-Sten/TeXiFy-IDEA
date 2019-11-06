@@ -22,6 +22,9 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.documentClassFile
+import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
 import java.util.*
 import kotlin.collections.ArrayList
 

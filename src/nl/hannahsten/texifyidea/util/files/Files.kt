@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.*
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
