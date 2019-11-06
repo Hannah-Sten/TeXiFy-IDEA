@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.psiFile
 import java.util.*
 
 /**
