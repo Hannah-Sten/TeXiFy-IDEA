@@ -113,5 +113,19 @@ In the table, each entry has the following values.
 * Position of label parameter: which (required) parameter of your custom command is input as value to the `\label`, so if you use `\label{#42}` then this number should be 42
 * Label previous command: should be true if your custom command labels the LaTeX command/environment that is right before that, for example using `\captionof` from the `caption` package.
 
+An example:
 
+[source,latex]
+----
+\documentclass{article}
 
+\newcommand{\italiclabel}[2]{
+\section{#1}\label{#2}
+}
+
+\begin{document}
+    \italiclabel{label me}{me:label}
+    If you add the italiclabel command with position 2 to the table in settings, then~\ref{me:label} will be recognized (and autocompleted).
+
+\end{document}
+----
