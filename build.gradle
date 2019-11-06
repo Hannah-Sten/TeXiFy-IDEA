@@ -170,7 +170,6 @@ test {
 // This requires to put your Jetbrains username and password, see http://www.jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html for more details
 // You should provide them either via environment variables (ORG_GRADLE_PROJECT_intellijPublishUsername and similar for password) or Gradle task parameters (-Dorg.gradle.project.intellijPublishUsername=myusername and password)
 publishPlugin {
-
     username intellijPublishUsername
     password intellijPublishPassword
 
