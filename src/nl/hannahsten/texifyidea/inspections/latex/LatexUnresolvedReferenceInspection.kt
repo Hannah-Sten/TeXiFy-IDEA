@@ -56,7 +56,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                         offset += parts[j].length + 1
                     }
 
-                descriptors.add(manager.createProblemDescriptor(
+                    descriptors.add(manager.createProblemDescriptor(
                             command,
                             TextRange.from(offset, part.length),
                             "Unresolved reference '$part'",
