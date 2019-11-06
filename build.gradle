@@ -120,25 +120,25 @@ def pycharmVersion = '2019.2'
 
 // This task is used to debug the plugin in a different IDE, in this case Pycharm
 // Source: https://gist.github.com/thomas15v/716ea57261855bf61d8b6131be419c26
-task setupPycharm() {
-    if (!new File(".gradle/ide/pycharm-${pycharmVersion}").exists()){
-        download {
-            src "https://download.jetbrains.com/python/pycharm-professional-${pycharmVersion}.tar.gz"
-            dest '.gradle/downloads/py.tar.gz'
-        }
-        copy {
-            from tarTree(resources.gzip('.gradle/downloads/py.tar.gz'))
-            into '.gradle/ide'
-        }
-    }
-}
+//task setupPycharm() {
+//    if (!new File(".gradle/ide/pycharm-${pycharmVersion}").exists()){
+//        download {
+//            src "https://download.jetbrains.com/python/pycharm-professional-${pycharmVersion}.tar.gz"
+//            dest '.gradle/downloads/py.tar.gz'
+//        }
+//        copy {
+//            from tarTree(resources.gzip('.gradle/downloads/py.tar.gz'))
+//            into '.gradle/ide'
+//        }
+//    }
+//}
 
 // In order to debug with PyCharm, just add the -PusePycharm=true argument to your runIde run configuration.
-runIde {
-    if (project.hasProperty('usePycharm') && usePycharm == 'true') {
-        dependsOn(setupPycharm)
-    }
-}
+//runIde {
+//    if (project.hasProperty('usePycharm') && usePycharm == 'true') {
+//        dependsOn(setupPycharm)
+//    }
+//}
 
 intellij {
     if (project.hasProperty('usePycharm') && usePycharm == 'true') {
