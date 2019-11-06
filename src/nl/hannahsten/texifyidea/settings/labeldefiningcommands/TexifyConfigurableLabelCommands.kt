@@ -8,8 +8,6 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.awt.*
 import java.awt.event.ActionListener
 import javax.swing.*
-import javax.swing.table.DefaultTableCellRenderer
-import javax.swing.table.TableCellRenderer
 
 /**
  * Excluded table for the settings page to get smaller and more meaningful classes
