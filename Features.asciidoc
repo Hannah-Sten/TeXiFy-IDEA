@@ -138,7 +138,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 
 These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy > Project Settings] and can be configured per project.
 
-* link:Global-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
+* link:Project-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 
 === Run configuration settings
 * Separate BibTeX run configuration
