@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.settings.LabelingCommandInformation
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.labeldefiningcommands.EditLabelDefiningCommand
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label defining command to settings") {
 
