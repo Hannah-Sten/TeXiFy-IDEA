@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.settings.labeldefiningcommands
 
 import com.intellij.ui.TableUtil
 import com.intellij.ui.ToolbarDecorator
-import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.UIUtil
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -17,7 +16,7 @@ import javax.swing.table.TableCellRenderer
  */
 class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
 
-    private var table: JBTable
+    private var table: JTable
     private val tableInfo = LabelCommandSettingsTableModel()
     private val tablePanel = JPanel(GridBagLayout())
 
@@ -47,7 +46,6 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         table.showHorizontalLines = false
         table.showVerticalLines = false
         table.selectionModel.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
-        table.tableHeader.defaultRenderer = HeaderRenderer(table)
 
         val gridBag = GridBagConstraints()
         gridBag.anchor = GridBagConstraints.LINE_START
@@ -89,7 +87,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     /**
      * show the same dialog but with the selected values and update row
      */
-    private fun editCommand(table: JBTable, tableInfo: LabelCommandSettingsTableModel) {
+    private fun editCommand(table: JTable, tableInfo: LabelCommandSettingsTableModel) {
         val row = table.selectedRow
         val command = rowToCommand(row)
         if (command.commandName == "\\label") {
@@ -107,7 +105,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
     /**
      * remove currently selected row
      */
-    private fun removeCommand(jTable: JBTable) {
+    private fun removeCommand(jTable: JTable) {
         val row = table.selectedRow
         val command = rowToCommand(row)
         if (command.commandName == "\\label") {
@@ -162,7 +160,7 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
         while (tableInfo.rowCount > 0) {
             tableInfo.removeRow(0)
         }
-        settings.labelCommands.forEach { _, definingCommand ->
+        settings.labelCommands.forEach { (_, definingCommand) ->
             tableInfo.addRow(arrayOf(definingCommand.commandName, definingCommand.position, definingCommand.labelsPreviousCommand))
         }
         updateTableSize()
@@ -213,20 +211,4 @@ class TexifyConfigurableLabelCommands(private val settings: TexifySettings) {
      * return the panel which holds the table to display it
      */
     fun getTable() = tablePanel
-
-    /**
-     * own renderer for the table header to display them left aligned
-     */
-    private class HeaderRenderer(table: JTable) : TableCellRenderer {
-        val renderer : DefaultTableCellRenderer = table.tableHeader.defaultRenderer as DefaultTableCellRenderer
-
-        init {
-            renderer.horizontalAlignment = JLabel.LEFT
-        }
-
-        override fun getTableCellRendererComponent(table: JTable?, value: Any?, isSelected: Boolean, hasFocus: Boolean,
-                                                   row: Int, column: Int): Component {
-            return renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
-        }
-    }
 }
