@@ -2,6 +2,7 @@
 
 
 ## Additions
+- Project-specific setting to change compiler compatibility. (#891)
 
 ## Changes
 - Performance improvements. (#932, #944)
