@@ -71,11 +71,13 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
 
                             if (bibtexId instanceof BibtexId) {
                                 label = StringsKt.substringEnd(bibtexId.getText(), 1);
-                            } else if (bibtexId instanceof LatexCommands) {
+                            }
+                            else if (bibtexId instanceof LatexCommands) {
                                 LatexCommands actualCommand = (LatexCommands) bibtexId;
                                 List<String> parameters = actualCommand.getRequiredParameters();
                                 label = parameters.get(0);
-                            } else {
+                            }
+                            else {
                                 return null;
                             }
                             return LookupElementBuilder.create(label)

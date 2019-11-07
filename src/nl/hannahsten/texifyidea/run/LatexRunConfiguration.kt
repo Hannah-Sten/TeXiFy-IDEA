@@ -15,9 +15,9 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.usesBiber
@@ -333,8 +333,15 @@ class LatexRunConfiguration constructor(project: Project,
 
     override fun getOutputFilePath(): String {
         val folder: String = if (hasOutputDirectories) {
-            ProjectRootManager.getInstance(project).fileIndex
-                    .getContentRootForFile(mainFile!!)!!.path + "/out/"
+            val contentRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+
+            // The contentRoot may be null if the file is not in the project
+            if (contentRoot != null) {
+                contentRoot.path + "/out/"
+            }
+            else {
+                mainFile!!.parent.path + "/"
+            }
         }
         else {
             mainFile!!.parent.path + "/"

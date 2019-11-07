@@ -53,7 +53,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // Get the required file arguments.
         val argument = if (ignoreFileArgument) {
             RequiredFileArgument("", "sty", "cls")
-        } else {
+        }
+        else {
             arguments[0]
         }
 

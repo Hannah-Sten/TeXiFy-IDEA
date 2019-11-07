@@ -54,7 +54,8 @@ open class InsertEditorAction (
 
         val caretPosition = if (start == end) {
             start + this.before.length
-        } else {
+        }
+        else {
             end + this.before.length + this.after.length
         }
 
