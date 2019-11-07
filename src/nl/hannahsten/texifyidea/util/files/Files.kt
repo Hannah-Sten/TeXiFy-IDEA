@@ -209,7 +209,7 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
         val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
 
         // When it looks like a file includes itself, we skip it
-        if (referenced.viewProvider.virtualFile.nameWithoutExtension == includedName) {
+        if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
             continue
         }
 
