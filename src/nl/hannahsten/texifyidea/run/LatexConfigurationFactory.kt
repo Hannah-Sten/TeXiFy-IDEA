@@ -10,7 +10,6 @@ import com.intellij.openapi.project.Project
 class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
 
     companion object {
-
         private const val factoryName = "LaTeX configuration factory"
     }
 

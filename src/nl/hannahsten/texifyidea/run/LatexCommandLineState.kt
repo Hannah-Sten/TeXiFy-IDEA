@@ -16,7 +16,10 @@ import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
 import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.FileUtil
+import nl.hannahsten.texifyidea.util.files.createExcludedDir
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.io.File
 
 /**
@@ -33,10 +36,15 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")
 
-        // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
-        // checking for bibliography commands
-        if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
-            runConfig.generateBibRunConfig()
+        // Some initial setup which is too expensive to do in LatexRunConfigurationProducer, which is called on e.g. every right-click in the document
+        if (!runConfig.hasBeenRun) {
+            runConfig.hasBeenRun = true
+
+            // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
+            // checking for bibliography commands
+            if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
+                runConfig.generateBibRunConfig()
+            }
         }
 
         createOutDirs(mainFile)

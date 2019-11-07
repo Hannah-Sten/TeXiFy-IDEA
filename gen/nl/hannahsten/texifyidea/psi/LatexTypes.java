@@ -68,7 +68,7 @@ public interface LatexTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == BEGIN_COMMAND) {
+      if (type == BEGIN_COMMAND) {
         return new LatexBeginCommandImpl(node);
       }
       else if (type == COMMANDS) {

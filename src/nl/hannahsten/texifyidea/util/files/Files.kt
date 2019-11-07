@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.*
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -207,6 +208,11 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
         val declaredIn = command.containingFile
         val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
 
+        // When it looks like a file includes itself, we skip it
+        if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
+            continue
+        }
+
         val inclusionSet = inclusions[declaredIn] ?: HashSet()
         inclusionSet.add(referenced)
         inclusions[declaredIn] = inclusionSet
@@ -310,9 +316,10 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val scope = fileSearchScope
     val commands = LatexCommandsIndex.getItems(project, scope)
 
+    val rootFile = findRootFile()
+
     commands.forEach { command ->
         val fileName = command.includedFileName() ?: return@forEach
-        val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
         val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
         if (included in files) return@forEach
@@ -368,7 +375,7 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexedCommands]
+ * @see [LatexCommandsIndex.getItems]
  */
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 

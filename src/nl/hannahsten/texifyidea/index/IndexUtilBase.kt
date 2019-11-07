@@ -6,9 +6,9 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
-import nl.hannahsten.texifyidea.util.documentClassFile
-import nl.hannahsten.texifyidea.util.findRootFile
-import nl.hannahsten.texifyidea.util.referencedFileSet
+import nl.hannahsten.texifyidea.util.files.documentClassFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 /**
  * @author Hannah Schellekens
@@ -51,6 +51,31 @@ abstract class IndexUtilBase<T : PsiElement>(
         // Search index.
         val scope = GlobalSearchScope.filesScope(project, searchFiles)
         return getItems(project, scope)
+    }
+
+    /**
+     * Get all the items in the index in the given file set, as well as the files where those items are.
+     * Consider using [PsiFile.commandsAndFilesInFileSet] where applicable.
+     *
+     * @param baseFile The file from which to look.
+     * @return List of pairs consisting of a file and the items in that file.
+     */
+    fun getItemsAndFilesInFileSet(baseFile: PsiFile): List<Pair<PsiFile, Collection<T>>> {
+        val result = mutableListOf<Pair<PsiFile, Collection<T>>>()
+
+        // Find all files to search in
+        val searchFiles = baseFile.referencedFileSet().toMutableSet()
+        val documentclass = baseFile.findRootFile().documentClassFile()
+        if (documentclass != null) {
+            searchFiles.add(documentclass)
+        }
+
+        for (file in searchFiles) {
+            val scope = GlobalSearchScope.fileScope(file)
+            result.add(Pair(file, getItems(baseFile.project, scope)))
+        }
+
+        return result
     }
 
     /**
