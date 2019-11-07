@@ -42,6 +42,7 @@ class LatexRunConfiguration constructor(project: Project,
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
         private const val OUTPUT_FORMAT = "output-format"
+        private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
     }
 
@@ -72,6 +73,9 @@ class LatexRunConfiguration constructor(project: Project,
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = true
+
+    // Whether the run configuration has already been run or not
+    var hasBeenRun = false
 
     var bibRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)
@@ -158,7 +162,11 @@ class LatexRunConfiguration constructor(project: Project,
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format ?: Format.PDF
+        this.outputFormat = format
+
+        // Read whether the run config has been run
+        val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
+        this.hasBeenRun = hasBeenRunString?.toBoolean() ?: false
 
         // Read bibliography run configuration
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
@@ -226,6 +234,11 @@ class LatexRunConfiguration constructor(project: Project,
         outputFormatElt.text = outputFormat.name
         parent.addContent(outputFormatElt)
 
+        // Write whether the run config has been run
+        val hasBeenRunElt = Element(HAS_BEEN_RUN)
+        hasBeenRunElt.text = hasBeenRun.toString()
+        parent.addContent(hasBeenRunElt)
+
         // Write bibliography run configuration
         val bibRunConfigElt = Element(BIB_RUN_CONFIG)
         bibRunConfigElt.text = bibRunConfigId
@@ -240,7 +253,7 @@ class LatexRunConfiguration constructor(project: Project,
         val defaultCompiler = when {
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
-            else -> BibliographyCompiler.BIBTEX
+            else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work

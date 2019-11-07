@@ -6,9 +6,9 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
-import nl.hannahsten.texifyidea.util.documentClassFile
-import nl.hannahsten.texifyidea.util.findRootFile
-import nl.hannahsten.texifyidea.util.referencedFileSet
+import nl.hannahsten.texifyidea.util.files.documentClassFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 /**
  * @author Hannah Schellekens

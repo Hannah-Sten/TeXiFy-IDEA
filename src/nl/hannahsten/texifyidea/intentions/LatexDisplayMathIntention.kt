@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
  * @author Hannah Schellekens

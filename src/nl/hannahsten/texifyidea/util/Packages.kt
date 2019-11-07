@@ -6,6 +6,9 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.isClassFile
+import nl.hannahsten.texifyidea.util.files.isStyleFile
 
 /**
  * @author Hannah Schellekens
