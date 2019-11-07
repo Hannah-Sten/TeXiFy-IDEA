@@ -250,14 +250,16 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         companion object {
 
-            fun byNameIgnoreCase(name: String?): Format? {
+            fun byNameIgnoreCase(name: String?): Format {
+                if (name == null) return PDF
+
                 for (format in values()) {
-                    if (format.name.equals(name!!, ignoreCase = true)) {
+                    if (format.name.equals(name, ignoreCase = true)) {
                         return format
                     }
                 }
 
-                return null
+                return PDF
             }
         }
     }

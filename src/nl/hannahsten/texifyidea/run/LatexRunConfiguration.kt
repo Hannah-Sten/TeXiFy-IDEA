@@ -173,7 +173,7 @@ class LatexRunConfiguration constructor(project: Project,
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format ?: Format.PDF
+        this.outputFormat = format
 
         // Read whether the run config has been run
         val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
@@ -269,7 +269,7 @@ class LatexRunConfiguration constructor(project: Project,
         val defaultCompiler = when {
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
-            else -> BibliographyCompiler.BIBTEX
+            else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
