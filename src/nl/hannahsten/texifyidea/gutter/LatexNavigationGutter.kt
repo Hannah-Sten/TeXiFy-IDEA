@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.findFile
-import nl.hannahsten.texifyidea.util.findRootFile
+import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.*
 import javax.swing.Icon
