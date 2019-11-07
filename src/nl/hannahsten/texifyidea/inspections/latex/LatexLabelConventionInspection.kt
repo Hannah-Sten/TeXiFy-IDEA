@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
 import kotlin.Comparator
