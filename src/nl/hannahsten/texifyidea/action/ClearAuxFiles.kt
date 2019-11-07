@@ -15,7 +15,8 @@ import java.io.File
 class ClearAuxFiles : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
-        val files = FileUtils.listFiles(File(project.basePath), Magic.File.auxiliaryFileTypes, true)
+        val basePath = project.basePath ?: return
+        val files = FileUtils.listFiles(File(basePath), Magic.File.auxiliaryFileTypes, true)
         files.forEach { it.delete() }
         LocalFileSystem.getInstance().refresh(true)
     }

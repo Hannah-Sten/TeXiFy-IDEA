@@ -37,7 +37,7 @@ class RunBibtexListener(
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             latexConfiguration.isLastRunConfig = true
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-
+            latexConfiguration.isLastRunConfig = false
         }
         finally {
             latexConfiguration.isSkipBibtex = false
