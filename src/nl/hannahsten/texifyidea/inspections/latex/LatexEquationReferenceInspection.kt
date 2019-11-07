@@ -4,7 +4,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.lang.Package
-import nl.hannahsten.texifyidea.util.document
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.findLabels
 import nl.hannahsten.texifyidea.util.findOuterMathEnvironment
 import nl.hannahsten.texifyidea.util.insertUsepackage

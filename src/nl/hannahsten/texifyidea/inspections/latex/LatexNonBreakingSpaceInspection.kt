@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.document
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parentOfType
 import java.util.*
 
