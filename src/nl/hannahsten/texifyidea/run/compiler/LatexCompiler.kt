@@ -68,6 +68,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val includesBibtex = true
 
+        override val handlesNumberOfCompiles = true
+
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
@@ -153,6 +155,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val includesBibtex = true
 
+        override val handlesNumberOfCompiles = true
+
         override val outputFormats = arrayOf(Format.PDF, Format.HTML, Format.XDV, Format.AUX)
 
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
@@ -222,6 +226,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     open val includesBibtex = false
 
     /**
+     * Whether the compiler automatically determines the number of compiles needed.
+     */
+    open val handlesNumberOfCompiles = false
+
+    /**
      * List of output formats supported by this compiler.
      */
     open val outputFormats: Array<Format> = arrayOf(Format.PDF, Format.DVI)
@@ -241,14 +250,16 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         companion object {
 
-            fun byNameIgnoreCase(name: String?): Format? {
+            fun byNameIgnoreCase(name: String?): Format {
+                if (name == null) return PDF
+
                 for (format in values()) {
-                    if (format.name.equals(name!!, ignoreCase = true)) {
+                    if (format.name.equals(name, ignoreCase = true)) {
                         return format
                     }
                 }
 
-                return null
+                return PDF
             }
         }
     }

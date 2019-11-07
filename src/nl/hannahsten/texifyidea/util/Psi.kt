@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import kotlin.reflect.KClass
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
