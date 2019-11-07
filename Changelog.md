@@ -19,6 +19,6 @@
 - Fixed not being able to disable bibtex. (#945)
 - Fixed package dependencies being inserted in the wrong file. (#942)
 - Fixed missing autocompletion when a file name is equal to a folder name. (#937)
-- Fixed crashes. (#909, #948)
+- Fixed crashes. (#909, #948, #963)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/16).
