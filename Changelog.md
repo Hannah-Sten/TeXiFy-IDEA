@@ -12,6 +12,7 @@
 
 ## Bug fixes
 - Renamed labels will now be renamed in all files. (#950)
+- Fixed package dependencies being inserted in the wrong file. (#942)
 - Fixed not being able to disable bibtex. (#945)
 - Fixed crashes. (#909, #948)
 
