@@ -4,7 +4,9 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.xmlb.XmlSerializerUtil
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
  *
@@ -34,6 +36,7 @@ class TexifySettings : PersistentStateComponent<TexifySettings> {
 
     // Index of selected combobox item
     var automaticQuoteReplacement = QuoteReplacement.NONE
+    var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
     override fun getState() = this
 

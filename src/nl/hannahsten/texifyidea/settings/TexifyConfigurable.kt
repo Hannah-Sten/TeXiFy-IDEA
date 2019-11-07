@@ -4,6 +4,8 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import java.awt.Color
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel
@@ -18,6 +20,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticUpDownBracket: JBCheckBox
     private lateinit var automaticItemInItemize: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
+    private lateinit var linuxPdfViewer: ComboBox<String>
 
     override fun getId() = "TexifyConfigurable"
 
@@ -32,6 +35,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
             automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
             automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
+            linuxPdfViewer = addLinuxPdfViewerOptions()
         })
     }
 
@@ -45,6 +49,20 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             add(list)
         })
         return list
+    }
+
+    private fun JPanel.addLinuxPdfViewerOptions(): ComboBox<String> {
+            val availableViewers = PdfViewer.values().filter { it.isAvailable() }.map { it.displayName }.toTypedArray()
+            val list = ComboBox(availableViewers)
+            val note = JBLabel(" Choose other when using a custom PDF viewer.")
+            note.foreground = Color.GRAY
+            add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(JBLabel("PDF viewer: "))
+                add(list)
+                add(note)
+            })
+
+            return list
     }
 
     private fun JPanel.addCheckbox(message: String): JBCheckBox {
@@ -61,6 +79,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
+                || linuxPdfViewer.selectedIndex != settings.pdfViewer.ordinal
     }
 
     override fun apply() {
@@ -69,6 +88,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
+        settings.pdfViewer = PdfViewer.values().filter { it.isAvailable() }[linuxPdfViewer.selectedIndex]
     }
 
     override fun reset() {
@@ -77,5 +97,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
+        linuxPdfViewer.selectedIndex = settings.pdfViewer.ordinal
     }
 }

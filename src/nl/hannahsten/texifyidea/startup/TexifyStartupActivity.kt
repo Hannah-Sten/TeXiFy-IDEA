@@ -7,6 +7,7 @@ import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.editor.LatexSoftWrapEditorListener
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceInverseSearchListener
+import nl.hannahsten.texifyidea.settings.TexifySettings
 
 /**
  * @author Sten Wessel
@@ -19,7 +20,7 @@ class TexifyStartupActivity : StartupActivity {
                 project
         )
 
-        if (SystemInfo.isLinux && PdfViewer.EVINCE.isAvailable()) {
+        if (SystemInfo.isLinux && TexifySettings.getInstance().pdfViewer == PdfViewer.EVINCE) {
             EvinceInverseSearchListener().start()
         }
     }
