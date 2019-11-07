@@ -10,6 +10,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 
 /**
  * @author Hannah Schellekens
@@ -80,7 +81,7 @@ open class LatexAnnotator : Annotator {
             if (psiElement is LatexEnvironment) {
                 val ann1 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.beginCommand.textOffset, 6), null)
                 ann1.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
-                val ann2 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.endCommand.textOffset, 4), null)
+                val ann2 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4), null)
                 ann2.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
             }
         }

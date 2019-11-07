@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.*
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -374,7 +375,7 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexedCommands]
+ * @see [LatexCommandsIndex.getItems]
  */
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 

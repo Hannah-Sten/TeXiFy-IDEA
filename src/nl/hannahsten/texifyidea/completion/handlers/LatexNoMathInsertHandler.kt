@@ -11,6 +11,7 @@ import com.intellij.codeInsight.template.impl.TemplateState
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 
 /**
  * @author Hannah Schellekens, Sten Wessel
