@@ -5,8 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.editor.LatexSoftWrapEditorListener
-import nl.hannahsten.texifyidea.run.evince.EvinceInverseSearchListener
-import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceInverseSearchListener
 
 /**
  * @author Sten Wessel
@@ -19,7 +19,7 @@ class TexifyStartupActivity : StartupActivity {
                 project
         )
 
-        if (SystemInfo.isLinux && isEvinceAvailable()) {
+        if (SystemInfo.isLinux && PdfViewer.EVINCE.isAvailable()) {
             EvinceInverseSearchListener().start()
         }
     }

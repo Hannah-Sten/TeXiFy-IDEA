@@ -6,10 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.action.EditorAction
-import nl.hannahsten.texifyidea.run.okular.OkularConversation
-import nl.hannahsten.texifyidea.run.okular.OkularForwardSearch
-import nl.hannahsten.texifyidea.run.okular.isOkularAvailable
-import nl.hannahsten.texifyidea.run.runCommand
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
  * Starts a forward search action in Okular.
@@ -22,18 +19,20 @@ open class ForwardSearchAction : EditorAction(
         "_ForwardSearch",
         TexifyIcons.RIGHT
 ) {
+    val okular = PdfViewer.OKULAR
+
     override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
-        if (!isOkularAvailable()) {
+        if (!okular.isAvailable()) {
             return
         }
 
         val document = editor.editor.document
         val line = document.getLineNumber(editor.editor.caretModel.offset) + 1
 
-        OkularConversation.forwardSearch(null, file.path, line)
+        okular.conversation.forwardSearch(null, file.path, line)
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = isOkularAvailable()
+        e.presentation.isEnabledAndVisible = okular.isAvailable()
     }
 }

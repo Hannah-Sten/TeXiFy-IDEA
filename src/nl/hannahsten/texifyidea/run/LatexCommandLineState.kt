@@ -12,10 +12,8 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
-import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
-import nl.hannahsten.texifyidea.run.okular.OkularForwardSearch
-import nl.hannahsten.texifyidea.run.okular.isOkularAvailable
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.files.FileUtil
@@ -116,11 +114,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Open Sumatra after compilation & execute inverse search.
             SumatraForwardSearch().execute(handler, runConfig, environment)
         }
-        else if(isOkularAvailable()) {
-            OkularForwardSearch().execute(handler, runConfig, environment)
+        // TODO replace with selected linux viewer.
+        else if(PdfViewer.OKULAR.isAvailable()) {
+            ViewerForwardSearch(PdfViewer.OKULAR).execute(handler, runConfig, environment)
         }
-        else if(isEvinceAvailable()) {
-            EvinceForwardSearch().execute(handler, runConfig, environment)
+        else if(PdfViewer.EVINCE.isAvailable()) {
+            ViewerForwardSearch(PdfViewer.EVINCE).execute(handler, runConfig, environment)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

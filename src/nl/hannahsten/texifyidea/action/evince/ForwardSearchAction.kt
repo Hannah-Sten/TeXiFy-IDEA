@@ -6,8 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.action.EditorAction
-import nl.hannahsten.texifyidea.run.evince.EvinceConversation
-import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
  * Starts a forward search action in Evince.
@@ -21,18 +20,20 @@ open class ForwardSearchAction : EditorAction(
         TexifyIcons.RIGHT
 ) {
 
+    val evince = PdfViewer.EVINCE
+
     override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
-        if (!isEvinceAvailable()) {
+        if (!evince.isAvailable()) {
             return
         }
 
         val document = editor.editor.document
         val line = document.getLineNumber(editor.editor.caretModel.offset) + 1
 
-        EvinceConversation.forwardSearch(sourceFilePath = file.path, line = line)
+        evince.conversation.forwardSearch(pdfPath = null, sourceFilePath = file.path, line = line)
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = isEvinceAvailable()
+        e.presentation.isEnabledAndVisible = evince.isAvailable()
     }
 }

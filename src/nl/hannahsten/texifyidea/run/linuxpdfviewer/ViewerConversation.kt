@@ -1,8 +1,11 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.linuxpdfviewer
 
-import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+
+abstract class ViewerConversation {
+    abstract fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int)
+}
 
 /**
  * Run a command in the terminal.

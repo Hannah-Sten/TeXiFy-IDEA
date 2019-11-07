@@ -1,30 +1,14 @@
-package nl.hannahsten.texifyidea.run.okular
+package nl.hannahsten.texifyidea.run.linuxpdfviewer.okular
 
-import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.runCommand
-import java.io.File
-
-/**
- * Checks if Okular is available.
- */
-fun isOkularAvailable() : Boolean {
-    // Only support Evince on Linux, although it can be installed on other systems like Mac
-    if (!SystemInfo.isLinux) {
-        return false
-    }
-
-    // Find out whether Okular is installed and in PATH, otherwise we can't use it
-    val output = "which okular".runCommand()
-    return output?.contains("/okular") ?: false
-}
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 
 /**
  * Execute Okular commands.
  *
  * @author Abby Berkers
  */
-object OkularConversation {
+object OkularConversation : ViewerConversation() {
     private var pdfFilePath: String? = null
 
     /**
@@ -32,17 +16,17 @@ object OkularConversation {
      * Unfortunately this line does not get highlighted.
      *
      * @param pdfPath Full path of the pdf.
-     * @param texFilePath Full path of the tex file.
+     * @param sourceFilePath Full path of the tex file.
      * @param line Line number in the source file to navigate to in the pdf.
      */
-    fun forwardSearch(pdfPath: String?, texFilePath: String, line: Int) {
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int) {
         if (pdfPath != null) {
             pdfFilePath = pdfPath
         }
 
         if (pdfFilePath != null) {
             // This okular command opens the pdf file using the destination coming from the line in the tex file.
-            val command = "okular --unique '$pdfFilePath#src:$line $texFilePath'"
+            val command = "okular --unique '$pdfFilePath#src:$line $sourceFilePath'"
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
         else {
