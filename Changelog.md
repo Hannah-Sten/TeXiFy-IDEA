@@ -11,5 +11,6 @@
 - Internal improvements
 
 ## Bug fixes
+- Fixed crashes (#909, #948)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/16).
