@@ -4,6 +4,7 @@
 ## Additions
 - Table creation wizard. (#907)
 - Project-specific setting to change compiler compatibility. (#891)
+- Added inspection that checks whether the \addbibresource has a file extension. (#956)
 - Specify custom commands that define a label. (#815)
 
 ## Changes
@@ -12,8 +13,9 @@
 
 ## Bug fixes
 - Renamed labels will now be renamed in all files. (#950)
-- Fixed package dependencies being inserted in the wrong file. (#942)
 - Fixed not being able to disable bibtex. (#945)
+- Fixed package dependencies being inserted in the wrong file. (#942)
+- Fixed missing autocompletion when a file name is equal to a folder name. (#937)
 - Fixed crashes. (#909, #948)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/16).
