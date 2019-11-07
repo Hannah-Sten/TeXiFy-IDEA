@@ -7,10 +7,10 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.completion.handlers.LatexCommandPackageIncludeHandler
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.insertUsepackage
 
 /**
  * This class performs smart quote substitution. When this is enabled, it will replace double quotes " and single quotes ' with the appropriate LaTeX symbols.
@@ -106,10 +106,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
             // Package dependencies
             if (char == '"') {
-                LatexCommandPackageIncludeHandler().handleInsert(document, file, LatexRegularCommand.ENQUOTE)
+                file.insertUsepackage(LatexRegularCommand.ENQUOTE.dependency)
             }
             else {
-                LatexCommandPackageIncludeHandler().handleInsert(document, file, LatexRegularCommand.ENQUOTE_STAR)
+                file.insertUsepackage(LatexRegularCommand.ENQUOTE_STAR.dependency)
             }
         }
     }

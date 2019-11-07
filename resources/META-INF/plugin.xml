@@ -24,9 +24,15 @@
 <idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA">
 
     <!-- Plugin information -->
-    <id>nl.hannahsten.texifyidea</id>
+    <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
     <version>0.6.6</version>
+    <!--
+    Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
+    Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
+    means that the first possible build is the next branch number after xyz, so e.g.
+    a since build of 173.* is equal to 181
+    -->
     <idea-version since-build="173.*"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
@@ -154,6 +160,10 @@
         <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex Edit Actions" popup="true"
                class="nl.hannahsten.texifyidea.action.group.LatexEditMenuGroup">
             <add-to-group group-id="EditSmartGroup" anchor="first"/>
+
+            <!-- Table Creation Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.tablewizard.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
+                    description="Shows popup to create and insert a table."/>
 
             <!-- Toggle Star -->
             <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
@@ -317,11 +327,14 @@
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 
-        <!-- Settings -->
+        <!-- Application settings -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.settings.TexifySettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
+        <!-- Project settings -->
+        <projectService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
+        <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
@@ -363,6 +376,8 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.UpDownAutoBracket"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.LatexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewBackspacehandler" />
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
@@ -399,6 +414,10 @@
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
+
+        <!-- Other Services -->
+        <projectService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
+                        serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
 
         <!-- Inspections -->
         <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
@@ -539,6 +558,9 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNoExtensionInspection"
                          groupName="LaTeX" displayName="File argument should not include the extension"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRequiredExtensionInspection"
+                         groupName="LaTeX" displayName="File argument should include the extension"
+                         enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
                          groupName="LaTeX" displayName="Nested includes"
                          enabledByDefault="true"/>
@@ -607,6 +629,12 @@
             <className>nl.hannahsten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexToggleSmartQuotes</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>
