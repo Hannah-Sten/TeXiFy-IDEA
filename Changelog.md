@@ -19,6 +19,7 @@
 - Fixed not being able to disable bibtex. (#945)
 - Fixed package dependencies being inserted in the wrong file. (#942)
 - Support compilation of non-project files. (#987)
+- Fixed crash when providing optional parameters to a \ref command as comma separated list. (#980)
 - Fixed missing autocompletion when a file name is equal to a folder name. (#937)
 - Fixed crashes. (#909, #948, #963)
 
