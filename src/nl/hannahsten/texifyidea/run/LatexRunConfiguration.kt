@@ -162,7 +162,7 @@ class LatexRunConfiguration constructor(project: Project,
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format ?: Format.PDF
+        this.outputFormat = format
 
         // Read whether the run config has been run
         val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)

@@ -6,6 +6,7 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
+import nl.hannahsten.texifyidea.settings.TexifySettings;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -105,6 +106,6 @@ public interface LatexCommands extends StubBasedPsiElement<LatexCommandsStub>, P
         }
 
         LatexCommands labelMaybe = children.iterator().next();
-        return "\\label".equals(labelMaybe.getName());
+        return TexifySettings.getInstance().getLabelPreviousCommands().containsKey(labelMaybe.getName());
     }
 }

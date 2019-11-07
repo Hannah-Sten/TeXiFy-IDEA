@@ -16,7 +16,10 @@ import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
 import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.FileUtil
+import nl.hannahsten.texifyidea.util.files.createExcludedDir
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import java.io.File
 
 /**
