@@ -4,6 +4,7 @@
 ## Additions
 - Table creation wizard. (#907)
 - Project-specific setting to change compiler compatibility. (#891)
+- Added an option to the run config to always compile twice. (#908)
 - Added inspection that checks whether the \addbibresource has a file extension. (#956)
 - Specify custom commands that define a label. (#815)
 
