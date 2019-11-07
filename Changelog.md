@@ -6,6 +6,7 @@
 - Project-specific setting to change compiler compatibility. (#891)
 - Added an option to the run config to always compile twice. (#908)
 - Added inspection that checks whether the \addbibresource has a file extension. (#956)
+- Add support for including packages in package or documentclass options. (#911, #949)
 - Specify custom commands that define a label. (#815)
 
 ## Changes
