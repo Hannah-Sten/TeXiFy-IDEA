@@ -6,17 +6,31 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.action.EditorAction
+import nl.hannahsten.texifyidea.run.okular.OkularConversation
+import nl.hannahsten.texifyidea.run.okular.OkularForwardSearch
 import nl.hannahsten.texifyidea.run.okular.isOkularAvailable
+import nl.hannahsten.texifyidea.run.runCommand
 
 /**
+ * Starts a forward search action in Okular.
+ *
+ * Note: this is only available on Linux.
+ *
  * @author Abby Berkers
  */
 open class ForwardSearchAction : EditorAction(
         "_ForwardSearch",
         TexifyIcons.RIGHT
 ) {
-    override fun actionPerformed(file: VirtualFile?, project: Project?, editor: TextEditor?) {
-        // Todo forward search.
+    override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
+        if (!isOkularAvailable()) {
+            return
+        }
+
+        val document = editor.editor.document
+        val line = document.getLineNumber(editor.editor.caretModel.offset) + 1
+
+        OkularConversation.forwardSearch(null, file.path, line)
     }
 
     override fun update(e: AnActionEvent) {

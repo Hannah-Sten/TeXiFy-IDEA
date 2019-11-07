@@ -14,6 +14,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
 import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
+import nl.hannahsten.texifyidea.run.okular.OkularForwardSearch
+import nl.hannahsten.texifyidea.run.okular.isOkularAvailable
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.files.FileUtil
@@ -84,6 +86,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // First check if the user specified a custom viewer, if not then try other supported viewers
+
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
             // Split user command on spaces, then replace {pdf} if needed
@@ -113,6 +116,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Open Sumatra after compilation & execute inverse search.
             SumatraForwardSearch().execute(handler, runConfig, environment)
         }
+        else if(isOkularAvailable()) {
+            OkularForwardSearch().execute(handler, runConfig, environment)
+        }
         else if(isEvinceAvailable()) {
             EvinceForwardSearch().execute(handler, runConfig, environment)
         }
@@ -127,7 +133,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
             handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
         }
-
         return handler
     }
 
