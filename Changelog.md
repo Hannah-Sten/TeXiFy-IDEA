@@ -7,6 +7,7 @@
 - Added an option to the run config to always compile twice. (#908)
 - Added inspection that checks whether the \addbibresource has a file extension. (#956)
 - Add support for including packages in package or documentclass options. (#911, #949)
+- Added continuous preview of math and TikZ pictures. (#923)
 - Specify custom commands that define a label. (#815)
 
 ## Changes
