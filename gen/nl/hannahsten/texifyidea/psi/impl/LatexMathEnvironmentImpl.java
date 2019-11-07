@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexMathEnvironmentImpl extends ASTWrapperPsiElement implements LatexMathEnvironment {
 
-  public LatexMathEnvironmentImpl(ASTNode node) {
+  public LatexMathEnvironmentImpl(@NotNull ASTNode node) {
     super(node);
   }
 

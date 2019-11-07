@@ -19,6 +19,9 @@ import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.files.createFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
 import org.intellij.lang.annotations.Language
 import java.io.File
 import java.util.*
