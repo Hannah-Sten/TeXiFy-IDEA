@@ -71,7 +71,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val handlesNumberOfCompiles = true
 
-        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile, moduleRoots: Array<VirtualFile>): MutableList<String> {
+        override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
             // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
