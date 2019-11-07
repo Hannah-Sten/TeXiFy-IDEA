@@ -100,6 +100,11 @@ object Magic {
         )
 
         /**
+         * LaTeX commands that increase a counter that can be labeled.
+         */
+        @JvmField val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeled.keys
+
+        /**
          * All commands that represent a reference to a label.
          */
         @JvmField val labelReference = hashSetOf(
@@ -223,6 +228,13 @@ object Magic {
         @JvmField val illegalExtensions = mapOf(
                 "\\include" to listOf(".tex"),
                 "\\bibliography" to listOf(".bib")
+        )
+
+        /**
+         * Commands that should have the given file extensions.
+         */
+        @JvmField val requiredExtensions = mapOf(
+                "\\addbibresource" to listOf("bib")
         )
 
         /**
