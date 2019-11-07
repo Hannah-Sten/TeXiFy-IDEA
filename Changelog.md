@@ -8,10 +8,11 @@
 
 ## Changes
 - Performance improvements. (#932, #944)
-- Internal improvements
+- Internal code improvements.
 
 ## Bug fixes
-- Fixed not being able to disable bibtex (#945)
-- Fixed crashes (#909, #948)
+- Renamed labels will now be renamed in all files. (#950)
+- Fixed not being able to disable bibtex. (#945)
+- Fixed crashes. (#909, #948)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/16).
