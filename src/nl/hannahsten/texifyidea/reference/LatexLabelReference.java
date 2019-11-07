@@ -9,8 +9,6 @@ import nl.hannahsten.texifyidea.TexifyIcons;
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.hannahsten.texifyidea.psi.BibtexId;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
-import nl.hannahsten.texifyidea.util.*;
-import nl.hannahsten.texifyidea.psi.LatexRequiredParam;
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.LabelsKt;
