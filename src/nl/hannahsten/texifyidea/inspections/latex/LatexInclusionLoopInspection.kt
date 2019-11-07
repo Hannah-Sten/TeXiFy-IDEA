@@ -9,9 +9,9 @@ import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.findInclusions
-import nl.hannahsten.texifyidea.util.findRelativeFile
-import nl.hannahsten.texifyidea.util.findRootFile
+import nl.hannahsten.texifyidea.util.files.findInclusions
+import nl.hannahsten.texifyidea.util.files.findRelativeFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**

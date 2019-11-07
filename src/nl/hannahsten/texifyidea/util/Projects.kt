@@ -1,9 +1,13 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.util.files.allChildFiles
 
 /**
  * Get a project [GlobalSearchScope] for this project.
@@ -33,4 +37,12 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
             .filter { it.isNotEmpty() }
             .mapNotNull { it.firstOrNull() }
             .toSet()
+}
+
+/**
+ * Get all the virtual files that are in the project of a given file type.
+ */
+fun Project.allFiles(type: FileType): Collection<VirtualFile> {
+    val scope = GlobalSearchScope.projectScope(this)
+    return FileTypeIndex.getFiles(type, scope)
 }

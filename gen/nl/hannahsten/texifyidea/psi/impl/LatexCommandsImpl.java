@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.psi.LatexVisitor;
 import nl.hannahsten.texifyidea.reference.LatexLabelReference;
 import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.PsiCommandsKt;
+import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -141,5 +142,12 @@ public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub
     @Override
     public String toString() {
         return "LatexCommandsImpl(COMMANDS)[STUB]{" + getName() + "}";
+    }
+
+    @Override
+    public void subtreeChanged() {
+        ReferencedFileSetService setService = ReferencedFileSetService.getInstance(getProject());
+        setService.dropCaches(getContainingFile());
+        super.subtreeChanged();
     }
 }

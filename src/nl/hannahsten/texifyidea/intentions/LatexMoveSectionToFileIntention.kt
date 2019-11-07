@@ -9,6 +9,10 @@ import nl.hannahsten.texifyidea.inspections.latex.LatexTooLargeSectionInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.createFile
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import java.io.File
 
 /**

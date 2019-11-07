@@ -15,9 +15,9 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.usesBiber
@@ -41,7 +41,9 @@ class LatexRunConfiguration constructor(project: Project,
         private const val MAIN_FILE = "main-file"
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
+        private const val COMPILE_TWICE = "compile-twice"
         private const val OUTPUT_FORMAT = "output-format"
+        private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
     }
 
@@ -66,12 +68,16 @@ class LatexRunConfiguration constructor(project: Project,
     // Enable auxiliary directories by default on MiKTeX only
     var hasAuxiliaryDirectories = LatexDistribution.isMiktex
     var hasOutputDirectories = true
+    var compileTwice = false
     var outputFormat: Format = Format.PDF
     private var bibRunConfigId = ""
     var isSkipBibtex = false
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
-    var isLastRunConfig = true
+    var isLastRunConfig = false
+
+    // Whether the run configuration has already been run or not, since it has been created
+    var hasBeenRun = false
 
     var bibRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)
@@ -155,10 +161,23 @@ class LatexRunConfiguration constructor(project: Project,
             this.hasOutputDirectories = java.lang.Boolean.parseBoolean(outDirBoolean)
         }
 
+        // Read whether to compile twice
+        val compileTwiceBoolean = parent.getChildText(COMPILE_TWICE)
+        if (compileTwiceBoolean == null) {
+            this.compileTwice = false
+        }
+        else {
+            this.compileTwice = compileTwiceBoolean.toBoolean()
+        }
+
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format ?: Format.PDF
+        this.outputFormat = format
+
+        // Read whether the run config has been run
+        val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
+        this.hasBeenRun = hasBeenRunString?.toBoolean() ?: false
 
         // Read bibliography run configuration
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
@@ -221,10 +240,20 @@ class LatexRunConfiguration constructor(project: Project,
         outDirElt.text = java.lang.Boolean.toString(hasOutputDirectories)
         parent.addContent(outDirElt)
 
+        // Write whether to compile twice
+        val compileTwiceElt = Element(COMPILE_TWICE)
+        compileTwiceElt.text = compileTwice.toString()
+        parent.addContent(compileTwiceElt)
+
         // Write output format.
         val outputFormatElt = Element(OUTPUT_FORMAT)
         outputFormatElt.text = outputFormat.name
         parent.addContent(outputFormatElt)
+
+        // Write whether the run config has been run
+        val hasBeenRunElt = Element(HAS_BEEN_RUN)
+        hasBeenRunElt.text = hasBeenRun.toString()
+        parent.addContent(hasBeenRunElt)
 
         // Write bibliography run configuration
         val bibRunConfigElt = Element(BIB_RUN_CONFIG)
@@ -240,7 +269,7 @@ class LatexRunConfiguration constructor(project: Project,
         val defaultCompiler = when {
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
-            else -> BibliographyCompiler.BIBTEX
+            else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
@@ -304,8 +333,15 @@ class LatexRunConfiguration constructor(project: Project,
 
     override fun getOutputFilePath(): String {
         val folder: String = if (hasOutputDirectories) {
-            ProjectRootManager.getInstance(project).fileIndex
-                    .getContentRootForFile(mainFile!!)!!.path + "/out/"
+            val contentRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+
+            // The contentRoot may be null if the file is not in the project
+            if (contentRoot != null) {
+                contentRoot.path + "/out/"
+            }
+            else {
+                mainFile!!.parent.path + "/"
+            }
         }
         else {
             mainFile!!.parent.path + "/"

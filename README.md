@@ -180,7 +180,6 @@ when you do not recognize the file.
 * <kbd>Ctrl</kbd>+<kbd>K</kbd> Commit and push changes.
 * <kbd>Ctrl</kbd>+<kbd>T</kbd> Pull changes.
 
-
 Any suggestions for improvements of the installation instructions, however small? Please let us know at [gitter](https://gitter.im/TeXiFy-IDEA)!
 
 ## <a name="equation-preview">Equation preview and TikZ Preview</a>
