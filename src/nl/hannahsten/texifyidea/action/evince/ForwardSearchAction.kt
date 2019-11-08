@@ -23,13 +23,13 @@ open class ForwardSearchAction : EditorAction(
 
     val evince = PdfViewer.EVINCE
 
-    override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
+    override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!evince.isAvailable()) {
             return
         }
 
-        val document = editor.editor.document
-        val line = document.getLineNumber(editor.editor.caretModel.offset) + 1
+        val document = textEditor.editor.document
+        val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
         evince.conversation!!.forwardSearch(pdfPath = null, sourceFilePath = file.path, line = line)
     }

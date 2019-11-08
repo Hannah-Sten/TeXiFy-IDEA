@@ -100,13 +100,13 @@ fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(pro
  */
 fun VirtualFile.findFile(fileName: String, extensions: Set<String>): VirtualFile? {
     var file = findFileByRelativePath(fileName)
-    if (file != null) return file
+    if (file != null && !file.isDirectory) return file
 
     extensions.forEach { extension ->
         val lookFor = if (fileName.endsWith(".$extension")) fileName else "$fileName.$extension"
         file = findFileByRelativePath(lookFor)
 
-        if (file != null) return file
+        if (file != null && !file!!.isDirectory) return file
     }
 
     return null
@@ -164,7 +164,8 @@ fun PsiFile.findRootFile(): PsiFile {
             return@forEach
         }
 
-        if (file.isIncludedBy(file, inclusions)) {
+        // If the root file contains this, we have found the root file
+        if (file.contains(this, inclusions)) {
             return file
         }
     }
@@ -181,7 +182,7 @@ fun PsiFile.findRootFile(): PsiFile {
  *              Map that maps each psi file to all the files that get included by said file.
  * @return `true` when `childMaybe` is a child of `this` file, `false` otherwise.
  */
-private fun PsiFile.isIncludedBy(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiFile>>): Boolean {
+private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiFile>>): Boolean {
     return IsChildDFS(
             this,
             { mapping[it] ?: emptySet() },
@@ -206,6 +207,11 @@ fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
         val includedName = command.includedFileName() ?: continue
         val declaredIn = command.containingFile
         val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
+
+        // When it looks like a file includes itself, we skip it
+        if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
+            continue
+        }
 
         val inclusionSet = inclusions[declaredIn] ?: HashSet()
         inclusionSet.add(referenced)
@@ -310,9 +316,10 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val scope = fileSearchScope
     val commands = LatexCommandsIndex.getItems(project, scope)
 
+    val rootFile = findRootFile()
+
     commands.forEach { command ->
         val fileName = command.includedFileName() ?: return@forEach
-        val rootFile = findRootFile()
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
         val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
         if (included in files) return@forEach
@@ -368,7 +375,7 @@ fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
 fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getDocument(this)
 
 /**
- * @see [LatexCommandsIndex.getIndexedCommands]
+ * @see [LatexCommandsIndex.getItems]
  */
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
 

@@ -27,8 +27,8 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         val FORM_KEY = Key<PreviewFormUpdater>("updater")
     }
 
-    override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
-        val element: PsiElement = getElement(file, project, editor) ?: return
+    override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
+        val element: PsiElement = getElement(file, project, textEditor) ?: return
 
         // Make sure we're currently in a tikz environment.
         val tikzEnvironment = findTikzEnvironment(element) ?: return
@@ -48,7 +48,7 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         }
     }
 
-    private fun findTikzEnvironment(innerElement: PsiElement): PsiElement? {
+    fun findTikzEnvironment(innerElement: PsiElement): PsiElement? {
         // If the selected element is already a tikz env, we're good.
         if (innerElement is LatexEnvironment && innerElement.isTikz()) return innerElement
 

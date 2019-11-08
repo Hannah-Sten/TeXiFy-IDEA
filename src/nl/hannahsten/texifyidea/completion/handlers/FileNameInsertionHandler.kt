@@ -22,7 +22,7 @@ open class FileNameInsertionHandler : InsertHandler<LookupElement> {
         val normalTextWord = file.findElementAt(offset) ?: return
         val command = normalTextWord.parentOfType(LatexCommands::class) ?: return
 
-        if (command.name != "\\include" && command.name != "\\bibliography" && command.name != "\\addbibresource") return
+        if (command.name != "\\include" && command.name != "\\bibliography") return
 
         // Only replace the first command argument.
         val firstRequiredArgument = command.firstChildOfType(LatexRequiredParam::class) ?: return

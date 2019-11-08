@@ -37,12 +37,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")
 
-        // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
-        // checking for bibliography commands
-        if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
-            runConfig.generateBibRunConfig()
-        }
-
         createOutDirs(mainFile)
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
@@ -50,6 +44,30 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
+
+        // Some initial setup
+        if (!runConfig.hasBeenRun) {
+            // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
+            // checking for bibliography commands
+            if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
+                runConfig.generateBibRunConfig()
+            }
+
+            runConfig.hasBeenRun = true
+        }
+
+        // If there is no bibtex involved and we don't need to compile twice, then this is the last compile
+        if (runConfig.bibRunConfig == null) {
+            if (!runConfig.compileTwice) {
+                runConfig.isLastRunConfig = true
+            }
+
+            // If we need to compile twice but we don't use bibtex, schedule the second compile if this is the first compile
+            if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
+                handler.addProcessListener(RunLatexListener(runConfig, environment))
+                return handler
+            }
+        }
 
         runConfig.bibRunConfig?.let {
             if (runConfig.isSkipBibtex) {
@@ -80,10 +98,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // Do not open the pdf viewer when this is not the last run config in the chain
-        if (!runConfig.isLastRunConfig) {
-            return handler
+        if (runConfig.isLastRunConfig) {
+            openPdfViewer(handler)
         }
 
+        return handler
+    }
+
+    /**
+     * Add a certain process listener for opening the right pdf viewer depending on settings and OS.
+     */
+    private fun openPdfViewer(handler: ProcessHandler) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
 
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
@@ -129,7 +154,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
             handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
         }
-        return handler
     }
 
     /**

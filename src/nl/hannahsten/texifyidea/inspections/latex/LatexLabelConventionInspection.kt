@@ -10,13 +10,13 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
 import kotlin.Comparator
-import kotlin.collections.ArrayList
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
@@ -61,7 +61,8 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                               descriptors: MutableList<ProblemDescriptor>) {
         val commands = file.commandsInFile()
         for (cmd in commands) {
-            if (cmd.name != "\\label") {
+            val labelAnyCommands = TexifySettings.getInstance().labelPreviousCommands
+            if (!labelAnyCommands.containsKey(cmd.name)) {
                 continue
             }
 
@@ -76,7 +77,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             }
 
             val prefix = Magic.Command.labeled[context.name]!!
-            if (!required[0].startsWith("$prefix:")) {
+            val position = labelAnyCommands[cmd.name]?.position ?: continue
+
+            val label = required.getOrNull(position - 1) ?: continue
+            if (!label.startsWith("$prefix:")) {
                 descriptors.add(manager.createProblemDescriptor(
                         cmd,
                         "Unconventional label prefix",
@@ -115,9 +119,18 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val context = findContextCommand(command) ?: return
-            val file = command.containingFile
-            val document = file.document() ?: return
-            val required = command.firstChildOfType(LatexRequiredParam::class) ?: return
+            val baseFile = command.containingFile
+            val name = command.name ?: return
+            val position =
+                    TexifySettings
+                            .getInstance()
+                            .labelPreviousCommands
+                            .getOrDefault(name, null)
+                            ?.position ?: return
+            val required = command
+                    .childrenOfType(LatexRequiredParam::class)
+                    .toList()
+                    .getOrNull(position - 1)?: return
             val oldLabel = required.firstChildOfType(LatexNormalText::class)?.text ?: return
 
             // Determine label name.
@@ -130,35 +143,56 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 "$prefix:$labelName"
             }
 
-            val createdLabel = appendCounter(createdLabelBase, file.findLabelsInFileSet())
+            val createdLabel = appendCounter(createdLabelBase, baseFile.findLabelsInFileSet())
 
             // Replace in document.
-            val references = findReferences(file, oldLabel)
-            references.add(required)
-            references.sortWith(Comparator { obj, anotherInteger -> anotherInteger.endOffset().compareTo(obj.endOffset()) })
+            val filesAndReferences = findReferences(baseFile, oldLabel)
+            for (pair in filesAndReferences) {
+                val document = pair.first.document() ?: break
+                val references = pair.second
 
-            for (reference in references) {
-                document.replaceString(reference.textRange, "{$createdLabel}")
+                // Also replace the label
+                if (pair.first == baseFile) {
+                    references.add(required)
+                }
+
+                // Replace references starting from the end of the document, to avoid previous offsets changing
+                references.sortWith(Comparator { obj, anotherInteger -> anotherInteger.endOffset().compareTo(obj.endOffset()) })
+
+                for (reference in references) {
+                    document.replaceString(reference.textRange, "{$createdLabel}")
+                }
             }
         }
 
         /**
          * Find all references to label `labelName`.
          */
-        private fun findReferences(file: PsiFile, labelName: String): MutableList<LatexRequiredParam> {
-            val resultList = ArrayList<LatexRequiredParam>()
+        private fun findReferences(file: PsiFile, labelName: String): MutableSet<Pair<PsiFile, MutableList<LatexRequiredParam>>> {
+            val result = mutableSetOf<Pair<PsiFile, MutableList<LatexRequiredParam>>>()
 
-            val commands = file.commandsInFileSet().filter { it.name == "\\ref" || it.name == "\\cite" }.reversed()
-            for (ref in commands) {
-                val parameter = ref.firstChildOfType(LatexRequiredParam::class) ?: continue
-                val name = parameter.firstChildOfType(LatexNormalText::class)?.text ?: continue
+            val commandsAndFiles = file.commandsAndFilesInFileSet()
 
-                if (name == labelName) {
-                    resultList.add(parameter)
+            // Loop over every file
+            for (pair in commandsAndFiles) {
+                // Only look at commands which refer to something
+                val commands = pair.second.filter { it.name == "\\ref" || it.name == "\\cite" }.reversed()
+                val requiredParams = mutableListOf<LatexRequiredParam>()
+
+                // Find all the parameters with the given labelName
+                for (ref in commands) {
+                    val parameter = ref.firstChildOfType(LatexRequiredParam::class) ?: continue
+                    val name = parameter.firstChildOfType(LatexNormalText::class)?.text ?: continue
+
+                    if (name == labelName) {
+                        requiredParams.add(parameter)
+                    }
                 }
+
+                result.add(Pair(pair.first, requiredParams))
             }
 
-            return resultList
+            return result
         }
 
         /**

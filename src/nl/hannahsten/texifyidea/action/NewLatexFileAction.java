@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.Consumer;
 import nl.hannahsten.texifyidea.TexifyIcons;
 import nl.hannahsten.texifyidea.file.*;
 import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory;
@@ -46,7 +47,8 @@ public class NewLatexFileAction extends CreateElementActionBase {
         builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE);
         builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE);
         builder.addKind("TikZ (.tikz)", TexifyIcons.TIKZ_FILE, OPTION_TIKZ_FILE);
-        builder.show("", null, fileCreator);
+        Consumer<PsiElement> consumer = (el) -> {};
+        builder.show("", null, fileCreator, consumer);
 
         return fileCreator.getCreatedElements();
     }

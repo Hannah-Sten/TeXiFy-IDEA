@@ -63,7 +63,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
                     .toSet()
 
             // Include packages.
-            if (!PackageUtils.getIncludedPackages(file).contains(pack.name) && envName !in envDefinitions) {
+            if (!file.includedPackages().contains(pack.name) && envName !in envDefinitions) {
                 file.insertUsepackage(pack)
             }
 

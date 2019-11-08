@@ -76,6 +76,11 @@ fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
 fun PsiFile.commandsInFileSet(): Collection<LatexCommands> = LatexCommandsIndex.getItemsInFileSet(this)
 
 /**
+ * @see [LatexCommandsIndex.getItemsAndFilesInFileSet]
+ */
+fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexCommands>>> = LatexCommandsIndex.getItemsAndFilesInFileSet(this)
+
+/**
  * Get all the definitions in the file set.
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {

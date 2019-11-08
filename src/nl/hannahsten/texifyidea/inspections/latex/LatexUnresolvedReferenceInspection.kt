@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.findLabelsInFileSet
-import nl.hannahsten.texifyidea.util.hasStar
 import java.util.*
 
 /**
@@ -43,22 +42,18 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
             }
 
             val parts = required[0].split(",")
-            for (i in 0 until parts.size) {
+            for (i in parts.indices) {
                 val part = parts[i]
                 if (part == "*") continue
 
+                // If there is no label with this required label parameter value
                 if (!labels.contains(part.trim())) {
-                    var offset = command.name!!.length + 1
+                    // We have to subtract from the total length, because we do not know whether optional
+                    // parameters were included with [a][b][c] or [a,b,c] in which case the
+                    // indices of the parts are different with respect to the start of the command
+                    var offset = command.textLength - parts.sumBy { it.length + 1 }
                     for (j in 0 until i) {
                         offset += parts[j].length + 1
-                    }
-
-                    // Add offset change by optional parameters.
-                    offset += command.optionalParameters.sumBy { it.length + 2 }
-
-                    // Add extra star offset
-                    if (command.hasStar()) {
-                        offset++
                     }
 
                     descriptors.add(manager.createProblemDescriptor(
