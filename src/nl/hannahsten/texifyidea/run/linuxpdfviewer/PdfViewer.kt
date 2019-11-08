@@ -27,7 +27,7 @@ enum class PdfViewer(private val viewerCommand: String,
         return if (this == OTHER) {
             true
         }
-        else if (SystemInfo.isWindows) {
+        else if (SystemInfo.isWindows && this == SUMATRA) {
             isSumatraAvailable
         }
         // Only support Evince and Okular on Linux, although they can be installed on other systems like Mac.
