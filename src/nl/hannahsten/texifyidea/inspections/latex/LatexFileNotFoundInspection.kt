@@ -8,6 +8,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
@@ -20,13 +21,11 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.firstChildOfType
-import nl.hannahsten.texifyidea.util.formatAsFileName
-import nl.hannahsten.texifyidea.util.removeAll
-import nl.hannahsten.texifyidea.util.runWriteAction
+import java.io.File
 import java.util.*
 
 /**
@@ -120,6 +119,8 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexParameter
             val file = cmd.containingFile
+            val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
+            val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
             // Create new files
             // Remove the braces of the LaTeX command before creating a filename of it
@@ -131,8 +132,13 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     .newFileFullPath ?: return
 
             runWriteAction {
-                createFile("$filePath.tex", "")
-                LocalFileSystem.getInstance().refresh(true)
+                val createdFile = createFile("$filePath.tex", "")
+
+                // Update LaTeX command parameter with chosen filename
+                val fileNameRelativeToRoot = createdFile.absolutePath
+                        .replace(File.separator, "/")
+                        .replace(root, "")
+                document.replaceString(cmd.textOffset + 1, cmd.endOffset() - 1, fileNameRelativeToRoot)
             }
         }
     }
