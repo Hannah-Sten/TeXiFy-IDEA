@@ -40,4 +40,4 @@ menu:Tools[LaTeX > Clear Generated Files]
 
 Be careful, you might not be able to fully undo this operation!
 
-This works the same as clearing auxiliary files, but will also delete other generated files like pdfs.
+This will delete all generated files in `src/`, `auxil/` and `out/`, including pdfs and generated `_minted-*` folders.
