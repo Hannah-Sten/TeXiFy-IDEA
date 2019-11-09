@@ -100,6 +100,11 @@ object Magic {
         )
 
         /**
+         * LaTeX commands that increase a counter that can be labeled.
+         */
+        @JvmField val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeled.keys
+
+        /**
          * All commands that represent a reference to a label.
          */
         @JvmField val labelReference = hashSetOf(
@@ -226,6 +231,13 @@ object Magic {
         )
 
         /**
+         * Commands that should have the given file extensions.
+         */
+        @JvmField val requiredExtensions = mapOf(
+                "\\addbibresource" to listOf("bib")
+        )
+
+        /**
          * Extensions that should only be scanned for the provided include commands.
          */
         @JvmField val includeOnlyExtensions = mapOf(
@@ -307,7 +319,7 @@ object Magic {
          *
          * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
          */
-        @JvmField val sentenceEnd = RegexPattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%])|(^\\. )")!!
+        @JvmField val sentenceEnd = RegexPattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%\\s])|(^\\. )")!!
 
         /**
          * Matches all interpunction that marks the end of a sentence.
@@ -327,6 +339,16 @@ object Magic {
          * at the end of the sentece (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
         @JvmField val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.|\\s)")!!
+
+        /**
+         * Matches all comments, starting with % and ending with a newline.
+         */
+        val comments: RegexPattern = RegexPattern.compile("%(.*)\\n")
+
+        /**
+         * Matches everything except comments which start with % and end with a newline.
+         */
+        @JvmField val noComments: RegexPattern = RegexPattern.compile("(?<=^|\\n)[^%]+")
 
         /**
          * Matches leading and trailing whitespace on a string.
