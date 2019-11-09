@@ -343,7 +343,7 @@ object Magic {
         /**
          * Matches all comments, starting with % and ending with a newline.
          */
-        val comments: RegexPattern = RegexPattern.compile("%(.*)\$")
+        val comments: RegexPattern = RegexPattern.compile("%(.*)\\n")
 
         /**
          * Matches everything except comments which start with % and end with a newline.
