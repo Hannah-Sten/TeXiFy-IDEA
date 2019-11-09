@@ -10,7 +10,7 @@ The default shortcut for inverse search in Okular is kbd:[Shift + Left mouse cli
 
 == Configuring inverse (or backwards) search
 - In Okular, open the settings and go to the Editor tab.
-- Select the Custom Text Editor in the editor field, and type the command `idea --line %l` (for PyCharm replace `idea` with `charm`).
+- Select the Custom Text Editor in the editor field, and type the command `idea --line %l` (for PyCharm replace `idea` with `pycharm`).
 - Check that `idea` is available with `which idea`. If it isn't, you might have to enable the "Generate shell scripts" settings in Jetbrains Toolbox, see the https://www.jetbrains.com/help/idea/opening-files-from-command-line.html[IntelliJ documentation] for more information.
 
 See the https://docs.kde.org/stable5/en/kdegraphics/okular/inverse_search.html[Okular documentation] for more information on inverse search with Okular.
