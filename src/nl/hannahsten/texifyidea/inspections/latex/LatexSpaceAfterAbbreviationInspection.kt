@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.document
+import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.inMathContext
 
 /**
@@ -37,6 +37,13 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                 continue
             }
 
+            // We find ranges where comments start and end, to check if matches are in there
+            val commentMatcher = Magic.Pattern.comments.matcher(text.text)
+            val commentParts = arrayListOf<IntRange>()
+            while (commentMatcher.find()) {
+                commentParts.add(commentMatcher.start()..commentMatcher.end())
+            }
+
             val matcher = Magic.Pattern.abbreviation.matcher(text.text)
             while (matcher.find()) {
                 val matchRange = matcher.start()..matcher.end()
@@ -45,9 +52,14 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                     continue
                 }
 
+                // If the match is inside a comment, ignore it
+                if (commentParts.any { it.first < matchRange.first && it.last > matchRange.last }) {
+                    continue
+                }
+
                 descriptors.add(manager.createProblemDescriptor(
                         text,
-                        TextRange(matchRange.endInclusive - 1, matchRange.endInclusive + 1),
+                        TextRange(matchRange.last - 1, matchRange.last + 1),
                         "Abbreviation is not followed by a normal space",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
@@ -62,9 +74,9 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
     private fun isFollowedByWhitespace(text: LatexNormalText, matchRange: IntRange): Boolean {
         // Whitespace followed in the Normal Text.
         val string = text.text
-        if (text.text.length > matchRange.endInclusive) {
-            val spaceMaybe = string.substring(matchRange.endInclusive, matchRange.endInclusive + 1)
-            if (matchRange.endInclusive < string.length && spaceMaybe.matches(Regex("\\s+"))) {
+        if (text.text.length > matchRange.last) {
+            val spaceMaybe = string.substring(matchRange.last, matchRange.last + 1)
+            if (matchRange.last < string.length && spaceMaybe.matches(Regex("\\s+"))) {
                 return true
             }
         }
@@ -90,8 +102,8 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
         }
 
         private fun replaceNormalText(document: Document, normalText: LatexNormalText) {
-            val start = normalText.textOffset + whitespaceRange.endInclusive
-            val end = normalText.textOffset + whitespaceRange.endInclusive + 1
+            val start = normalText.textOffset + whitespaceRange.last
+            val end = normalText.textOffset + whitespaceRange.last + 1
             document.replaceString(start, end, "\\ ")
         }
     }

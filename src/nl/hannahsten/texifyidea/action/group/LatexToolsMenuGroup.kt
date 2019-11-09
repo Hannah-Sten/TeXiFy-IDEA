@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.action.group
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import org.apache.commons.io.FileUtils
 import java.io.File
 

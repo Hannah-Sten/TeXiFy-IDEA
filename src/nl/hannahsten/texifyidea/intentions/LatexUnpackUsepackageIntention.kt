@@ -7,6 +7,8 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
  * @author Hannah Schellekens

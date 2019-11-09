@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry {
 
-  public BibtexEntryImpl(ASTNode node) {
+  public BibtexEntryImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -31,9 +31,9 @@ public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry
   }
 
   @Override
-  @NotNull
+  @Nullable
   public BibtexEndtry getEndtry() {
-    return findNotNullChildByClass(BibtexEndtry.class);
+    return findChildByClass(BibtexEndtry.class);
   }
 
   @Override

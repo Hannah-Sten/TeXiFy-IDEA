@@ -6,7 +6,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import org.jetbrains.concurrency.runAsync
 
 /**
