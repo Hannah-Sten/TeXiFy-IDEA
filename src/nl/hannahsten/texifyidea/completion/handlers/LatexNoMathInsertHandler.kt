@@ -11,6 +11,7 @@ import com.intellij.codeInsight.template.impl.TemplateState
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -62,7 +63,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
                     .toSet()
 
             // Include packages.
-            if (!PackageUtils.getIncludedPackages(file).contains(pack.name) && envName !in envDefinitions) {
+            if (!file.includedPackages().contains(pack.name) && envName !in envDefinitions) {
                 file.insertUsepackage(pack)
             }
 

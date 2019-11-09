@@ -21,13 +21,13 @@ open class ForwardSearchAction : EditorAction(
         TexifyIcons.RIGHT
 ) {
 
-    override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
+    override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!isEvinceAvailable()) {
             return
         }
 
-        val document = editor.editor.document
-        val line = document.getLineNumber(editor.editor.caretModel.offset) + 1
+        val document = textEditor.editor.document
+        val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
         EvinceConversation.forwardSearch(sourceFilePath = file.path, line = line)
     }

@@ -6,6 +6,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.files.document
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
