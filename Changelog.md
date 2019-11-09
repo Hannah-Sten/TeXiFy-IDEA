@@ -12,6 +12,7 @@
 
 ## Changes
 - Performance improvements. (#932, #944)
+- Inspection for normal space after abbreviation will not be triggered in comments. (#983)
 - Internal code improvements.
 
 ## Bug fixes
