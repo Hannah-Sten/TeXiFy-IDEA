@@ -5,7 +5,9 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
@@ -14,10 +16,17 @@ import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.ui.CreateFileDialog
+import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.formatAsFileName
+import nl.hannahsten.texifyidea.util.removeAll
+import nl.hannahsten.texifyidea.util.runWriteAction
 import java.util.*
 
 /**
@@ -47,7 +56,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             // Remove optional parameters from list of parameters
             val parameters = command.parameterList.filter { it.requiredParam != null }
 
-            for (i in 0 until arguments.size) {
+            for (i in arguments.indices) {
                 // when there are more required arguments than actual present break the loop
                 if (i >= parameters.size) {
                     break
@@ -67,7 +76,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 // get the virtual file of the root file
                 val containingDirectory = root.containingDirectory.virtualFile
 
-                // check if the given name is reachable form the root file
+                // check if the given name is reachable from the root file
                 val relative = containingDirectory.findFile(fileName, extensions)
 
                 if (relative != null) {
@@ -91,11 +100,40 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                         "File not found",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly,
-                        *fixes.toTypedArray()
+                        InspectionFix()
                 ))
             }
         }
 
         return descriptors
+    }
+
+    /**
+     * Create a new file.
+     */
+    class InspectionFix : LocalQuickFix {
+
+        override fun getFamilyName() = "Create file"
+
+        override fun startInWriteAction() = false
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val cmd = descriptor.psiElement as LatexParameter
+            val file = cmd.containingFile
+
+            // Create new files
+            // Remove the braces of the LaTeX command before creating a filename of it
+            val fileName = cmd.text.removeAll("{", "}")
+                    .formatAsFileName()
+
+            // Display a dialog to ask for the location and name of the new file.
+            val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName.formatAsFileName())
+                    .newFileFullPath ?: return
+
+            runWriteAction {
+                createFile("$filePath.tex", "")
+                LocalFileSystem.getInstance().refresh(true)
+            }
+        }
     }
 }
