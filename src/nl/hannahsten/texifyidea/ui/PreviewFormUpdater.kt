@@ -1,12 +1,15 @@
 package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.util.SystemInfo
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
+import javax.swing.SwingUtilities.invokeLater
 
 /**
  * @author Sergei Izmailov
@@ -38,7 +41,7 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
      * This function also starts the creation and compilation of the temporary preview document, and will then
      * either display the preview, or if something failed, the error produced.
      */
-    fun setPreviewCode(previewCode: String) {
+    fun compilePreview(previewCode: String) {
         previewForm.setEquation(previewCode)
 
         // First define the function that actually does stuff in a temp folder. The usual temp directory might not be
@@ -89,7 +92,9 @@ $previewCode
                 ) ?: throw AccessDeniedException(tempDirectory)
 
                 val image = ImageIO.read(File("$tempBasename.png"))
-                previewForm.setPreview(image, latexStdoutText)
+                invokeLater {
+                    previewForm.setPreview(image, latexStdoutText)
+                }
             }
             finally {
                 // Delete all the created temp files in the default temp directory.
@@ -97,19 +102,18 @@ $previewCode
             }
         }
 
-        try {
-            // Create the default temp directory.
-            setPreviewCodeInTemp(createTempDir())
+        GlobalScope.launch {
+            try {
+                // Create the default temp directory.
+                setPreviewCodeInTemp(createTempDir())
+            } catch (exception: AccessDeniedException) {
+                // If pdf2svg or inkscape does not have access to the temp directory, try again with temp folder in the
+                // home directory.
+                setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
+            } catch (exception: IOException) {
+                previewForm.setLatexErrorMessage("${exception.message}")
+            }
         }
-        catch (exception: AccessDeniedException) {
-            // If pdf2svg or inkscape does not have access to the temp directory, try again with temp folder in the
-            // home directory.
-            setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
-        }
-        catch (exception: IOException) {
-            previewForm.setLatexErrorMessage("${exception.message}")
-        }
-
     }
 
     private fun runCommand(command: String, args: Array<String>, workDirectory: File): String? {

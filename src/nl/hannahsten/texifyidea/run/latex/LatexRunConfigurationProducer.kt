@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfiguration>() {
 
     override fun getConfigurationFactory(): ConfigurationFactory {
-        return LatexConfigurationFactory(LatexRunConfigurationType())
+        return LatexConfigurationFactory(LatexRunConfigurationType.instance)
     }
 
     override fun setupConfigurationFromContext(runConfiguration: LatexRunConfiguration,

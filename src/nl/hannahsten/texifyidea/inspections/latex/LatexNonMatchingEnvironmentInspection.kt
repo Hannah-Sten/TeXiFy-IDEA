@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
 
 /**

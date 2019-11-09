@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.action.group
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import nl.hannahsten.texifyidea.util.isLatexFile
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
  * @author Hannah Schellekens

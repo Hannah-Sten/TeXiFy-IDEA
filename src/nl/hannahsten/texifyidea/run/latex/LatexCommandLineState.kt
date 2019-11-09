@@ -20,6 +20,10 @@ import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.util.files.FileUtil
+import nl.hannahsten.texifyidea.util.files.createExcludedDir
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Magic.Package.index
 import java.io.File

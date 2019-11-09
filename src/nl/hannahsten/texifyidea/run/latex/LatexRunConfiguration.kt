@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.usesBiber
@@ -187,7 +188,7 @@ class LatexRunConfiguration constructor(project: Project,
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format ?: Format.PDF
+        this.outputFormat = format
 
         // Read whether the run config has been run
         val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
@@ -288,7 +289,7 @@ class LatexRunConfiguration constructor(project: Project,
         val defaultCompiler = when {
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
-            else -> BibliographyCompiler.BIBTEX
+            else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
@@ -369,8 +370,15 @@ class LatexRunConfiguration constructor(project: Project,
 
     override fun getOutputFilePath(): String {
         val folder: String = if (hasOutputDirectories) {
-            ProjectRootManager.getInstance(project).fileIndex
-                    .getContentRootForFile(mainFile!!)!!.path + "/out/"
+            val contentRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+
+            // The contentRoot may be null if the file is not in the project
+            if (contentRoot != null) {
+                contentRoot.path + "/out/"
+            }
+            else {
+                mainFile!!.parent.path + "/"
+            }
         }
         else {
             mainFile!!.parent.path + "/"

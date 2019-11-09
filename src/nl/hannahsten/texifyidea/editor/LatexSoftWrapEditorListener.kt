@@ -3,8 +3,8 @@ package nl.hannahsten.texifyidea.editor
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.isLatexFile
-import nl.hannahsten.texifyidea.util.psiFile
+import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
  * Enables automatic soft wrap when a LaTeX file is opened.

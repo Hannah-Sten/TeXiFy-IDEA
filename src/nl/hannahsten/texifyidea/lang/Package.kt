@@ -11,13 +11,14 @@ open class Package @JvmOverloads constructor(
     companion object {
 
         // Predefined packages.
+        @JvmField val DEFAULT = Package("")
         @JvmField val AMSFONTS = Package("amsfonts")
         @JvmField val AMSMATH = Package("amsmath")
         @JvmField val AMSSYMB = Package("amssymb")
         @JvmField val BIBLATEX = Package("biblatex")
+        @JvmField val BOOKTABS = Package("booktabs")
         @JvmField val COMMENT = Package("comment")
         @JvmField val CSQUOTES = Package("csquotes")
-        @JvmField val DEFAULT = Package("")
         @JvmField val FONTENC = Package("fontenc")
         @JvmField val GRAPHICX = Package("graphicx")
         @JvmField val HYPERREF = Package("hyperref")

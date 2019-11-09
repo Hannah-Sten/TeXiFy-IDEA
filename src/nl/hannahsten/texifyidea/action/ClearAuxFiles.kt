@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.Magic
-import org.apache.commons.io.FileUtils
 import java.io.File
 
 /**
@@ -15,8 +14,10 @@ import java.io.File
 class ClearAuxFiles : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
-        val files = FileUtils.listFiles(File(project.basePath), Magic.File.auxiliaryFileTypes, true)
-        files.forEach { it.delete() }
+        val basePath = project.basePath ?: return
+        File(basePath).walk().filter { it.isFile }
+                .filter { it.extension in Magic.File.auxiliaryFileTypes }
+                .forEach { it.delete() }
         LocalFileSystem.getInstance().refresh(true)
     }
 }

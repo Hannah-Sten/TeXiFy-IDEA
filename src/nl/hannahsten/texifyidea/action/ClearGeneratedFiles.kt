@@ -2,9 +2,9 @@ package nl.hannahsten.texifyidea.action
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.Magic
-import org.apache.commons.io.FileUtils
 import java.io.File
 
 /**
@@ -13,10 +13,26 @@ import java.io.File
 class ClearGeneratedFiles : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
-        val files = FileUtils.listFiles(File(project.basePath!!), Magic.File.generatedFileTypes, true)
-        files.forEach { it.delete() }
-        // todo minted files in _minted-*/*
-        // todo dialog
+        val basePath = project.basePath ?: return
+
+        // Delete generated files only in these folders
+        for (folder in setOf("src", "auxil", "out")) {
+            File(basePath, folder).walk().maxDepth(1)
+                    .filter { it.isFile }
+                    .filter { it.extension in Magic.File.generatedFileTypes }
+                    .forEach { it.delete() }
+        }
+
+        // Generated minted files
+        File(basePath, "src").walk().maxDepth(1)
+                .filter { it.name.startsWith("_minted") }
+                .forEach { it.deleteRecursively() }
+
+        showOkCancelDialog("Clear generated files",
+                "Delete all LaTeX generated files? \n" +
+                        "All generated files in src/, auxil/ and out/ will be deleted. \n" +
+                        "You might not be able to fully undo this operation!",
+                "Delete")
         LocalFileSystem.getInstance().refresh(true)
     }
 }
