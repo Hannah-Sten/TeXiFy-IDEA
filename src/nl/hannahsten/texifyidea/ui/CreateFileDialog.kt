@@ -32,7 +32,7 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
             // Make sure the dialog is wide enough to fit the whole path in the text field.
             pathField.textField.columns = pathField.text.length
 
-                    // Add a listener to the browse button to browse a folder
+            // Add a listener to the browse button to browse a folder
             pathField.addBrowseFolderListener(
                     TextBrowseFolderListener(
                             FileChooserDescriptor(false, true, false, false, false, false)

@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
@@ -11,11 +11,15 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.ToggleActionButton
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.TexifyIcons.LATEX_FILE
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.util.Magic
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -36,6 +40,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private var auxDir: JBCheckBox? = null
     private var outDir: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
+    private var makeindex: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: BibliographyPanel
@@ -105,6 +110,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             if (runConfiguration.compileTwice) {
                 runConfiguration.isLastRunConfig = false
             }
+        }
+
+        // Reset whether to handle makeindex
+        if (makeindex != null) {
+            makeindex!!.isSelected = runConfiguration.isMakeindexEnabled
         }
 
         // Reset output format.
@@ -194,6 +204,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             }
         }
 
+        // Apply whether to handle makeindex
+        if (makeindex != null) {
+            runConfiguration.isMakeindexEnabled = makeindex!!.isSelected
+        }
+
         // Apply output format.
         val format = outputFormat.component.selectedItem as Format?
         runConfiguration.outputFormat = format ?: Format.PDF
@@ -254,6 +269,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compileTwice = JBCheckBox("Always compile twice")
         compileTwice!!.isSelected = false
         panel.add(compileTwice)
+
+        makeindex = JBCheckBox("Enable automatic index creation using makeindex")
+        makeindex!!.isSelected = true
+        panel.add(makeindex)
 
         // Output format.
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler
