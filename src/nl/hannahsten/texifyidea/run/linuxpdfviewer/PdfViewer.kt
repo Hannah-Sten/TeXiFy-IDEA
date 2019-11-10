@@ -40,4 +40,9 @@ enum class PdfViewer(private val viewerCommand: String,
             false
         }
     }
+
+    companion object {
+        fun availableSubset(): List<PdfViewer> = values().filter { it.isAvailable() }
+        fun firstAvailable(): PdfViewer = availableSubset().first()
+    }
 }
