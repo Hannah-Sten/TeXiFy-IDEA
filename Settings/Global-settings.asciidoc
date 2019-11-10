@@ -100,6 +100,17 @@ For continuous compilation of the complete document, see link:Compilers#Latexmk[
 
 image::continuous-preview.gif[Continuous preview]
 
+[#pdfviewer]
+== Option to select default PDF viewer
+_Since b0.6.7_
+
+This lists all supported pdf viewers that are installed on your system, which you can select as the default pdf viewer.
+Selecting a supported viewer as default means that you get forward and inverse search, and that the selected pdf viewer is the viewer that will open when compilation is done.
+
+The supported pdf viewers are link:SumatraPDF-support[Sumatra] for Windows, and link:Evince-support[Evince] and link:Okular-support[Okular] for linux.
+You can use any other pdf viewer by selecting the option Custom PDF Viewer.
+
+
 [#labeldefining-commands]
 == Option to specify custom commands that also define a label
 
