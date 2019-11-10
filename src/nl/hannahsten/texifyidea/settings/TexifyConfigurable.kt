@@ -6,7 +6,6 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import nl.hannahsten.texifyidea.settings.labeldefiningcommands.TexifyConfigurableLabelCommands
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import java.awt.Color
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JComponent
@@ -23,8 +22,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticItemInItemize: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
+    private lateinit var pdfViewer: ComboBox<String>
     private lateinit var labelDefiningCommands: TexifyConfigurableLabelCommands
-    private lateinit var linuxPdfViewer: ComboBox<String>
 
     override fun getId() = "TexifyConfigurable"
 
@@ -43,8 +42,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
+                pdfViewer = addPdfViewerOptions()
                 add(labelDefiningCommands.getTable())
-                linuxPdfViewer = addLinuxPdfViewerOptions()
             })
         }
     }
@@ -61,17 +60,13 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         return list
     }
 
-    private fun JPanel.addLinuxPdfViewerOptions(): ComboBox<String> {
-            val availableViewers = PdfViewer.values().filter { it.isAvailable() }.map { it.displayName }.toTypedArray()
+    private fun JPanel.addPdfViewerOptions(): ComboBox<String> {
+            val availableViewers = PdfViewer.availableSubset().map { it.displayName }.toTypedArray()
             val list = ComboBox(availableViewers)
-            val note = JBLabel(" Choose other when using a custom PDF viewer.")
-            note.foreground = Color.GRAY
             add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
                 add(JBLabel("PDF viewer: "))
                 add(list)
-                add(note)
             })
-
             return list
     }
 
@@ -89,9 +84,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || continuousPreview.isSelected != settings.continuousPreview
-                || labelDefiningCommands.isModified()
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
-                || linuxPdfViewer.selectedIndex != settings.pdfViewer.ordinal
+                || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
+                || labelDefiningCommands.isModified()
     }
 
     override fun apply() {
@@ -101,8 +96,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
         settings.continuousPreview = continuousPreview.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
+        settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
         labelDefiningCommands.apply()
-        settings.pdfViewer = PdfViewer.values().filter { it.isAvailable() }[linuxPdfViewer.selectedIndex]
     }
 
     override fun reset() {
@@ -111,8 +106,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         continuousPreview.isSelected = settings.continuousPreview
-        labelDefiningCommands.reset()
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
-        linuxPdfViewer.selectedIndex = settings.pdfViewer.ordinal
+        pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
+        labelDefiningCommands.reset()
     }
 }

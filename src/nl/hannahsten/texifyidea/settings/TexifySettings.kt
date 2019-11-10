@@ -43,22 +43,26 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
-                labelCommands = labelCommands.mapValues { it.value.toSerializableString() },
                 automaticSoftWraps = automaticSoftWraps,
                 automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
                 automaticUpDownBracket = automaticUpDownBracket,
                 automaticItemInItemize = automaticItemInItemize,
-                automaticQuoteReplacement = automaticQuoteReplacement
+                continuousPreview = continuousPreview,
+                automaticQuoteReplacement = automaticQuoteReplacement,
+                pdfViewer = pdfViewer,
+                labelCommands = labelCommands.mapValues { it.value.toSerializableString() }
         )
     }
 
     override fun loadState(state: TexifySettingsState) {
-        state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }
         automaticSoftWraps = state.automaticSoftWraps
         automaticSecondInlineMathSymbol = state.automaticSecondInlineMathSymbol
         automaticUpDownBracket = state.automaticUpDownBracket
         automaticItemInItemize = state.automaticItemInItemize
+        continuousPreview = state.continuousPreview
         automaticQuoteReplacement = state.automaticQuoteReplacement
+        pdfViewer = state.pdfViewer
+        state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }
     }
 
     fun addCommand(cmd: LabelingCommandInformation) {
