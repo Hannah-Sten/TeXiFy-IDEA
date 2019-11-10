@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.editor
 
+import com.intellij.openapi.application.runUndoTransparentWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -68,7 +69,7 @@ class MathEnvironmentEditor(
                 body.replace("\n", "\n$indent    ") +
                 endBlock(indent) + extraNewLine
 
-        runWriteAction {
+        runUndoTransparentWriteAction {
             document.replaceString(
                     environment.textOffset - whitespace,
                     environment.endOffset() + extra,
@@ -78,7 +79,7 @@ class MathEnvironmentEditor(
             editor.caretModel.moveToOffset(environment.textOffset +
                     newText.length - extra - extraWhiteSpace.length - extraNewLine.length - endBlock(indent).length
             )
-            val file = environment.containingFile ?: return@runWriteAction
+            val file = environment.containingFile ?: return@runUndoTransparentWriteAction
             if (isAmsMathEnvironment(newEnvironmentName) && Package.AMSMATH.name !in file.includedPackages()) {
                 file.insertUsepackage(Package.AMSMATH)
             }
