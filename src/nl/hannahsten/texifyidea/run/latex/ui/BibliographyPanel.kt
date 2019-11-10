@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.impl.RunManagerImpl
@@ -9,6 +9,7 @@ import com.intellij.ui.HideableTitledPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import com.intellij.util.IconUtil
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import java.awt.BorderLayout
 import javax.swing.DefaultListSelectionModel
 import javax.swing.JPanel

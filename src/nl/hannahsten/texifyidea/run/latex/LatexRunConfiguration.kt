@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
@@ -15,9 +15,12 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.usesBiber
@@ -42,6 +45,7 @@ class LatexRunConfiguration constructor(project: Project,
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
         private const val COMPILE_TWICE = "compile-twice"
+        private const val MAKEINDEX = "makeindex"
         private const val OUTPUT_FORMAT = "output-format"
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
@@ -69,12 +73,13 @@ class LatexRunConfiguration constructor(project: Project,
     var hasAuxiliaryDirectories = LatexDistribution.isMiktex
     var hasOutputDirectories = true
     var compileTwice = false
+    var isMakeindexEnabled = true
     var outputFormat: Format = Format.PDF
     private var bibRunConfigId = ""
-    var isSkipBibtex = false
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
+    var isFirstRunConfig = true
 
     // Whether the run configuration has already been run or not, since it has been created
     var hasBeenRun = false
@@ -170,6 +175,15 @@ class LatexRunConfiguration constructor(project: Project,
             this.compileTwice = compileTwiceBoolean.toBoolean()
         }
 
+        // Read whether to handle makeindex
+        val makeindexString = parent.getChildText(MAKEINDEX)
+        if (makeindexString == null) {
+            this.isMakeindexEnabled = true
+        }
+        else {
+            this.isMakeindexEnabled = makeindexString.toBoolean()
+        }
+
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
@@ -245,6 +259,11 @@ class LatexRunConfiguration constructor(project: Project,
         compileTwiceElt.text = compileTwice.toString()
         parent.addContent(compileTwiceElt)
 
+        // Write whether to handle makeindex
+        val makeindexElt = Element(MAKEINDEX)
+        makeindexElt.text = isMakeindexEnabled.toString()
+        parent.addContent(makeindexElt)
+
         // Write output format.
         val outputFormatElt = Element(OUTPUT_FORMAT)
         outputFormatElt.text = outputFormat.name
@@ -316,6 +335,23 @@ class LatexRunConfiguration constructor(project: Project,
 
     fun setDefaultOutputFormat() {
         outputFormat = Format.PDF
+    }
+
+    /**
+     * Find the directory where auxiliary files will be placed, depending on the run config settings.
+     *
+     * @return The auxil folder when used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
+     */
+    fun getAuxilDirectory(): VirtualFile? {
+        val mainFile = this.mainFile ?: return null
+
+        fun findChild(name: String) = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(name)
+
+        return when {
+            hasAuxiliaryDirectories -> findChild("auxil")
+            hasOutputDirectories -> findChild("out")
+            else -> findChild(mainFile.parent.name)
+        }
     }
 
     fun setSuggestedName() {

@@ -1,50 +1,10 @@
-package nl.hannahsten.texifyidea.run.evince
+package nl.hannahsten.texifyidea.run.linuxpdfviewer.evince
 
-import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.errors.NoReply
 import org.gnome.evince.Daemon
-import java.io.IOException
-import java.util.concurrent.TimeUnit
-
-/**
- * Indicates whether Evince is installed and available.
- *
- * For debugging, the self-contained project at https://github.com/PHPirates/evince_dbus may be helpful.
- */
-fun isEvinceAvailable(): Boolean {
-    // Only support Evince on Linux, although it can be installed on other systems like Mac
-    if (!SystemInfo.isLinux) {
-        return false
-    }
-
-    // Find out whether Evince is installed and in PATH, otherwise we can't use it
-    val output = "which evince".runCommand()
-    return output?.contains("evince") ?: false
-}
-
-/**
- * Run a command in the terminal.
- *
- * @return The output of the command or null if an exception was thrown.
- */
-fun String.runCommand(): String? {
-    return try {
-        val parts = this.split("\\s".toRegex())
-        val proc = ProcessBuilder(*parts.toTypedArray())
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
-
-        // Timeout value
-        proc.waitFor(10, TimeUnit.SECONDS)
-        proc.inputStream.bufferedReader().readText()
-    } catch (e: IOException) {
-        e.printStackTrace()
-        null
-    }
-}
 
 /**
  * Send commands to Evince.
@@ -52,7 +12,7 @@ fun String.runCommand(): String? {
  *
  * @author Thomas Schouten
  */
-object EvinceConversation {
+object EvinceConversation : ViewerConversation() {
 
     /**
      * Object path of the Evince daemon. Together with the object name, this allows us to find the
@@ -83,13 +43,13 @@ object EvinceConversation {
      * Execute forward search, highlighting a certain line in Evince.
      * If a pdf file is given, it will execute FindDocument and open the pdf file again to find the latest process owner. If the pdf file is already open, this will do nothing.
      *
-     * @param pdfFilePath Full path to a pdf file.
+     * @param pdfPath Full path to a pdf file.
      * @param sourceFilePath Full path to the LaTeX source file.
      * @param line Line number in the source file to highlight in the pdf.
      */
-    fun forwardSearch(pdfFilePath: String? = null, sourceFilePath: String, line: Int) {
-        if (pdfFilePath != null) {
-            findProcessOwner(pdfFilePath)
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int) {
+        if (pdfPath != null) {
+            findProcessOwner(pdfPath)
         }
 
         if (processOwner != null) {
@@ -99,7 +59,7 @@ object EvinceConversation {
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
         else {
-            throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file.")
+            throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $pdfPath")
         }
     }
 

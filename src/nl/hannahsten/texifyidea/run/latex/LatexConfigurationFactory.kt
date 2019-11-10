@@ -1,8 +1,12 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
+import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
+import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 
 /**
  * @author Sten Wessel
@@ -16,6 +20,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
     override fun createTemplateConfiguration(project: Project) = when (type) {
         is LatexRunConfigurationType -> LatexRunConfiguration(project, this, "LaTeX")
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
+        is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")
         else -> throw IllegalArgumentException("No TeXiFy run configuration type, but ${type.id} was received instead.")
     }
 

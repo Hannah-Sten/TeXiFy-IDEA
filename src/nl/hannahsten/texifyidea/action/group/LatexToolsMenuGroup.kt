@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.action.group
 
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import nl.hannahsten.texifyidea.util.files.isLatexFile
+import java.io.File
 
 /**
  * @author Hannah Schellekens
@@ -11,7 +11,8 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 open class LatexToolsMenuGroup : DefaultActionGroup() {
 
     override fun update(event: AnActionEvent) {
-        val file = event.getData(CommonDataKeys.PSI_FILE)
-        event.presentation.isEnabledAndVisible = file?.isLatexFile() ?: false
+        // Show menu when any LaTeX files are in the project
+        val basePath = AnAction.getEventProject(event)?.basePath ?: return
+        event.presentation.isEnabledAndVisible = File(basePath).walk().any { it.extension == "tex" }
     }
 }

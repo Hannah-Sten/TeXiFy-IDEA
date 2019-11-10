@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.run.compiler
 
-import nl.hannahsten.texifyidea.run.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 
 /**
  * @author Hannah Schellekens, Sten Wessel

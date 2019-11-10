@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
@@ -12,14 +12,21 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
-import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
+import nl.hannahsten.texifyidea.run.OpenPdfViewerListener
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
+import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.Magic.Package.index
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.includedPackages
 import java.io.File
 
 /**
@@ -39,7 +46,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         createOutDirs(mainFile)
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
-        val handler: ProcessHandler = KillableProcessHandler(commandLine)
+        val handler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
@@ -55,21 +62,40 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runConfig.hasBeenRun = true
         }
 
-        // If there is no bibtex involved and we don't need to compile twice, then this is the last compile
-        if (runConfig.bibRunConfig == null) {
+        // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
+        if (runConfig.bibRunConfig == null && !runConfig.isMakeindexEnabled) {
             if (!runConfig.compileTwice) {
                 runConfig.isLastRunConfig = true
             }
 
-            // If we need to compile twice but we don't use bibtex, schedule the second compile if this is the first compile
+            // Schedule the second compile only if this is the first compile
             if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
                 handler.addProcessListener(RunLatexListener(runConfig, environment))
                 return handler
             }
         }
-        
+
+        // Run makeindex when applicable
+        if (runConfig.isFirstRunConfig && runConfig.isMakeindexEnabled) {
+            // If no index package is used, we assume we won't have to run makeindex
+            val includedPackages = runConfig.mainFile
+                    ?.psiFile(runConfig.project)
+                    ?.includedPackages()
+                    ?: setOf()
+            val usesIndexPackage = includedPackages.intersect(index.asIterable()).isNotEmpty()
+
+            if (usesIndexPackage) {
+                // Some packages do handle makeindex themselves
+                // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
+                val usesAuxDir = runConfig.hasAuxiliaryDirectories || runConfig.hasOutputDirectories
+                if (!includedPackages.contains("imakeidx") || usesAuxDir) {
+                    handler.addProcessListener(RunMakeindexListener(runConfig, environment))
+                }
+            }
+        }
+
         runConfig.bibRunConfig?.let {
-            if (runConfig.isSkipBibtex) {
+            if (!runConfig.isFirstRunConfig) {
                 return@let
             }
 
@@ -77,17 +103,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             (it.configuration as? BibtexRunConfiguration)?.apply {
                 this.mainFile = mainFile
                 // Check if the aux, out, or src folder should be used as bib working dir.
-                when {
-                    runConfig.hasAuxiliaryDirectories -> {
-                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("auxil")
-                    }
-                    runConfig.hasOutputDirectories -> {
-                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild("out")
-                    }
-                    else -> {
-                        this.bibWorkingDir = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(mainFile.parent.name)
-                    }
-                }
+                this.bibWorkingDir = runConfig.getAuxilDirectory()
             }
 
             handler.addProcessListener(RunBibtexListener(it, runConfig, environment))
@@ -109,6 +125,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      */
     private fun openPdfViewer(handler: ProcessHandler) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
+
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
             // Split user command on spaces, then replace {pdf} if needed
@@ -138,8 +155,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Open Sumatra after compilation & execute inverse search.
             SumatraForwardSearch().execute(handler, runConfig, environment)
         }
-        else if(isEvinceAvailable()) {
-            EvinceForwardSearch().execute(handler, runConfig, environment)
+        else if (TexifySettings.getInstance().pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR)) {
+            ViewerForwardSearch(TexifySettings.getInstance().pdfViewer).execute(handler, runConfig, environment)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

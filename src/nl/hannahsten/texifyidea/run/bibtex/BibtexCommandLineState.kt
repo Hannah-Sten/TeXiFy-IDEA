@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.bibtex
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState

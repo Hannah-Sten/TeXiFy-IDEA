@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.evince
+package nl.hannahsten.texifyidea.run.linuxpdfviewer.evince
 
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
