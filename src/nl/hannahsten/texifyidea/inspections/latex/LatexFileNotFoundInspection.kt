@@ -137,7 +137,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 // Update LaTeX command parameter with chosen filename
                 val fileNameRelativeToRoot = createdFile.absolutePath
                         .replace(File.separator, "/")
-                        .replace(root, "")
+                        .replace("$root/", "")
                 document.replaceString(cmd.textOffset + 1, cmd.endOffset() - 1, fileNameRelativeToRoot)
             }
         }
