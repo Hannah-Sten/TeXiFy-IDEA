@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.bibtex
 
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
@@ -7,6 +7,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.Key
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 /**
  * @author Sten Wessel
@@ -26,7 +27,7 @@ class RunBibtexListener(
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, bibtexSettings, null)
 
         // Mark the next latex runs to exclude bibtex compilation
-        latexConfiguration.isSkipBibtex = true
+        latexConfiguration.isFirstRunConfig = false
         try {
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration)
                     ?: return
@@ -37,10 +38,10 @@ class RunBibtexListener(
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             latexConfiguration.isLastRunConfig = true
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-            latexConfiguration.isLastRunConfig = false
         }
         finally {
-            latexConfiguration.isSkipBibtex = false
+            latexConfiguration.isLastRunConfig = false
+            latexConfiguration.isFirstRunConfig = true
         }
     }
 

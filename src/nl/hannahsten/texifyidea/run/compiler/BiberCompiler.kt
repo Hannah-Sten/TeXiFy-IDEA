@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.run.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 
 /**
  * @author Thomas Schouten

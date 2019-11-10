@@ -1,8 +1,9 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.bibtex
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import javax.swing.Icon
 
 /**
