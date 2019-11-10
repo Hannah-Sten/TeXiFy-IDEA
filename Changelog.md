@@ -3,6 +3,7 @@
 
 ## Additions
 - Table creation wizard. (#907)
+- Add support for multiple citations in one command. (#921)
 - Project-specific setting to change compiler compatibility. (#891)
 - Added an option to the run config to always compile twice. (#908)
 - Added support for automatically running makeindex in auxiliary directories. (#924)
