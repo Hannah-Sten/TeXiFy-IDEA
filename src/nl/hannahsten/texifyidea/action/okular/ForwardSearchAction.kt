@@ -22,13 +22,13 @@ open class ForwardSearchAction : EditorAction(
 ) {
     val okular = PdfViewer.OKULAR
 
-    override fun actionPerformed(file: VirtualFile, project: Project, editor: TextEditor) {
+    override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!okular.isAvailable()) {
             return
         }
 
-        val document = editor.editor.document
-        val line = document.getLineNumber(editor.editor.caretModel.offset) + 1
+        val document = textEditor.editor.document
+        val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
         okular.conversation!!.forwardSearch(null, file.path, line)
     }
