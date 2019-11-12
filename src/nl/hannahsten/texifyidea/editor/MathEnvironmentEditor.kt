@@ -25,18 +25,17 @@ class MathEnvironmentEditor(
         val whitespace = if (newEnvironmentName == "inline") indent.length + 1
         else if (oldEnvironmentName == "inline") 1
         else 0
+
         // Extra white space to be added to the beginning of the new environment, when converting from/to inline.
         val extraWhiteSpace = if (newEnvironmentName == "inline") {
             // Add indentation if indentation of old environment is bigger than the previous line.
             val indentOfPreviousLine = document.lineIndentation(document.getLineNumber(environment.textOffset) - 1)
             if (indentOfPreviousLine.length < indent.length) "\n$indent" else " "
-        }
-        else if (oldEnvironmentName == "inline") {
+        } else if (oldEnvironmentName == "inline") {
             // Add a newline if there is no text on the line before the inline environment.
             val prefixOnLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset)), environment.textOffset))
             if (prefixOnLine.matches(Regex("^\\s*"))) " " else "\n$indent"
-        }
-        else ""
+        } else ""
 
         // The number of characters to replace after the end block of the old environment ends.
         val extra = if (newEnvironmentName == "inline") {
@@ -48,6 +47,7 @@ class MathEnvironmentEditor(
         }
         else if (oldEnvironmentName == "inline") 1
         else 0
+
         // Extra new line to be added at the end of the new environment if the old environment was inline.
         val extraNewLine = if (oldEnvironmentName == "inline") {
             // If the rest of the line is empty, add a new line without indentation.
@@ -58,12 +58,21 @@ class MathEnvironmentEditor(
         else ""
 
         // Convert the body to one line if necessary.
-        val body = if (isOneLineEnvironment(newEnvironmentName)) {
+        val originalBody = if (isOneLineEnvironment(newEnvironmentName)) {
             MultiLineMathContentToOneLine(getBody(indent)).getOneLiner()
         }
         else {
             getBody(indent)
         }
+
+        // Deal with the parameter from the alignat environments.
+        val body = if (needsParameter(oldEnvironmentName) && !needsParameter(newEnvironmentName)) {
+            originalBody.replaceBefore("}", "").removePrefix("}")
+        }
+        else {
+            originalBody
+        }
+
 
         val newText = extraWhiteSpace + beginBlock(indent) +
                 body.replace("\n", "\n$indent    ") +
@@ -79,7 +88,8 @@ class MathEnvironmentEditor(
             editor.caretModel.moveToOffset(environment.textOffset +
                     newText.length - extra - extraWhiteSpace.length - extraNewLine.length - endBlock(indent).length
             )
-            val file = environment.containingFile ?: return@runUndoTransparentWriteAction
+            val file = environment.containingFile
+                    ?: return@runUndoTransparentWriteAction
             if (isAmsMathEnvironment(newEnvironmentName) && Package.AMSMATH.name !in file.includedPackages()) {
                 file.insertUsepackage(Package.AMSMATH)
             }
@@ -101,13 +111,24 @@ class MathEnvironmentEditor(
         return environmentName == "inline" || environmentName == "display" || environmentName == "equation" || environmentName == "equation*"
     }
 
+    private fun needsParameter(environmentName: String): Boolean {
+        return environmentName.contains("alignat")
+    }
+
     /**
      * Construct the begin block for an environment.
+     * Removes, keeps, or adds the curly braces when the environment needs a parameter.
      */
-    private fun beginBlock(indent: String): String = when (newEnvironmentName) {
-        "inline" -> "$"
-        "display" -> "\\[\n$indent    "
-        else -> "\\begin{$newEnvironmentName}\n$indent    "
+    private fun beginBlock(indent: String): String = if (needsParameter(newEnvironmentName)) {
+        if (needsParameter(oldEnvironmentName)) "\\begin{$newEnvironmentName}"
+        else "\\begin{$newEnvironmentName}{}\n$indent    "
+    }
+    else {
+        when (newEnvironmentName) {
+            "inline" -> "$"
+            "display" -> "\\[\n$indent    "
+            else -> "\\begin{$newEnvironmentName}\n$indent    "
+        }
     }
 
     /**
@@ -129,7 +150,7 @@ class MathEnvironmentEditor(
         else -> {
             environment.text
                     .trimRange("\\begin{}".length + oldEnvironmentName.length,
-                    "\\end{}".length + oldEnvironmentName.length)
+                            "\\end{}".length + oldEnvironmentName.length)
                     .replace("$indent    ", "")
                     .trim()
         }
