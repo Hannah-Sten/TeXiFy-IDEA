@@ -3,13 +3,9 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.isClassFile
-import nl.hannahsten.texifyidea.util.files.isStyleFile
+import nl.hannahsten.texifyidea.util.files.*
 
 /**
  * @author Hannah Schellekens

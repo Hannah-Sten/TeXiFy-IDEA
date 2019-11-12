@@ -12,8 +12,11 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.includedFileNames
+import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.trimRange
 
 /**
  * @author Sten Wessel
@@ -80,7 +83,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
             // Handle commands by descending offset, to make sure the replaceString calls work correctly
             for (command in commandsToFix.sortedByDescending { it.textOffset }) {
                 val document = command.containingFile.document() ?: continue
-                val param = command.requiredParameters().first()
+                val param = command.parameterList.first()
 
                 // If we handle the current command, find the first occurrence of bibName and leave it intact
                 val firstBibIndex = if (command == currentCommand) {
