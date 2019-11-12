@@ -5,6 +5,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import nl.hannahsten.texifyidea.settings.labeldefiningcommands.TexifyConfigurableLabelCommands
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JComponent
@@ -21,6 +22,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticItemInItemize: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
+    private lateinit var pdfViewer: ComboBox<String>
     private lateinit var labelDefiningCommands: TexifyConfigurableLabelCommands
 
     override fun getId() = "TexifyConfigurable"
@@ -40,6 +42,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
+                pdfViewer = addPdfViewerOptions()
                 add(labelDefiningCommands.getTable())
             })
         }
@@ -57,6 +60,16 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         return list
     }
 
+    private fun JPanel.addPdfViewerOptions(): ComboBox<String> {
+            val availableViewers = PdfViewer.availableSubset().map { it.displayName }.toTypedArray()
+            val list = ComboBox(availableViewers)
+            add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(JBLabel("PDF viewer: "))
+                add(list)
+            })
+            return list
+    }
+
     private fun JPanel.addCheckbox(message: String): JBCheckBox {
         val checkBox = JBCheckBox(message)
         add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
@@ -71,8 +84,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || continuousPreview.isSelected != settings.continuousPreview
-                || labelDefiningCommands.isModified()
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
+                || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
+                || labelDefiningCommands.isModified()
     }
 
     override fun apply() {
@@ -82,6 +96,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
         settings.continuousPreview = continuousPreview.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
+        settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
         labelDefiningCommands.apply()
     }
 
@@ -91,7 +106,8 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
         continuousPreview.isSelected = settings.continuousPreview
-        labelDefiningCommands.reset()
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
+        pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
+        labelDefiningCommands.reset()
     }
 }

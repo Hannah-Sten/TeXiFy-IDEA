@@ -4,6 +4,9 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.util.xmlb.XmlSerializerUtil
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
  * @author Sten Wessel
@@ -30,6 +33,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticItemInItemize = true
     var continuousPreview = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
+    var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
     /**
      * internal list which stores the commands data
@@ -39,22 +43,26 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
-                labelCommands = labelCommands.mapValues { it.value.toSerializableString() },
                 automaticSoftWraps = automaticSoftWraps,
                 automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
                 automaticUpDownBracket = automaticUpDownBracket,
                 automaticItemInItemize = automaticItemInItemize,
-                automaticQuoteReplacement = automaticQuoteReplacement
+                continuousPreview = continuousPreview,
+                automaticQuoteReplacement = automaticQuoteReplacement,
+                pdfViewer = pdfViewer,
+                labelCommands = labelCommands.mapValues { it.value.toSerializableString() }
         )
     }
 
     override fun loadState(state: TexifySettingsState) {
-        state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }
         automaticSoftWraps = state.automaticSoftWraps
         automaticSecondInlineMathSymbol = state.automaticSecondInlineMathSymbol
         automaticUpDownBracket = state.automaticUpDownBracket
         automaticItemInItemize = state.automaticItemInItemize
+        continuousPreview = state.continuousPreview
         automaticQuoteReplacement = state.automaticQuoteReplacement
+        pdfViewer = state.pdfViewer
+        state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }
     }
 
     fun addCommand(cmd: LabelingCommandInformation) {

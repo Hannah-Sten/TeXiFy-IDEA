@@ -15,11 +15,12 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.OpenPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
-import nl.hannahsten.texifyidea.run.evince.EvinceForwardSearch
-import nl.hannahsten.texifyidea.run.evince.isEvinceAvailable
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Magic.Package.index
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
@@ -61,18 +62,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runConfig.hasBeenRun = true
         }
 
-        // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
-        if (runConfig.bibRunConfig == null && !runConfig.isMakeindexEnabled) {
-            if (!runConfig.compileTwice) {
-                runConfig.isLastRunConfig = true
-            }
-
-            // Schedule the second compile only if this is the first compile
-            if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
-                handler.addProcessListener(RunLatexListener(runConfig, environment))
-                return handler
-            }
-        }
+        var isMakeindexNeeded = false
 
         // Run makeindex when applicable
         if (runConfig.isFirstRunConfig && runConfig.isMakeindexEnabled) {
@@ -81,15 +71,28 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     ?.psiFile(runConfig.project)
                     ?.includedPackages()
                     ?: setOf()
-            val usesIndexPackage = includedPackages.intersect(index.asIterable()).isNotEmpty()
+            isMakeindexNeeded = includedPackages.intersect(index.asIterable()).isNotEmpty()
 
-            if (usesIndexPackage) {
+            if (isMakeindexNeeded) {
                 // Some packages do handle makeindex themselves
                 // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
                 val usesAuxDir = runConfig.hasAuxiliaryDirectories || runConfig.hasOutputDirectories
                 if (!includedPackages.contains("imakeidx") || usesAuxDir) {
                     handler.addProcessListener(RunMakeindexListener(runConfig, environment))
                 }
+            }
+        }
+
+        // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
+        if (runConfig.bibRunConfig == null && !isMakeindexNeeded) {
+            if (!runConfig.compileTwice) {
+                runConfig.isLastRunConfig = true
+            }
+
+            // Schedule the second compile only if this is the first compile
+            if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
+                handler.addProcessListener(RunLatexListener(runConfig, environment))
+                return handler
             }
         }
 
@@ -124,6 +127,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      */
     private fun openPdfViewer(handler: ProcessHandler) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
+
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
             // Split user command on spaces, then replace {pdf} if needed
@@ -153,8 +157,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Open Sumatra after compilation & execute inverse search.
             SumatraForwardSearch().execute(handler, runConfig, environment)
         }
-        else if(isEvinceAvailable()) {
-            EvinceForwardSearch().execute(handler, runConfig, environment)
+        else if (TexifySettings.getInstance().pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR)) {
+            ViewerForwardSearch(TexifySettings.getInstance().pdfViewer).execute(handler, runConfig, environment)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

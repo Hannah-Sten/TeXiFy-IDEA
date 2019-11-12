@@ -57,7 +57,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Scan all commands.
             val commands = LatexCommandsIndex.getItems(command.containingFile).toList()
 
-            for (i in 0 until commands.size) {
+            for (i in commands.indices) {
                 val cmd = commands[i]
 
                 val indexOfCurrent = SECTION_NAMES.indexOf(cmd.name)
@@ -99,7 +99,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        for (i in 0 until commands.size) {
+        for (i in commands.indices) {
             if (!isTooLong(commands[i], findNextSection(commands[i]))) {
                 continue
             }
@@ -216,7 +216,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 LocalFileSystem.getInstance().refresh(true)
                 val fileNameRelativeToRoot = createdFile.absolutePath
                         .replace(File.separator, "/")
-                        .replace(root, "")
+                        .replace("$root/", "")
                 val indent = cmd.findIndentation()
                 document.insertString(startIndex, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
             }

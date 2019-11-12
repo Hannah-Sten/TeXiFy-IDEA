@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.action.evince
+package nl.hannahsten.texifyidea.action.okular
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.TextEditor
@@ -10,31 +10,30 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 
 /**
- * Starts a forward search action in Evince.
+ * Starts a forward search action in Okular.
  *
  * Note: this is only available on Linux.
  *
- * @author Thomas Schouten
+ * @author Abby Berkers
  */
 open class ForwardSearchAction : EditorAction(
         "_ForwardSearch",
         TexifyIcons.RIGHT
 ) {
-
-    val evince = PdfViewer.EVINCE
+    val okular = PdfViewer.OKULAR
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        if (!evince.isAvailable()) {
+        if (!okular.isAvailable()) {
             return
         }
 
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
-        evince.conversation!!.forwardSearch(pdfPath = null, sourceFilePath = file.path, line = line)
+        okular.conversation!!.forwardSearch(null, file.path, line)
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = TexifySettings.getInstance().pdfViewer == evince
+        e.presentation.isEnabledAndVisible = TexifySettings.getInstance().pdfViewer == okular
     }
 }

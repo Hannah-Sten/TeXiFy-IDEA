@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run.evince
+package nl.hannahsten.texifyidea.run.linuxpdfviewer
 
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -8,10 +8,9 @@ import nl.hannahsten.texifyidea.util.files.openedEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
- * Provides forward search for Evince.
+ * Provides forward search for the available pdf viewers.
  */
-class EvinceForwardSearch {
-
+class ViewerForwardSearch(private val viewer: PdfViewer) {
     /**
      * Execute forward search when the process is done.
      */
@@ -23,10 +22,10 @@ class EvinceForwardSearch {
         // Get the line number in the currently open file
         val line = editor.document.getLineNumber(editor.caretOffset()) + 1
 
-        // Get the currently open file to use for forward search
+        // Get the currently open file to use for forward search.
         val currentPsiFile = editor.document.psiFile(environment.project) ?: return
 
-        // Set the OpenEvinceListener to execute when the compilation is done
-        handler.addProcessListener(OpenEvinceListener(runConfig, environment, currentPsiFile, line))
+        // Set the OpenOkularListener to execute when the compilation is done.
+        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line))
     }
 }

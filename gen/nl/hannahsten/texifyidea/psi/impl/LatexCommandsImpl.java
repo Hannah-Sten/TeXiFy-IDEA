@@ -4,6 +4,7 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiReference;
@@ -21,8 +22,11 @@ import nl.hannahsten.texifyidea.util.PsiCommandsKt;
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
 
@@ -54,18 +58,62 @@ public class LatexCommandsImpl extends StubBasedPsiElementBase<LatexCommandsStub
         }
     }
 
+    @NotNull
     @Override
-    public PsiReference getReference() {
-        LatexRequiredParam firstParam = ApplicationManager.getApplication().runReadAction((Computable<LatexRequiredParam>)() -> {
-            List<LatexRequiredParam> params = PsiCommandsKt.requiredParameters(this);
-            return params.isEmpty() ? null : params.get(0);
-        });
+    public PsiReference[] getReferences() {
+        final LatexRequiredParam firstParam = readFirstParam();
 
         if (REFERENCE_COMMANDS.contains(getCommandToken().getText()) && firstParam != null) {
-            return new LatexLabelReference(this, firstParam);
+            return extractReferences(firstParam).toArray(new PsiReference[0]);
         }
 
-        return null;
+        return new PsiReference[0];
+    }
+
+    @NotNull
+    private List<PsiReference> extractReferences(LatexRequiredParam firstParam) {
+        List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
+
+        List<PsiReference> references = new ArrayList<>();
+        for (TextRange range : subParamRanges) {
+            references.add(new LatexLabelReference(
+                    this, range.shiftRight(firstParam.getTextOffset() - getTextOffset())
+            ));
+        }
+        return references;
+    }
+
+    private LatexRequiredParam readFirstParam() {
+        return ApplicationManager.getApplication().runReadAction((Computable<LatexRequiredParam>)() -> {
+                List<LatexRequiredParam> params = PsiCommandsKt.requiredParameters(this);
+                return params.isEmpty() ? null : params.get(0);
+        });
+    }
+
+    @NotNull
+    private static List<TextRange> extractSubParameterRanges(LatexRequiredParam param) {
+        return splitToRanges(stripGroup(param.getText()), Magic.Pattern.parameterSplit).stream()
+                .map(r -> r.shiftRight(1)).collect(Collectors.toList());
+    }
+
+    @NotNull
+    private static List<TextRange> splitToRanges(String text, Pattern pattern) {
+        String[] parts = pattern.split(text);
+
+        List<TextRange> ranges = new ArrayList<>();
+
+        int currentOffset = 0;
+        for (String part : parts) {
+            final int partStartOffset = text.indexOf(part, currentOffset);
+            ranges.add(TextRange.from(partStartOffset, part.length()));
+            currentOffset = partStartOffset + part.length();
+        }
+
+        return ranges;
+    }
+
+    private static String stripGroup(String text) {
+        return text.substring(1, text.length() - 1);
     }
 
     @Override
