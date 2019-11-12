@@ -11,15 +11,13 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
-import com.intellij.ui.ToggleActionButton
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
-import nl.hannahsten.texifyidea.TexifyIcons.LATEX_FILE
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.LatexDistribution
-import nl.hannahsten.texifyidea.util.Magic
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -142,7 +140,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     @Throws(ConfigurationException::class)
     override fun applyEditorTo(runConfiguration: LatexRunConfiguration) {
         // Apply chosen compiler.
-        val chosenCompiler = compiler.component.selectedItem as LatexCompiler
+        val chosenCompiler = compiler.component.selectedItem as? LatexCompiler ?: PDFLATEX
         runConfiguration.compiler = chosenCompiler
 
         // Remove bibtex run config when switching to a compiler which includes running bibtex
