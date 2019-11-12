@@ -1,8 +1,6 @@
-%%
-%% PACKAGE_NAME package
-%% Author: ${USER}
-%% %${DATE}
-%%
+%! Package = PACKAGE_NAME
+%! Author = ${USER}
+%! Date = ${DATE}
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{PACKAGE_NAME}[$YEAR/$MONTH/$DAY ${USER}'s Package]

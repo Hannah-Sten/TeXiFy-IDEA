@@ -1,7 +1,7 @@
 <!--
   ~ The MIT License (MIT)
   ~
-  ~ Copyright (c) 2017 Ruben Schellekens, Sten Wessel
+  ~ Copyright (c) 2017 Hannah Schellekens, Sten Wessel
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -21,14 +21,20 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-<idea-plugin url="https://github.com/Ruben-Sten/TeXiFy-IDEA">
+<idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA">
 
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.5</version>
+    <version>0.6.6</version>
+    <!--
+    Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
+    Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
+    means that the first possible build is the next branch number after xyz, so e.g.
+    a since build of 173.* is equal to 181
+    -->
     <idea-version since-build="173.*"/>
-    <vendor url="https://ruben-sten.github.io/home/index.html">Ruben-Sten</vendor>
+    <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
@@ -63,11 +69,11 @@
             <li>Support for user-created document classes and packages</li>
             <li>Toggle star action</li>
             <li>Words of encouragement</li>
-            <li>A complete feature list can be found at our <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/wiki/Features">wiki</a> (work in progress).</li>
+            <li>A complete feature list can be found at our <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features">wiki</a> (work in progress).</li>
         </ul>
         <p>
             All critique, questions, suggestions, requests, bug reports, kudos, and (non-)creative ideas are
-            welcome on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA">plugin's GitHub page</a>.
+            welcome on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA">plugin's GitHub page</a>.
             If you want to directly chat with us, take a peek at the project's
             <a href="https://gitter.im/TeXiFy-IDEA">gitter</a>.
         </p>
@@ -75,10 +81,10 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.5</strong></p>
+        <p><strong>Beta 0.6.6</strong></p>
         <p>
-            We're continuing the bimonthly updates with a new release of TeXiFy IDEA with a handful of new features
-            and several bug fixes.
+            We welcome you to yet another instance of our bimestrial updates containing a plethora of changes and bug fixes.
+            Get excited about inspection suppression, Tectonic, Evince PDF viewer support and much more!
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -89,41 +95,47 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li>Added smart quotes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/848">#848</a>)</li>
-            <li>Added TikZ preview (thanks to <a href="https://github.com/FalseHonesty">FalseHonesty</a>). (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/837">#837</a>)</li>
-            <li>Added support for LaTeX modules in non-IntelliJ IDEs. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/581">#581</a>)</li>
-            <li>Added toggle math environment intention. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/836">#836</a>)</li>
-            <li>Added custom package names to the autocompletion. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
-            <li>Added navigation gutter icon for custom classes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
-            <li>Added theorems defined by \newtheorem to the environment autocompletion. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/260">#260</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/879">#879</a>)</li>
-            <li>Added \LoadClass(WithOptions) to the autocompletion. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
-            <li>Added \lq and \rq to the autocompletion with auto-insertion of \rq. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/849">#849</a>)</li>
+            <li>Added inspection suppression. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/925">#925</a>)</li>
+            <li>Added basic support for magic comments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/877">#877</a>)</li>
+            <li>Added support for the Tectonic compiler. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/888">#888</a>)</li>
+            <li>Added support for TeX Live on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/882">#882</a>)</li>
+            <li>Added action to clear auxiliary files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/859">#859</a>)</li>
+            <li>Added support for Evince PDF viewer. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/742">#742</a>)</li>
+            <li>Added option to open in a custom PDF viewer. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/122">#122</a>)</li>
+            <li>Added equation reference inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/884">#884</a>)</li>
+            <li>Added figure not referenced inspection (thanks to <a href="https://github.com/pschuprikov">pschuprikov</a>). (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/875">#875</a>)</li>
+            <li>Added file dialog when creating files using inspections and intentions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/878">#878</a>)</li>
+            <li>Added intention to toggle smart quotes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/872">#872</a>)</li>
+            <li>Added brace matching for \begin and \end pairs (thanks to <a href="https://github.com/ice1000">ice1000</a>). (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/933">#933</a>)</li>
+            <li>Added enquote as smart quote option. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/897">#897</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>Updated the plugin for 2019.1 (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/846">#846</a>)</li>
-            <li>Changed the icon of TikZ files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/870">#870</a>)</li>
-            <li>Text in \bibliography and \bibliographystyle now get ignored by the word count. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/862">#862</a>)</li>
-            <li>Updated CTAN package list. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/864">#864</a>)</li>
+            <li>Made the SumatraPDF path configurable. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/793">#793</a>)</li>
+            <li>Improved speed of up-down-autobracket. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/868">#868</a>)</li>
+            <li>The colour of method separators now changes based on the structure level. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/901">#901</a>)</li>
+            <li>Removed Plexus Utils library dependency. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/911">#911</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/920">#920</a>)</li>
+            <li>Several performance improvements.</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Fixed word count analysing non-source files. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/860">#860</a>)</li>
-            <li>Fixed \citet commands (and variants) without non-breaking space being flagged. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/865">#865</a>)</li>
-            <li>Fixed (internal) display name of the LatexNonBreakingSpace inspection being wrong. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/866">#866</a>)</li>
-            <li>Fixed SumatraPDF menu group having no icon. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/857">#857</a>)</li>
-            <li>Fixed names of SumatraPDF menu items being wrong. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/857">#857</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/839">#839</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/843">#843</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/861">#861</a>, <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/issues/867">#867</a>)</li>
+            <li>Fixed inspection 'fix all' not working for regex based inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/826">#826</a>)</li>
+            <li>Fixed autocompletion not working for colons (thanks to <a href="https://github.com/pschuprikov">pschuprikov</a>). (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/835">#835</a>)</li>
+            <li>Fixed previews not working when inkscape is installed as a snap app. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/886">#886</a>)</li>
+            <li>Removed unnecessary execution for bibliography checks when right-clicking files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/915">#915</a>)</li>
+            <li>Fixed groups disappearing after autocompletion of includes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/929">#929</a>)</li>
+            <li>Fixed NonBreakingSpace inspection triggering for \citeauthor. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/912">#912</a>)</li>
+            <li>Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/902">#902</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/913">#913</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/919">#919</a>)</li>
         </ul>
         <br>
         <p>
-            The full list of releases is available on the <a href="https://github.com/Ruben-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>
     ]]></change-notes>
 
@@ -133,164 +145,188 @@
     <!-- Register Analyze menu items programmatically. -->
     <application-components>
         <component>
-            <implementation-class>nl.rubensten.texifyidea.action.AnalyzeMenuRegistration</implementation-class>
+            <implementation-class>nl.hannahsten.texifyidea.action.AnalyzeMenuRegistration</implementation-class>
         </component>
     </application-components>
 
     <!-- Custom actions -->
     <actions>
         <!-- New LaTeX file -->
-        <action id="texify.NewFile" class="nl.rubensten.texifyidea.action.NewLatexFileAction">
+        <action id="texify.NewFile" class="nl.hannahsten.texifyidea.action.NewLatexFileAction">
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile" />
         </action>
 
         <!-- LaTeX Edit commands -->
-        <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex Edit Actions" popup="true"
-               class="nl.rubensten.texifyidea.action.group.LatexEditMenuGroup">
+        <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex edit actions" popup="true"
+               class="nl.hannahsten.texifyidea.action.group.LatexEditMenuGroup">
             <add-to-group group-id="EditSmartGroup" anchor="first"/>
 
+            <!-- Table Creation Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.tablewizard.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
+                    description="Shows popup to create and insert a table."/>
+
             <!-- Toggle Star -->
-            <action class="nl.rubensten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
+            <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
         </group>
 
         <!-- LaTeX Analyze commands -->
-        <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex Analysis Actions" popup="true"
-               class="nl.rubensten.texifyidea.action.group.LatexAnalyzeMenuGroup">
+        <group id="texify.LatexMenuAnalyze" text="_LaTeX" description="Latex analysis actions" popup="true"
+               class="nl.hannahsten.texifyidea.action.group.LatexAnalyzeMenuGroup">
             <!-- Do not add it to the group here, because that will be handled in AnalyzeMenuRegistration. -->
             <!--<add-to-group group-id="AnalyzeMenu" anchor="last"/>-->
 
-            <action class="nl.rubensten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
-                    text="_Word count" description="Estimate the word count of the currently active .tex file and inclusions.">
+            <action class="nl.hannahsten.texifyidea.action.analysis.WordCountAction" id="texify.analysis.WordCount"
+                    text="_Word Count" description="Estimate the word count of the currently active .tex file and inclusions.">
                 <keyboard-shortcut first-keystroke="control alt W" keymap="$default" />
             </action>
         </group>
 
         <!-- LaTeX Tools commands -->
-        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex Tools" popup="true"
-               class="nl.rubensten.texifyidea.action.group.LatexToolsMenuGroup">
+        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true"
+               class="nl.hannahsten.texifyidea.action.group.LatexToolsMenuGroup">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
-            <!-- Clear auxiliary files -->
-            <action class="nl.rubensten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+            <!-- Clear files -->
+            <action class="nl.hannahsten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
+            </action>
+            <action class="nl.hannahsten.texifyidea.action.ClearGeneratedFiles" id="texify.ClearGeneratedFiles" text="Clear Generated Files">
             </action>
 
             <separator/>
             <!-- Show equation preview -->
-            <action class="nl.rubensten.texifyidea.action.preview.ShowEquationPreview" id="texify.ShowEquationPreview" text="Preview _Equation">
+            <action class="nl.hannahsten.texifyidea.action.preview.ShowEquationPreview" id="texify.ShowEquationPreview" text="Preview _Equation">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
             </action>
 
             <!-- Show tikz preview -->
-            <action class="nl.rubensten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz Picture">
+            <action class="nl.hannahsten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview" text="Preview _Tikz Picture">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
 
         </group>
 
         <!-- Insert: Sectioning -->
-        <group id="texify.LatexMenu.Insert.Sectioning" class="nl.rubensten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
+        <group id="texify.LatexMenu.Insert.Sectioning" class="nl.hannahsten.texifyidea.action.group.InsertSectioningActionGroup" text="_Sectioning" description="Insert sectioning." popup="true">
             <add-to-group group-id="texify.LatexMenuEdit" anchor="first"/>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertPartAction" id="texify.insert.sectioning.Part"
                     text="_Part" description="Insert the part command." />
-            <action class="nl.rubensten.texifyidea.action.insert.InsertChapterAction" id="texify.insert.sectioning.Chapter"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertChapterAction" id="texify.insert.sectioning.Chapter"
                     text="_Chapter" description="Insert the chapter command." />
-            <action class="nl.rubensten.texifyidea.action.insert.InsertSectionAction" id="texify.insert.sectioning.Section"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSectionAction" id="texify.insert.sectioning.Section"
                     text="_Section" description="Insert the section command." />
-            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSectionAction" id="texify.insert.sectioning.Subsection"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSubSectionAction" id="texify.insert.sectioning.Subsection"
                     text="S_ubsection" description="Insert the subsection command." />
-            <action class="nl.rubensten.texifyidea.action.insert.InsertSubSubSectionAction" id="texify.insert.sectioning.Subsubsection"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSubSubSectionAction" id="texify.insert.sectioning.Subsubsection"
                     text="Su_bsubsection" description="Insert the subsubsection command." />
-            <action class="nl.rubensten.texifyidea.action.insert.InsertParagraphAction" id="texify.insert.sectioning.Paragraph"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertParagraphAction" id="texify.insert.sectioning.Paragraph"
                     text="_Paragraph" description="Insert the paragraph command." />
-            <action class="nl.rubensten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSubParagraphAction" id="texify.insert.sectioning.Subparagraph"
                     text="Subp_aragraph" description="Insert the subparagraph command." />
         </group>
 
         <!-- Insert: Font Style -->
-        <group id="texify.LatexMenu.Insert.FontStyle" class="nl.rubensten.texifyidea.action.group.InsertFontStyleActionGroup" text="_Font Style" description="Insert font style commands." popup="true">
+        <group id="texify.LatexMenu.Insert.FontStyle" class="nl.hannahsten.texifyidea.action.group.InsertFontStyleActionGroup" text="_Font Style" description="Insert font style commands." popup="true">
             <add-to-group group-id="texify.LatexMenuEdit" anchor="after" relative-to-action="texify.LatexMenu.Insert.Sectioning" />
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertBoldfaceAction" id="texify.insert.fontstyle.BoldFace"
                     text="_Bold" description="Insert the command to make text appear bold.">
                 <keyboard-shortcut first-keystroke="control alt shift B" keymap="$default" />
             </action>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertItalicsAction" id="texify.insert.fontstyle.Italics"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertItalicsAction" id="texify.insert.fontstyle.Italics"
                     text="_Italics" description="Insert the command to make text appear in italics.">
                 <keyboard-shortcut first-keystroke="control alt shift I" keymap="$default" />
             </action>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertUnderlineAction" id="texify.insert.fontstyle.Underline"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertUnderlineAction" id="texify.insert.fontstyle.Underline"
                     text="_Underline" description="Insert the command to underline text.">
                 <keyboard-shortcut first-keystroke="control alt shift U" keymap="$default" />
             </action>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertOverlineAction" id="texify.insert.fontstyle.Overline"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertOverlineAction" id="texify.insert.fontstyle.Overline"
                     text="_Overline" description="Insert the command to overline text.">
                 <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default" />
             </action>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertSmallCapsAction" id="texify.insert.fontstyle.SmallCaps"
-                    text="Small _capitals" description="Insert the command to underline text.">
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSmallCapsAction" id="texify.insert.fontstyle.SmallCaps"
+                    text="Small _Capitals" description="Insert the command to underline text.">
                 <keyboard-shortcut first-keystroke="control alt shift C" keymap="$default" />
             </action>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertTypewriterAction" id="texify.insert.fontstyle.Typewriter"
-                    text="_Typewriter (monospace)" description="Insert the command to make text monospace.">
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertTypewriterAction" id="texify.insert.fontstyle.Typewriter"
+                    text="_Typewriter (Monospace)" description="Insert the command to make text monospace.">
                 <keyboard-shortcut first-keystroke="control alt shift T" keymap="$default" />
             </action>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertStrikethroughAction" id="texify.insert.fontstyle.Strikethrough"
-                    text="_Strikethrough (ulem package)" description="Insert the command to strikethrough text (inclusion of ulem package required).">
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertStrikethroughAction" id="texify.insert.fontstyle.Strikethrough"
+                    text="_Strikethrough (Ulem Package)" description="Insert the command to strikethrough text (inclusion of ulem package required).">
                 <keyboard-shortcut first-keystroke="control alt shift S" keymap="$default" />
             </action>
 
-            <action class="nl.rubensten.texifyidea.action.insert.InsertSlantedAction" id="texify.insert.fontstyle.Slanted"
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertSlantedAction" id="texify.insert.fontstyle.Slanted"
                     text="S_lanted" description="Insert the command to make text appear slanted.">
                 <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default" />
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.insert.InsertEmphasisAction" id="texify.insert.fontstyle.Emphasis"
+                    text="_Emphasis" description="Insert the command to emphasise text.">
             </action>
         </group>
 
         <!-- SumatraPDF -->
-        <group id="texify.LatexMenu.Sumatra" class="nl.rubensten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF"
-               description="Interact with SumatraPDF." popup="true" icon="/nl/rubensten/texifyidea/icons/sumatra.svg">
+        <group id="texify.LatexMenu.Sumatra" class="nl.hannahsten.texifyidea.action.group.SumatraActionGroup" text="Sumatra_PDF"
+               description="Interact with SumatraPDF." popup="true" icon="/nl/hannahsten/texifyidea/icons/sumatra.svg">
             <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
 
-            <action class="nl.rubensten.texifyidea.action.sumatra.ForwardSearchAction" id="texify.sumatra.ForwardSearch"
+            <action class="nl.hannahsten.texifyidea.action.sumatra.ForwardSearchAction" id="texify.sumatra.ForwardSearch"
                     text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
                 <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
             </action>
-            <action class="nl.rubensten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
+            <action class="nl.hannahsten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
                     text="_Configure Inverse Search" description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
         </group>
 
         <!-- Evince -->
-        <group id="texify.LatexMenu.Evince" class="nl.rubensten.texifyidea.action.group.EvinceActionGroup" text="Evince"
+        <group id="texify.LatexMenu.Evince" class="nl.hannahsten.texifyidea.action.group.EvinceActionGroup" text="Evince"
                description="Interact with Evince." popup="true">
             <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
 
-            <action class="nl.rubensten.texifyidea.action.evince.ForwardSearchAction" id="texify.evince.ForwardSearch"
+            <action class="nl.hannahsten.texifyidea.action.evince.ForwardSearchAction" id="texify.evince.ForwardSearch"
                     text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
                 <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default" />
             </action>
+        </group>
+
+        <!-- Okular -->
+        <group id="texify.LatexMenu.Okular" class="nl.hannahsten.texifyidea.action.group.OkularActionGroup" text="Okular"
+               description="Interact with Okular." popup="true">
+            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
+
+            <action class="nl.hannahsten.texifyidea.action.okular.ForwardSearchAction" id="texify.okular.ForwardSearch"
+                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
+                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.okular.ConfigureInverseSearchAction" id="texify.okular.ConfigureInverseSearch"
+                    text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
         </group>
     </actions>
 
     <!-- Hooks for plugin functionality -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- Startup -->
-        <postStartupActivity implementation="nl.rubensten.texifyidea.startup.TexifyStartupActivity"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.TexifyStartupActivity"/>
 
         <!-- Files and project -->
-        <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.rubensten.texifyidea.modules.LatexModuleType"/>
-        <fileTypeFactory implementation="nl.rubensten.texifyidea.file.TexifyFileTypeFactory"/>
+        <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
+        <fileTypeFactory implementation="nl.hannahsten.texifyidea.file.TexifyFileTypeFactory"/>
 
         <!-- Register module type for new project creation in non-IntelliJ IDEs -->
-        <directoryProjectGenerator implementation="nl.rubensten.texifyidea.modules.LatexProjectGenerator"/>
+        <directoryProjectGenerator implementation="nl.hannahsten.texifyidea.modules.LatexProjectGenerator"/>
 
         <!-- Templates -->
         <internalFileTemplate name="LaTeX Source"/>
@@ -299,292 +335,322 @@
         <internalFileTemplate name="BibTeX Bibliography"/>
         <internalFileTemplate name="TikZ Picture"/>
 
-        <fileTemplateGroup implementation="nl.rubensten.texifyidea.templates.LatexTemplatesFactory"/>
+        <fileTemplateGroup implementation="nl.hannahsten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Live templates -->
-        <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.LatexLiveTemplateProvider"/>
-        <defaultLiveTemplatesProvider implementation="nl.rubensten.texifyidea.templates.BibtexLiveTemplateProvider"/>
-        <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.LatexContext"/>
-        <liveTemplateContext implementation="nl.rubensten.texifyidea.templates.BibtexContext"/>
+        <defaultLiveTemplatesProvider implementation="nl.hannahsten.texifyidea.templates.LatexLiveTemplateProvider"/>
+        <defaultLiveTemplatesProvider implementation="nl.hannahsten.texifyidea.templates.BibtexLiveTemplateProvider"/>
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext"/>
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 
-        <!-- Settings -->
-        <applicationService serviceInterface="nl.rubensten.texifyidea.settings.TexifySettings" serviceImplementation="nl.rubensten.texifyidea.settings.TexifySettings"/>
-        <applicationConfigurable instance="nl.rubensten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
-        <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.LatexColorSettingsPage"/>
-        <colorSettingsPage implementation="nl.rubensten.texifyidea.highlighting.BibtexColorSettingsPage"/>
+        <!-- Application settings -->
+        <applicationService serviceInterface="nl.hannahsten.texifyidea.settings.TexifySettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
+        <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
+        <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
+        <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
+        <!-- Project settings -->
+        <projectService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
+        <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
 
         <!-- Languages -->
-        <lang.parserDefinition language="Latex" implementationClass="nl.rubensten.texifyidea.LatexParserDefinition"/>
-        <lang.parserDefinition language="Bibtex" implementationClass="nl.rubensten.texifyidea.BibtexParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
-        <lang.syntaxHighlighterFactory language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexSyntaxHighlighterFactory"/>
-        <lang.commenter language="Latex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
-        <lang.commenter language="Bibtex" implementationClass="nl.rubensten.texifyidea.editor.LatexCommenter"/>
-        <lang.braceMatcher language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
-        <lang.braceMatcher language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
+        <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
+        <lang.parserDefinition language="Bibtex" implementationClass="nl.hannahsten.texifyidea.BibtexParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexSyntaxHighlighterFactory"/>
+        <lang.commenter language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
+        <lang.commenter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
+        <lang.braceMatcher language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
+        <lang.braceMatcher language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
 
         <!-- Structure view -->
-        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.rubensten.texifyidea.structure.latex.LatexStructureViewFactory"/>
-        <lang.psiStructureViewFactory language="Bibtex" implementationClass="nl.rubensten.texifyidea.structure.bibtex.BibtexStructureViewFactory"/>
+        <lang.psiStructureViewFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.structure.latex.LatexStructureViewFactory"/>
+        <lang.psiStructureViewFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewFactory"/>
 
         <!-- Breadcrumbs -->
-        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.latex.LatexBreadcrumbsInfo"/>
-        <breadcrumbsInfoProvider implementation="nl.rubensten.texifyidea.structure.bibtex.BibtexBreadcrumbsInfo"/>
+        <breadcrumbsInfoProvider implementation="nl.hannahsten.texifyidea.structure.latex.LatexBreadcrumbsInfo"/>
+        <breadcrumbsInfoProvider implementation="nl.hannahsten.texifyidea.structure.bibtex.BibtexBreadcrumbsInfo"/>
 
         <!-- Project view -->
-        <projectViewNodeDecorator implementation="nl.rubensten.texifyidea.project.TeXiFyProjectViewNodeDecorator"/>
+        <projectViewNodeDecorator implementation="nl.hannahsten.texifyidea.project.TeXiFyProjectViewNodeDecorator"/>
 
         <!-- Editor -->
-        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexImportFoldingBuilder"/>
-        <lang.foldingBuilder language="Latex" implementationClass="nl.rubensten.texifyidea.folding.LatexSectionFoldingBuilder"/>
-        <lang.formatter language="Latex" implementationClass="nl.rubensten.texifyidea.formatting.LatexFormattingModelBuilder"/>
-        <lang.formatter language="Bibtex" implementationClass="nl.rubensten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
-        <completion.contributor language="Latex" implementationClass="nl.rubensten.texifyidea.completion.TexifyCompletionContributor"/>
-        <completion.contributor language="Bibtex" implementationClass="nl.rubensten.texifyidea.completion.TexifyCompletionContributor"/>
-        <enterHandlerDelegate implementation="nl.rubensten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
-        <enterHandlerDelegate implementation="nl.rubensten.texifyidea.completion.InsertBibtexTag"/>
-        <codeInsight.parameterInfo language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexParameterInfoHandler"/>
-        <typedHandler implementation="nl.rubensten.texifyidea.highlighting.LatexTypedHandler"/>
-        <lookup.charFilter implementation="nl.rubensten.texifyidea.completion.LatexCharFilter" id="latex"/>
-        <enterHandlerDelegate implementation="nl.rubensten.texifyidea.editor.InsertEnumerationItem"/>
-        <typedHandler implementation="nl.rubensten.texifyidea.editor.ShiftTracker"/>
-        <typedHandler implementation="nl.rubensten.texifyidea.editor.UpDownAutoBracket"/>
-        <typedHandler implementation="nl.rubensten.texifyidea.editor.BibtexQuoteInsertHandler"/>
-        <typedHandler implementation="nl.rubensten.texifyidea.editor.LatexQuoteInsertHandler"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexMathSymbolFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexEnvironmentFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder"/>
+        <lang.foldingBuilder language="Latex" implementationClass="nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder"/>
+        <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
+        <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
+        <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
+        <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexParameterInfoHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.highlighting.LatexTypedHandler"/>
+        <lookup.charFilter implementation="nl.hannahsten.texifyidea.completion.LatexCharFilter" id="latex"/>
+        <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InsertEnumerationItem"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ShiftTracker"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.UpDownAutoBracket"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.BibtexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.LatexQuoteInsertHandler"/>
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewBackspacehandler" />
 
         <!-- Navigation -->
-        <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoLabelSymbolContributor"/>
-        <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoCommandDefinitionSymbolContributor"/>
-        <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoEnvironmentDefinitionSymbolContributor"/>
-        <gotoSymbolContributor implementation="nl.rubensten.texifyidea.navigation.GotoSectionDefinitionSymbolContributor"/>
+        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
+        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoCommandDefinitionSymbolContributor"/>
+        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoEnvironmentDefinitionSymbolContributor"/>
+        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoSectionDefinitionSymbolContributor"/>
 
         <!-- Line markers -->
-        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.insight.LatexLineMarkerProvider"/>
-        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexNavigationGutter"/>
-        <runLineMarkerContributor language="Latex" implementationClass="nl.rubensten.texifyidea.gutter.LatexCompileGutter"/>
+        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexNavigationGutter"/>
+        <runLineMarkerContributor language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>
 
         <!-- Run configurations -->
-        <configurationType implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationType"/>
-        <configurationType implementation="nl.rubensten.texifyidea.run.BibtexRunConfigurationType"/>
-        <runConfigurationProducer implementation="nl.rubensten.texifyidea.run.LatexRunConfigurationProducer"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType"/>
+        <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->
-        <annotator language="Latex" implementationClass="nl.rubensten.texifyidea.highlighting.LatexAnnotator"/>
-        <annotator language="Bibtex" implementationClass="nl.rubensten.texifyidea.highlighting.BibtexAnnotator"/>
+        <annotator language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexAnnotator"/>
+        <annotator language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexAnnotator"/>
 
         <!-- Blame -->
-        <errorHandler implementation="nl.rubensten.texifyidea.blame.LatexErrorReportSubmitter"/>
+        <errorHandler implementation="nl.hannahsten.texifyidea.blame.LatexErrorReportSubmitter"/>
 
         <!-- Index -->
-        <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.LatexTypes"/>
-        <stubElementTypeHolder class="nl.rubensten.texifyidea.psi.BibtexTypes"/>
+        <stubElementTypeHolder class="nl.hannahsten.texifyidea.psi.LatexTypes"/>
+        <stubElementTypeHolder class="nl.hannahsten.texifyidea.psi.BibtexTypes"/>
 
-        <stubIndex implementation="nl.rubensten.texifyidea.index.LatexCommandsIndex"/>
-        <stubIndex implementation="nl.rubensten.texifyidea.index.BibtexIdIndex"/>
-        <stubIndex implementation="nl.rubensten.texifyidea.index.LatexIncludesIndex"/>
-        <stubIndex implementation="nl.rubensten.texifyidea.index.LatexDefinitionIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexIdIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
 
         <!-- Documentation -->
-        <lang.documentationProvider language="Latex" implementationClass="nl.rubensten.texifyidea.documentation.LatexDocumentationProvider"/>
-        <lang.documentationProvider language="Bibtex" implementationClass="nl.rubensten.texifyidea.documentation.BibtexDocumentationProvider"/>
+        <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
+        <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
+
+        <!-- Other Services -->
+        <projectService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
+                        serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
 
         <!-- Inspections -->
-        <spellchecker.support language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
+        <spellchecker.support language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.LatexSpellcheckingStrategy"/>
 
         <!-- Latex inspections -->
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathOperatorEscapeInspection"
                          groupName="LaTeX" displayName="Non-escaped common math operators"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCommandAlreadyDefinedInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCommandAlreadyDefinedInspection"
                          groupName="LaTeX" displayName="Command is already defined"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMightBreakTexifyInspection"
                          groupName="LaTeX" displayName="Might break TeXiFy functionality"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexUnicodeInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnicodeInspection"
                          groupName="LaTeX" displayName="Unsupported Unicode character"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexOverInsteadOfFracInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexOverInsteadOfFracInspection"
                          groupName="LaTeX" displayName="Use of \over discouraged"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
                          groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
                          groupName="LaTeX" displayName="Missing documentclass"
                          enabledByDefault="false"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingDocumentEnvironmentInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentEnvironmentInspection"
                          groupName="LaTeX" displayName="Missing document environment"
                          enabledByDefault="false"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexTooLargeSectionInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTooLargeSectionInspection"
                          groupName="LaTeX" displayName="Too large sections"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexPrimitiveStyleInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveStyleInspection"
                          groupName="LaTeX" displayName="TeX styling primitives usage is discouraged"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexLineBreakInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection"
                          groupName="LaTeX" displayName="Start sentences on a new line"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonBreakingSpaceInspection"
                          groupName="LaTeX" displayName="Non-breaking spaces before references"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDiscouragedUseOfDefInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiscouragedUseOfDefInspection"
                          groupName="LaTeX" displayName="Discouraged use of \def and \let"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingLabelInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingLabelInspection"
                          groupName="LaTeX" displayName="Missing labels"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
                          groupName="LaTeX" displayName="Duplicate labels"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexLabelConventionInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelConventionInspection"
                          groupName="LaTeX" displayName="Label conventions"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMissingImportInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingImportInspection"
                          groupName="LaTeX" displayName="Missing imports"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexUnresolvedReferenceInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnresolvedReferenceInspection"
                          groupName="LaTeX" displayName="Unresolved references"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNonMatchingEnvironmentInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEquationReferenceInspection"
+                         groupName="LaTeX" displayName="Use \eqref{...} instead of (\ref{...})"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonMatchingEnvironmentInspection"
                          groupName="LaTeX" displayName="Non matching environment commands"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEllipsisInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEllipsisInspection"
                          groupName="LaTeX" displayName="Ellipsis with ... instead of \ldots or \dots"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexAvoidEqnarrayInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexAvoidEqnarrayInspection"
                          groupName="LaTeX" displayName="Avoid eqnarray"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexSpaceAfterAbbreviationInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSpaceAfterAbbreviationInspection"
                          groupName="LaTeX" displayName="Normal space after abbreviation"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEnDashInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEnDashInspection"
                          groupName="LaTeX" displayName="En dash in number ranges"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexSentenceEndWithCapitalInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexSentenceEndWithCapitalInspection"
                          groupName="LaTeX" displayName="End-of-sentence space after sentences ending with capitals"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCdotInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCdotInspection"
                          groupName="LaTeX" displayName="Use of . instead of \cdot"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexXInsteadOfTimesInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexXInsteadOfTimesInspection"
                          groupName="LaTeX" displayName="Use of x instead of \times"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexGroupedSubSupScriptInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGroupedSubSupScriptInspection"
                          groupName="LaTeX" displayName="Grouped superscript and subscript"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexRedundantParInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantParInspection"
                          groupName="LaTeX" displayName="Redundant use of \par"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNonMatchingIfInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNonMatchingIfInspection"
                          groupName="LaTeX" displayName="Open if-then-else control sequence"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexQedHereInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexQedHereInspection"
                          groupName="LaTeX" displayName="Insert \qedhere in trailing displaymath environment"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexExtremeInequalityInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexExtremeInequalityInspection"
                          groupName="LaTeX" displayName="Use the matching amssymb symbol for extreme inequalities"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexFileNotFoundInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFileNotFoundInspection"
                          groupName="LaTeX" displayName="File not found"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexInclusionLoopInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexInclusionLoopInspection"
                          groupName="LaTeX" displayName="Inclusion loops"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexPrimitiveEquationInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPrimitiveEquationInspection"
                          groupName="LaTeX" displayName="Discouraged use of primitive TeX display math"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCollapseCiteInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCollapseCiteInspection"
                          groupName="LaTeX" displayName="Collapse cite commands"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDiacriticIJInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDiacriticIJInspection"
                          groupName="LaTeX" displayName="Dotless versions of i and j must be used with diacritics"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleIncludesInspection"
                          groupName="LaTeX" displayName="Package has been imported multiple times"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexTrimWhitespaceInspection"
                          groupName="LaTeX" displayName="Unnecessary whitespace in section commands"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexEncloseWithLeftRightInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEncloseWithLeftRightInspection"
                          groupName="LaTeX" displayName="Enclose high commands with \leftX..\rightX"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexCiteBeforePeriodInspection"
                          groupName="LaTeX" displayName="Citations must be placed before interpunction"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateDefinitionInspection"
                          groupName="LaTeX" displayName="Duplicate command definitions"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexGatherEquationsInspection"
                          groupName="LaTeX" displayName="Gather equations"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexMakeatletterInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMakeatletterInspection"
                          groupName="LaTeX" displayName="Discouraged use of \makeatletter in tex sources"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNoExtensionInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNoExtensionInspection"
                          groupName="LaTeX" displayName="File argument should not include the extension"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRequiredExtensionInspection"
+                         groupName="LaTeX" displayName="File argument should include the extension"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
                          groupName="LaTeX" displayName="Nested includes"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
+                         groupName="LaTeX" displayName="Figure not referenced"
                          enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
-        <localInspection language="Bibtex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
+        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.rubensten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
                          groupName="BibTeX" displayName="Same bibliography is included multiple times"
                          enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
-            <className>nl.rubensten.texifyidea.intentions.LatexDisplayMathIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexDisplayMathIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexDisplayMath</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.rubensten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMoveSectionToFile</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.rubensten.texifyidea.intentions.LatexMoveSelectionToFileIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexMoveSelectionToFileIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMoveSelectionToFile</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.rubensten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.rubensten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.rubensten.texifyidea.intentions.LatexInlineDisplayToggle</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggle</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.rubensten.texifyidea.intentions.LatexMathToggle</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggle</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexToggleSmartQuotes</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>
