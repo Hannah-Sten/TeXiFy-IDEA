@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
 /**
  * Finds all the defined labels in the fileset of the file.
@@ -77,7 +78,7 @@ fun PsiFile.findLabels(): Collection<PsiElement> = findLabelingCommandsSequence(
 fun PsiFile.findLabelingCommandsSequence(): Sequence<LatexCommands> {
     val commandNames = TexifySettings.getInstance().labelCommands
 
-    return LatexCommandsIndex.getItemsInFileSet(this).asSequence()
+    return this.commandsInFileSet().asSequence()
             .filter { commandNames.containsKey(it.name) }
 }
 
@@ -109,8 +110,7 @@ fun PsiFile.findBibtexItems(): Collection<PsiElement> {
 /**
  * Finds all \\bibitem-commands in the document
  */
-fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = LatexCommandsIndex
-        .getItemsInFileSet(this).asSequence()
+fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = this.commandsInFileSet().asSequence()
         .filter { it.name == "\\bibitem" }
 
 /**

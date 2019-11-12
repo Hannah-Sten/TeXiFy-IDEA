@@ -446,7 +446,7 @@ fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibl
  *
  * @return The split contents.
  */
-private fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter) ?: emptyList()
+fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter) ?: emptyList()
 
 /**
  * Splits the plain text contents on [delimiter].
