@@ -27,6 +27,6 @@
 - Support compilation of non-project files. (#987)
 - Fixed crash when providing optional parameters to a \ref command as comma separated list. (#980)
 - Fixed missing autocompletion when a file name is equal to a folder name. (#937)
-- Fixed crashes. (#909, #948, #963)
+- Fixed crashes. (#909, #948, #963, #1055)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/16).
