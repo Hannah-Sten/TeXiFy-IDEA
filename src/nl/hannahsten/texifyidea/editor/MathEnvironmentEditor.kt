@@ -67,7 +67,7 @@ class MathEnvironmentEditor(
 
         // Deal with the parameter from the alignat environments.
         val body = if (needsParameter(oldEnvironmentName) && !needsParameter(newEnvironmentName)) {
-            originalBody.replaceBefore("}", "").removePrefix("}")
+            originalBody.replaceBefore("}", "").removePrefix("}").removePrefix("\n")
         }
         else {
             originalBody
