@@ -31,11 +31,13 @@ class MathEnvironmentEditor(
             // Add indentation if indentation of old environment is bigger than the previous line.
             val indentOfPreviousLine = document.lineIndentation(document.getLineNumber(environment.textOffset) - 1)
             if (indentOfPreviousLine.length < indent.length) "\n$indent" else " "
-        } else if (oldEnvironmentName == "inline") {
+        }
+        else if (oldEnvironmentName == "inline") {
             // Add a newline if there is no text on the line before the inline environment.
             val prefixOnLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset)), environment.textOffset))
             if (prefixOnLine.matches(Regex("^\\s*"))) " " else "\n$indent"
-        } else ""
+        }
+        else ""
 
         // The number of characters to replace after the end block of the old environment ends.
         val extra = if (newEnvironmentName == "inline") {
