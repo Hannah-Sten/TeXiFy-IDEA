@@ -10,12 +10,17 @@ import java.util.concurrent.TimeUnit
 class LatexDistribution {
 
     companion object {
+
+        val pdflatexVersionText: String by lazy {
+            getDistribution()
+        }
+
         /**
          * Whether the user is using MikTeX or not.
          * This value is lazy, so only computed when first accessed, because it is unlikely that the user will change LaTeX distribution while using IntelliJ.
          */
         val isMiktex: Boolean by lazy {
-            getDistribution().contains("MiKTeX")
+            pdflatexVersionText.contains("MiKTeX")
         }
 
         /**
@@ -23,7 +28,20 @@ class LatexDistribution {
          * This value is only computed once.
          */
         val isTexlive: Boolean by lazy {
-            getDistribution().contains("TeX Live")
+            pdflatexVersionText.contains("TeX Live")
+        }
+
+        /**
+         * Returns year of texlive installation, 0 if it is not texlive.
+         * Assumes the pdflatex version output contains something like (TeX Live 2019).
+         */
+        val texliveVersion: Int by lazy {
+            val startIndex = pdflatexVersionText.indexOf("TeX Live")
+            try {
+                pdflatexVersionText.substring(startIndex + "TeX Live ".length, startIndex + "TeX Live ".length + "2019".length).toInt()
+            } catch (e: NumberFormatException) {
+                0
+            }
         }
 
         /**
