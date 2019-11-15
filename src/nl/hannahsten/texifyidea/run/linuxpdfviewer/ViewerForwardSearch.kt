@@ -26,6 +26,6 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
         val currentPsiFile = editor.document.psiFile(environment.project) ?: return
 
         // Set the OpenOkularListener to execute when the compilation is done.
-        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line))
+        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, environment.project))
     }
 }
