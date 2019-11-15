@@ -2,14 +2,6 @@
 
 These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy]
 
-[#soft-wraps]
-== Option to enable use of soft wraps when opening LaTeX files
-
-When enabled, soft wraps will always be used when opening LaTeX files.
-Note you have to reopen files for this setting to take effect.
-
-Soft wraps make sure that when a line does not fit in the window, it will be wrapped.
-
 [#closing-math]
 == Option to disable automatic insertion of second $
 

@@ -44,7 +44,7 @@ toc::[]
 * Custom live templates
 * Custom macros with shortcuts
 * Spellchecking with custom dictionaries
-* Soft wraps and wrap on typing
+* link:Soft-wraps[Soft wraps and wrap on typing]
 * link:Shortcuts[Many useful shortcuts]
 * Automatic insertion of `\item` in list environments like itemize and enumerate
 * Automatic insertion of of `\end` when typing `\begin` for environments
@@ -128,7 +128,6 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 
 These settings can be found in menu:File[Settings > Languages & Frameworks > TeXiFy] and are global to your IntelliJ: they will be same for all projects.
 
-* link:Global-settings#soft-wraps[Option to enable use of soft wraps when opening LaTeX files]
 * link:Global-settings#closing-math[Option to disable automatic insertion of second $]
 * link:Global-settings#brace-insertion[Option to disable automatic brace insertion around text in subscript and superscript]
 * link:Global-settings#item-insertion[Option to disable auto-insertion of \item]
