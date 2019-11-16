@@ -30,7 +30,13 @@ class MathEnvironmentEditor(
         val extraWhiteSpace = if (newEnvironmentName == "inline") {
             // Add indentation if indentation of old environment is bigger than the previous line.
             val indentOfPreviousLine = document.lineIndentation(document.getLineNumber(environment.textOffset) - 1)
-            if (indentOfPreviousLine.length < indent.length) "\n$indent" else " "
+            // Get the previous line, so we can check if it ends with a sentence separator. In that case the inline should not move to the previous line.
+            val previousLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset) - 1), environment.textOffset))
+            when {
+                indentOfPreviousLine.length < indent.length -> "\n$indent"
+                Magic.Pattern.sentenceSeparatorAtLineEnd.matcher(previousLine).find() -> "\n$indent"
+                else -> " "
+            }
         }
         else if (oldEnvironmentName == "inline") {
             // Add a newline if there is no text on the line before the inline environment.
