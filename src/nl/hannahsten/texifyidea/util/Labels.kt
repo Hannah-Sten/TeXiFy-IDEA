@@ -18,6 +18,11 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 fun PsiFile.findLabelsInFileSet(): Set<String> = (findAllLabelsInFileSet() + findBibtexLabelsInFileSet()).toSet()
 
 /**
+ * Find all defined labels in the fileset.
+ */
+fun PsiFile.findLabelsInFileSetSequence(): Sequence<LatexCommands> = findLabelingCommandsSequence() + findBibitemCommands()
+
+/**
  * Finds all the defined latex labels in the fileset of the file.
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
