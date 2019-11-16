@@ -37,17 +37,29 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
         file.commandsInFile().asSequence()
                 .filter { it.name in Magic.Command.illegalExtensions }
                 .filter { command ->
-                    Magic.Command.illegalExtensions[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }
+                    Magic.Command.illegalExtensions[command.name]!!.any {
+                        extension -> command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == true }
+                    }
                 }
-                .forEach {
-                    descriptors.add(manager.createProblemDescriptor(
-                            it,
-                            TextRange.allOf(it.requiredParameter(0)!!).shiftRight(it.commandToken.textLength + 1),
-                            "File argument should not include the extension",
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly,
-                            RemoveExtensionFix
-                    ))
+                .forEach {command ->
+                    val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+                    var offset = 0
+                    for (parameter in parameterList) {
+                        if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
+                            descriptors.add(manager.createProblemDescriptor(
+                                    command,
+                                    TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
+                                    "File argument should not include the extension",
+                                    ProblemHighlightType.GENERIC_ERROR,
+                                    isOntheFly,
+                                    RemoveExtensionFix
+                            ))
+                        }
+
+                        // Assume all parameter are comma separated
+                        offset += parameter.length + ",".length
+                    }
+
                 }
 
         return descriptors
@@ -58,20 +70,29 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
      */
     object RemoveExtensionFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Remove file extension"
+        override fun getFamilyName() = "Remove file extension from parameters"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
 
-            val replacement = Magic.Command.illegalExtensions[command.name]
-                    ?.find { command.requiredParameter(0)?.endsWith(it) == true }
-                    ?.run { command.requiredParameter(0)?.removeSuffix(this) } ?: return
+            val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+            var offset = 0
+            for (parameter in parameterList) {
+                if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
+                    val range = TextRange(offset, offset + parameter.length).shiftRight(command.parameterList.first { it.requiredParam != null }.textOffset + 1)
+                    val replacement = Magic.Command.illegalExtensions[command.name]
+                            ?.find { parameter.endsWith(it) }
+                            ?.run { parameter.removeSuffix(this) } ?: break
+                    document.replaceString(range, replacement)
 
-            // Exclude the enclosing braces
-            val range = command.parameterList.first { it.requiredParam != null }.textRange.shiftRight(1).grown(-2)
+                    // Maintain offset for any removed part
+                    offset -= (range.length - replacement.length)
+                }
 
-            document.replaceString(range, replacement)
+                // Assume all parameter are comma separated
+                offset += parameter.length + ",".length
+            }
         }
     }
 }
