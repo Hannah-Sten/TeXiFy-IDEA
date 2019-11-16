@@ -64,7 +64,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
 }
 
 private fun PsiFile.findLatexLabels(): Collection<LatexCommands> =
-        findLabels().filterIsInstance<LatexCommands>()
+        findLabelsInFileSet().filterIsInstance<LatexCommands>()
 
 private val LatexCommands.labelName: String?
     get() = requiredParameter(0)

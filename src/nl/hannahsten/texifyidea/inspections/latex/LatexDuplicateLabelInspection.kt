@@ -10,13 +10,11 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.bibtexIdsInFileSet
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import java.util.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import java.lang.Integer.max
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -49,7 +47,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         val commands = TexifySettings.getInstance().labelCommands
 
         // nearly same code twice, one time for labeling commands and one time for \bibitem
-        file.findLabelingCommandsSequence().forEach {
+        file.findLabelsInFileSetSequence().forEach {
             // when label is defined in \newcommand ignore it, because there could be mor than one with #1 as parameter
             val parent = it.parentOfType(LatexCommands::class)
             if (parent != null && parent.name == "\\newcommand") {
@@ -100,7 +98,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
             latexParameter.text
         }
         val toIgnore = parameterStrings.indexOf("{$searched}")
-        return parameterStrings.subList(0, toIgnore).map { it.length }
+        return parameterStrings.subList(0, max(0, toIgnore)).map { it.length }
                 .sum()
     }
 
