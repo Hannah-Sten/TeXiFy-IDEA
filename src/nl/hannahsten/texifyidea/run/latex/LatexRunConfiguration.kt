@@ -1,12 +1,15 @@
 package nl.hannahsten.texifyidea.run.latex
 
+import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.*
 import com.intellij.execution.filters.RegexpFilter
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -20,6 +23,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.ui.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.hasBibliography
@@ -93,6 +97,17 @@ class LatexRunConfiguration constructor(project: Project,
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(project)
+    }
+
+    override fun createAdditionalTabComponents(manager: AdditionalTabComponentManager,
+                                               startedProcess: ProcessHandler?) {
+        super.createAdditionalTabComponents(manager, startedProcess)
+
+        if (manager is LogConsoleManagerBase) {
+            manager.addAdditionalTabComponent(LatexLogTabComponent(), "LaTeX-Log", AllIcons.Debugger.Console, false)
+
+        }
+
     }
 
     @Throws(RuntimeConfigurationException::class)
