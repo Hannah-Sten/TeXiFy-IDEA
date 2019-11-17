@@ -35,6 +35,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
+        // Map each bibliography file to all the commands which include it
         val groupedIncludes = mutableMapOf<String, MutableList<LatexCommands>>()
 
         LatexIncludesIndex.getItemsInFileSet(file).asSequence()
@@ -51,9 +52,10 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                     for (command in commands.distinct()) {
                         if (command.containingFile != file) continue
 
+                        val parameterIndex = command.requiredParameter(0)?.indexOf(fileName) ?: break
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
-                                TextRange(0, command.requiredParameter(0)?.length!!).shiftRight(command.commandToken.textLength + 1),
+                                TextRange(parameterIndex, parameterIndex + fileName.length).shiftRight(command.commandToken.textLength + 1),
                                 "Bibliography file '$fileName' is included multiple times",
                                 ProblemHighlightType.GENERIC_ERROR,
                                 isOntheFly,
@@ -87,12 +89,13 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
                 // If we handle the current command, find the first occurrence of bibName and leave it intact
                 val firstBibIndex = if (command == currentCommand) {
-                    param.text.splitToSequence(',').indexOfFirst { it.matchesBibName() }
+                    param.text.trimRange(1, 1).splitToSequence(',').indexOfFirst { it.trim() == bibName }
                 }
                 else -1
 
                 val replacement = param.text.trimRange(1, 1).splitToSequence(',')
-                        .filterIndexed { i, it -> i <= firstBibIndex || it.matchesBibName() }
+                        // Parameter should stay if it is at firstBibIndex or some other bibliography file
+                        .filterIndexed { i, it -> i <= firstBibIndex || it.trim() != bibName }
                         .joinToString(",", prefix = "{", postfix = "}")
 
                 // When no arguments are left, just delete the command
@@ -106,10 +109,5 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                 documentManager.commitDocument(document)
             }
         }
-
-        /**
-         * Check whether this list item matches [bibName], ignoring comments and whitespace
-         */
-        private fun String.matchesBibName() = this.trim() != bibName
     }
 }
