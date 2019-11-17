@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.replaceString
-import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 
 /**
