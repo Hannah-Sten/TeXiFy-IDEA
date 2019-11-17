@@ -16,8 +16,11 @@ import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
+import nl.hannahsten.texifyidea.util.Magic.Command.includeOnlyExtensions
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -72,28 +75,37 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 // get the virtual file of the root file
                 val containingDirectory = root.containingDirectory.virtualFile
 
-                for (fileName in fileNames) {
+                for (filePath in fileNames) {
                     // check if the given name is reachable from the root file
-                    val relative = containingDirectory.findFile(fileName, extensions)
+                    val relative = containingDirectory.findFile(filePath, extensions)
 
                     if (relative != null) continue
 
-                    val fixes = mutableListOf(CreateFileFix(false, fileName, root.containingDirectory))
+                    val fixes = mutableListOf(CreateFileFix(false, filePath, root.containingDirectory))
 
                     // Create quick fixes for all extensions if none was supplied in the argument
-                    if (extensions.none { fileName.endsWith(".$it") }) {
+                    if (extensions.none { filePath.endsWith(".$it") }) {
                         extensions.forEach {
-                            fixes.add(0, CreateFileFix(false, "$fileName.$it", root.containingDirectory))
+                            fixes.add(0, CreateFileFix(false, "$filePath.$it", root.containingDirectory))
                         }
                     }
 
+                    // Find extension
+                    val extension = if (command.commandToken.text in includeOnlyExtensions.keys) {
+                        includeOnlyExtensions[command.commandToken.text]?.toList()?.first() ?: "tex"
+                    }
+                    else {
+                        "tex"
+                    }
+
+                    val parameterOffset = parameter.text.trimRange(1,1).indexOf(filePath)
                     descriptors.add(manager.createProblemDescriptor(
                             parameter,
-                            TextRange(1, parameter.textLength - 1),
-                            "File '$fileName' not found",
+                            TextRange(parameterOffset + 1, parameterOffset + filePath.length + 1),
+                            "File '${filePath.appendExtension(extension)}' not found",
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly,
-                            InspectionFix()
+                            InspectionFix(filePath, extension)
                     ))
                 }
             }
@@ -105,9 +117,9 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     /**
      * Create a new file.
      */
-    class InspectionFix : LocalQuickFix {
+    class InspectionFix(private val filePath: String, private val extension: String) : LocalQuickFix {
 
-        override fun getFamilyName() = "Create file"
+        override fun getFamilyName() = "Create file ${filePath.appendExtension(extension)}"
 
         override fun startInWriteAction() = false
 
@@ -117,23 +129,26 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
-            // Create new files
-            // Remove the braces of the LaTeX command before creating a filename of it
-            val fileName = cmd.text.removeAll("{", "}")
-                    .formatAsFileName()
-
-            // Display a dialog to ask for the location and name of the new file.
-            val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName.formatAsFileName())
+            // Display a dialog to ask for the location and name of the new file. // todo may be bib file
+            val newFilePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, filePath.formatAsFilePath())
                     .newFileFullPath ?: return
 
+            val parameterIndex = cmd.text.indexOf(filePath)
+
             runWriteAction {
-                val createdFile = createFile("$filePath.tex", "")
+                val createdFile = createFile("$newFilePath.$extension", "")
 
                 // Update LaTeX command parameter with chosen filename
-                val fileNameRelativeToRoot = createdFile.absolutePath
+                var fileNameRelativeToRoot = createdFile.absolutePath
                         .replace(File.separator, "/")
                         .replace("$root/", "")
-                document.replaceString(cmd.textOffset + 1, cmd.endOffset() - 1, fileNameRelativeToRoot)
+
+                val command = (cmd.context as LatexCommandsImpl).commandToken.text
+                if (command in illegalExtensions) {
+                    illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
+                }
+
+                document.replaceString(cmd.textOffset + parameterIndex, cmd.textOffset + parameterIndex + filePath.length, fileNameRelativeToRoot)
             }
         }
     }
