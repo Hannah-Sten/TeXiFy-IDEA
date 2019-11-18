@@ -1,3 +1,4 @@
 - [ ] Document compiles and pdf viewer is opened
 - [ ] Both bibtex and biber configs are generated automatically when needed
 - [ ] Forward/backward search
+- [ ] Autocomplete (bibtex, latex)
