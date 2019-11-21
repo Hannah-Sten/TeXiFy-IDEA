@@ -10,7 +10,7 @@ public interface BibtexEntry extends PsiElement {
   @NotNull
   List<BibtexComment> getCommentList();
 
-  @Nullable
+  @NotNull
   BibtexEndtry getEndtry();
 
   @Nullable

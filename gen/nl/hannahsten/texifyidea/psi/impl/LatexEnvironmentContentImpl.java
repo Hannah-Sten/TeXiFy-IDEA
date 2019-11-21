@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexEnvironmentContentImpl extends ASTWrapperPsiElement implements LatexEnvironmentContent {
 
-  public LatexEnvironmentContentImpl(@NotNull ASTNode node) {
+  public LatexEnvironmentContentImpl(ASTNode node) {
     super(node);
   }
 

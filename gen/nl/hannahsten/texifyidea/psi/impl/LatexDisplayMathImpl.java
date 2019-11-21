@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexDisplayMathImpl extends ASTWrapperPsiElement implements LatexDisplayMath {
 
-  public LatexDisplayMathImpl(@NotNull ASTNode node) {
+  public LatexDisplayMathImpl(ASTNode node) {
     super(node);
   }
 
