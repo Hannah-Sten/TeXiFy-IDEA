@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements LatexRequiredParam {
 
-  public LatexRequiredParamImpl(@NotNull ASTNode node) {
+  public LatexRequiredParamImpl(ASTNode node) {
     super(node);
   }
 

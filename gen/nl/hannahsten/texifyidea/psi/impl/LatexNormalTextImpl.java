@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexNormalTextImpl extends ASTWrapperPsiElement implements LatexNormalText {
 
-  public LatexNormalTextImpl(@NotNull ASTNode node) {
+  public LatexNormalTextImpl(ASTNode node) {
     super(node);
   }
 

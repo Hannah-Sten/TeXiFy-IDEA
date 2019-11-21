@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexInlineMath {
 
-  public LatexInlineMathImpl(@NotNull ASTNode node) {
+  public LatexInlineMathImpl(ASTNode node) {
     super(node);
   }
 
@@ -32,9 +32,9 @@ public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexIn
   }
 
   @Override
-  @Nullable
+  @NotNull
   public PsiElement getInlineMathEnd() {
-    return findChildByType(INLINE_MATH_END);
+    return findNotNullChildByType(INLINE_MATH_END);
   }
 
   @Override
