@@ -42,8 +42,7 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
     private fun applyForInlineMath(editor: Editor, inline: LatexInlineMath) {
         val document = editor.document
         val indent = document.lineIndentationByOffset(inline.textOffset)
-        val endLength = inline.inlineMathEnd?.textLength ?: 0
-        val text = inline.text.trimRange(inline.inlineMathStart.textLength, endLength).trim()
+        val text = inline.text.trimRange(inline.inlineMathStart.textLength, inline.inlineMathEnd.textLength).trim()
 
         runWriteAction {
             val extra = if (document.getText(TextRange.from(inline.endOffset(), 1)) == " ") {
