@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.action.tablewizard.TableInformation
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
@@ -46,7 +47,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
      * Add a table column.
      *
      * @param title of the column.
-     * @param typedColumnIndex is the column type of the column.
+     * @param columnType is the column type of the column.
      */
     private val addColumnFun = fun(title: String, columnType: ColumnType, _: Int) {
         // Add the column to the table, with an empty cell for each row (instead of the default null).
@@ -61,7 +62,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
      * Edit the table column, i.e., udpate the header title and the column type.
      *
      * @param title is the new title of the header.
-     * @param typedColumnIndex is the index of the column type.
+     * @param columnType is the index of the column type.
      * @param columnIndex is the index of the edited column in the table, starting at 0.
      */
     private val editColumnFun = fun(title: String, columnType: ColumnType, columnIndex: Int) {
@@ -81,17 +82,18 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
                 .setAddActionName("Add Column")
                 .setRemoveAction { tableModel.removeColumn(table.selectedColumn) }
                 .setRemoveActionName("Remove Column")
-                .setEditAction {
-                    TableCreationEditColumnDialog(
-                            editColumnFun,
-                            table.selectedColumn,
-                            table.getColumnName(table.selectedColumn),
-                            columnTypes[table.selectedColumn])
-                }
-                .setEditActionName("Edit Column Type")
+//                .setEditAction {
+//                    TableCreationEditColumnDialog(
+//                            editColumnFun,
+//                            table.selectedColumn,
+//                            table.getColumnName(table.selectedColumn),
+//                            columnTypes[table.selectedColumn])
+//                }
+//                .setEditActionName("Edit Column Type")
                 .createPanel()
 
         table.addTabCreatesNewRowAction()
+        table.addEnterCreatesNewRowAction()
 
         val captionLabel = JBLabel("Caption:")
         captionLabel.labelFor = caption
@@ -186,5 +188,35 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
 
         // Map the new action to the TAB key.
         actionMap.put(actionKey, actionWrapper)
+    }
+
+    /**
+     * Sets the action when pressing ENTER to create a new (empty) row and set the
+     * selection on the first cell of the new row.
+     *
+     * See [addTabCreatesNewRowAction]
+     */
+    private fun JTable.addEnterCreatesNewRowAction() {
+        val keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0)
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keyStroke, "enter")
+
+        val actionWrapper = object : AbstractAction() {
+            override fun actionPerformed(e: ActionEvent?) {
+                tableModel.addEmptyRow()
+
+                val keyStrokeTab = KeyStroke.getKeyStroke("TAB")
+                val actionKey = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(keyStrokeTab)
+                // Get the action to go to the next cell
+                val nextCellAction = actionMap[actionKey]
+
+                // Skip the rest of the cells in the row
+                val table = this@addEnterCreatesNewRowAction
+                for (i in table.columnModel.selectionModel.leadSelectionIndex until table.columnCount) {
+                    nextCellAction.actionPerformed(e)
+                }
+            }
+        }
+
+        actionMap.put("enter", actionWrapper)
     }
 }
