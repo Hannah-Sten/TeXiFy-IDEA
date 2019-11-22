@@ -54,6 +54,13 @@ class TableCreationEditColumnDialog(
                 dialogWrapper.close(0)
             }
 
+            if (columnName == "") {
+                title("Add column")
+            }
+            else {
+                title("Edit column")
+            }
+
             if (show() == DialogWrapper.OK_EXIT_CODE) {
                 onOkFunction(columnNameField.text, ColumnType.values()[columnTypeComboBox.selectedIndex], editingColumn)
             }
