@@ -1,14 +1,14 @@
 package nl.hannahsten.texifyidea.ui.tablecreationdialog
 
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AnActionButton
+import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.scale.JBUIScale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.action.tablewizard.TableInformation
@@ -77,35 +77,44 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
         tableModel.fireTableStructureChanged()
     }
 
+    private val editColumnActionButton: AnActionButton = object : AnActionButton("Edit column header", addText(IconUtil.getEditIcon(), "C")) {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            if (table.selectedColumn >= 0) {
+                TableCreationEditColumnDialog(
+                        editColumnFun,
+                        table.selectedColumn,
+                        table.getColumnName(table.selectedColumn),
+                        columnTypes[table.selectedColumn])
+            }
+        }
+    }
+
+    private val addRowActionButton = object : AnActionButton("Add Row", addText(IconUtil.getAddIcon(), "R")) {
+        override fun actionPerformed(e: AnActionEvent) {
+            tableModel.addEmptyRow()
+        }
+    }
+
+    private val removeRowActionButton = object : AnActionButton("Remove Row", addText(IconUtil.getRemoveIcon(), "R")) {
+
+        override fun isEnabled() = table.selectedRow > -1
+
+        override fun actionPerformed(e: AnActionEvent) {
+            tableModel.removeRow(table.selectedRow)
+        }
+    }
+
+    private val removeColumnActionButton = object : AnActionButton("Remove Column", addText(IconUtil.getRemoveIcon(), "C")) {
+
+        override fun isEnabled() = table.selectedColumn > -1
+
+        override fun actionPerformed(e: AnActionEvent) {
+            tableModel.removeColumn(table.selectedColumn)
+        }
+    }
 
     override fun createCenterPanel(): JPanel {
-
-        // todo split up method
-
-        val editColumnActionButton: AnActionButton = object : AnActionButton("Edit column header", IconUtil.getEditIcon()) {
-
-            override fun actionPerformed(e: AnActionEvent) {
-                if (table.selectedColumn >= 0) {
-                    TableCreationEditColumnDialog(
-                            editColumnFun,
-                            table.selectedColumn,
-                            table.getColumnName(table.selectedColumn),
-                            columnTypes[table.selectedColumn])
-                }
-            }
-        }
-
-        val addRowActionButton = object : AnActionButton("Add row", IconUtil.getAddIcon()) {
-            override fun actionPerformed(e: AnActionEvent) {
-                tableModel.addEmptyRow()
-            }
-        }
-
-        val removeRowActionButton = object : AnActionButton("Remove row", IconUtil.getRemoveIcon()) {
-            override fun actionPerformed(e: AnActionEvent) {
-                tableModel.removeRow(table.selectedRow)
-            }
-        }
 
         // Decorator that contains the add/remove/edit buttons.
         val decorator = ToolbarDecorator.createDecorator(table)
@@ -113,8 +122,8 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
                     TableCreationEditColumnDialog(addColumnFun, tableModel.columnCount)
                 }
                 .setAddActionName("Add Column")
-                .setRemoveAction { tableModel.removeColumn(table.selectedColumn) }
-                .setRemoveActionName("Remove Column")
+                .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
+                .addExtraAction(removeColumnActionButton)
                 .addExtraAction(editColumnActionButton)
                 .addExtraAction(addRowActionButton)
                 .addExtraAction(removeRowActionButton)
@@ -173,6 +182,16 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
         }
 
         return panel
+    }
+
+    /**
+     * See [IconUtil.addText].
+     */
+    fun addText(base: Icon, text: String, scale: Float = 7f): Icon? {
+        val icon = LayeredIcon(2)
+        icon.setIcon(base, 0, SwingConstants.NORTH_WEST)
+        icon.setIcon(IconUtil.textToIcon(text, JLabel(), JBUIScale.scale(scale)), 1, SwingConstants.SOUTH_EAST)
+        return icon
     }
 
     /**
