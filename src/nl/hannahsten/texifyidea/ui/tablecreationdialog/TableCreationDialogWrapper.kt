@@ -12,8 +12,7 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.action.tablewizard.TableInformation
-import java.awt.BorderLayout
-import java.awt.Dimension
+import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
@@ -54,6 +53,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
      * @param title of the column.
      * @param columnType is the column type of the column.
      */
+    @Suppress("KDocUnresolvedReference")
     private val addColumnFun = fun(title: String, columnType: ColumnType, _: Int) {
         // Add the column to the table, with an empty cell for each row (instead of the default null).
         tableModel.addColumn(title, (0 until tableModel.rowCount).map { "" }.toTypedArray())
@@ -70,6 +70,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
      * @param columnType is the index of the column type.
      * @param columnIndex is the index of the edited column in the table, starting at 0.
      */
+    @Suppress("KDocUnresolvedReference", "KDocUnresolvedReference")
     private val editColumnFun = fun(title: String, columnType: ColumnType, columnIndex: Int) {
         tableModel.setHeaderName(title, columnIndex)
         // Edit the column type of the edited column.
@@ -77,7 +78,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
         tableModel.fireTableStructureChanged()
     }
 
-    private val editColumnActionButton: AnActionButton = object : AnActionButton("Edit column header", addText(IconUtil.getEditIcon(), "C")) {
+    private fun getEditColumnActionButton(): AnActionButton = object : AnActionButton("Edit column header", addText(IconUtil.getEditIcon(), "C")) {
 
         override fun actionPerformed(e: AnActionEvent) {
             if (table.selectedColumn >= 0) {
@@ -90,13 +91,13 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
         }
     }
 
-    private val addRowActionButton = object : AnActionButton("Add Row", addText(IconUtil.getAddIcon(), "R")) {
+    private fun getAddRowActionButton() = object : AnActionButton("Add Row", addText(IconUtil.getAddIcon(), "R")) {
         override fun actionPerformed(e: AnActionEvent) {
             tableModel.addEmptyRow()
         }
     }
 
-    private val removeRowActionButton = object : AnActionButton("Remove Row", addText(IconUtil.getRemoveIcon(), "R")) {
+    private fun getRemoveRowActionButton() = object : AnActionButton("Remove Row", addText(IconUtil.getRemoveIcon(), "R")) {
 
         override fun isEnabled() = table.selectedRow > -1
 
@@ -105,7 +106,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
         }
     }
 
-    private val removeColumnActionButton = object : AnActionButton("Remove Column", addText(IconUtil.getRemoveIcon(), "C")) {
+    private fun getRemoveColumnActionButton() = object : AnActionButton("Remove Column", addText(IconUtil.getRemoveIcon(), "C")) {
 
         override fun isEnabled() = table.selectedColumn > -1
 
@@ -123,10 +124,10 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
                 }
                 .setAddActionName("Add Column")
                 .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
-                .addExtraAction(removeColumnActionButton)
-                .addExtraAction(editColumnActionButton)
-                .addExtraAction(addRowActionButton)
-                .addExtraAction(removeRowActionButton)
+                .addExtraAction(getRemoveColumnActionButton())
+                .addExtraAction(getEditColumnActionButton())
+                .addExtraAction(getAddRowActionButton())
+                .addExtraAction(getRemoveRowActionButton())
                 .createPanel()
 
 
@@ -154,6 +155,21 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
                 add(decorator, BorderLayout.EAST)
             }
 
+            // Help text
+            val helpText = JBLabel("<html>Press tab to go to the next cell or row, press enter to go to the next row.</html>")
+            helpText.foreground = Color.GRAY
+
+            // Put help text below table
+            val tablePanelContainer = JPanel(GridBagLayout())
+            val constraints = GridBagConstraints()
+            constraints.gridx = 0
+            constraints.gridy = GridBagConstraints.RELATIVE
+            tablePanelContainer.apply {
+                add(tablePanel, constraints)
+                add(helpText, constraints)
+            }
+            add(tablePanelContainer)
+
             // Create a panel for the caption box and its label.
             val captionPanel = JPanel()
             captionPanel.apply {
@@ -173,7 +189,6 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
             }
 
             // Actually add all the panels to the main panel.
-            add(tablePanel)
             // Add some air between components.
             add(Box.createRigidArea(Dimension(0, 8)))
             add(captionPanel)
