@@ -7,7 +7,12 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.PackageUtils.PACKAGE_COMMANDS
+import nl.hannahsten.texifyidea.util.PackageUtils.getIncludedPackages
+import nl.hannahsten.texifyidea.util.appendExtension
+import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
  * Run makeindex.
@@ -22,7 +27,17 @@ class MakeindexCommandLineState(
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file to compile is not found or missing.")
         val workDir = runConfig.getAuxilDirectory()
 
-        val command = listOf("makeindex", mainFile.nameWithoutExtension)
+        // Find index package options
+        val mainPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: throw ExecutionException("Main psifile not found")
+        val indexPackageOptions = LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
+                .filter { it.commandToken.text in PACKAGE_COMMANDS }
+                .filter { command -> command.requiredParameters.any { it == "imakeidx"}}
+                .map { it.optionalParameters }
+                .flatten()
+
+        val indexProgram = if (indexPackageOptions.contains("xindy")) "texindy" else "makeindex"
+
+        val command = listOf(indexProgram, mainFile.nameWithoutExtension.appendExtension("idx"))
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workDir?.path)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)

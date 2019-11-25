@@ -26,7 +26,7 @@ class MakeindexRunConfiguration(
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = "makeindex"
+    override fun suggestedName() = "index"
 
     fun setSuggestedName() {
         name = suggestedName()
