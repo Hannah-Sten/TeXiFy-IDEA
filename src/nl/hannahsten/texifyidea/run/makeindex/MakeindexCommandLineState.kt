@@ -9,8 +9,6 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.PackageUtils.PACKAGE_COMMANDS
-import nl.hannahsten.texifyidea.util.PackageUtils.getIncludedPackages
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.psiFile
 
@@ -19,7 +17,9 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  */
 class MakeindexCommandLineState(
         environment: ExecutionEnvironment,
-        private val runConfig: LatexRunConfiguration
+        private val runConfig: LatexRunConfiguration,
+        private val indexPackageOptions: List<String>,
+        private val makeindexOptions: HashMap<String, String>
 ) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)
@@ -27,17 +27,12 @@ class MakeindexCommandLineState(
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file to compile is not found or missing.")
         val workDir = runConfig.getAuxilDirectory()
 
-        // Find index package options
-        val mainPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: throw ExecutionException("Main psifile not found")
-        val indexPackageOptions = LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-                .filter { it.commandToken.text in PACKAGE_COMMANDS }
-                .filter { command -> command.requiredParameters.any { it == "imakeidx"}}
-                .map { it.optionalParameters }
-                .flatten()
 
         val indexProgram = if (indexPackageOptions.contains("xindy")) "texindy" else "makeindex"
 
-        val command = listOf(indexProgram, mainFile.nameWithoutExtension.appendExtension("idx"))
+        val indexFilename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension).appendExtension("idx")
+
+        val command = listOf(indexProgram, indexFilename)
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workDir?.path)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
