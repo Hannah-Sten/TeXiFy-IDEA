@@ -27,8 +27,20 @@ class MakeindexCommandLineState(
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file to compile is not found or missing.")
         val workDir = runConfig.getAuxilDirectory()
 
+        var indexProgram = if (indexPackageOptions.contains("xindy")) "texindy" else "makeindex"
 
-        val indexProgram = if (indexPackageOptions.contains("xindy")) "texindy" else "makeindex"
+        // Possible extra settings to override the indexProgram, see the imakeidx docs
+        for (program in listOf("makeindex", "xindy", "texindy", "truexindy")) {
+            if (makeindexOptions.contains("program")) {
+                indexProgram = makeindexOptions["program"] ?: break
+                if (indexProgram == "xindy") {
+                    indexProgram = "texindy"
+                }
+                if (indexProgram == "truexindy") {
+                    indexProgram = "xindy"
+                }
+            }
+        }
 
         val indexFilename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension).appendExtension("idx")
 
