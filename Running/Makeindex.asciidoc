@@ -26,7 +26,7 @@ TeXiFy also supports using xindy (instead of makeindex) and a custom index name,
 [source,latex]
 ----
 \documentclass{article}
-\usepackage{imakeidx}
+\usepackage[xindy]{imakeidx}
 \makeindex[name=myindex]
 \begin{document}
     Some random\index[myindex]{random} text\index[myindex]{text} which should be indexed\index[myindex]{index}.
