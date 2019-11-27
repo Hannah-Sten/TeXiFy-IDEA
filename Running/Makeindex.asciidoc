@@ -1,3 +1,5 @@
+_Since b0.6.7_
+
 When the makeindex setting in the run configuration is enabled, TeXiFy will handle makeindex for you.
 Makeindex is only run when you actually include an index package like `imakeidx`.
 
@@ -18,3 +20,19 @@ Example:
     \printindex
 \end{document}
 ----
+
+TeXiFy also supports using xindy (instead of makeindex) and a custom index name, for example:
+
+[source,latex]
+----
+\documentclass{article}
+\usepackage{imakeidx}
+\makeindex[name=myindex]
+\begin{document}
+    Some random\index[myindex]{random} text\index[myindex]{text} which should be indexed\index[myindex]{index}.
+
+    \printindex[myindex]
+\end{document}
+----
+
+See the imakeidx documentation at https://ctan.org/pkg/imakeidx for more details.
