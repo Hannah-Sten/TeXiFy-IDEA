@@ -8,7 +8,7 @@ When you use the `auxil/` or `out/` directories, makeindex will be run there and
 
 Note that when you use `imakeidx` but no `auxil/` or `out/` then imakeidx will handle makeindex itself. 
 
-[NOTE]
+[IMPORTANT]
 If you use xindy but no `auxil/` or `out/` then in order to allow imakeidx to run xindy, you need to provide the `-shell-escape` custom compiler argument in the run configuration.
 
 Example:
