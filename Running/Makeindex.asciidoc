@@ -6,7 +6,10 @@ Makeindex is only run when you actually include an index package like `imakeidx`
 Makeindex will be run as a separate configuration, so you will see the output in a window next to your normal LaTeX output window.
 When you use the `auxil/` or `out/` directories, makeindex will be run there and the `.ind` file will be copied next to your main file so that the index package can find it.
 
-Note that when you use `imakeidx` but no `auxil/` or `out/` then imakeidx will handle makeindex itself. **However** if you use xindy then in order to allow imakeidx to run xindy, you need to provide the `-shell-escape` custom compiler argument in the run configuration.
+Note that when you use `imakeidx` but no `auxil/` or `out/` then imakeidx will handle makeindex itself. 
+
+[NOTE]
+If you use xindy but no `auxil/` or `out/` then in order to allow imakeidx to run xindy, you need to provide the `-shell-escape` custom compiler argument in the run configuration.
 
 Example:
 
