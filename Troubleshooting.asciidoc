@@ -165,6 +165,11 @@ Make sure you have followed all the installation instructions at https://github.
 . If you are on Windows or Mac and installing MikTeX, you can also try installing TeX Live instead.
 . Ask on https://tex.stackexchange.com, providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
 
+== I have an error which complains about openout_any = p
+
+This can happen for example if you try to use an index or bibtex as well as an auxiliary directory.
+This is a TeX Live security setting which you can change by editing `/path/to/texlive/2019/texmf-dist/web2c/texmf.cnf` and changing `openout_any = p` to `openout_any = a`.
+
 == My index is not generated correctly
 
 If you have TeXiFy version 0.6.7 or later, make sure that makeindex is run by TeXiFy, so you should see a run window called makeindex with the output.
