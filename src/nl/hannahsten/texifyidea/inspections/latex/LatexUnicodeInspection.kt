@@ -161,7 +161,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun startInWriteAction() = false
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable(TexifyProjectSettings()).id)
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable::class.java)
         }
     }
 
