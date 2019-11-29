@@ -40,7 +40,8 @@ TeXiFy also supports using xindy (instead of makeindex) and a custom index name,
 
 See the imakeidx documentation at https://ctan.org/pkg/imakeidx for more details.
 
+=== Input index file filename.idx not found.
 If you use an auxiliary directory (auxil/ or out/) then you may get an error message from imakeidx saying
-`Input index file makeindex-mwe.idx not found.`.
+`Input index file filename.idx not found.`.
 You can ignore it, because TeXiFy handles makeindex, but imakeidx doesn't know that and it will try to handle makeindex itself.
 You can tell imakeidx to not worry about it with the `noautomatic` option, so write `\makeindex[noautomatic]`.
