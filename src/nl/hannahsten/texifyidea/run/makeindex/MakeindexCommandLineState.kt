@@ -7,45 +7,31 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.appendExtension
-import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
  * Run makeindex.
  */
 class MakeindexCommandLineState(
         environment: ExecutionEnvironment,
-        private val runConfig: LatexRunConfiguration,
-        private val indexPackageOptions: List<String>,
-        private val makeindexOptions: HashMap<String, String>
+        private val mainFile: VirtualFile?,
+        private val workingDirectory: VirtualFile?,
+        private val makeindexOptions: HashMap<String, String>,
+        private val indexProgram: MakeindexProgram
 ) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
-        val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file to compile is not found or missing.")
-        val workDir = runConfig.getAuxilDirectory()
-
-        var indexProgram = if (indexPackageOptions.contains("xindy")) "texindy" else "makeindex"
-
-        // Possible extra settings to override the indexProgram, see the imakeidx docs
-        for (program in listOf("makeindex", "xindy", "texindy", "truexindy")) {
-            if (makeindexOptions.contains("program")) {
-                indexProgram = makeindexOptions["program"] ?: break
-                if (indexProgram == "xindy") {
-                    indexProgram = "texindy"
-                }
-                if (indexProgram == "truexindy") {
-                    indexProgram = "xindy"
-                }
-            }
+        if (mainFile == null) {
+            throw ExecutionException("Main file to compile is not found or missing.")
         }
 
         val indexFilename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension).appendExtension("idx")
 
-        val command = listOf(indexProgram, indexFilename)
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(workDir?.path)
+        val command = listOf(indexProgram.executableName, indexFilename)
+        val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)
 

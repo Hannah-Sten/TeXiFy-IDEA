@@ -49,6 +49,7 @@ class LatexRunConfiguration constructor(project: Project,
         private const val OUTPUT_FORMAT = "output-format"
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
+        private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
     }
 
     var compiler: LatexCompiler? = null
@@ -89,6 +90,14 @@ class LatexRunConfiguration constructor(project: Project,
                 .getConfigurationById(bibRunConfigId)
         set(bibRunConfig) {
             this.bibRunConfigId = bibRunConfig?.uniqueID ?: ""
+        }
+
+    private var makeindexRunConfigId = ""
+    var makeindexRunConfig: RunnerAndConfigurationSettings?
+        get() = RunManagerImpl.getInstanceImpl(project)
+                .getConfigurationById(makeindexRunConfigId)
+        set(makeindexRunConfigId) {
+            this.makeindexRunConfigId = makeindexRunConfigId?.uniqueID ?: ""
         }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
@@ -196,6 +205,10 @@ class LatexRunConfiguration constructor(project: Project,
         // Read bibliography run configuration
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
         this.bibRunConfigId = bibRunConfigElt ?: ""
+
+        // Read makeindex run configuration
+        val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
+        this.makeindexRunConfigId = makeindexRunConfigElt ?: ""
     }
 
     @Throws(WriteExternalException::class)
@@ -278,6 +291,9 @@ class LatexRunConfiguration constructor(project: Project,
         val bibRunConfigElt = Element(BIB_RUN_CONFIG)
         bibRunConfigElt.text = bibRunConfigId
         parent.addContent(bibRunConfigElt)
+
+        // Write makeindex run configuration
+        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).apply { text = makeindexRunConfigId })
     }
 
     /**

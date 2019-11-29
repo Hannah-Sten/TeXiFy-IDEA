@@ -27,24 +27,33 @@ class RunMakeindexListener(
     override fun processTerminated(event: ProcessEvent) {
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
 
-        val makeindexSettings = runManager.createConfiguration(
-                "",
-                LatexConfigurationFactory(MakeindexRunConfigurationType())
-        )
+        // Only create new one if there is none yet
+        if (runConfig.makeindexRunConfig == null) {
+            val makeindexRunConfig = runManager.createConfiguration(
+                    "",
+                    LatexConfigurationFactory(MakeindexRunConfigurationType())
+            )
 
-        runManager.addConfiguration(makeindexSettings)
+            runManager.addConfiguration(makeindexRunConfig)
 
-        val makeindexRunConfiguration = makeindexSettings.configuration as MakeindexRunConfiguration
+            val makeindexRunConfiguration = makeindexRunConfig.configuration as MakeindexRunConfiguration
 
-        makeindexRunConfiguration.latexRunConfiguration = runConfig
-        makeindexRunConfiguration.setSuggestedName()
+            makeindexRunConfiguration.mainFile = runConfig.mainFile
+            makeindexRunConfiguration.workingDirectory = runConfig.getAuxilDirectory()
+            makeindexRunConfiguration.setSuggestedName()
+
+            runConfig.makeindexRunConfig = makeindexRunConfig
+        }
+
+        val runConfigSettings = runConfig.makeindexRunConfig ?: return
 
         // Run makeindex
-        RunConfigurationBeforeRunProvider.doExecuteTask(environment, makeindexSettings, null)
+        RunConfigurationBeforeRunProvider.doExecuteTask(environment, runConfigSettings, null)
 
         try {
-            val options = makeindexRunConfiguration.getMakeindexOptions()
-            val indexFilename = options.getOrDefault("name", runConfig.mainFile?.nameWithoutExtension)?.appendExtension("ind") ?: return
+            val makeindexRunConfig = runConfigSettings.configuration as MakeindexRunConfiguration
+            val options = makeindexRunConfig.getMakeindexOptions()
+            val indexFilename = options.getOrDefault("name", makeindexRunConfig.mainFile?.nameWithoutExtension)?.appendExtension("ind") ?: return
 
             if (!copyIndexFile(indexFilename)) return
 
