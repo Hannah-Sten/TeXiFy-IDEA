@@ -65,7 +65,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         var isMakeindexNeeded = false
 
         // Run makeindex when applicable
-        if (runConfig.isFirstRunConfig && runConfig.isMakeindexEnabled) {
+        if (runConfig.isFirstRunConfig && runConfig.makeindexRunConfig != null) {
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = runConfig.mainFile
                     ?.psiFile(runConfig.project)
