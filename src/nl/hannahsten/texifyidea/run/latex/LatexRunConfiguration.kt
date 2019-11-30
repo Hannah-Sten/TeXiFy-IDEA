@@ -74,7 +74,6 @@ class LatexRunConfiguration constructor(project: Project,
     var hasOutputDirectories = true
     var compileTwice = false
     var outputFormat: Format = Format.PDF
-    private var bibRunConfigId = ""
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -83,6 +82,7 @@ class LatexRunConfiguration constructor(project: Project,
     // Whether the run configuration has already been run or not, since it has been created
     var hasBeenRun = false
 
+    private var bibRunConfigId = ""
     var bibRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)
                 .getConfigurationById(bibRunConfigId)
