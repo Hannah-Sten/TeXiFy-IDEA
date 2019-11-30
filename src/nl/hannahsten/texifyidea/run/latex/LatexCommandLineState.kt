@@ -58,8 +58,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
                 runConfig.generateBibRunConfig()
             }
-
-            runConfig.hasBeenRun = true
         }
 
         var isMakeindexNeeded = false
@@ -82,6 +80,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 }
             }
         }
+
+        runConfig.hasBeenRun = true
 
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
         if (runConfig.bibRunConfig == null && !isMakeindexNeeded) {
