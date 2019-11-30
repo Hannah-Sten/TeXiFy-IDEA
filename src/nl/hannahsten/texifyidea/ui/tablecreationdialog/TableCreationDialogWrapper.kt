@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.ui.tablecreationdialog
 
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.KeyboardShortcut
+import com.intellij.openapi.actionSystem.ShortcutSet
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AnActionButton
@@ -8,7 +10,7 @@ import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.scale.JBUIScale
+import com.intellij.ui.scale.JBUIScale.scale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.action.tablewizard.TableInformation
@@ -80,6 +82,8 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
 
     private fun getEditColumnActionButton(): AnActionButton = object : AnActionButton("Edit column header", addText(IconUtil.getEditIcon(), "C")) {
 
+        override fun isEnabled() = table.columnCount > 0
+
         override fun actionPerformed(e: AnActionEvent) {
             if (table.selectedColumn >= 0) {
                 TableCreationEditColumnDialog(
@@ -92,6 +96,9 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
     }
 
     private fun getAddRowActionButton() = object : AnActionButton("Add Row", addText(IconUtil.getAddIcon(), "R")) {
+
+        override fun isEnabled() = table.columnCount > 0
+
         override fun actionPerformed(e: AnActionEvent) {
             tableModel.addEmptyRow()
         }
@@ -127,7 +134,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
                 .addExtraAction(getRemoveColumnActionButton())
                 .addExtraAction(getEditColumnActionButton())
                 .addExtraAction(getAddRowActionButton())
-                .addExtraAction(getRemoveRowActionButton())
+                .addExtraAction(getRemoveRowActionButton().apply { shortcut = ShortcutSet { arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null)) } })
                 .createPanel()
 
 
@@ -205,7 +212,7 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
     fun addText(base: Icon, text: String, scale: Float = 7f): Icon? {
         val icon = LayeredIcon(2)
         icon.setIcon(base, 0, SwingConstants.NORTH_WEST)
-        icon.setIcon(IconUtil.textToIcon(text, JLabel(), JBUIScale.scale(scale)), 1, SwingConstants.SOUTH_EAST)
+        icon.setIcon(IconUtil.textToIcon(text, JLabel(), scale(scale)), 1, SwingConstants.SOUTH_EAST)
         return icon
     }
 
