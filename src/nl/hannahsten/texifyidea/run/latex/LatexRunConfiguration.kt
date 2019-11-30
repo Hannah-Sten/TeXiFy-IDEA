@@ -277,7 +277,9 @@ class LatexRunConfiguration constructor(project: Project,
         parent.addContent(bibRunConfigElt)
 
         // Write makeindex run configuration
-        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).apply { text = makeindexRunConfigId })
+        val makeindexConfigElt = Element(MAKEINDEX_RUN_CONFIG)
+        makeindexConfigElt.text = makeindexRunConfigId
+        parent.addContent(makeindexConfigElt)
     }
 
     /**

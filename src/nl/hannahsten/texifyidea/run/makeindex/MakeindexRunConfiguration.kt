@@ -9,6 +9,7 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.PackageUtils
@@ -52,9 +53,14 @@ class MakeindexRunConfiguration(
         val parent = element.getChild(PARENT_ELEMENT)
 
         makeindexProgram = try {
-            MakeindexProgram.valueOf(parent.getChildText(PROGRAM))
+            val programText = parent.getChildText(PROGRAM)
+            if (!programText.isNullOrEmpty()) {
+                MakeindexProgram.valueOf(programText)
+            } else {
+                MakeindexProgram.MAKEINDEX
+            }
         }
-        catch (e: IllegalArgumentException) {
+        catch (e: NullPointerException) {
             MakeindexProgram.MAKEINDEX
         }
 
