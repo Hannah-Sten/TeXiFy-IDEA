@@ -94,8 +94,8 @@ class LatexRunConfiguration constructor(project: Project,
     var makeindexRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)
                 .getConfigurationById(makeindexRunConfigId)
-        set(makeindexRunConfigId) {
-            this.makeindexRunConfigId = makeindexRunConfigId?.uniqueID ?: ""
+        set(makeindexRunConfig) {
+            this.makeindexRunConfigId = makeindexRunConfig?.uniqueID ?: ""
         }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {

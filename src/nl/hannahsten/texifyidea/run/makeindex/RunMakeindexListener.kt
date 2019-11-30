@@ -20,32 +20,33 @@ import java.io.FileNotFoundException
  * Run makeindex and then latex again (twice).
  */
 class RunMakeindexListener(
-        private val runConfig: LatexRunConfiguration,
+        private val latexRunConfig: LatexRunConfiguration,
         private val environment: ExecutionEnvironment
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        val runManager = RunManagerImpl.getInstanceImpl(environment.project)
 
         // Only create new one if there is none yet
-        if (runConfig.makeindexRunConfig == null) {
-            val makeindexRunConfig = runManager.createConfiguration(
+        if (latexRunConfig.makeindexRunConfig == null) {
+            val runManager = RunManagerImpl.getInstanceImpl(environment.project)
+
+            val makeindexRunConfigSettings = runManager.createConfiguration(
                     "",
                     LatexConfigurationFactory(MakeindexRunConfigurationType())
             )
 
-            runManager.addConfiguration(makeindexRunConfig)
+            runManager.addConfiguration(makeindexRunConfigSettings)
 
-            val makeindexRunConfiguration = makeindexRunConfig.configuration as MakeindexRunConfiguration
+            val makeindexRunConfiguration = makeindexRunConfigSettings.configuration as MakeindexRunConfiguration
 
-            makeindexRunConfiguration.mainFile = runConfig.mainFile
-            makeindexRunConfiguration.workingDirectory = runConfig.getAuxilDirectory()
+            makeindexRunConfiguration.mainFile = latexRunConfig.mainFile
+            makeindexRunConfiguration.workingDirectory = latexRunConfig.getAuxilDirectory()
             makeindexRunConfiguration.setSuggestedName()
 
-            runConfig.makeindexRunConfig = makeindexRunConfig
+            latexRunConfig.makeindexRunConfig = makeindexRunConfigSettings
         }
 
-        val runConfigSettings = runConfig.makeindexRunConfig ?: return
+        val runConfigSettings = latexRunConfig.makeindexRunConfig ?: return
 
         // Run makeindex
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, runConfigSettings, null)
@@ -58,19 +59,19 @@ class RunMakeindexListener(
             if (!copyIndexFile(indexFilename)) return
 
             // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
-            if (runConfig.bibRunConfig == null) {
+            if (latexRunConfig.bibRunConfig == null) {
                 // LaTeX twice
-                runConfig.isFirstRunConfig = false
-                val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(runConfig)
+                latexRunConfig.isFirstRunConfig = false
+                val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
                         ?: return
-                runConfig.isLastRunConfig = false
+                latexRunConfig.isLastRunConfig = false
                 RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-                runConfig.isLastRunConfig = true
+                latexRunConfig.isLastRunConfig = true
                 RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             }
         } finally {
-            runConfig.isLastRunConfig = false
-            runConfig.isFirstRunConfig = true
+            latexRunConfig.isLastRunConfig = false
+            latexRunConfig.isFirstRunConfig = true
         }
     }
 
@@ -80,8 +81,8 @@ class RunMakeindexListener(
      * @param indexFileName Filename of the .ind file, with extension.
      */
     private fun copyIndexFile(indexFileName: String): Boolean {
-        val mainFile = runConfig.mainFile ?: return false
-        val workDir = runConfig.getAuxilDirectory() ?: return false
+        val mainFile = latexRunConfig.mainFile ?: return false
+        val workDir = latexRunConfig.getAuxilDirectory() ?: return false
 
         val indexFileSource = workDir.path + '/' + indexFileName
         val indexFileDestination = File(mainFile.path).parent + '/' + indexFileName

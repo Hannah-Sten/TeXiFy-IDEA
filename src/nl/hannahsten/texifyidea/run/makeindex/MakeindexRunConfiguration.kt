@@ -7,11 +7,13 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.psiFile
+import org.jdom.Element
 
 /**
  * Run configuration for running the makeindex tool.
@@ -21,6 +23,14 @@ class MakeindexRunConfiguration(
         factory: ConfigurationFactory,
         name: String
         ) : RunConfigurationBase<MakeindexCommandLineState>(project, factory, name), LocatableConfiguration {
+
+    companion object {
+
+        private const val PARENT_ELEMENT = "texify-makeindex"
+        private const val PROGRAM = "program"
+        private const val MAIN_FILE = "main-file"
+        private const val WORK_DIR = "work-dir"
+    }
 
     // The following variables are saved in the MakeindexSettingsEditor
     var makeindexProgram: MakeindexProgram? = null
@@ -35,6 +45,46 @@ class MakeindexRunConfiguration(
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = MakeindexSettingsEditor(project)
+
+    override fun readExternal(element: Element) {
+        super<LocatableConfiguration>.readExternal(element)
+
+        val parent = element.getChild(PARENT_ELEMENT)
+
+        makeindexProgram = try {
+            MakeindexProgram.valueOf(parent.getChildText(PROGRAM))
+        }
+        catch (e: IllegalArgumentException) {
+            MakeindexProgram.MAKEINDEX
+        }
+
+        val mainFilePath = parent.getChildText(MAIN_FILE)
+        mainFile = if (mainFilePath != null) {
+            LocalFileSystem.getInstance().findFileByPath(mainFilePath)
+        }
+        else {
+            null
+        }
+
+        val workDirPath = parent.getChildText(WORK_DIR)
+        workingDirectory = if (workDirPath != null) {
+            LocalFileSystem.getInstance().findFileByPath(workDirPath)
+        }
+        else {
+            null
+        }
+    }
+
+    override fun writeExternal(element: Element) {
+        super<LocatableConfiguration>.writeExternal(element)
+
+        val parent = element.getChild(PARENT_ELEMENT) ?: Element(PARENT_ELEMENT).apply { element.addContent(this) }
+        parent.removeContent()
+
+        parent.addContent(Element(PROGRAM).apply{ text = makeindexProgram?.name ?: "" })
+        parent.addContent(Element(MAIN_FILE).apply{ text = mainFile?.path ?: "" })
+        parent.addContent(Element(WORK_DIR).apply{ text = workingDirectory?.path ?: "" })
+    }
 
     override fun isGeneratedName() = name == suggestedName()
 
@@ -63,7 +113,6 @@ class MakeindexRunConfiguration(
             indexProgram = MakeindexProgram.TRUEXINDY
         }
 
-        // todo this will override user chosen setting?
         if (makeindexProgram == null) {
             makeindexProgram = indexProgram
         }
@@ -76,7 +125,7 @@ class MakeindexRunConfiguration(
     fun getIndexPackageOptions(): List<String> {
         return runReadAction {
             // Find index package options
-            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main psifile not found")
+            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
             LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
                     .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
                     .filter { command -> command.requiredParameters.any { it == "imakeidx" } }
@@ -89,7 +138,7 @@ class MakeindexRunConfiguration(
      */
     fun getMakeindexOptions(): HashMap<String, String> {
         return runReadAction {
-            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main psifile not found")
+            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
             val makeindexOptions = HashMap<String, String>()
             LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
                     .filter { it.commandToken.text == "\\makeindex" }
