@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.makeindex
 
+import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessEvent
@@ -27,26 +28,13 @@ class RunMakeindexListener(
     override fun processTerminated(event: ProcessEvent) {
 
         // Only create new one if there is none yet
+        val runConfigSettings: RunnerAndConfigurationSettings =
         if (latexRunConfig.makeindexRunConfig == null) {
-            val runManager = RunManagerImpl.getInstanceImpl(environment.project)
-
-            val makeindexRunConfigSettings = runManager.createConfiguration(
-                    "",
-                    LatexConfigurationFactory(MakeindexRunConfigurationType())
-            )
-
-            runManager.addConfiguration(makeindexRunConfigSettings)
-
-            val makeindexRunConfiguration = makeindexRunConfigSettings.configuration as MakeindexRunConfiguration
-
-            makeindexRunConfiguration.mainFile = latexRunConfig.mainFile
-            makeindexRunConfiguration.workingDirectory = latexRunConfig.getAuxilDirectory()
-            makeindexRunConfiguration.setSuggestedName()
-
-            latexRunConfig.makeindexRunConfig = makeindexRunConfigSettings
+            generateIndexConfig()
         }
-
-        val runConfigSettings = latexRunConfig.makeindexRunConfig ?: return
+        else {
+            latexRunConfig.makeindexRunConfig ?: return
+        }
 
         // Run makeindex
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, runConfigSettings, null)
@@ -73,6 +61,26 @@ class RunMakeindexListener(
             latexRunConfig.isLastRunConfig = false
             latexRunConfig.isFirstRunConfig = true
         }
+    }
+
+    private fun generateIndexConfig(): RunnerAndConfigurationSettings {
+        val runManager = RunManagerImpl.getInstanceImpl(environment.project)
+
+        val makeindexRunConfigSettings = runManager.createConfiguration(
+                "",
+                LatexConfigurationFactory(MakeindexRunConfigurationType())
+        )
+
+        runManager.addConfiguration(makeindexRunConfigSettings)
+
+        val makeindexRunConfiguration = makeindexRunConfigSettings.configuration as MakeindexRunConfiguration
+
+        makeindexRunConfiguration.mainFile = latexRunConfig.mainFile
+        makeindexRunConfiguration.workingDirectory = latexRunConfig.getAuxilDirectory()
+        makeindexRunConfiguration.setSuggestedName()
+
+        latexRunConfig.makeindexRunConfig = makeindexRunConfigSettings
+        return makeindexRunConfigSettings
     }
 
     /**

@@ -9,7 +9,6 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.PackageUtils
@@ -94,7 +93,7 @@ class MakeindexRunConfiguration(
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = "index"
+    override fun suggestedName() = mainFile?.nameWithoutExtension.plus(" index")
 
     fun setSuggestedName() {
         name = suggestedName()
