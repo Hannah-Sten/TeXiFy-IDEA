@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexContentImpl extends ASTWrapperPsiElement implements LatexContent {
 
-  public LatexContentImpl(@NotNull ASTNode node) {
+  public LatexContentImpl(ASTNode node) {
     super(node);
   }
 
