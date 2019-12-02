@@ -71,13 +71,13 @@ class RunMakeindexListener(
                 LatexConfigurationFactory(MakeindexRunConfigurationType())
         )
 
-        runManager.addConfiguration(makeindexRunConfigSettings)
-
         val makeindexRunConfiguration = makeindexRunConfigSettings.configuration as MakeindexRunConfiguration
 
         makeindexRunConfiguration.mainFile = latexRunConfig.mainFile
         makeindexRunConfiguration.workingDirectory = latexRunConfig.getAuxilDirectory()
         makeindexRunConfiguration.setSuggestedName()
+
+        runManager.addConfiguration(makeindexRunConfigSettings)
 
         latexRunConfig.makeindexRunConfig = makeindexRunConfigSettings
         return makeindexRunConfigSettings
