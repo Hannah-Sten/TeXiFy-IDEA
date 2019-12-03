@@ -44,6 +44,7 @@ toc::[]
 * Custom live templates
 * Custom macros with shortcuts
 * Spellchecking with custom dictionaries
+* link:Grazie[Support for the Grazie grammar and spellchecking plugin]
 * link:Soft-wraps[Soft wraps and wrap on typing]
 * link:Shortcuts[Many useful shortcuts]
 * Automatic insertion of `\item` in list environments like itemize and enumerate
