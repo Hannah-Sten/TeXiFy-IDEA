@@ -29,4 +29,6 @@
 - Fixed missing autocompletion when a file name is equal to a folder name. (#937)
 - Fixed crashes. (#909, #948, #963, #1055)
 
+Thanks to [@pschuprikov](https://github.com/pschuprikov), [@Qwlouse](https://github.com/Qwlouse), [@ice1000](https://github.com/ice1000) and [@Stainzl](https://github.com/Stainzl) for contributing to this release.
+
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/16).
