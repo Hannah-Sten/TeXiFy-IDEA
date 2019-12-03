@@ -9,4 +9,4 @@ You can switch on or off grammar rules in menu:File[Settings > Tools > Grazie].
 
 For more information about Grazie, see https://plugins.jetbrains.com/plugin/12175-grazie/
 
-image::grazie.png
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/grazie.png[Grazie]
