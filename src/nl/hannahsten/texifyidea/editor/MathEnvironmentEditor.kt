@@ -30,12 +30,20 @@ class MathEnvironmentEditor(
         val extraWhiteSpace = if (newEnvironmentName == "inline") {
             // Add indentation if indentation of old environment is bigger than the previous line.
             val indentOfPreviousLine = document.lineIndentation(document.getLineNumber(environment.textOffset) - 1)
-            if (indentOfPreviousLine.length < indent.length) "\n$indent" else " "
-        } else if (oldEnvironmentName == "inline") {
+            // Get the previous line, so we can check if it ends with a sentence separator. In that case the inline should not move to the previous line.
+            val previousLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset) - 1), environment.textOffset))
+            when {
+                indentOfPreviousLine.length < indent.length -> "\n$indent"
+                Magic.Pattern.sentenceSeparatorAtLineEnd.matcher(previousLine).find() -> "\n$indent"
+                else -> " "
+            }
+        }
+        else if (oldEnvironmentName == "inline") {
             // Add a newline if there is no text on the line before the inline environment.
             val prefixOnLine = document.getText(TextRange(document.getLineStartOffset(document.getLineNumber(environment.textOffset)), environment.textOffset))
             if (prefixOnLine.matches(Regex("^\\s*"))) " " else "\n$indent"
-        } else ""
+        }
+        else ""
 
         // The number of characters to replace after the end block of the old environment ends.
         val extra = if (newEnvironmentName == "inline") {
@@ -67,7 +75,7 @@ class MathEnvironmentEditor(
 
         // Deal with the parameter from the alignat environments.
         val body = if (needsParameter(oldEnvironmentName) && !needsParameter(newEnvironmentName)) {
-            originalBody.replaceBefore("}", "").removePrefix("}")
+            originalBody.replaceBefore("}", "").removePrefix("}").removePrefix("\n")
         }
         else {
             originalBody
