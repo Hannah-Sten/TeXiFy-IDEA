@@ -24,11 +24,7 @@ open class FileNameInsertionHandler : InsertHandler<LookupElement> {
 
         if (command.name != "\\include" && command.name != "\\bibliography") return
 
-        // Only replace the first command argument.
-        val firstRequiredArgument = command.firstChildOfType(LatexRequiredParam::class) ?: return
-        val endOffset = firstRequiredArgument.endOffset()
-
         val extensionless = text.toString().removeFileExtension()
-        document.replaceString(command.textOffset, endOffset, "${command.name}{$extensionless}")
+        document.replaceString(offset, context.tailOffset, extensionless)
     }
 }

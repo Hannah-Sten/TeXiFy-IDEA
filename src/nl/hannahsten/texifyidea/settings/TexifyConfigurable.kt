@@ -4,8 +4,8 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
-import nl.hannahsten.texifyidea.settings.labeldefiningcommands.TexifyConfigurableLabelCommands
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.settings.labeldefiningcommands.TexifyConfigurableLabelCommands
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JComponent
@@ -16,7 +16,6 @@ import javax.swing.JPanel
  */
 class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
 
-    private lateinit var automaticSoftWraps: JBCheckBox
     private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
     private lateinit var automaticUpDownBracket: JBCheckBox
     private lateinit var automaticItemInItemize: JBCheckBox
@@ -36,7 +35,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             add(JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-                automaticSoftWraps = addCheckbox("Enable soft wraps when opening LaTeX files")
                 automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
                 automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                 automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
@@ -79,8 +77,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun isModified(): Boolean {
-        return automaticSoftWraps.isSelected != settings.automaticSoftWraps
-                || automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
+        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
                 || continuousPreview.isSelected != settings.continuousPreview
@@ -90,7 +87,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun apply() {
-        settings.automaticSoftWraps = automaticSoftWraps.isSelected
         settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
@@ -101,7 +97,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun reset() {
-        automaticSoftWraps.isSelected = settings.automaticSoftWraps
         automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize

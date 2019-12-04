@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.settings
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 data class TexifySettingsState (
-        var automaticSoftWraps : Boolean = false,
         var automaticSecondInlineMathSymbol : Boolean = true,
         var automaticUpDownBracket : Boolean = true,
         var automaticItemInItemize: Boolean = true,

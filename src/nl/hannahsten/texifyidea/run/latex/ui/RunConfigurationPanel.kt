@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.RunnerAndConfigurationSettings
+import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
@@ -9,7 +10,6 @@ import com.intellij.ui.HideableTitledPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import com.intellij.util.IconUtil
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import java.awt.BorderLayout
 import javax.swing.DefaultListSelectionModel
 import javax.swing.JPanel
@@ -17,12 +17,10 @@ import javax.swing.JPanel
 /**
  * @author Sten Wessel
  */
-class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
-
-    companion object {
-
-        private const val title = "Bibliography: "
-    }
+class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
+        private val project: Project,
+        private val title: String,
+        private val runConfigurationType: Class<RunConfigurationType>) : JPanel(BorderLayout()) {
 
     private val contentPanel = JPanel(BorderLayout())
     private val hidePanel: HideableTitledPanel
@@ -35,6 +33,7 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
         }
 
     init {
+
         createPanel()
         hidePanel = HideableTitledPanel(title, false).apply {
             setContentComponent(contentPanel)
@@ -45,7 +44,7 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
     private fun createPanel() {
         list = JBList<RunnerAndConfigurationSettings>().apply {
             visibleRowCount = 1
-            emptyText.text = "No bibliography run configuration selected."
+            emptyText.text = "No run configuration selected."
             cellRenderer = RunConfigCellRenderer(project)
 
             // Cell height
@@ -87,7 +86,8 @@ class BibliographyPanel(private val project: Project) : JPanel(BorderLayout()) {
     }
 
     private fun askRunConfiguration(): RunnerAndConfigurationSettings? {
-        val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type is BibtexRunConfigurationType }
+        val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type.javaClass == runConfigurationType  }
+
         val dialog = RunConfigurationSelectionDialog(project, configurations)
 
         dialog.show()

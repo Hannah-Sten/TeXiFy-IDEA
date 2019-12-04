@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexEndCommandImpl extends ASTWrapperPsiElement implements LatexEndCommand {
 
-  public LatexEndCommandImpl(@NotNull ASTNode node) {
+  public LatexEndCommandImpl(ASTNode node) {
     super(node);
   }
 
