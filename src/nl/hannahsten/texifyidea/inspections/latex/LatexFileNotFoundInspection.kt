@@ -86,7 +86,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                             if (relative != null) {
                                 break
                             }
-                            relative = moduleRoot.findFile(fileName, extensions)
+                            relative = moduleRoot.findFile(filePath, extensions)
                         }
                     }
 

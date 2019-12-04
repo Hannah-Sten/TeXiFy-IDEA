@@ -98,7 +98,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .toList()
 
         // Build gutter icon.
-        val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject()).size.width
+        val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width ?: return
 
         val builder = NavigationGutterIconBuilder
                 .create(TexifyIcons.getIconFromExtension(argument.defaultExtension))
