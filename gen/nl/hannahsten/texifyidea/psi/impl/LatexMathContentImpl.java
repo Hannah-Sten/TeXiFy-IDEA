@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexMathContentImpl extends ASTWrapperPsiElement implements LatexMathContent {
 
-  public LatexMathContentImpl(@NotNull ASTNode node) {
+  public LatexMathContentImpl(ASTNode node) {
     super(node);
   }
 
