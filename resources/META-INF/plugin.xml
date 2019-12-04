@@ -26,18 +26,19 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.6</version>
+    <version>0.6.7</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="173.*"/>
+    <idea-version since-build="192"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
+    <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
 
     <description><![CDATA[
         <p>
@@ -53,7 +54,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
-            <li>SumatraPDF (Windows) and Evince (Linux) support with forward and backward search</li>
+            <li>SumatraPDF (Windows), Evince (Linux) and Okular (Linux) support with forward and backward search</li>
             <li>Smart quotes</li>
             <li>Unicode math preview</li>
             <li>Equation and TikZ picture preview</li>
@@ -81,10 +82,10 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.6</strong></p>
+        <p><strong>Beta 0.6.7</strong></p>
         <p>
             We welcome you to yet another instance of our bimestrial updates containing a plethora of changes and bug fixes.
-            Get excited about inspection suppression, Tectonic, Evince PDF viewer support and much more!
+            Get excited about Okular support, a table creation wizard, makeindex support and much more!
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -95,44 +96,45 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li>Added inspection suppression. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/925">#925</a>)</li>
-            <li>Added basic support for magic comments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/877">#877</a>)</li>
-            <li>Added support for the Tectonic compiler. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/888">#888</a>)</li>
-            <li>Added support for TeX Live on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/882">#882</a>)</li>
-            <li>Added action to clear auxiliary files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/859">#859</a>)</li>
-            <li>Added support for Evince PDF viewer. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/742">#742</a>)</li>
-            <li>Added option to open in a custom PDF viewer. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/122">#122</a>)</li>
-            <li>Added equation reference inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/884">#884</a>)</li>
-            <li>Added figure not referenced inspection (thanks to <a href="https://github.com/pschuprikov">pschuprikov</a>). (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/875">#875</a>)</li>
-            <li>Added file dialog when creating files using inspections and intentions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/878">#878</a>)</li>
-            <li>Added intention to toggle smart quotes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/872">#872</a>)</li>
-            <li>Added brace matching for \begin and \end pairs (thanks to <a href="https://github.com/ice1000">ice1000</a>). (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/933">#933</a>)</li>
-            <li>Added enquote as smart quote option. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/897">#897</a>)</li>
+            <li>Table creation wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/907">#907</a>)</li>
+            <li>Added support for multiple citations in one command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/921">#921</a>)</li>
+            <li>Project-specific setting to change compiler compatibility. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/891">#891</a>)</li>
+            <li>Added an option to the run config to always compile twice. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/908">#908</a>)</li>
+            <li>Added support for automatically running makeindex in auxiliary directories. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/924">#924</a>)</li>
+            <li>Added support for Okular. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1064">#1064</a>)</li>
+            <li>Added inspection that checks whether the \addbibresource has a file extension. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/956">#956</a>)</li>
+            <li>Added support for including packages in package or documentclass options. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/911">#911</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/949">#949</a>)</li>
+            <li>Added menu entry to clear all generated files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/971">#971</a>)</li>
+            <li>Added continuous preview of math and TikZ pictures. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/923">#923</a>)</li>
+            <li>Specify custom commands that define a label. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/815">#815</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>Made the SumatraPDF path configurable. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/793">#793</a>)</li>
-            <li>Improved speed of up-down-autobracket. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/868">#868</a>)</li>
-            <li>The colour of method separators now changes based on the structure level. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/901">#901</a>)</li>
-            <li>Removed Plexus Utils library dependency. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/911">#911</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/920">#920</a>)</li>
-            <li>Several performance improvements.</li>
+            <li>Performance improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/932">#932</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/944">#944</a>)</li>
+            <li>Inspection for normal space after abbreviation will not be triggered in comments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/983">#983</a>)</li>
+            <li>The 'file not found' inspection quickfix now also uses the file creation dialog. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1004">#1004</a>)</li>
+            <li>Internal code improvements.</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Fixed inspection 'fix all' not working for regex based inspections. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/826">#826</a>)</li>
-            <li>Fixed autocompletion not working for colons (thanks to <a href="https://github.com/pschuprikov">pschuprikov</a>). (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/835">#835</a>)</li>
-            <li>Fixed previews not working when inkscape is installed as a snap app. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/886">#886</a>)</li>
-            <li>Removed unnecessary execution for bibliography checks when right-clicking files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/915">#915</a>)</li>
-            <li>Fixed groups disappearing after autocompletion of includes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/929">#929</a>)</li>
-            <li>Fixed NonBreakingSpace inspection triggering for \citeauthor. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/912">#912</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/902">#902</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/913">#913</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/919">#919</a>)</li>
+            <li>Renamed labels will now be renamed in all files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/950">#950</a>)</li>
+            <li>Fixed not being able to disable bibtex. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/945">#945</a>)</li>
+            <li>Fixed package dependencies being inserted in the wrong file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/942">#942</a>)</li>
+            <li>Support compilation of non-project files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/987">#987</a>)</li>
+            <li>Fixed crash when providing optional parameters to a \ref command as comma separated list. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/980">#980</a>)</li>
+            <li>Fixed missing autocompletion when a file name is equal to a folder name. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/937">#937</a>)</li>
+            <li>Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/909">#909</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/948">#948</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/963">#963</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1055">#1055</a>)</li>
         </ul>
+        <br>
+        <p>
+            Thanks to <a href="https://github.com/pschuprikov">@pschuprikov</a>, <a href="https://github.com/Qwlouse">@Qwlouse</a>, <a href="https://github.com/ice1000">@ice1000</a> and <a href="https://github.com/Stainzl">@Stainzl</a> for contributing to this release.
+        </p>
         <br>
         <p>
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
@@ -192,7 +194,7 @@
             <!-- Clear files -->
             <action class="nl.hannahsten.texifyidea.action.ClearAuxFiles" id="texify.ClearAuxFiles" text="Clear Auxiliary Files">
             </action>
-            <action class="nl.hannahsten.texifyidea.action.ClearGeneratedFiles" id="texify.ClearGeneratedFiles" text="Clear Generated Files">
+            <action class="nl.hannahsten.texifyidea.action.ClearGeneratedFiles" id="texify.ClearGeneratedFiles" text="Clear Auxiliary and Generated Files">
             </action>
 
             <separator/>
@@ -409,6 +411,7 @@
         <!-- Run configurations -->
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->

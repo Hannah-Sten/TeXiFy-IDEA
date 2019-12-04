@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -14,9 +13,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * @author Hannah Schellekens
@@ -36,7 +35,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
         for (cmd in commands) {
             if (cmd.name !in Magic.Command.bibliographyReference) {
                 continue
