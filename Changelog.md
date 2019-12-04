@@ -8,7 +8,7 @@
 
 
 ## Bug fixes
-
+- Include commands like \bibliography and \input can now recognize multiple files as argument. (#782)
 
 Thanks to [@TanVD](https://github.com/TanVD) for contributing to this release.
 
