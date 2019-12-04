@@ -124,7 +124,7 @@ object Magic {
         )
 
         /**
-         * All commands that represend some kind of reference (think \ref and \cite).
+         * All commands that represent some kind of reference (think \ref and \cite).
          */
         @JvmField val reference = labelReference + bibliographyReference
 
@@ -324,7 +324,13 @@ object Magic {
         /**
          * Matches all interpunction that marks the end of a sentence.
          */
-        @JvmField val sentenceSeperator = RegexPattern.compile("[.?!;;]")!!
+        @JvmField val sentenceSeparator = RegexPattern.compile("[.?!;;]")!!
+
+        /**
+         * Matches all sentenceSeparators at the end of a line (with or without space).
+         */
+        @JvmField val sentenceSeparatorAtLineEnd = RegexPattern.compile("$sentenceSeparator\\s*$")!!
+
 
         /**
          * Matches when a string ends with a non breaking space.
@@ -336,7 +342,7 @@ object Magic {
          *
          * It might be more parts, like `b.v.b.d.` is a valid abbreviation. Likewise are `sajdflkj.asdkfj.asdf` and
          * `i.e.`. Single period abbreviations are not being detected as they can easily be confused with two letter words
-         * at the end of the sentece (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
+         * at the end of the sentence (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
         @JvmField val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.|\\s)")!!
 
@@ -361,7 +367,7 @@ object Magic {
         @JvmField val nonAscii = RegexPattern.compile("\\P{ASCII}")!!
 
         /**
-         * Seperator for multiple parameter values in one parameter.
+         * Separator for multiple parameter values in one parameter.
          *
          * E.g. when you have \cite{citation1,citation2,citation3}, this pattern will match the separating
          * comma.

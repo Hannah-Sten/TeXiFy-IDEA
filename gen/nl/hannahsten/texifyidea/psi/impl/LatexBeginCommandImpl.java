@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements LatexBeginCommand {
 
-  public LatexBeginCommandImpl(@NotNull ASTNode node) {
+  public LatexBeginCommandImpl(ASTNode node) {
     super(node);
   }
 

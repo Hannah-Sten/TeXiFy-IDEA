@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements LatexNoMathContent {
 
-  public LatexNoMathContentImpl(@NotNull ASTNode node) {
+  public LatexNoMathContentImpl(ASTNode node) {
     super(node);
   }
 

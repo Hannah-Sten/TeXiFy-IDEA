@@ -31,7 +31,7 @@ open class ForwardSearchAction : EditorAction(
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
-        evince.conversation!!.forwardSearch(pdfPath = null, sourceFilePath = file.path, line = line)
+        evince.conversation!!.forwardSearch(pdfPath = null, sourceFilePath = file.path, line = line, project = project)
     }
 
     override fun update(e: AnActionEvent) {

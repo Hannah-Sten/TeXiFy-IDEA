@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexStringImpl extends ASTWrapperPsiElement implements BibtexString {
 
-  public BibtexStringImpl(@NotNull ASTNode node) {
+  public BibtexStringImpl(ASTNode node) {
     super(node);
   }
 
