@@ -142,9 +142,14 @@ fun String.removeAll(vararg strings: String): String {
 /**
  * Formats the string as a valid filename, removing not-allowed characters, in TeX-style with - as separator.
  */
-fun String.formatAsFileName(): String {
+fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "\\")
+
+/**
+ * Formats the string as a valid filepath, removing not-allowed characters, in TeX-style with - as separator. Any / or \ characters are not removed.
+ */
+fun String.formatAsFilePath(): String {
     val formatted = this.replace(" ", "-")
-            .removeAll("/", "\\", "<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
+            .removeAll("<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
             .toLowerCase()
 
     // If there are no valid characters left, use a default name.

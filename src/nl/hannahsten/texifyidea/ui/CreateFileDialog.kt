@@ -14,13 +14,13 @@ import javax.swing.JTextField
  *
  * @param currentFilePath The path of the file we are currently in, e.g., the file from which an intention was triggered
  *      that creates a new file.
- * @param newFileName The name of the new file, with or without the '.tex' extension.
+ * @param newFileName The name of the new file, with or without the extension.
  * @param newFileFullPath The full path of the new file, without tex extension.
  */
 class CreateFileDialog(private val currentFilePath: String?, private val newFileName: String, var newFileFullPath: String? = null) {
     init {
         DialogBuilder().apply {
-            setTitle("Create new tex file")
+            setTitle("Create new file")
             val panel = JPanel()
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
@@ -39,9 +39,8 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
                                     .withTitle("Select folder of new file")))
 
             // Add the fields to the panel, with a useful label.
-            panel.add(LabeledComponent.create(nameField, "File name (.tex optional)"))
-            panel.add(LabeledComponent.create(pathField, "Location"))
-
+            panel.add(LabeledComponent.create(nameField, "File path (extension optional, relative to base directory)"))
+            panel.add(LabeledComponent.create(pathField, "Base directory"))
 
             setCenterPanel(panel)
             addCancelAction()

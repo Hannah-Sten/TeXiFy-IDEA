@@ -15,19 +15,19 @@
 
 bibtexFile ::= (entry | comment)*
 
-entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?  { pin=1 }
+entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?
 
-entry_content ::= tag (SEPARATOR tag)* SEPARATOR? { pin=1 }
+entry_content ::= tag (SEPARATOR tag)* SEPARATOR?
 
 endtry ::= SEPARATOR? comment* (CLOSE_BRACE | CLOSE_PARENTHESIS)
 
 type ::= TYPE_TOKEN
 
-preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
+preamble ::= (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
 
-id ::= comment* IDENTIFIER comment* SEPARATOR { pin=2 }
+id ::= comment* IDENTIFIER comment* SEPARATOR
 
-tag ::= comment* key comment* ASSIGNMENT comment* content comment* { pin=2 }
+tag ::= comment* key comment* ASSIGNMENT comment* content comment*
 
 key ::= IDENTIFIER
 
@@ -37,9 +37,9 @@ string ::= defined_string | quoted_string | braced_string
 
 defined_string ::= IDENTIFIER
 
-quoted_string ::= QUOTES normal_text? END_QUOTES { pin=1 }
+quoted_string ::= QUOTES normal_text? END_QUOTES
 
-braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE { pin=1 }
+braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE
 
 comment ::= COMMENT_TOKEN
 

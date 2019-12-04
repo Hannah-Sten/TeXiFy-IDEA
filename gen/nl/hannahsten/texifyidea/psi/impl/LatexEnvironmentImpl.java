@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexEnvironment {
 
-  public LatexEnvironmentImpl(@NotNull ASTNode node) {
+  public LatexEnvironmentImpl(ASTNode node) {
     super(node);
   }
 
@@ -29,9 +29,9 @@ public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexE
   }
 
   @Override
-  @Nullable
+  @NotNull
   public LatexEndCommand getEndCommand() {
-    return findChildByClass(LatexEndCommand.class);
+    return findNotNullChildByClass(LatexEndCommand.class);
   }
 
   @Override
