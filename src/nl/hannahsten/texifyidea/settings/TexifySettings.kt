@@ -4,8 +4,6 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.xmlb.XmlSerializerUtil
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
@@ -27,7 +25,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         CSQUOTES // Context Sensitive quotes from the csquotes package
     }
 
-    var automaticSoftWraps = false
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
@@ -43,7 +40,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
-                automaticSoftWraps = automaticSoftWraps,
                 automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
                 automaticUpDownBracket = automaticUpDownBracket,
                 automaticItemInItemize = automaticItemInItemize,
@@ -55,7 +51,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     }
 
     override fun loadState(state: TexifySettingsState) {
-        automaticSoftWraps = state.automaticSoftWraps
         automaticSecondInlineMathSymbol = state.automaticSecondInlineMathSymbol
         automaticUpDownBracket = state.automaticUpDownBracket
         automaticItemInItemize = state.automaticItemInItemize

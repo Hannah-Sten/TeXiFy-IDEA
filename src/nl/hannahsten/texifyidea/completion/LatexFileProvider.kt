@@ -32,10 +32,13 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
         private val TRIM_BACK = Pattern.compile("\\.\\./")
     }
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, givenResultSet: CompletionResultSet) {
         // Get base data.
         val baseFile = parameters.originalFile.virtualFile
-        val autocompleteText = processAutocompleteText(parameters.originalPosition!!.text)
+        val autocompleteText = processAutocompleteText(parameters.position.text)
+
+        // We create a result set with the correct autocomplete text as prefix, which may be different when multiple LaTeX parameters (comma separated) are present
+        val result = givenResultSet.withPrefixMatcher(autocompleteText)
 
         val baseDirectory = if (parameters.originalFile.isLatexFile()) {
             parameters.originalFile.findRootFile().containingDirectory.virtualFile
@@ -139,6 +142,12 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
             autocompleteText.substring(0, autocompleteText.length - 1)
         }
         else autocompleteText
+
+        // When the last parameter is autocompleted, parameters before that may also be present in
+        // autocompleteText so we split on commas and take the last one. If it is not the last
+        // parameter, no commas will be present so the split will do nothing.
+        result = result.replace("IntellijIdeaRulezzz", "")
+                .split(",").last()
 
         if (result.endsWith(".")) {
             result = result.substring(0, result.length - 1) + "/"

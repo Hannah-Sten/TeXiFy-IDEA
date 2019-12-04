@@ -75,7 +75,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 return
             }
 
-            val signMarker = Magic.Pattern.sentenceSeperator.matcher(textInElement)
+            val signMarker = Magic.Pattern.sentenceSeparator.matcher(textInElement)
             if (!signMarker.find()) {
                 return
             }

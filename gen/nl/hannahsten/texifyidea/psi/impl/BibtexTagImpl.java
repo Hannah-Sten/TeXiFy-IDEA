@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
 
-  public BibtexTagImpl(@NotNull ASTNode node) {
+  public BibtexTagImpl(ASTNode node) {
     super(node);
   }
 
@@ -31,9 +31,9 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
   }
 
   @Override
-  @Nullable
+  @NotNull
   public BibtexContent getContent() {
-    return findChildByClass(BibtexContent.class);
+    return findNotNullChildByClass(BibtexContent.class);
   }
 
   @Override
