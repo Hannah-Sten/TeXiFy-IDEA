@@ -5,7 +5,7 @@
 - Add support for the Grazie grammar and spellchecking plugin. (#1120)
 
 ## Changes
-
+- Improved the math environment switcher. (#1080)
 
 ## Bug fixes
 - Include commands like \bibliography and \input can now recognize multiple files as argument. (#782)
