@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexEndtryImpl extends ASTWrapperPsiElement implements BibtexEndtry {
 
-  public BibtexEndtryImpl(@NotNull ASTNode node) {
+  public BibtexEndtryImpl(ASTNode node) {
     super(node);
   }
 

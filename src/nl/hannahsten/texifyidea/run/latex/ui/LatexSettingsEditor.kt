@@ -13,10 +13,12 @@ import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
@@ -38,10 +40,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private var auxDir: JBCheckBox? = null
     private var outDir: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
-    private var makeindex: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private val extensionSeparator = TitledSeparator("Extensions")
-    private lateinit var bibliographyPanel: BibliographyPanel
+    private lateinit var bibliographyPanel: RunConfigurationPanel<BibtexRunConfigurationType>
+    private lateinit var makeindexPanel: RunConfigurationPanel<MakeindexRunConfigurationType>
 
     /** Whether to enable the sumatraPath text field. */
     private lateinit var enableSumatraPath: JBCheckBox
@@ -110,11 +112,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             }
         }
 
-        // Reset whether to handle makeindex
-        if (makeindex != null) {
-            makeindex!!.isSelected = runConfiguration.isMakeindexEnabled
-        }
-
         // Reset output format.
         // Make sure to use the output formats relevant for the chosen compiler
         if (runConfiguration.compiler != null) {
@@ -135,6 +132,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset bibliography
         bibliographyPanel.configuration = runConfiguration.bibRunConfig
+
+        // Reset makeindex
+        makeindexPanel.configuration = runConfiguration.makeindexRunConfig
     }
 
     @Throws(ConfigurationException::class)
@@ -146,15 +146,23 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Remove bibtex run config when switching to a compiler which includes running bibtex
         if (runConfiguration.compiler?.includesBibtex == true) {
             runConfiguration.bibRunConfig = null
-            extensionSeparator.isVisible = false
             bibliographyPanel.isVisible = false
         }
         else {
-            extensionSeparator.isVisible = true
             bibliographyPanel.isVisible = true
 
             // Apply bibliography, only if not hidden
             runConfiguration.bibRunConfig = bibliographyPanel.configuration
+        }
+
+        if (runConfiguration.compiler?.includesMakeindex == true) {
+            runConfiguration.makeindexRunConfig = null
+            makeindexPanel.isVisible = false
+        } else {
+            makeindexPanel.isVisible = true
+
+            // Apply makeindex
+            runConfiguration.makeindexRunConfig = makeindexPanel.configuration
         }
 
         // Apply custom compiler path if applicable
@@ -200,11 +208,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             if (runConfiguration.compileTwice) {
                 runConfiguration.isLastRunConfig = false
             }
-        }
-
-        // Apply whether to handle makeindex
-        if (makeindex != null) {
-            runConfiguration.isMakeindexEnabled = makeindex!!.isSelected
         }
 
         // Apply output format.
@@ -268,10 +271,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compileTwice!!.isSelected = false
         panel.add(compileTwice)
 
-        makeindex = JBCheckBox("Enable automatic index creation using makeindex")
-        makeindex!!.isSelected = true
-        panel.add(makeindex)
-
         // Output format.
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler
         val cboxFormat = ComboBox(selectedCompiler.outputFormats)
@@ -282,8 +281,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(extensionSeparator)
 
         // Extension panels
-        bibliographyPanel = BibliographyPanel(project!!)
+        bibliographyPanel = RunConfigurationPanel(project!!,"Bibliography: ", BibtexRunConfigurationType::class.java)
         panel.add(bibliographyPanel)
+
+        makeindexPanel = RunConfigurationPanel(project!!, "Makeindex: ", MakeindexRunConfigurationType::class.java)
+        panel.add(makeindexPanel)
     }
 
     /**

@@ -6,6 +6,7 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
@@ -77,7 +78,17 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
                 for (filePath in fileNames) {
                     // check if the given name is reachable from the root file
-                    val relative = containingDirectory.findFile(filePath, extensions)
+                    var relative = containingDirectory.findFile(filePath, extensions)
+
+                    // If not, check if it is reachable from any content root which will be included when using MiKTeX
+                    if (LatexDistribution.isMiktex) {
+                        for (moduleRoot in ProjectRootManager.getInstance(file.project).contentSourceRoots) {
+                            if (relative != null) {
+                                break
+                            }
+                            relative = moduleRoot.findFile(fileName, extensions)
+                        }
+                    }
 
                     if (relative != null) continue
 

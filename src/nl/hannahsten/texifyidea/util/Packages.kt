@@ -25,7 +25,7 @@ object PackageUtils {
             .toList()
 
     /** Commands which can include packages in optional or required arguments. **/
-    private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
+    val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
     private val TIKZ_IMPORT_COMMANDS = setOf("\\usetikzlibrary")
     private val PGF_IMPORT_COMMANDS = setOf("\\usepgfplotslibrary")
 

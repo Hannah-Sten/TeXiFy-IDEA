@@ -69,6 +69,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val includesBibtex = true
 
+        override val includesMakeindex = true
+
         override val handlesNumberOfCompiles = true
 
         override fun createCommand(runConfig: LatexRunConfiguration, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
@@ -225,6 +227,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      * Whether the compiler includes running bibtex/biber.
      */
     open val includesBibtex = false
+
+    /**
+     * Whether the compiler includes running index programs.
+     */
+    open val includesMakeindex = false
 
     /**
      * Whether the compiler automatically determines the number of compiles needed.
