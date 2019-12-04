@@ -58,14 +58,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
                 runConfig.generateBibRunConfig()
             }
-
-            runConfig.hasBeenRun = true
         }
 
         var isMakeindexNeeded = false
 
         // Run makeindex when applicable
-        if (runConfig.isFirstRunConfig && runConfig.isMakeindexEnabled) {
+        if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfig != null || !runConfig.hasBeenRun)) {
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = runConfig.mainFile
                     ?.psiFile(runConfig.project)
@@ -82,6 +80,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 }
             }
         }
+
+        runConfig.hasBeenRun = true
 
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
         if (runConfig.bibRunConfig == null && !isMakeindexNeeded) {
