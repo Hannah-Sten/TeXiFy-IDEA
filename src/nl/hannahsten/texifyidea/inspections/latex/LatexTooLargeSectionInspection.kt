@@ -55,7 +55,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
          */
         fun findNextSection(command: LatexCommands): PsiElement? {
             // Scan all commands.
-            val commands = LatexCommandsIndex.getItems(command.containingFile).toList()
+            val commands = command.containingFile.commandsInFile().toList()
 
             for (i in commands.indices) {
                 val cmd = commands[i]

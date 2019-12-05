@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.linuxpdfviewer
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -14,14 +15,15 @@ class OpenViewerListener(
         private val viewer: PdfViewer,
         val runConfig: LatexRunConfiguration,
         val sourceFilePath: String,
-        val line: Int)
+        val line: Int,
+        val project: Project)
     : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
             runAsync {
                 try {
-                    viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line)
+                    viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project)
                 } catch (ignored: TeXception) {
                 }
             }

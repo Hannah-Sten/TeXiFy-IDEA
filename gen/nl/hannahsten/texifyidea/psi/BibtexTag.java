@@ -10,7 +10,7 @@ public interface BibtexTag extends PsiElement {
   @NotNull
   List<BibtexComment> getCommentList();
 
-  @Nullable
+  @NotNull
   BibtexContent getContent();
 
   @NotNull

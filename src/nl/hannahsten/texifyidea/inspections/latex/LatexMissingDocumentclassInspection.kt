@@ -8,10 +8,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import java.util.*
 
 /**
@@ -40,7 +40,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        val hasDocumentclass = LatexCommandsIndex.getItemsInFileSet(file).asSequence()
+        val hasDocumentclass = file.commandsInFileSet().asSequence()
                 .filter { cmd -> cmd.name == "\\documentclass" }
                 .count() > 0
 

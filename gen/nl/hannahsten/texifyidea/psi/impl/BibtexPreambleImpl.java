@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexPreambleImpl extends ASTWrapperPsiElement implements BibtexPreamble {
 
-  public BibtexPreambleImpl(@NotNull ASTNode node) {
+  public BibtexPreambleImpl(ASTNode node) {
     super(node);
   }
 

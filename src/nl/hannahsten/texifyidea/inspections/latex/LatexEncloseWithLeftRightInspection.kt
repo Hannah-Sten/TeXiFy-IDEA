@@ -90,18 +90,25 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
         }
 
         // Lookbehind for \left or \right.
-        if (document[offset - 5 until offset] == "\\left" || document[offset - 6 until offset] == "\\right") {
-            return true
+        if (offset - 6 >= 0) {
+            if (document[offset - 5 until offset] == "\\left" || document[offset - 6 until offset] == "\\right") {
+                return true
+            }
         }
 
         return false
     }
 
+    /**
+     * Check if the command that starts at 'offset' is a command which takes up vertical space, such that it should be enclosed with left./right.
+     */
     private fun hasAffectedCommand(document: Document, offset: Int): Boolean {
         for (cmd in affectedCommands()) {
-            val found = document[offset until offset + cmd.length]
-            if (found == cmd) {
-                return true
+            if (offset + cmd.length <= document.textLength) {
+                val found = document[offset until offset + cmd.length]
+                if (found == cmd) {
+                    return true
+                }
             }
         }
 

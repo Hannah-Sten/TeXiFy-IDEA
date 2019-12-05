@@ -3,9 +3,12 @@ package nl.hannahsten.texifyidea.gutter
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
+import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.wm.ex.WindowManagerEx
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
@@ -14,6 +17,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.splitContent
 import java.util.*
 import javax.swing.Icon
 
@@ -63,9 +67,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             return
         }
 
-        // Make filename. Substring is to remove { and }.
-        var fileName = requiredParams[0].group.text
-        fileName = fileName.substring(1, fileName.length - 1)
+        // Find filenames.
+        val fileNames = splitContent(requiredParams[0], ",")
 
         // Look up target file.
         val containingFile = element.getContainingFile() ?: return
@@ -79,24 +82,30 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val rootManager = ProjectRootManager.getInstance(element.getProject())
         Collections.addAll(roots, *rootManager.contentSourceRoots)
 
-        var file: VirtualFile? = null
-        for (root in roots) {
-            val foundFile = root.findFile(fileName, argument.supportedExtensions)
-            if (foundFile != null) {
-                file = foundFile
-                break
-            }
-        }
+        val psiManager = PsiManager.getInstance(element.project)
 
-        if (file == null) {
-            return
-        }
+        val files: List<PsiFile> = fileNames
+                .map { fileName ->
+                    for (root in roots) {
+                        val foundFile = root.findFile(fileName, argument.supportedExtensions)
+                        if (foundFile != null) {
+                            return@map psiManager.findFile(foundFile)
+                        }
+                    }
+                    null
+                }
+                .filterNotNull()
+                .toList()
 
         // Build gutter icon.
+        val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width ?: return
+
         val builder = NavigationGutterIconBuilder
-                .create(TexifyIcons.getIconFromExtension(file.extension))
-                .setTarget(PsiManager.getInstance(element.getProject()).findFile(file))
-                .setTooltipText("Go to referenced file '" + file.name + "'")
+                .create(TexifyIcons.getIconFromExtension(argument.defaultExtension))
+                .setTargets(files)
+                .setPopupTitle("Navigate to Referenced File")
+                .setTooltipText("Go to referenced file")
+                .setCellRenderer(GotoFileCellRenderer(maxSize))
 
         result.add(builder.createLineMarkerInfo(element))
     }

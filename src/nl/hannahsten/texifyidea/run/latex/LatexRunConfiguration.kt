@@ -45,10 +45,10 @@ class LatexRunConfiguration constructor(project: Project,
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
         private const val COMPILE_TWICE = "compile-twice"
-        private const val MAKEINDEX = "makeindex"
         private const val OUTPUT_FORMAT = "output-format"
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
+        private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
     }
 
     var compiler: LatexCompiler? = null
@@ -73,9 +73,7 @@ class LatexRunConfiguration constructor(project: Project,
     var hasAuxiliaryDirectories = LatexDistribution.isMiktex
     var hasOutputDirectories = true
     var compileTwice = false
-    var isMakeindexEnabled = true
     var outputFormat: Format = Format.PDF
-    private var bibRunConfigId = ""
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -84,11 +82,20 @@ class LatexRunConfiguration constructor(project: Project,
     // Whether the run configuration has already been run or not, since it has been created
     var hasBeenRun = false
 
+    private var bibRunConfigId = ""
     var bibRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)
                 .getConfigurationById(bibRunConfigId)
         set(bibRunConfig) {
             this.bibRunConfigId = bibRunConfig?.uniqueID ?: ""
+        }
+
+    private var makeindexRunConfigId = ""
+    var makeindexRunConfig: RunnerAndConfigurationSettings?
+        get() = RunManagerImpl.getInstanceImpl(project)
+                .getConfigurationById(makeindexRunConfigId)
+        set(makeindexRunConfig) {
+            this.makeindexRunConfigId = makeindexRunConfig?.uniqueID ?: ""
         }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
@@ -175,15 +182,6 @@ class LatexRunConfiguration constructor(project: Project,
             this.compileTwice = compileTwiceBoolean.toBoolean()
         }
 
-        // Read whether to handle makeindex
-        val makeindexString = parent.getChildText(MAKEINDEX)
-        if (makeindexString == null) {
-            this.isMakeindexEnabled = true
-        }
-        else {
-            this.isMakeindexEnabled = makeindexString.toBoolean()
-        }
-
         // Read output format.
         val format = Format
                 .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
@@ -196,6 +194,10 @@ class LatexRunConfiguration constructor(project: Project,
         // Read bibliography run configuration
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
         this.bibRunConfigId = bibRunConfigElt ?: ""
+
+        // Read makeindex run configuration
+        val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
+        this.makeindexRunConfigId = makeindexRunConfigElt ?: ""
     }
 
     @Throws(WriteExternalException::class)
@@ -259,11 +261,6 @@ class LatexRunConfiguration constructor(project: Project,
         compileTwiceElt.text = compileTwice.toString()
         parent.addContent(compileTwiceElt)
 
-        // Write whether to handle makeindex
-        val makeindexElt = Element(MAKEINDEX)
-        makeindexElt.text = isMakeindexEnabled.toString()
-        parent.addContent(makeindexElt)
-
         // Write output format.
         val outputFormatElt = Element(OUTPUT_FORMAT)
         outputFormatElt.text = outputFormat.name
@@ -278,6 +275,11 @@ class LatexRunConfiguration constructor(project: Project,
         val bibRunConfigElt = Element(BIB_RUN_CONFIG)
         bibRunConfigElt.text = bibRunConfigId
         parent.addContent(bibRunConfigElt)
+
+        // Write makeindex run configuration
+        val makeindexRunConfigElt = Element(MAKEINDEX_RUN_CONFIG)
+        makeindexRunConfigElt.text = makeindexRunConfigId
+        parent.addContent(makeindexRunConfigElt)
     }
 
     /**

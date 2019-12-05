@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.*;
 
 public class BibtexContentImpl extends ASTWrapperPsiElement implements BibtexContent {
 
-  public BibtexContentImpl(@NotNull ASTNode node) {
+  public BibtexContentImpl(ASTNode node) {
     super(node);
   }
 
