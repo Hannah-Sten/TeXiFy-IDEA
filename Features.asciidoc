@@ -61,6 +61,7 @@ toc::[]
 * Method separator lines for sections
 * Special highlighting and marker for `todo` comments, customizable
 * Links (in comments) are clickable
+* link:LaTeX-documentation[Easy links to LaTeX package documentation]
 
 == Preview
 * link:Preview#Unicode-math-preview[Unicode math preview]
