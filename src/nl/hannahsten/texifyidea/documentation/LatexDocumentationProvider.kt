@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException
 import java.io.InputStream
@@ -88,7 +89,15 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         val stream: InputStream
         try {
-            stream = Runtime.getRuntime().exec("texdoc -l -M $name").inputStream
+            // -M to avoid texdoc asking to choose from the list
+            val command = if (LatexDistribution.isTexlive) {
+                "texdoc -l -M $name"
+            }
+            else {
+                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
+                "texdoc -l $name"
+            }
+            stream = Runtime.getRuntime().exec(command).inputStream
         }
         catch (e: IOException) {
             return emptyList()
@@ -100,9 +109,14 @@ class LatexDocumentationProvider : DocumentationProvider {
              emptyList()
         }
         else {
-            lines.map {
-                // Line consists of: name version path optional file description
-                it.split("\t")[2]
+            if (LatexDistribution.isTexlive) {
+                lines.map {
+                    // Line consists of: name version path optional file description
+                    it.split("\t")[2]
+                }
+            }
+            else {
+                lines
             }
         }
     }
