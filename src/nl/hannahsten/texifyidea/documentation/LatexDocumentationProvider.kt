@@ -20,7 +20,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
     companion object {
 
-        private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
+        private val PACKAGE_COMMANDS = setOf("usepackage", "RequirePackage", "documentclass", "LoadClass")
     }
 
     /**
@@ -39,13 +39,14 @@ class LatexDocumentationProvider : DocumentationProvider {
             return null
         }
 
+        val command = LatexCommand.lookup(element) ?: return null
+
         // Special case for package inclusion commands
-        if (element.name in PACKAGE_COMMANDS) {
+        if (command.command in PACKAGE_COMMANDS) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
             return runTexdoc(Package(pkg))
         }
 
-        val command = LatexCommand.lookup(element) ?: return null
         return runTexdoc(command.dependency)
     }
 
@@ -87,7 +88,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         val stream: InputStream
         try {
-            stream = Runtime.getRuntime().exec("texdoc -l $name").inputStream
+            stream = Runtime.getRuntime().exec("texdoc -l -M $name").inputStream
         }
         catch (e: IOException) {
             return emptyList()
@@ -99,7 +100,10 @@ class LatexDocumentationProvider : DocumentationProvider {
              emptyList()
         }
         else {
-            lines
+            lines.map {
+                // Line consists of: name version path optional file description
+                it.split("\t")[2]
+            }
         }
     }
 }
