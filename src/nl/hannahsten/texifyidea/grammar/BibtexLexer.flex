@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.grammar;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 
 import static com.intellij.psi.TokenType.BAD_CHARACTER;
