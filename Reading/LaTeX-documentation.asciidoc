@@ -1,0 +1,12 @@
+:experimental:
+
+You can view LaTeX package documentation using `texdoc`.
+First, make sure you have installed `texdoc`, for example on TeX Live with `tlmgr install texdoc`.
+
+Then place your cursor on a LaTeX command and press kbd:[Ctrl + Q].
+If the command has a package dependency which is known to TeXiFy, you will get a popup which includes links to the package documentation that is installed locally on your machine.
+LaTeX package documentation is written in LaTeX (surprise) so when you click on a link it will open a pdf.
+
+When the command is a `\usepackage` or `\documentclass` then the documentation of the included package or class will be shown.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/texdoc.png[texdoc]
