@@ -40,7 +40,7 @@ abstract class IndexUtilBase<T : PsiElement>(
         val searchFiles = baseFile.referencedFileSet().asSequence()
                 .map { it.virtualFile }
                 .toMutableSet()
-         searchFiles.add(baseFile.virtualFile)
+        searchFiles.add(baseFile.virtualFile)
 
         // Add document class.
         val root = baseFile.findRootFile()
