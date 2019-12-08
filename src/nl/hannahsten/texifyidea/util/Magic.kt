@@ -344,7 +344,7 @@ object Magic {
          * `i.e.`. Single period abbreviations are not being detected as they can easily be confused with two letter words
          * at the end of the sentence (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
-        @JvmField val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.|\\s)")!!
+        @JvmField val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.\\s)")!!
 
         /**
          * Matches all comments, starting with % and ending with a newline.
