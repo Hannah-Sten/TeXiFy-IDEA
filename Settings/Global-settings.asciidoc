@@ -54,6 +54,7 @@ You can disable the automatic insertion of package dependencies.
 This also disables the inspection which checks for link:Probable-bugs#Missing-imports[Missing imports].
 For more information, see link:Automatic-package-importing[Automagically import packages of common commands].
 
+If you disable this, consider if TeXiFy should support your use case and please open an issue if so.
 
 [#smart-quotes]
 == Option to enable smart quote substitution
