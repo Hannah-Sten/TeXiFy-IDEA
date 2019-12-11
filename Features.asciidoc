@@ -204,7 +204,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:++Probable-bugs#File argument should include the extension++[File argument should include the extension]
 * Missing documentclass
 * Missing document environment
-* Missing imports
+* link:Probable-bugs#Missing-imports[Missing imports]
 * Unresolved references
 * Non matching environment commands
 * Open if-then-else control sequence

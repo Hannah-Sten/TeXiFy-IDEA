@@ -74,6 +74,11 @@ For example if you want to include a bibliography in `references.bib` then `\add
 == Missing documentclass
 == Missing document environment
 == Missing imports
+
+For some common commands TeXiFy knows which package is needed to use them.
+A quickfix is available to add the missing `\usepackage` or `\RequirePackage` command.
+For more information, see link:Automatic-package-importing[Automagically import packages of common commands].
+
 == Unresolved references
 == Non matching environment commands
 == Open if-then-else control sequence
