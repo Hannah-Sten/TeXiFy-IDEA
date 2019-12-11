@@ -33,7 +33,7 @@ toc::[]
 * Autocomplete of labels, many common commands, custom defined commands and (custom) environments
 * Formatter
 * link:Smart-quotes[Smart quotes]
-* Automagically import packages of common commands
+* link:Automatic-package-importing[Automagically import packages of common commands]
 * Shortcuts for styling text
 * Line and block commenting shortcut
 * Support for user-created document classes and packages
@@ -48,7 +48,7 @@ toc::[]
 * link:Soft-wraps[Soft wraps and wrap on typing]
 * link:Shortcuts[Many useful shortcuts]
 * Automatic insertion of `\item` in list environments like itemize and enumerate
-* Automatic insertion of of `\end` when typing `\begin` for environments
+* Automatic insertion of `\end` when typing `\begin` for environments
 * On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
 * Automatic insertion of braces of first required parameter
 * Typing `}` at closing brace skips over it, same for `$..$`
@@ -134,6 +134,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#closing-math[Option to disable automatic insertion of second $]
 * link:Global-settings#brace-insertion[Option to disable automatic brace insertion around text in subscript and superscript]
 * link:Global-settings#item-insertion[Option to disable auto-insertion of \item]
+* link:Global-settings#dependency-check[Option to disable automatic package dependency checks]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
 * link:Global-settings#continuous-preview[Option to enable continuous preview of math and TikZ environments]
 * link:Global-settings#pdfviewer[Option to select default PDF viewer]
