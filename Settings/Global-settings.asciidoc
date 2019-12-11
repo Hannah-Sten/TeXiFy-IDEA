@@ -47,6 +47,11 @@ If you do not want to insert an `\item`, press kbd:[Shift + Enter] instead.
 
 You can disable the automatic insertion of `\item` using this setting.
 
+[#dependency-check]
+== Option to disable automatic package dependency checks
+
+See #todo
+
 [#smart-quotes]
 == Option to enable smart quote substitution
 
