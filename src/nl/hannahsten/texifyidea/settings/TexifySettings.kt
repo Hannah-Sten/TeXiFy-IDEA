@@ -28,6 +28,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
+    var automaticDependencyCheck = true
     var continuousPreview = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
@@ -43,6 +44,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
                 automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
                 automaticUpDownBracket = automaticUpDownBracket,
                 automaticItemInItemize = automaticItemInItemize,
+                automaticDependencyCheck = automaticDependencyCheck,
                 continuousPreview = continuousPreview,
                 automaticQuoteReplacement = automaticQuoteReplacement,
                 pdfViewer = pdfViewer,
@@ -54,6 +56,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         automaticSecondInlineMathSymbol = state.automaticSecondInlineMathSymbol
         automaticUpDownBracket = state.automaticUpDownBracket
         automaticItemInItemize = state.automaticItemInItemize
+        automaticDependencyCheck = state.automaticDependencyCheck
         continuousPreview = state.continuousPreview
         automaticQuoteReplacement = state.automaticQuoteReplacement
         pdfViewer = state.pdfViewer
