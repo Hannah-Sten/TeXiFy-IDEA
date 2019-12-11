@@ -201,7 +201,7 @@ object Magic {
          * All commands that include other files.
          */
         @JvmField val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\subfile"
         )
 
         /**
@@ -243,6 +243,7 @@ object Magic {
         @JvmField val includeOnlyExtensions = mapOf(
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
+                "\\subfile" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
