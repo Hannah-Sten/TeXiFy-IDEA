@@ -227,6 +227,7 @@ object PackageUtils {
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
+     * Classes will not be included.
      *
      * Note that not all elements returned may be valid package names.
      */
@@ -240,8 +241,16 @@ object PackageUtils {
                 continue
             }
 
-            // Packages can be loaded both in optional and required parameters
-            for (list in setOf(cmd.requiredParameters, cmd.optionalParameters)) {
+            // Assume packages can be included in both optional and required parameters
+            // Except a class, because a class is not a package
+            val packages = if (cmd.commandToken.text == "\\documentclass" || cmd.commandToken.text == "\\LoadClass") {
+                setOf(cmd.optionalParameters)
+            }
+            else {
+                setOf(cmd.requiredParameters, cmd.optionalParameters)
+            }
+
+            for (list in packages) {
 
                 if (list.isEmpty()) {
                     continue
