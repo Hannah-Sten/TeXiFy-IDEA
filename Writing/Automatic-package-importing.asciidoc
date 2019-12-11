@@ -3,7 +3,7 @@ By default, TeXiFy will automatically insert package dependencies when you use a
 An example is the `align` environment, which is provided by the `amsmath` package.
 If you type
 
-video::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/package-import.mp4[]
+video::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/package-import.gif[]
 
 
 == Subfiles
