@@ -10,6 +10,7 @@
 - Remove obsolete soft wraps setting which is built-in in IDEA now. (#1084)
 - Improve exception handling for forward search on Linux. (#1087)
 - Disable unicode quickfixes for TeX Live versions 2018 or later as these are included by default. (#1088)
+- First stop Sumatra before starting it with new inverse search settings. (#1128)
 
 ## Bug fixes
 - Include commands like \bibliography and \input can now recognize multiple files as argument. (#782)
