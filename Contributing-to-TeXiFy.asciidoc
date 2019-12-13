@@ -15,3 +15,20 @@ If you do not have a favourite profiler yet, you can use VisualVM. Install it us
 == Editing a lexer
 
 When you edit a `.flex` file, regenerate the lexer with Run JFlex Generator from the context menu, as described at https://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support/lexer_and_parser_definition.html#generate-a-lexer-class
+
+== LatexCommands.commandToken.text vs LatexCommands.name
+
+Throughout the code, you may see either `LatexCommands.commandToken.text` or `LatexCommands.name` being used to get the command name (e.g. `\section`).
+Since the (generated) implementation of `getName()` is
+
+[source,java]
+----
+default String getName() {
+    return getCommandToken().getText();
+}
+----
+
+you would think that these are the same.
+But there is an important difference! The `name` is _indexed_ (see `LatexCommandsIndex`).
+This means that probably using `name` is recommended, as it would use the index, but it may be completely wrong if the index is not updated correctly.
+This can lead to strange behaviour (see e.g. https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1097[#1097]).
