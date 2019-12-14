@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.grammar;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 
 import static com.intellij.psi.TokenType.BAD_CHARACTER;
@@ -41,6 +42,7 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 
 %state XXAFTERTYPETOKEN
 %state XXENTRY
+%state XXENTRYIDENTIFIER
 %state XXAFTERENTRY
 %state XXSTRINGDEF
 %state XXQUOTED_STRING
@@ -72,7 +74,7 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 }
 
 <XXAFTERTYPETOKEN> {
-    {OPEN_BRACE}                { yybegin(XXENTRY); return OPEN_BRACE; }
+    {OPEN_BRACE}                { yybegin(XXENTRYIDENTIFIER); return OPEN_BRACE; }
 }
 
 // Preamble: @preamble{ "some string" }
@@ -106,6 +108,10 @@ NORMAL_TEXT_BRACED_STRING=[^{} ]+
 <XXQUOTED_STRINGDEF> {
     {QUOTES}                    { yybegin(XXSTRINGDEF); return END_QUOTES; }
     {NORMAL_TEXT_WORD}          { return NORMAL_TEXT_WORD; }
+}
+
+<XXENTRYIDENTIFIER> {
+    {IDENTIFIER}                { yybegin(XXENTRY); return IDENTIFIER; }
 }
 
 // Complete entry.

@@ -30,7 +30,7 @@ open class ConfigureInverseSearchAction : AnAction(
             setTitle("Configure inverse search")
             setCenterPanel(JLabel(
                     "<html>To enable inverse search (from PDF to source file), the inverse search setting in SumatraPDF must be changed.<br/>" +
-                    "By clicking OK, this change will automatically be applied and SumatraPDF will be started.<br/><br/>" +
+                    "By clicking OK, this change will automatically be applied and SumatraPDF will be restarted.<br/><br/>" +
                     "Warning: this will permanently overwrite the previous inverse search setting in SumatraPDF.</html>",
                     AllIcons.General.WarningDialog,
                     SwingConstants.LEADING
@@ -39,6 +39,9 @@ open class ConfigureInverseSearchAction : AnAction(
             addOkAction()
             addCancelAction()
             setOkOperation {
+                // First kill Sumatra to avoid having two instances open of which only one has the correct setting
+                Runtime.getRuntime().exec("taskkill /IM SumatraPDF.exe")
+
                 val path = PathManager.getBinPath()
                 var name = ApplicationNamesInfo.getInstance().scriptName
 
