@@ -21,6 +21,7 @@
 - Allow number-only bibtex identifiers. (#1126)
 - Include files included by class file in fileset. (#1123)
 - Only check for normal spaces after abbreviations when they end with a full stop. (#1129)
+- Use actual instead of incorrectly indexed command name for missing label inspection. (#1136)
 - Fixed crashes. (#1085)
 
 Thanks to [@TanVD](https://github.com/TanVD) for contributing to this release.
