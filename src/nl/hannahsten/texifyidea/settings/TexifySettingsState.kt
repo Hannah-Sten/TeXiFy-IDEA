@@ -6,6 +6,7 @@ data class TexifySettingsState (
         var automaticSecondInlineMathSymbol : Boolean = true,
         var automaticUpDownBracket : Boolean = true,
         var automaticItemInItemize: Boolean = true,
+        var automaticDependencyCheck: Boolean = true,
         var continuousPreview: Boolean = false,
         var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
         var pdfViewer: PdfViewer = PdfViewer.firstAvailable(),

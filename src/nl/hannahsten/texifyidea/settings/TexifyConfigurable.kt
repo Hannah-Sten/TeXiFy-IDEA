@@ -19,6 +19,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
     private lateinit var automaticUpDownBracket: JBCheckBox
     private lateinit var automaticItemInItemize: JBCheckBox
+    private lateinit var automaticDependencyCheck: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var pdfViewer: ComboBox<String>
@@ -38,6 +39,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
                 automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                 automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
+                automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
@@ -80,6 +82,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
                 || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
                 || automaticItemInItemize.isSelected != settings.automaticItemInItemize
+                || automaticDependencyCheck.isSelected != settings.automaticDependencyCheck
                 || continuousPreview.isSelected != settings.continuousPreview
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
                 || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
@@ -90,6 +93,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol.isSelected
         settings.automaticUpDownBracket = automaticUpDownBracket.isSelected
         settings.automaticItemInItemize = automaticItemInItemize.isSelected
+        settings.automaticDependencyCheck = automaticDependencyCheck.isSelected
         settings.continuousPreview = continuousPreview.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
@@ -100,6 +104,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticSecondInlineMathSymbol.isSelected = settings.automaticSecondInlineMathSymbol
         automaticUpDownBracket.isSelected = settings.automaticUpDownBracket
         automaticItemInItemize.isSelected = settings.automaticItemInItemize
+        automaticDependencyCheck.isSelected = settings.automaticDependencyCheck
         continuousPreview.isSelected = settings.continuousPreview
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
         pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)

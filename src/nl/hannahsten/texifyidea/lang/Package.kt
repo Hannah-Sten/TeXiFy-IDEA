@@ -30,6 +30,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val MATHABX = Package("mathabx")
         @JvmField val MATHTOOLS = Package("mathtools")
         @JvmField val NATBIB = Package("natbib")
+        @JvmField val SUBFILES = Package("subfiles")
         @JvmField val ULEM = Package("ulem")
         @JvmField val XPARSE = Package("xparse")
     }

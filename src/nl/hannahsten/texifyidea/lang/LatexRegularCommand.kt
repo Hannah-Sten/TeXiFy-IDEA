@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
 
 /**
@@ -221,6 +222,7 @@ enum class LatexRegularCommand(
     STEPCOUNTER("stepcounter", "counter".asRequired()),
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
+    SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
     SUBITEM("subitem"),
     SUBPARAGRAPH("subparagraph", "shorttitle".asOptional(Type.TEXT), "title".asRequired(Type.TEXT)),
     SUBPARAGRAPH_STAR("subparagraph*", "title".asRequired(Type.TEXT)),
@@ -365,6 +367,7 @@ enum class LatexRegularCommand(
         private val lookupDisplay = HashMap<String, LatexRegularCommand>()
 
         init {
+            @Suppress("RemoveRedundantQualifierName")
             for (command in LatexRegularCommand.values()) {
                 lookup[command.command] = command
                 if (command.display != null) {
