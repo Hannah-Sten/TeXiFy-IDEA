@@ -3,6 +3,9 @@
 #### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version
 
 
+#### Operating System (Windows, Linux, MacOS, etc.)
+
+
 #### TeXiFy IDEA version
 
 

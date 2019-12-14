@@ -59,8 +59,8 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
 
                 descriptors.add(manager.createProblemDescriptor(
                         text,
-                        TextRange(matchRange.last - 1, matchRange.last + 1),
-                        "Abbreviation is not followed by a normal space",
+                        TextRange(matchRange.last - 2, matchRange.last),
+                        "Abbreviation should be followed by a normal space",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
                         NormalSpaceFix(matchRange)
@@ -102,8 +102,8 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
         }
 
         private fun replaceNormalText(document: Document, normalText: LatexNormalText) {
-            val start = normalText.textOffset + whitespaceRange.last
-            val end = normalText.textOffset + whitespaceRange.last + 1
+            val start = normalText.textOffset + whitespaceRange.last - 1
+            val end = normalText.textOffset + whitespaceRange.last
             document.replaceString(start, end, "\\ ")
         }
     }
