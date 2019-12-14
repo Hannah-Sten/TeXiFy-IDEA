@@ -18,6 +18,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val BIBLATEX = Package("biblatex")
         @JvmField val BOOKTABS = Package("booktabs")
         @JvmField val COMMENT = Package("comment")
+        @JvmField val CLEVEREF = Package("cleveref")
         @JvmField val CSQUOTES = Package("csquotes")
         @JvmField val FONTENC = Package("fontenc")
         @JvmField val GRAPHICX = Package("graphicx")
@@ -29,6 +30,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val MATHABX = Package("mathabx")
         @JvmField val MATHTOOLS = Package("mathtools")
         @JvmField val NATBIB = Package("natbib")
+        @JvmField val SUBFILES = Package("subfiles")
         @JvmField val ULEM = Package("ulem")
         @JvmField val XPARSE = Package("xparse")
     }

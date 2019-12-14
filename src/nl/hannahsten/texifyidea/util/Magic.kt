@@ -109,7 +109,7 @@ object Magic {
          */
         @JvmField val labelReference = hashSetOf(
                 "\\ref", "\\eqref", "\\nameref", "\\autoref",
-                "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref",
+                "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
                 "\\labelcref", "\\cpageref"
         )
 
@@ -201,7 +201,7 @@ object Magic {
          * All commands that include other files.
          */
         @JvmField val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\subfile"
         )
 
         /**
@@ -243,6 +243,7 @@ object Magic {
         @JvmField val includeOnlyExtensions = mapOf(
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
+                "\\subfile" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
@@ -344,7 +345,7 @@ object Magic {
          * `i.e.`. Single period abbreviations are not being detected as they can easily be confused with two letter words
          * at the end of the sentence (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
-        @JvmField val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.|\\s)")!!
+        @JvmField val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.\\s)")!!
 
         /**
          * Matches all comments, starting with % and ending with a newline.

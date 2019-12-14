@@ -5,6 +5,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 
 /**
@@ -42,6 +43,11 @@ object PackageUtils {
      */
     @JvmStatic
     fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
+
+        if (!TexifySettings.getInstance().automaticDependencyCheck) {
+            return
+        }
+
         val commands = file.commandsInFile()
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
@@ -49,7 +55,13 @@ object PackageUtils {
         var last: LatexCommands? = null
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
-                last = cmd
+                // Do not insert below the subfiles package, it should stay last
+                if (cmd.requiredParameters.contains("subfiles")) {
+                    break
+                }
+                else {
+                    last = cmd
+                }
             }
         }
 
@@ -215,6 +227,7 @@ object PackageUtils {
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
+     * Classes will not be included.
      *
      * Note that not all elements returned may be valid package names.
      */
@@ -228,8 +241,16 @@ object PackageUtils {
                 continue
             }
 
-            // Packages can be loaded both in optional and required parameters
-            for (list in setOf(cmd.requiredParameters, cmd.optionalParameters)) {
+            // Assume packages can be included in both optional and required parameters
+            // Except a class, because a class is not a package
+            val packages = if (cmd.commandToken.text == "\\documentclass" || cmd.commandToken.text == "\\LoadClass") {
+                setOf(cmd.optionalParameters)
+            }
+            else {
+                setOf(cmd.requiredParameters, cmd.optionalParameters)
+            }
+
+            for (list in packages) {
 
                 if (list.isEmpty()) {
                     continue

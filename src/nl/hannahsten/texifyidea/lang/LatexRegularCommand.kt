@@ -3,11 +3,13 @@ package nl.hannahsten.texifyidea.lang
 import nl.hannahsten.texifyidea.lang.Argument.Type
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.Package.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
 
 /**
@@ -50,6 +52,8 @@ enum class LatexRegularCommand(
     COLUMNWIDTH("columnwidth"),
     CONTENTSLINE("contentsline", "type".asRequired(), "text".asRequired(Type.TEXT), "page".asRequired()),
     CONTENTSNAME("contentsname", "name".asRequired()),
+    CREF("cref", "label".asRequired(), dependency = CLEVEREF),
+    CREF_CAPITAL("Cref", "label".asRequired(), dependency = CLEVEREF),
     DATE("date", "text".asRequired(Type.TEXT)),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT)),
     DEF("def"),
@@ -218,6 +222,7 @@ enum class LatexRegularCommand(
     STEPCOUNTER("stepcounter", "counter".asRequired()),
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
+    SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
     SUBITEM("subitem"),
     SUBPARAGRAPH("subparagraph", "shorttitle".asOptional(Type.TEXT), "title".asRequired(Type.TEXT)),
     SUBPARAGRAPH_STAR("subparagraph*", "title".asRequired(Type.TEXT)),
@@ -362,6 +367,7 @@ enum class LatexRegularCommand(
         private val lookupDisplay = HashMap<String, LatexRegularCommand>()
 
         init {
+            @Suppress("RemoveRedundantQualifierName")
             for (command in LatexRegularCommand.values()) {
                 lookup[command.command] = command
                 if (command.display != null) {

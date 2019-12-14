@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
@@ -40,6 +41,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Missing imports"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+
+        if (!TexifySettings.getInstance().automaticDependencyCheck) {
+            return emptyList()
+        }
+
         val descriptors = descriptorList()
 
         val includedPackages = PackageUtils.getIncludedPackages(file)

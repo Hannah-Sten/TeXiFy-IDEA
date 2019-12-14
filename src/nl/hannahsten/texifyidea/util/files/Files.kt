@@ -154,14 +154,26 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
-    if (this.commandsInFile().any { "\\documentclass" == it.name }) {
+    val documentClass = this.commandsInFile().find { it.name == "\\documentclass" }
+
+    // Function to avoid unnecessary evaluation
+    fun usesSubFiles() = documentClass?.requiredParameters?.contains("subfiles") == true
+
+    // When using subfiles, a file with a documentclass does not have to be the root
+    if (documentClass != null && !usesSubFiles()) {
         return this
     }
 
     val inclusions = project.allFileInclusions()
     inclusions.forEach { (file, _) ->
+        // Function to avoid unnecessary evaluation
+        fun usesSubFiles() = file.commandsInFile()
+                .find { it.name == "\\documentclass" }
+                ?.requiredParameters
+                ?.contains("subfiles") == true
+
         // For each root, IsChildDFS until found.
-        if (!file.isRoot()) {
+        if (!file.isRoot() || usesSubFiles()) {
             return@forEach
         }
 
