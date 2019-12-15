@@ -46,6 +46,9 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                 val part = parts[i]
                 if (part == "*") continue
 
+                // The cleveref package allows empty items to customize enumerations
+                if (part.isEmpty() && (command.commandToken.text == "\\cref" || command.commandToken.text == "\\Cref")) continue
+
                 // If there is no label with this required label parameter value
                 if (!labels.contains(part.trim())) {
                     // We have to subtract from the total length, because we do not know whether optional
