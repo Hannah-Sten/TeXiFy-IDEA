@@ -117,10 +117,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Do not open the pdf viewer when this is not the last run config in the chain
         if (runConfig.isLastRunConfig) {
-            openPdfViewer(handler)
 
             if (TexifySettings.getInstance().autoCompile) {
-                AutoCompileState.compileDone(environment, runConfig)
+                AutoCompileState.compileDone()
+            }
+            else {
+                openPdfViewer(handler)
             }
         }
 

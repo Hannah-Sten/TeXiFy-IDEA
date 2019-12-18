@@ -21,7 +21,7 @@ class AutocompileHandler : TypedHandlerDelegate() {
                 return@run
             }
 
-            AutoCompileState.documentChanged()
+            AutoCompileState.documentChanged(project)
         }
 
         return super.charTyped(char, project, editor, file)
