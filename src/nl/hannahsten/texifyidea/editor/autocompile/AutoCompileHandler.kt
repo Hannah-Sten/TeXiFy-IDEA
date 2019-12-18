@@ -29,10 +29,14 @@ class AutocompileHandler : TypedHandlerDelegate() {
 }
 
 class AutoCompileBackspacehandler : BackspaceHandlerDelegate() {
-    override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {}
+    override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {
+        val project = editor.project
+        if (project != null && TexifySettings.getInstance().autoCompile) {
+            AutoCompileState.documentChanged(project)
+        }
+    }
 
     override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {
-        AutocompileHandler().charTyped(c, file.project, editor, file)
         return true
     }
 }

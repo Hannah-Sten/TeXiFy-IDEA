@@ -50,11 +50,7 @@ object AutoCompileState {
 
         // Only compile again if needed
         if (hasChanged) {
-            hasChanged = false
             scheduleCompilation()
-        }
-        else {
-            isCompiling = false
         }
     }
 
@@ -67,17 +63,23 @@ object AutoCompileState {
         }
 
         isCompiling = true
+        hasChanged = false
 
         GlobalScope.launch {
             // Get run configuration selected in the combobox and run that one
             val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration ?: return@launch
 
-            ExecutionManager.getInstance(project!!).restartRunProfile(project!!,
-                    DefaultRunExecutor.getRunExecutorInstance(),
-                    ExecutionTargetManager.getInstance(project!!).activeTarget,
-                    runConfigSettings,
-                    null)
-            // todo should open pdf if not open yet, but not change focus
+            try {
+                ExecutionManager.getInstance(project!!).restartRunProfile(project!!,
+                        DefaultRunExecutor.getRunExecutorInstance(),
+                        ExecutionTargetManager.getInstance(project!!).activeTarget,
+                        runConfigSettings,
+                        null)
+            }
+            finally {
+                isCompiling = false
+            }
+                // todo should open pdf if not open yet, but not change focus
         }
     }
 }
