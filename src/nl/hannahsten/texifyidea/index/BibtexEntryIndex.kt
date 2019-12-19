@@ -8,34 +8,34 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.util.ArrayUtil
-import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 
 /**
  * @author Hannah Schellekens
  */
-object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
+object BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
 
     /**
-     * Get all the indexed [BibtexId]s in the project.
+     * Get all the indexed [BibtexEntry]s in the project.
      */
     @JvmStatic
-    fun getIndexedIds(project: Project) = getIndexedIds(project, GlobalSearchScope.projectScope(project))
+    fun getIndexedEntries(project: Project) = getIndexedEntries(project, GlobalSearchScope.projectScope(project))
 
     /**
-     * Get all the indexed [BibtexId]s in the given file.
+     * Get all the indexed [BibtexEntry]s in the given file.
      */
     @JvmStatic
-    fun getIndexedIds(file: PsiFile) = getIndexedIds(file.project, GlobalSearchScope.fileScope(file))
+    fun getIndexedEntries(file: PsiFile) = getIndexedEntries(file.project, GlobalSearchScope.fileScope(file))
 
     /**
-     * Get all the indexed [BibtexId]s in the complete file set of the given base file.
+     * Get all the indexed [BibtexEntry]s in the complete file set of the given base file.
      *
      * @param baseFile
      *          The file whose file set must be analysed for indexed ids.
      */
     @JvmStatic
-    fun getIndexedIdsInFileSet(baseFile: PsiFile): Collection<BibtexId> {
+    fun getIndexedEntriesInFileSet(baseFile: PsiFile): Collection<BibtexEntry> {
         val project = baseFile.project
         val searchFiles: MutableSet<VirtualFile> = baseFile.referencedFileSet()
                 .asSequence()
@@ -43,26 +43,26 @@ object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
                 .toMutableSet()
         searchFiles.add(baseFile.virtualFile)
         val scope = GlobalSearchScope.filesScope(project, searchFiles)
-        return getIndexedIds(project, scope)
+        return getIndexedEntries(project, scope)
     }
 
     /**
-     * Get all the indexed [BibtexId]s in the given search scope.
+     * Get all the indexed [BibtexEntry]s in the given search scope.
      */
     @JvmStatic
-    fun getIndexedIds(project: Project, scope: GlobalSearchScope): Collection<BibtexId> {
-        val commands: MutableCollection<BibtexId> = ArrayList()
+    fun getIndexedEntries(project: Project, scope: GlobalSearchScope): Collection<BibtexEntry> {
+        val commands: MutableCollection<BibtexEntry> = ArrayList()
 
         for (key in getKeys(project)) {
-            commands.addAll(getIdByName(key, project, scope))
+            commands.addAll(getEntryByName(key, project, scope))
         }
 
         return commands
     }
 
     @JvmStatic
-    fun getIdByName(name: String, project: Project, scope: GlobalSearchScope): Collection<BibtexId> {
-        return StubIndex.getElements(key, name, project, scope, BibtexId::class.java)
+    fun getEntryByName(name: String, project: Project, scope: GlobalSearchScope): Collection<BibtexEntry> {
+        return StubIndex.getElements(key, name, project, scope, BibtexEntry::class.java)
     }
 
     @JvmStatic
@@ -76,5 +76,5 @@ object BibtexIdIndex : StringStubIndexExtension<BibtexId>() {
         return ArrayUtil.toStringArray(keys)
     }
 
-    override fun getKey() = BibtexIdIndexKey.KEY!!
+    override fun getKey() = BibtexEntryIndexKey.KEY!!
 }

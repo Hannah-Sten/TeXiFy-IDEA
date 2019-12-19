@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
-import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
@@ -31,7 +31,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
     override fun getQuickNavigateInfo(psiElement: PsiElement, originalElement: PsiElement) = when (psiElement) {
         is LatexCommands -> LabelDeclarationLabel(psiElement).makeLabel()
-        is BibtexId -> IdDeclarationLabel(psiElement).makeLabel()
+        is BibtexEntry -> IdDeclarationLabel(psiElement).makeLabel()
         else -> null
     }
 
