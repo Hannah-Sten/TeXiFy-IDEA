@@ -1,6 +1,6 @@
 :experimental:
 
-_Since b0.6.8_
+_Since b0.6.7_
 
 On Linux systems, TeXiFy supports Okular as a pdf viewer with forward and inverse search.
 
