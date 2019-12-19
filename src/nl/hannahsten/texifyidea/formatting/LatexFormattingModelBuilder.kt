@@ -1,52 +1,43 @@
-package nl.hannahsten.texifyidea.formatting;
+package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.formatting.Alignment;
-import com.intellij.formatting.FormattingModel;
-import com.intellij.formatting.FormattingModelBuilder;
-import com.intellij.formatting.FormattingModelProvider;
-import com.intellij.formatting.SpacingBuilder;
-import com.intellij.formatting.Wrap;
-import com.intellij.formatting.WrapType;
-import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import nl.hannahsten.texifyidea.LatexLanguage;
-import nl.hannahsten.texifyidea.psi.LatexTypes;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.formatting.*
+import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.codeStyle.CodeStyleSettings
+import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
  * @author Sten Wessel
  */
-public class LatexFormattingModelBuilder implements FormattingModelBuilder {
-
-    private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings) {
-        SpacingBuilder spacingBuilder = new SpacingBuilder(settings, LatexLanguage.INSTANCE);
-        spacingBuilder.between(LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT_WORD).spaces(1);
-        spacingBuilder.around(LatexTypes.ENVIRONMENT_CONTENT).lineBreakInCode();
-        return spacingBuilder;
-    }
-
-    @NotNull
-    @Override
-    public FormattingModel createModel(PsiElement element, CodeStyleSettings settings) {
+class LatexFormattingModelBuilder : FormattingModelBuilder {
+    override fun createModel(element: PsiElement, settings: CodeStyleSettings): FormattingModel {
         return FormattingModelProvider.createFormattingModelForPsiFile(
-                element.getContainingFile(),
-                new LatexBlock(
-                        element.getNode(),
+                element.containingFile,
+                LatexBlock(
+                        element.node,
                         Wrap.createWrap(WrapType.NONE, false),
                         Alignment.createAlignment(),
                         createSpaceBuilder(settings)
                 ),
                 settings
-        );
+        )
     }
 
-    @Nullable
-    @Override
-    public TextRange getRangeAffectingIndent(PsiFile file, int offset, ASTNode elementAtOffset) {
-        return null;
+    override fun getRangeAffectingIndent(file: PsiFile, offset: Int, elementAtOffset: ASTNode): TextRange? {
+        return null
+    }
+
+    companion object {
+        private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
+            val spacingBuilder = SpacingBuilder(settings, LatexLanguage.INSTANCE)
+            spacingBuilder.between(LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT_WORD)
+                    .spaces(1)
+            spacingBuilder.around(LatexTypes.ENVIRONMENT_CONTENT)
+                    .lineBreakInCode()
+            return spacingBuilder
+        }
     }
 }

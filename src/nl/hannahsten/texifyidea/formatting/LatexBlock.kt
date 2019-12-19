@@ -1,95 +1,74 @@
-package nl.hannahsten.texifyidea.formatting;
+package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.formatting.Alignment;
-import com.intellij.formatting.Block;
-import com.intellij.formatting.ChildAttributes;
-import com.intellij.formatting.Indent;
-import com.intellij.formatting.Spacing;
-import com.intellij.formatting.SpacingBuilder;
-import com.intellij.formatting.Wrap;
-import com.intellij.formatting.WrapType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.TokenType;
-import com.intellij.psi.formatter.common.AbstractBlock;
-import com.intellij.psi.tree.IElementType;
-import nl.hannahsten.texifyidea.psi.LatexTypes;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.intellij.formatting.*
+import com.intellij.lang.ASTNode
+import com.intellij.psi.TokenType
+import com.intellij.psi.formatter.common.AbstractBlock
+import nl.hannahsten.texifyidea.psi.LatexTypes
+import java.util.*
 
 /**
  * @author Sten Wessel
  */
-public class LatexBlock extends AbstractBlock {
+class LatexBlock(
+        node: ASTNode,
+        wrap: Wrap?,
+        alignment: Alignment?,
+        private val spacingBuilder: SpacingBuilder
+) : AbstractBlock(node, wrap, alignment) {
 
-    private SpacingBuilder spacingBuilder;
-
-    protected LatexBlock(@NotNull ASTNode node, @Nullable Wrap wrap, @Nullable Alignment
-            alignment, SpacingBuilder spacingBuilder) {
-        super(node, wrap, alignment);
-        this.spacingBuilder = spacingBuilder;
-    }
-
-    @Override
-    protected List<Block> buildChildren() {
-        List<Block> blocks = new ArrayList<>();
-        ASTNode child = myNode.getFirstChildNode();
+    override fun buildChildren(): List<Block> {
+        val blocks: MutableList<Block> = ArrayList()
+        var child = myNode.firstChildNode
 
         while (child != null) {
-            if (child.getElementType() != TokenType.WHITE_SPACE) {
-                Block block = new LatexBlock(
+            if (child.elementType !== TokenType.WHITE_SPACE) {
+                val block: Block = LatexBlock(
                         child,
                         Wrap.createWrap(WrapType.NONE, false),
                         null,
                         spacingBuilder
-                );
-                blocks.add(block);
+                )
+                blocks.add(block)
             }
-
-            child = child.getTreeNext();
+            child = child.treeNext
         }
-
-        return blocks;
+        return blocks
     }
 
-    @Override
-    public Indent getIndent() {
+    override fun getIndent(): Indent? {
         // Fix for leading comments inside an environment, because somehow they are not placed inside environments
-        if (myNode.getElementType() == LatexTypes.ENVIRONMENT_CONTENT || (myNode.getElementType() == LatexTypes.COMMENT_TOKEN && myNode.getTreeParent().getElementType() == LatexTypes.ENVIRONMENT)) {
-            return Indent.getNormalIndent(true);
+        if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT
+                || myNode.elementType === LatexTypes.COMMENT_TOKEN
+                && myNode.treeParent.elementType === LatexTypes.ENVIRONMENT) {
+            return Indent.getNormalIndent(true)
         }
-
-        // Displaymath
-        if ((myNode.getElementType() == LatexTypes.MATH_CONTENT || myNode.getElementType() == LatexTypes.COMMENT_TOKEN) && myNode.getTreeParent().getElementType() == LatexTypes.DISPLAY_MATH) {
-            return Indent.getNormalIndent(true);
+        // Display math
+        return if ((myNode.elementType === LatexTypes.MATH_CONTENT || myNode.elementType === LatexTypes.COMMENT_TOKEN)
+                && myNode.treeParent.elementType === LatexTypes.DISPLAY_MATH) {
+            Indent.getNormalIndent(true)
         }
-        return Indent.getNoneIndent();
+        else Indent.getNoneIndent()
     }
 
-    @Nullable
-    @Override
-    public Spacing getSpacing(@Nullable Block child1, @NotNull Block child2) {
-        return spacingBuilder.getSpacing(this, child1, child2);
+    override fun getSpacing(child1: Block?, child2: Block): Spacing? {
+        return spacingBuilder.getSpacing(this, child1, child2)
     }
 
-    @Override
-    public boolean isLeaf() {
-        return myNode.getFirstChildNode() == null;
+    override fun isLeaf(): Boolean {
+        return myNode.firstChildNode == null
     }
 
-    @NotNull
-    @Override
-    public ChildAttributes getChildAttributes(int newChildIndex) {
-        IElementType type = myNode.getElementType();
-        if (type == LatexTypes.DISPLAY_MATH) {
-            return new ChildAttributes(Indent.getNormalIndent(true), null);
+    override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
+        val type = myNode.elementType
+        if (type === LatexTypes.DISPLAY_MATH) {
+            return ChildAttributes(Indent.getNormalIndent(true), null)
         }
-        else if (type == LatexTypes.ENVIRONMENT) {
-            return new ChildAttributes(Indent.getNormalIndent(true), null);
+        else if (type === LatexTypes.ENVIRONMENT) {
+            return ChildAttributes(Indent.getNormalIndent(true), null)
         }
 
-        return new ChildAttributes(Indent.getNoneIndent(), null);
+        return ChildAttributes(Indent.getNoneIndent(), null)
     }
+
 }
