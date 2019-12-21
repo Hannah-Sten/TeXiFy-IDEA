@@ -56,8 +56,9 @@ toc::[]
 * link:Math-environment-switcher[Easy switching to other math environments]
 
 == Reading
-* Code folding for imports, (sub(sub))sections and environments
 * Customizable syntax highlighting
+* Code folding for imports, (sub(sub))sections and environments
+* link:Code-formatting[Code formatting]
 * Method separator lines for sections
 * Special highlighting and marker for `todo` comments, customizable
 * Links (in comments) are clickable

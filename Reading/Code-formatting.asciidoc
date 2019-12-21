@@ -1,0 +1,5 @@
+:experimental:
+
+Press kbd:[Ctrl+Alt+L] to reformat.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/reformat.gif[reformat]
