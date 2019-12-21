@@ -37,12 +37,20 @@ class LatexBlock(
     }
 
     override fun getIndent(): Indent? {
-        // Fix for leading comments inside an environment, because somehow they are not placed inside environments
         if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT
+                // Fix for leading comments inside an environment, because
+                // somehow they are not placed inside environments.
                 || myNode.elementType === LatexTypes.COMMENT_TOKEN
                 && myNode.treeParent.elementType === LatexTypes.ENVIRONMENT) {
             return Indent.getNormalIndent(true)
         }
+        // Indent content of groups. Not relative to their parent, because that
+        // would be relative to the open brace of the group instead of the (usually) command.
+        if (myNode.elementType === LatexTypes.CONTENT
+                && myNode.treeParent.elementType === LatexTypes.GROUP) {
+            return Indent.getNormalIndent()
+        }
+
         // Display math
         return if ((myNode.elementType === LatexTypes.MATH_CONTENT || myNode.elementType === LatexTypes.COMMENT_TOKEN)
                 && myNode.treeParent.elementType === LatexTypes.DISPLAY_MATH) {
