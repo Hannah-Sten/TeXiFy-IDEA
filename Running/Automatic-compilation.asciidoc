@@ -1,3 +1,7 @@
+:experimental:
+
+_Since b0.6.8_
+
 menu:File[Settings > Languages & Frameworks > TeXiFy]
 
 TeXiFy supports automatic compilation, which means that when you type in your document, it will automatically be compiled.
