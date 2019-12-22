@@ -14,7 +14,8 @@ class LatexBlock(
         node: ASTNode,
         wrap: Wrap?,
         alignment: Alignment?,
-        private val spacingBuilder: LatexSpacingBuilder
+        private val spacingBuilder: LatexSpacingBuilder,
+        private val wrappingStrategy: LatexWrappingStrategy
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {
@@ -25,9 +26,10 @@ class LatexBlock(
             if (child.elementType !== TokenType.WHITE_SPACE) {
                 val block: Block = LatexBlock(
                         child,
-                        Wrap.createWrap(WrapType.NONE, false),
+                        wrappingStrategy.getWrap(child),
                         null,
-                        spacingBuilder
+                        spacingBuilder,
+                        wrappingStrategy
                 )
                 blocks.add(block)
             }
@@ -48,7 +50,7 @@ class LatexBlock(
         // would be relative to the open brace of the group instead of the
         // (usually) command.
         if (myNode.elementType === LatexTypes.CONTENT
-                && myNode.treeParent.elementType === LatexTypes.GROUP) {
+                && myNode.treeParent.elementType in setOf(LatexTypes.GROUP, LatexTypes.OPEN_GROUP)) {
             return Indent.getNormalIndent()
         }
 
