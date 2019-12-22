@@ -50,7 +50,13 @@ object EvinceConversation : ViewerConversation() {
      * @param sourceFilePath Full path to the LaTeX source file.
      * @param line Line number in the source file to highlight in the pdf.
      */
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project) {
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+
+        // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Evince
+        if (!focusAllowed) {
+            return
+        }
+
         if (pdfPath != null) {
             findProcessOwner(pdfPath)
         }
@@ -64,7 +70,7 @@ object EvinceConversation : ViewerConversation() {
         else {
             // If the user used the forward search menu action
             if (pdfPath == null) {
-                Notification("EvinceConversation", "Could not execute forward search", "Please make sure you have compiled the document first.", NotificationType.ERROR).notify(project)
+                Notification("EvinceConversation", "Could not execute forward search", "Please make sure you have compiled the document first, or if you are using autocompile execute forward search twice.", NotificationType.ERROR).notify(project)
             }
             else {
                 throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $pdfPath")

@@ -16,14 +16,15 @@ class OpenViewerListener(
         val runConfig: LatexRunConfiguration,
         val sourceFilePath: String,
         val line: Int,
-        val project: Project)
+        val project: Project,
+        val focusAllowed: Boolean = true)
     : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
             runAsync {
                 try {
-                    viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project)
+                    viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
                 } catch (ignored: TeXception) {
                 }
             }

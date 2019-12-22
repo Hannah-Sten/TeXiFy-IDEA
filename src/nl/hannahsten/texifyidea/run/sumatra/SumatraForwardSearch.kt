@@ -5,11 +5,13 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.openedEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.name
+import nl.hannahsten.texifyidea.util.parentOfType
 import org.jetbrains.concurrency.runAsync
 
 /**
@@ -20,7 +22,7 @@ class SumatraForwardSearch {
     /**
      * Execute forward search based on the given environment.
      */
-    fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, executionEnvironment: ExecutionEnvironment) {
+    fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, executionEnvironment: ExecutionEnvironment, focusAllowed: Boolean = true) {
         handler.addProcessListener(OpenSumatraListener(runConfig))
 
         // Forward search.
@@ -49,7 +51,7 @@ class SumatraForwardSearch {
                     // Wait for sumatra pdf to start. 1250ms should be plenty.
                     // Otherwise the person is out of luck ¯\_(ツ)_/¯
                     Thread.sleep(1250)
-                    SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line)
+                    SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = focusAllowed)
                 }
                 catch (ignored: TeXception) {
                 }

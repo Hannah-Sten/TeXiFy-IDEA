@@ -79,7 +79,6 @@ object AutoCompileState {
             finally {
                 isCompiling = false
             }
-                // todo should open pdf if not open yet, but not change focus
         }
     }
 }

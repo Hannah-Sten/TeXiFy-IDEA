@@ -120,6 +120,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             if (TexifySettings.getInstance().autoCompile) {
                 AutoCompileState.compileDone()
+                openPdfViewer(handler, false)
             }
             else {
                 openPdfViewer(handler)
@@ -131,8 +132,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
     /**
      * Add a certain process listener for opening the right pdf viewer depending on settings and OS.
+     *
+     * @param focusAllowed Whether focussing the pdf viewer is allowed. If not, it may happen forward search is not executed (in case the pdf viewer does not support forward search without changing focus).
      */
-    private fun openPdfViewer(handler: ProcessHandler) {
+    private fun openPdfViewer(handler: ProcessHandler, focusAllowed: Boolean = true) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
 
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
@@ -162,10 +165,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
         else if (runConfig.sumatraPath != null || isSumatraAvailable) {
             // Open Sumatra after compilation & execute inverse search.
-            SumatraForwardSearch().execute(handler, runConfig, environment)
+            SumatraForwardSearch().execute(handler, runConfig, environment, focusAllowed)
         }
         else if (TexifySettings.getInstance().pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR)) {
-            ViewerForwardSearch(TexifySettings.getInstance().pdfViewer).execute(handler, runConfig, environment)
+            ViewerForwardSearch(TexifySettings.getInstance().pdfViewer).execute(handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
