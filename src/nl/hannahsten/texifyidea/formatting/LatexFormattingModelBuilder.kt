@@ -33,8 +33,11 @@ class LatexFormattingModelBuilder : FormattingModelBuilder {
     companion object {
         private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
             val spacingBuilder = SpacingBuilder(settings, LatexLanguage.INSTANCE)
+            // Insert one space between two words.
             spacingBuilder.between(LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT_WORD)
                     .spaces(1)
+            // Put the content of an environment on its own lines, i.e. put a
+            // newline after a begin command and before an end command.
             spacingBuilder.around(LatexTypes.ENVIRONMENT_CONTENT)
                     .lineBreakInCode()
             return spacingBuilder
