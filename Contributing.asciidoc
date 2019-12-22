@@ -3,29 +3,42 @@
 This wiki uses AsciiDoc.
 You can clone this wiki and edit in IntelliJ using the AsciiDoc plugin.
 
-=== AsciiDoc guidelines/tips/cheatsheet
+== AsciiDoc guidelines/tips/cheatsheet
 * Display keyboard shortcuts:
 
-[source, subs="verbatim"]
+[source,asciidoc]
+----
 kbd:[Ctrl + \]]
+----
 
 results in kbd:[Ctrl + \]]
 which requires adding the `:experimental:` attribute at the top of the file
 
 * Display menu selections:
 
-[source, subs="verbatim"]
+[source,asciidoc]
+----
 menu:File[New > LaTeX File]
+----
 
 results in menu:File[New > LaTeX File]
 
 
-* To link to pages with spaces in the filename, use
+* Pages with dashes in the filename will appear with spaces on the wiki, so include them with:
 
-[source,subs="verbatim"]
-link:++Page name++[Link text]
+[source,asciidoc]
+----
+link:Page-name[Link text]
+----
 
-=== Useful AsciiDoc links
+* To include images/gifs, put it in a `figures/` subdirectory, and link to it with
+
+[source,asciidoc]
+----
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/package-import.gif[]
+----
+
+== Useful AsciiDoc links
 
 GitHub uses AsciiDoctor to render `.asciidoc` files.
 
