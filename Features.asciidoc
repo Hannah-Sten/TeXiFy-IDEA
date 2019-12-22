@@ -137,8 +137,9 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#brace-insertion[Option to disable automatic brace insertion around text in subscript and superscript]
 * link:Global-settings#item-insertion[Option to disable auto-insertion of \item]
 * link:Global-settings#dependency-check[Option to disable automatic package dependency checks]
-* link:Global-settings#smart-quotes[Option to enable smart quote substitution]
+* link:Global-settings#automatic-compilation[Option to enable automatic compilation]
 * link:Global-settings#continuous-preview[Option to enable continuous preview of math and TikZ environments]
+* link:Global-settings#smart-quotes[Option to enable smart quote substitution]
 * link:Global-settings#pdfviewer[Option to select default PDF viewer]
 * link:Global-settings#labeldefining-commands[Option to specify custom commands that also define a label]
 
