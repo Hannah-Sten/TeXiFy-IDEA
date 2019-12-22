@@ -29,6 +29,9 @@ class OpenViewerListener(
                 }
             }
         }
+
+        // Reset to default
+        runConfig.allowFocusChange = true
     }
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {

@@ -12,14 +12,14 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileState
-import nl.hannahsten.texifyidea.run.OpenPdfViewerListener
+import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
+import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
-import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearch
+import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Magic.Package.index
@@ -115,17 +115,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             return handler
         }
 
-        // Do not open the pdf viewer when this is not the last run config in the chain
+        // Do not schedule to open the pdf viewer when this is not the last run config in the chain
         if (runConfig.isLastRunConfig) {
-
-            if (TexifySettings.getInstance().autoCompile) {
-                AutoCompileState.compileDone()
-                openPdfViewer(handler, false)
-            }
-            else {
-                openPdfViewer(handler)
-            }
+            addOpenViewerListener(handler, runConfig.allowFocusChange)
+            handler.addProcessListener(AutoCompileDoneListener())
         }
+
 
         return handler
     }
@@ -135,7 +130,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      *
      * @param focusAllowed Whether focussing the pdf viewer is allowed. If not, it may happen forward search is not executed (in case the pdf viewer does not support forward search without changing focus).
      */
-    private fun openPdfViewer(handler: ProcessHandler, focusAllowed: Boolean = true) {
+    private fun addOpenViewerListener(handler: ProcessHandler, focusAllowed: Boolean = true) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
 
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
@@ -161,11 +156,11 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 commandList += runConfig.outputFilePath
             }
 
-            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray()))
+            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
         }
         else if (runConfig.sumatraPath != null || isSumatraAvailable) {
             // Open Sumatra after compilation & execute inverse search.
-            SumatraForwardSearch().execute(handler, runConfig, environment, focusAllowed)
+            handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment, focusAllowed))
         }
         else if (TexifySettings.getInstance().pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR)) {
             ViewerForwardSearch(TexifySettings.getInstance().pdfViewer).execute(handler, runConfig, environment, focusAllowed)
@@ -174,12 +169,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Open default system viewer, source: https://ss64.com/osx/open.html
             val commandList = arrayListOf("open", runConfig.outputFilePath)
             // Fail silently, otherwise users who have set up something themselves get an exception every time when this command fails
-            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
+            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
         }
         else if (SystemInfo.isLinux) {
             // Open default system viewer using xdg-open, since this is available in almost all desktop environments
             val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
-            handler.addProcessListener(OpenPdfViewerListener(commandList.toTypedArray(), failSilently = true))
+            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
         }
     }
 

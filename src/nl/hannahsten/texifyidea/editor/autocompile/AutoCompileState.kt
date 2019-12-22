@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 /**
  * State of autocompilation.
@@ -52,6 +53,9 @@ object AutoCompileState {
         if (hasChanged) {
             scheduleCompilation()
         }
+        else {
+            isCompiling = false
+        }
     }
 
     private fun scheduleCompilation() {
@@ -69,16 +73,15 @@ object AutoCompileState {
             // Get run configuration selected in the combobox and run that one
             val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration ?: return@launch
 
-            try {
-                ExecutionManager.getInstance(project!!).restartRunProfile(project!!,
-                        DefaultRunExecutor.getRunExecutorInstance(),
-                        ExecutionTargetManager.getInstance(project!!).activeTarget,
-                        runConfigSettings,
-                        null)
-            }
-            finally {
-                isCompiling = false
-            }
+            // Changing focus would interrupt the user during typing
+            (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
+
+            ExecutionManager.getInstance(project!!).restartRunProfile(project!!,
+                    DefaultRunExecutor.getRunExecutorInstance(),
+                    ExecutionTargetManager.getInstance(project!!).activeTarget,
+                    runConfigSettings,
+                    null)
+
         }
     }
 }
