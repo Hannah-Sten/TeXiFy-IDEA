@@ -11,7 +11,7 @@ When you start typing in a document, the run configuration that is selected in t
 Recall that you can create a run config with kbd:[Ctrl + Shift + F10].
 
 When you use Evince or Okular, you need to compile manually (so using the button next to the run configuration or using kbd:[Shift + F10]) once before you can use forward search.
-This is because you need to tell TeXiFy where the pdf is that you want to forward search too, which depends on the run configuration.
+This is because you need to tell TeXiFy where the pdf is that you want to forward search to, which depends on the run configuration.
 Since these pdf viewers will focus when you forward search, this is not done while you are typing.
 This is not the case for SumatraPDF, which can forward search without losing focus.
 
