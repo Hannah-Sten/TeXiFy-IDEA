@@ -23,7 +23,10 @@ object OkularConversation : ViewerConversation() {
      */
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
 
-        // todo focus support?
+        // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Okular
+        if (!focusAllowed) {
+            return
+        }
 
         if (pdfPath != null) {
             pdfFilePath = pdfPath

@@ -20,8 +20,7 @@ import org.jetbrains.concurrency.runAsync
  * @author Sten Wessel
  */
 class SumatraForwardSearchListener(val runConfig: LatexRunConfiguration,
-                                   private val executionEnvironment: ExecutionEnvironment,
-                                   private val focusAllowed: Boolean
+                                   private val executionEnvironment: ExecutionEnvironment
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -60,7 +59,8 @@ class SumatraForwardSearchListener(val runConfig: LatexRunConfiguration,
                     // Wait for sumatra pdf to start. 1250ms should be plenty.
                     // Otherwise the person is out of luck ¯\_(ツ)_/¯
                     Thread.sleep(1250)
-                    SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = focusAllowed)
+                    // Never focus, because forward search will work fine without focus, and the user might want to continue typing after doing forward search/compiling
+                    SumatraConversation.forwardSearch(sourceFilePath = psiFile.virtualFile.path, line = line, focus = false)
                 }
                 catch (ignored: TeXception) {
                 }
