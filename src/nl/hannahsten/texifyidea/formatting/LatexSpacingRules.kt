@@ -23,7 +23,6 @@ fun createSpacingBuilder(settings: CodeStyleSettings): LatexSpacingBuilder {
 
         custom {
             fun commentSpacing(minSpaces: Int): Spacing {
-                // TODO: blank lines settings
                 if (latexCommonSettings.KEEP_FIRST_COLUMN_COMMENT) {
                     return Spacing.createKeepingFirstColumnSpacing(minSpaces, Int.MAX_VALUE, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
                 }

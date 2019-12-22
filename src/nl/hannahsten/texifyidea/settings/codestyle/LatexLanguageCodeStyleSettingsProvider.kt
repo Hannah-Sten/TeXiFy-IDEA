@@ -5,7 +5,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceOption.*
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.*
+import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS
 import com.intellij.psi.codeStyle.extractor.values.Value.VAR_KIND.RIGHT_MARGIN
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.util.Magic
@@ -33,16 +33,10 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {
 
-            SPACING_SETTINGS -> customizeSpacingSettings(consumer)
             WRAPPING_AND_BRACES_SETTINGS -> customizeWrappingAndBracesSettings(consumer)
-            BLANK_LINES_SETTINGS -> customizeBlankLinesSettings(consumer)
 
             else -> return
         }
-    }
-
-    private fun customizeSpacingSettings(consumer: CodeStyleSettingsCustomizable) {
-        // TODO: add remove multiple spaces option
     }
 
     private fun customizeWrappingAndBracesSettings(consumer: CodeStyleSettingsCustomizable) {
@@ -54,7 +48,4 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
         ).map { it.toString() }.toTypedArray())
     }
 
-    private fun customizeBlankLinesSettings(consumer: CodeStyleSettingsCustomizable) {
-        // TODO: add custom settings
-    }
 }

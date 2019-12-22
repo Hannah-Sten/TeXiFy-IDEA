@@ -30,7 +30,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
-    override fun getDisplayName() = "Collapce cite commands"
+    override fun getDisplayName() = "Collapse cite commands"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
