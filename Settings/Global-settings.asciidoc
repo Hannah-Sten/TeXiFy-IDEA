@@ -56,6 +56,24 @@ For more information, see link:Automatic-package-importing[Automagically import 
 
 If you disable this, consider if TeXiFy should support your use case and please open an issue if so.
 
+
+[#continuous-preview]
+== Option to enable continuous preview of math and TikZ environments
+_Since b0.6.7_
+
+When enabled and you are typing in a math environment (for example inline math `$..$` or display math `\[ ... \]`) then a preview window will pop up which will show how the math will look like. The same holds for `tikzpicture` environments.
+
+For more information about the preview and how to install dependencies, see link:Preview#Equation-preview[Equation preview].
+For continuous compilation of the complete document, see link:Compilers#Latexmk[Latexmk].
+
+image::continuous-preview.gif[Continuous preview]
+
+[#automatic-compilation]
+== Option to enable automatic compilation
+_Since b0.6.8_
+
+See link:Automatic-compilation[Support for automatic compilation].
+
 [#smart-quotes]
 == Option to enable smart quote substitution
 
@@ -90,16 +108,6 @@ Note that instead of typing the closing `'` or `"` you could also type the closi
 
 For more advantages, see https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f
 
-[#continuous-preview]
-== Option to enable continuous preview of math and TikZ environments
-_Since b0.6.7_
-
-When enabled and you are typing in a math environment (for example inline math `$..$` or display math `\[ ... \]`) then a preview window will pop up which will show how the math will look like. The same holds for `tikzpicture` environments.
-
-For more information about the preview and how to install dependencies, see link:Preview#Equation-preview[Equation preview].
-For continuous compilation of the complete document, see link:Compilers#Latexmk[Latexmk].
-
-image::continuous-preview.gif[Continuous preview]
 
 [#pdfviewer]
 == Option to select default PDF viewer

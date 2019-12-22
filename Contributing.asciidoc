@@ -35,7 +35,7 @@ link:Page-name[Link text]
 
 [source,asciidoc]
 ----
-image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/package-import.gif[]
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/path/to/figure.gif[]
 ----
 
 == Useful AsciiDoc links
