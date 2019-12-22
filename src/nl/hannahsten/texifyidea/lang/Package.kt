@@ -25,6 +25,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val IMAKEIDX = Package("imakeidx")
         @JvmField val INPUTENC = Package("inputenc")
         @JvmField val LATEXSYMB = Package("latexsymb")
+        @JvmField val LISTINGS = Package("listings")
         @JvmField val LUACODE = Package("luacode")
         @JvmField val MATHABX = Package("mathabx")
         @JvmField val MATHTOOLS = Package("mathtools")

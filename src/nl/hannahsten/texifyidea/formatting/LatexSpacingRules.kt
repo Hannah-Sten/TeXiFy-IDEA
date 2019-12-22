@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
  * @author Sten Wessel
  */
 fun createSpacingBuilder(settings: CodeStyleSettings): LatexSpacingBuilder {
-    val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)!!
-    val latexCommonSettings = settings.getCommonSettings(LatexLanguage.INSTANCE)!!
+    val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
+    val latexCommonSettings = settings.getCommonSettings(LatexLanguage.INSTANCE)
 
     return rules(latexCommonSettings) {
 
