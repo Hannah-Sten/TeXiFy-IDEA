@@ -14,7 +14,7 @@ class LatexBlock(
         node: ASTNode,
         wrap: Wrap?,
         alignment: Alignment?,
-        private val spacingBuilder: SpacingBuilder
+        private val spacingBuilder: LatexSpacingBuilder
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {

@@ -6,8 +6,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleSettings
-import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
  * @author Sten Wessel
@@ -20,7 +18,7 @@ class LatexFormattingModelBuilder : FormattingModelBuilder {
                         element.node,
                         Wrap.createWrap(WrapType.NONE, false),
                         Alignment.createAlignment(),
-                        createSpaceBuilder(settings)
+                        createSpacingBuilder(settings)
                 ),
                 settings
         )
@@ -31,15 +29,15 @@ class LatexFormattingModelBuilder : FormattingModelBuilder {
     }
 
     companion object {
-        private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
-            val spacingBuilder = SpacingBuilder(settings, LatexLanguage.INSTANCE)
+        private fun createSpaceBuilder(settings: CodeStyleSettings): LatexSpacingBuilder {
+            val spacingBuilder = LatexSpacingBuilder(settings)
             // Insert one space between two words.
-            spacingBuilder.between(LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT_WORD)
-                    .spaces(1)
+//            spacingBuilder.between(LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT_WORD)
+//                    .spaces(1)
             // Put the content of an environment on its own lines, i.e. put a
             // newline after a begin command and before an end command.
-            spacingBuilder.around(LatexTypes.ENVIRONMENT_CONTENT)
-                    .lineBreakInCode()
+//            spacingBuilder.around(LatexTypes.ENVIRONMENT_CONTENT)
+//                    .lineBreakInCode()
             return spacingBuilder
         }
     }

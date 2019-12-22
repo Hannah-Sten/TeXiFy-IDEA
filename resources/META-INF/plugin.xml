@@ -350,6 +350,11 @@
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
+
+        <!-- Code style settings -->
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexLanguageCodeStyleSettingsProvider"/>
+
         <!-- Project settings -->
         <projectService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
         <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
