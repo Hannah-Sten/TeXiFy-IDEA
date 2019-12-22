@@ -121,7 +121,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             handler.addProcessListener(AutoCompileDoneListener())
         }
 
-
         return handler
     }
 

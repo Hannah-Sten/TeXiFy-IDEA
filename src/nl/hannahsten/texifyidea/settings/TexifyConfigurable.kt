@@ -41,7 +41,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                 automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
                 automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
-                autoCompile = addCheckbox("Enable automatic compilation (warning: can cause high CPU usage)")
+                autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
