@@ -1,7 +1,21 @@
 :experimental:
 
+_General_
+
+- Press kbd:[Ctrl+Alt+L] to reformat.
+- To disable formatting on a portion of your tex file, wrap the code with
+
+[latex]
+----
+% @formatter:off
+...
+% @formatter:on
+----
+
+and enable these commens in the settings by going to menu:Settings[Editor > Code Style > Formatter Control] and checking `Enable formatter markers in comments`.
+
 _Since b0.6.8_
 
-Press kbd:[Ctrl+Alt+L] to reformat.
+Indents in groups.
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/reformat.gif[reformat]
