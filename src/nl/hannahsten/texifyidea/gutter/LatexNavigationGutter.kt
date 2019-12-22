@@ -66,10 +66,12 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val argument = if (ignoreFileArgument) {
             if (commandName == LatexRegularCommand.DOCUMENTCLASS.command) {
                 RequiredFileArgument("", "cls")
-            } else {
+            }
+            else {
                 RequiredFileArgument("", "sty")
             }
-        } else {
+        }
+        else {
             arguments[0]
         }
 
@@ -107,11 +109,13 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         // Get the icon from the file extension when applicable and there exists an icon for this extension,
         // otherwise get the default icon for this argument.
-        val extensionIcon = TexifyIcons.getIconFromExtension(fileNames[0].split(".").last())
-        val icon = if (ignoreFileArgument || extensionIcon == TexifyIcons.FILE) {
-            TexifyIcons.getIconFromExtension(argument.defaultExtension)
-        } else {
-            extensionIcon
+        val extension = fileNames.firstOrNull()?.split(".")?.last()
+        val defaultIcon = TexifyIcons.getIconFromExtension(argument.defaultExtension)
+        val icon = if (ignoreFileArgument || TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE) {
+            defaultIcon
+        }
+        else {
+            TexifyIcons.getIconFromExtension(extension)
         }
 
         val builder = NavigationGutterIconBuilder
