@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.sumatra
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -34,21 +35,22 @@ class SumatraForwardSearchListener(val runConfig: LatexRunConfiguration,
         }
 
         // Forward search.
-        run {
-            val psiFile = runConfig.mainFile?.psiFile(executionEnvironment.project) ?: return@run
-            val document = psiFile.document() ?: return@run
-            val editor = psiFile.openedEditor() ?: return@run
+        invokeLater {
+            val psiFile = runConfig.mainFile?.psiFile(executionEnvironment.project) ?: return@invokeLater
+            val document = psiFile.document() ?: return@invokeLater
+
+            val editor = psiFile.openedEditor() ?: return@invokeLater
 
             if (document != editor.document) {
-                return@run
+                return@invokeLater
             }
 
             // Do not do forward search when editing the preamble.
             if (psiFile.isRoot()) {
-                val element = psiFile.findElementAt(editor.caretOffset()) ?: return@run
-                val latexEnvironment = element.parentOfType(LatexEnvironment::class) ?: return@run
+                val element = psiFile.findElementAt(editor.caretOffset()) ?: return@invokeLater
+                val latexEnvironment = element.parentOfType(LatexEnvironment::class) ?: return@invokeLater
                 if (latexEnvironment.name()?.text != "document") {
-                    return@run
+                    return@invokeLater
                 }
             }
 
