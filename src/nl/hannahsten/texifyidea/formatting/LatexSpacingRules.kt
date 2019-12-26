@@ -39,9 +39,9 @@ fun createSpacingBuilder(settings: CodeStyleSettings): LatexSpacingBuilder {
                     return@customRule createSpacing(
                             minSpaces = 0,
                             maxSpaces = Int.MAX_VALUE,
-                            minLineFeeds = latexSettings.BLANK_LINES_BEFORE_SECTIONING + 1,
-                            keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
-                            keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+                            minLineFeeds = latexSettings.BLANK_LINES_BEFORE_SECTION + 1,
+                            keepLineBreaks = false,
+                            keepBlankLines = 0)
                 }
                 return@customRule Spacing.getReadOnlySpacing()
             }
