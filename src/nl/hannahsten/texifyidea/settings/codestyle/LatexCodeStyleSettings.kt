@@ -9,6 +9,6 @@ import nl.hannahsten.texifyidea.LatexLanguage
  * @author Sten Wessel
  */
 class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSettings(LatexLanguage.INSTANCE.id, container) {
-
+    var BLANK_LINES_BEFORE_SECTIONING: Int = 2
 
 }
