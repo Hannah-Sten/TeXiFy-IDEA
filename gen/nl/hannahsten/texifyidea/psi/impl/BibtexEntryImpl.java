@@ -104,6 +104,10 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
     return identifier;
   }
 
+  public String getAbstract() {
+    return getTagContent("abstract");
+  }
+
   private String getTagContent(String tagName) {
     BibtexEntryContent entryContent = getEntryContent();
     if (entryContent == null) return "";

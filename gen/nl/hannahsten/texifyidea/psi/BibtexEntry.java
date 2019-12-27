@@ -37,4 +37,6 @@ public interface BibtexEntry extends StubBasedPsiElement<BibtexEntryStub>, PsiNa
 
   String getIdentifier();
 
+  String getAbstract();
+
 }

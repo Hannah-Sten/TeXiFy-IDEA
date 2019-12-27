@@ -67,6 +67,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                                 LinkedList<String> lookupStrings = new LinkedList<>(entry.getAuthors());
                                 lookupStrings.add(entry.getTitle());
                                 return LookupElementBuilder.create(entry.getIdentifier())
+                                        .withPsiElement(bibtexEntry)
                                         .withPresentableText(entry.getTitle())
                                         .bold()
                                         .withInsertHandler(new LatexReferenceInsertHandler())

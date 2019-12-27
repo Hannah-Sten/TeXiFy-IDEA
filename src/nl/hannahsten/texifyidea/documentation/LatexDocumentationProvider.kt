@@ -52,6 +52,22 @@ class LatexDocumentationProvider : DocumentationProvider {
     }
 
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
+        if (element is BibtexEntry) {
+            fun formatAuthor(author: String): String {
+                val parts = author.split(",")
+                if (parts.size < 2) return author
+                val last = parts[1].trim()
+                val first = parts[0].trim()
+                return "$first $last"
+            }
+
+            val stringBuilder = StringBuilder("<h3>${element.title} (${element.year})</h3>")
+            stringBuilder.append(element.authors.joinToString(", ") { a -> formatAuthor(a) })
+            stringBuilder.append("<br/><br/>")
+            stringBuilder.append(element.abstract)
+            return stringBuilder.toString()
+        }
+
         if (element.previousSiblingIgnoreWhitespace() != null) {
             return lookup?.description
         }
