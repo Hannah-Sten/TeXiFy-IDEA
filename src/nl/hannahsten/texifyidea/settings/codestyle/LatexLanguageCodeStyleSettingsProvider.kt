@@ -13,13 +13,12 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.removeHtmlTags
 
 /**
- *
+ * Provides the code style settings
  * @author Sten Wessel
  */
 class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
     companion object {
-
         private val demoText = Magic.General.demoText.removeHtmlTags()
     }
 
@@ -34,12 +33,7 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {
             WRAPPING_AND_BRACES_SETTINGS -> customizeWrappingAndBracesSettings(consumer)
-            BLANK_LINES_SETTINGS -> consumer.showCustomOption(
-                    LatexCodeStyleSettings::class.java,
-                    LatexCodeStyleSettings::BLANK_LINES_BEFORE_SECTION.name,
-                    "Number of blank lines before \\section command",
-                    CodeStyleSettingsCustomizable.BLANK_LINES
-            )
+            BLANK_LINES_SETTINGS -> customizeBlankLinesSettings(consumer)
             else -> return
         }
     }
@@ -51,6 +45,17 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                 WRAP_LONG_LINES,
                 KEEP_FIRST_COLUMN_COMMENT
         ).map { it.toString() }.toTypedArray())
+    }
+
+    private fun customizeBlankLinesSettings(consumer: CodeStyleSettingsCustomizable) {
+        LatexCodeStyleSettings.blankLinesOptions.forEach {
+            consumer.showCustomOption(
+                    LatexCodeStyleSettings::class.java,
+                    it.key.name,
+                    it.value,
+                    CodeStyleSettingsCustomizable.BLANK_LINES
+            )
+        }
     }
 
 }

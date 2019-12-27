@@ -9,6 +9,10 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import nl.hannahsten.texifyidea.LatexLanguage
 
 /**
+ * Provides the LaTex code style settings.
+ *
+ * The most useful thing here is that we specify which tabs to show in the
+ * settings.
  *
  * @author Sten Wessel
  */
@@ -30,7 +34,6 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                         addIndentOptionsTab(settings)
                         addWrappingAndBracesTab(settings)
                         addBlankLinesTab(settings)
-//                        addTab(BlankLinesPanelWrapper(settings))
                     }
 
                     override fun addWrappingAndBracesTab(settings: CodeStyleSettings?) {
@@ -39,7 +42,6 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                             override fun getTabTitle() = "Wrapping"
                         })
                     }
-
                 }
             }
 
