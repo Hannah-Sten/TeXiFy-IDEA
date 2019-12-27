@@ -7,7 +7,6 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.ui.codestyle.BlankLinesPanelWrapper
 
 /**
  *
@@ -30,7 +29,8 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                     override fun initTabs(settings: CodeStyleSettings) {
                         addIndentOptionsTab(settings)
                         addWrappingAndBracesTab(settings)
-                        addTab(BlankLinesPanelWrapper(settings))
+                        addBlankLinesTab(settings)
+//                        addTab(BlankLinesPanelWrapper(settings))
                     }
 
                     override fun addWrappingAndBracesTab(settings: CodeStyleSettings?) {
@@ -39,6 +39,7 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                             override fun getTabTitle() = "Wrapping"
                         })
                     }
+
                 }
             }
 
