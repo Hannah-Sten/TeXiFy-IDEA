@@ -7,6 +7,7 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
+    psiImplUtilClass="nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.BibtexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.BibtexElementType"
@@ -35,7 +36,9 @@ content ::= (string (CONCATENATE string)+) | string | NUMBER | IDENTIFIER
 
 string ::= defined_string | quoted_string | braced_string
 
-defined_string ::= IDENTIFIER
+defined_string ::= IDENTIFIER {
+    methods=[getReference]
+}
 
 quoted_string ::= QUOTES normal_text? END_QUOTES
 

@@ -2,9 +2,6 @@
 package nl.hannahsten.texifyidea.psi.impl;
 
 import java.util.List;
-
-import com.intellij.psi.PsiReference;
-import nl.hannahsten.texifyidea.reference.BibtexStringReference;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -13,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
+import com.intellij.psi.PsiReference;
 
 public class BibtexDefinedStringImpl extends ASTWrapperPsiElement implements BibtexDefinedString {
 
@@ -29,8 +27,9 @@ public class BibtexDefinedStringImpl extends ASTWrapperPsiElement implements Bib
     else super.accept(visitor);
   }
 
-    @Override
-    public PsiReference getReference() {
-        return new BibtexStringReference(this);
-    }
+  @Override
+  public PsiReference getReference() {
+    return BibtexPsiImplUtil.getReference(this);
+  }
+
 }
