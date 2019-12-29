@@ -1,21 +1,21 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.psi.*
+import com.intellij.psi.PsiComment
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.reference.BibtexStringReference
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import kotlin.reflect.KClass
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// PSI ELEMENT ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-fun BibtexDefinedString.getReference(): PsiReference = BibtexStringReference(this)
 
 /**
  * Get the offset where the psi element ends.
