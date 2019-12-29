@@ -19,7 +19,7 @@
 
 bibtexFile ::= (entry | comment)*
 
-entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR? { pin=1 }
+entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?
 
 entry_content ::= tag (SEPARATOR tag)* SEPARATOR? { pin=1 }
 

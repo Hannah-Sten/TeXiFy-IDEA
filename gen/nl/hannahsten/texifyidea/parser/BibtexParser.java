@@ -206,18 +206,17 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean entry(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry")) return false;
     if (!nextTokenIs(b, TYPE_TOKEN)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, ENTRY, null);
+    boolean r;
+    Marker m = enter_section_(b);
     r = type(b, l + 1);
-    p = r; // pin = 1
-    r = r && report_error_(b, entry_1(b, l + 1));
-    r = p && report_error_(b, entry_2(b, l + 1)) && r;
-    r = p && report_error_(b, entry_3(b, l + 1)) && r;
-    r = p && report_error_(b, endtry(b, l + 1)) && r;
-    r = p && report_error_(b, entry_5(b, l + 1)) && r;
-    r = p && entry_6(b, l + 1) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+    r = r && entry_1(b, l + 1);
+    r = r && entry_2(b, l + 1);
+    r = r && entry_3(b, l + 1);
+    r = r && endtry(b, l + 1);
+    r = r && entry_5(b, l + 1);
+    r = r && entry_6(b, l + 1);
+    exit_section_(b, m, ENTRY, r);
+    return r;
   }
 
   // OPEN_BRACE | OPEN_PARENTHESIS
