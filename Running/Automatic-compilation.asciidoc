@@ -15,4 +15,6 @@ This is because you need to tell TeXiFy where the pdf is that you want to forwar
 Since these pdf viewers will focus when you forward search, this is not done while you are typing.
 This is not the case for SumatraPDF, which can forward search without losing focus.
 
+Currently the automatic compilation is only triggered when you type in a document or use backspace, not yet by other ways you edit the document.
+
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Running/figures/autocompile.gif[]
