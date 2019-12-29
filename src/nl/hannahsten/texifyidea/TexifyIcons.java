@@ -402,6 +402,8 @@ public class TexifyIcons {
                 return STYLE_FILE;
             case "txt":
                 return TEXT_FILE;
+            case "tikz":
+                return TIKZ_FILE;
             case "log":
                 return TEXT_FILE;
             case "pdf":
