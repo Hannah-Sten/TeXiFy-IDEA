@@ -12,7 +12,7 @@ _General_
 % @formatter:on
 ----
 
-and enable these commens in the settings by going to menu:Settings[Editor > Code Style > Formatter Control] and checking `Enable formatter markers in comments`.
+and enable these comments in the settings by going to menu:Settings[Editor > Code Style > Formatter Control] and checking `Enable formatter markers in comments`.
 
 _Since b0.6.8_
 
