@@ -19,9 +19,9 @@
 
 bibtexFile ::= (entry | comment)*
 
-entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?
+entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR? { pin=1 }
 
-entry_content ::= tag (SEPARATOR tag)* SEPARATOR?
+entry_content ::= tag (SEPARATOR tag)* SEPARATOR? { pin=1 }
 
 endtry ::= SEPARATOR? comment* (CLOSE_BRACE | CLOSE_PARENTHESIS)
 
@@ -32,7 +32,6 @@ preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
 id ::= comment* IDENTIFIER comment* SEPARATOR {
     stubClass="nl.hannahsten.texifyidea.index.stub.BibtexIdStub"
     mixin="nl.hannahsten.texifyidea.psi.BibtexIdImplMixin"
-    pin=2
 }
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* { pin=2 }

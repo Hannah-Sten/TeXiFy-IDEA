@@ -206,17 +206,18 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean entry(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry")) return false;
     if (!nextTokenIs(b, TYPE_TOKEN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ENTRY, null);
     r = type(b, l + 1);
-    r = r && entry_1(b, l + 1);
-    r = r && entry_2(b, l + 1);
-    r = r && entry_3(b, l + 1);
-    r = r && endtry(b, l + 1);
-    r = r && entry_5(b, l + 1);
-    r = r && entry_6(b, l + 1);
-    exit_section_(b, m, ENTRY, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, entry_1(b, l + 1));
+    r = p && report_error_(b, entry_2(b, l + 1)) && r;
+    r = p && report_error_(b, entry_3(b, l + 1)) && r;
+    r = p && report_error_(b, endtry(b, l + 1)) && r;
+    r = p && report_error_(b, entry_5(b, l + 1)) && r;
+    r = p && entry_6(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // OPEN_BRACE | OPEN_PARENTHESIS
@@ -291,13 +292,14 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean entry_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_content")) return false;
     if (!nextTokenIs(b, "<entry content>", COMMENT_TOKEN, IDENTIFIER)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, ENTRY_CONTENT, "<entry content>");
     r = tag(b, l + 1);
-    r = r && entry_content_1(b, l + 1);
-    r = r && entry_content_2(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, entry_content_1(b, l + 1));
+    r = p && entry_content_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // (SEPARATOR tag)*
@@ -334,15 +336,14 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean id(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "id")) return false;
     if (!nextTokenIs(b, "<id>", COMMENT_TOKEN, IDENTIFIER)) return false;
-    boolean r, p;
+    boolean r;
     Marker m = enter_section_(b, l, _NONE_, ID, "<id>");
     r = id_0(b, l + 1);
     r = r && consumeToken(b, IDENTIFIER);
-    p = r; // pin = 2
-    r = r && report_error_(b, id_2(b, l + 1));
-    r = p && consumeToken(b, SEPARATOR) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+    r = r && id_2(b, l + 1);
+    r = r && consumeToken(b, SEPARATOR);
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   // comment*
