@@ -4,6 +4,7 @@
 ## Additions
 - Add support for the Grazie grammar and spellchecking plugin. (#1120)
 - Add support for texdoc on TeX Live. (#1125)
+- Add support for automatic compilation. (#1140)
 - Add option to disable auto package insert. (#1131)
 - Add support for compression prevention from the cleveref package. (#1134) 
 - Add subfiles support. (#1131)
