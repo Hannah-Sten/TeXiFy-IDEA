@@ -1,7 +1,9 @@
 :experimental:
 
-Press kbd:[Ctrl+Alt+L] to reformat.
-To disable formatting on a portion of your `tex` file, wrap the code with
+_General_
+
+- Press kbd:[Ctrl+Alt+L] to reformat.
+- To disable formatting on a portion of your LaTeX file, wrap the code with
 
 [latex]
 ----
