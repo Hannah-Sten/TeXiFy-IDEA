@@ -27,14 +27,15 @@ endtry ::= SEPARATOR? comment* (CLOSE_BRACE | CLOSE_PARENTHESIS)
 
 type ::= TYPE_TOKEN
 
-preamble ::= (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
+preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
 
 id ::= comment* IDENTIFIER comment* SEPARATOR {
     stubClass="nl.hannahsten.texifyidea.index.stub.BibtexIdStub"
     mixin="nl.hannahsten.texifyidea.psi.BibtexIdImplMixin"
+    pin=2
 }
 
-tag ::= comment* key comment* ASSIGNMENT comment* content comment*
+tag ::= comment* key comment* ASSIGNMENT comment* content comment* { pin=2 }
 
 key ::= IDENTIFIER
 
@@ -46,9 +47,9 @@ defined_string ::= IDENTIFIER {
     methods=[getReference]
 }
 
-quoted_string ::= QUOTES normal_text? END_QUOTES
+quoted_string ::= QUOTES normal_text? END_QUOTES { pin=1 }
 
-braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE
+braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE { pin=1 }
 
 comment ::= COMMENT_TOKEN
 

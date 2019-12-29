@@ -61,13 +61,14 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean braced_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "braced_string")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, BRACED_STRING, null);
     r = consumeToken(b, OPEN_BRACE);
-    r = r && braced_string_1(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BRACE);
-    exit_section_(b, m, BRACED_STRING, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, braced_string_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // normal_text+
@@ -333,14 +334,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean id(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "id")) return false;
     if (!nextTokenIs(b, "<id>", COMMENT_TOKEN, IDENTIFIER)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, ID, "<id>");
     r = id_0(b, l + 1);
     r = r && consumeToken(b, IDENTIFIER);
-    r = r && id_2(b, l + 1);
-    r = r && consumeToken(b, SEPARATOR);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    p = r; // pin = 2
+    r = r && report_error_(b, id_2(b, l + 1));
+    r = p && consumeToken(b, SEPARATOR) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // comment*
@@ -395,20 +397,19 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
+  // (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
   public static boolean preamble(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "preamble")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PREAMBLE, "<preamble>");
     r = preamble_0(b, l + 1);
-    if (!r) r = quoted_string(b, l + 1);
     if (!r) r = consumeToken(b, NUMBER);
     if (!r) r = consumeToken(b, IDENTIFIER);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // quoted_string (CONCATENATE quoted_string)+
+  // quoted_string (CONCATENATE quoted_string)*
   private static boolean preamble_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "preamble_0")) return false;
     boolean r;
@@ -419,19 +420,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (CONCATENATE quoted_string)+
+  // (CONCATENATE quoted_string)*
   private static boolean preamble_0_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "preamble_0_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = preamble_0_1_0(b, l + 1);
-    while (r) {
+    while (true) {
       int c = current_position_(b);
       if (!preamble_0_1_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "preamble_0_1", c)) break;
     }
-    exit_section_(b, m, null, r);
-    return r;
+    return true;
   }
 
   // CONCATENATE quoted_string
@@ -450,13 +447,14 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean quoted_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "quoted_string")) return false;
     if (!nextTokenIs(b, QUOTES)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, QUOTED_STRING, null);
     r = consumeToken(b, QUOTES);
-    r = r && quoted_string_1(b, l + 1);
-    r = r && consumeToken(b, END_QUOTES);
-    exit_section_(b, m, QUOTED_STRING, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, quoted_string_1(b, l + 1));
+    r = p && consumeToken(b, END_QUOTES) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // normal_text?
@@ -484,17 +482,18 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean tag(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tag")) return false;
     if (!nextTokenIs(b, "<tag>", COMMENT_TOKEN, IDENTIFIER)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, TAG, "<tag>");
     r = tag_0(b, l + 1);
     r = r && key(b, l + 1);
-    r = r && tag_2(b, l + 1);
-    r = r && consumeToken(b, ASSIGNMENT);
-    r = r && tag_4(b, l + 1);
-    r = r && content(b, l + 1);
-    r = r && tag_6(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    p = r; // pin = 2
+    r = r && report_error_(b, tag_2(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, ASSIGNMENT)) && r;
+    r = p && report_error_(b, tag_4(b, l + 1)) && r;
+    r = p && report_error_(b, content(b, l + 1)) && r;
+    r = p && tag_6(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // comment*
