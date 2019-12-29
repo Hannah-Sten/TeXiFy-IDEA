@@ -44,7 +44,7 @@ public interface BibtexTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == BRACED_STRING) {
+      if (type == BRACED_STRING) {
         return new BibtexBracedStringImpl(node);
       }
       else if (type == COMMENT) {

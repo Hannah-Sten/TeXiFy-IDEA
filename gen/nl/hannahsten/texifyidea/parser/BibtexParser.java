@@ -7,6 +7,7 @@ import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
@@ -22,58 +23,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == BRACED_STRING) {
-      r = braced_string(b, 0);
-    }
-    else if (t == COMMENT) {
-      r = comment(b, 0);
-    }
-    else if (t == CONTENT) {
-      r = content(b, 0);
-    }
-    else if (t == DEFINED_STRING) {
-      r = defined_string(b, 0);
-    }
-    else if (t == ENDTRY) {
-      r = endtry(b, 0);
-    }
-    else if (t == ENTRY) {
-      r = entry(b, 0);
-    }
-    else if (t == ENTRY_CONTENT) {
-      r = entry_content(b, 0);
-    }
-    else if (t == ID) {
-      r = id(b, 0);
-    }
-    else if (t == KEY) {
-      r = key(b, 0);
-    }
-    else if (t == NORMAL_TEXT) {
-      r = normal_text(b, 0);
-    }
-    else if (t == PREAMBLE) {
-      r = preamble(b, 0);
-    }
-    else if (t == QUOTED_STRING) {
-      r = quoted_string(b, 0);
-    }
-    else if (t == STRING) {
-      r = string(b, 0);
-    }
-    else if (t == TAG) {
-      r = tag(b, 0);
-    }
-    else if (t == TYPE) {
-      r = type(b, 0);
-    }
-    else {
-      r = parse_root_(t, b, 0);
-    }
+    r = parse_root_(t, b);
     exit_section_(b, 0, m, t, r, true, TRUE_CONDITION);
   }
 
-  protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
+  protected boolean parse_root_(IElementType t, PsiBuilder b) {
+    return parse_root_(t, b, 0);
+  }
+
+  static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return bibtexFile(b, l + 1);
   }
 
@@ -81,11 +39,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // (entry | comment)*
   static boolean bibtexFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bibtexFile")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!bibtexFile_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "bibtexFile", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -94,10 +51,8 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   private static boolean bibtexFile_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bibtexFile_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = entry(b, l + 1);
     if (!r) r = comment(b, l + 1);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -121,11 +76,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = normal_text(b, l + 1);
-    int c = current_position_(b);
     while (r) {
+      int c = current_position_(b);
       if (!normal_text(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "braced_string_1", c)) break;
-      c = current_position_(b);
     }
     exit_section_(b, m, null, r);
     return r;
@@ -174,11 +128,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = content_0_1_0(b, l + 1);
-    int c = current_position_(b);
     while (r) {
+      int c = current_position_(b);
       if (!content_0_1_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "content_0_1", c)) break;
-      c = current_position_(b);
     }
     exit_section_(b, m, null, r);
     return r;
@@ -230,11 +183,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean endtry_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "endtry_1")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "endtry_1", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -243,10 +195,8 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   private static boolean endtry_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "endtry_2")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, CLOSE_BRACE);
     if (!r) r = consumeToken(b, CLOSE_PARENTHESIS);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -272,10 +222,8 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   private static boolean entry_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_1")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, OPEN_BRACE);
     if (!r) r = consumeToken(b, OPEN_PARENTHESIS);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -311,11 +259,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean entry_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_3")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "entry_3", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -323,11 +270,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean entry_5(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_5")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "entry_5", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -356,11 +302,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // (SEPARATOR tag)*
   private static boolean entry_content_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry_content_1")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!entry_content_1_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "entry_content_1", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -401,11 +346,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean id_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "id_0")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "id_0", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -413,11 +357,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean id_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "id_2")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "id_2", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -442,11 +385,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, NORMAL_TEXT_WORD);
-    int c = current_position_(b);
     while (r) {
+      int c = current_position_(b);
       if (!consumeToken(b, NORMAL_TEXT_WORD)) break;
       if (!empty_element_parsed_guard_(b, "normal_text", c)) break;
-      c = current_position_(b);
     }
     exit_section_(b, m, NORMAL_TEXT, r);
     return r;
@@ -483,11 +425,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = preamble_0_1_0(b, l + 1);
-    int c = current_position_(b);
     while (r) {
+      int c = current_position_(b);
       if (!preamble_0_1_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "preamble_0_1", c)) break;
-      c = current_position_(b);
     }
     exit_section_(b, m, null, r);
     return r;
@@ -559,11 +500,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean tag_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tag_0")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "tag_0", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -571,11 +511,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean tag_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tag_2")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "tag_2", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -583,11 +522,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean tag_4(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tag_4")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "tag_4", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -595,11 +533,10 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   // comment*
   private static boolean tag_6(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tag_6")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!comment(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "tag_6", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
