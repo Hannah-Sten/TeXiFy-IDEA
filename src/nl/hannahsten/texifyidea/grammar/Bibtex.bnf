@@ -10,8 +10,11 @@
     psiImplUtilClass="nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.BibtexTypes"
-    elementTypeClass="nl.hannahsten.texifyidea.psi.BibtexElementType"
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexIdStubElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.BibtexTokenType"
+
+    extends("id")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexIdStub>"
+    implements("id")="com.intellij.psi.PsiNamedElement"
 }
 
 bibtexFile ::= (entry | comment)*
@@ -26,7 +29,10 @@ type ::= TYPE_TOKEN
 
 preamble ::= (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
 
-id ::= comment* IDENTIFIER comment* SEPARATOR
+id ::= comment* IDENTIFIER comment* SEPARATOR {
+    stubClass="nl.hannahsten.texifyidea.index.stub.BibtexIdStub"
+    mixin="nl.hannahsten.texifyidea.psi.BibtexIdImplMixin"
+}
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment*
 

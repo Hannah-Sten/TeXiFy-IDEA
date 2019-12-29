@@ -29,19 +29,19 @@ public class BibtexStringImpl extends ASTWrapperPsiElement implements BibtexStri
   @Override
   @Nullable
   public BibtexBracedString getBracedString() {
-    return findChildByClass(BibtexBracedString.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexBracedString.class);
   }
 
   @Override
   @Nullable
   public BibtexDefinedString getDefinedString() {
-    return findChildByClass(BibtexDefinedString.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexDefinedString.class);
   }
 
   @Override
   @Nullable
   public BibtexQuotedString getQuotedString() {
-    return findChildByClass(BibtexQuotedString.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexQuotedString.class);
   }
 
 }

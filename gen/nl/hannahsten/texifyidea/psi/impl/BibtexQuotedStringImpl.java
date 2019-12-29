@@ -29,7 +29,7 @@ public class BibtexQuotedStringImpl extends ASTWrapperPsiElement implements Bibt
   @Override
   @Nullable
   public BibtexNormalText getNormalText() {
-    return findChildByClass(BibtexNormalText.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexNormalText.class);
   }
 
 }

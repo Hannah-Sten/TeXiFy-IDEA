@@ -35,31 +35,31 @@ public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry
   @Override
   @NotNull
   public BibtexEndtry getEndtry() {
-    return findNotNullChildByClass(BibtexEndtry.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexEndtry.class));
   }
 
   @Override
   @Nullable
   public BibtexEntryContent getEntryContent() {
-    return findChildByClass(BibtexEntryContent.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexEntryContent.class);
   }
 
   @Override
   @Nullable
   public BibtexId getId() {
-    return findChildByClass(BibtexId.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexId.class);
   }
 
   @Override
   @Nullable
   public BibtexPreamble getPreamble() {
-    return findChildByClass(BibtexPreamble.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexPreamble.class);
   }
 
   @Override
   @NotNull
   public BibtexType getType() {
-    return findNotNullChildByClass(BibtexType.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexType.class));
   }
 
 }

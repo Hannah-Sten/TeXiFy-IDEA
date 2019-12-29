@@ -2,30 +2,30 @@
 package nl.hannahsten.texifyidea.psi.impl;
 
 import java.util.List;
-
-import com.intellij.extapi.psi.StubBasedPsiElementBase;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.util.IncorrectOperationException;
-import nl.hannahsten.texifyidea.index.stub.BibtexIdStub;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.hannahsten.texifyidea.psi.BibtexIdImplMixin;
 import nl.hannahsten.texifyidea.psi.*;
+import nl.hannahsten.texifyidea.index.stub.BibtexIdStub;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class BibtexIdImpl extends StubBasedPsiElementBase<BibtexIdStub> implements BibtexId {
+public class BibtexIdImpl extends BibtexIdImplMixin implements BibtexId {
 
-  private String identifier;
+  public BibtexIdImpl(@NotNull BibtexIdStub stub, @NotNull IStubElementType type) {
+    super(stub, type);
+  }
 
   public BibtexIdImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  public BibtexIdImpl(BibtexIdStub stub, IStubElementType nodeType) {
-    super(stub, nodeType);
+  public BibtexIdImpl(BibtexIdStub stub, IElementType type, ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {
@@ -37,29 +37,10 @@ public class BibtexIdImpl extends StubBasedPsiElementBase<BibtexIdStub> implemen
     else super.accept(visitor);
   }
 
-  public String getIdentifier() {
-      return identifier;
-  }
-
   @Override
   @NotNull
   public List<BibtexComment> getCommentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexComment.class);
   }
 
-  @Override
-  public String getName() {
-      return getIdentifier();
-  }
-
-  @Override
-  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-      this.identifier = s;
-      return this;
-  }
-
-  @Override
-  public String toString() {
-      return "BibtexId{" + getName() + "}";
-  }
 }

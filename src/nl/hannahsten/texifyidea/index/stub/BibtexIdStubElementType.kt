@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.util.substringEnd
 /**
  * @author Hannah Schellekens
  */
-open class BibtexIdStubElementType(val debugName: String) : IStubElementType<BibtexIdStub, BibtexId>("bibtex-id", BibtexLanguage) {
+open class BibtexIdStubElementType(private val debugName: String) : IStubElementType<BibtexIdStub, BibtexId>(debugName, BibtexLanguage) {
 
     override fun createPsi(stub: BibtexIdStub): BibtexId {
         val id = BibtexIdImpl(stub, this)
@@ -27,7 +27,7 @@ open class BibtexIdStubElementType(val debugName: String) : IStubElementType<Bib
         return BibtexIdStubImpl(parent, this, identifier)
     }
 
-    override fun getExternalId() = "texify.bibtex.id"
+    override fun getExternalId() = debugName
 
     override fun serialize(stub: BibtexIdStub, out: StubOutputStream) {
         out.writeName(stub.name)

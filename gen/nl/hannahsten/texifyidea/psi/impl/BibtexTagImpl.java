@@ -35,13 +35,13 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
   @Override
   @NotNull
   public BibtexContent getContent() {
-    return findNotNullChildByClass(BibtexContent.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexContent.class));
   }
 
   @Override
   @NotNull
   public BibtexKey getKey() {
-    return findNotNullChildByClass(BibtexKey.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexKey.class));
   }
 
 }
