@@ -100,6 +100,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * Formatter
 * Autocomplete
 * Structure view with filters
+* link:String-variables[Support for @string variables]
 
 == Managing LaTeX
 * Never press kbd:[Ctrl + S] again: saves while you type
