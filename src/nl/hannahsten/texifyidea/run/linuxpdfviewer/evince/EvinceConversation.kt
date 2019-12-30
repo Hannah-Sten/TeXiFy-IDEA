@@ -50,7 +50,13 @@ object EvinceConversation : ViewerConversation() {
      * @param sourceFilePath Full path to the LaTeX source file.
      * @param line Line number in the source file to highlight in the pdf.
      */
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project) {
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+
+        // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Evince
+        if (!focusAllowed) {
+            return
+        }
+
         if (pdfPath != null) {
             findProcessOwner(pdfPath)
         }

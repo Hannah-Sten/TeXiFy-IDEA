@@ -1,44 +1,46 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import java.util.List;
+import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.psi.BibtexComment;
-import nl.hannahsten.texifyidea.psi.BibtexId;
-import nl.hannahsten.texifyidea.psi.BibtexVisitor;
-import org.jetbrains.annotations.NotNull;
+import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
+import nl.hannahsten.texifyidea.psi.BibtexIdImplMixin;
+import nl.hannahsten.texifyidea.psi.*;
+import nl.hannahsten.texifyidea.index.stub.BibtexIdStub;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-import java.util.List;
+public class BibtexIdImpl extends BibtexIdImplMixin implements BibtexId {
 
-public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
+  public BibtexIdImpl(@NotNull BibtexIdStub stub, @NotNull IStubElementType type) {
+    super(stub, type);
+  }
 
-    public BibtexIdImpl(ASTNode node) {
-        super(node);
-    }
+  public BibtexIdImpl(@NotNull ASTNode node) {
+    super(node);
+  }
 
-    public void accept(@NotNull BibtexVisitor visitor) {
-        visitor.visitId(this);
-    }
+  public BibtexIdImpl(BibtexIdStub stub, IElementType type, ASTNode node) {
+    super(stub, type, node);
+  }
 
-    public void accept(@NotNull PsiElementVisitor visitor) {
-        if (visitor instanceof BibtexVisitor) {
-            accept((BibtexVisitor)visitor);
-        }
-        else {
-            super.accept(visitor);
-        }
-    }
+  public void accept(@NotNull BibtexVisitor visitor) {
+    visitor.visitId(this);
+  }
 
-    @Override
-    @NotNull
-    public List<BibtexComment> getCommentList() {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexComment.class);
-    }
+  public void accept(@NotNull PsiElementVisitor visitor) {
+    if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
+    else super.accept(visitor);
+  }
 
-    @Override
-    public String toString() {
-        return "BibtexId{" + getName() + "}";
-    }
+  @Override
+  @NotNull
+  public List<BibtexComment> getCommentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexComment.class);
+  }
+
 }

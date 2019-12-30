@@ -4,6 +4,7 @@ package nl.hannahsten.texifyidea.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 
 public class BibtexVisitor extends PsiElementVisitor {
 
@@ -36,7 +37,7 @@ public class BibtexVisitor extends PsiElementVisitor {
   }
 
   public void visitId(@NotNull BibtexId o) {
-    visitPsiElement(o);
+    visitPsiNamedElement(o);
   }
 
   public void visitKey(@NotNull BibtexKey o) {
@@ -65,6 +66,10 @@ public class BibtexVisitor extends PsiElementVisitor {
 
   public void visitType(@NotNull BibtexType o) {
     visitPsiElement(o);
+  }
+
+  public void visitPsiNamedElement(@NotNull PsiNamedElement o) {
+    visitElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {

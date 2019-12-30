@@ -1,30 +1,29 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
-import nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType;
+import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
+import nl.hannahsten.texifyidea.index.stub.BibtexIdStubElementType;
 import nl.hannahsten.texifyidea.psi.impl.*;
 
 public interface BibtexTypes {
 
-  IElementType BRACED_STRING = new BibtexElementType("BRACED_STRING");
-  IElementType COMMENT = new BibtexElementType("COMMENT");
-  IElementType CONTENT = new BibtexElementType("CONTENT");
-  IElementType DEFINED_STRING = new BibtexElementType("DEFINED_STRING");
-  IElementType ENDTRY = new BibtexElementType("ENDTRY");
-  IStubElementType ENTRY = new BibtexEntryStubElementType("ENTRY");
-  IElementType ENTRY_CONTENT = new BibtexElementType("ENTRY_CONTENT");
-  IElementType ID = new BibtexElementType("ID");
-  IElementType KEY = new BibtexElementType("KEY");
-  IElementType NORMAL_TEXT = new BibtexElementType("NORMAL_TEXT");
-  IElementType PREAMBLE = new BibtexElementType("PREAMBLE");
-  IElementType QUOTED_STRING = new BibtexElementType("QUOTED_STRING");
-  IElementType STRING = new BibtexElementType("STRING");
-  IElementType TAG = new BibtexElementType("TAG");
-  IElementType TYPE = new BibtexElementType("TYPE");
+  IElementType BRACED_STRING = new BibtexIdStubElementType("BRACED_STRING");
+  IElementType COMMENT = new BibtexIdStubElementType("COMMENT");
+  IElementType CONTENT = new BibtexIdStubElementType("CONTENT");
+  IElementType DEFINED_STRING = new BibtexIdStubElementType("DEFINED_STRING");
+  IElementType ENDTRY = new BibtexIdStubElementType("ENDTRY");
+  IElementType ENTRY = new BibtexIdStubElementType("ENTRY");
+  IElementType ENTRY_CONTENT = new BibtexIdStubElementType("ENTRY_CONTENT");
+  IElementType ID = new BibtexIdStubElementType("ID");
+  IElementType KEY = new BibtexIdStubElementType("KEY");
+  IElementType NORMAL_TEXT = new BibtexIdStubElementType("NORMAL_TEXT");
+  IElementType PREAMBLE = new BibtexIdStubElementType("PREAMBLE");
+  IElementType QUOTED_STRING = new BibtexIdStubElementType("QUOTED_STRING");
+  IElementType STRING = new BibtexIdStubElementType("STRING");
+  IElementType TAG = new BibtexIdStubElementType("TAG");
+  IElementType TYPE = new BibtexIdStubElementType("TYPE");
 
   IElementType ASSIGNMENT = new BibtexTokenType("ASSIGNMENT");
   IElementType CLOSE_BRACE = new BibtexTokenType("CLOSE_BRACE");
@@ -44,7 +43,7 @@ public interface BibtexTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == BRACED_STRING) {
+      if (type == BRACED_STRING) {
         return new BibtexBracedStringImpl(node);
       }
       else if (type == COMMENT) {
