@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.util.removeHtmlTags
 class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
     companion object {
-        private val demoText = Magic.General.demoText.removeHtmlTags()
+        private val demoText = Magic.General.latexDemoText.removeHtmlTags()
     }
 
     override fun getLanguage() = LatexLanguage.INSTANCE!!
