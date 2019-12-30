@@ -82,6 +82,9 @@ class LatexRunConfiguration constructor(project: Project,
     // Whether the run configuration has already been run or not, since it has been created
     var hasBeenRun = false
 
+    /** Whether the pdf viewer is allowed to claim focus after compilation. */
+    var allowFocusChange = true
+
     private var bibRunConfigId = ""
     var bibRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)

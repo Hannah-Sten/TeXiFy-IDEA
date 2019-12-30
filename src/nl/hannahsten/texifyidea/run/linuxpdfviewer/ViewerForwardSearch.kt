@@ -14,7 +14,7 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
     /**
      * Execute forward search when the process is done.
      */
-    fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment) {
+    fun execute(handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment, focusAllowed: Boolean = true) {
         // We have to find the file and line number before scheduling the forward search
         val mainPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
         val editor = mainPsiFile.openedEditor() ?: return
@@ -25,7 +25,7 @@ class ViewerForwardSearch(private val viewer: PdfViewer) {
         // Get the currently open file to use for forward search.
         val currentPsiFile = editor.document.psiFile(environment.project) ?: return
 
-        // Set the OpenOkularListener to execute when the compilation is done.
-        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, environment.project))
+        // Set the OpenViewerListener to execute when the compilation is done.
+        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, environment.project, focusAllowed))
     }
 }
