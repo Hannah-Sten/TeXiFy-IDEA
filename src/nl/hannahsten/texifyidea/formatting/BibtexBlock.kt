@@ -49,7 +49,7 @@ open class BibtexBlock(
             return Indent.getNormalIndent(false)
         }
         // Indents in entries.
-        if (myNode.elementType == BibtexTypes.ENTRY_CONTENT) {
+        if (type == BibtexTypes.ENTRY_CONTENT) {
             return Indent.getNormalIndent(true)
         }
 

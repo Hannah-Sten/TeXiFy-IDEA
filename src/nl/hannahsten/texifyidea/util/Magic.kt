@@ -124,23 +124,25 @@ object Magic {
         @Language("Bibtex")
         @JvmField
         val bibtexDemoText = """
-                |@article{greenwade1993,
-                |    author  = "George D. Greenwade",
-                |    title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",
-                |    year    = "1993",
-                |    journal = "TUGBoat",
-                |    volume  = "14",
-                |    number  = "3",
-                |    pages   = "342--351"
-                |}
-                |
-                |@book{goossens1993,
-                |    author    = "Michel Goossens and Frank Mittelbach and Alexander Samarin",
-                |    title     = "The LaTeX Companion",
-                |    year      = "1993",
-                |    publisher = "Addison-Wesley",
-                |    address   = "Reading, Massachusetts"
-                |}
+                % I am a BibTeX comment.
+                @article{greenwade1993,
+                    author  = "George D. Greenwade",
+                    title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",
+                    year    = "1993",
+                    journal = "TUGBoat",
+                    volume  = "14",
+                    number  = "3",
+                    pages   = "342--351"
+                }
+                
+                I am also a BibTeX comment.
+                @book{goossens1993,
+                    author    = "Michel Goossens and Frank Mittelbach and Alexander Samarin",
+                    title     = "The LaTeX Companion",
+                    year      = "1993",
+                    publisher = "Addison-Wesley",
+                    address   = "Reading, Massachusetts"
+                }
         """.trimIndent()
     }
 

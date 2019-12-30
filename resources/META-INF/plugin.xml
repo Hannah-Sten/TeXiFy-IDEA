@@ -354,6 +354,8 @@
         <!-- Code style settings -->
         <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexLanguageCodeStyleSettingsProvider"/>
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexLanguageCodeStyleSettingsProvider"/>
 
         <!-- Project settings -->
         <projectService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
