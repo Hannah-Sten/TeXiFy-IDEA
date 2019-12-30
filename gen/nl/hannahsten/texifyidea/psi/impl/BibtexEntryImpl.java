@@ -8,13 +8,24 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.extapi.psi.StubBasedPsiElementBase;
+import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import nl.hannahsten.texifyidea.psi.*;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry {
+public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> implements BibtexEntry {
+
+  public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType type) {
+    super(stub, type);
+  }
 
   public BibtexEntryImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public BibtexEntryImpl(BibtexEntryStub stub, IElementType type, ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {
@@ -60,6 +71,46 @@ public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry
   @NotNull
   public BibtexType getType() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexType.class));
+  }
+
+  @Override
+  public String getTitle() {
+    return BibtexPsiImplUtil.getTitle(this);
+  }
+
+  @Override
+  public List<String> getAuthors() {
+    return BibtexPsiImplUtil.getAuthors(this);
+  }
+
+  @Override
+  public String getYear() {
+    return BibtexPsiImplUtil.getYear(this);
+  }
+
+  @Override
+  public String getIdentifier() {
+    return BibtexPsiImplUtil.getIdentifier(this);
+  }
+
+  @Override
+  public String getAbstract() {
+    return BibtexPsiImplUtil.getAbstract(this);
+  }
+
+  @Override
+  public String getTagContent(String tagName) {
+    return BibtexPsiImplUtil.getTagContent(this, tagName);
+  }
+
+  @Override
+  public String getName() {
+    return BibtexPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(@NotNull @NonNls String name) {
+    return BibtexPsiImplUtil.setName(this, name);
   }
 
 }

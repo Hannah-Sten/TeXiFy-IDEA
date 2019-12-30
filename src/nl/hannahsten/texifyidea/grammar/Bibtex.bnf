@@ -10,16 +10,19 @@
     psiImplUtilClass="nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.BibtexTypes"
-    elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexIdStubElementType"
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.BibtexTokenType"
 
-    extends("id")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
-    implements("id")="com.intellij.psi.PsiNamedElement"
+    extends("entry")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
+    implements("entry")="com.intellij.psi.PsiNamedElement"
 }
 
 bibtexFile ::= (entry | comment)*
 
-entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?
+entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR? {
+    stubClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStub"
+    methods=[getTitle getAuthors getYear getIdentifier getAbstract getTagContent getName setName]
+}
 
 entry_content ::= tag (SEPARATOR tag)* SEPARATOR?
 
@@ -29,10 +32,7 @@ type ::= TYPE_TOKEN
 
 preamble ::= (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
 
-id ::= comment* IDENTIFIER comment* SEPARATOR {
-    stubClass="nl.hannahsten.texifyidea.index.stub.BibtexIdStub"
-    mixin="nl.hannahsten.texifyidea.psi.BibtexIdImplMixin"
-}
+id ::= comment* IDENTIFIER comment* SEPARATOR
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment*
 

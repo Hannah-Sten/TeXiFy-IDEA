@@ -8,24 +8,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
-import nl.hannahsten.texifyidea.psi.BibtexIdImplMixin;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
-import nl.hannahsten.texifyidea.index.stub.BibtexIdStub;
 
-public class BibtexIdImpl extends BibtexIdImplMixin implements BibtexId {
-
-  public BibtexIdImpl(@NotNull BibtexIdStub stub, @NotNull IStubElementType type) {
-    super(stub, type);
-  }
+public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
 
   public BibtexIdImpl(@NotNull ASTNode node) {
     super(node);
-  }
-
-  public BibtexIdImpl(BibtexIdStub stub, IElementType type, ASTNode node) {
-    super(stub, type, node);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {
