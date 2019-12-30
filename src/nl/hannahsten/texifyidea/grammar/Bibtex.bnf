@@ -13,7 +13,7 @@
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexIdStubElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.BibtexTokenType"
 
-    extends("id")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexIdStub>"
+    extends("id")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
     implements("id")="com.intellij.psi.PsiNamedElement"
 }
 

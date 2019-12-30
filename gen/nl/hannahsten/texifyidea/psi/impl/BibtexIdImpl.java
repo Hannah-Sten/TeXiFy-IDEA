@@ -10,9 +10,9 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import nl.hannahsten.texifyidea.psi.BibtexIdImplMixin;
 import nl.hannahsten.texifyidea.psi.*;
-import nl.hannahsten.texifyidea.index.stub.BibtexIdStub;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
+import nl.hannahsten.texifyidea.index.stub.BibtexIdStub;
 
 public class BibtexIdImpl extends BibtexIdImplMixin implements BibtexId {
 
