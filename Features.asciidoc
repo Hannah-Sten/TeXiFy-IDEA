@@ -100,7 +100,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * Formatter
 * link:BibTeX-autocomplete[Autocomplete]
 * Structure view with filters
-* kbd:[Ctrl + Q] on a bibtex reference will show a popup with title and authors
+* kbd:[Ctrl + Q] on a bibtex reference will show a popup with title and authors from the bibtex entry
 * link:String-variables[Support for @string variables]
 
 == Managing LaTeX
