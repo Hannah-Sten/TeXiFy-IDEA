@@ -1,34 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
-import nl.hannahsten.texifyidea.psi.impl.LatexBeginCommandImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexCommentImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexContentImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexDisplayMathImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexEndCommandImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentContentImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexGroupImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexInlineMathImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexMathContentImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexMathEnvironmentImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexNoMathContentImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexNormalTextImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexOpenGroupImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexOptionalParamImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexParameterImpl;
-import nl.hannahsten.texifyidea.psi.impl.LatexRequiredParamImpl;
+import nl.hannahsten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
 
   IElementType BEGIN_COMMAND = new LatexElementType("BEGIN_COMMAND");
-  IStubElementType COMMANDS = new LatexCommandsStubElementType("COMMANDS");
+  IElementType COMMANDS = new LatexCommandsStubElementType("COMMANDS");
   IElementType COMMENT = new LatexElementType("COMMENT");
   IElementType CONTENT = new LatexElementType("CONTENT");
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");
