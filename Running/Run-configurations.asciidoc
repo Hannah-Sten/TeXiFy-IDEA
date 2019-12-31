@@ -19,6 +19,8 @@ If the pdf file is not the last argument, you can use the `{pdf}` placeholder, s
 
 Then when you run the run configuration, when the compilation has finished the pdf will open in the viewer you specified.
 
+If you don't want to open any pdf viewer for some reason, select the checkbox but leave the field empty.
+
 === Choose LaTeX source file to compile
 === Option to disable use of out/ directory
 === Choose output format
