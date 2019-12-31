@@ -98,7 +98,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 
 * Syntax highlighting
 * Formatter
-* Autocomplete
+* link:BibTeX-autocomplete[Autocomplete]
 * Structure view with filters
 * link:String-variables[Support for @string variables]
 
