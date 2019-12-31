@@ -3,6 +3,7 @@
 
 ## Additions
 - Add support for the Grazie grammar and spellchecking plugin. (#1120)
+- BibTeX autocompletion now also gives suggestions when typing author or title. (#1152)
 - Add support for texdoc on TeX Live. (#1125)
 - Add support for automatic compilation. (#1140)
 - Add option to disable auto package insert. (#1131)
@@ -28,6 +29,6 @@
 - Register the analyze menu action group using a service instead of a deprecated application component. (#1144 )
 - Fixed crashes. (#1085)
 
-Thanks to [@TanVD](https://github.com/TanVD) for contributing to this release.
+Thanks to [@TanVD](https://github.com/TanVD) and [@fberlakovich](https://github.com/fberlakovich) for contributing to this release.
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/17?closed=1).
