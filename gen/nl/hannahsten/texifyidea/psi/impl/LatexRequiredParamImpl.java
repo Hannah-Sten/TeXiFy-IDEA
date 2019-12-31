@@ -29,7 +29,7 @@ public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements Late
   @Override
   @NotNull
   public LatexGroup getGroup() {
-    return findNotNullChildByClass(LatexGroup.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexGroup.class));
   }
 
 }

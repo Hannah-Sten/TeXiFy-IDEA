@@ -29,19 +29,19 @@ public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexE
   @Override
   @NotNull
   public LatexBeginCommand getBeginCommand() {
-    return findNotNullChildByClass(LatexBeginCommand.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexBeginCommand.class));
   }
 
   @Override
   @NotNull
   public LatexEndCommand getEndCommand() {
-    return findNotNullChildByClass(LatexEndCommand.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexEndCommand.class));
   }
 
   @Override
   @Nullable
   public LatexEnvironmentContent getEnvironmentContent() {
-    return findChildByClass(LatexEnvironmentContent.class);
+    return PsiTreeUtil.getChildOfType(this, LatexEnvironmentContent.class);
   }
 
 }

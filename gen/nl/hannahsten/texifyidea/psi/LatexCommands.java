@@ -5,9 +5,11 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.StubBasedPsiElement;
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import com.intellij.psi.PsiReference;
 
-public interface LatexCommands extends PsiNamedElement {
+public interface LatexCommands extends PsiNamedElement, StubBasedPsiElement<LatexCommandsStub> {
 
   @NotNull
   List<LatexParameter> getParameterList();

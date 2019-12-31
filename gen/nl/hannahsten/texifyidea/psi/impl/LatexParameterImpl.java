@@ -29,13 +29,13 @@ public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexPar
   @Override
   @Nullable
   public LatexOptionalParam getOptionalParam() {
-    return findChildByClass(LatexOptionalParam.class);
+    return PsiTreeUtil.getChildOfType(this, LatexOptionalParam.class);
   }
 
   @Override
   @Nullable
   public LatexRequiredParam getRequiredParam() {
-    return findChildByClass(LatexRequiredParam.class);
+    return PsiTreeUtil.getChildOfType(this, LatexRequiredParam.class);
   }
 
 }

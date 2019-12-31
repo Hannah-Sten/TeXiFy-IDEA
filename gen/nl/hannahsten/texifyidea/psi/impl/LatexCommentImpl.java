@@ -29,7 +29,7 @@ public class LatexCommentImpl extends ASTWrapperPsiElement implements LatexComme
   @Override
   @NotNull
   public PsiElement getCommentToken() {
-    return findNotNullChildByType(COMMENT_TOKEN);
+    return notNullChild(findChildByType(COMMENT_TOKEN));
   }
 
 }

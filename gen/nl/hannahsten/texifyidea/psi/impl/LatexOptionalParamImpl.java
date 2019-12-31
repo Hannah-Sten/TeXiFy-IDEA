@@ -29,7 +29,7 @@ public class LatexOptionalParamImpl extends ASTWrapperPsiElement implements Late
   @Override
   @NotNull
   public LatexOpenGroup getOpenGroup() {
-    return findNotNullChildByClass(LatexOpenGroup.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexOpenGroup.class));
   }
 
 }

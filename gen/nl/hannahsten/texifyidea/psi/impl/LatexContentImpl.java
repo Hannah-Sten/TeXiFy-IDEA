@@ -29,7 +29,7 @@ public class LatexContentImpl extends ASTWrapperPsiElement implements LatexConte
   @Override
   @NotNull
   public LatexNoMathContent getNoMathContent() {
-    return findNotNullChildByClass(LatexNoMathContent.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexNoMathContent.class));
   }
 
 }

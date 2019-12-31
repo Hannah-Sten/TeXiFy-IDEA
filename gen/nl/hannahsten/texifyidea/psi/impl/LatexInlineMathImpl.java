@@ -29,19 +29,19 @@ public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexIn
   @Override
   @Nullable
   public LatexMathContent getMathContent() {
-    return findChildByClass(LatexMathContent.class);
+    return PsiTreeUtil.getChildOfType(this, LatexMathContent.class);
   }
 
   @Override
   @NotNull
   public PsiElement getInlineMathEnd() {
-    return findNotNullChildByType(INLINE_MATH_END);
+    return notNullChild(findChildByType(INLINE_MATH_END));
   }
 
   @Override
   @NotNull
   public PsiElement getInlineMathStart() {
-    return findNotNullChildByType(INLINE_MATH_START);
+    return notNullChild(findChildByType(INLINE_MATH_START));
   }
 
 }

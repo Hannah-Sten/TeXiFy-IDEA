@@ -29,43 +29,43 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
   @Override
   @Nullable
   public LatexCommands getCommands() {
-    return findChildByClass(LatexCommands.class);
+    return PsiTreeUtil.getChildOfType(this, LatexCommands.class);
   }
 
   @Override
   @Nullable
   public LatexComment getComment() {
-    return findChildByClass(LatexComment.class);
+    return PsiTreeUtil.getChildOfType(this, LatexComment.class);
   }
 
   @Override
   @Nullable
   public LatexEnvironment getEnvironment() {
-    return findChildByClass(LatexEnvironment.class);
+    return PsiTreeUtil.getChildOfType(this, LatexEnvironment.class);
   }
 
   @Override
   @Nullable
   public LatexGroup getGroup() {
-    return findChildByClass(LatexGroup.class);
+    return PsiTreeUtil.getChildOfType(this, LatexGroup.class);
   }
 
   @Override
   @Nullable
   public LatexMathEnvironment getMathEnvironment() {
-    return findChildByClass(LatexMathEnvironment.class);
+    return PsiTreeUtil.getChildOfType(this, LatexMathEnvironment.class);
   }
 
   @Override
   @Nullable
   public LatexNormalText getNormalText() {
-    return findChildByClass(LatexNormalText.class);
+    return PsiTreeUtil.getChildOfType(this, LatexNormalText.class);
   }
 
   @Override
   @Nullable
   public LatexOpenGroup getOpenGroup() {
-    return findChildByClass(LatexOpenGroup.class);
+    return PsiTreeUtil.getChildOfType(this, LatexOpenGroup.class);
   }
 
 }

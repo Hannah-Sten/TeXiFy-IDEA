@@ -29,7 +29,7 @@ public class LatexDisplayMathImpl extends ASTWrapperPsiElement implements LatexD
   @Override
   @Nullable
   public LatexMathContent getMathContent() {
-    return findChildByClass(LatexMathContent.class);
+    return PsiTreeUtil.getChildOfType(this, LatexMathContent.class);
   }
 
 }

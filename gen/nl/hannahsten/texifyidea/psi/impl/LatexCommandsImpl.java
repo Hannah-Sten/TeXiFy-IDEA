@@ -47,7 +47,7 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   @Override
   @NotNull
   public PsiElement getCommandToken() {
-    return findNotNullChildByType(COMMAND_TOKEN);
+    return notNullChild(findChildByType(COMMAND_TOKEN));
   }
 
   @Override

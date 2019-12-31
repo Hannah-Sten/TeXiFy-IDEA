@@ -29,13 +29,13 @@ public class LatexMathEnvironmentImpl extends ASTWrapperPsiElement implements La
   @Override
   @Nullable
   public LatexDisplayMath getDisplayMath() {
-    return findChildByClass(LatexDisplayMath.class);
+    return PsiTreeUtil.getChildOfType(this, LatexDisplayMath.class);
   }
 
   @Override
   @Nullable
   public LatexInlineMath getInlineMath() {
-    return findChildByClass(LatexInlineMath.class);
+    return PsiTreeUtil.getChildOfType(this, LatexInlineMath.class);
   }
 
 }
