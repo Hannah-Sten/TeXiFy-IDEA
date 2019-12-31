@@ -54,7 +54,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
-            <li>SumatraPDF (Windows), Evince (Linux) and Okular (Linux) support with forward and backward search</li>
+            <li>SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search</li>
             <li>Smart quotes</li>
             <li>Unicode math preview</li>
             <li>Equation and TikZ picture preview</li>
@@ -306,6 +306,21 @@
             <action class="nl.hannahsten.texifyidea.action.okular.ConfigureInverseSearchAction" id="texify.okular.ConfigureInverseSearch"
                     text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
         </group>
+
+        <!-- Skim -->
+        <group id="texify.LatexMenu.Skim" class="nl.hannahsten.texifyidea.action.group.SkimActionGroup" text="Skim"
+               description="Interact with Skim." popup="true">
+            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
+
+            <action class="nl.hannahsten.texifyidea.action.skim.ForwardSearchAction" id="texify.skim.ForwardSearch"
+                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
+                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.skim.ConfigureInverseSearchAction" id="texify.skim.ConfigureInverseSearch"
+                    text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
+        </group>
+
     </actions>
 
     <!-- Hooks for plugin functionality -->

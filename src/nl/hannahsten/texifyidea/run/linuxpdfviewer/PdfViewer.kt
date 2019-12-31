@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.linuxpdfviewer
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.skim.SkimConversation
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 
 /**
@@ -16,6 +17,7 @@ enum class PdfViewer(private val viewerCommand: String,
                      val conversation: ViewerConversation?) {
     EVINCE("evince", "Evince", EvinceConversation),
     OKULAR("okular", "Okular", OkularConversation),
+    SKIM("skim", "Skim", SkimConversation),
     SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows and Mac.
     OTHER("other", "Custom PDF viewer", null);
 
@@ -35,6 +37,12 @@ enum class PdfViewer(private val viewerCommand: String,
             // Find out whether the pdf viewer is installed and in PATH, otherwise we can't use it.
             val output = "which ${this.viewerCommand}".runCommand()
             output?.contains("/${this.viewerCommand}") ?: false
+        }
+        else if (SystemInfo.isMac) {
+            // Check if Skim is installed in applications, otherwise we can't use it.
+            // Open -Ra returns an error message if application was not found, else empty string
+            val output = "open -Ra ${this.viewerCommand}".runCommand()
+            output?.isEmpty() ?: false
         }
         else {
             false
