@@ -1,29 +1,29 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType;
 import nl.hannahsten.texifyidea.psi.impl.*;
 
 public interface BibtexTypes {
 
-  IElementType BRACED_STRING = new BibtexEntryStubElementType("BRACED_STRING");
-  IElementType COMMENT = new BibtexEntryStubElementType("COMMENT");
-  IElementType CONTENT = new BibtexEntryStubElementType("CONTENT");
-  IElementType DEFINED_STRING = new BibtexEntryStubElementType("DEFINED_STRING");
-  IElementType ENDTRY = new BibtexEntryStubElementType("ENDTRY");
+  IElementType BRACED_STRING = new BibtexElementType("BRACED_STRING");
+  IElementType COMMENT = new BibtexElementType("COMMENT");
+  IElementType CONTENT = new BibtexElementType("CONTENT");
+  IElementType DEFINED_STRING = new BibtexElementType("DEFINED_STRING");
+  IElementType ENDTRY = new BibtexElementType("ENDTRY");
   IElementType ENTRY = new BibtexEntryStubElementType("ENTRY");
-  IElementType ENTRY_CONTENT = new BibtexEntryStubElementType("ENTRY_CONTENT");
-  IElementType ID = new BibtexEntryStubElementType("ID");
-  IElementType KEY = new BibtexEntryStubElementType("KEY");
-  IElementType NORMAL_TEXT = new BibtexEntryStubElementType("NORMAL_TEXT");
-  IElementType PREAMBLE = new BibtexEntryStubElementType("PREAMBLE");
-  IElementType QUOTED_STRING = new BibtexEntryStubElementType("QUOTED_STRING");
-  IElementType STRING = new BibtexEntryStubElementType("STRING");
-  IElementType TAG = new BibtexEntryStubElementType("TAG");
-  IElementType TYPE = new BibtexEntryStubElementType("TYPE");
+  IElementType ENTRY_CONTENT = new BibtexElementType("ENTRY_CONTENT");
+  IElementType ID = new BibtexElementType("ID");
+  IElementType KEY = new BibtexElementType("KEY");
+  IElementType NORMAL_TEXT = new BibtexElementType("NORMAL_TEXT");
+  IElementType PREAMBLE = new BibtexElementType("PREAMBLE");
+  IElementType QUOTED_STRING = new BibtexElementType("QUOTED_STRING");
+  IElementType STRING = new BibtexElementType("STRING");
+  IElementType TAG = new BibtexElementType("TAG");
+  IElementType TYPE = new BibtexElementType("TYPE");
 
   IElementType ASSIGNMENT = new BibtexTokenType("ASSIGNMENT");
   IElementType CLOSE_BRACE = new BibtexTokenType("CLOSE_BRACE");

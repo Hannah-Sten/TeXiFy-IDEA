@@ -10,7 +10,7 @@
     psiImplUtilClass="nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.BibtexTypes"
-    elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
+    elementTypeClass="nl.hannahsten.texifyidea.psi.BibtexElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.BibtexTokenType"
 
     extends("entry")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
@@ -20,6 +20,7 @@
 bibtexFile ::= (entry | comment)*
 
 entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR? {
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStub"
     methods=[getTitle getAuthors getYear getIdentifier getAbstract getTagContent getName setName]
 }
