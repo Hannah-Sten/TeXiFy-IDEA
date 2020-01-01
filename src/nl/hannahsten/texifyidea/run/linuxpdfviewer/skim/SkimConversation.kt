@@ -29,7 +29,7 @@ object SkimConversation : ViewerConversation() {
         }
 
         if (pdfFilePath != null) {
-            // This okular command opens the pdf file using the destination coming from the line in the tex file.
+            // This command opens the pdf file using the destination coming from the line in the tex file.
             val command = "/Applications/Skim.app/Contents/SharedSupport/displayline $backgroundParameter -r $line '$pdfFilePath' '$sourceFilePath'"
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
