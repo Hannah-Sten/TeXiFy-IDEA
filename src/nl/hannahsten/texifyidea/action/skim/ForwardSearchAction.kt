@@ -20,7 +20,7 @@ open class ForwardSearchAction : EditorAction(
         "_ForwardSearch",
         TexifyIcons.RIGHT
 ) {
-    val skim = PdfViewer.SKIM
+    private val skim = PdfViewer.SKIM
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!skim.isAvailable()) {
