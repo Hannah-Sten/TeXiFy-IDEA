@@ -18,7 +18,7 @@ enum class PdfViewer(private val viewerCommand: String,
     EVINCE("evince", "Evince", EvinceConversation),
     OKULAR("okular", "Okular", OkularConversation),
     SKIM("skim", "Skim", SkimConversation),
-    SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows and Mac.
+    SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
     OTHER("other", "Custom PDF viewer", null);
 
     /**
