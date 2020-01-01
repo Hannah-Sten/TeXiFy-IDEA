@@ -34,6 +34,9 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
         when (settingsType) {
             WRAPPING_AND_BRACES_SETTINGS -> customizeWrappingAndBracesSettings(consumer)
             BLANK_LINES_SETTINGS -> customizeBlankLinesSettings(consumer)
+            SettingsType.COMMENTER_SETTINGS -> {
+                consumer.showAllStandardOptions()
+            }
             else -> return
         }
     }

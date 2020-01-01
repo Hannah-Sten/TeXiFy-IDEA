@@ -34,6 +34,13 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                         addIndentOptionsTab(settings)
                         addWrappingAndBracesTab(settings)
                         addBlankLinesTab(settings)
+
+                        // Adds the Code Generation tab.
+                        for (provider in EXTENSION_POINT_NAME.extensions) {
+                            if (provider.language === LatexLanguage.INSTANCE && !provider.hasSettingsPage()) {
+                                createTab(provider)
+                            }
+                        }
                     }
 
                     override fun addWrappingAndBracesTab(settings: CodeStyleSettings?) {
