@@ -1,12 +1,14 @@
 package nl.hannahsten.texifyidea.settings.codestyle
 
+// import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.*
 import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
+import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_ADD_SPACE
+import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_AT_FIRST_COLUMN
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceOption.*
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.BLANK_LINES_SETTINGS
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS
+import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.*
 import com.intellij.psi.codeStyle.extractor.values.Value.VAR_KIND.RIGHT_MARGIN
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.util.Magic
@@ -33,11 +35,9 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {
             WRAPPING_AND_BRACES_SETTINGS -> customizeWrappingAndBracesSettings(consumer)
-            BLANK_LINES_SETTINGS -> customizeBlankLinesSettings(consumer)
-            SettingsType.COMMENTER_SETTINGS -> {
-                consumer.showAllStandardOptions()
-            }
-            else -> return
+            BLANK_LINES_SETTINGS         -> customizeBlankLinesSettings(consumer)
+            COMMENTER_SETTINGS           -> customizeCodeGenerationSettings(consumer)
+            else                         -> return
         }
     }
 
@@ -59,6 +59,13 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                     CodeStyleSettingsCustomizable.BLANK_LINES
             )
         }
+    }
+
+    private fun customizeCodeGenerationSettings(consumer: CodeStyleSettingsCustomizable) {
+        consumer.showStandardOptions(*arrayOf(
+                LINE_COMMENT_AT_FIRST_COLUMN,
+                LINE_COMMENT_ADD_SPACE
+        ).map { it.toString() }.toTypedArray())
     }
 
 }
