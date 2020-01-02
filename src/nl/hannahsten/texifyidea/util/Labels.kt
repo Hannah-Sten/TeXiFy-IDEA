@@ -3,9 +3,9 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.BibtexIdIndex
+import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -47,7 +47,7 @@ fun PsiFile.findAllLabelsInFileSet(): Sequence<String> {
 fun PsiFile.findBibtexLabelsInFileSet(): Sequence<String>  = findBibtexItems().asSequence()
             .mapNotNull {
                 when (it) {
-                    is BibtexId -> it.text.substringEnd(1)
+                    is BibtexEntry -> it.name
                     is LatexCommands -> it.requiredParameter(0)
                     else -> null
                 }
@@ -97,7 +97,7 @@ fun Project.findLabels(): Collection<PsiElement> {
 
     val commands = LatexCommandsIndex.getItems(this)
     val commandsFiltered = commands.filter { commandNames.containsKey(it.name) }
-    val bibtexIds = BibtexIdIndex.getIndexedIds(this)
+    val bibtexIds = BibtexEntryIndex.getIndexedEntries(this)
     val result = ArrayList<PsiElement>(commandsFiltered)
     result.addAll(bibtexIds)
     return result.findLabels()
@@ -107,7 +107,7 @@ fun Project.findLabels(): Collection<PsiElement> {
  * Finds all specified bibtex entries
  */
 fun PsiFile.findBibtexItems(): Collection<PsiElement> {
-    val bibtex = BibtexIdIndex.getIndexedIdsInFileSet(this)
+    val bibtex = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
     val bibitem = findBibitemCommands().toList()
     return (bibtex + bibitem)
 }
@@ -133,7 +133,7 @@ fun Project.findLabels(key: String?): Collection<PsiElement> = findLabels().filt
 fun PsiElement.extractLabelName(): String {
     val labelingCommands = TexifySettings.getInstance().labelCommands
     return when (this) {
-        is BibtexId -> idName()
+        is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
             val position = labelingCommands[this.name]?.position ?: return ""
             this.requiredParameter(position - 1) ?: ""

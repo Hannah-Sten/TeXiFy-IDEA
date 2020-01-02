@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.linuxpdfviewer.okular
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 
 /**
@@ -22,7 +21,13 @@ object OkularConversation : ViewerConversation() {
      * @param sourceFilePath Full path of the tex file.
      * @param line Line number in the source file to navigate to in the pdf.
      */
-    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project) {
+    override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+
+        // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Okular
+        if (!focusAllowed) {
+            return
+        }
+
         if (pdfPath != null) {
             pdfFilePath = pdfPath
         }

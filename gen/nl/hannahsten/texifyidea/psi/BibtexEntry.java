@@ -4,8 +4,11 @@ package nl.hannahsten.texifyidea.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.StubBasedPsiElement;
+import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 
-public interface BibtexEntry extends PsiElement {
+public interface BibtexEntry extends PsiNamedElement, StubBasedPsiElement<BibtexEntryStub> {
 
   @NotNull
   List<BibtexComment> getCommentList();
@@ -24,5 +27,21 @@ public interface BibtexEntry extends PsiElement {
 
   @NotNull
   BibtexType getType();
+
+  String getTitle();
+
+  List<String> getAuthors();
+
+  String getYear();
+
+  String getIdentifier();
+
+  String getAbstract();
+
+  String getTagContent(String tagName);
+
+  String getName();
+
+  PsiElement setName(@NotNull @NonNls String name);
 
 }

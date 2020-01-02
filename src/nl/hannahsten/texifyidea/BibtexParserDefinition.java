@@ -28,7 +28,12 @@ public class BibtexParserDefinition implements ParserDefinition {
 
     public static final IStubFileElementType FILE = new IStubFileElementType(
             Language.findInstance(BibtexLanguage.class)
-    );
+    ) {
+        @Override
+        public int getStubVersion() {
+            return 5;
+        }
+    };
 
     @NotNull
     @Override

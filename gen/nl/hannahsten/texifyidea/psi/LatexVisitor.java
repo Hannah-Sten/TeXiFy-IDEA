@@ -4,6 +4,7 @@ package nl.hannahsten.texifyidea.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 
 public class LatexVisitor extends PsiElementVisitor {
 
@@ -12,7 +13,7 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitCommands(@NotNull LatexCommands o) {
-    visitPsiElement(o);
+    visitPsiNamedElement(o);
   }
 
   public void visitComment(@NotNull LatexComment o) {
@@ -77,6 +78,10 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitRequiredParam(@NotNull LatexRequiredParam o) {
     visitPsiElement(o);
+  }
+
+  public void visitPsiNamedElement(@NotNull PsiNamedElement o) {
+    visitElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {

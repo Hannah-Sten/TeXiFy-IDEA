@@ -1,15 +1,19 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexParameter {
 
-  public LatexParameterImpl(ASTNode node) {
+  public LatexParameterImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -25,13 +29,13 @@ public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexPar
   @Override
   @Nullable
   public LatexOptionalParam getOptionalParam() {
-    return findChildByClass(LatexOptionalParam.class);
+    return PsiTreeUtil.getChildOfType(this, LatexOptionalParam.class);
   }
 
   @Override
   @Nullable
   public LatexRequiredParam getRequiredParam() {
-    return findChildByClass(LatexRequiredParam.class);
+    return PsiTreeUtil.getChildOfType(this, LatexRequiredParam.class);
   }
 
 }
