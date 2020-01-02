@@ -39,7 +39,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         val fullCommand = element.commandToken.text ?: return
 
-        // True when it doesnt have a required _file_ argument, but must be handled.
+        // True when it doesn't have a required _file_ argument, but must be handled.
         val ignoreFileArgument = IGNORE_FILE_ARGUMENTS.contains(fullCommand)
 
         // Fetch the corresponding LatexRegularCommand object.
@@ -54,14 +54,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             return
         }
 
-        // Get the required file arguments.
-        val argument = if (ignoreFileArgument) {
-            RequiredFileArgument("", "sty", "cls")
-        }
-        else {
-            arguments[0]
-        }
-
         val requiredParams = element.requiredParameters()
         if (requiredParams.isEmpty()) {
             return
@@ -69,6 +61,20 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         // Find filenames.
         val fileNames = splitContent(requiredParams[0], ",")
+
+        // Get the required file arguments.
+        val argument = if (ignoreFileArgument) {
+            if (commandName == LatexRegularCommand.DOCUMENTCLASS.command) {
+                RequiredFileArgument("", "cls")
+            }
+            else {
+                RequiredFileArgument("", "sty")
+            }
+        }
+        else {
+            arguments[0]
+        }
+
 
         // Look up target file.
         val containingFile = element.getContainingFile() ?: return
@@ -98,10 +104,22 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .toList()
 
         // Build gutter icon.
-        val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width ?: return
+        val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width
+                ?: return
+
+        // Get the icon from the file extension when applicable and there exists an icon for this extension,
+        // otherwise get the default icon for this argument.
+        val extension = fileNames.firstOrNull()?.split(".")?.last()
+        val defaultIcon = TexifyIcons.getIconFromExtension(argument.defaultExtension)
+        val icon = if (ignoreFileArgument || TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE) {
+            defaultIcon
+        }
+        else {
+            TexifyIcons.getIconFromExtension(extension)
+        }
 
         val builder = NavigationGutterIconBuilder
-                .create(TexifyIcons.getIconFromExtension(argument.defaultExtension))
+                .create(icon)
                 .setTargets(files)
                 .setPopupTitle("Navigate to Referenced File")
                 .setTooltipText("Go to referenced file")

@@ -4,12 +4,12 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.psi.PsiElement
 import com.intellij.util.xml.model.gotosymbol.GoToSymbolProvider
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.extractLabelName
+import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
@@ -34,7 +34,7 @@ object NavigationItemUtil {
                         else TexifyIcons.DOT_BIB
                 )
             }
-            is BibtexId -> GoToSymbolProvider.BaseNavigationItem(psiElement,
+            is BibtexEntry -> GoToSymbolProvider.BaseNavigationItem(psiElement,
                     psiElement.name ?: return null,
                     TexifyIcons.DOT_BIB
             )

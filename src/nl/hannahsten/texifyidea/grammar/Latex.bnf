@@ -7,10 +7,14 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
+    psiImplUtilClass="nl.hannahsten.texifyidea.psi.LatexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.LatexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.LatexElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
+
+    extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
+    implements("commands")="com.intellij.psi.PsiNamedElement"
 
     tokens=[
         WHITE_SPACE='regexp:\s+'
@@ -41,7 +45,12 @@ environment ::= begin_command environment_content? end_command
 
 environment_content ::= content+
 
-commands ::= COMMAND_TOKEN STAR? parameter*
+commands ::= COMMAND_TOKEN STAR? parameter* {
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
+    stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
+    mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
+    methods=[getReferences getOptionalParameters getRequiredParameters hasLabel]
+}
 
 begin_command ::= BEGIN_TOKEN STAR? parameter*
 

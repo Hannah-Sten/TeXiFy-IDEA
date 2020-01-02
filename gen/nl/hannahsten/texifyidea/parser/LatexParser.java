@@ -7,6 +7,7 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
@@ -22,67 +23,15 @@ public class LatexParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == BEGIN_COMMAND) {
-      r = begin_command(b, 0);
-    }
-    else if (t == COMMANDS) {
-      r = commands(b, 0);
-    }
-    else if (t == COMMENT) {
-      r = comment(b, 0);
-    }
-    else if (t == CONTENT) {
-      r = content(b, 0);
-    }
-    else if (t == DISPLAY_MATH) {
-      r = display_math(b, 0);
-    }
-    else if (t == END_COMMAND) {
-      r = end_command(b, 0);
-    }
-    else if (t == ENVIRONMENT) {
-      r = environment(b, 0);
-    }
-    else if (t == ENVIRONMENT_CONTENT) {
-      r = environment_content(b, 0);
-    }
-    else if (t == GROUP) {
-      r = group(b, 0);
-    }
-    else if (t == INLINE_MATH) {
-      r = inline_math(b, 0);
-    }
-    else if (t == MATH_CONTENT) {
-      r = math_content(b, 0);
-    }
-    else if (t == MATH_ENVIRONMENT) {
-      r = math_environment(b, 0);
-    }
-    else if (t == NO_MATH_CONTENT) {
-      r = no_math_content(b, 0);
-    }
-    else if (t == NORMAL_TEXT) {
-      r = normal_text(b, 0);
-    }
-    else if (t == OPEN_GROUP) {
-      r = open_group(b, 0);
-    }
-    else if (t == OPTIONAL_PARAM) {
-      r = optional_param(b, 0);
-    }
-    else if (t == PARAMETER) {
-      r = parameter(b, 0);
-    }
-    else if (t == REQUIRED_PARAM) {
-      r = required_param(b, 0);
-    }
-    else {
-      r = parse_root_(t, b, 0);
-    }
+    r = parse_root_(t, b);
     exit_section_(b, 0, m, t, r, true, TRUE_CONDITION);
   }
 
-  protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
+  protected boolean parse_root_(IElementType t, PsiBuilder b) {
+    return parse_root_(t, b, 0);
+  }
+
+  static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return latexFile(b, l + 1);
   }
 
@@ -110,11 +59,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // parameter*
   private static boolean begin_command_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "begin_command_2")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!parameter(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "begin_command_2", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -143,11 +91,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // parameter*
   private static boolean commands_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "commands_2")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!parameter(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "commands_2", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -220,11 +167,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // parameter*
   private static boolean end_command_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "end_command_2")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!parameter(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "end_command_2", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -257,11 +203,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENVIRONMENT_CONTENT, "<environment content>");
     r = content(b, l + 1);
-    int c = current_position_(b);
     while (r) {
+      int c = current_position_(b);
       if (!content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "environment_content", c)) break;
-      c = current_position_(b);
     }
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -284,11 +229,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // content*
   private static boolean group_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group_1")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "group_1", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -318,11 +262,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // content*
   static boolean latexFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "latexFile")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "latexFile", c)) break;
-      c = current_position_(b);
     }
     return true;
   }
@@ -334,11 +277,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MATH_CONTENT, "<math content>");
     r = no_math_content(b, l + 1);
-    int c = current_position_(b);
     while (r) {
+      int c = current_position_(b);
       if (!no_math_content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "math_content", c)) break;
-      c = current_position_(b);
     }
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -386,11 +328,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NORMAL_TEXT, "<normal text>");
     r = normal_text_0(b, l + 1);
-    int c = current_position_(b);
     while (r) {
+      int c = current_position_(b);
       if (!normal_text_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "normal_text", c)) break;
-      c = current_position_(b);
     }
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -400,10 +341,8 @@ public class LatexParser implements PsiParser, LightPsiParser {
   private static boolean normal_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -424,11 +363,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
   // content*
   private static boolean open_group_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "open_group_1")) return false;
-    int c = current_position_(b);
     while (true) {
+      int c = current_position_(b);
       if (!content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "open_group_1", c)) break;
-      c = current_position_(b);
     }
     return true;
   }

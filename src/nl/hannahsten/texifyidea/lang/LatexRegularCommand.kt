@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang
 import nl.hannahsten.texifyidea.lang.Argument.Type
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.Package.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
@@ -51,6 +52,8 @@ enum class LatexRegularCommand(
     COLUMNWIDTH("columnwidth"),
     CONTENTSLINE("contentsline", "type".asRequired(), "text".asRequired(Type.TEXT), "page".asRequired()),
     CONTENTSNAME("contentsname", "name".asRequired()),
+    CREF("cref", "label".asRequired(), dependency = CLEVEREF),
+    CREF_CAPITAL("Cref", "label".asRequired(), dependency = CLEVEREF),
     DATE("date", "text".asRequired(Type.TEXT)),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT)),
     DEF("def"),
@@ -108,7 +111,7 @@ enum class LatexRegularCommand(
     I("i", display = "i (dotless)"),
     INCLUDE("include", RequiredFileArgument("sourcefile", "tex")),
     INPUT("input", RequiredFileArgument("sourcefile", "tex")),
-    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredFileArgument("imagefile", "pdf", "png", "jpg", "eps"), dependency = GRAPHICX),
+    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredFileArgument("imagefile", "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", "tex")),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),

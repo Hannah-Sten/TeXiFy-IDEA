@@ -16,7 +16,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.47'
+version '0.7-alpha.49'
 
 repositories {
     mavenCentral()
@@ -143,7 +143,7 @@ intellij {
         alternativeIdePath ".gradle/ide/pycharm-${pycharmVersion}"
     }
 
-    plugins = ['tanvd.grazi:2019.3-6.2.stable']
+    plugins = ['tanvd.grazi:2019.3-6.2.stable', 'java']
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false

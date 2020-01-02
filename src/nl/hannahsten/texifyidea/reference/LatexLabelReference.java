@@ -7,20 +7,16 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import nl.hannahsten.texifyidea.TexifyIcons;
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
-import nl.hannahsten.texifyidea.psi.BibtexId;
+import nl.hannahsten.texifyidea.psi.BibtexEntry;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.LabelsKt;
 import nl.hannahsten.texifyidea.util.Magic;
-import nl.hannahsten.texifyidea.util.StringsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -62,29 +58,39 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         // add bibreferences to autocompletion for \cite-style commands
         if (Magic.Command.bibliographyReference.contains(command)) {
             return LabelsKt.findBibtexItems(file).stream()
-                    .map(bibtexId -> {
-                        if (bibtexId != null) {
-                            PsiFile containing = bibtexId.getContainingFile();
-                            String label;
+                    .map(bibtexEntry -> {
+                        if (bibtexEntry != null) {
+                            PsiFile containing = bibtexEntry.getContainingFile();
 
-                            if (bibtexId instanceof BibtexId) {
-                                label = StringsKt.substringEnd(bibtexId.getText(), 1);
+                            if (bibtexEntry instanceof BibtexEntry) {
+                                BibtexEntry entry = (BibtexEntry)bibtexEntry;
+                                LinkedList<String> lookupStrings = new LinkedList<>(entry.getAuthors());
+                                lookupStrings.add(entry.getTitle());
+                                return LookupElementBuilder.create(entry.getIdentifier())
+                                        .withPsiElement(bibtexEntry)
+                                        .withPresentableText(entry.getTitle())
+                                        .bold()
+                                        .withInsertHandler(new LatexReferenceInsertHandler())
+                                        .withLookupStrings(lookupStrings)
+                                        .withCaseSensitivity(false)
+                                        .withTypeText(entry.getIdentifier(),
+                                                true)
+                                        .withIcon(TexifyIcons.DOT_BIB);
                             }
-                            else if (bibtexId instanceof LatexCommands) {
-                                LatexCommands actualCommand = (LatexCommands) bibtexId;
+                            else if (bibtexEntry instanceof LatexCommands) {
+                                LatexCommands actualCommand = (LatexCommands) bibtexEntry;
                                 List<String> parameters = actualCommand.getRequiredParameters();
-                                label = parameters.get(0);
+                                return LookupElementBuilder.create(parameters.get(0))
+                                        .bold()
+                                        .withInsertHandler(new LatexReferenceInsertHandler())
+                                        .withTypeText(containing.getName() + ": " +
+                                                        (1 + StringUtil.offsetToLineNumber(containing.getText(), bibtexEntry.getTextOffset())),
+                                                true)
+                                        .withIcon(TexifyIcons.DOT_BIB);
                             }
                             else {
                                 return null;
                             }
-                            return LookupElementBuilder.create(label)
-                                    .bold()
-                                    .withInsertHandler(new LatexReferenceInsertHandler())
-                                    .withTypeText(containing.getName() + ": " +
-                                                    (1 + StringUtil.offsetToLineNumber(containing.getText(), bibtexId.getTextOffset())),
-                                            true)
-                                    .withIcon(TexifyIcons.DOT_BIB);
                         }
                         return null;
                     }).filter(Objects::nonNull).toArray();

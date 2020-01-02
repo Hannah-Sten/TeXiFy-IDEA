@@ -232,7 +232,7 @@ object Magic {
         @JvmField
         val labelReference = hashSetOf(
                 "\\ref", "\\eqref", "\\nameref", "\\autoref",
-                "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref",
+                "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
                 "\\labelcref", "\\cpageref"
         )
 

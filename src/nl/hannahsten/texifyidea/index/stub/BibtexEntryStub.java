@@ -2,13 +2,17 @@ package nl.hannahsten.texifyidea.index.stub;
 
 import com.intellij.psi.stubs.NamedStub;
 import com.intellij.psi.stubs.StubElement;
-import nl.hannahsten.texifyidea.psi.BibtexId;
+import nl.hannahsten.texifyidea.psi.BibtexEntry;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author Hannah Schellekens
- */
-public interface BibtexIdStub extends StubElement<BibtexId>, NamedStub<BibtexId> {
+import java.util.List;
+
+public interface BibtexEntryStub extends StubElement<BibtexEntry>, NamedStub<BibtexEntry> {
+    String getTitle();
+
+    List<String> getAuthors();
+
+    String getYear();
 
     String getIdentifier();
 

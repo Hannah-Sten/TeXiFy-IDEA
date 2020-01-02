@@ -7,6 +7,7 @@ data class TexifySettingsState (
         var automaticUpDownBracket : Boolean = true,
         var automaticItemInItemize: Boolean = true,
         var automaticDependencyCheck: Boolean = true,
+        var autoCompile: Boolean = false,
         var continuousPreview: Boolean = false,
         var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
         var pdfViewer: PdfViewer = PdfViewer.firstAvailable(),

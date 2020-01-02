@@ -7,27 +7,35 @@
     psiImplClassSuffix="Impl"
     psiPackage="nl.hannahsten.texifyidea.psi"
     psiImplPackage="nl.hannahsten.texifyidea.psi.impl"
+    psiImplUtilClass="nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil"
 
     elementTypeHolderClass="nl.hannahsten.texifyidea.psi.BibtexTypes"
     elementTypeClass="nl.hannahsten.texifyidea.psi.BibtexElementType"
     tokenTypeClass="nl.hannahsten.texifyidea.psi.BibtexTokenType"
+
+    extends("entry")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
+    implements("entry")="com.intellij.psi.PsiNamedElement"
 }
 
 bibtexFile ::= (entry | comment)*
 
-entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR?
+entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR? {
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
+    stubClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStub"
+    methods=[getTitle getAuthors getYear getIdentifier getAbstract getTagContent getName setName]
+}
 
-entry_content ::= tag (SEPARATOR tag)* SEPARATOR?
+entry_content ::= tag (SEPARATOR tag)* SEPARATOR? { pin=1 }
 
 endtry ::= SEPARATOR? comment* (CLOSE_BRACE | CLOSE_PARENTHESIS)
 
 type ::= TYPE_TOKEN
 
-preamble ::= (quoted_string (CONCATENATE quoted_string)+) | quoted_string | NUMBER | IDENTIFIER
+preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
 
 id ::= comment* IDENTIFIER comment* SEPARATOR
 
-tag ::= comment* key comment* ASSIGNMENT comment* content comment*
+tag ::= comment* key comment* ASSIGNMENT comment* content comment* { pin=2 }
 
 key ::= IDENTIFIER
 
@@ -35,11 +43,13 @@ content ::= (string (CONCATENATE string)+) | string | NUMBER | IDENTIFIER
 
 string ::= defined_string | quoted_string | braced_string
 
-defined_string ::= IDENTIFIER
+defined_string ::= IDENTIFIER {
+    methods=[getReference]
+}
 
-quoted_string ::= QUOTES normal_text? END_QUOTES
+quoted_string ::= QUOTES normal_text? END_QUOTES { pin=1 }
 
-braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE
+braced_string ::= OPEN_BRACE normal_text+ CLOSE_BRACE { pin=1 }
 
 comment ::= COMMENT_TOKEN
 

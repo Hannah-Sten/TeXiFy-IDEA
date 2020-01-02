@@ -1,23 +1,21 @@
-package nl.hannahsten.texifyidea.action
+package nl.hannahsten.texifyidea.startup
 
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.ApplicationNamesInfo
-import com.intellij.openapi.components.BaseComponent
+import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.startup.StartupActivity
 
 /**
  * Register a menu item programmatically instead of in plugin.xml, so we can customize when it is shown or not (xml is preferred, but we cannot switch on application name in xml).
  *
  * @author Thomas Schouten
  */
-class AnalyzeMenuRegistration : BaseComponent {
+class AnalyzeMenuRegistration : StartupActivity, DumbAware {
 
-    override fun initComponent() {
-        super.initComponent()
-
-        // Documentation for registering an action: http://www.jetbrains.org/intellij/sdk/docs/basics/action_system.html?search=action#registering-actions-from-code
-
+    override fun runActivity(project: Project) {
         // Get the group which should be added to either the Analyze menu or something else
         val latexAnalyzeMenuGroup = ActionManager.getInstance().getAction("texify.LatexMenuAnalyze") as DefaultActionGroup
 
@@ -34,7 +32,7 @@ class AnalyzeMenuRegistration : BaseComponent {
         }
         else {
             // Get an instance of the Code action group by ID
-            val analyzeGroup: DefaultActionGroup = com.intellij.openapi.actionSystem.ActionManager.getInstance().getAction("CodeMenu") as DefaultActionGroup
+            val analyzeGroup: DefaultActionGroup = ActionManager.getInstance().getAction("CodeMenu") as DefaultActionGroup
 
             analyzeGroup.add(latexAnalyzeMenuGroup)
         }

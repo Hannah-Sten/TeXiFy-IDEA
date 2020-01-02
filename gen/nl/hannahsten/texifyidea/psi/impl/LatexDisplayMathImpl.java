@@ -1,15 +1,19 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexDisplayMathImpl extends ASTWrapperPsiElement implements LatexDisplayMath {
 
-  public LatexDisplayMathImpl(ASTNode node) {
+  public LatexDisplayMathImpl(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -25,7 +29,7 @@ public class LatexDisplayMathImpl extends ASTWrapperPsiElement implements LatexD
   @Override
   @Nullable
   public LatexMathContent getMathContent() {
-    return findChildByClass(LatexMathContent.class);
+    return PsiTreeUtil.getChildOfType(this, LatexMathContent.class);
   }
 
 }

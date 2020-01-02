@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
-import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
@@ -31,7 +31,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
     override fun getQuickNavigateInfo(psiElement: PsiElement, originalElement: PsiElement) = when (psiElement) {
         is LatexCommands -> LabelDeclarationLabel(psiElement).makeLabel()
-        is BibtexId -> IdDeclarationLabel(psiElement).makeLabel()
+        is BibtexEntry -> IdDeclarationLabel(psiElement).makeLabel()
         else -> null
     }
 
@@ -52,6 +52,22 @@ class LatexDocumentationProvider : DocumentationProvider {
     }
 
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
+        if (element is BibtexEntry) {
+            fun formatAuthor(author: String): String {
+                val parts = author.split(",")
+                if (parts.size < 2) return author
+                val last = parts[1].trim()
+                val first = parts[0].trim()
+                return "$first $last"
+            }
+
+            val stringBuilder = StringBuilder("<h3>${element.title} (${element.year})</h3>")
+            stringBuilder.append(element.authors.joinToString(", ") { a -> formatAuthor(a) })
+            stringBuilder.append("<br/><br/>")
+            stringBuilder.append(element.abstract)
+            return stringBuilder.toString()
+        }
+
         if (element.previousSiblingIgnoreWhitespace() != null) {
             return lookup?.description
         }

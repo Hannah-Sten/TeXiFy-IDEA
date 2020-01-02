@@ -33,7 +33,7 @@
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="192"/>
+    <idea-version since-build="193.4099.13"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
@@ -54,7 +54,7 @@
             <li>Formatter for LaTeX and BibTeX</li>
             <li>Structure view for LaTeX and BibTeX with filters</li>
             <li>Code folding for imports, sections, and environments</li>
-            <li>SumatraPDF (Windows), Evince (Linux) and Okular (Linux) support with forward and backward search</li>
+            <li>SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search</li>
             <li>Smart quotes</li>
             <li>Unicode math preview</li>
             <li>Equation and TikZ picture preview</li>
@@ -140,16 +140,6 @@
             The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>
     ]]></change-notes>
-
-    <module-components>
-    </module-components>
-
-    <!-- Register Analyze menu items programmatically. -->
-    <application-components>
-        <component>
-            <implementation-class>nl.hannahsten.texifyidea.action.AnalyzeMenuRegistration</implementation-class>
-        </component>
-    </application-components>
 
     <!-- Custom actions -->
     <actions>
@@ -316,12 +306,28 @@
             <action class="nl.hannahsten.texifyidea.action.okular.ConfigureInverseSearchAction" id="texify.okular.ConfigureInverseSearch"
                     text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
         </group>
+
+        <!-- Skim -->
+        <group id="texify.LatexMenu.Skim" class="nl.hannahsten.texifyidea.action.group.SkimActionGroup" text="Skim"
+               description="Interact with Skim." popup="true">
+            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
+
+            <action class="nl.hannahsten.texifyidea.action.skim.ForwardSearchAction" id="texify.skim.ForwardSearch"
+                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
+                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
+            </action>
+
+            <action class="nl.hannahsten.texifyidea.action.skim.ConfigureInverseSearchAction" id="texify.skim.ConfigureInverseSearch"
+                    text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
+        </group>
+
     </actions>
 
     <!-- Hooks for plugin functionality -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- Startup -->
-        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.TexifyStartupActivity"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.StartEvinceInverseSearchListener"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.AnalyzeMenuRegistration" />
 
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
@@ -346,7 +352,7 @@
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 
         <!-- Application settings -->
-        <applicationService serviceInterface="nl.hannahsten.texifyidea.settings.TexifySettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
+        <applicationService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
@@ -359,7 +365,7 @@
         <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexLanguageCodeStyleSettingsProvider"/>
 
         <!-- Project settings -->
-        <projectService serviceInterface="nl.hannahsten.texifyidea.settings.TexifyProjectSettings" serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
+        <projectService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
         <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
 
         <!-- Languages -->
@@ -402,8 +408,10 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.UpDownAutoBracket"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.LatexQuoteInsertHandler"/>
-        <typedHandler implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewHandler"/>
-        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.ContinuousPreviewBackspacehandler" />
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler" />
+        <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler" />
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
@@ -434,7 +442,7 @@
         <stubElementTypeHolder class="nl.hannahsten.texifyidea.psi.BibtexTypes"/>
 
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexIdIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
 
