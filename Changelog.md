@@ -17,7 +17,7 @@
 - Improve exception handling for forward search on Linux. (#1087)
 - Disable unicode quickfixes for TeX Live versions 2018 or later as these are included by default. (#1088)
 - First stop Sumatra before starting it with new inverse search settings. (#1128)
-- Internal parser code improvements. (#1156, #1162, #1157)
+- Internal parser improvements. (#1156, #1162, #1157)
 
 ## Bug fixes
 - Include commands like \bibliography and \input can now recognize multiple files as argument. (#782)
