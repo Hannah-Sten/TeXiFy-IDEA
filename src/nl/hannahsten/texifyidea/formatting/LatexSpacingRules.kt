@@ -50,7 +50,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): LatexSpacingBuilder {
                                 keepBlankLines = 0)
                     }
                 }
-                return@customRule Spacing.getReadOnlySpacing()
+                return@customRule null
             }
         }
     }
