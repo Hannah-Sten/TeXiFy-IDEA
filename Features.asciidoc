@@ -103,6 +103,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * Structure view with filters
 * kbd:[Ctrl + Q] on a bibtex reference will show a popup with title and authors from the bibtex entry
 * link:String-variables[Support for @string variables]
+* link:Bibtex-folding[Folding]
 
 == Managing LaTeX
 * Never press kbd:[Ctrl + S] again: saves while you type
