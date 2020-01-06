@@ -32,7 +32,7 @@ class LatexEnvironmentFoldingBuilder : FoldingBuilderEx() {
             // Get content offsets.
             // Uses the commands instead of the actual contents as they may be empty.
             val start = environment.beginCommand.endOffset()
-            val end = environment.endCommand?.textOffset ?: environment.endOffset()
+            val end = environment.endCommand.textOffset
 
             if (end <= start) {
                 continue
