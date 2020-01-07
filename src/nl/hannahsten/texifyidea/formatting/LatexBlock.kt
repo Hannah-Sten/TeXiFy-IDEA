@@ -17,7 +17,7 @@ class LatexBlock(
         node: ASTNode,
         wrap: Wrap?,
         alignment: Alignment?,
-        private val spacingBuilder: LatexSpacingBuilder,
+        private val spacingBuilder: TexSpacingBuilder,
         private val wrappingStrategy: LatexWrappingStrategy
 ) : AbstractBlock(node, wrap, alignment) {
 
