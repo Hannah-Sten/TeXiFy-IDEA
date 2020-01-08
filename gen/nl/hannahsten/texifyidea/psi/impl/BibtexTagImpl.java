@@ -33,9 +33,9 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public BibtexContent getContent() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexContent.class));
+    return PsiTreeUtil.getChildOfType(this, BibtexContent.class);
   }
 
   @Override

@@ -17,7 +17,7 @@ open class BibtexStructureViewTagElement(val tag: BibtexTag) : StructureViewTree
 
     val tagPresentation: ItemPresentation = object : ItemPresentation {
 
-        override fun getLocationString() = tag.content.evaluate()
+        override fun getLocationString() = tag.content?.evaluate().orEmpty()
 
         override fun getPresentableText() = tag.keyName()
 
