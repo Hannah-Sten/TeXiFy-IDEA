@@ -5,6 +5,7 @@
 - Add support for the Grazie grammar and spellchecking plugin. (#1120)
 - BibTeX autocompletion now also gives suggestions when typing author or title. (#1152)
 - Add support for Skim on MacOS including forward and backward search. (#1163)
+- Add folding for bibtex entries. (#1167)
 - Add support for texdoc on TeX Live. (#1125)
 - Add support for automatic compilation. (#1140)
 - Add option to disable auto package insert. (#1131)
