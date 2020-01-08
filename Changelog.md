@@ -11,6 +11,9 @@
 - Add support for compression prevention from the cleveref package. (#1134) 
 - Add subfiles support. (#1131)
 
+### Code style and formatting
+- 
+
 ## Changes
 - Improve the math environment switcher. (#1080)
 - Remove obsolete soft wraps setting which is built-in in IDEA now. (#1084)
