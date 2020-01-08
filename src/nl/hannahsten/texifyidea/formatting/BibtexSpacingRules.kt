@@ -4,13 +4,9 @@ import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.BibtexLanguage
 import nl.hannahsten.texifyidea.psi.BibtexTypes.*
-import nl.hannahsten.texifyidea.settings.codestyle.BibtexCodeStyleSettings
 
 fun createBibtexSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
-    fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
-            Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
 
-    val bibtexSettings = settings.getCustomSettings(BibtexCodeStyleSettings::class.java)
     val bibtexCommonSettings = settings.getCommonSettings(BibtexLanguage)
 
     return rules(bibtexCommonSettings) {
