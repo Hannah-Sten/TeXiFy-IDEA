@@ -31,7 +31,7 @@ toc::[]
 
 * link:Unicode[Unicode support]
 * Autocomplete of labels, many common commands, custom defined commands and (custom) environments
-* Formatter
+* link:Code-formatting[Formatter]
 * link:Smart-quotes[Smart quotes]
 * link:Automatic-package-importing[Automagically import packages of common commands]
 * Shortcuts for styling text
@@ -164,6 +164,20 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * Choose output format
 * Choose BibTeX run configuration
 * Other tasks to run before the run configuration, including other run configurations or external tools
+
+=== Code style settings
+
+These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX (or BibTeX)].
+
+==== Common code style settings for LaTeX and BibTex
+
+* link:Code-style-settings#indent-size[Specify the number of spaces to use for indentation]
+* link:Code-style-settings#hard-wrap[Option to hard wrap LaTeX and BibTeX files]
+
+==== LaTeX specific code style settings
+
+* link:Code-style-settings#indent-comment[Option to start a comment at the same indentation as normal text]
+* link:Code-style-settings#section-newlines[Specify the number of blank lines before a sectioning command]
 
 == Inspections
 

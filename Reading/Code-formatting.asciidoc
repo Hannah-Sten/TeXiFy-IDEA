@@ -1,9 +1,7 @@
 :experimental:
 
-_General_
-
-- Press kbd:[Ctrl+Alt+L] to reformat.
-- To disable formatting on a portion of your tex file, wrap the code with
+Press kbd:[Ctrl+Alt+L] to reformat.
+To disable formatting on a portion of your `tex` file, wrap the code with
 
 [latex]
 ----
@@ -12,10 +10,31 @@ _General_
 % @formatter:on
 ----
 
-and enable these commens in the settings by going to menu:Settings[Editor > Code Style > Formatter Control] and checking `Enable formatter markers in comments`.
+and enable these comments in the settings by going to menu:Settings[Editor > Code Style > Formatter Control] and checking *Enable formatter markers in comments*.
+This can be particularly useful for `listings` environments.
+
+== Indents in (math) environments
+
+
+
+== Indents in groups
 
 _Since b0.6.8_
 
-Indents in groups.
-
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/reformat.gif[reformat]
+
+== Blank lines before sectioning commands
+
+_Since b0.6.8_
+
+Edit this behaviour in the link:Code-style-settings#section-newlines[code style settings].
+
+
+
+== Hard wrap
+
+_Since b0.6.8_
+
+Enable or disable this setting in the link:Code-style-settings#hard-wrap[code style settings].
+
+
