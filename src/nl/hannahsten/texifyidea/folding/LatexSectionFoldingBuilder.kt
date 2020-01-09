@@ -39,7 +39,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
             return descriptors.toTypedArray()
         }
 
-        for (currentFoldingCommandIndex in 0 until commands.size) {
+        for (currentFoldingCommandIndex in commands.indices) {
             var foundHigherCommand = false
             val currentFoldingCommand = commands[currentFoldingCommandIndex]
             val currentCommandRank = sectionCommands.indexOf(currentFoldingCommand.name)
