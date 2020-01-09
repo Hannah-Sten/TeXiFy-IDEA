@@ -3,10 +3,17 @@
 
 ## Additions
 - Add support for the Grazie grammar and spellchecking plugin. (#1120)
+- BibTeX autocompletion now also gives suggestions when typing author or title. (#1152)
+- Add support for Skim on MacOS including forward and backward search. (#1163)
+- Add folding for bibtex entries. (#1167)
 - Add support for texdoc on TeX Live. (#1125)
+- Add support for automatic compilation. (#1140)
 - Add option to disable auto package insert. (#1131)
 - Add support for compression prevention from the cleveref package. (#1134) 
 - Add subfiles support. (#1131)
+
+### Code style and formatting
+- 
 
 ## Changes
 - Improve the math environment switcher. (#1080)
@@ -14,6 +21,7 @@
 - Improve exception handling for forward search on Linux. (#1087)
 - Disable unicode quickfixes for TeX Live versions 2018 or later as these are included by default. (#1088)
 - First stop Sumatra before starting it with new inverse search settings. (#1128)
+- Internal parser improvements. (#1156, #1162, #1157, #1165)
 
 ## Bug fixes
 - Include commands like \bibliography and \input can now recognize multiple files as argument. (#782)
@@ -26,6 +34,6 @@
 - Register the analyze menu action group using a service instead of a deprecated application component. (#1144 )
 - Fixed crashes. (#1085)
 
-Thanks to [@TanVD](https://github.com/TanVD) for contributing to this release.
+Thanks to [@TanVD](https://github.com/TanVD), [@fberlakovich](https://github.com/fberlakovich) and [@stsundermann](https://github.com/stsundermann) for contributing to this release.
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/17?closed=1).
