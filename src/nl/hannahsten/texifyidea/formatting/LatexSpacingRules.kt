@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
  *
  * @author Sten Wessel, Abby Berkers
  */
-fun createSpacingBuilder(settings: CodeStyleSettings): LatexSpacingBuilder {
+fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
     fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
             Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
 

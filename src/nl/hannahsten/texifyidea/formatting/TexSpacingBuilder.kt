@@ -13,7 +13,7 @@ import com.intellij.psi.tree.TokenSet
  *
  * @author Sten Wessel
  */
-class LatexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
+class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
 
     private val builders = ArrayList<Builder>()
 
@@ -140,10 +140,10 @@ class LatexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
 }
 
 /**
- * Build a [LatexSpacingBuilder] with a set of rules.
+ * Build a [TexSpacingBuilder] with a set of rules.
  */
-fun rules(latexSettings: CommonCodeStyleSettings, init: LatexSpacingBuilder.() -> Unit): LatexSpacingBuilder {
-    val builder = LatexSpacingBuilder(latexSettings)
+fun rules(latexSettings: CommonCodeStyleSettings, init: TexSpacingBuilder.() -> Unit): TexSpacingBuilder {
+    val builder = TexSpacingBuilder(latexSettings)
     builder.init()
     return builder
 }

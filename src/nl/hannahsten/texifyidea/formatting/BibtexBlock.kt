@@ -13,7 +13,7 @@ open class BibtexBlock(
         node: ASTNode,
         wrap: Wrap,
         alignment: Alignment?,
-        val spacingBuilder: SpacingBuilder
+        private val spacingBuilder: TexSpacingBuilder
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): MutableList<Block> {

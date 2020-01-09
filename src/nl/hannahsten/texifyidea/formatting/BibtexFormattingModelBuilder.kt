@@ -34,7 +34,7 @@ open class BibtexFormattingModelBuilder : FormattingModelBuilder {
                     element.node,
                     Wrap.createWrap(WrapType.NONE, false),
                     Alignment.createAlignment(),
-                    createSpacingBuilder(settings)
+                    createBibtexSpacingBuilder(settings)
             ),
             settings
     )!!
