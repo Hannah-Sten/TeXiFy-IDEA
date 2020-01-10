@@ -15,13 +15,15 @@ This can be particularly useful for `listings` environments.
 
 == Indents in (math) environments
 
-
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/indent-environment.gif[indent-environment]
 
 == Indents in groups
 
 _Since b0.6.8_
 
-image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/reformat.gif[reformat]
+When writing inside a group (`{...}` or `[...]`) the formatter will indent all content that is on a new line.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/indent-group.gif[indent-group]
 
 == Blank lines before sectioning commands
 
@@ -29,7 +31,7 @@ _Since b0.6.8_
 
 Edit this behaviour in the link:Code-style-settings#section-newlines[code style settings].
 
-
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/blank-lines-section.gif[blank-lines-section]
 
 == Hard wrap
 
@@ -37,4 +39,4 @@ _Since b0.6.8_
 
 Enable or disable this setting in the link:Code-style-settings#hard-wrap[code style settings].
 
-
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/hard-wrap.gif[hard-wrap]
