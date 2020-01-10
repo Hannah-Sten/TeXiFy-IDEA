@@ -1,6 +1,31 @@
+:experimental:
+
 == About run configurations
 
 See https://www.jetbrains.com/help/idea/creating-and-editing-run-debug-configurations.html
+
+== Template run configurations
+
+For the LaTeX run configuration you can change the default template.
+This means you can choose for example your favourite compiler or pdf viewer in the template, and it will be used when a new run configuration is created.
+Note that choosing a main file to compile in the template generally is not useful because it will be different for each new run config, and when creating a run config from context (like when using the gutter icon next to `\begin{document}`), it will be overwritten anyway.
+In principle, all other settings in the run configuration you can configure in the template.
+
+You can change the template on two levels, project and global level.
+
+=== Changing the project run configuration template
+
+When changing this template, only new run configurations created in that project will be affected.
+
+Open the Run/Debug Configurations by clicking on the dropdown at the top and selecting Edit Configurations.
+Then go to Templates, select LaTeX and edit it.
+For more information, see https://www.jetbrains.com/help/idea/changing-default-run-debug-configurations.html
+
+=== Changing the run configuration template for new projects
+
+When changing this template, all new run configurations created in any new project will be affected.
+
+Go to menu:File[Other Settings > Run configuration Templates for New Projects] and select LaTeX.
 
 == Run configuration settings
 
