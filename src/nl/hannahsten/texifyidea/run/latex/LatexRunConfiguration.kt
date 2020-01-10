@@ -107,9 +107,12 @@ class LatexRunConfiguration constructor(project: Project,
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
-        if (compiler == null || mainFile == null) {
+        if (compiler == null) {
             throw RuntimeConfigurationError(
-                    "Run configuration is invalid.")
+                    "Run configuration is invalid: no compiler selected")
+        }
+        if (mainFile == null) {
+            throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
     }
 
@@ -159,7 +162,13 @@ class LatexRunConfiguration constructor(project: Project,
         // Read main file.
         val fileSystem = LocalFileSystem.getInstance()
         val filePath = parent.getChildText(MAIN_FILE)
-        this.mainFile = fileSystem.findFileByPath(filePath)
+        val mainFile = fileSystem.findFileByPath(filePath)
+        if (mainFile?.extension == "tex") {
+            this.mainFile = mainFile
+        }
+        else {
+            this.mainFile = null
+        }
 
         // Read auxiliary directories.
         val auxDirBoolean = parent.getChildText(AUX_DIR)
@@ -324,7 +333,14 @@ class LatexRunConfiguration constructor(project: Project,
      */
     fun setMainFile(mainFilePath: String) {
         val fileSystem = LocalFileSystem.getInstance()
-        this.mainFile = fileSystem.findFileByPath(mainFilePath)
+        // Check if the file is valid and exists
+        val mainFile = fileSystem.findFileByPath(mainFilePath)
+        if (mainFile?.extension == "tex") {
+            this.mainFile = mainFile
+        }
+        else {
+            this.mainFile = null
+        }
     }
 
     fun setDefaultCompiler() {

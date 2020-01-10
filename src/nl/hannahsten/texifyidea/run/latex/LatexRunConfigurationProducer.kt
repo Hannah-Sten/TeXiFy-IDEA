@@ -33,12 +33,9 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             return false
         }
 
-        // Setup run configuration.
+        // Change the main file as given by the template run configuration to the current file
         runConfiguration.mainFile = mainFile
         runConfiguration.psiFile = container
-        runConfiguration.setDefaultAuxiliaryDirectories()
-        runConfiguration.setDefaultCompiler()
-        runConfiguration.setDefaultOutputFormat()
         runConfiguration.setSuggestedName()
 
         return true

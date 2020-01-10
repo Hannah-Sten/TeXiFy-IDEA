@@ -57,6 +57,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     /** Allow users to specify a custom pdf viewer command. */
     private lateinit var viewerCommand: JBTextField
 
+    // Discard all non-confirmed user changes made via the UI
     override fun resetEditorFrom(runConfiguration: LatexRunConfiguration) {
         // Reset the selected compiler.
         compiler.component.selectedItem = runConfiguration.compiler
@@ -137,6 +138,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         makeindexPanel.configuration = runConfiguration.makeindexRunConfig
     }
 
+    // Confirm the changes, i.e. copy current UI state into the target settings object.
     @Throws(ConfigurationException::class)
     override fun applyEditorTo(runConfiguration: LatexRunConfiguration) {
         // Apply chosen compiler.
