@@ -30,27 +30,36 @@ These settings are only available for LaTeX.
 This setting is in the *Code Generation* tab.
 
 Press kbd:[Ctrl + /] to turn a line into a comment.
-By default (*Line comment at first column* is checked), this will turn the line
+By default (*Line comment at first column* is checked), this will turn the line `This is a sentence.`
 
 [source, latex]
 ```
+\begin{center}
+    Normal text.
     This is a sentence.
+\end{center}
 ```
 into the comment
 
 [source, latex]
 ```
+\begin{center}
+    Normal text
 %    This is a sentence.
+\end{center}
 ```
 
 Uncheck *Line comment at first column* and check *Add space to comment start* to change this behaviour and obtain the comment
 
 [source, latex]
 ```
+\begin{center}
+    Normal text.
     % This is a sentence.
+\end{center}
 ```
 
-Note that this only changes the behaviour when *generating* a comment with kbd:[Ctrl + L], and that this setting has no influence on the formatting of comments.
+Note that this only changes the behaviour when *generating* a comment with kbd:[Ctrl + /], and that this setting has no influence on the formatting of comments.
 
 [#section-newlines]
 === Specify number of blank lines before sectioning commands

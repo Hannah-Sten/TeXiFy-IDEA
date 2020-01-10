@@ -31,7 +31,6 @@ toc::[]
 
 * link:Unicode[Unicode support]
 * Autocomplete of labels, many common commands, custom defined commands and (custom) environments
-* link:Code-formatting[Formatter]
 * link:Smart-quotes[Smart quotes]
 * link:Automatic-package-importing[Automagically import packages of common commands]
 * Shortcuts for styling text
