@@ -33,7 +33,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
         }
         else {
             // If there are no required parameters, the user may have left out the braces around the first one, so we get it manually
-            newCommand.nextCommand()?.text
+            newCommand.nextCommand()?.commandToken?.text
         }
 
         this.newCommandName = command ?: "" + suffix
