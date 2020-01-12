@@ -182,6 +182,42 @@ These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX 
 * link:Code-style-settings#indent-comment[Option to start a comment at the same indentation as normal text]
 * link:Code-style-settings#section-newlines[Specify the number of blank lines before a sectioning command]
 
+
+== Menu entries
+
+If any shortcut is assigned to a menu entry, it will be shown next to it.
+
+menu:File[New > LaTeX File]:: Create a new LaTeX file of type Source (`.tex`), Bibliography(`.bib`), Package (`.sty`), Document class (`.cls`) or TikZ (`.tikz`)
+
+menu:File[Other Settings > Run configuration Templates for New Projects]:: link:Run-configurations[Change the run configuration template]
+
+menu:Edit[LaTeX > Sectioning]:: Insert sectioning commands like `\part` or `\subsection`. If any text is selected, it will be used as argument to the command.
+
+menu:Edit[LaTeX > Font Style]:: Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
+
+menu:Edit[LaTeX > link:Menu-entries#table-creation-wizard[Table Creation Wizard]]:: Displays a table creation wizard that generates a LaTeX table.
+
+// todo link to description pages for the next entries
+menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
+
+menu:Analyze[LaTeX > Word Count]:: Word counting tool.
+
+menu:Tools[LaTeX > Equation Preview]:: Preview equations.
+
+menu:Tools[LaTeX > TikZ Preview]:: Preview TikZ pictures.
+
+menu:Tools[LaTeX > link:Menu-entries#clear-aux-files[Clear Auxiliary Files]]:: Clear the generated auxiliary files.
+
+menu:Tools[LaTeX > link:Menu-entries#clear-generated-files[Clear Generated Files]]:: Clear all generated files.
+
+menu:Tools[LaTeX > SumatraPDF]:: (Windows only) Forward search and configuration of inverse search
+
+=== Context menu entries
+
+menu:Right-click on any file[New > LaTeX File]:: Create a new LaTeX file.
+
+menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
+
 == Inspections
 
 * link:Inspection-suppression[Inspection suppression]
@@ -269,35 +305,3 @@ These settings can be found in menu:File[Settings > Editor > Code Style > LaTeX 
 * Move selection contents to separate file
 * Split into multiple `\usepackage` commands
 
-== Menu entries
-
-If any shortcut is assigned to a menu entry, it will be shown next to it.
-
-menu:File[New > LaTeX File]:: Create a new LaTeX file of type Source (`.tex`), Bibliography(`.bib`), Package (`.sty`), Document class (`.cls`) or TikZ (`.tikz`)
-
-menu:Edit[LaTeX > Sectioning]:: Insert sectioning commands like `\part` or `\subsection`. If any text is selected, it will be used as argument to the command.
-
-menu:Edit[LaTeX > Font Style]:: Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
-
-menu:Edit[LaTeX > link:Menu-entries#table-creation-wizard[Table Creation Wizard]]:: Displays a table creation wizard that generates a LaTeX table.
-
-// todo link to description pages for the next entries
-menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
-
-menu:Analyze[LaTeX > Word Count]:: Word counting tool.
-
-menu:Tools[LaTeX > Equation Preview]:: Preview equations.
-
-menu:Tools[LaTeX > TikZ Preview]:: Preview TikZ pictures.
-
-menu:Tools[LaTeX > link:Menu-entries#clear-aux-files[Clear Auxiliary Files]]:: Clear the generated auxiliary files.
-
-menu:Tools[LaTeX > link:Menu-entries#clear-generated-files[Clear Generated Files]]:: Clear all generated files.
-
-menu:Tools[LaTeX > SumatraPDF]:: (Windows only) Forward search and configuration of inverse search
-
-=== Context menu entries
-
-menu:Right-click on any file[New > LaTeX File]:: Create a new LaTeX file.
-
-menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
