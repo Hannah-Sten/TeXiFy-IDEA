@@ -30,7 +30,9 @@ public class LatexPsiImplUtil {
         final LatexRequiredParam firstParam = readFirstParam(element);
 
         if (REFERENCE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
-            return extractReferences(element, firstParam).toArray(new PsiReference[0]);
+            List<PsiReference> references = extractReferences(element, firstParam);
+            //noinspection ToArrayCallWithZeroLengthArrayArgument
+            return references.toArray(new PsiReference[references.size()]);
         }
 
         return new PsiReference[0];
