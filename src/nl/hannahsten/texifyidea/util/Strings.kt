@@ -169,3 +169,12 @@ fun String.formatAsLabel(): String {
  * Split the given string on whitespace.
  */
 fun String.splitWhitespace() = split(Regex("\\s+"))
+
+/**
+ * Removes HTML tags from the string.
+ *
+ * @return The string with HTML tags removed.
+ *
+ * @see [Magic.Pattern.htmlTag]
+ */
+fun String.removeHtmlTags() = this.replace(Magic.Pattern.htmlTag.toRegex(), "")

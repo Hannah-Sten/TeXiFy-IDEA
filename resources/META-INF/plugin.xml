@@ -356,6 +356,14 @@
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.BibtexColorSettingsPage"/>
+
+        <!-- Code style settings -->
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettingsProvider"/>
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexGenerationSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.LatexLanguageCodeStyleSettingsProvider"/>
+        <codeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexLanguageCodeStyleSettingsProvider"/>
+
         <!-- Project settings -->
         <projectService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
         <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
