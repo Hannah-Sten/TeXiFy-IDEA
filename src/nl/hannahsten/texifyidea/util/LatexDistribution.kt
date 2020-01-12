@@ -36,11 +36,16 @@ class LatexDistribution {
          * Assumes the pdflatex version output contains something like (TeX Live 2019).
          */
         val texliveVersion: Int by lazy {
-            val startIndex = pdflatexVersionText.indexOf("TeX Live")
-            try {
-                pdflatexVersionText.substring(startIndex + "TeX Live ".length, startIndex + "TeX Live ".length + "2019".length).toInt()
-            } catch (e: NumberFormatException) {
+            if (!isTexlive) {
                 0
+            }
+            else {
+                val startIndex = pdflatexVersionText.indexOf("TeX Live")
+                try {
+                    pdflatexVersionText.substring(startIndex + "TeX Live ".length, startIndex + "TeX Live ".length + "2019".length).toInt()
+                } catch (e: NumberFormatException) {
+                    0
+                }
             }
         }
 
