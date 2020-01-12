@@ -21,7 +21,14 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
         simple {
             between(NORMAL_TEXT_WORD, NORMAL_TEXT_WORD).spaces(1)
-            around(ENVIRONMENT_CONTENT).lineBreakInCode()
+            before(ENVIRONMENT_CONTENT).lineBreakInCode()
+        }
+
+        custom {
+            // Insert a new line between the end of environment content and the end command.
+            inPosition(parent = ENVIRONMENT, left = ENVIRONMENT_CONTENT, right = END_COMMAND).spacing(
+                    Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+            )
         }
 
         custom {
@@ -36,10 +43,10 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
             // Make sure the number of new lines before a sectioning command is
             // as much as the user specified in the settings.
-            // BUG: Does not work for a command that immediately follows
+            // BUG? Does not work for a command that immediately follows
             // \begin{document}. But no one should start their document like
             // that anyway.
-            customRule {_, _, right ->
+            customRule { _, _, right ->
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
                     if (right.node?.text?.matches(Regex("\\${it.value}\\{.*\\}")) == true) {
                         return@customRule createSpacing(
