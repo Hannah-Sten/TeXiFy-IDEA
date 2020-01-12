@@ -12,4 +12,9 @@ public class LatexLanguage extends Language {
     private LatexLanguage() {
         super("Latex");
     }
+
+    @Override
+    public String getDisplayName() {
+        return "LaTeX";
+    }
 }
