@@ -13,7 +13,7 @@ open class BibtexBlock(
         node: ASTNode,
         wrap: Wrap,
         alignment: Alignment?,
-        val spacingBuilder: SpacingBuilder
+        private val spacingBuilder: TexSpacingBuilder
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): MutableList<Block> {
@@ -49,7 +49,7 @@ open class BibtexBlock(
             return Indent.getNormalIndent(false)
         }
         // Indents in entries.
-        if (myNode.elementType == BibtexTypes.ENTRY_CONTENT) {
+        if (type == BibtexTypes.ENTRY_CONTENT) {
             return Indent.getNormalIndent(true)
         }
 

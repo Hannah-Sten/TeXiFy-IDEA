@@ -40,13 +40,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean begin_command(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "begin_command")) return false;
     if (!nextTokenIs(b, BEGIN_TOKEN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, BEGIN_COMMAND, null);
     r = consumeToken(b, BEGIN_TOKEN);
-    r = r && begin_command_1(b, l + 1);
-    r = r && begin_command_2(b, l + 1);
-    exit_section_(b, m, BEGIN_COMMAND, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, begin_command_1(b, l + 1));
+    r = p && begin_command_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // STAR?
@@ -72,13 +73,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean commands(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "commands")) return false;
     if (!nextTokenIs(b, COMMAND_TOKEN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, COMMANDS, null);
     r = consumeToken(b, COMMAND_TOKEN);
-    r = r && commands_1(b, l + 1);
-    r = r && commands_2(b, l + 1);
-    exit_section_(b, m, COMMANDS, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, commands_1(b, l + 1));
+    r = p && commands_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // STAR?
@@ -127,13 +129,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean display_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "display_math")) return false;
     if (!nextTokenIs(b, DISPLAY_MATH_START)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, DISPLAY_MATH, null);
     r = consumeToken(b, DISPLAY_MATH_START);
-    r = r && display_math_1(b, l + 1);
-    r = r && consumeToken(b, DISPLAY_MATH_END);
-    exit_section_(b, m, DISPLAY_MATH, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, display_math_1(b, l + 1));
+    r = p && consumeToken(b, DISPLAY_MATH_END) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // math_content?
@@ -148,13 +151,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean end_command(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "end_command")) return false;
     if (!nextTokenIs(b, END_TOKEN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, END_COMMAND, null);
     r = consumeToken(b, END_TOKEN);
-    r = r && end_command_1(b, l + 1);
-    r = r && end_command_2(b, l + 1);
-    exit_section_(b, m, END_COMMAND, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, end_command_1(b, l + 1));
+    r = p && end_command_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // STAR?
@@ -180,13 +184,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean environment(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "environment")) return false;
     if (!nextTokenIs(b, BEGIN_TOKEN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ENVIRONMENT, null);
     r = begin_command(b, l + 1);
-    r = r && environment_1(b, l + 1);
-    r = r && end_command(b, l + 1);
-    exit_section_(b, m, ENVIRONMENT, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, environment_1(b, l + 1));
+    r = p && end_command(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // environment_content?
@@ -217,13 +222,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, GROUP, null);
     r = consumeToken(b, OPEN_BRACE);
-    r = r && group_1(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BRACE);
-    exit_section_(b, m, GROUP, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, group_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // content*
@@ -242,13 +248,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean inline_math(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "inline_math")) return false;
     if (!nextTokenIs(b, INLINE_MATH_START)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, INLINE_MATH, null);
     r = consumeToken(b, INLINE_MATH_START);
-    r = r && inline_math_1(b, l + 1);
-    r = r && consumeToken(b, INLINE_MATH_END);
-    exit_section_(b, m, INLINE_MATH, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, inline_math_1(b, l + 1));
+    r = p && consumeToken(b, INLINE_MATH_END) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // math_content?
@@ -351,13 +358,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean open_group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "open_group")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, OPEN_GROUP, null);
     r = consumeToken(b, OPEN_BRACKET);
-    r = r && open_group_1(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BRACKET);
-    exit_section_(b, m, OPEN_GROUP, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, open_group_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BRACKET) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // content*

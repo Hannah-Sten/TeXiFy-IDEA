@@ -33,9 +33,9 @@ public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexIn
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getInlineMathEnd() {
-    return notNullChild(findChildByType(INLINE_MATH_END));
+    return findChildByType(INLINE_MATH_END);
   }
 
   @Override

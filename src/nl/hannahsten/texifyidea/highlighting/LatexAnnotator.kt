@@ -81,7 +81,7 @@ open class LatexAnnotator : Annotator {
             if (psiElement is LatexEnvironment) {
                 val ann1 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.beginCommand.textOffset, 6), null)
                 ann1.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
-                val ann2 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.endCommand.textOffset, 4), null)
+                val ann2 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4), null)
                 ann2.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
             }
         }

@@ -33,9 +33,9 @@ public class LatexEnvironmentImpl extends ASTWrapperPsiElement implements LatexE
   }
 
   @Override
-  @NotNull
+  @Nullable
   public LatexEndCommand getEndCommand() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexEndCommand.class));
+    return PsiTreeUtil.getChildOfType(this, LatexEndCommand.class);
   }
 
   @Override
