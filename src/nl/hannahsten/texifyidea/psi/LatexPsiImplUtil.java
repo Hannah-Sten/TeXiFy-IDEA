@@ -6,6 +6,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.hannahsten.texifyidea.reference.InputFileReference;
 import nl.hannahsten.texifyidea.reference.LatexLabelReference;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.Magic;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 public class LatexPsiImplUtil {
 
     static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
+    static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
     static final Pattern OPTIONAL_SPLIT = Pattern.compile(",");
 
     @NotNull
@@ -35,7 +37,26 @@ public class LatexPsiImplUtil {
             return references.toArray(new PsiReference[references.size()]);
         }
 
+        if (INCLUDE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
+            List<PsiReference> references = extractIncludes(element, firstParam);
+            return references.toArray(new PsiReference[references.size()]);
+
+        }
+
         return new PsiReference[0];
+    }
+
+    @NotNull
+    private static List<PsiReference> extractIncludes(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
+        List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
+
+        List<PsiReference> references = new ArrayList<>();
+        for (TextRange range : subParamRanges) {
+            references.add(new InputFileReference(
+                    element, range.shiftRight(firstParam.getTextOffset() - element.getTextOffset())
+            ));
+        }
+        return references;
     }
 
     @NotNull

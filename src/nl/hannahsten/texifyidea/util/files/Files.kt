@@ -99,7 +99,7 @@ fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(pro
  *         Set of all supported extensions to look for.
  * @return The matching file, or `null` when the file couldn't be found.
  */
-fun VirtualFile.findFile(fileName: String, extensions: Set<String>): VirtualFile? {
+fun VirtualFile.findFile(fileName: String, extensions: Set<String> = emptySet()): VirtualFile? {
     var file = findFileByRelativePath(fileName)
     if (file != null && !file.isDirectory) return file
 
