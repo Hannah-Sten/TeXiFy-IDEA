@@ -21,10 +21,12 @@ import java.util.stream.Stream;
 /**
  * This class is used for method injection in generated parser classes.
  */
+@SuppressWarnings("ToArrayCallWithZeroLengthArrayArgument")
 public class LatexPsiImplUtil {
 
     static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
     static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
+    static final Set<String> DEFINITION_COMMANDS = Magic.Command.commandDefinitions;
     static final Pattern OPTIONAL_SPLIT = Pattern.compile(",");
 
     @NotNull
@@ -33,14 +35,17 @@ public class LatexPsiImplUtil {
 
         if (REFERENCE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
             List<PsiReference> references = extractReferences(element, firstParam);
-            //noinspection ToArrayCallWithZeroLengthArrayArgument
             return references.toArray(new PsiReference[references.size()]);
         }
 
         if (INCLUDE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
             List<PsiReference> references = extractIncludes(element, firstParam);
             return references.toArray(new PsiReference[references.size()]);
+        }
 
+        List<PsiReference> userDefinedReferences = LatexPsiImplUtilKtKt.userDefinedCommandReferences(element);
+        if (userDefinedReferences.size() > 0) {
+            return userDefinedReferences.toArray(new PsiReference[userDefinedReferences.size()]);
         }
 
         return new PsiReference[0];
