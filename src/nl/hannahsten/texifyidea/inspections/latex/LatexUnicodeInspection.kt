@@ -239,7 +239,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             // Extract modifiers
             val mods = n.substring(matcher.end()).split("".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-            val diacritics = (0 until mods.size)
+            val diacritics = (mods.indices)
                     // Modifiers in reversed order
                     .map { mods[mods.size - 1 - it] }
                     .map { if (inMathMode)

@@ -5,13 +5,12 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
  * @author Hannah Schellekens
  */
-class LatexLabelPresentation(val labelCommand: LatexCommands) : ItemPresentation {
+class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
 
     private val locationString: String
     private val presentableText: String

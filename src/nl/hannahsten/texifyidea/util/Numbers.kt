@@ -18,8 +18,7 @@ private val ROMAN = TreeMap<Int, String>().apply {
 /**
  * Turns a given integer into a roman numeral.
  *
- * @param integer
- *          The (positive) integer to convert to roman.
+ * @receiver The (positive) integer to convert to roman.
  * @return The roman representation of said integer.
  * @throws IllegalArgumentException
  *          When the integer is smaller or equal to 0.

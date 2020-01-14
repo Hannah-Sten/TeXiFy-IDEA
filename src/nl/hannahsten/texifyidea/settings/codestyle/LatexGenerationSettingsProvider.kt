@@ -26,7 +26,7 @@ class LatexGenerationSettingsProvider : CodeStyleSettingsProvider() {
     override fun getConfigurableDisplayName(): String = ApplicationBundle.message("title.code.generation")
     override fun getPriority(): DisplayPriority = DisplayPriority.CODE_SETTINGS
     override fun hasSettingsPage() = false
-    override fun getLanguage() = LatexLanguage.INSTANCE
+    override fun getLanguage(): LatexLanguage = LatexLanguage.INSTANCE
 }
 
 class LatexCodeStyleGenerationConfigurable(private val mySettings: CodeStyleSettings) : CodeStyleConfigurable {

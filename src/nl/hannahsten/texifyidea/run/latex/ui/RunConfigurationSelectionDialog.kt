@@ -13,7 +13,7 @@ import javax.swing.ListSelectionModel
 import javax.swing.SwingUtilities
 
 /**
- * Adapted from [com.intellij.execution.impl.RunConfigurationBeforeRunProvider.SelectionDialog]
+ * Adapted from [com.intellij.execution.impl.RunConfigurationBeforeRunProvider]
  *
  * @author Sten Wessel
  */
@@ -57,7 +57,7 @@ class RunConfigurationSelectionDialog(
         list = JBList(settings).apply {
             selectionMode = ListSelectionModel.SINGLE_SELECTION
 
-            selectionModel.addListSelectionListener { _ ->
+            selectionModel.addListSelectionListener {
                 selected = list.selectedValue
                 isOKActionEnabled = list.selectedValue != null
             }

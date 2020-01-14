@@ -11,7 +11,7 @@ class LatexDistribution {
 
     companion object {
 
-        val pdflatexVersionText: String by lazy {
+        private val pdflatexVersionText: String by lazy {
             getDistribution()
         }
 

@@ -139,7 +139,7 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
     /**
      * See [merge], but then modifies `this` comment instead of creating a new one.
      */
-    fun mergeModify(mergeWith: MagicComment<Key, Value>) {
+    private fun mergeModify(mergeWith: MagicComment<Key, Value>) {
         mergeWith.keySet().forEach keyLoop@ { key ->
             val magicKey = CustomMagicKey(key)
             val values = mergeWith.values(magicKey) ?: return@keyLoop

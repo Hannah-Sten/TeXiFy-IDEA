@@ -39,7 +39,7 @@ fun runWriteAction(writeAction: () -> Unit) {
 /**
  * Converts an [IntRange] to [TextRange].
  */
-fun IntRange.toTextRange() = TextRange(this.start, this.endInclusive + 1)
+fun IntRange.toTextRange() = TextRange(this.first, this.last + 1)
 
 /**
  * Get the length of an [IntRange].

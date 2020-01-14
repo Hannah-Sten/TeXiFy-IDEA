@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
  */
 open class BibtexStructureViewEntriesElement(val file: PsiFile) : StructureViewTreeElement, SortableTreeElement {
 
-    val entriesPresentation: ItemPresentation = object : ItemPresentation {
+    private val entriesPresentation: ItemPresentation = object : ItemPresentation {
 
         override fun getLocationString() = file.childrenOfType(BibtexEntry::class).size.toString()
 
