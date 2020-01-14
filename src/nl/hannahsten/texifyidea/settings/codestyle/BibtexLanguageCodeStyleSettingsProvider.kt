@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.settings.codestyle
 import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.lang.Language
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.extractor.values.Value
 import nl.hannahsten.texifyidea.BibtexLanguage
@@ -19,8 +18,6 @@ class BibtexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvide
     override fun getCodeSample(settingsType: SettingsType): String? = demoText
 
     override fun getIndentOptionsEditor() = SmartIndentOptionsEditor()
-
-    override fun getDefaultCommonSettings() = CommonCodeStyleSettings(language).also { it.initIndentOptions() }
 
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {

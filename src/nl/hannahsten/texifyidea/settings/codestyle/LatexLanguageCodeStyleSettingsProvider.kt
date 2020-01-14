@@ -1,12 +1,10 @@
 package nl.hannahsten.texifyidea.settings.codestyle
 
-// import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.*
 import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_ADD_SPACE
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_AT_FIRST_COLUMN
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceOption.*
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.*
 import com.intellij.psi.codeStyle.extractor.values.Value.VAR_KIND.RIGHT_MARGIN
@@ -29,8 +27,6 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
     override fun getCodeSample(settingsType: SettingsType) = demoText
 
     override fun getIndentOptionsEditor() = SmartIndentOptionsEditor()
-
-    override fun getDefaultCommonSettings() = CommonCodeStyleSettings(language).also { it.initIndentOptions() }
 
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {
