@@ -400,7 +400,7 @@ object Magic {
          * All commands that at first glance look like \if-esque commands, but that actually aren't.
          */
         @JvmField
-        val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse")
+        val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle")
 
         /**
          * List of all TeX style primitives.
