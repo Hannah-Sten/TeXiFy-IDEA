@@ -185,8 +185,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
             val fileNames = cmd.includedFileNames() ?: continue
             val containingFile = element.containingFile
-            val directory = containingFile.findRootFile()
-                    .containingDirectory.virtualFile
+            val containingDirectory = containingFile.findRootFile()
+                    .containingDirectory ?: continue
+            val directory = containingDirectory.virtualFile
 
             val elt = LatexStructureViewCommandElement(cmd)
             for (fileName in fileNames) {
