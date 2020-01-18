@@ -74,7 +74,8 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                                                         (1 + StringUtil.offsetToLineNumber(containing.getText(), bibtexEntry.getTextOffset())),
                                                 true)
                                         .withIcon(TexifyIcons.DOT_BIB);
-                            } else {
+                            }
+                            else {
                                 return null;
                             }
                         }
@@ -100,7 +101,8 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                                             labelingCommand.getContainingFile().getText(),
                                             labelingCommand.getTextOffset())), true)
                                     .withIcon(TexifyIcons.DOT_LABEL);
-                        } else {
+                        }
+                        else {
                             return null;
                         }
                     }).filter(Objects::nonNull).toArray();
