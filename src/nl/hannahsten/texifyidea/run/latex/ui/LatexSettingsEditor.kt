@@ -160,7 +160,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         if (runConfiguration.compiler?.includesMakeindex == true) {
             runConfiguration.makeindexRunConfig = null
             makeindexPanel.isVisible = false
-        } else {
+        }
+        else {
             makeindexPanel.isVisible = true
 
             // Apply makeindex

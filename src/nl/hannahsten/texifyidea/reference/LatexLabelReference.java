@@ -7,7 +7,6 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import nl.hannahsten.texifyidea.TexifyIcons;
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
-import nl.hannahsten.texifyidea.psi.BibtexEntry;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
@@ -16,7 +15,10 @@ import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -62,22 +64,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
                         if (bibtexEntry != null) {
                             PsiFile containing = bibtexEntry.getContainingFile();
 
-                            if (bibtexEntry instanceof BibtexEntry) {
-                                BibtexEntry entry = (BibtexEntry)bibtexEntry;
-                                LinkedList<String> lookupStrings = new LinkedList<>(entry.getAuthors());
-                                lookupStrings.add(entry.getTitle());
-                                return LookupElementBuilder.create(entry.getIdentifier())
-                                        .withPsiElement(bibtexEntry)
-                                        .withPresentableText(entry.getTitle())
-                                        .bold()
-                                        .withInsertHandler(new LatexReferenceInsertHandler())
-                                        .withLookupStrings(lookupStrings)
-                                        .withCaseSensitivity(false)
-                                        .withTypeText(entry.getIdentifier(),
-                                                true)
-                                        .withIcon(TexifyIcons.DOT_BIB);
-                            }
-                            else if (bibtexEntry instanceof LatexCommands) {
+                            if (bibtexEntry instanceof LatexCommands) {
                                 LatexCommands actualCommand = (LatexCommands) bibtexEntry;
                                 List<String> parameters = actualCommand.getRequiredParameters();
                                 return LookupElementBuilder.create(parameters.get(0))
