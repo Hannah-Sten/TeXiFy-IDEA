@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.structure.latex
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.nextCommand
 
 /**
  * @author Hannah Schellekens
@@ -16,7 +17,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
         // Fetch parameter amount.
         val optional = newCommand.optionalParameters
         var params = -1
-        if (!optional.isEmpty()) {
+        if (optional.isNotEmpty()) {
             try {
                 params = Integer.parseInt(optional[0])
             }
@@ -27,7 +28,15 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
         // Get command name.
         val required = newCommand.requiredParameters
-        this.newCommandName = required.firstOrNull() ?: "" + suffix
+        val command = if (required.size > 0) {
+            required.first()
+        }
+        else {
+            // If there are no required parameters, the user may have left out the braces around the first one, so we get it manually
+            newCommand.nextCommand()?.commandToken?.text
+        }
+
+        this.newCommandName = command ?: "" + suffix
 
         // Get value.
         locationString = if (required.size > 1) {

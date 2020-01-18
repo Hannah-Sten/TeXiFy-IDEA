@@ -83,7 +83,10 @@ enum class DefaultEnvironment(
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT),
 
     // lualatex
-    LUACODE(environmentName = "luacode", dependency = Package.LUACODE);
+    LUACODE(environmentName = "luacode", dependency = Package.LUACODE),
+
+    // listings
+    LISTINGS(environmentName = "lstlisting", dependency = Package.LISTINGS);
 
     companion object {
 
