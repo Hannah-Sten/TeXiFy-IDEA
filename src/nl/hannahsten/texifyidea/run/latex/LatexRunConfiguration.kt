@@ -42,8 +42,8 @@ class LatexRunConfiguration constructor(project: Project,
         private const val VIEWER_COMMAND = "viewer-command"
         private const val COMPILER_ARGUMENTS = "compiler-arguments"
         private const val MAIN_FILE = "main-file"
-        private const val AUX_DIR = "aux-dir"
-        private const val OUT_DIR = "out-dir"
+        private const val OUTPUT_PATH = "output-path"
+        private const val AUXIL_PATH = "auxil-path"
         private const val COMPILE_TWICE = "compile-twice"
         private const val OUTPUT_FORMAT = "output-format"
         private const val HAS_BEEN_RUN = "has-been-run"
@@ -69,9 +69,9 @@ class LatexRunConfiguration constructor(project: Project,
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
 
-    // Enable auxiliary directories by default on MiKTeX only
-    var hasAuxiliaryDirectories = LatexDistribution.isMiktex
-    var hasOutputDirectories = true
+    var outputPath: VirtualFile? = null
+    var auxilPath: VirtualFile? = null // todo MiKTeX only
+
     var compileTwice = false
     var outputFormat: Format = Format.PDF
 
@@ -170,19 +170,16 @@ class LatexRunConfiguration constructor(project: Project,
             this.mainFile = null
         }
 
-        // Read auxiliary directories.
-        val auxDirBoolean = parent.getChildText(AUX_DIR)
-        this.hasAuxiliaryDirectories = java.lang.Boolean.parseBoolean(auxDirBoolean)
-
-        // Read output directories.
-        val outDirBoolean = parent.getChildText(OUT_DIR)
-        // This is null if the original run configuration did not contain the
-        // option to disable the out directory, which should be enabled by default.
-        if (outDirBoolean == null) {
-            this.hasOutputDirectories = true
+        // Read output path
+        val outputPathString = parent.getChildText(OUTPUT_PATH)
+        if (outputPathString != null) {
+            this.outputPath = fileSystem.findFileByPath(outputPathString)
         }
-        else {
-            this.hasOutputDirectories = java.lang.Boolean.parseBoolean(outDirBoolean)
+
+        // Read auxil path
+        val auxilPathString = parent.getChildText(AUXIL_PATH)
+        if (auxilPathString != null) {
+            this.auxilPath = fileSystem.findFileByPath(auxilPathString)
         }
 
         // Read whether to compile twice
@@ -258,15 +255,15 @@ class LatexRunConfiguration constructor(project: Project,
         mainFileElt.text = mainFile?.path ?: ""
         parent.addContent(mainFileElt)
 
-        // Write auxiliary directories.
-        val auxDirElt = Element(AUX_DIR)
-        auxDirElt.text = java.lang.Boolean.toString(hasAuxiliaryDirectories)
-        parent.addContent(auxDirElt)
+        // Write output path
+        val outputPathElt = Element(OUTPUT_PATH)
+        outputPathElt.text = outputPath?.path ?: ""
+        parent.addContent(outputPathElt)
 
-        // Write output directories.
-        val outDirElt = Element(OUT_DIR)
-        outDirElt.text = java.lang.Boolean.toString(hasOutputDirectories)
-        parent.addContent(outDirElt)
+        // Write auxiliary path
+        val auxilPathElt = Element(AUXIL_PATH)
+        auxilPathElt.text = auxilPath?.path ?: ""
+        parent.addContent(auxilPathElt)
 
         // Write whether to compile twice
         val compileTwiceElt = Element(COMPILE_TWICE)
