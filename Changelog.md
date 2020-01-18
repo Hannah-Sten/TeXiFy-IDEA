@@ -34,6 +34,7 @@
 - Allow number-only bibtex identifiers. (#1126)
 - Show correct gutter icons for included files. (#1137)
 - Include files included by class file in fileset. (#1123)
+- Fix parsing of linenumber for Evince backward search. (#1181)
 - Add custom command names to the structure view when braces are left out. (#1173)
 - Only check for normal spaces after abbreviations when they end with a full stop. (#1129)
 - Use actual instead of incorrectly indexed command name for missing label inspection. (#1136)
