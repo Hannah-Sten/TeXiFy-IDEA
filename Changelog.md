@@ -40,8 +40,9 @@
 - Add custom command names to the structure view when braces are left out. (#1173)
 - Only check for normal spaces after abbreviations when they end with a full stop. (#1129)
 - Use actual instead of incorrectly indexed command name for missing label inspection. (#1136)
+- Command definitions using \newif need not be closed with \fi. (#1187)
 - Register the analyze menu action group using a service instead of a deprecated application component. (#1144)
-- Fixed crashes. (#1085, #1178, #1184, #1185)
+- Fixed crashes. (#1085, #1178, #1184, #1185, #1189)
 - Fix BibTeX formatter inserting spaces in braced words. (#1168)
 
 Thanks to [@TanVD](https://github.com/TanVD), [@fberlakovich](https://github.com/fberlakovich) and [@stsundermann](https://github.com/stsundermann) for contributing to this release.
