@@ -203,7 +203,7 @@ open class WordCountAction : AnAction(
     private fun contractionCount(word: String): Int {
         val split = CONTRACTION_CHARACTERS.split(word)
         var count = 0
-        for (i in 0 until split.size) {
+        for (i in split.indices) {
             val string = split[i]
 
             // Only count contractions: so do not count start or end single quotes :)

@@ -21,7 +21,7 @@ open class ForwardSearchAction : EditorAction(
         TexifyIcons.RIGHT
 ) {
 
-    val evince = PdfViewer.EVINCE
+    private val evince = PdfViewer.EVINCE
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!evince.isAvailable()) {

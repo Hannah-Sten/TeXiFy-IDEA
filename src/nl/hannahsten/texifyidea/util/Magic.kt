@@ -595,10 +595,10 @@ object Magic {
          */
         @JvmField
         val fileTypes = setOf(
-                BibtexFileType,
-                ClassFileType,
                 LatexFileType,
                 StyleFileType,
+                ClassFileType,
+                BibtexFileType,
                 TikzFileType
         )
 

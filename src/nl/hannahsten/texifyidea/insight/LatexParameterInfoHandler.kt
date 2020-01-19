@@ -24,10 +24,6 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegul
         return ArrayUtil.EMPTY_OBJECT_ARRAY
     }
 
-    override fun getParametersForDocumentation(p: LatexRegularCommand, context: ParameterInfoContext): Array<Any>? {
-        return ArrayUtil.EMPTY_OBJECT_ARRAY
-    }
-
     override fun findElementForParameterInfo(context: CreateParameterInfoContext): LatexCommands? {
         return findLatexCommand(context.file, context.offset)
     }
@@ -46,10 +42,6 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegul
     override fun updateParameterInfo(element: LatexCommands, context: UpdateParameterInfoContext) {
         context.setCurrentParameter(0)
     }
-
-    override fun getParameterCloseChars() = "]}"
-
-    override fun tracksParameterIndex() = true
 
     override fun updateUI(cmd: LatexRegularCommand?, context: ParameterInfoUIContext) {
         if (cmd == null) {

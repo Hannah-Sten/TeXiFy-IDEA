@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.settings.codestyle
 import com.intellij.application.options.CodeStyleAbstractConfigurable
 import com.intellij.application.options.CodeStyleAbstractPanel
 import com.intellij.application.options.TabbedLanguageCodeStylePanel
-import com.intellij.openapi.options.Configurable
+import com.intellij.psi.codeStyle.CodeStyleConfigurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import nl.hannahsten.texifyidea.LatexLanguage
@@ -22,7 +22,7 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
     override fun getConfigurableDisplayName() = LatexLanguage.INSTANCE.displayName
 
-    override fun createSettingsPage(settings: CodeStyleSettings, originalSettings: CodeStyleSettings?): Configurable {
+    override fun createConfigurable(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): CodeStyleConfigurable {
         return object : CodeStyleAbstractConfigurable(settings, originalSettings, configurableDisplayName) {
 
             override fun createPanel(settings: CodeStyleSettings?): CodeStyleAbstractPanel {

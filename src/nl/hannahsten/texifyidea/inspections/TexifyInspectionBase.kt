@@ -222,7 +222,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class GroupSuppressionFix(val parentGroup: LatexGroup) : SuppressionFixBase(parentGroup) {
+    private inner class GroupSuppressionFix(parentGroup: LatexGroup) : SuppressionFixBase(parentGroup) {
 
         override val suppressionScope = MagicCommentScope.GROUP
 

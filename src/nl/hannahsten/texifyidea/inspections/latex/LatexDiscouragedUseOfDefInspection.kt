@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
+import kotlin.math.max
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -72,7 +73,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
             val (cmd, value) = getArguments(command) ?: return
 
             val startOFfset = command.textOffset
-            val endOffset = Math.max(cmd.textOffset + cmd.textLength, value.textOffset + value.textLength)
+            val endOffset = max(cmd.textOffset + cmd.textLength, value.textOffset + value.textLength)
 
             document.replaceString(startOFfset, endOffset, "$commandName{${cmd.text}}{${value.text}}")
         }

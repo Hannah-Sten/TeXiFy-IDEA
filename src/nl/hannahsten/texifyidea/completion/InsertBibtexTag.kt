@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.files.document
  */
 open class InsertBibtexTag : EnterHandlerDelegate {
 
-    override fun postProcessEnter(file: PsiFile, editor: Editor, context: DataContext): EnterHandlerDelegate.Result {
+    override fun postProcessEnter(file: PsiFile, editor: Editor, context: DataContext): Result {
         ShiftTracker.setup(editor.contentComponent)
         if (file.fileType != BibtexFileType) {
             return Result.Continue
@@ -37,7 +37,7 @@ open class InsertBibtexTag : EnterHandlerDelegate {
         return Result.Continue
     }
 
-    override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>, context: DataContext, p5: EditorActionHandler?): EnterHandlerDelegate.Result {
+    override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>, context: DataContext, p5: EditorActionHandler?): Result {
         return Result.Continue
     }
 

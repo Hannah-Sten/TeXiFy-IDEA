@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import com.intellij.codeInsight.daemon.quickFix.CreateFileFix
+import com.intellij.codeInsight.daemon.quickFix.CreateFilePathFix
+import com.intellij.codeInsight.daemon.quickFix.NewFileLocation
+import com.intellij.codeInsight.daemon.quickFix.TargetDirectory
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -92,12 +94,14 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
                     if (relative != null) continue
 
-                    val fixes = mutableListOf(CreateFileFix(false, filePath, root.containingDirectory))
+                    val newFileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), filePath)
+                    val fixes = mutableListOf(CreateFilePathFix(file, newFileLocation))
 
                     // Create quick fixes for all extensions if none was supplied in the argument
                     if (extensions.none { filePath.endsWith(".$it") }) {
                         extensions.forEach {
-                            fixes.add(0, CreateFileFix(false, "$filePath.$it", root.containingDirectory))
+                            val fileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), "$filePath.$it")
+                            fixes.add(CreateFilePathFix(file, fileLocation))
                         }
                     }
 

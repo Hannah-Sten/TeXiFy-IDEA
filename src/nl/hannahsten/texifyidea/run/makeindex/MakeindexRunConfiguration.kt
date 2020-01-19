@@ -55,7 +55,8 @@ class MakeindexRunConfiguration(
             val programText = parent.getChildText(PROGRAM)
             if (!programText.isNullOrEmpty()) {
                 MakeindexProgram.valueOf(programText)
-            } else {
+            }
+            else {
                 MakeindexProgram.MAKEINDEX
             }
         }
@@ -63,7 +64,12 @@ class MakeindexRunConfiguration(
             MakeindexProgram.MAKEINDEX
         }
 
-        val mainFilePath = parent.getChildText(MAIN_FILE)
+        val mainFilePath = try {
+            parent.getChildText(MAIN_FILE)
+        }
+        catch (e: NullPointerException) {
+            null
+        }
         mainFile = if (mainFilePath != null) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
         }
@@ -71,7 +77,12 @@ class MakeindexRunConfiguration(
             null
         }
 
-        val workDirPath = parent.getChildText(WORK_DIR)
+        val workDirPath = try {
+            parent.getChildText(WORK_DIR)
+        }
+        catch (e: NullPointerException) {
+            null
+        }
         workingDirectory = if (workDirPath != null) {
             LocalFileSystem.getInstance().findFileByPath(workDirPath)
         }
@@ -103,7 +114,7 @@ class MakeindexRunConfiguration(
      * Try to find out which index program the user wants to use, based on the given options.
      * Will also set [makeindexProgram] if not already set.
      */
-    fun findMakeindexProgram(indexPackageOptions: List<String>, makeindexOptions: HashMap<String, String>): MakeindexProgram {
+    private fun findMakeindexProgram(indexPackageOptions: List<String>, makeindexOptions: HashMap<String, String>): MakeindexProgram {
 
         var indexProgram = if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
 
@@ -127,7 +138,7 @@ class MakeindexRunConfiguration(
     /**
      * Get package options for included index packages.
      */
-    fun getIndexPackageOptions(): List<String> {
+    private fun getIndexPackageOptions(): List<String> {
         return runReadAction {
             // Find index package options
             val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
@@ -152,7 +163,8 @@ class MakeindexRunConfiguration(
                     .forEach {
                         if (it.size == 1) {
                             makeindexOptions[it.first()] = ""
-                        } else if (it.size == 2) {
+                        }
+                        else if (it.size == 2) {
                             makeindexOptions[it.first()] = it.last()
                         }
                     }

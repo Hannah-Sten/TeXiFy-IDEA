@@ -7,7 +7,7 @@ package nl.hannahsten.texifyidea.lang
 class OptionalArgument : Argument {
 
     @JvmOverloads
-    internal constructor(name: String, type: Argument.Type = Argument.Type.NORMAL) : super(name, type)
+    internal constructor(name: String, type: Type = Type.NORMAL) : super(name, type)
 
     override fun toString() = "[$name]"
 }

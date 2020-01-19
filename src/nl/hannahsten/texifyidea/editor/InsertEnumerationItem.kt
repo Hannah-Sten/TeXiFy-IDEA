@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.util.*
 class InsertEnumerationItem : EnterHandlerDelegate {
 
     override fun postProcessEnter(file: PsiFile, editor: Editor,
-                                  context: DataContext): EnterHandlerDelegate.Result {
+                                  context: DataContext): Result {
         ShiftTracker.setup(editor.contentComponent)
         if (file.fileType != LatexFileType) {
             return Result.Continue
@@ -39,7 +39,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
 
     override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>,
                                  context: DataContext,
-                                 p5: EditorActionHandler?): EnterHandlerDelegate.Result {
+                                 p5: EditorActionHandler?): Result {
         return Result.Continue
     }
 

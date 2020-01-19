@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.structure.latex
 
 import nl.hannahsten.texifyidea.util.toRoman
+import kotlin.math.max
 
 /**
  * @author Hannah Schellekens
@@ -31,7 +32,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
         }
     }
 
-    fun getCounter(level: Int) = counters[level]
+    private fun getCounter(level: Int) = counters[level]
 
     fun setCounter(level: Int, amount: Int) {
         counters[level] = amount
@@ -44,7 +45,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
     fun getTitle(level: Int): String {
         // Parts
         if (level == 0) {
-            return Math.max(0, counters[0]).toRoman()
+            return max(0, counters[0]).toRoman()
         }
 
         val sb = StringBuilder()
