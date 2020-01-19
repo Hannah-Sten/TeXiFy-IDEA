@@ -32,6 +32,21 @@ SmallCapsFont = GFSPorson-Regular]
 \end{document}
 ----
 
+Another example, tested with XeLaTeX:
+
+[source,latex]
+----
+\documentclass{article}
+\usepackage{fontspec}
+
+% Download from https://www.fontsquirrel.com/fonts/computer-modern and put ttf files in /usr/share/fonts/TTF
+\setmainfont{CMU Serif}
+
+\begin{document}
+    This is a paragraph with a PI (π) in it, which looks different than a $\pi$.
+\end{document}
+----
+
 === Quick fixes
 
 ==== Escape Unicode character

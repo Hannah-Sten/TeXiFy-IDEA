@@ -26,6 +26,7 @@
 - Improve exception handling for forward search on Linux. (#1087)
 - Disable unicode quickfixes for TeX Live versions 2018 or later as these are included by default. (#1088)
 - First stop Sumatra before starting it with new inverse search settings. (#1128)
+- Skip unicode check also for XeLaTeX. (#1182)
 - Internal parser improvements. (#1156, #1162, #1157, #1165)
 
 ## Bug fixes
@@ -39,7 +40,7 @@
 - Only check for normal spaces after abbreviations when they end with a full stop. (#1129)
 - Use actual instead of incorrectly indexed command name for missing label inspection. (#1136)
 - Register the analyze menu action group using a service instead of a deprecated application component. (#1144)
-- Fixed crashes. (#1085, #1178)
+- Fixed crashes. (#1085, #1178, #1184)
 - Fix BibTeX formatter inserting spaces in braced words. (#1168)
 
 Thanks to [@TanVD](https://github.com/TanVD), [@fberlakovich](https://github.com/fberlakovich) and [@stsundermann](https://github.com/stsundermann) for contributing to this release.
