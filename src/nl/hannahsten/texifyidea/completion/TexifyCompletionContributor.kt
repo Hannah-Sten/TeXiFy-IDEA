@@ -109,6 +109,8 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 LatexMagicCommentKeyProvider
         )
 
+        extendLatexCommands(LatexBibliographyReferenceProvider, Magic.Command.bibliographyReference)
+
         // Inspection list for magic comment suppress.
         val suppressRegex = Regex("""suppress\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
         extend(

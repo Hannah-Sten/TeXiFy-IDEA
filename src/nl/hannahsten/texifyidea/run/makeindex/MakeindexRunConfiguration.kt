@@ -55,7 +55,8 @@ class MakeindexRunConfiguration(
             val programText = parent.getChildText(PROGRAM)
             if (!programText.isNullOrEmpty()) {
                 MakeindexProgram.valueOf(programText)
-            } else {
+            }
+            else {
                 MakeindexProgram.MAKEINDEX
             }
         }
@@ -152,7 +153,8 @@ class MakeindexRunConfiguration(
                     .forEach {
                         if (it.size == 1) {
                             makeindexOptions[it.first()] = ""
-                        } else if (it.size == 2) {
+                        }
+                        else if (it.size == 2) {
                             makeindexOptions[it.first()] = it.last()
                         }
                     }

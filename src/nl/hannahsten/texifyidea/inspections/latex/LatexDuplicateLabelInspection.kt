@@ -18,13 +18,7 @@ import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.lang.Integer.max
 import java.util.*
-import kotlin.collections.List
-import kotlin.collections.contains
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import kotlin.collections.sum
-import kotlin.collections.toList
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -101,7 +95,8 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                 if (!markedCommands.containsKey(oldCommand)) {
                     markedCommands[oldCommand] = problemDescriptor(oldCommand, label, isOntheFly, manager)
                 }
-            } else {
+            }
+            else {
                 // The first one we found is in the current file, so mark it
                 markedCommands[command] = problemDescriptor(command, label, isOntheFly, manager)
             }
