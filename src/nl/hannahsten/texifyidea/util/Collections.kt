@@ -109,7 +109,7 @@ inline fun <T> Collection<T>.anyMatchAll(predicate: (T) -> Boolean, vararg predi
     val matches = BooleanArray(predicates.size + 1)
     var matchCount = 0
     for (element in this) {
-        for (i in 0 until predicates.size) {
+        for (i in predicates.indices) {
             if (!matches[i] && predicates[i](element)) {
                 matches[i] = true
                 matchCount += 1

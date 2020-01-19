@@ -63,12 +63,12 @@ interface Diacritic {
         companion object {
 
             fun fromUnicode(unicode: String): Normal? {
-                return Normal.values()
+                return values()
                         .find { it.unicode == unicode }
             }
 
             fun fromCommand(command: String): Normal? {
-                return Normal.values()
+                return values()
                         .find { it.command == command }
             }
         }
@@ -101,12 +101,12 @@ interface Diacritic {
         companion object {
 
             fun fromUnicode(unicode: String): Math? {
-                return Math.values()
+                return values()
                         .find { it.unicode == unicode }
             }
 
             fun fromCommand(command: String): Math? {
-                return Math.values()
+                return values()
                         .find { it.command == command }
             }
         }

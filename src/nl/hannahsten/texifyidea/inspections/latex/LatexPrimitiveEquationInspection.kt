@@ -27,15 +27,15 @@ open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
 
     companion object {
 
-        fun replaceRange(it: Matcher) = (it.groupRange(1).start..it.groupRange(2).endInclusive)
+        fun replaceRange(it: Matcher) = (it.groupRange(1).first..it.groupRange(2).last)
     }
 
     override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {
         val file = descriptor.psiElement as PsiFile
         val document = file.document() ?: return 0
 
-        document.replaceString(replacementRange.start, replacementRange.start + 2, "\\[")
-        document.replaceString(replacementRange.endInclusive - 2, replacementRange.endInclusive, "\\]")
+        document.replaceString(replacementRange.first, replacementRange.first + 2, "\\[")
+        document.replaceString(replacementRange.last - 2, replacementRange.last, "\\]")
 
         // $$ were replaced by \[ or \] so the length did not change
         return 0

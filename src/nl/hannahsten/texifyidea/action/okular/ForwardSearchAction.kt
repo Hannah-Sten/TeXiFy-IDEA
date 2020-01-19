@@ -20,7 +20,7 @@ open class ForwardSearchAction : EditorAction(
         "_ForwardSearch",
         TexifyIcons.RIGHT
 ) {
-    val okular = PdfViewer.OKULAR
+    private val okular = PdfViewer.OKULAR
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!okular.isAvailable()) {

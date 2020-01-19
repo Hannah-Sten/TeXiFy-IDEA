@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
@@ -19,7 +20,7 @@ fun Document.lineIndentation(lineNumber: Int): String {
     val lineEnd = this.getLineEndOffset(lineNumber)
     val line = this.getText(TextRange(lineStart, lineEnd))
 
-    for (i in 0 until line.length) {
+    for (i in line.indices) {
         if (line[i] == ' ' || line[i] == '\t') {
             result.append(line[i])
         }
@@ -32,8 +33,7 @@ fun Document.lineIndentation(lineNumber: Int): String {
 /**
  * Gets all the indentation characters of the line at the given offset.
  *
- * @param lineNumber
- *              The offset of the line to get the indentation of.
+ * @param offset The offset of the line to get the indentation of.
  * @return A string containing all the indentation characters. `empty string` when problems arise.
  */
 fun Document.lineIndentationByOffset(offset: Int) = lineIndentation(getLineNumber(offset))
@@ -63,7 +63,7 @@ operator fun Document.set(offset: Int, value: CharSequence) = replaceString(offs
 /**
  * @see [Document.replaceString]
  */
-operator fun Document.set(range: IntRange, value: CharSequence) = replaceString(range.start, range.endInclusive, value)
+operator fun Document.set(range: IntRange, value: CharSequence) = replaceString(range.first, range.last, value)
 
 /**
  * Deletes the given element from the document.
@@ -91,6 +91,6 @@ fun Editor.insertAndMove(offset: Int, string: String) {
 }
 
 /**
- * @see [CaretModel.offset]
+ * @see [CaretModel.getOffset]
  */
 fun Editor.caretOffset() = caretModel.offset

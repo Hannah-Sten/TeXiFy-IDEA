@@ -4,7 +4,6 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -19,12 +18,8 @@ import nl.hannahsten.texifyidea.util.requiredParameter
 import java.lang.Integer.max
 import java.util.*
 import kotlin.collections.List
-import kotlin.collections.contains
 import kotlin.collections.map
-import kotlin.collections.mutableMapOf
-import kotlin.collections.set
 import kotlin.collections.sum
-import kotlin.collections.toList
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -44,72 +39,55 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      */
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
 
-        // save all labels defined by label commands
-        val definedLabels = mutableMapOf<String, LatexCommands>()
+        val duplicateLabels = getProblemDescriptors(file.findLabelingCommandsSequence(), isOntheFly, manager, file) {
+            val labelCommands = TexifySettings.getInstance().labelCommands
+            val name = this.name ?: return@getProblemDescriptors null
+            val position = labelCommands[name]?.position ?: return@getProblemDescriptors null
+            this.requiredParameter(position - 1) ?: return@getProblemDescriptors null
+        }
 
-        // store the markers identified by the marked command to prevent to mark a command twice
-        val markedCommands = mutableMapOf<PsiElement, ProblemDescriptor>()
+        val duplicateBibitems = getProblemDescriptors(file.findBibitemCommands(), isOntheFly, manager, file) {
+            this.requiredParameter(0) ?: return@getProblemDescriptors null
+        }
 
-        // list of defined commands
-        val commands = TexifySettings.getInstance().labelCommands
+        return duplicateLabels + duplicateBibitems
+    }
+
+    /**
+     * @param getLabel Get the label string given the command in which it is defined.
+     */
+    private fun getProblemDescriptors(commands: Sequence<LatexCommands>, isOntheFly: Boolean, manager: InspectionManager, file: PsiFile, getLabel: LatexCommands.() -> String?): List<ProblemDescriptor> {
+
+        // Map labels to commands defining the label
+        val allLabels = hashMapOf<String, MutableSet<LatexCommands>>()
+
+        val result = mutableListOf<ProblemDescriptor>()
+
 
         // Treat LaTeX and BibTeX separately because only the first parameter of \bibitem commands counts
-        file.findLabelingCommandsSequence().forEach {
-            // when label is defined in \newcommand ignore it, because there could be more than one with #1 as parameter
-            val parent = it.parentOfType(LatexCommands::class)
+        // First find all duplicate labels
+        commands.forEach { command ->
+            // When the label is defined in \newcommand ignore it, because there could be more than one with #1 as parameter
+            val parent = command.parentOfType(LatexCommands::class)
             if (parent != null && parent.name == "\\newcommand") {
                 return@forEach
             }
 
-            val name = it.name ?: return@forEach
-
-            val position = commands[name]?.position ?: return@forEach
-            val label = it.requiredParameter(position - 1) ?: return@forEach
-            markCommand(it, label, definedLabels, file, markedCommands, isOntheFly, manager)
+            allLabels.getOrPut(command.getLabel() ?: return@forEach) { mutableSetOf() }.add(command)
         }
 
-        // save all labels defined by bibitem commands
-        val definedBibitems = mutableMapOf<String, LatexCommands>()
+        val duplicates = allLabels.filter { it.value.size > 1 }
 
-        file.findBibitemCommands().forEach {
-            val label = it.requiredParameter(0) ?: return@forEach
-            markCommand(it, label, definedBibitems, file, markedCommands, isOntheFly, manager)
-        }
+        for ((label, labelCommands) in duplicates) {
+            // We can only mark labels in the current file
+            val currentFileDuplicates = labelCommands.filter { command -> command.containingFile == file }
 
-        // remove the identifier of the map and return as list
-        return markedCommands.map { it.value }.toList()
-    }
-
-    /**
-     * Mark a command as duplicate when applicable.
-     */
-    private fun markCommand(command: LatexCommands,
-                    label: String,
-                    definedLabels: MutableMap<String, LatexCommands>,
-                    file: PsiFile,
-                    markedCommands: MutableMap<PsiElement, ProblemDescriptor>,
-                    isOntheFly: Boolean,
-                    manager: InspectionManager) {
-
-        if (definedLabels.contains(label)) {
-            // We cannot mark commands which are not in the file we are currently inspecting
-            // If the second one we found is not in the current file
-            if (command.containingFile != file) {
-                // Mark the old one
-                val oldCommand = definedLabels[label] ?: return
-                // To prevent marking a command twice, check if the command is already marked
-                if (!markedCommands.containsKey(oldCommand)) {
-                    markedCommands[oldCommand] = problemDescriptor(oldCommand, label, isOntheFly, manager)
-                }
-            } else {
-                // The first one we found is in the current file, so mark it
-                markedCommands[command] = problemDescriptor(command, label, isOntheFly, manager)
+            for (command in currentFileDuplicates) {
+                result.add(createProblemDescriptor(command, label, isOntheFly, manager))
             }
         }
-        // store the new label with defining command
-        else {
-            definedLabels[label] = command
-        }
+
+        return result
     }
 
     /**
@@ -127,7 +105,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     /**
      * make the mapping from command etc. to ProblemDescriptor
      */
-    private fun problemDescriptor(cmd : LatexCommands, label : String, isOntheFly: Boolean, manager: InspectionManager)
+    private fun createProblemDescriptor(cmd : LatexCommands, label : String, isOntheFly: Boolean, manager: InspectionManager)
             : ProblemDescriptor {
         val offset = cmd.commandToken.textLength + skippedParametersLength(cmd.parameterList, label) + 1
         return manager.createProblemDescriptor(

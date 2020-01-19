@@ -10,5 +10,6 @@ class LatexIncludesIndex : StringStubIndexExtension<LatexCommands>() {
 
     companion object : IndexCommandsUtilBase(IndexKeys.INCLUDES_KEY)
 
+    @Suppress("RedundantCompanionReference")
     override fun getKey() = Companion.key()
 }
