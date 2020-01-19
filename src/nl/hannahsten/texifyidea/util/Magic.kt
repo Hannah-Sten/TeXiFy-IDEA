@@ -337,7 +337,7 @@ object Magic {
          */
         @JvmField
         val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\subfile"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\documentclass", "\\subfile"
         )
 
         /**
@@ -380,14 +380,15 @@ object Magic {
          * Extensions that should only be scanned for the provided include commands.
          */
         @JvmField
-        val includeOnlyExtensions = mapOf(
+        val includeOnlyExtensions: Map<String, HashSet<String>> = mapOf(
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
                 "\\subfile" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
-                "\\usepackage" to hashSetOf("sty")
+                "\\usepackage" to hashSetOf("sty"),
+                "\\documentclass" to hashSetOf("cls")
         )
 
         /**
