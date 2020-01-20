@@ -59,12 +59,12 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
 
         // Insert squiggly brackets.
         if (element is LatexNormalText) {
-            handleNormalText(element, editor, c)
+            handleNormalText(element, editor)
         }
         else {
             val normalText = findNormalText(element)
             if (normalText != null) {
-                handleNormalText(normalText, editor, c)
+                handleNormalText(normalText, editor)
             }
         }
 
@@ -119,7 +119,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         }
     }
 
-    private fun handleNormalText(normalText: LatexNormalText, editor: Editor, char: Char) {
+    private fun handleNormalText(normalText: LatexNormalText, editor: Editor) {
         // Check if in math environment.
         if (!normalText.inMathContext()) {
             return
