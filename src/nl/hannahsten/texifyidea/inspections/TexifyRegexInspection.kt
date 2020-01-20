@@ -311,7 +311,7 @@ abstract class TexifyRegexInspection(
         var accumulatedDisplacement = 0
 
         // Loop over all fixes manually, in order to fix the regex locations
-        for (i in 0 until replacements.size) {
+        for (i in replacements.indices) {
             val replacementRange = replacementRanges[i]
             val replacement = replacements[i]
 

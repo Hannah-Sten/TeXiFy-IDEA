@@ -41,5 +41,5 @@ class TableCreationTableModel : DefaultTableModel() {
     /**
      * Get the names of the columns.
      */
-    fun getColumnNames() = columnIdentifiers
+    fun getColumnNames(): Vector<Any> = columnIdentifiers
 }

@@ -351,7 +351,7 @@ enum class LatexMathCommand(
         private val lookupDisplay = HashMap<String, LatexMathCommand>()
 
         init {
-            for (command in LatexMathCommand.values()) {
+            for (command in values()) {
                 lookup[command.command] = command
                 if (command.display != null) {
                     lookupDisplay.putIfAbsent(command.display!!, command)

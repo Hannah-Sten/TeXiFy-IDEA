@@ -237,7 +237,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Optional custom compiler arguments
         val argumentsTitle = "Custom compiler arguments"
         val argumentsField = RawCommandLineEditor()
-        argumentsField.dialogCaption = argumentsTitle
 
         compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
         panel.add(compilerArguments)

@@ -27,7 +27,7 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
 
         val file = descriptor.psiElement.containingFile
         val document = file.document() ?: return 0
-        val cite = file.findElementAt(replacementRange.endInclusive + 3)?.parentOfType(LatexCommands::class) ?: return 0
+        val cite = file.findElementAt(replacementRange.last + 3)?.parentOfType(LatexCommands::class) ?: return 0
 
         // Find the interpunction character (the first regex group) in order to move it after the cite
         val char = groups[0]

@@ -27,7 +27,7 @@ enum class LatexMathEnvironment(
         private val lookup = HashMap<String, LatexMathEnvironment>()
 
         init {
-            for (environment in LatexMathEnvironment.values()) {
+            for (environment in values()) {
                 lookup[environment.environmentName] = environment
             }
         }

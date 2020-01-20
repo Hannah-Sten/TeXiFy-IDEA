@@ -28,7 +28,7 @@ open class LatexEquationReferenceInspection : TexifyRegexInspection(
         val document = file.document() ?: return 0
         val reference = groups[0]
 
-        document.replaceString(replacementRange.start, replacementRange.endInclusive, "\\eqref{$reference}")
+        document.replaceString(replacementRange.first, replacementRange.last, "\\eqref{$reference}")
         // We add two characters: 'eq' and remove the two braces, thus the document gets 0 characters longer.
         return 0
     }

@@ -47,7 +47,7 @@ fun String.substringEnd(startIndex: Int, endIndex: Int): String = substring(leng
 /**
  * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
  */
-fun String.substringEnd(range: IntRange): String = substringEnd(range.start, range.endInclusive + 1)
+fun String.substringEnd(range: IntRange): String = substringEnd(range.first, range.last + 1)
 
 /**
  * Trims `startTrim` characters from the front, and `endTrim` characters from the end.

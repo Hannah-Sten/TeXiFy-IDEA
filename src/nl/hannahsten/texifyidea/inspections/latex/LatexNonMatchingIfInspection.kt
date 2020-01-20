@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.matches
+import nl.hannahsten.texifyidea.util.previousCommand
 import java.util.*
 
 /**
@@ -46,7 +47,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
                 stack.pop()
             }
-            else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs) {
+            else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs && command.previousCommand()?.name != "\\newif") {
                 stack.push(command)
             }
         }

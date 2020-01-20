@@ -76,7 +76,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
         val docClass = LatexCommandsIndex.getItems(element.getProject(), scope).asSequence()
-                .filter { cmd -> cmd.commandToken.text == "\\documentclass" && !cmd.requiredParameters.isEmpty() }
+                .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.requiredParameters.isNotEmpty() }
                 .map { cmd -> cmd.requiredParameters[0] }
                 .firstOrNull() ?: "article"
 
@@ -149,7 +149,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
         // Include documentclass.
-        if (!commands.isEmpty()) {
+        if (commands.isNotEmpty()) {
             val baseFile = commands[0].containingFile
             val root = baseFile.findRootFile()
             val documentClass = root.documentClassFile()
@@ -185,8 +185,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
             val fileNames = cmd.includedFileNames() ?: continue
             val containingFile = element.containingFile
-            val directory = containingFile.findRootFile()
-                    .containingDirectory.virtualFile
+            val containingDirectory = containingFile.findRootFile()
+                    .containingDirectory ?: continue
+            val directory = containingDirectory.virtualFile
 
             val elt = LatexStructureViewCommandElement(cmd)
             for (fileName in fileNames) {

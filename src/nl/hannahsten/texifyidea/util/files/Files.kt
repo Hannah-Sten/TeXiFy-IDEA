@@ -313,6 +313,7 @@ fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this)
  *          The package to check for.
  * @return `true` when there is a package `package` included in the file set, `false` otherwise.
  */
+@Suppress("unused")
 fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
 
 /**
@@ -417,6 +418,7 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
 /**
  * Get all the definitions and redefinitions in the file.
  */
+@Suppress("unused")
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this)
 }
