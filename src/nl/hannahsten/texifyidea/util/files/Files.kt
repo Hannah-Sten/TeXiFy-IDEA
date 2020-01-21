@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.execution.RunManager
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileType
@@ -24,6 +26,7 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -154,13 +157,7 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
-    val documentClass = this.commandsInFile().find { it.name == "\\documentclass" }
-
-    // Function to avoid unnecessary evaluation
-    fun usesSubFiles() = documentClass?.requiredParameters?.contains("subfiles") == true
-
-    // When using subfiles, a file with a documentclass does not have to be the root
-    if (documentClass != null && !usesSubFiles()) {
+    if (this.isRoot()) {
         return this
     }
 
@@ -249,8 +246,17 @@ fun PsiFile.isRoot(): Boolean {
     if (fileType != LatexFileType) {
         return false
     }
+    val documentClass = this.commandsInFile().find { it.name == "\\documentclass" }
 
-    return commandsInFile().find { it.commandToken.text == "\\documentclass" } != null
+    // Function to avoid unnecessary evaluation
+    fun usesSubFiles() = documentClass?.requiredParameters?.contains("subfiles") == true
+
+    // When using subfiles, a file with a documentclass does not have to be the root
+
+    val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
+    val latexRunConfiguration = runManager.selectedConfiguration?.configuration as LatexRunConfiguration?
+
+    return latexRunConfiguration?.mainFile == this.virtualFile ||  documentClass != null && !usesSubFiles()
 }
 
 /**
