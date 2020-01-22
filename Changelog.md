@@ -1,5 +1,17 @@
-# Beta 0.6.8
+# Beta 0.6.9
 
+## Additions
+* Added biblatex commands to the autocomplete. (#1195)
+
+## Changes
+
+## Bug fixes
+
+Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko) for contributing to this release.
+
+A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/18?closed=1).
+
+# Beta 0.6.8
 
 ## Additions
 - Add support for the Grazie grammar and spellchecking plugin. (#1120)
@@ -48,3 +60,4 @@
 Thanks to [@TanVD](https://github.com/TanVD), [@fberlakovich](https://github.com/fberlakovich) and [@stsundermann](https://github.com/stsundermann) for contributing to this release.
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/17?closed=1).
+
