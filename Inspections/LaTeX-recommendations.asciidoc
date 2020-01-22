@@ -4,6 +4,10 @@ In general we recommend starting every sentence on a new line, especially becaus
 That also makes it more meaningful to reference a certain line in a document.
 It also makes it easier to read when soft wrapping is off.
 
+Note that this inspection would trigger on abbreviations like `etc.`.
+However, when you use abbreviations like that you should always tell LaTeX to use a normal space instead of an end-of-sentence space, so instead of `This etc. contains a sentence` you should write ``This etc.\ contains a sentence`.
+(Try it, the spaces are really different in the pdf!)
+
 == Collapse cite commands
 
 `\cite{knuth1990}\cite{goossens1993}` can be replaced with `\cite{knuth1990,goossens1993}`
