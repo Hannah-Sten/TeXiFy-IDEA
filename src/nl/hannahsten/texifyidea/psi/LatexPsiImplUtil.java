@@ -130,7 +130,7 @@ public class LatexPsiImplUtil {
                 .filter(Objects::nonNull)
                 .map(PsiElement::getText)
                 .filter(Objects::nonNull)
-                .flatMap(text -> OPTIONAL_SPLIT.splitAsStream(text))
+                .flatMap(OPTIONAL_SPLIT::splitAsStream)
                 .collect(Collectors.toList());
     }
 

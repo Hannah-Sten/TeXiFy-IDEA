@@ -4,8 +4,6 @@ import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.projectSearchScope
 
 /**
@@ -18,14 +16,14 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val project = element.project
-        return LatexDefinitionIndex.getCommandsByNames(Magic.Command.commandDefinitions, project, project.projectSearchScope)
-                .filter { it.forcedFirstRequiredParameterAsCommand()?.name == element.commandToken.text }
+        return LatexDefinitionIndex.getCommandsByName(element.name ?: return emptyArray(), project, project.projectSearchScope)
                 .map { PsiElementResolveResult(it.commandToken) }
                 .toArray(emptyArray())
     }
 
     override fun resolve(): PsiElement? {
         val resolveResults = multiResolve(false)
+        // If there is more than one definition, something is wrong.
         return if (resolveResults.size == 1) resolveResults[0].element else null
     }
 }

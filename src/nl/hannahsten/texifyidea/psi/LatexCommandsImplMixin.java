@@ -14,12 +14,13 @@ import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * This class is a mixin for LatexCommandsImpl. We use a separate mixin class instead of [LatexPsiImplUtil] because we need to add an instance variable
  * in order to implement [getName] and [setName] correctly.
  */
 public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommandsStub> implements PsiNameIdentifierOwner {
-
 
     public String name;
 
@@ -43,7 +44,15 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
 
     @Override
     public String getName() {
-        return name;
+        // TODO this for all definition commands.
+        if (getNode().getText().startsWith("\\newcommand")) {
+            List<String> requiredParameters = getRequiredParameters(this);
+            if (requiredParameters.size() > 0) {
+                return requiredParameters.get(0);
+            }
+            else return name;
+        }
+        else return name;
     }
 
     @Override
@@ -54,7 +63,12 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
     @NotNull
     @Override
     public TextRange getTextRangeInParent() {
-        return null;
+        // TODO this for all definition commands.
+        if (getNode().getText().startsWith("\\newcommand")) {
+            int start = "\\newcommand".length() + 1;
+            return TextRange.from(start, getName().length());
+        }
+        else return super.getTextRangeInParent();
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -77,5 +91,12 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
     @Override
     public PsiElement getNameIdentifier() {
         return this;
+    }
+
+    private List<String> getRequiredParameters(PsiElement element) {
+        if (element instanceof LatexCommands) {
+            return LatexPsiImplUtil.getRequiredParameters((LatexCommands) element);
+        }
+        else return null;
     }
 }
