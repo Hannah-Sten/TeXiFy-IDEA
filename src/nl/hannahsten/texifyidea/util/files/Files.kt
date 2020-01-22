@@ -254,9 +254,9 @@ fun PsiFile.isRoot(): Boolean {
     // When using subfiles, a file with a documentclass does not have to be the root
 
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
-    val latexRunConfiguration = runManager.selectedConfiguration?.configuration as LatexRunConfiguration?
+    val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
 
-    return latexRunConfiguration?.mainFile == this.virtualFile ||  documentClass != null && !usesSubFiles()
+    return isMainFileInAnyConfiguration || documentClass != null && !usesSubFiles()
 }
 
 /**
