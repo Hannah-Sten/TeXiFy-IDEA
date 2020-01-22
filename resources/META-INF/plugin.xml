@@ -430,9 +430,12 @@
                 implementation="nl.hannahsten.texifyidea.navigation.GotoSectionDefinitionSymbolContributor"/>
 
         <!-- Line markers -->
-        <!--        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexLineMarkerProvider"/>-->
-        <!--        <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexNavigationGutter"/>-->
-        <!--        <runLineMarkerContributor language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>-->
+        <codeInsight.lineMarkerProvider language="Latex"
+                                        implementationClass="nl.hannahsten.texifyidea.insight.LatexLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="Latex"
+                                        implementationClass="nl.hannahsten.texifyidea.gutter.LatexNavigationGutter"/>
+        <runLineMarkerContributor language="Latex"
+                                  implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>
 
         <!-- Run configurations -->
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
