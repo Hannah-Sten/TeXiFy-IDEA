@@ -1,5 +1,13 @@
 == Start sentences on a new line
+
+In general we recommend starting every sentence on a new line, especially because this works nicer with version control systems, which work per line.
+That also makes it more meaningful to reference a certain line in a document.
+It also makes it easier to read when soft wrapping is off.
+
 == Collapse cite commands
+
+`\cite{knuth1990}\cite{goossens1993}` can be replaced with `\cite{knuth1990,goossens1993}`
+
 == [[ins:eqref]] Use `\eqref{...}` instead of `(\ref{...})`
 _Since b0.6.6_
 
