@@ -246,17 +246,19 @@ fun PsiFile.isRoot(): Boolean {
     if (fileType != LatexFileType) {
         return false
     }
-    val documentClass = this.commandsInFile().find { it.name == "\\documentclass" }
 
     // Function to avoid unnecessary evaluation
-    fun usesSubFiles() = documentClass?.requiredParameters?.contains("subfiles") == true
+    fun documentClass() = this.commandsInFile().find { it.name == "\\documentclass" }
 
-    // When using subfiles, a file with a documentclass does not have to be the root
+    // Whether the document makes use of the subfiles class, in which case it is not a root file
+    fun usesSubFiles() = documentClass()?.requiredParameters?.contains("subfiles") == true
 
+    // Go through all run configurations, to check if there is one which contains the current file.
+    // If so, then we assume that the file is compilable and must be a root file.
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
 
-    return isMainFileInAnyConfiguration || documentClass != null && !usesSubFiles()
+    return isMainFileInAnyConfiguration || documentClass() != null && !usesSubFiles()
 }
 
 /**
