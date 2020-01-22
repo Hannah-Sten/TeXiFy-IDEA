@@ -2,3 +2,4 @@
 - [ ] Both bibtex and biber configs are generated automatically when needed
 - [ ] Forward/backward search
 - [ ] Autocomplete (bibtex, latex)
+- [ ] Run ctan.py
