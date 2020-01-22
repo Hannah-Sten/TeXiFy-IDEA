@@ -237,14 +237,22 @@ object Magic {
         )
 
         /**
-         * All commands that represent a reference to a bibiography entry/item.
+         * All commands that represent a reference to a bibliography entry/item.
+         * Commands listed here should also be listed in [nl.hannahsten.texifyidea.lang.LatexRegularCommand].
          */
         @JvmField
         val bibliographyReference = hashSetOf(
                 "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
                 "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
                 "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
-                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar"
+                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar", "\\parencite", "\\Parencite",
+                "\\footcite", "\\footcitetext", "\\textcite", "\\Textcite", "\\smartcite", "\\Smartcite",
+                "\\cite*", "\\parencite*", "\\supercite", "\\autocite", "\\Autocite", "\\autocite*",
+                "\\Autocite*", "\\citetitle", "\\citetitle*", "\\citeyear*", "\\citedate", "\\citedate*",
+                "\\citeurl", "\\volcite", "\\Volcite", "\\pvolcite", "\\Pvolcite", "\\fvolcite",
+                "\\Fvolcite", "\\ftvolcite", "\\svolcite", "\\Svolcite", "\\tvolcite", "\\Tvolcite",
+                "\\avolcite", "\\Avolcite", "\\fullcite", "\\footfullcite", "\\notecite", "\\Notecite",
+                "\\pnotecite", "\\fnotecite"
         )
 
         /**

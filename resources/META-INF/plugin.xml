@@ -415,9 +415,9 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.BibtexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.LatexQuoteInsertHandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewHandler"/>
-        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler" />
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
-        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler" />
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
