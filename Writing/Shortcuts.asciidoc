@@ -18,6 +18,7 @@ Some useful shortcuts are for example:
 * kbd:[Alt + Shift + {arrowup}] or kbd:[Alt + Shift + {arrowdown}]: Move the line up or down.
 * kbd:[Ctrl + K]: Commit and push changes with git.
 * kbd:[Ctrl + T] Pull changes with git.
+* kbd:[Ctrl + Alt + <-] Go back to previous cursor location.
 
 == TeXiFy-IDEA shortcuts
 
