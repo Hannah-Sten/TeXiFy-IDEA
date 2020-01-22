@@ -1,0 +1,9 @@
+:experimental:
+
+Next to commands that include other files, there is a gutter icon.
+You can click on it to bring you to the file, or you can use kbd[Ctrl + B] when your cursor is on the filename.
+This includes commands like `\documentclass`, `\usepackage` and `\includegraphics`.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-file-inclusion.gif[]
+
+
