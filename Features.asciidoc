@@ -72,7 +72,7 @@ toc::[]
 * link:++Structure view++[Structure view with filters]
 * link:Go-to-declaration[Go to declaration of labels]
 * "Goto Symbol" support for section names, labels, bibitems, new environments and new commands
-* Gutter icons for file includes including \input, \includegraphic, \usepackage
+* link:File-inclusion-navigation[Gutter icons and navigation shortcuts for file inclusions]
 * Breadcrumbs for environments and commands
 
 == Running
