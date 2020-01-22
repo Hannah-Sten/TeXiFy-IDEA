@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.grazie.grammar.strategy.GrammarCheckingStrategy
 import com.intellij.grazie.grammar.strategy.StrategyUtils
-import com.intellij.grazie.utils.isAtEnd
-import com.intellij.grazie.utils.isAtStart
 import com.intellij.grazie.utils.parents
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.LatexGroup
@@ -18,8 +16,6 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
             ?.let { it is LatexGroup } ?: true
 
     override fun isMyContextRoot(element: PsiElement) = element is LatexNormalText && element.isNotInMathEnvironment() && element.isNotInSquareBrackets()
-
-    override fun isTypoAccepted(root: PsiElement, typoRange: IntRange, ruleRange: IntRange) = !typoRange.isAtStart(root) && !typoRange.isAtEnd(root)
 
     override fun getStealthyRanges(root: PsiElement, text: CharSequence) = StrategyUtils.indentIndexes(text, setOf(' '))
 }

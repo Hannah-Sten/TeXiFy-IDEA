@@ -102,7 +102,7 @@ fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(pro
  *         Set of all supported extensions to look for.
  * @return The matching file, or `null` when the file couldn't be found.
  */
-fun VirtualFile.findFile(fileName: String, extensions: Set<String>): VirtualFile? {
+fun VirtualFile.findFile(fileName: String, extensions: Set<String> = emptySet()): VirtualFile? {
     var file = findFileByRelativePath(fileName)
     if (file != null && !file.isDirectory) return file
 
@@ -148,7 +148,8 @@ fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replace
  * @param path The path to create the directory to.
  */
 fun Module.createExcludedDir(path: String) {
-    ModuleRootManager.getInstance(this).modifiableModel.addContentEntry(path).addExcludeFolder(path)
+    ModuleRootManager.getInstance(this).modifiableModel.addContentEntry(path)
+            .addExcludeFolder(path)
 }
 
 /**
@@ -218,7 +219,8 @@ fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
         val declaredIn = command.containingFile
 
         for (includedName in includedNames) {
-            val referenced = declaredIn.findRelativeFile(includedName) ?: continue
+            val referenced = declaredIn.findRelativeFile(includedName)
+                    ?: continue
 
             // When it looks like a file includes itself, we skip it
             if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
@@ -228,7 +230,7 @@ fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
             val inclusionSet = inclusions[declaredIn] ?: HashSet()
             inclusionSet.add(referenced)
             inclusions[declaredIn] = inclusionSet
-    }
+        }
 
     }
 
@@ -292,7 +294,7 @@ fun PsiFile.isStyleFile() = virtualFile.extension == "sty"
 fun PsiFile.isClassFile() = virtualFile.extension == "cls"
 
 /**
- * Looks up the the that is in the documentclass command.
+ * Looks up the argument that is in the documentclass command.
  */
 fun PsiFile.documentClassFile(): PsiFile? {
     val command = commandsInFile().asSequence()
@@ -345,7 +347,8 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
 
         for (fileName in fileNames) {
-            val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
+            val included = rootFile.findRelativeFile(fileName, extensions)
+                    ?: return@forEach
             if (included in files) return@forEach
             files.add(included)
             included.referencedFiles(files)
@@ -363,7 +366,8 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
 fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val directory = containingDirectory.virtualFile
 
-    val file = directory.findFile(path, extensions ?: Magic.File.includeExtensions)
+    val file = directory.findFile(path, extensions
+            ?: Magic.File.includeExtensions)
             ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
@@ -385,7 +389,8 @@ fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): Psi
 fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
     val rootManager = ProjectRootManager.getInstance(project)
     rootManager.contentSourceRoots.forEach { root ->
-        val file = root.findFile(path, extensions ?: Magic.File.includeExtensions)
+        val file = root.findFile(path, extensions
+                ?: Magic.File.includeExtensions)
         if (file != null) {
             return file.psiFile(project)
         }
@@ -462,3 +467,9 @@ fun createFile(fileName: String, contents: String): File {
         writeText(contents, StandardCharsets.UTF_8)
     }
 }
+
+/**
+ * Get a(n external) file by its absolute path.
+ */
+fun getExternalFile(path: String): VirtualFile? =
+        LocalFileSystem.getInstance().findFileByPath(path)

@@ -14,7 +14,7 @@
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
 
     extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
-    implements("commands")="com.intellij.psi.PsiNamedElement"
+    implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
 
     tokens=[
         WHITE_SPACE='regexp:\s+'

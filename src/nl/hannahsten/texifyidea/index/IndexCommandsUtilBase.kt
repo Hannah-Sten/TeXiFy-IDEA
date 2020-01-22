@@ -16,7 +16,7 @@ abstract class IndexCommandsUtilBase(
     /**
      * Get all the commands that are in a given set of names (without slash).
      */
-    private fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
+    fun getCommandsByNames(names: Set<String>, project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
         val result = ArrayList<LatexCommands>()
 
         for (key in getKeys(project)) {

@@ -237,14 +237,22 @@ object Magic {
         )
 
         /**
-         * All commands that represent a reference to a bibiography entry/item.
+         * All commands that represent a reference to a bibliography entry/item.
+         * Commands listed here should also be listed in [nl.hannahsten.texifyidea.lang.LatexRegularCommand].
          */
         @JvmField
         val bibliographyReference = hashSetOf(
                 "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
                 "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
                 "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
-                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar"
+                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar", "\\parencite", "\\Parencite",
+                "\\footcite", "\\footcitetext", "\\textcite", "\\Textcite", "\\smartcite", "\\Smartcite",
+                "\\cite*", "\\parencite*", "\\supercite", "\\autocite", "\\Autocite", "\\autocite*",
+                "\\Autocite*", "\\citetitle", "\\citetitle*", "\\citeyear*", "\\citedate", "\\citedate*",
+                "\\citeurl", "\\volcite", "\\Volcite", "\\pvolcite", "\\Pvolcite", "\\fvolcite",
+                "\\Fvolcite", "\\ftvolcite", "\\svolcite", "\\Svolcite", "\\tvolcite", "\\Tvolcite",
+                "\\avolcite", "\\Avolcite", "\\fullcite", "\\footfullcite", "\\notecite", "\\Notecite",
+                "\\pnotecite", "\\fnotecite"
         )
 
         /**
@@ -337,7 +345,7 @@ object Magic {
          */
         @JvmField
         val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\subfile"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\documentclass", "\\subfile"
         )
 
         /**
@@ -380,14 +388,15 @@ object Magic {
          * Extensions that should only be scanned for the provided include commands.
          */
         @JvmField
-        val includeOnlyExtensions = mapOf(
+        val includeOnlyExtensions: Map<String, HashSet<String>> = mapOf(
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
                 "\\subfile" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
-                "\\usepackage" to hashSetOf("sty")
+                "\\usepackage" to hashSetOf("sty"),
+                "\\documentclass" to hashSetOf("cls")
         )
 
         /**
