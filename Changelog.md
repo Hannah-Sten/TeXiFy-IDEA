@@ -1,7 +1,10 @@
 # Beta 0.6.9
 
 ## Additions
-* Added biblatex commands to the autocomplete. (#1195)
+* Add go to definition for labels, citations and new commands. (#1191, #2)
+* Add support for opening source files of installed LaTeX packages and classes. (#1191)
+* Add support for opening files from include commands. (#1191)
+* Add biblatex commands to the autocomplete. (#1195)
 
 ## Changes
 
