@@ -6,8 +6,9 @@
 ## Changes
 
 ## Bug fixes
+* Also execute Grazie grammar checking at the beginning of sentences. (#1196)
 
-Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko) for contributing to this release.
+Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko) and Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) for contributing to this release.
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/18?closed=1).
 
