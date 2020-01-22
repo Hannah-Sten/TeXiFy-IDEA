@@ -1,8 +1,10 @@
 :experimental:
 
 By pressing kbd:[Ctrl + B] on a reference to a label, or a citation of a bibtex entry, your cursor will go to the declaration of the reference or citation.
+In general, you can go back to your previous cursor location with kbd:[Ctrl + Alt + <-]
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-label-declaration.gif[]
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-cite-declaration.gif[]
 
 
 Note that your cursor has to be placed somewhere in the parameter of the referencing command, not on the command itself.
