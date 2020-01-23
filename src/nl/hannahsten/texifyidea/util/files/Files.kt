@@ -250,7 +250,7 @@ fun PsiFile.isRoot(): Boolean {
     }
 
     // Function to avoid unnecessary evaluation
-    fun documentClass() = this.commandsInFile().find { it.name == "\\documentclass" }
+    fun documentClass() = this.commandsInFile().find { it.commandToken.text == "\\documentclass" }
 
     // Whether the document makes use of the subfiles class, in which case it is not a root file
     fun usesSubFiles() = documentClass()?.requiredParameters?.contains("subfiles") == true
