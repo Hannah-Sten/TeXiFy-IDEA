@@ -7,6 +7,7 @@
 * Add biblatex commands to the autocomplete. (#1195)
 
 ## Changes
+* If a file has a run configuration associated, treat it as a root file. (#1198)
 
 ## Bug fixes
 * Also execute Grazie grammar checking at the beginning of sentences. (#1196)
