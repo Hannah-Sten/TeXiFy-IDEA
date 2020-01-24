@@ -119,7 +119,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val defaultIcon = TexifyIcons.getIconFromExtension(argument.defaultExtension)
         val icon = if (ignoreFileArgument || TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE) {
             defaultIcon
-        } else {
+        }
+        else {
             TexifyIcons.getIconFromExtension(extension)
         }
 
