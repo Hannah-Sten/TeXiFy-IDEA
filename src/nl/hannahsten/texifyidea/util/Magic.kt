@@ -332,6 +332,8 @@ object Magic {
         @JvmField
         val redefinitions = hashSetOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
 
+        @JvmField
+        val definitionsAndRedefinitions = definitions + redefinitions
         /**
          * All commands that include other files.
          */

@@ -8,7 +8,6 @@ import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.LatexLexerAdapter
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.Magic
 
 class LatexUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? {
@@ -46,7 +45,8 @@ class LatexUsagesProvider : FindUsagesProvider {
     }
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
+        // TODO \newcommand isn't a PsiNameIdentifierOwner anymore? :(
         return psiElement is PsiNameIdentifierOwner
-                && (Magic.Command.definitions + Magic.Command.redefinitions).any { psiElement.node.text.startsWith(it) }
+//                && (Magic.Command.definitions + Magic.Command.redefinitions).any { psiElement.node.text.startsWith(it) }
     }
 }

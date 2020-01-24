@@ -23,7 +23,6 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
 
     override fun resolve(): PsiElement? {
         val resolveResults = multiResolve(false)
-        // If there is more than one definition, something is wrong.
         return if (resolveResults.size == 1) resolveResults[0].element else null
     }
 }

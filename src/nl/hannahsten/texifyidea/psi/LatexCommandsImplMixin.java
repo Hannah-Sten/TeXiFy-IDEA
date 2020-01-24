@@ -10,11 +10,16 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.IncorrectOperationException;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
+import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This class is a mixin for LatexCommandsImpl. We use a separate mixin class instead of [LatexPsiImplUtil] because we need to add an instance variable
@@ -44,8 +49,7 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
 
     @Override
     public String getName() {
-        // TODO this for all definition commands.
-        if (getNode().getText().startsWith("\\newcommand")) {
+        if (new ArrayList<>(Magic.Command.definitionsAndRedefinitions).stream().anyMatch(it -> getNode().getText().startsWith(it))) {
             List<String> requiredParameters = getRequiredParameters(this);
             if (requiredParameters.size() > 0) {
                 return requiredParameters.get(0);
@@ -63,9 +67,12 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
     @NotNull
     @Override
     public TextRange getTextRangeInParent() {
+        String regex = Magic.Command.definitionsAndRedefinitions.stream().map(it -> it.replace("\\", "\\\\")).collect(Collectors.joining("|"));
+        Matcher matcher = Pattern.compile(regex).matcher(getNode().getText());
         // TODO this for all definition commands.
-        if (getNode().getText().startsWith("\\newcommand")) {
-            int start = "\\newcommand".length() + 1;
+        if (matcher.find()) {
+            String command = getNode().getText().split("\\{")[0];
+            int start = command.length() + 1;
             return TextRange.from(start, getName().length());
         }
         else return super.getTextRangeInParent();
