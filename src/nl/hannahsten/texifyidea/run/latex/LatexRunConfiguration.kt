@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
@@ -49,6 +48,9 @@ class LatexRunConfiguration constructor(project: Project,
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
+        // For backwards compatibility
+        private const val AUX_DIR = "aux-dir"
+        private const val OUT_DIR = "out-dir"
     }
 
     var compiler: LatexCompiler? = null
@@ -170,6 +172,8 @@ class LatexRunConfiguration constructor(project: Project,
             this.mainFile = null
         }
 
+        // todo take into account old options when they exist, for backwards compatibility
+
         // Read output path
         val outputPathString = parent.getChildText(OUTPUT_PATH)
         if (outputPathString != null) {
@@ -180,6 +184,24 @@ class LatexRunConfiguration constructor(project: Project,
         val auxilPathString = parent.getChildText(AUXIL_PATH)
         if (auxilPathString != null) {
             this.auxilPath = fileSystem.findFileByPath(auxilPathString)
+        }
+
+        // Backwards compatibility
+        val auxDirBoolean = parent.getChildText(AUX_DIR)
+        if (auxDirBoolean != null && this.auxilPath == null && mainFile != null) {
+            // If there is no auxil path yet but this option still exists,
+            // guess the output path in the same way as it was previously done
+            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
+            val pathExtension = if (usesAuxDir) "/auxil" else ""
+            this.outputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + pathExtension)
+        }
+        val outDirBoolean = parent.getChildText(OUT_DIR)
+        if (outDirBoolean != null && this.outputPath == null && mainFile != null) {
+            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
+            val pathExtension = if (usesOutDir) "/out" else ""
+            this.outputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + pathExtension)
         }
 
         // Read whether to compile twice
@@ -302,10 +324,7 @@ class LatexRunConfiguration constructor(project: Project,
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
-        // On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
-        if (!LatexDistribution.isMiktex) {
-            this.hasOutputDirectories = false
-        }
+        // todo On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
 
         val runManager = RunManagerImpl.getInstanceImpl(project)
 
@@ -344,13 +363,6 @@ class LatexRunConfiguration constructor(project: Project,
         compiler = LatexCompiler.PDFLATEX
     }
 
-    /**
-     * Only enabled by default on MiKTeX, because -aux-directory is MikTeX only.
-     */
-    fun setDefaultAuxiliaryDirectories() {
-        this.hasAuxiliaryDirectories = LatexDistribution.isMiktex
-    }
-
     fun setDefaultOutputFormat() {
         outputFormat = Format.PDF
     }
@@ -361,14 +373,11 @@ class LatexRunConfiguration constructor(project: Project,
      * @return The auxil folder when used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        val mainFile = this.mainFile ?: return null
-
-        fun findChild(name: String) = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)?.findChild(name)
-
         return when {
-            hasAuxiliaryDirectories -> findChild("auxil")
-            hasOutputDirectories -> findChild("out")
-            else -> findChild(mainFile.parent.name)
+            auxilPath != null -> auxilPath
+            outputPath != null -> outputPath
+            mainFile != null -> mainFile?.parent
+            else -> null
         }
     }
 
@@ -385,23 +394,10 @@ class LatexRunConfiguration constructor(project: Project,
         return name == getName()
     }
 
+    // Path to output file (e.g. pdf)
     override fun getOutputFilePath(): String {
-        val folder: String = if (hasOutputDirectories) {
-            val contentRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-
-            // The contentRoot may be null if the file is not in the project
-            if (contentRoot != null) {
-                contentRoot.path + "/out/"
-            }
-            else {
-                mainFile!!.parent.path + "/"
-            }
-        }
-        else {
-            mainFile!!.parent.path + "/"
-        }
-
-        return folder + mainFile!!
+        val outputDir = if (outputPath != null) outputPath!!.path else mainFile?.parent?.path
+        return outputDir + mainFile!!
                 .nameWithoutExtension + "." + outputFormat.toString()
                 .toLowerCase()
     }
@@ -422,7 +418,6 @@ class LatexRunConfiguration constructor(project: Project,
                 ", compilerPath=" + compilerPath +
                 ", sumatraPath=" + sumatraPath +
                 ", mainFile=" + mainFile +
-                ", bibWorkingDir=" + hasAuxiliaryDirectories +
                 ", outputFormat=" + outputFormat +
                 '}'.toString()
     }
