@@ -332,7 +332,7 @@ class LatexRunConfiguration constructor(project: Project,
         if (!LatexDistribution.isMiktex) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (isDefaultOutputPath() && mainFile != null) {
-                outputPath = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+                outputPath = mainFile!!.parent
             }
         }
 
@@ -380,11 +380,11 @@ class LatexRunConfiguration constructor(project: Project,
     /**
      * Find the directory where auxiliary files will be placed, depending on the run config settings.
      *
-     * @return The auxil folder when used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
+     * @return The auxil folder when MiKTeX used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
      */
     fun getAuxilDirectory(): VirtualFile? {
         return when {
-            auxilPath != null -> auxilPath
+            auxilPath != null && LatexDistribution.isMiktex -> auxilPath
             outputPath != null -> outputPath
             mainFile != null -> mainFile?.parent
             else -> null
