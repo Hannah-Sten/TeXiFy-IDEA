@@ -75,7 +75,7 @@ class LatexRunConfiguration constructor(project: Project,
     /** Path to the directory containing the output files. */
     var outputPath: VirtualFile? = null
     /** Path to the directory containing the auxiliary files. */
-    var auxilPath: VirtualFile? = null // todo MiKTeX only
+    var auxilPath: VirtualFile? = null
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
@@ -174,8 +174,6 @@ class LatexRunConfiguration constructor(project: Project,
         else {
             this.mainFile = null
         }
-
-        // todo take into account old options when they exist, for backwards compatibility
 
         // Read output path
         val outputPathString = parent.getChildText(OUTPUT_PATH)
@@ -411,6 +409,9 @@ class LatexRunConfiguration constructor(project: Project,
                 .toLowerCase()
     }
 
+    /**
+     * Set [outputPath]
+     */
     override fun setFileOutputPath(fileOutputPath: String) {
         this.outputPath = LocalFileSystem.getInstance().findFileByPath(fileOutputPath)
     }
@@ -442,6 +443,34 @@ class LatexRunConfiguration constructor(project: Project,
         if (auxilPath != null || mainFile == null || !LatexDistribution.isMiktex) return
         val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         this.auxilPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/auxil")
+    }
+
+    /**
+     * Set [auxilPath]
+     */
+    fun setFileAuxilPath(fileAuxilPath: String) {
+        this.auxilPath = LocalFileSystem.getInstance().findFileByPath(fileAuxilPath)
+    }
+
+    /**
+     * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
+     */
+    fun usesAuxilOrOutDirectory(): Boolean {
+        val usesAuxilDir = if (auxilPath == null) {
+            false
+        }
+        else {
+            auxilPath != mainFile?.parent
+        }
+
+        val usesOutDir = if (outputPath == null) {
+            false
+        }
+        else {
+            outputPath != mainFile?.parent
+        }
+
+        return usesAuxilDir || usesOutDir
     }
 
     override fun suggestedName(): String? {

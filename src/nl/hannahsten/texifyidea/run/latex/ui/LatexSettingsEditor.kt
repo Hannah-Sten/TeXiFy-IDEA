@@ -35,10 +35,11 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
+    private lateinit var outputPath: LabeledComponent<ComponentWithBrowseButton<*>>
+    // Not shown on non-MiKTeX systems
+    private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
 
     // The following options may or may not exist.
-    private var auxDir: JBCheckBox? = null
-    private var outDir: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private val extensionSeparator = TitledSeparator("Extensions")
@@ -82,19 +83,15 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset the main file to compile.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
-        val virtualFile = runConfiguration.mainFile
-        val path = virtualFile?.path ?: ""
-        txtFile.text = path
+        txtFile.text = runConfiguration.mainFile?.path ?: ""
 
-        // Reset seperate auxiliary files.
-        if (auxDir != null) {
-            auxDir!!.isSelected = runConfiguration.hasAuxiliaryDirectories
+        if (auxilPath != null) {
+            val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
+            auxilPathTextField.text = runConfiguration.auxilPath?.path ?: ""
         }
 
-        // Reset seperate output files.
-        if (outDir != null) {
-            outDir!!.isSelected = runConfiguration.hasOutputDirectories
-        }
+        val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
+        outputPathTextField.text = runConfiguration.outputPath?.path ?: ""
 
         // Reset whether to compile twice
         if (compileTwice != null) {
@@ -186,13 +183,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val filePath = txtFile.text
         runConfiguration.setMainFile(filePath)
 
-        // Apply auxiliary files, only if the option exists.
-        if (auxDir != null) {
-            runConfiguration.hasAuxiliaryDirectories = auxDir!!.isSelected
-        }
+        val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
+        runConfiguration.setFileOutputPath(outputPathTextField.text)
 
-        if (outDir != null) {
-            runConfiguration.hasOutputDirectories = outDir!!.isSelected
+        if (auxilPath != null) {
+            val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
+            runConfiguration.setFileAuxilPath(auxilPathTextField.text)
         }
 
         if (compileTwice != null) {
@@ -255,19 +251,31 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
         if (LatexDistribution.isMiktex) {
-            panel.add(TitledSeparator("Options"))
 
-            // Auxiliary files
-            auxDir = JBCheckBox("Separate auxiliary files from output")
-            auxDir!!.isSelected = true
-            panel.add(auxDir)
+            val auxilPathField = TextFieldWithBrowseButton()
+            auxilPathField.addBrowseFolderListener(
+                    TextBrowseFolderListener(
+                            FileChooserDescriptor(false, true, false, false, false, false)
+                                .withTitle("Choose a directory for auxiliary files")
+                                    .withRoots(*ProjectRootManager.getInstance(project!!)
+                                            .contentRootsFromAllModules)
+                    )
+            )
+            auxilPath = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
+            panel.add(auxilPath)
         }
 
-        // Output folder
-        outDir = JBCheckBox("Separate output files from source (disable this when using BiBTeX without MiKTeX)")
-        // Enable by default.
-        outDir!!.isSelected = true
-        panel.add(outDir)
+        val outputPathField = TextFieldWithBrowseButton()
+        outputPathField.addBrowseFolderListener(
+                TextBrowseFolderListener(
+                        FileChooserDescriptor(false, true, false, false, false, false)
+                                .withTitle("Choose a directory for output files")
+                                .withRoots(*ProjectRootManager.getInstance(project!!)
+                                        .contentRootsFromAllModules)
+                )
+        )
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX)")
+        panel.add(outputPath)
 
         compileTwice = JBCheckBox("Always compile twice")
         compileTwice!!.isSelected = false
