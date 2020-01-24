@@ -23,14 +23,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            // -output-directory also exists on non-Windows systems
-            if (runConfig.hasOutputDirectories && moduleRoot != null) {
-                command.add("-output-directory=" + moduleRoot.path + "/out")
+            if (runConfig.outputPath != null) {
+                command.add("-output-directory=" + runConfig.outputPath)
             }
 
-            // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex && moduleRoot != null) {
-                command.add("-aux-directory=" + moduleRoot.path + "/auxil")
+            if (runConfig.auxilPath != null) {
+                command.add("-aux-directory=" + runConfig.auxilPath)
             }
 
             // Prepend root paths to the input search path
@@ -55,9 +53,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            // -output-directory also exists on non-Windows systems
-            if (runConfig.hasOutputDirectories && moduleRoot != null) {
-                command.add("-output-directory=${moduleRoot.path}/out")
+            if (runConfig.outputPath != null) {
+                command.add("-output-directory=" + runConfig.outputPath)
             }
 
             // Note that lualatex has no -aux-directory
@@ -83,14 +80,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            // -output-directory also exists on non-Windows systems
-            if (runConfig.hasOutputDirectories && moduleRoot != null) {
-                command.add("-output-directory=${moduleRoot.path}/out")
+            if (runConfig.outputPath != null) {
+                command.add("-output-directory=" + runConfig.outputPath)
             }
 
-            // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex && moduleRoot != null) {
-                command.add("-aux-directory=${moduleRoot.path}/auxil")
+            if (runConfig.auxilPath != null) {
+                command.add("-aux-directory=" + runConfig.auxilPath)
             }
 
             // -include-directory does not work with latexmk
@@ -115,13 +110,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-no-pdf")
             }
 
-            if (runConfig.hasOutputDirectories && moduleRoot != null) {
-                command.add("-output-directory=" + moduleRoot.path + "/out")
+            if (runConfig.outputPath != null) {
+                command.add("-output-directory=" + runConfig.outputPath)
             }
 
-            // -aux-directory only exists on MikTeX
-            if (runConfig.hasAuxiliaryDirectories && LatexDistribution.isMiktex && moduleRoot != null) {
-                command.add("-aux-directory=" + moduleRoot.path + "/auxil")
+            if (runConfig.auxilPath != null) {
+                command.add("-aux-directory=" + runConfig.auxilPath)
             }
 
             // Prepend root paths to the input search path
@@ -146,8 +140,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
             // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
             // Since adding one will work without any quotes, we choose the output directory.
-            if (runConfig.hasOutputDirectories && moduleRoot != null) {
-                command.add("--arguments=--output-directory=${moduleRoot.path}/out")
+            if (runConfig.outputPath != null) {
+                command.add("--arguments=--output-directory=" + runConfig.outputPath)
             }
 
             return command
@@ -171,8 +165,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("--outfmt=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.hasOutputDirectories && moduleRoot != null) {
-                command.add("--outdir=${moduleRoot.path}/out")
+            if (runConfig.outputPath != null) {
+                command.add("--outdir=" + runConfig.outputPath)
             }
 
             return command

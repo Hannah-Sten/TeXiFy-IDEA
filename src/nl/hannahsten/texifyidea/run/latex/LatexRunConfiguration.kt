@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
@@ -71,7 +72,9 @@ class LatexRunConfiguration constructor(project: Project,
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
 
+    /** Path to the directory containing the output files. */
     var outputPath: VirtualFile? = null
+    /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null // todo MiKTeX only
 
     var compileTwice = false
@@ -324,7 +327,13 @@ class LatexRunConfiguration constructor(project: Project,
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
-        // todo On non-MiKTeX systems, disable the out/ directory by default for bibtex to work
+        // On non-MiKTeX systems, override outputPath to disable the out/ directory by default for bibtex to work
+        if (!LatexDistribution.isMiktex) {
+            // Only if default, because the user could have changed it after creating the run config but before running
+            if (isDefaultOutputPath() && mainFile != null) {
+                outputPath = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+            }
+        }
 
         val runManager = RunManagerImpl.getInstanceImpl(project)
 
@@ -402,7 +411,38 @@ class LatexRunConfiguration constructor(project: Project,
                 .toLowerCase()
     }
 
-    override fun setFileOutputPath(fileOutputPath: String) {}
+    override fun setFileOutputPath(fileOutputPath: String) {
+        this.outputPath = LocalFileSystem.getInstance().findFileByPath(fileOutputPath)
+    }
+
+    /**
+     * Assuming the main file is known, set a default output path if not already set.
+     */
+    fun setDefaultOutputPath() {
+        if (outputPath != null || mainFile == null) return
+        this.outputPath = getDefaultOutputPath()
+    }
+
+    private fun getDefaultOutputPath(): VirtualFile? {
+        val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+        return LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/out")
+    }
+
+    /**
+     * Whether the current output path is the default.
+     */
+    fun isDefaultOutputPath() = getDefaultOutputPath() == outputPath
+
+    /**
+     * Assuming the main file is known, set a default auxil path if not already set.
+     * Will be set to null if not used.
+     */
+    fun setDefaultAuxilPath() {
+        // -aux-directory pdflatex flag only exists on MiKTeX, so disable auxil otherwise
+        if (auxilPath != null || mainFile == null || !LatexDistribution.isMiktex) return
+        val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+        this.auxilPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/auxil")
+    }
 
     override fun suggestedName(): String? {
         return if (mainFile == null) {
