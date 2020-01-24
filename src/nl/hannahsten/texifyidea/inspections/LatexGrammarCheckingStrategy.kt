@@ -2,10 +2,12 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.grazie.grammar.strategy.GrammarCheckingStrategy
 import com.intellij.grazie.grammar.strategy.StrategyUtils
-import com.intellij.grazie.grammar.strategy.impl.ReplaceCharRule
-import com.intellij.grazie.utils.*
+import com.intellij.grazie.utils.parents
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexGroup
+import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
+import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexOpenGroup
 
 class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
     private fun PsiElement.isNotInMathEnvironment() = parents().none { it is LatexMathEnvironment }
@@ -14,10 +16,6 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
             ?.let { it is LatexGroup } ?: true
 
     override fun isMyContextRoot(element: PsiElement) = element is LatexNormalText && element.isNotInMathEnvironment() && element.isNotInSquareBrackets()
-
-    override fun isTypoAccepted(root: PsiElement, typoRange: IntRange, ruleRange: IntRange) = !typoRange.isAtStart(root) && !typoRange.isAtEnd(root)
-
-    override fun getReplaceCharRules(root: PsiElement) = emptyList<ReplaceCharRule>()
 
     override fun getStealthyRanges(root: PsiElement, text: CharSequence) = StrategyUtils.indentIndexes(text, setOf(' '))
 }

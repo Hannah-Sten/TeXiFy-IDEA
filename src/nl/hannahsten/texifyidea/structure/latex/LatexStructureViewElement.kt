@@ -8,7 +8,7 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
@@ -49,7 +49,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase() ?: if (element is PsiNamedElement) {
+        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase() ?: if (element is PsiNameIdentifierOwner) {
             element.name!!.toLowerCase()
         }
         else {
@@ -76,7 +76,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
         val docClass = LatexCommandsIndex.getItems(element.getProject(), scope).asSequence()
-                .filter { cmd -> cmd.commandToken.text == "\\documentclass" && !cmd.requiredParameters.isEmpty() }
+                .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.requiredParameters.isNotEmpty() }
                 .map { cmd -> cmd.requiredParameters[0] }
                 .firstOrNull() ?: "article"
 
@@ -149,7 +149,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
         // Include documentclass.
-        if (!commands.isEmpty()) {
+        if (commands.isNotEmpty()) {
             val baseFile = commands[0].containingFile
             val root = baseFile.findRootFile()
             val documentClass = root.documentClassFile()
@@ -185,8 +185,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
             val fileNames = cmd.includedFileNames() ?: continue
             val containingFile = element.containingFile
-            val directory = containingFile.findRootFile()
-                    .containingDirectory.virtualFile
+            val containingDirectory = containingFile.findRootFile()
+                    .containingDirectory ?: continue
+            val directory = containingDirectory.virtualFile
 
             val elt = LatexStructureViewCommandElement(cmd)
             for (fileName in fileNames) {

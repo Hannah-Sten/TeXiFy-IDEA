@@ -6,9 +6,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
-import nl.hannahsten.texifyidea.util.PackageUtils.getIncludedPackages
-import nl.hannahsten.texifyidea.util.files.*
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.files.documentClassFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.files.referencedFiles
 
 /**
  * @author Hannah Schellekens
@@ -18,12 +19,12 @@ abstract class IndexUtilBase<T : PsiElement>(
         /**
          * The class of the elements that are stored in the index.
          */
-        val elementClass: Class<T>,
+        private val elementClass: Class<T>,
 
         /**
          * The key of the index.
          */
-        val indexKey: StubIndexKey<String, T>
+        private val indexKey: StubIndexKey<String, T>
 ) {
 
     /**

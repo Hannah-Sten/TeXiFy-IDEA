@@ -90,7 +90,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
 
             // Custom compiler arguments
             val argumentsTitle = "Custom compiler arguments"
-            val argumentsField = RawCommandLineEditor().apply { dialogCaption = argumentsTitle }
+            val argumentsField = RawCommandLineEditor()
             compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
             add(compilerArguments)
 

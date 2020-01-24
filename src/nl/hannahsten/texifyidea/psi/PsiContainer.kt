@@ -5,6 +5,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.scope.PsiScopeProcessor
+import nl.hannahsten.texifyidea.folding.LatexImportFoldingBuilder
 import nl.hannahsten.texifyidea.util.endOffset
 import javax.swing.Icon
 
@@ -31,7 +32,7 @@ import javax.swing.Icon
  */
 open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement {
 
-    fun elements() = generateSequence(start) { it.nextSibling?.takeIf { it != end } }
+    fun elements() = generateSequence(start) { it -> it.nextSibling?.takeIf { it != end } }
 
     /**
      * Only returns `true` when `another`
@@ -61,7 +62,10 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getReferences(): Array<PsiReference> = elements().flatMap { it.references.asSequence() }.toList().toTypedArray()
 
-    override fun checkAdd(element: PsiElement) = elements().forEach { it.checkAdd(element) }
+    override fun checkAdd(element: PsiElement) = elements().forEach {
+        @Suppress("DEPRECATION") // Has to be overridden
+        it.checkAdd(element)
+    }
 
     override fun getLanguage() = start.language
 
@@ -98,6 +102,7 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
     override fun getOriginalElement(): PsiElement? = start.originalElement
 
     override fun checkDelete() = elements().forEach {
+        @Suppress("DEPRECATION") // Has to be overridden
         it.checkDelete()
     }
 

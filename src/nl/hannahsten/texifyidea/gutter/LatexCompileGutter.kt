@@ -7,7 +7,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.Function
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
+import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.isEntryPoint
+import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
  * Puts a run-configuration icon in the gutter in front of the \begin{document} command.
@@ -16,11 +18,13 @@ import nl.hannahsten.texifyidea.util.isEntryPoint
  */
 class LatexCompileGutter : RunLineMarkerContributor() {
 
-    override fun getInfo(element: PsiElement): RunLineMarkerContributor.Info? {
-        if (element !is LatexBeginCommand) return null
+    override fun getInfo(element: PsiElement): Info? {
+        if (element.firstChild != null || element.parent !is LatexNormalText) return null
+
+        val beginCommand = element.parentOfType(LatexBeginCommand::class) ?: return null
 
         // Break when not a valid command: don't show icon.
-        if (!element.isEntryPoint()) {
+        if (!beginCommand.isEntryPoint()) {
             return null
         }
 
@@ -30,9 +34,9 @@ class LatexCompileGutter : RunLineMarkerContributor() {
         val actions = ExecutorAction.getActions(0)
 
         // Create icon.
-        return RunLineMarkerContributor.Info(
+        return Info(
                 TexifyIcons.BUILD,
-                Function { _ -> "Compile document" },
+                Function { "Compile document" },
                 actions[0],
                 editConfigs
         )

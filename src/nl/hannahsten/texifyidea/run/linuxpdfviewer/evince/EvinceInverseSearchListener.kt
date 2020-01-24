@@ -52,7 +52,7 @@ class EvinceInverseSearchListener {
 
                     // Get the location represented by the struct
                     val lineNumberLine = bufferedReader.readLine()
-                    val lineNumberString = lineNumberLine.substring(lineNumberLine.indexOf("int32") + 6, lineNumberLine.indexOf("int32") + 7)
+                    val lineNumberString = lineNumberLine.substring(lineNumberLine.indexOf("int32") + 6, lineNumberLine.length).trim()
                     val lineNumber = Integer.parseInt(lineNumberString)
 
                     // Sync the IDE

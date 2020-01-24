@@ -157,7 +157,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         if (runConfiguration.compiler?.includesMakeindex == true) {
             runConfiguration.makeindexRunConfig = null
             makeindexPanel.isVisible = false
-        } else {
+        }
+        else {
             makeindexPanel.isVisible = true
 
             // Apply makeindex
@@ -232,7 +233,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Optional custom compiler arguments
         val argumentsTitle = "Custom compiler arguments"
         val argumentsField = RawCommandLineEditor()
-        argumentsField.dialogCaption = argumentsTitle
 
         compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
         panel.add(compilerArguments)

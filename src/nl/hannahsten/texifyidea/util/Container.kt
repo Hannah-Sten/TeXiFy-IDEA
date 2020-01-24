@@ -3,17 +3,11 @@ package nl.hannahsten.texifyidea.util
 /**
  * @author Hannah Schellekens
  */
-open class Container<T> {
-
-    /**
-     * The item that is contained in the container (Duh).
-     */
-    var item: T?
-
-    @JvmOverloads
-    constructor(item: T? = null) {
-        this.item = item
-    }
+open class Container<T> @JvmOverloads constructor(
+        /**
+         * The item that is contained in the container (Duh).
+         */
+        var item: T? = null) {
 
     override fun toString() = "Container[$item]"
 

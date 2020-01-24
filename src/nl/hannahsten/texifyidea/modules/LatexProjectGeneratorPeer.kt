@@ -11,7 +11,7 @@ import javax.swing.JPanel
 /**
  * Customize the project creation dialog, adding settings.
  *
- * Inspirec by the Rust plugin, source:
+ * Inspired by the Rust plugin, source:
  * https://github.com/intellij-rust/intellij-rust/blob/master/src/main/kotlin/org/rust/ide/newProject/RsProjectGeneratorPeer.kt
  */
 class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {

@@ -43,7 +43,7 @@ class ReferencedFileSetCache(val project: Project) {
      * Creates a new cached value for the file set of base file `psiFile`.
      * This will register the cache to the [CachedValuesManager] and store the cached value.
      */
-    fun buildCacheFor(psiFile: PsiFile): CachedValue<Set<PsiFile>> {
+    private fun buildCacheFor(psiFile: PsiFile): CachedValue<Set<PsiFile>> {
         val psiFileCache = valueManager.createCachedValue {
             CachedValueProvider.Result.create(findReferencedFileSet(psiFile), dependenciesFor(psiFile))
         }

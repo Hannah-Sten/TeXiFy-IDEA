@@ -50,7 +50,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             }
 
             val diacritic = Diacritic.Normal.fromCommand(command.commandToken.text) ?: continue
-            if (diacritic.isTypeable && (!command.requiredParameters.isEmpty() || hasNormalTextSibling(command))) {
+            if (diacritic.isTypeable && (command.requiredParameters.isNotEmpty() || hasNormalTextSibling(command))) {
                 descriptors.add(manager.createProblemDescriptor(
                         command,
                         "Redundant diacritic escape",

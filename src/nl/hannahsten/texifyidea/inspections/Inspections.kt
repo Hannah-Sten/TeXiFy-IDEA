@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
  * Map where each [InsightGroup] is mapped to all the relevant inspection ids.
  */
 val ALL_TEXIFY_INSPECTIONS: Map<InsightGroup, List<String>> by lazy {
-    val inspections = InspectionToolRegistrar.getInstance().get()
+    val inspections = InspectionToolRegistrar.getInstance().createTools()
     val insightGroups = InsightGroup.values()
     HashMap<InsightGroup, List<String>>().apply {
         for (group in insightGroups) {

@@ -14,7 +14,7 @@ import org.jetbrains.concurrency.runAsync
 class OpenViewerListener(
         private val viewer: PdfViewer,
         val runConfig: LatexRunConfiguration,
-        val sourceFilePath: String,
+        private val sourceFilePath: String,
         val line: Int,
         val project: Project,
         val focusAllowed: Boolean = true)

@@ -1,15 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
-import com.intellij.psi.PsiReference;
+import org.jetbrains.annotations.NotNull;
 
-public interface LatexCommands extends PsiNamedElement, StubBasedPsiElement<LatexCommandsStub> {
+import java.util.List;
+
+public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiElement<LatexCommandsStub> {
 
   @NotNull
   List<LatexParameter> getParameterList();

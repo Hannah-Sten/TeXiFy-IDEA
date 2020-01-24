@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.util.*
  */
 open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureViewTreeElement, SortableTreeElement {
 
-    val entryPresentation: ItemPresentation = object : ItemPresentation {
+    private val entryPresentation: ItemPresentation = object : ItemPresentation {
 
         override fun getLocationString() = when (entry.tokenName()?.toLowerCase()) {
             "string" -> entry.tags().first().content?.text.orEmpty()

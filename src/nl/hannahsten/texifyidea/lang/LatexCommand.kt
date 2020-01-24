@@ -67,6 +67,7 @@ interface LatexCommand : Dependend {
      *
      * @return e.g. `{ARG1}{ARG2}[ARG3]`
      */
+    @Suppress("KDocUnresolvedReference")
     fun getArgumentsDisplay(): String {
         val sb = StringBuilder()
         for (arg in arguments) {
@@ -81,7 +82,7 @@ interface LatexCommand : Dependend {
      *
      * @return `true` to insert automatically, `false` not to insert.
      */
-    fun autoInsertRequired() = arguments.filter { arg -> arg is RequiredArgument }.count() >= 1
+    fun autoInsertRequired() = arguments.filterIsInstance<RequiredArgument>().count() >= 1
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Argument> getArgumentsOf(clazz: KClass<T>): List<T> {
