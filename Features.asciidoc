@@ -58,7 +58,7 @@ toc::[]
 * Customizable syntax highlighting
 * Code folding for imports, (sub(sub))sections and environments
 * link:Code-formatting[Code formatting]
-* Method separator lines for sections
+* link:Line-markers[Line markers for sections]
 * Special highlighting and marker for `todo` comments, customizable
 * Links (in comments) are clickable
 * link:LaTeX-documentation[Easy links to LaTeX package documentation]
