@@ -6,7 +6,6 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.ex.WindowManagerEx
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -14,8 +13,10 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.splitContent
 import java.util.*
@@ -32,12 +33,15 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(element: PsiElement,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
-        // Only make markers when dealing with commands.
-        if (element !is LatexCommands) {
-            return
-        }
 
-        val fullCommand = element.commandToken.text ?: return
+        // Gutters should only be used with leaf elements.
+        // Filter for text nodes and then lookup their LatexCommands parent
+        if (element.firstChild != null || element.parent !is LatexNormalText) return
+
+        // Only make markers when dealing with commands.
+        val command = element.parentOfType(LatexCommands::class) ?: return
+
+        val fullCommand = command.commandToken.text ?: return
 
         // True when it doesn't have a required _file_ argument, but must be handled.
         val ignoreFileArgument = IGNORE_FILE_ARGUMENTS.contains(fullCommand)
@@ -54,7 +58,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             return
         }
 
-        val requiredParams = element.requiredParameters()
+        val requiredParams = command.requiredParameters()
         if (requiredParams.isEmpty()) {
             return
         }
@@ -104,8 +108,10 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .toList()
 
         // Build gutter icon.
-        val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width
-                ?: return
+        // TODO: do we really need to dynamically find the maxSize? WindowManagerEx doesn't work in unit tests
+        // val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width
+        //         ?: return
+        val maxSize = 0
 
         // Get the icon from the file extension when applicable and there exists an icon for this extension,
         // otherwise get the default icon for this argument.
@@ -113,8 +119,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val defaultIcon = TexifyIcons.getIconFromExtension(argument.defaultExtension)
         val icon = if (ignoreFileArgument || TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE) {
             defaultIcon
-        }
-        else {
+        } else {
             TexifyIcons.getIconFromExtension(extension)
         }
 

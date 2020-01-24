@@ -35,6 +35,18 @@ class LatexGutterTest : BasePlatformTestCase() {
 
     }
 
+    @Test
+    fun testShowNavigationGutter() {
+        val testName = getTestName(false)
+        myFixture.configureByFile("$testName.tex")
+        myFixture.doHighlighting()
+        val lineMarkers = DaemonCodeAnalyzerImpl
+                .getLineMarkers(myFixture.editor.document, myFixture.project)
+        val gutters = myFixture.findAllGutters()
+        assertEquals(5, gutters.size)
+        assertTrue(gutters.all { g -> g.tooltipText == "Go to referenced file" })
+    }
+
     private fun getLineMarkerLine(marker: LineMarkerInfo<*>): Int {
         return myFixture.editor.document.getLineNumber((marker.element as LeafPsiElement).textRange.startOffset)
     }
