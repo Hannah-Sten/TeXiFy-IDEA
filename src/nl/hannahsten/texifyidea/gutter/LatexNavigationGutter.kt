@@ -79,9 +79,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             arguments[0]
         }
 
-
         // Look up target file.
-        val containingFile = element.getContainingFile() ?: return
+        val containingFile = element.containingFile ?: return
 
         val roots = ArrayList<VirtualFile>()
         val rootFile = containingFile.findRootFile()
@@ -89,7 +88,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             return
         }
         roots.add(rootFile.containingDirectory.virtualFile)
-        val rootManager = ProjectRootManager.getInstance(element.getProject())
+        val rootManager = ProjectRootManager.getInstance(element.project)
         Collections.addAll(roots, *rootManager.contentSourceRoots)
 
         val psiManager = PsiManager.getInstance(element.project)
