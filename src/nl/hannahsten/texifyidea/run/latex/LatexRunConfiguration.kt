@@ -7,6 +7,7 @@ import com.intellij.execution.configurations.*
 import com.intellij.execution.filters.RegexpFilter
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -188,21 +189,23 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
         // Backwards compatibility
-        val auxDirBoolean = parent.getChildText(AUX_DIR)
-        if (auxDirBoolean != null && this.auxilPath == null && mainFile != null) {
-            // If there is no auxil path yet but this option still exists,
-            // guess the output path in the same way as it was previously done
-            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
-            val pathExtension = if (usesAuxDir) "/auxil" else ""
-            this.outputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + pathExtension)
-        }
-        val outDirBoolean = parent.getChildText(OUT_DIR)
-        if (outDirBoolean != null && this.outputPath == null && mainFile != null) {
-            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
-            val pathExtension = if (usesOutDir) "/out" else ""
-            this.outputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + pathExtension)
+        runReadAction {
+            val auxDirBoolean = parent.getChildText(AUX_DIR)
+            if (auxDirBoolean != null && this.auxilPath == null && mainFile != null) {
+                // If there is no auxil path yet but this option still exists,
+                // guess the output path in the same way as it was previously done
+                val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
+                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
+                val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else mainFile.parent.path
+                this.auxilPath = LocalFileSystem.getInstance().findFileByPath(path)
+            }
+            val outDirBoolean = parent.getChildText(OUT_DIR)
+            if (outDirBoolean != null && this.outputPath == null && mainFile != null) {
+                val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
+                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
+                val path = if (usesOutDir) moduleRoot?.path + "/out" else mainFile.parent.path
+                this.outputPath = LocalFileSystem.getInstance().findFileByPath(path)
+            }
         }
 
         // Read whether to compile twice
@@ -404,7 +407,7 @@ class LatexRunConfiguration constructor(project: Project,
     // Path to output file (e.g. pdf)
     override fun getOutputFilePath(): String {
         val outputDir = if (outputPath != null) outputPath!!.path else mainFile?.parent?.path
-        return outputDir + mainFile!!
+        return "$outputDir/" + mainFile!!
                 .nameWithoutExtension + "." + outputFormat.toString()
                 .toLowerCase()
     }

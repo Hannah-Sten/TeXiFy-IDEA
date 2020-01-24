@@ -24,11 +24,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             if (runConfig.outputPath != null) {
-                command.add("-output-directory=" + runConfig.outputPath)
+                command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
-            if (runConfig.auxilPath != null) {
-                command.add("-aux-directory=" + runConfig.auxilPath)
+            // -aux-directory only exists on MiKTeX
+            if (runConfig.auxilPath != null && LatexDistribution.isMiktex) {
+                command.add("-aux-directory=" + runConfig.auxilPath?.path)
             }
 
             // Prepend root paths to the input search path
@@ -54,7 +55,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             if (runConfig.outputPath != null) {
-                command.add("-output-directory=" + runConfig.outputPath)
+                command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
             // Note that lualatex has no -aux-directory
@@ -81,11 +82,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             if (runConfig.outputPath != null) {
-                command.add("-output-directory=" + runConfig.outputPath)
+                command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
-            if (runConfig.auxilPath != null) {
-                command.add("-aux-directory=" + runConfig.auxilPath)
+            if (runConfig.auxilPath != null && LatexDistribution.isMiktex) {
+                command.add("-aux-directory=" + runConfig.auxilPath?.path)
             }
 
             // -include-directory does not work with latexmk
@@ -111,11 +112,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
 
             if (runConfig.outputPath != null) {
-                command.add("-output-directory=" + runConfig.outputPath)
+                command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
-            if (runConfig.auxilPath != null) {
-                command.add("-aux-directory=" + runConfig.auxilPath)
+            if (runConfig.auxilPath != null && LatexDistribution.isMiktex) {
+                command.add("-aux-directory=" + runConfig.auxilPath?.path)
             }
 
             // Prepend root paths to the input search path
@@ -141,7 +142,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
             // Since adding one will work without any quotes, we choose the output directory.
             if (runConfig.outputPath != null) {
-                command.add("--arguments=--output-directory=" + runConfig.outputPath)
+                command.add("--arguments=--output-directory=" + runConfig.outputPath?.path)
             }
 
             return command
