@@ -40,7 +40,7 @@ class LatexGutterTest : BasePlatformTestCase() {
         val testName = getTestName(false)
         myFixture.configureByFile("$testName.tex")
         myFixture.doHighlighting()
-        val lineMarkers = DaemonCodeAnalyzerImpl
+        @Suppress("UNUSED_VARIABLE") val lineMarkers = DaemonCodeAnalyzerImpl
                 .getLineMarkers(myFixture.editor.document, myFixture.project)
         val gutters = myFixture.findAllGutters()
         assertEquals(5, gutters.size)

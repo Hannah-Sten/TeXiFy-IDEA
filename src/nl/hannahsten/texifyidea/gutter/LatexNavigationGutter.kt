@@ -108,10 +108,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .toList()
 
         // Build gutter icon.
-        // TODO: do we really need to dynamically find the maxSize? WindowManagerEx doesn't work in unit tests
-        // val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width
-        //         ?: return
-        val maxSize = 0
 
         // Get the icon from the file extension when applicable and there exists an icon for this extension,
         // otherwise get the default icon for this argument.
@@ -129,7 +125,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .setTargets(files)
                 .setPopupTitle("Navigate to Referenced File")
                 .setTooltipText("Go to referenced file")
-                .setCellRenderer(GotoFileCellRenderer(maxSize))
+                .setCellRenderer(GotoFileCellRenderer(0))
 
         result.add(builder.createLineMarkerInfo(element))
     }
