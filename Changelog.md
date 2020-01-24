@@ -8,6 +8,7 @@
 
 ## Changes
 * If a file has a run configuration associated, treat it as a root file. (#1198)
+* Improve performance of line markers. (#1200)
 
 ## Bug fixes
 * Also execute Grazie grammar checking at the beginning of sentences. (#1196)
