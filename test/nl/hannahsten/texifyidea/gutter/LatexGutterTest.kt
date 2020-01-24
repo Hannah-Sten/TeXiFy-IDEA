@@ -40,8 +40,6 @@ class LatexGutterTest : BasePlatformTestCase() {
         val testName = getTestName(false)
         myFixture.configureByFile("$testName.tex")
         myFixture.doHighlighting()
-        @Suppress("UNUSED_VARIABLE") val lineMarkers = DaemonCodeAnalyzerImpl
-                .getLineMarkers(myFixture.editor.document, myFixture.project)
         val gutters = myFixture.findAllGutters()
         assertEquals(5, gutters.size)
         assertTrue(gutters.all { g -> g.tooltipText == "Go to referenced file" })
