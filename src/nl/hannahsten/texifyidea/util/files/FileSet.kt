@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.BibtexIdIndex
+import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
@@ -66,9 +66,9 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> {
 }
 
 /**
- * @see [BibtexIdIndex.getIndexedIdsInFileSet]
+ * @see [BibtexEntryIndex.getIndexedEntriesInFileSet]
  */
-fun PsiFile.bibtexIdsInFileSet() = BibtexIdIndex.getIndexedIdsInFileSet(this)
+fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
 
 /**
  * @see [LatexCommandsIndex.getItemsInFileSet]

@@ -3,11 +3,13 @@ package nl.hannahsten.texifyidea.lang
 import nl.hannahsten.texifyidea.lang.Argument.Type
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.Package.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
 
 /**
@@ -50,6 +52,8 @@ enum class LatexRegularCommand(
     COLUMNWIDTH("columnwidth"),
     CONTENTSLINE("contentsline", "type".asRequired(), "text".asRequired(Type.TEXT), "page".asRequired()),
     CONTENTSNAME("contentsname", "name".asRequired()),
+    CREF("cref", "label".asRequired(), dependency = CLEVEREF),
+    CREF_CAPITAL("Cref", "label".asRequired(), dependency = CLEVEREF),
     DATE("date", "text".asRequired(Type.TEXT)),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT)),
     DEF("def"),
@@ -107,7 +111,7 @@ enum class LatexRegularCommand(
     I("i", display = "i (dotless)"),
     INCLUDE("include", RequiredFileArgument("sourcefile", "tex")),
     INPUT("input", RequiredFileArgument("sourcefile", "tex")),
-    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredFileArgument("imagefile", "pdf", "png", "jpg", "eps"), dependency = GRAPHICX),
+    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredFileArgument("imagefile", "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", "tex")),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),
@@ -218,6 +222,7 @@ enum class LatexRegularCommand(
     STEPCOUNTER("stepcounter", "counter".asRequired()),
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
+    SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
     SUBITEM("subitem"),
     SUBPARAGRAPH("subparagraph", "shorttitle".asOptional(Type.TEXT), "title".asRequired(Type.TEXT)),
     SUBPARAGRAPH_STAR("subparagraph*", "title".asRequired(Type.TEXT)),
@@ -354,7 +359,61 @@ enum class LatexRegularCommand(
     CITEYEAR("citeyear", "keys".asRequired(), dependency = NATBIB),
     CITEYEARPAR("citeyearpar", "keys".asRequired(), dependency = NATBIB),
     CITENUM("citenum", "key".asRequired(), dependency = NATBIB),
-    CITETEXT("citetext", "text".asRequired(), dependency = NATBIB);
+    CITETEXT("citetext", "text".asRequired(), dependency = NATBIB),
+
+    /**
+     * Biblatex commands
+     */
+    CITE_CAPITALIZED("Cite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PARENCITE("parencite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PARENCITE_CAPITALIZED("Parencite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FOOTCITE("footcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FOOTCITETEXT("footcitetext", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    TEXTCITE("textcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    TEXTCITE_CAPITALIZED("Textcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    SMARTCITE("smartcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    SMARTCITE_CAPITALIZED("Smartcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    CITE_STAR("cite*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PARENCITE_STAR("parencite*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    SUPERCITE("supercite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    AUTOCITE("autocite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    AUTOCITE_CAPITALIZED("Autocite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    AUTOCITE_STAR("autocite*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    AUTOCITE_STAR_CAPITALIZED("Autocite*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITEAUTHOR("citeauthor", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITEAUTHOR_STAR("citeauthor*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITEAUTHOR_CAPITALIZED("Citeauthor", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITEAUTHOR_STAR_CAPITALIZED("Citeauthor*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITETITLE("citetitle", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITETITLE_STAR("citetitle*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITEYEAR("citeyear", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_CITEYEAR_STAR("citeyear*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    CITEDATE("citedate", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    CITEDATE_STAR("citedate*", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    CITEURL("citeurl", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    VOLCITE("volcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    VOLCITE_CAPITALIZED("Volcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PVOLCITE("pvolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PVOLCITE_CAPITALIZED("Pvolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FVOLCITE("fvolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FVOLCITE_CAPITALIZED("Fvolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FTVOLCITE("ftvolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    SVOLCITE("svolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    SVOLCITE_CAPITALIZED("Svolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    TVOLCITE("tvolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    TVOLCITE_CAPITALIZED("Tvolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    AVOLCITE("avolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    AVOLCITE_CAPITALIZED("Avolcite", "prenote".asOptional(), "volume".asRequired(), "page".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FULLCITE("fullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FOOTFULLCITE("footcullcite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    BIBLATEX_NOCITE("nocite", "key".asRequired(), dependency = BIBLATEX),
+    NOTECITE("notecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    NOTECITE_CAPITALIZED("Notecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PNOTECITE("pnotecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PNOTECITE_CAPITALIZED("Pnotecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    FNOTECITE("fnotecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
+    PARENTTEXT("parenttext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
+    BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX);
 
     companion object {
 
@@ -362,6 +421,7 @@ enum class LatexRegularCommand(
         private val lookupDisplay = HashMap<String, LatexRegularCommand>()
 
         init {
+            @Suppress("RemoveRedundantQualifierName")
             for (command in LatexRegularCommand.values()) {
                 lookup[command.command] = command
                 if (command.display != null) {

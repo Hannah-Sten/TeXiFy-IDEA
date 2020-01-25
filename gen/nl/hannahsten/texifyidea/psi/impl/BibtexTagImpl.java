@@ -4,8 +4,10 @@ package nl.hannahsten.texifyidea.psi.impl;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
@@ -33,13 +35,13 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
   @Override
   @Nullable
   public BibtexContent getContent() {
-    return findChildByClass(BibtexContent.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexContent.class);
   }
 
   @Override
   @NotNull
   public BibtexKey getKey() {
-    return findNotNullChildByClass(BibtexKey.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexKey.class));
   }
 
 }

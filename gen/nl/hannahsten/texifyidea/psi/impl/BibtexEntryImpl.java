@@ -1,18 +1,34 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import nl.hannahsten.texifyidea.psi.*;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry {
+import java.util.List;
+
+public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> implements BibtexEntry, PsiNameIdentifierOwner {
+
+  public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType type) {
+    super(stub, type);
+  }
 
   public BibtexEntryImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public BibtexEntryImpl(BibtexEntryStub stub, IElementType type, ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull BibtexVisitor visitor) {
@@ -31,33 +47,78 @@ public class BibtexEntryImpl extends ASTWrapperPsiElement implements BibtexEntry
   }
 
   @Override
-  @Nullable
+  @NotNull
   public BibtexEndtry getEndtry() {
-    return findChildByClass(BibtexEndtry.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexEndtry.class));
   }
 
   @Override
   @Nullable
   public BibtexEntryContent getEntryContent() {
-    return findChildByClass(BibtexEntryContent.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexEntryContent.class);
   }
 
   @Override
   @Nullable
   public BibtexId getId() {
-    return findChildByClass(BibtexId.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexId.class);
   }
 
   @Override
   @Nullable
   public BibtexPreamble getPreamble() {
-    return findChildByClass(BibtexPreamble.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexPreamble.class);
   }
 
   @Override
   @NotNull
   public BibtexType getType() {
-    return findNotNullChildByClass(BibtexType.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, BibtexType.class));
   }
 
+  @Override
+  public String getTitle() {
+    return BibtexPsiImplUtil.getTitle(this);
+  }
+
+  @Override
+  public List<String> getAuthors() {
+    return BibtexPsiImplUtil.getAuthors(this);
+  }
+
+  @Override
+  public String getYear() {
+    return BibtexPsiImplUtil.getYear(this);
+  }
+
+  @Override
+  public String getIdentifier() {
+    return BibtexPsiImplUtil.getIdentifier(this);
+  }
+
+  @Override
+  public String getAbstract() {
+    return BibtexPsiImplUtil.getAbstract(this);
+  }
+
+  @Override
+  public String getTagContent(String tagName) {
+    return BibtexPsiImplUtil.getTagContent(this, tagName);
+  }
+
+  @Override
+  public String getName() {
+    return BibtexPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(@NotNull @NonNls String name) {
+    return BibtexPsiImplUtil.setName(this, name);
+  }
+
+  @Nullable
+  @Override
+  public PsiElement getNameIdentifier() {
+    return this;
+  }
 }

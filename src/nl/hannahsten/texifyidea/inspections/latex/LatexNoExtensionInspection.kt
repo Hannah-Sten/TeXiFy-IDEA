@@ -7,15 +7,14 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.replaceString
-import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 
 /**
@@ -34,20 +33,32 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        LatexCommandsIndex.getItems(file).asSequence()
+        file.commandsInFile().asSequence()
                 .filter { it.name in Magic.Command.illegalExtensions }
                 .filter { command ->
-                    Magic.Command.illegalExtensions[command.name]!!.any { command.requiredParameter(0)?.endsWith(it) == true }
+                    Magic.Command.illegalExtensions[command.name]!!.any {
+                        extension -> command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == true }
+                    }
                 }
-                .forEach {
-                    descriptors.add(manager.createProblemDescriptor(
-                            it,
-                            TextRange.allOf(it.requiredParameter(0)!!).shiftRight(it.commandToken.textLength + 1),
-                            "File argument should not include the extension",
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly,
-                            RemoveExtensionFix
-                    ))
+                .forEach {command ->
+                    val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+                    var offset = 0
+                    for (parameter in parameterList) {
+                        if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
+                            descriptors.add(manager.createProblemDescriptor(
+                                    command,
+                                    TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
+                                    "File argument should not include the extension",
+                                    ProblemHighlightType.GENERIC_ERROR,
+                                    isOntheFly,
+                                    RemoveExtensionFix
+                            ))
+                        }
+
+                        // Assume all parameter are comma separated
+                        offset += parameter.length + ",".length
+                    }
+
                 }
 
         return descriptors
@@ -58,20 +69,29 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
      */
     object RemoveExtensionFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Remove file extension"
+        override fun getFamilyName() = "Remove file extension from parameters"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
 
-            val replacement = Magic.Command.illegalExtensions[command.name]
-                    ?.find { command.requiredParameter(0)?.endsWith(it) == true }
-                    ?.run { command.requiredParameter(0)?.removeSuffix(this) } ?: return
+            val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+            var offset = 0
+            for (parameter in parameterList) {
+                if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
+                    val range = TextRange(offset, offset + parameter.length).shiftRight(command.parameterList.first { it.requiredParam != null }.textOffset + 1)
+                    val replacement = Magic.Command.illegalExtensions[command.name]
+                            ?.find { parameter.endsWith(it) }
+                            ?.run { parameter.removeSuffix(this) } ?: break
+                    document.replaceString(range, replacement)
 
-            // Exclude the enclosing braces
-            val range = command.parameterList.first { it.requiredParam != null }.textRange.shiftRight(1).grown(-2)
+                    // Maintain offset for any removed part
+                    offset -= (range.length - replacement.length)
+                }
 
-            document.replaceString(range, replacement)
+                // Assume all parameter are comma separated
+                offset += parameter.length + ",".length
+            }
         }
     }
 }

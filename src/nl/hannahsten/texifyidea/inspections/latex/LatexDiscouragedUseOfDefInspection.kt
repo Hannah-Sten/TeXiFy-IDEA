@@ -8,14 +8,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import java.util.*
+import kotlin.math.max
 
 /**
  * For now, only not using it before `\ref` or `\cite` will be detected.
@@ -35,7 +36,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
         for (cmd in commands) {
             // Only consider \let and \def.
             if (cmd.name == "\\let" || cmd.name == "\\def") {
@@ -72,7 +73,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
             val (cmd, value) = getArguments(command) ?: return
 
             val startOFfset = command.textOffset
-            val endOffset = Math.max(cmd.textOffset + cmd.textLength, value.textOffset + value.textLength)
+            val endOffset = max(cmd.textOffset + cmd.textLength, value.textOffset + value.textLength)
 
             document.replaceString(startOFfset, endOffset, "$commandName{${cmd.text}}{${value.text}}")
         }

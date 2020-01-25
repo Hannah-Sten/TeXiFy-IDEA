@@ -28,7 +28,12 @@ public class BibtexParserDefinition implements ParserDefinition {
 
     public static final IStubFileElementType FILE = new IStubFileElementType(
             Language.findInstance(BibtexLanguage.class)
-    );
+    ) {
+        @Override
+        public int getStubVersion() {
+            return 5;
+        }
+    };
 
     @NotNull
     @Override
@@ -76,7 +81,7 @@ public class BibtexParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode astNode, ASTNode astNode1) {
+    public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode astNode, ASTNode astNode1) {
         return SpaceRequirements.MAY;
     }
 }

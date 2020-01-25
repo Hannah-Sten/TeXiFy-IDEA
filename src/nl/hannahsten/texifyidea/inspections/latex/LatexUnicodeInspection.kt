@@ -25,6 +25,7 @@ import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable
 import nl.hannahsten.texifyidea.settings.TexifyProjectSettings
+import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.insertUsepackage
@@ -64,11 +65,12 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          * @return Whether Unicode support is enabled.
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
-            if (TexifyProjectSettings.getInstance(file.project).compilerCompatibility == LatexCompiler.LUALATEX) {
+            // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
+            val compilerCompat = TexifyProjectSettings.getInstance(file.project).compilerCompatibility
+            if (compilerCompat == LatexCompiler.LUALATEX || compilerCompat == LatexCompiler.XELATEX || LatexDistribution.texliveVersion >= 2018) {
                 return true
             }
 
-            // TODO: check if options are correct as well
             val included = PackageUtils.getIncludedPackages(file)
             return Magic.Package.unicode.stream().allMatch { p -> included.contains(p.name) }
         }
@@ -161,7 +163,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun startInWriteAction() = false
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable(TexifyProjectSettings()).id)
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable::class.java)
         }
     }
 
@@ -238,7 +240,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             // Extract modifiers
             val mods = n.substring(matcher.end()).split("".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-            val diacritics = (0 until mods.size)
+            val diacritics = (mods.indices)
                     // Modifiers in reversed order
                     .map { mods[mods.size - 1 - it] }
                     .map { if (inMathMode)

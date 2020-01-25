@@ -1,9 +1,13 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
@@ -25,19 +29,19 @@ public class BibtexStringImpl extends ASTWrapperPsiElement implements BibtexStri
   @Override
   @Nullable
   public BibtexBracedString getBracedString() {
-    return findChildByClass(BibtexBracedString.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexBracedString.class);
   }
 
   @Override
   @Nullable
   public BibtexDefinedString getDefinedString() {
-    return findChildByClass(BibtexDefinedString.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexDefinedString.class);
   }
 
   @Override
   @Nullable
   public BibtexQuotedString getQuotedString() {
-    return findChildByClass(BibtexQuotedString.class);
+    return PsiTreeUtil.getChildOfType(this, BibtexQuotedString.class);
   }
 
 }

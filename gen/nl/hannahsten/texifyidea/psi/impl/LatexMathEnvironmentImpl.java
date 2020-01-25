@@ -1,9 +1,13 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
@@ -25,13 +29,13 @@ public class LatexMathEnvironmentImpl extends ASTWrapperPsiElement implements La
   @Override
   @Nullable
   public LatexDisplayMath getDisplayMath() {
-    return findChildByClass(LatexDisplayMath.class);
+    return PsiTreeUtil.getChildOfType(this, LatexDisplayMath.class);
   }
 
   @Override
   @Nullable
   public LatexInlineMath getInlineMath() {
-    return findChildByClass(LatexInlineMath.class);
+    return PsiTreeUtil.getChildOfType(this, LatexInlineMath.class);
   }
 
 }

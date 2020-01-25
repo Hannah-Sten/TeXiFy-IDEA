@@ -9,7 +9,7 @@ import java.io.File
  *
  * @author Hannah Schellekens
  */
-fun main(args: Array<String>) {
+fun main() {
     val result = StringBuilder("<templateSet>\n")
 
     for (entry in BibtexDefaultEntry.values()) {

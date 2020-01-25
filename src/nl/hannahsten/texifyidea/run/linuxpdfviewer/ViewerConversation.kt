@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.run.linuxpdfviewer
 
+import com.intellij.openapi.project.Project
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 abstract class ViewerConversation {
-    abstract fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int)
+    abstract fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 }
 
 /**
@@ -22,7 +23,7 @@ fun String.runCommand(): String? {
 
         // Timeout value
         proc.waitFor(10, TimeUnit.SECONDS)
-        proc.inputStream.bufferedReader().readText()
+        proc.inputStream.bufferedReader().readText() + proc.errorStream.bufferedReader().readText()
     } catch (e: IOException) {
         e.printStackTrace()
         null

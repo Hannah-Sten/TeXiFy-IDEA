@@ -31,7 +31,7 @@ open class LatexEnDashInspection : TexifyRegexInspection(
         val end = groups[1]
 
         val dashReplacement = "$start--$end"
-        document.replaceString(replacementRange.start, replacementRange.endInclusive, dashReplacement)
+        document.replaceString(replacementRange.first, replacementRange.last, dashReplacement)
 
         return dashReplacement.length - replacementRange.length
     }

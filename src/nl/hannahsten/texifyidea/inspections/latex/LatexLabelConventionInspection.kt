@@ -105,8 +105,6 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 continue
             }
         }
-
-        // TODO: make this work. but it's a bit dodgy..
     }
 
     /**

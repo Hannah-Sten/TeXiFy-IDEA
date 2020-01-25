@@ -7,7 +7,6 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -16,6 +15,7 @@ import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parentOfType
 import java.util.*
@@ -33,7 +33,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
          * All commands that should not have a forced breaking space.
          */
         val IGNORED_COMMANDS = setOf(
-                "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\cpageref", "\\autoref", "\\citeauthor"
+                "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\Cref", "\\cpageref", "\\autoref", "\\citeauthor"
         )
     }
 
@@ -48,7 +48,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = LatexCommandsIndex.getItems(file)
+        val commands = file.commandsInFile()
         for (command in commands) {
             // Only target references.
             if (!Magic.Command.reference.contains(command.name)) continue

@@ -21,7 +21,7 @@ open class ForwardSearchAction : EditorAction(
         TexifyIcons.RIGHT
 ) {
 
-    val evince = PdfViewer.EVINCE
+    private val evince = PdfViewer.EVINCE
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!evince.isAvailable()) {
@@ -31,7 +31,7 @@ open class ForwardSearchAction : EditorAction(
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
-        evince.conversation!!.forwardSearch(pdfPath = null, sourceFilePath = file.path, line = line)
+        evince.conversation!!.forwardSearch(pdfPath = null, sourceFilePath = file.path, line = line, project = project, focusAllowed = true)
     }
 
     override fun update(e: AnActionEvent) {

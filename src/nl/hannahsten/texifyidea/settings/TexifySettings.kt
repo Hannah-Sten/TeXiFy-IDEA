@@ -4,8 +4,6 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.xmlb.XmlSerializerUtil
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
@@ -27,10 +25,11 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         CSQUOTES // Context Sensitive quotes from the csquotes package
     }
 
-    var automaticSoftWraps = false
     var automaticSecondInlineMathSymbol = true
     var automaticUpDownBracket = true
     var automaticItemInItemize = true
+    var automaticDependencyCheck = true
+    var autoCompile = false
     var continuousPreview = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
@@ -43,10 +42,11 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
-                automaticSoftWraps = automaticSoftWraps,
                 automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
                 automaticUpDownBracket = automaticUpDownBracket,
                 automaticItemInItemize = automaticItemInItemize,
+                automaticDependencyCheck = automaticDependencyCheck,
+                autoCompile = autoCompile,
                 continuousPreview = continuousPreview,
                 automaticQuoteReplacement = automaticQuoteReplacement,
                 pdfViewer = pdfViewer,
@@ -55,10 +55,11 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     }
 
     override fun loadState(state: TexifySettingsState) {
-        automaticSoftWraps = state.automaticSoftWraps
         automaticSecondInlineMathSymbol = state.automaticSecondInlineMathSymbol
         automaticUpDownBracket = state.automaticUpDownBracket
         automaticItemInItemize = state.automaticItemInItemize
+        automaticDependencyCheck = state.automaticDependencyCheck
+        autoCompile = state.autoCompile
         continuousPreview = state.continuousPreview
         automaticQuoteReplacement = state.automaticQuoteReplacement
         pdfViewer = state.pdfViewer

@@ -4,10 +4,9 @@ import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexRequiredParam
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
  * @author Hannah Schellekens
@@ -24,11 +23,7 @@ open class FileNameInsertionHandler : InsertHandler<LookupElement> {
 
         if (command.name != "\\include" && command.name != "\\bibliography") return
 
-        // Only replace the first command argument.
-        val firstRequiredArgument = command.firstChildOfType(LatexRequiredParam::class) ?: return
-        val endOffset = firstRequiredArgument.endOffset()
-
         val extensionless = text.toString().removeFileExtension()
-        document.replaceString(command.textOffset, endOffset, "${command.name}{$extensionless}")
+        document.replaceString(offset, context.tailOffset, extensionless)
     }
 }

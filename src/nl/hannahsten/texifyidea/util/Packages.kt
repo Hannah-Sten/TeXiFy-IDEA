@@ -3,13 +3,10 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.isClassFile
-import nl.hannahsten.texifyidea.util.files.isStyleFile
+import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.files.*
 
 /**
  * @author Hannah Schellekens
@@ -29,7 +26,7 @@ object PackageUtils {
             .toList()
 
     /** Commands which can include packages in optional or required arguments. **/
-    private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
+    val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
     private val TIKZ_IMPORT_COMMANDS = setOf("\\usetikzlibrary")
     private val PGF_IMPORT_COMMANDS = setOf("\\usepgfplotslibrary")
 
@@ -45,15 +42,26 @@ object PackageUtils {
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
     @JvmStatic
-    private fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
-        val commands = LatexCommandsIndex.getItems(file)
+    fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
+
+        if (!TexifySettings.getInstance().automaticDependencyCheck) {
+            return
+        }
+
+        val commands = file.commandsInFile()
 
         val commandName = if (file.isStyleFile() || file.isClassFile()) "\\RequirePackage" else "\\usepackage"
 
         var last: LatexCommands? = null
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
-                last = cmd
+                // Do not insert below the subfiles package, it should stay last
+                if (cmd.requiredParameters.contains("subfiles")) {
+                    break
+                }
+                else {
+                    last = cmd
+                }
             }
         }
 
@@ -131,7 +139,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackages(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedPackages(commands, HashSet())
     }
 
@@ -142,7 +150,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedTikzLibraries(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedTikzLibraries(commands, HashSet())
     }
 
@@ -153,7 +161,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPgfLibraries(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedPgfLibraries(commands, HashSet())
     }
 
@@ -164,7 +172,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesList(baseFile: PsiFile): List<String> {
-        val commands = LatexCommandsIndex.getItemsInFileSet(baseFile)
+        val commands = baseFile.commandsInFileSet()
         return getIncludedPackages(commands, ArrayList())
     }
 
@@ -175,7 +183,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesOfSingleFile(baseFile: PsiFile): Set<String> {
-        val commands = LatexCommandsIndex.getItems(baseFile)
+        val commands = baseFile.commandsInFile()
         return getIncludedPackages(commands, HashSet())
     }
 
@@ -186,7 +194,7 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPackagesOfSingleFileList(baseFile: PsiFile): List<String> {
-        val commands = LatexCommandsIndex.getItems(baseFile)
+        val commands = baseFile.commandsInFile()
         return getIncludedPackages(commands, ArrayList())
     }
 
@@ -219,6 +227,7 @@ object PackageUtils {
 
     /**
      * Analyses all the given commands and reduces it to a set of all included packages.
+     * Classes will not be included.
      *
      * Note that not all elements returned may be valid package names.
      */
@@ -232,8 +241,16 @@ object PackageUtils {
                 continue
             }
 
-            // Packages can be loaded both in optional and required parameters
-            for (list in setOf(cmd.requiredParameters, cmd.optionalParameters)) {
+            // Assume packages can be included in both optional and required parameters
+            // Except a class, because a class is not a package
+            val packages = if (cmd.commandToken.text == "\\documentclass" || cmd.commandToken.text == "\\LoadClass") {
+                setOf(cmd.optionalParameters)
+            }
+            else {
+                setOf(cmd.requiredParameters, cmd.optionalParameters)
+            }
+
+            for (list in packages) {
 
                 if (list.isEmpty()) {
                     continue

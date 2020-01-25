@@ -10,6 +10,7 @@ import javax.swing.Icon
 /**
  * @author Hannah Schellekens
  */
+@Suppress("ComponentNotRegistered")
 open class InsertEditorAction (
         /**
          * The name of the action.

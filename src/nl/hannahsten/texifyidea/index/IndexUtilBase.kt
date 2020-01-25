@@ -9,6 +9,7 @@ import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.util.files.documentClassFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.files.referencedFiles
 
 /**
  * @author Hannah Schellekens
@@ -18,12 +19,12 @@ abstract class IndexUtilBase<T : PsiElement>(
         /**
          * The class of the elements that are stored in the index.
          */
-        val elementClass: Class<T>,
+        private val elementClass: Class<T>,
 
         /**
          * The key of the index.
          */
-        val indexKey: StubIndexKey<String, T>
+        private val indexKey: StubIndexKey<String, T>
 ) {
 
     /**
@@ -46,6 +47,8 @@ abstract class IndexUtilBase<T : PsiElement>(
         val documentClass = root.documentClassFile()
         if (documentClass != null) {
             searchFiles.add(documentClass.virtualFile)
+            documentClass.referencedFiles().asSequence()
+                    .forEach { searchFiles.add(it.virtualFile) }
         }
 
         // Search index.

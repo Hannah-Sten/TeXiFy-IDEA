@@ -1,9 +1,10 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiNameIdentifierOwner;
+import org.jetbrains.annotations.NotNull;
 
 public class LatexVisitor extends PsiElementVisitor {
 
@@ -12,7 +13,7 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitCommands(@NotNull LatexCommands o) {
-    visitPsiElement(o);
+    visitPsiNameIdentifierOwner(o);
   }
 
   public void visitComment(@NotNull LatexComment o) {
@@ -77,6 +78,10 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitRequiredParam(@NotNull LatexRequiredParam o) {
     visitPsiElement(o);
+  }
+
+  public void visitPsiNameIdentifierOwner(@NotNull PsiNameIdentifierOwner o) {
+    visitElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {

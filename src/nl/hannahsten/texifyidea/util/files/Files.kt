@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.execution.RunManager
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileType
@@ -21,8 +23,10 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -98,7 +102,7 @@ fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(pro
  *         Set of all supported extensions to look for.
  * @return The matching file, or `null` when the file couldn't be found.
  */
-fun VirtualFile.findFile(fileName: String, extensions: Set<String>): VirtualFile? {
+fun VirtualFile.findFile(fileName: String, extensions: Set<String> = emptySet()): VirtualFile? {
     var file = findFileByRelativePath(fileName)
     if (file != null && !file.isDirectory) return file
 
@@ -144,7 +148,8 @@ fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replace
  * @param path The path to create the directory to.
  */
 fun Module.createExcludedDir(path: String) {
-    ModuleRootManager.getInstance(this).modifiableModel.addContentEntry(path).addExcludeFolder(path)
+    ModuleRootManager.getInstance(this).modifiableModel.addContentEntry(path)
+            .addExcludeFolder(path)
 }
 
 /**
@@ -153,14 +158,20 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
-    if (LatexCommandsIndex.getItems(this).any { "\\documentclass" == it.name }) {
+    if (this.isRoot()) {
         return this
     }
 
-    val inclusions = project.allFileinclusions()
+    val inclusions = project.allFileInclusions()
     inclusions.forEach { (file, _) ->
+        // Function to avoid unnecessary evaluation
+        fun usesSubFiles() = file.commandsInFile()
+                .find { it.name == "\\documentclass" }
+                ?.requiredParameters
+                ?.contains("subfiles") == true
+
         // For each root, IsChildDFS until found.
-        if (!file.isRoot()) {
+        if (!file.isRoot() || usesSubFiles()) {
             return@forEach
         }
 
@@ -196,26 +207,31 @@ private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiF
  * @return A map that maps each file to a set of all files that get included by said file. E.g.
  * when `A`↦{`B`,`C`}. Then the files `B` and `C` get included by `A`.
  */
-fun Project.allFileinclusions(): Map<PsiFile, Set<PsiFile>> {
-    val commands = LatexCommandsIndex.getItems(this)
+fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
+    val commands = LatexIncludesIndex.getItems(this)
 
     // Maps every file to all the files it includes.
     val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
 
     // Find all related files.
     for (command in commands) {
-        val includedName = command.includedFileName() ?: continue
+        val includedNames = command.includedFileNames() ?: continue
         val declaredIn = command.containingFile
-        val referenced = declaredIn.findRelativeFile(includedName, null) ?: continue
 
-        // When it looks like a file includes itself, we skip it
-        if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
-            continue
+        for (includedName in includedNames) {
+            val referenced = declaredIn.findRelativeFile(includedName)
+                    ?: continue
+
+            // When it looks like a file includes itself, we skip it
+            if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
+                continue
+            }
+
+            val inclusionSet = inclusions[declaredIn] ?: HashSet()
+            inclusionSet.add(referenced)
+            inclusions[declaredIn] = inclusionSet
         }
 
-        val inclusionSet = inclusions[declaredIn] ?: HashSet()
-        inclusionSet.add(referenced)
-        inclusions[declaredIn] = inclusionSet
     }
 
     return inclusions
@@ -233,7 +249,18 @@ fun PsiFile.isRoot(): Boolean {
         return false
     }
 
-    return commandsInFile().find { it.commandToken.text == "\\documentclass" } != null
+    // Function to avoid unnecessary evaluation
+    fun documentClass() = this.commandsInFile().find { it.commandToken.text == "\\documentclass" }
+
+    // Whether the document makes use of the subfiles class, in which case it is not a root file
+    fun usesSubFiles() = documentClass()?.requiredParameters?.contains("subfiles") == true
+
+    // Go through all run configurations, to check if there is one which contains the current file.
+    // If so, then we assume that the file is compilable and must be a root file.
+    val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
+    val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
+
+    return isMainFileInAnyConfiguration || documentClass() != null && !usesSubFiles()
 }
 
 /**
@@ -243,13 +270,10 @@ fun PsiFile.isRoot(): Boolean {
  */
 fun PsiFile.findInclusions(): List<PsiFile> {
     val root = findRootFile()
-    return commandsInFile().asSequence()
+    return LatexIncludesIndex.getItems(this).asSequence()
             .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
-            .map { it.requiredParameter(0) }
-            .filter(Objects::nonNull)
-            .map { root.findRelativeFile(it!!) }
-            .filter(Objects::nonNull)
-            .map { it!! }
+            .flatMap { it.includedFileNames()?.asSequence() ?: emptySequence() }
+            .mapNotNull { root.findRelativeFile(it) }
             .toList()
 }
 
@@ -270,7 +294,7 @@ fun PsiFile.isStyleFile() = virtualFile.extension == "sty"
 fun PsiFile.isClassFile() = virtualFile.extension == "cls"
 
 /**
- * Looks up the the that is in the documentclass command.
+ * Looks up the argument that is in the documentclass command.
  */
 fun PsiFile.documentClassFile(): PsiFile? {
     val command = commandsInFile().asSequence()
@@ -296,6 +320,7 @@ fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this)
  *          The package to check for.
  * @return `true` when there is a package `package` included in the file set, `false` otherwise.
  */
+@Suppress("unused")
 fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
 
 /**
@@ -314,17 +339,20 @@ fun PsiFile.referencedFiles(): Set<PsiFile> {
  */
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     val scope = fileSearchScope
-    val commands = LatexCommandsIndex.getItems(project, scope)
-
+    val commands = LatexIncludesIndex.getItems(project, scope)
     val rootFile = findRootFile()
 
     commands.forEach { command ->
-        val fileName = command.includedFileName() ?: return@forEach
+        val fileNames = command.includedFileNames() ?: return@forEach
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
-        val included = rootFile.findRelativeFile(fileName, extensions) ?: return@forEach
-        if (included in files) return@forEach
-        files.add(included)
-        included.referencedFiles(files)
+
+        for (fileName in fileNames) {
+            val included = rootFile.findRelativeFile(fileName, extensions)
+                    ?: return@forEach
+            if (included in files) return@forEach
+            files.add(included)
+            included.referencedFiles(files)
+        }
     }
 }
 
@@ -338,7 +366,8 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
 fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val directory = containingDirectory.virtualFile
 
-    val file = directory.findFile(path, extensions ?: Magic.File.includeExtensions)
+    val file = directory.findFile(path, extensions
+            ?: Magic.File.includeExtensions)
             ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
@@ -360,7 +389,8 @@ fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): Psi
 fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
     val rootManager = ProjectRootManager.getInstance(project)
     rootManager.contentSourceRoots.forEach { root ->
-        val file = root.findFile(path, extensions ?: Magic.File.includeExtensions)
+        val file = root.findFile(path, extensions
+                ?: Magic.File.includeExtensions)
         if (file != null) {
             return file.psiFile(project)
         }
@@ -395,6 +425,7 @@ fun PsiFile.definitions(): Collection<LatexCommands> {
 /**
  * Get all the definitions and redefinitions in the file.
  */
+@Suppress("unused")
 fun PsiFile.definitionsAndRedefinitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this)
 }
@@ -436,3 +467,9 @@ fun createFile(fileName: String, contents: String): File {
         writeText(contents, StandardCharsets.UTF_8)
     }
 }
+
+/**
+ * Get a(n external) file by its absolute path.
+ */
+fun getExternalFile(path: String): VirtualFile? =
+        LocalFileSystem.getInstance().findFileByPath(path)

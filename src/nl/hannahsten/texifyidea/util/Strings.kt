@@ -47,7 +47,7 @@ fun String.substringEnd(startIndex: Int, endIndex: Int): String = substring(leng
 /**
  * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
  */
-fun String.substringEnd(range: IntRange): String = substringEnd(range.start, range.endInclusive + 1)
+fun String.substringEnd(range: IntRange): String = substringEnd(range.first, range.last + 1)
 
 /**
  * Trims `startTrim` characters from the front, and `endTrim` characters from the end.
@@ -142,9 +142,14 @@ fun String.removeAll(vararg strings: String): String {
 /**
  * Formats the string as a valid filename, removing not-allowed characters, in TeX-style with - as separator.
  */
-fun String.formatAsFileName(): String {
+fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "\\")
+
+/**
+ * Formats the string as a valid filepath, removing not-allowed characters, in TeX-style with - as separator. Any / or \ characters are not removed.
+ */
+fun String.formatAsFilePath(): String {
     val formatted = this.replace(" ", "-")
-            .removeAll("/", "\\", "<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
+            .removeAll("<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
             .toLowerCase()
 
     // If there are no valid characters left, use a default name.
@@ -164,3 +169,12 @@ fun String.formatAsLabel(): String {
  * Split the given string on whitespace.
  */
 fun String.splitWhitespace() = split(Regex("\\s+"))
+
+/**
+ * Removes HTML tags from the string.
+ *
+ * @return The string with HTML tags removed.
+ *
+ * @see [Magic.Pattern.htmlTag]
+ */
+fun String.removeHtmlTags() = this.replace(Magic.Pattern.htmlTag.toRegex(), "")

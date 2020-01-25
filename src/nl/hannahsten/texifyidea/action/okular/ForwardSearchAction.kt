@@ -20,7 +20,7 @@ open class ForwardSearchAction : EditorAction(
         "_ForwardSearch",
         TexifyIcons.RIGHT
 ) {
-    val okular = PdfViewer.OKULAR
+    private val okular = PdfViewer.OKULAR
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!okular.isAvailable()) {
@@ -30,7 +30,7 @@ open class ForwardSearchAction : EditorAction(
         val document = textEditor.editor.document
         val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
 
-        okular.conversation!!.forwardSearch(null, file.path, line)
+        okular.conversation!!.forwardSearch(null, file.path, line, project, focusAllowed = true)
     }
 
     override fun update(e: AnActionEvent) {

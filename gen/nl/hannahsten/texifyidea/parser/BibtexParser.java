@@ -6,8 +6,8 @@ import com.intellij.lang.PsiBuilder.Marker;
 import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.IFileElementType;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
@@ -23,16 +23,15 @@ public class BibtexParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t instanceof IFileElementType) {
-      r = parse_root_(t, b, 0);
-    }
-    else {
-      r = false;
-    }
+    r = parse_root_(t, b);
     exit_section_(b, 0, m, t, r, true, TRUE_CONDITION);
   }
 
-  protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
+  protected boolean parse_root_(IElementType t, PsiBuilder b) {
+    return parse_root_(t, b, 0);
+  }
+
+  static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return bibtexFile(b, l + 1);
   }
 
@@ -207,18 +206,17 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean entry(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "entry")) return false;
     if (!nextTokenIs(b, TYPE_TOKEN)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, ENTRY, null);
+    boolean r;
+    Marker m = enter_section_(b);
     r = type(b, l + 1);
-    p = r; // pin = 1
-    r = r && report_error_(b, entry_1(b, l + 1));
-    r = p && report_error_(b, entry_2(b, l + 1)) && r;
-    r = p && report_error_(b, entry_3(b, l + 1)) && r;
-    r = p && report_error_(b, endtry(b, l + 1)) && r;
-    r = p && report_error_(b, entry_5(b, l + 1)) && r;
-    r = p && entry_6(b, l + 1) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+    r = r && entry_1(b, l + 1);
+    r = r && entry_2(b, l + 1);
+    r = r && entry_3(b, l + 1);
+    r = r && endtry(b, l + 1);
+    r = r && entry_5(b, l + 1);
+    r = r && entry_6(b, l + 1);
+    exit_section_(b, m, ENTRY, r);
+    return r;
   }
 
   // OPEN_BRACE | OPEN_PARENTHESIS
@@ -337,15 +335,14 @@ public class BibtexParser implements PsiParser, LightPsiParser {
   public static boolean id(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "id")) return false;
     if (!nextTokenIs(b, "<id>", COMMENT_TOKEN, IDENTIFIER)) return false;
-    boolean r, p;
+    boolean r;
     Marker m = enter_section_(b, l, _NONE_, ID, "<id>");
     r = id_0(b, l + 1);
     r = r && consumeToken(b, IDENTIFIER);
-    p = r; // pin = 2
-    r = r && report_error_(b, id_2(b, l + 1));
-    r = p && consumeToken(b, SEPARATOR) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+    r = r && id_2(b, l + 1);
+    r = r && consumeToken(b, SEPARATOR);
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   // comment*

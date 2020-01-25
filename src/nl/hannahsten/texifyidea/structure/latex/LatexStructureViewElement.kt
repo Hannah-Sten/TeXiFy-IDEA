@@ -8,7 +8,7 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
@@ -21,10 +21,13 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.allCommands
+import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.documentClassFile
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.includedFileNames
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -46,7 +49,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase() ?: if (element is PsiNamedElement) {
+        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase() ?: if (element is PsiNameIdentifierOwner) {
             element.name!!.toLowerCase()
         }
         else {
@@ -73,7 +76,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get document class.
         val scope = GlobalSearchScope.fileScope(element as PsiFile)
         val docClass = LatexCommandsIndex.getItems(element.getProject(), scope).asSequence()
-                .filter { cmd -> cmd.commandToken.text == "\\documentclass" && !cmd.requiredParameters.isEmpty() }
+                .filter { cmd -> cmd.commandToken.text == "\\documentclass" && cmd.requiredParameters.isNotEmpty() }
                 .map { cmd -> cmd.requiredParameters[0] }
                 .firstOrNull() ?: "article"
 
@@ -146,12 +149,12 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
         // Include documentclass.
-        if (!commands.isEmpty()) {
+        if (commands.isNotEmpty()) {
             val baseFile = commands[0].containingFile
             val root = baseFile.findRootFile()
             val documentClass = root.documentClassFile()
             if (documentClass != null) {
-                val command = LatexCommandsIndex.getItems(baseFile).asSequence()
+                val command = baseFile.commandsInFile().asSequence()
                         .filter { cmd -> "\\documentclass" == cmd.name }
                         .firstOrNull()
                 if (command != null) {
@@ -180,24 +183,25 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             val argument = latexCommandHuh
                     .getArgumentsOf(RequiredFileArgument::class.java)[0]
 
-            val fileName = required[0]
+            val fileNames = cmd.includedFileNames() ?: continue
             val containingFile = element.containingFile
-            val directory = containingFile.findRootFile()
-                    .containingDirectory.virtualFile
+            val containingDirectory = containingFile.findRootFile()
+                    .containingDirectory ?: continue
+            val directory = containingDirectory.virtualFile
 
-            val file = directory.findFile(fileName, argument.supportedExtensions) ?: continue
-            val psiFile = PsiManager.getInstance(element.project).findFile(file) ?: continue
+            val elt = LatexStructureViewCommandElement(cmd)
+            for (fileName in fileNames) {
+                val file = directory.findFile(fileName, argument.supportedExtensions) ?: continue
+                val psiFile = PsiManager.getInstance(element.project).findFile(file) ?: continue
 
-            if (BibtexFileType == psiFile.fileType) {
-                val elt = LatexStructureViewCommandElement(cmd)
-                elt.addChild(BibtexStructureViewElement(psiFile))
-                treeElements.add(elt)
+                if (BibtexFileType == psiFile.fileType) {
+                    elt.addChild(BibtexStructureViewElement(psiFile))
+                }
+                else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
+                    elt.addChild(LatexStructureViewElement(psiFile))
+                }
             }
-            else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
-                val elt = LatexStructureViewCommandElement(cmd)
-                elt.addChild(LatexStructureViewElement(psiFile))
-                treeElements.add(elt)
-            }
+            treeElements.add(elt)
         }
     }
 

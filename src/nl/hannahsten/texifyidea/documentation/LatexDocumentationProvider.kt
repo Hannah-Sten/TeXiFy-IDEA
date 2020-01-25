@@ -7,8 +7,9 @@ import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
-import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException
 import java.io.InputStream
@@ -20,7 +21,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
     companion object {
 
-        private val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage")
+        private val PACKAGE_COMMANDS = setOf("usepackage", "RequirePackage", "documentclass", "LoadClass")
     }
 
     /**
@@ -30,7 +31,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
     override fun getQuickNavigateInfo(psiElement: PsiElement, originalElement: PsiElement) = when (psiElement) {
         is LatexCommands -> LabelDeclarationLabel(psiElement).makeLabel()
-        is BibtexId -> IdDeclarationLabel(psiElement).makeLabel()
+        is BibtexEntry -> IdDeclarationLabel(psiElement).makeLabel()
         else -> null
     }
 
@@ -39,17 +40,34 @@ class LatexDocumentationProvider : DocumentationProvider {
             return null
         }
 
+        val command = LatexCommand.lookup(element) ?: return null
+
         // Special case for package inclusion commands
-        if (element.name in PACKAGE_COMMANDS) {
+        if (command.command in PACKAGE_COMMANDS) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
             return runTexdoc(Package(pkg))
         }
 
-        val command = LatexCommand.lookup(element) ?: return null
         return runTexdoc(command.dependency)
     }
 
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
+        if (element is BibtexEntry) {
+            fun formatAuthor(author: String): String {
+                val parts = author.split(",")
+                if (parts.size < 2) return author
+                val last = parts[1].trim()
+                val first = parts[0].trim()
+                return "$first $last"
+            }
+
+            val stringBuilder = StringBuilder("<h3>${element.title} (${element.year})</h3>")
+            stringBuilder.append(element.authors.joinToString(", ") { a -> formatAuthor(a) })
+            stringBuilder.append("<br/><br/>")
+            stringBuilder.append(element.abstract)
+            return stringBuilder.toString()
+        }
+
         if (element.previousSiblingIgnoreWhitespace() != null) {
             return lookup?.description
         }
@@ -87,7 +105,15 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         val stream: InputStream
         try {
-            stream = Runtime.getRuntime().exec("texdoc -l $name").inputStream
+            // -M to avoid texdoc asking to choose from the list
+            val command = if (LatexDistribution.isTexlive) {
+                "texdoc -l -M $name"
+            }
+            else {
+                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
+                "texdoc -l $name"
+            }
+            stream = Runtime.getRuntime().exec(command).inputStream
         }
         catch (e: IOException) {
             return emptyList()
@@ -99,7 +125,15 @@ class LatexDocumentationProvider : DocumentationProvider {
              emptyList()
         }
         else {
-            lines
+            if (LatexDistribution.isTexlive) {
+                lines.map {
+                    // Line consists of: name version path optional file description
+                    it.split("\t")[2]
+                }
+            }
+            else {
+                lines
+            }
         }
     }
 }

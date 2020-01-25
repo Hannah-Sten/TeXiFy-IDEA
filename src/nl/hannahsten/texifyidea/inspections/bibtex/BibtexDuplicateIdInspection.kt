@@ -5,13 +5,16 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.BibtexIdIndex
+import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.findAtLeast
+import nl.hannahsten.texifyidea.util.findLabels
+import nl.hannahsten.texifyidea.util.identifier
+import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
  * @author Hannah Schellekens
@@ -34,36 +37,37 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
                 .toSet()
 
         // All the ids that have been defined in the bibtex file. And next a list of all names.
-        val bibtexIds = BibtexIdIndex.getIndexedIdsInFileSet(file)
-        val strings = bibtexIds.map { it.idName() }.toList()
+        val bibtexIds = BibtexEntryIndex.getIndexedEntriesInFileSet(file)
+        val strings = bibtexIds.map { it.identifier() }.toList()
 
-        val added = HashSet<BibtexId>()
-        for (bibtexId in bibtexIds) {
-            val idName = bibtexId.idName()
+        val added = HashSet<BibtexEntry>()
+        // Check the bibtexIds in the current file
+        for (bibtexEntry in BibtexEntryIndex.getIndexedEntries(file)) {
+            val idName = bibtexEntry.identifier()
 
             // Check if defined as bibitem.
-            if (bibtexId !in added && idName in bibitems) {
+            if (bibtexEntry !in added && idName in bibitems) {
                 descriptors.add(manager.createProblemDescriptor(
-                        bibtexId,
-                        TextRange(0, bibtexId.textLength - 1),
+                        bibtexEntry,
+                        TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
                 ))
-                added += bibtexId
+                added += bibtexEntry
                 continue
             }
 
             // Check if defined in bibtex files.
-            if (bibtexId !in added && strings.findAtLeast(2) { it == idName }) {
+            if (bibtexEntry !in added && strings.findAtLeast(2) { it == idName }) {
                 descriptors.add(manager.createProblemDescriptor(
-                        bibtexId,
-                        TextRange(0, bibtexId.textLength - 1),
+                        bibtexEntry,
+                        TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
                 ))
-                added += bibtexId
+                added += bibtexEntry
             }
         }
 

@@ -83,7 +83,10 @@ enum class DefaultEnvironment(
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT),
 
     // lualatex
-    LUACODE(environmentName = "luacode", dependency = Package.LUACODE);
+    LUACODE(environmentName = "luacode", dependency = Package.LUACODE),
+
+    // listings
+    LISTINGS(environmentName = "lstlisting", dependency = Package.LISTINGS);
 
     companion object {
 
@@ -93,7 +96,7 @@ enum class DefaultEnvironment(
         private val lookup = HashMap<String, DefaultEnvironment>()
 
         init {
-            for (environment in DefaultEnvironment.values()) {
+            for (environment in values()) {
                 lookup[environment.environmentName] = environment
             }
         }
