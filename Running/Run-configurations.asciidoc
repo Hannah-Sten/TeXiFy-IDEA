@@ -47,7 +47,17 @@ Then when you run the run configuration, when the compilation has finished the p
 If you don't want to open any pdf viewer for some reason, select the checkbox but leave the field empty.
 
 === Choose LaTeX source file to compile
-=== Option to disable use of out/ directory
+=== (MiKTeX only) Set a custom path for auxiliary files
+
+When using MiKTeX, this path will be passed to the `-aux-directory` flag for pdflatex, and similar for other compilers which support an auxiliary directory.
+
+=== Set a custom path for output files
+
+This path will be passed to the `-output-directory` for pdflatex, and similar for other compilers which support an output directory.
+
+Make sure to _disable this when using BibTeX without MiKTeX_, otherwise bibtex won't be run correctly.
+The exception to this is when you have changed your `openout_any` setting in TeX Live.
+
 === Choose output format
 === Choose BibTeX run configuration
 === Other tasks to run before the run configuration, including other run configurations or external tools
