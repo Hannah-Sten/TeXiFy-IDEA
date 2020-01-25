@@ -351,8 +351,10 @@
         <fileTemplateGroup implementation="nl.hannahsten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Live templates -->
-        <defaultLiveTemplatesProvider implementation="nl.hannahsten.texifyidea.templates.LatexLiveTemplateProvider"/>
-        <defaultLiveTemplatesProvider implementation="nl.hannahsten.texifyidea.templates.BibtexLiveTemplateProvider"/>
+        <defaultLiveTemplates file="/liveTemplates/hidden/LaTeX" hidden="true"/>
+        <defaultLiveTemplates file="/liveTemplates/hidden/BibTeX" hidden="true"/>
+        <defaultLiveTemplates file="/liveTemplates/hidden/Math" hidden="true"/>
+
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 
