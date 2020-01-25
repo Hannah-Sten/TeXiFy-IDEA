@@ -160,8 +160,8 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
 * link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
 * Choose LaTeX source file to compile
-* (Windows) Option to disable use of auxil/ directory
-* Option to disable use of out/ directory
+* (MiKTeX only) Option to set a custom path for auxiliary files
+* Option to set a custom path for output files
 * Option to always compile documents twice (e.g. to fix references)
 * link:Makeindex[Enable/disable the automatic handling of makeindex]
 * Choose output format
