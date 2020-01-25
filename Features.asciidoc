@@ -153,19 +153,21 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Project-settings#compiler-compatibility[Option to change compiler for which to check compatibility]
 
 === Run configuration settings
-* Separate BibTeX run configuration
+
+See link:Run-configurations#Run-configuration-settings[the Run configurations page] for more info.
+
 * Choose compiler
 * Custom compiler path
 * Custom compiler arguments
-* link:SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
-* link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
+* (Windows) Choose a custom path to SumatraPDF
+* Custom pdf viewer
 * Choose LaTeX source file to compile
 * (MiKTeX only) Option to set a custom path for auxiliary files
 * Option to set a custom path for output files
 * Option to always compile documents twice (e.g. to fix references)
-* link:Makeindex[Enable/disable the automatic handling of makeindex]
 * Choose output format
 * Choose BibTeX run configuration
+* Choose Makeindex run configuration
 * Other tasks to run before the run configuration, including other run configurations or external tools
 
 === Code style settings
