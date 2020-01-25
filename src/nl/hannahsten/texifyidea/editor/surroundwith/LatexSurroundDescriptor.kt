@@ -6,15 +6,20 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 
 class LatexSurroundDescriptor : SurroundDescriptor {
+    /**
+     * Get the first and last element of the selection, as these are the only
+     * elements the [LatexSurrounder] uses to surround a piece of text.
+     */
     override fun getElementsToSurround(file: PsiFile?, startOffset: Int, endOffset: Int): Array<PsiElement> {
-        // TODO return all PsiElements in range, instead of only the first element.
-        return arrayOf(file?.findElementAt(startOffset) ?: return emptyArray())
+        val startElement = file?.findElementAt(startOffset) ?: return emptyArray()
+        val endElement = file.findElementAt(endOffset - 1) ?: return emptyArray()
+        return arrayOf(startElement, endElement)
     }
 
     override fun isExclusive(): Boolean = false
 
     override fun getSurrounders(): Array<Surrounder> = arrayOf(
-            QuotesSurrounder.DoubleQuotesSurrounder(),
-            QuotesSurrounder.SingleQuotesSurrounder()
+            DoubleQuotesSurrounder(),
+            SingleQuotesSurrounder()
     )
 }
