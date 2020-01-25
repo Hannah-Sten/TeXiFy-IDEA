@@ -47,7 +47,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
 
         val toolWindow = toolWindowManager.getToolWindow(toolWindowId)
             ?: toolWindowManager.registerToolWindow(toolWindowId, true, ToolWindowAnchor.BOTTOM)
-                .apply { icon = toolWindowIcon }
+//                .apply { icon = toolWindowIcon }
 
         val containingFile = element.containingFile
         val psiDocumentManager = PsiDocumentManager.getInstance(project)
