@@ -154,7 +154,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 
 === Run configuration settings
 
-See link:Run-configurations#Run-configuration-settings[the Run configurations page] for more info.
+See link:Run-configurations#Run-configuration-settings[Run configurations settings] for more info.
 
 * Choose compiler
 * Custom compiler path
@@ -162,9 +162,9 @@ See link:Run-configurations#Run-configuration-settings[the Run configurations pa
 * (Windows) Choose a custom path to SumatraPDF
 * Custom pdf viewer
 * Choose LaTeX source file to compile
-* (MiKTeX only) Option to set a custom path for auxiliary files
-* Option to set a custom path for output files
-* Option to always compile documents twice (e.g. to fix references)
+* (MiKTeX only) Set a custom path for auxiliary files
+* Set a custom path for output files
+* Option to always compile documents twice
 * Choose output format
 * Choose BibTeX run configuration
 * Choose Makeindex run configuration

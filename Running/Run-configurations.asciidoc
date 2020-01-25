@@ -29,10 +29,20 @@ Go to menu:File[Other Settings > Run configuration Templates for New Projects] a
 
 == Run configuration settings
 
-=== Separate BibTeX run configuration
 === Choose compiler
+
+See link:Compilers[Compilers].
+
 === Custom compiler path
+
+Select a path to a LaTeX compiler.
+
 === Custom compiler arguments
+
+Extra arguments to pass to the compiler.
+It depends on the compiler which ones are there by default.
+For more info, check the implementation at https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/src/nl/hannahsten/texifyidea/run/compiler/LatexCompiler.kt
+
 === Custom SumatraPDF path
 
 See link:Running/SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
@@ -47,6 +57,9 @@ Then when you run the run configuration, when the compilation has finished the p
 If you don't want to open any pdf viewer for some reason, select the checkbox but leave the field empty.
 
 === Choose LaTeX source file to compile
+
+Select a LaTeX file.
+
 === (MiKTeX only) Set a custom path for auxiliary files
 
 When using MiKTeX, this path will be passed to the `-aux-directory` flag for pdflatex, and similar for other compilers which support an auxiliary directory.
@@ -58,10 +71,23 @@ This path will be passed to the `-output-directory` for pdflatex, and similar fo
 Make sure to _disable this when using BibTeX without MiKTeX_, otherwise bibtex won't be run correctly.
 The exception to this is when you have changed your `openout_any` setting in TeX Live.
 
+=== Always compile twice
+
+When enabled, TeXiFy will always compile at least twice.
+Can be useful to make sure your references are always updated.
+
 === Choose output format
+
+Some compilers support different output formats than just pdf, for example dvi.
+
 === Choose BibTeX run configuration
+
+See link:BibTeX[BibTeX].
+
 === Choose Makeindex run configuration
 
 See link:Makeindex[Makeindex support].
 
 === Other tasks to run before the run configuration, including other run configurations or external tools
+
+See https://www.jetbrains.com/help/idea/run-debug-configurations-dialog.html#before-launch-options
