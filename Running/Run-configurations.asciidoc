@@ -60,4 +60,8 @@ The exception to this is when you have changed your `openout_any` setting in TeX
 
 === Choose output format
 === Choose BibTeX run configuration
+=== Choose Makeindex run configuration
+
+See link:Makeindex[Makeindex support].
+
 === Other tasks to run before the run configuration, including other run configurations or external tools
