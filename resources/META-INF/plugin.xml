@@ -361,6 +361,9 @@
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 
+        <!-- Surrounders -->
+        <lang.surroundDescriptor language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.surroundwith.LatexSurroundDescriptor"/>
+
         <!-- Application settings -->
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language" id="TexifyConfigurable"/>

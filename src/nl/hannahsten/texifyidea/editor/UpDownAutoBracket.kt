@@ -22,7 +22,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
     companion object {
 
         /**
-         * Symbols that denote wheter a {} block has to be inserted when having more than 1 character.
+         * Symbols that denote whether a {} block has to be inserted when having more than 1 character.
          */
         private val insertSymbols = setOf("_", "^")
 
