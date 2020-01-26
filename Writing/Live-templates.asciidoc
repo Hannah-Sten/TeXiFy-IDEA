@@ -3,6 +3,8 @@
 Using live templates, you can quickly insert a predefined piece of text by typing just a few characters of a certain key.
 You can denote places to which the cursor skips when you press kbd:[Tab] after inserting the live template.
 
+To use a live template, type (a part of) the key, for example `fig`, hit enter when the live template is suggested in the autocomplete, type things and use kbd:[Tab] to skip to the next place to type information.
+
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/live-templates.gif[]
 
 Currently implemented by default are live templates for figures, tables, itemize, enumerate, and in math for summations and integrals.
