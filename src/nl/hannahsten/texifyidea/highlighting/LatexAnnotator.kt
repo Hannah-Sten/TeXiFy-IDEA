@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.highlighting
 
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
@@ -15,6 +16,7 @@ import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 /**
  * @author Hannah Schellekens
  */
+@Suppress("UnstableApiUsage")
 open class LatexAnnotator : Annotator {
 
     companion object {
@@ -79,10 +81,15 @@ open class LatexAnnotator : Annotator {
 
             // Begin/End commands
             if (psiElement is LatexEnvironment) {
-                val ann1 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.beginCommand.textOffset, 6), null)
-                ann1.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
-                val ann2 = annotationHolder.createInfoAnnotation(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4), null)
-                ann2.textAttributes = LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
+                annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                    .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
+                    .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                    .create()
+
+                annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                        .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4))
+                        .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                        .create()
             }
         }
         // Optional parameters
@@ -98,14 +105,16 @@ open class LatexAnnotator : Annotator {
     /**
      * Annotates an inline math element and its children.
      *
-     * All elements will  be coloured accoding to [LatexSyntaxHighlighter.INLINE_MATH] and
+     * All elements will be coloured accoding to [LatexSyntaxHighlighter.INLINE_MATH] and
      * all commands that are contained in the math environment get styled with
      * [LatexSyntaxHighlighter.COMMAND_MATH_INLINE].
      */
     private fun annotateInlineMath(inlineMathElement: LatexInlineMath,
                                    annotationHolder: AnnotationHolder) {
-        val annotation = annotationHolder.createInfoAnnotation(inlineMathElement, null)
-        annotation.textAttributes = LatexSyntaxHighlighter.INLINE_MATH
+        annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                .range(inlineMathElement)
+                .textAttributes(LatexSyntaxHighlighter.INLINE_MATH)
+                .create()
 
         annotateMathCommands(LatexPsiUtil.getAllChildren(inlineMathElement), annotationHolder,
                 LatexSyntaxHighlighter.COMMAND_MATH_INLINE)
@@ -120,8 +129,10 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateDisplayMath(displayMathElement: PsiElement,
                                     annotationHolder: AnnotationHolder) {
-        val annotation = annotationHolder.createInfoAnnotation(displayMathElement, null)
-        annotation.textAttributes = LatexSyntaxHighlighter.DISPLAY_MATH
+        annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                .range(displayMathElement)
+                .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
+                .create()
 
         annotateMathCommands(displayMathElement.childrenOfType(LatexCommands::class), annotationHolder,
                 LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
@@ -137,11 +148,15 @@ open class LatexAnnotator : Annotator {
             return
         }
 
-        val annotation = annotationHolder.createInfoAnnotation(comment, null)
-        annotation.textAttributes = if (comment.isMagicComment()) {
+        val textAttributes = if (comment.isMagicComment()) {
             LatexSyntaxHighlighter.MAGIC_COMMENT
         }
         else LatexSyntaxHighlighter.COMMENT
+
+        annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                .range(comment)
+                .textAttributes(textAttributes)
+                .create()
     }
 
     /**
@@ -161,8 +176,11 @@ open class LatexAnnotator : Annotator {
             }
 
             val token = element.commandToken
-            val annotation = annotationHolder.createInfoAnnotation(token, null)
-            annotation.textAttributes = highlighter
+
+            annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                    .range(token)
+                    .textAttributes(highlighter)
+                    .create()
         }
     }
 
@@ -178,8 +196,11 @@ open class LatexAnnotator : Annotator {
 
             val noMathContent = element.noMathContent
             val toStyle = noMathContent.normalText ?: continue
-            val annotation = annotationHolder.createInfoAnnotation(toStyle, null)
-            annotation.textAttributes = LatexSyntaxHighlighter.OPTIONAL_PARAM
+
+            annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                    .range(toStyle)
+                    .textAttributes(LatexSyntaxHighlighter.OPTIONAL_PARAM)
+                    .create()
         }
     }
 
@@ -190,22 +211,24 @@ open class LatexAnnotator : Annotator {
         annotateStyle(command, annotationHolder)
 
         // Label references.
-        val style = if (command.name in Magic.Command.labelReference) {
-            LatexSyntaxHighlighter.LABEL_REFERENCE
+        val style = when (command.name) {
+            in Magic.Command.labelReference -> {
+                LatexSyntaxHighlighter.LABEL_REFERENCE
+            }
+            // Label definitions.
+            in Magic.Command.labelDefinition -> {
+                LatexSyntaxHighlighter.LABEL_DEFINITION
+            }
+            // Bibliography references (citations).
+            in Magic.Command.bibliographyReference -> {
+                LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
+            }
+            // Label definitions.
+            in Magic.Command.bibliographyItems -> {
+                LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
+            }
+            else -> return
         }
-        // Label definitions.
-        else if (command.name in Magic.Command.labelDefinition) {
-            LatexSyntaxHighlighter.LABEL_DEFINITION
-        }
-        // Bibliography references (citations).
-        else if (command.name in Magic.Command.bibliographyReference) {
-            LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
-        }
-        // Label definitions.
-        else if (command.name in Magic.Command.bibliographyItems) {
-            LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
-        }
-        else return
 
         command.requiredParameters().firstOrNull()?.let {
             annotationHolder.annotateRequiredParameter(it, style!!)
@@ -238,7 +261,9 @@ open class LatexAnnotator : Annotator {
      */
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
         val content = parameter.firstChildOfType(LatexContent::class) ?: return
-        val annotation = createInfoAnnotation(content, null)
-        annotation.textAttributes = style
+        this.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                .range(content)
+                .textAttributes(style)
+                .create()
     }
 }
