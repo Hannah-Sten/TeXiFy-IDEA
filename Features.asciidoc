@@ -39,7 +39,7 @@ toc::[]
 * Toggle star action
 * Custom shortcuts for menu items
 * Brace matching
-* Live template for `\frac` with `tab` skip to next braces pair
+* link:Live-templates[Live templates, for example to quickly insert `\frac{}{}` with `tab` skip to next braces pair]
 * Custom live templates
 * Custom macros with shortcuts
 * Spellchecking with custom dictionaries
