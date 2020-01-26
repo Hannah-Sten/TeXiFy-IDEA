@@ -27,7 +27,7 @@ public class LatexPsiImplUtil {
     static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
     static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
     static final Set<String> DEFINITION_COMMANDS = Magic.Command.commandDefinitions;
-    static final Pattern OPTIONAL_SPLIT = Pattern.compile(",");
+    static final Pattern OPTIONAL_SPLIT = Pattern.compile(",\\s*");
 
     @NotNull
     public static PsiReference[] getReferences(@NotNull LatexCommands element) {
@@ -114,9 +114,14 @@ public class LatexPsiImplUtil {
      * Generates a list of all names of all optional parameters in the command.
      */
     public static List<String> getOptionalParameters(@NotNull LatexCommands element) {
-        return element.getParameterList().stream()
+        return getOptionalParameters(element.getParameterList());
+    }
+
+    private static List<String> getOptionalParameters(@NotNull List<LatexParameter> parameters) {
+        return parameters.stream()
                 .map(LatexParameter::getOptionalParam)
                 .filter(Objects::nonNull)
+                // extract the text of each parameter element
                 .flatMap(op -> {
                     if (op == null || op.getOpenGroup() == null) {
                         return Stream.empty();
@@ -130,7 +135,11 @@ public class LatexPsiImplUtil {
                 .filter(Objects::nonNull)
                 .map(PsiElement::getText)
                 .filter(Objects::nonNull)
+                // split the text elements along the comma separator
                 .flatMap(text -> OPTIONAL_SPLIT.splitAsStream(text))
+                .filter(text -> !text.isEmpty())
+                // return only the parameter name for parameters like "param=value"
+                .map(text -> text.split("\\s*=\\s*")[0])
                 .collect(Collectors.toList());
     }
 
