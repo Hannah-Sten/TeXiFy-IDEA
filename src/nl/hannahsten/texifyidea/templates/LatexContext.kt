@@ -31,8 +31,3 @@ open class LatexContext(
 
     }
 }
-
-
-
-
-
