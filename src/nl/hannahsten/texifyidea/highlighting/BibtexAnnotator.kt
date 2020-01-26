@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.highlighting
 
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.BibtexBracedString
 import nl.hannahsten.texifyidea.psi.BibtexEntry
@@ -13,6 +14,7 @@ import nl.hannahsten.texifyidea.util.tokenType
 /**
  * @author Hannah Schellekens
  */
+@Suppress("UnstableApiUsage")
 open class BibtexAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
@@ -27,16 +29,20 @@ open class BibtexAnnotator : Annotator {
      * Adds syntax highlighting to all {Braced Strings}.
      */
     private fun annotate(bracedString: BibtexBracedString, holder: AnnotationHolder) {
-        val annotation = holder.createInfoAnnotation(bracedString, null)
-        annotation.textAttributes = BibtexSyntaxHighlighter.VALUE
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                .range(bracedString)
+                .textAttributes(BibtexSyntaxHighlighter.VALUE)
+                .create()
     }
 
     /**
      * Adds syntax highlighting to all "Quoted Strings".
      */
     private fun annotate(quotedString: BibtexQuotedString, holder: AnnotationHolder) {
-        val annotation = holder.createInfoAnnotation(quotedString, null)
-        annotation.textAttributes = BibtexSyntaxHighlighter.STRING
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                .range(quotedString)
+                .textAttributes(BibtexSyntaxHighlighter.STRING)
+                .create()
     }
 
     /**
@@ -49,7 +55,9 @@ open class BibtexAnnotator : Annotator {
             return
         }
 
-        val annotation = holder.createInfoAnnotation(key, null)
-        annotation.textAttributes = BibtexSyntaxHighlighter.KEY
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                .range(key)
+                .textAttributes(BibtexSyntaxHighlighter.KEY)
+                .create()
     }
 }
