@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.highlighting
 
+import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
@@ -22,18 +23,20 @@ class LatexTypedHandler : TypedHandlerDelegate() {
      * When pressing $ when text is selected, surround with $ signs.
      */
     override fun beforeSelectionRemoved(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        if (file is LatexFile && c == '$') {
-            val selectionModel = editor.selectionModel
-            val selectedText = selectionModel.selectedText ?: return Result.CONTINUE
-            val selectionStartOffset = selectionModel.selectionStart
-            val selectionEndOffset = selectionModel.selectionEnd
-            // Remove the selected text.
-            editor.document.deleteString(selectionStartOffset, selectionEndOffset)
-            // Insert the selected text, surrounded by dollar signs.
-            editor.document.insertString(selectionStartOffset, "$c$selectedText$c")
-            // Move the caret to just before the second dollar sign (same behaviour as surrounding with quotes).
-            editor.caretModel.moveToOffset(selectionEndOffset + 1)
-            return Result.STOP
+        val selectionModel = editor.selectionModel
+        if (CodeInsightSettings.getInstance().SURROUND_SELECTION_ON_QUOTE_TYPED && selectionModel.hasSelection()) {
+            if (file is LatexFile && c == '$') {
+                val selectedText = selectionModel.selectedText
+                val selectionStartOffset = selectionModel.selectionStart
+                val selectionEndOffset = selectionModel.selectionEnd
+                // Remove the selected text.
+                editor.document.deleteString(selectionStartOffset, selectionEndOffset)
+                // Insert the selected text, surrounded by dollar signs.
+                editor.document.insertString(selectionStartOffset, "$c$selectedText$c")
+                // Move the caret to just before the second dollar sign (same behaviour as surrounding with quotes).
+                editor.caretModel.moveToOffset(selectionEndOffset + 1)
+                return Result.STOP
+            }
         }
         return super.beforeSelectionRemoved(c, project, editor, file)
     }
