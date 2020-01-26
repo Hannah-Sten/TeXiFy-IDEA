@@ -18,6 +18,26 @@ import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
  * @author Sten Wessel
  */
 class LatexTypedHandler : TypedHandlerDelegate() {
+    /**
+     * When pressing $ when text is selected, surround with $ signs.
+     */
+    override fun beforeSelectionRemoved(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
+        if (file is LatexFile && c == '$') {
+            val selectionModel = editor.selectionModel
+            val selectedText = selectionModel.selectedText ?: return Result.CONTINUE
+            val selectionStartOffset = selectionModel.selectionStart
+            val selectionEndOffset = selectionModel.selectionEnd
+            // Remove the selected text.
+            editor.document.deleteString(selectionStartOffset, selectionEndOffset)
+            // Insert the selected text, surrounded by dollar signs.
+            editor.document.insertString(selectionStartOffset, "$c$selectedText$c")
+            // Move the caret to just before the second dollar sign (same behaviour as surrounding with quotes).
+            editor.caretModel.moveToOffset(selectionEndOffset + 1)
+            return Result.STOP
+        }
+        return super.beforeSelectionRemoved(c, project, editor, file)
+    }
+
     override fun beforeCharTyped(c: Char, project: Project, editor: Editor, file: PsiFile, fileType: FileType): Result {
         if (file is LatexFile) {
             if (c == '$') {
