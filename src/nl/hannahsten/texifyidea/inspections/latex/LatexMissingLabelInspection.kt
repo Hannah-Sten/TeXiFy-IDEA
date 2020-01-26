@@ -10,9 +10,11 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.environmentsInFile
 import nl.hannahsten.texifyidea.util.files.openedEditor
 import java.util.*
 
@@ -47,6 +49,15 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             addCommandDescriptor(command, descriptors, manager, isOntheFly)
         }
 
+        val environments = file.environmentsInFile()
+        for (environment in environments) {
+            if (!Magic.Environment.labeled.containsKey(environment.environmentName)) {
+                continue
+            }
+
+            addEnvironmentDescriptor(environment, descriptors, manager, isOntheFly)
+        }
+
         return descriptors
     }
 
@@ -67,6 +78,24 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                 InsertLabelFix(),
                 ProblemHighlightType.WEAK_WARNING,
                 isOntheFly
+        ))
+
+        return true
+    }
+
+    private fun addEnvironmentDescriptor(environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>,
+                                         manager: InspectionManager, isOntheFly: Boolean): Boolean {
+        if (environment.hasLabel()) {
+            return false
+        }
+
+        descriptors.add(manager.createProblemDescriptor(
+                environment,
+                "Missing label",
+                LocalQuickFix.EMPTY_ARRAY,
+                ProblemHighlightType.WEAK_WARNING,
+                isOntheFly,
+                false
         ))
 
         return true

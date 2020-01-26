@@ -16,6 +16,8 @@
     extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
     implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
 
+    extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
+
     tokens=[
         WHITE_SPACE='regexp:\s+'
         DISPLAY_MATH_START='\['
@@ -41,7 +43,12 @@ no_math_content ::= comment | environment | math_environment | commands | group 
 
 normal_text ::= (NORMAL_TEXT_WORD | STAR)+
 
-environment ::= begin_command environment_content? end_command { pin=1 }
+environment ::= begin_command environment_content? end_command {
+    pin=1
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
+    stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
+    methods=[getEnvironmentName hasLabel]
+ }
 
 environment_content ::= content+
 

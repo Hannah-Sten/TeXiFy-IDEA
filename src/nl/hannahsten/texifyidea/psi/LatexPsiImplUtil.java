@@ -6,6 +6,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import nl.hannahsten.texifyidea.reference.InputFileReference;
 import nl.hannahsten.texifyidea.reference.LatexLabelReference;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
@@ -196,5 +197,50 @@ public class LatexPsiImplUtil {
 
         LatexCommands labelMaybe = children.iterator().next();
         return TexifySettings.getInstance().getLabelPreviousCommands().containsKey(labelMaybe.getCommandToken().getText());
+    }
+
+    /**
+     * Checks if the environment contains a label.
+     */
+    public static boolean hasLabel(@NotNull LatexEnvironment element) {
+        PsiElement content = element.getEnvironmentContent();
+        if (content == null) {
+            return false;
+        }
+
+        boolean labelFound = false;
+
+        // see if we can find a label command inside the environment
+        Collection<LatexCommands> children = PsiTreeUtil.findChildrenOfType(content, LatexCommands.class);
+        if (!children.isEmpty()) {
+            LatexCommands labelMaybe = children.iterator().next();
+            labelFound = TexifySettings.getInstance().getLabelPreviousCommands().containsKey(labelMaybe.getCommandToken().getText());
+        }
+
+        // see if we can find a label option
+        List<String> optionalParameters = getOptionalParameters(element.getBeginCommand().getParameterList());
+        labelFound = labelFound || optionalParameters.contains("label");
+
+        return labelFound;
+    }
+
+    public static String getEnvironmentName(@NotNull LatexEnvironment element) {
+        LatexEnvironmentStub stub = element.getStub();
+        if (stub != null) return stub.getEnvironmentName();
+
+        List<LatexParameter> parameters = element.getBeginCommand().getParameterList();
+        if (parameters.isEmpty()) return "";
+
+        LatexParameter environmentNameParam = parameters.get(0);
+        LatexRequiredParam requiredParam = environmentNameParam.getRequiredParam();
+        if (requiredParam == null) return "";
+
+        List<LatexContent> contentList = requiredParam.getGroup().getContentList();
+        if (contentList.isEmpty()) return "";
+
+        LatexNormalText paramText = contentList.get(0).getNoMathContent().getNormalText();
+        if (paramText == null) return "";
+
+        return paramText.getText();
     }
 }
