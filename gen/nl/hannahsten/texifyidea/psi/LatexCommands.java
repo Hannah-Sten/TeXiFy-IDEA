@@ -27,4 +27,6 @@ public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiEleme
 
   boolean hasLabel();
 
+  String getName();
+
 }

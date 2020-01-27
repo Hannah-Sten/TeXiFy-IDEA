@@ -6,6 +6,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import nl.hannahsten.texifyidea.reference.InputFileReference;
 import nl.hannahsten.texifyidea.reference.LatexLabelReference;
@@ -178,6 +179,12 @@ public class LatexPsiImplUtil {
                             .collect(Collectors.toList()));
                 })
                 .collect(Collectors.toList());
+    }
+
+    public static String getName(@NotNull LatexCommands element) {
+        LatexCommandsStub stub = element.getStub();
+        if (stub != null) return stub.getName();
+        return element.getCommandToken().getText();
     }
 
     /**
