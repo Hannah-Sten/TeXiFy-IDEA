@@ -191,19 +191,19 @@ class LatexRunConfiguration constructor(project: Project,
         // Backwards compatibility
         runReadAction {
             val auxDirBoolean = parent.getChildText(AUX_DIR)
-            if (auxDirBoolean != null && this.auxilPath == null && mainFile != null) {
+            if (auxDirBoolean != null && this.auxilPath == null && this.mainFile != null) {
                 // If there is no auxil path yet but this option still exists,
                 // guess the output path in the same way as it was previously done
                 val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
-                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
-                val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else mainFile.parent.path
+                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
+                val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else this.mainFile!!.parent.path
                 this.auxilPath = LocalFileSystem.getInstance().findFileByPath(path)
             }
             val outDirBoolean = parent.getChildText(OUT_DIR)
-            if (outDirBoolean != null && this.outputPath == null && mainFile != null) {
+            if (outDirBoolean != null && this.outputPath == null && this.mainFile != null) {
                 val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
-                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
-                val path = if (usesOutDir) moduleRoot?.path + "/out" else mainFile.parent.path
+                val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
+                val path = if (usesOutDir) moduleRoot?.path + "/out" else this.mainFile!!.parent.path
                 this.outputPath = LocalFileSystem.getInstance().findFileByPath(path)
             }
         }
