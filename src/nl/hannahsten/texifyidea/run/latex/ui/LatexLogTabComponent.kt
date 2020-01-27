@@ -6,12 +6,12 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.ui.components.JBList
+import com.intellij.util.ui.MessageCategory
 import nl.hannahsten.texifyidea.util.substringEnd
 import org.apache.commons.collections.buffer.CircularFifoBuffer
 import java.awt.BorderLayout
-import java.awt.ScrollPane
 import javax.swing.DefaultListModel
 import javax.swing.JComponent
 
@@ -22,14 +22,14 @@ import javax.swing.JComponent
  *
  * @author Sten Wessel
  */
-class LatexLogTabComponent(startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
+class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
     private val listModel = DefaultListModel<String>()
+    private val treeView = LatexCompileMessageTreeView(project)
 
     init {
 
-        add(ScrollPane().apply { add(JBList(listModel)) }, BorderLayout.CENTER)
-
+        add(treeView, BorderLayout.CENTER)
         startedProcess.addProcessListener(LatexOutputListener(), this)
     }
 
@@ -129,11 +129,17 @@ class LatexLogTabComponent(startedProcess: ProcessHandler) : AdditionalTabCompon
         }
 
         private fun addMessageToLog(message: String) {
+            treeView.addMessage(MessageCategory.ERROR, arrayOf(message), null, 0, 0, null)
             listModel.addElement(message)
         }
 
         override fun processTerminated(event: ProcessEvent) {
-
+            if (event.exitCode == 0) {
+                treeView.setProgressText("Compilation was successful.")
+            }
+            else {
+                treeView.setProgressText("Compilation failed.")
+            }
         }
 
         override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
@@ -141,7 +147,7 @@ class LatexLogTabComponent(startedProcess: ProcessHandler) : AdditionalTabCompon
         }
 
         override fun startNotified(event: ProcessEvent) {
-
+            treeView.setProgressText("Compilation in progress...")
         }
     }
 
