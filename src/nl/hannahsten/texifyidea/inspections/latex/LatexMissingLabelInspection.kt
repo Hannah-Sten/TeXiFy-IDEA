@@ -11,11 +11,13 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.LatexPsiFactory
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.environmentsInFile
 import nl.hannahsten.texifyidea.util.files.openedEditor
+import nl.hannahsten.texifyidea.util.hasStar
 import java.util.*
 
 /**
@@ -108,43 +110,21 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val file = command.containingFile
-            val document = file.document() ?: return
-            val required = command.requiredParameters
-            if (required.isEmpty()) {
-                return
-            }
 
-            // Determine label name.
-            val prefix = Magic.Command.labeled[command.name]
-            val labelName = required[0].formatAsLabel()
-            val createdLabelBase = "$prefix:$labelName"
+            val factory = LatexPsiFactory(project)
+            val labelCommand = factory.createUniqueLabelFor(command) ?: return
 
-            val allLabels = file.findLabelsInFileSet()
-            val createdLabel = appendCounter(createdLabelBase, allLabels)
-
-            // Insert label.
-            val labelText = "\\label{$createdLabel}"
-            document.insertString(command.endOffset(), labelText)
+            // Insert label
+            // command -> NoMathContent -> Content -> Container containing the command
+            val commandContent = command.parent.parent
+            commandContent.parent.addAfter(labelCommand, commandContent)
 
             // Adjust caret offset.
-            val editor = file.openedEditor() ?: return
+            val editor = command.containingFile.openedEditor() ?: return
             val caret = editor.caretModel
-            caret.moveToOffset(command.endOffset() + labelText.length)
+            caret.moveToOffset(labelCommand.endOffset())
         }
 
-        /**
-         * Keeps adding a counter behind the label until there is no other label with that name.
-         */
-        private fun appendCounter(label: String, allLabels: Set<String>): String {
-            var counter = 2
-            var candidate = label
 
-            while (allLabels.contains(candidate)) {
-                candidate = label + (counter++)
-            }
-
-            return candidate
-        }
     }
 }

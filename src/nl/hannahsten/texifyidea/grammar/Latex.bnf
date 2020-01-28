@@ -60,7 +60,10 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     methods=[getReferences getOptionalParameters getRequiredParameters hasLabel getName]
 }
 
-begin_command ::= BEGIN_TOKEN STAR? parameter* { pin=1 }
+begin_command ::= BEGIN_TOKEN STAR? parameter* {
+    pin=1
+    methods=[getOptionalParameters getRequiredParameters]
+}
 
 end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 

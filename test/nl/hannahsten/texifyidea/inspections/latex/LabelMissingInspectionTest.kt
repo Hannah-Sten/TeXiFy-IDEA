@@ -5,7 +5,7 @@ import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
-class GrazieInspectionTest : BasePlatformTestCase() {
+class LabelMissingInspectionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return "testData/inspections/latex"
     }
@@ -30,7 +30,8 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         do {
             // we need to collect the fixes again after applying a fix because otherwise
             // the problem descriptors use a cached element from before the applying the fix
-            val fix = myFixture.getAllQuickFixes().firstOrNull()
+            val allQuickFixes = myFixture.getAllQuickFixes()
+            val fix = allQuickFixes.firstOrNull()
             writeCommand(myFixture.project) {
                 fix?.invoke(myFixture.project, myFixture.editor, myFixture.file)
             }

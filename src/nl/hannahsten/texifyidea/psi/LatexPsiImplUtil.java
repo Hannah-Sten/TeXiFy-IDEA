@@ -119,6 +119,10 @@ public class LatexPsiImplUtil {
         return getOptionalParameters(element.getParameterList());
     }
 
+    public static List<String> getOptionalParameters(@NotNull LatexBeginCommand element) {
+        return getOptionalParameters(element.getParameterList());
+    }
+
     private static List<String> getOptionalParameters(@NotNull List<LatexParameter> parameters) {
         return parameters.stream()
                 .map(LatexParameter::getOptionalParam)
@@ -145,12 +149,8 @@ public class LatexPsiImplUtil {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Generates a list of all names of all required parameters in the command.
-     */
-    public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
-        return element.getParameterList().stream()
-                .map(LatexParameter::getRequiredParam)
+    private static List<String> getRequiredParameters(@NotNull List<LatexParameter> parameters) {
+        return parameters.stream().map(LatexParameter::getRequiredParam)
                 .flatMap(rp -> {
                     if (rp == null || rp.getGroup() == null) {
                         return Stream.empty();
@@ -179,6 +179,17 @@ public class LatexPsiImplUtil {
                             .collect(Collectors.toList()));
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Generates a list of all names of all required parameters in the command.
+     */
+    public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
+        return getRequiredParameters(element.getParameterList());
+    }
+
+    public static List<String> getRequiredParameters(@NotNull LatexBeginCommand element) {
+        return getRequiredParameters(element.getParameterList());
     }
 
     public static String getName(@NotNull LatexCommands element) {
