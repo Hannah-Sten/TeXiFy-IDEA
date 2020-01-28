@@ -25,10 +25,6 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
 
     override fun getSettings() = settings
 
-    /** Deprecated but we have to override it. */
-    @Deprecated("", ReplaceWith("addSettingsListener"), level = DeprecationLevel.ERROR)
-    override fun addSettingsStateListener(@Suppress("DEPRECATION") listener: com.intellij.platform.WebProjectGenerator.SettingsStateListener) = Unit
-
     override fun buildUI(settingsStep: SettingsStep) = settingsStep.addExpertPanel(component)
 
     override fun isBackgroundJobRunning() = false
