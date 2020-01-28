@@ -11,13 +11,10 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.LatexPsiFactory
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.environmentsInFile
 import nl.hannahsten.texifyidea.util.files.openedEditor
-import nl.hannahsten.texifyidea.util.hasStar
 import java.util.*
 
 /**
@@ -75,7 +72,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         descriptors.add(manager.createProblemDescriptor(
                 command,
                 "Missing label",
-                InsertLabelFix(),
+                InsertLabelAfterCommandFix(),
                 ProblemHighlightType.WEAK_WARNING,
                 isOntheFly
         ))
@@ -92,7 +89,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         descriptors.add(manager.createProblemDescriptor(
                 environment,
                 "Missing label",
-                LocalQuickFix.EMPTY_ARRAY,
+                arrayOf(InsertLabelInEnvironmentFix()),
                 ProblemHighlightType.WEAK_WARNING,
                 isOntheFly,
                 false
@@ -104,7 +101,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     /**
      * @author Hannah Schellekens
      */
-    private class InsertLabelFix : LocalQuickFix {
+    private class InsertLabelAfterCommandFix : LocalQuickFix {
 
         override fun getFamilyName() = "Insert label"
 
@@ -112,7 +109,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
 
             val factory = LatexPsiFactory(project)
-            val labelCommand = factory.createUniqueLabelFor(command) ?: return
+            val labelCommand = factory.createUniqueLabelCommandFor(command) ?: return
 
             // Insert label
             // command -> NoMathContent -> Content -> Container containing the command
@@ -124,7 +121,36 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val caret = editor.caretModel
             caret.moveToOffset(labelCommand.endOffset())
         }
+    }
 
+    private class InsertLabelInEnvironmentFix : LocalQuickFix {
+        override fun getFamilyName() = "Insert label"
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val command = descriptor.psiElement as LatexEnvironment
+
+            val factory = LatexPsiFactory(project)
+            val labelCommand = factory.createUniqueLabelCommandFor(command) ?: return
+            if (command.environmentContent == null) {
+                command.addAfter(factory.createEnvironmentContent(), command.beginCommand)
+            }
+
+            val environmentContent = command.environmentContent!!
+
+            // in a float environment the label must be inserted after a caption
+            val caption = environmentContent.childrenOfType<LatexCommands>().findLast { c -> c.name == "\\caption" }
+            if (caption != null) {
+                environmentContent.addAfter(labelCommand, caption.parent.parent)
+            }
+            else {
+                environmentContent.add(labelCommand)
+            }
+
+            // Adjust caret offset
+            val openedEditor = command.containingFile.openedEditor() ?: return
+            val caretModel = openedEditor.caretModel
+            caretModel.moveToOffset(labelCommand.endOffset())
+        }
 
     }
 }

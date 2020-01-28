@@ -3,13 +3,23 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 
 class LatexPsiFactory(private val project: Project) {
 
-    fun createUniqueLabelFor(command: LatexCommands): PsiElement? {
+    fun createEnvironmentContent(): LatexEnvironmentContent {
+        val environment = createFromText("\\begin{figure}\n" +
+                "        Placehodler\n" +
+                "    \\end{figure}").firstChildOfType(LatexEnvironment::class)!!
+        environment.environmentContent!!.firstChild.delete()
+        return environment.environmentContent!!
+    }
+
+    fun createUniqueLabelCommandFor(command: LatexCommands): PsiElement? {
         val required = command.requiredParameters
         if (required.isEmpty()) {
             return null
@@ -23,14 +33,14 @@ class LatexPsiFactory(private val project: Project) {
         return createUniqueLabelCommand(labelBase, command.containingFile)
     }
 
-    fun createUniqueLabelFor(command: LatexEnvironment): PsiElement? {
+    fun createUniqueLabelCommandFor(command: LatexEnvironment): PsiElement? {
         val required = command.beginCommand.requiredParameters
         if (required.isEmpty()) {
             return null
         }
 
         // Determine label name.
-        val prefix = Magic.Environment.labeled[command.beginCommand.text]
+        val prefix = Magic.Environment.labeled[command.environmentName]
         val labelName = required[0].formatAsLabel()
         val labelBase = "$prefix:$labelName"
 
@@ -45,10 +55,13 @@ class LatexPsiFactory(private val project: Project) {
 
     fun createLabelCommand(labelName: String): PsiElement {
         val labelText = "\\label{$labelName}"
-        val fileFromText = com.intellij.psi.PsiFileFactory.getInstance(project)
-                .createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, labelText, false, true)
+        val fileFromText = createFromText(labelText)
         return fileFromText.firstChild
     }
+
+    private fun createFromText(text: String): PsiElement =
+            PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
+
 
     /**
      * Keeps adding a counter behind the label until there is no other label with that name.

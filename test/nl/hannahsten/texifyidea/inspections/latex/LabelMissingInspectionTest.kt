@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
@@ -13,7 +12,6 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
     override fun setUp() {
         super.setUp()
         myFixture.enableInspections(LatexMissingLabelInspection())
-        (myFixture as? CodeInsightTestFixtureImpl)?.canChangeDocumentDuringHighlighting(true)
     }
 
     @Test

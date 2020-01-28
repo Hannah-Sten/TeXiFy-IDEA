@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import nl.hannahsten.texifyidea.reference.InputFileReference;
 import nl.hannahsten.texifyidea.reference.LatexLabelReference;
+import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.PsiCommandsKt;
@@ -232,7 +233,8 @@ public class LatexPsiImplUtil {
         Collection<LatexCommands> children = PsiTreeUtil.findChildrenOfType(content, LatexCommands.class);
         if (!children.isEmpty()) {
             LatexCommands labelMaybe = children.iterator().next();
-            labelFound = TexifySettings.getInstance().getLabelPreviousCommands().containsKey(labelMaybe.getCommandToken().getText());
+            Map<String, LabelingCommandInformation> labelCommands = TexifySettings.getInstance().getLabelPreviousCommands();
+            labelFound = children.stream().anyMatch(c -> labelCommands.containsKey(c.getName()));
         }
 
         // see if we can find a label option
