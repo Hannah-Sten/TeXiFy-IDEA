@@ -5,6 +5,7 @@
 * Add support for opening source files of installed LaTeX packages and classes. (#1191)
 * Add support for opening files from include commands. (#1191)
 * Add biblatex commands to the autocomplete. (#1195)
+* Add more user configurable live templates. (#1203)
 
 ## Changes
 * If a file has a run configuration associated, treat it as a root file. (#1198)
@@ -12,6 +13,7 @@
 
 ## Bug fixes
 * Also execute Grazie grammar checking at the beginning of sentences. (#1196)
+* Fixed crashes. (#1211)
 
 Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko) and Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) for contributing to this release.
 
@@ -60,7 +62,7 @@ A detailed overview of the changes can be found on the [milestone page](https://
 - Use actual instead of incorrectly indexed command name for missing label inspection. (#1136)
 - Command definitions using \newif need not be closed with \fi. (#1187)
 - Register the analyze menu action group using a service instead of a deprecated application component. (#1144)
-- Fixed crashes. (#1085, #1178, #1184, #1185, #1189, #1199)
+- Fixed crashes. (#1085, #1178, #1184, #1185, #1189, #1199, #1210)
 - Fix BibTeX formatter inserting spaces in braced words. (#1168)
 
 Thanks to [@TanVD](https://github.com/TanVD), [@fberlakovich](https://github.com/fberlakovich) and [@stsundermann](https://github.com/stsundermann) for contributing to this release.
