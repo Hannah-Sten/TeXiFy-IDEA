@@ -48,7 +48,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         val environments = file.environmentsInFile()
         for (environment in environments) {
-            if (!Magic.Environment.labeled.containsKey(environment.environmentName)) {
+            if (!Magic.Environment.labeled.containsKey(environment.environmentName) || environment.environmentName == "lstlisting") {
                 continue
             }
 
@@ -128,7 +128,6 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEnvironment
-
             val factory = LatexPsiFactory(project)
             val labelCommand = factory.createUniqueLabelCommandFor(command) ?: return
             if (command.environmentContent == null) {

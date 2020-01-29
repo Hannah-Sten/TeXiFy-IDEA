@@ -34,14 +34,9 @@ class LatexPsiFactory(private val project: Project) {
     }
 
     fun createUniqueLabelCommandFor(command: LatexEnvironment): PsiElement? {
-        val required = command.beginCommand.requiredParameters
-        if (required.isEmpty()) {
-            return null
-        }
-
         // Determine label name.
         val prefix = Magic.Environment.labeled[command.environmentName]
-        val labelName = required[0].formatAsLabel()
+        val labelName = command.environmentName.formatAsLabel()
         val labelBase = "$prefix:$labelName"
 
         return createUniqueLabelCommand(labelBase, command.containingFile)
