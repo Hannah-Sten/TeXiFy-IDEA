@@ -20,8 +20,6 @@ import java.util.*
 /**
  * Currently only works for Chapters, Sections and Subsections.
  *
- * Planned is to also implement this for other environments.
- *
  * @author Hannah Schellekens
  */
 open class LatexMissingLabelInspection : TexifyInspectionBase() {
