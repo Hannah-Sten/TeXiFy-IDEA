@@ -276,7 +276,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * Unnecessary whitespace in section commands
 
 ==== Conventions
-* link:Missing-labels[Missing labels]
+* link:Conventions#Missing-labels[Missing labels]
 * Label conventions
 
 ==== Discouraged use of TeX or obsolete LaTeX
