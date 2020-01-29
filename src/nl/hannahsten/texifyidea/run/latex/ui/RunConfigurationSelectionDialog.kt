@@ -55,7 +55,7 @@ class RunConfigurationSelectionDialog(
 
     override fun createCenterPanel(): JComponent? {
         list = JBList(settings).apply {
-            selectionMode = ListSelectionModel.SINGLE_SELECTION
+            selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
 
             selectionModel.addListSelectionListener {
                 selected = list.selectedValue
