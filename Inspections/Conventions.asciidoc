@@ -1,0 +1,7 @@
+:experimental:
+
+These inspections are about LaTeX conventions.
+
+== Missing labels
+
+== Label conventions
