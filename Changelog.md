@@ -14,6 +14,7 @@
 
 ## Bug fixes
 * Also execute Grazie grammar checking at the beginning of sentences. (#1196)
+* Ignore \ifoot for \if-like commands. (#1220)
 * Fixed crashes. (#1211)
 
 Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko) and Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) for contributing to this release.
