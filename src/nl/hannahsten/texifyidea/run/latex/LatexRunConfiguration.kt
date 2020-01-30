@@ -85,10 +85,11 @@ class LatexRunConfiguration constructor(project: Project,
     /** Whether the pdf viewer is allowed to claim focus after compilation. */
     var allowFocusChange = true
 
-    private var bibRunConfigIds = mutableListOf<String>()
-    var bibRunConfigs: List<RunnerAndConfigurationSettings?> = emptyList()
-        get() = field.mapIndexed { index, _ -> RunManagerImpl.getInstanceImpl(project)
-                .getConfigurationById(bibRunConfigIds[index]) }
+    private var bibRunConfigIds = mutableSetOf<String>()
+    var bibRunConfigs: List<RunnerAndConfigurationSettings?>
+        get() = bibRunConfigIds.map {
+            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
+        }.toList()
         set(bibRunConfigs) {
             bibRunConfigs.forEach {
                 bibRunConfigIds.add(it?.uniqueID ?: "")
@@ -205,10 +206,10 @@ class LatexRunConfiguration constructor(project: Project,
         val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
         this.hasBeenRun = hasBeenRunString?.toBoolean() ?: false
 
-        // Read bibliography run configuration
+        // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
-        // todo deserialize list?
-//        this.bibRunConfigIds = bibRunConfigElt ?: ""
+        // Assume the list is of the form [id 1,id 2]
+        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(",").toMutableSet()
 
         // Read makeindex run configuration
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)

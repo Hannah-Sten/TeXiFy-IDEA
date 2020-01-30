@@ -43,7 +43,6 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
     private fun createPanel() {
         list = JBList<RunnerAndConfigurationSettings>().apply {
-//            visibleRowCount = 1
             emptyText.text = "No run configurations selected."
             cellRenderer = RunConfigCellRenderer(project)
 
@@ -51,12 +50,12 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
             prototypeCellValue = RunManagerImpl.getInstanceImpl(project).allSettings.firstOrNull()
 
             // Disable selection
-//            selectionModel = object : DefaultListSelectionModel() {
-//                override fun setSelectionInterval(index0: Int, index1: Int) {
-//                    super.setSelectionInterval(-1, -1)
-//                    fireValueChanged(-1, -1, false)
-//                }
-//            }
+            selectionModel = object : DefaultListSelectionModel() {
+                override fun setSelectionInterval(index0: Int, index1: Int) {
+                    super.setSelectionInterval(-1, -1)
+                    fireValueChanged(-1, -1, false)
+                }
+            }
         }
 
         val toolbar = ToolbarDecorator.createDecorator(list).apply {
@@ -65,6 +64,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
             disableUpDownActions()
             disableRemoveAction()
 
+            // todo make add/edit?/remove behave like normal
             setAddIcon(IconUtil.getEditIcon())
             setAddAction {
                 configurations = askRunConfigurations()
@@ -101,7 +101,8 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
     private fun configurationChanged() {
         if (configurations.isNotEmpty()) {
-            list = JBList(configurations.mapNotNull { it })
+            list.setListData(configurations.mapNotNull { it }.toTypedArray() )
+            list.visibleRowCount = configurations.size
 
             // Mock value change to commit changes (otherwise the apply button is not activated)
             list.setSelectionInterval(-1, -1)
@@ -110,6 +111,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
         }
 
         list.setListData(emptyArray())
+        list.visibleRowCount = 1
 
         // Mock value change to commit changes (otherwise the apply button is not activated)
         list.setSelectionInterval(-1, -1)
