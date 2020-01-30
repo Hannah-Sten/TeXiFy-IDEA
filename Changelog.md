@@ -6,6 +6,7 @@
 * Add support for opening files from include commands. (#1191)
 * Add biblatex commands to the autocomplete. (#1195)
 * Add more user configurable live templates. (#1203)
+* Add inspection which checks that floating environments have a label. (#1216)
 
 ## Changes
 * If a file has a run configuration associated, treat it as a root file. (#1198)
