@@ -26,7 +26,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     private val hidePanel: HideableTitledPanel
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
 
-    var configuration: RunnerAndConfigurationSettings? = null
+    var configurations: List<RunnerAndConfigurationSettings> = emptyList()
         set(value) {
             field = value
             configurationChanged()
@@ -67,7 +67,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
             setAddIcon(IconUtil.getEditIcon())
             setAddAction {
-                configuration = askRunConfiguration() ?: return@setAddAction
+                configurations = askRunConfigurations()
             }
 
             val removeAction = object : AnActionButton("Remove", IconUtil.getRemoveIcon()) {
@@ -75,7 +75,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
                 override fun isEnabled() = !list.isEmpty
 
                 override fun actionPerformed(e: AnActionEvent) {
-                    configuration = null
+                    configurations = emptyList()
                 }
             }
 
@@ -85,7 +85,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
         contentPanel.add(toolbar.createPanel(), BorderLayout.CENTER)
     }
 
-    private fun askRunConfiguration(): RunnerAndConfigurationSettings? {
+    private fun askRunConfigurations(): List<RunnerAndConfigurationSettings> {
         val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type.javaClass == runConfigurationType  }
 
         val dialog = RunConfigurationSelectionDialog(project, configurations)
@@ -100,8 +100,8 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     }
 
     private fun configurationChanged() {
-        if (configuration != null) {
-            list.setListData(Array(1) { configuration })
+        if (configurations.isNotEmpty()) {
+            list = JBList(configurations)
 
             // Mock value change to commit changes (otherwise the apply button is not activated)
             list.setSelectionInterval(-1, -1)

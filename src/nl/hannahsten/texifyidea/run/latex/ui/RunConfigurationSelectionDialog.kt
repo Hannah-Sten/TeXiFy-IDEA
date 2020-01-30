@@ -20,13 +20,13 @@ import javax.swing.SwingUtilities
 class RunConfigurationSelectionDialog(
         private val project: Project,
         private val settings: List<RunnerAndConfigurationSettings>,
-        selected: RunnerAndConfigurationSettings? = null
+        selected: List<RunnerAndConfigurationSettings> = emptyList()
 ) : DialogWrapper(project) {
 
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
 
     var selected = selected
-        get() = if (isOK) field else null
+        get() = if (isOK) field else emptyList()
 
     init {
         title = "Choose Run Configuration"
@@ -58,8 +58,8 @@ class RunConfigurationSelectionDialog(
             selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
 
             selectionModel.addListSelectionListener {
-                selected = list.selectedValue
-                isOKActionEnabled = list.selectedValue != null
+                selected = list.selectedValuesList
+                isOKActionEnabled = !list.selectedValuesList.isNullOrEmpty()
             }
 
             cellRenderer = RunConfigCellRenderer(project)
