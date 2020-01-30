@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
@@ -58,7 +59,7 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  public List<String> getOptionalParameters() {
+  public LinkedHashMap<String, String> getOptionalParameters() {
     return LatexPsiImplUtil.getOptionalParameters(this);
   }
 

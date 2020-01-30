@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiImplUtil;
 import nl.hannahsten.texifyidea.psi.LatexVisitor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements LatexBeginCommand {
@@ -35,7 +36,7 @@ public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements Latex
   }
 
   @Override
-  public List<String> getOptionalParameters() {
+  public LinkedHashMap<String, String> getOptionalParameters() {
     return LatexPsiImplUtil.getOptionalParameters(this);
   }
 

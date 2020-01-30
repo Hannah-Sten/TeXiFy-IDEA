@@ -13,8 +13,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
     @Test
     fun testOptionalParameterSplitting() {
         // given
-        val testName = getTestName(false)
-        myFixture.configureByFiles("$testName.tex")
+        myFixture.configureByFiles("OptionalParameters.tex")
 
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
@@ -22,8 +21,24 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         val optionalParameters = element.optionalParameters
 
         // then
-        assertEquals(optionalParameters[0], "backend")
-        assertEquals(optionalParameters[1], "style")
-        assertEquals(optionalParameters[2], "optionwithoutvalue")
+        assertEquals("biber", optionalParameters["backend"])
+        assertEquals("alphabetic order", optionalParameters["style"])
+        assertEquals("", optionalParameters["optionwithoutvalue"])
+    }
+
+    @Test
+    fun testOptionalParameterNameOrder() {
+        // given
+        myFixture.configureByFiles("OptionalParameters.tex")
+
+        // when
+        val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
+        val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
+        val optionalParameters = element.optionalParameters.keys.toList()
+
+        // then
+        assertEquals("backend", optionalParameters[0])
+        assertEquals("style", optionalParameters[1])
+        assertEquals("optionwithoutvalue", optionalParameters[2])
     }
 }

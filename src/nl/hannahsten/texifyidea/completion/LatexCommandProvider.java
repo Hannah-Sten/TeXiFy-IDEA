@@ -22,7 +22,9 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex;
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex;
 import nl.hannahsten.texifyidea.lang.*;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
-import nl.hannahsten.texifyidea.util.*;
+import nl.hannahsten.texifyidea.util.Kindness;
+import nl.hannahsten.texifyidea.util.Magic;
+import nl.hannahsten.texifyidea.util.PsiCommandsKt;
 import nl.hannahsten.texifyidea.util.files.FileSetKt;
 import nl.hannahsten.texifyidea.util.files.FilesKt;
 import org.jetbrains.annotations.NotNull;
@@ -227,7 +229,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
             return "";
         }
 
-        List<String> optional = commands.getOptionalParameters();
+        List<String> optional = new LinkedList<>(commands.getOptionalParameters().keySet());
 
         int cmdParameterCount = 0;
 

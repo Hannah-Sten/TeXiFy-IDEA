@@ -114,40 +114,50 @@ public class LatexPsiImplUtil {
     }
 
     /**
-     * Generates a list of all names of all optional parameters in the command.
+     * Generates a list of all optional parameter names and values.
      */
-    public static List<String> getOptionalParameters(@NotNull LatexCommands element) {
+    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexCommands element) {
         return getOptionalParameters(element.getParameterList());
     }
 
-    public static List<String> getOptionalParameters(@NotNull LatexBeginCommand element) {
+    /**
+     * Generates a list of all optional parameter names and values.
+     */
+    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexBeginCommand element) {
         return getOptionalParameters(element.getParameterList());
     }
 
-    private static List<String> getOptionalParameters(@NotNull List<LatexParameter> parameters) {
-        return parameters.stream()
+    /**
+     * Generates a map of parameter names and values for all optional parameters
+     */
+    // Explicitly use a LinkedHashMap to preserve iteration order
+    private static LinkedHashMap<String, String> getOptionalParameters(@NotNull List<LatexParameter> parameters) {
+        LinkedHashMap<String, String> parameterMap = new LinkedHashMap<>();
+        String parameterString = parameters.stream()
+                // we care only about optional parameters
                 .map(LatexParameter::getOptionalParam)
                 .filter(Objects::nonNull)
-                // extract the text of each parameter element
-                .flatMap(op -> {
-                    if (op == null || op.getOpenGroup() == null) {
-                        return Stream.empty();
-                    }
+                // extract the content of each parameter element
+                .flatMap(op -> op.getOpenGroup().getContentList().stream()
+                        .map(LatexContent::getNoMathContent))
+                .map(c -> {
+                    // the content is either simple text
+                    LatexNormalText text = c.getNormalText();
+                    if (text != null) return text.getText();
 
-                    return op.getOpenGroup().getContentList().stream()
-                            .map(LatexContent::getNoMathContent);
+                    // or a group like in param={some value}
+                    if (c.getGroup() == null) return null;
+                    return c.getGroup().getContentList().stream()
+                            .map(PsiElement::getText).collect(Collectors.joining());
                 })
                 .filter(Objects::nonNull)
-                .map(LatexNoMathContent::getNormalText)
-                .filter(Objects::nonNull)
-                .map(PsiElement::getText)
-                .filter(Objects::nonNull)
-                // split the text elements along the comma separator
-                .flatMap(text -> OPTIONAL_SPLIT.splitAsStream(text))
-                .filter(text -> !text.isEmpty())
-                // return only the parameter name for parameters like "param=value"
-                .map(text -> text.split("\\s*=\\s*")[0])
-                .collect(Collectors.toList());
+                .collect(Collectors.joining());
+
+        for (String parameter : parameterString.split(",")) {
+            String[] parts = parameter.split("=");
+            parameterMap.put(parts[0], parts.length > 1 ? parts[1] : "");
+        }
+        return parameterMap;
     }
 
     private static List<String> getRequiredParameters(@NotNull List<LatexParameter> parameters) {
@@ -238,7 +248,7 @@ public class LatexPsiImplUtil {
         }
 
         // see if we can find a label option
-        List<String> optionalParameters = getOptionalParameters(element.getBeginCommand().getParameterList());
+        Set<String> optionalParameters = getOptionalParameters(element.getBeginCommand().getParameterList()).keySet();
         labelFound = labelFound || optionalParameters.contains("label");
 
         return labelFound;

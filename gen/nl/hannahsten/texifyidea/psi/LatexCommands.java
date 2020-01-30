@@ -8,6 +8,7 @@ import com.intellij.psi.StubBasedPsiElement;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiElement<LatexCommandsStub> {
@@ -21,7 +22,7 @@ public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiEleme
   @NotNull
   PsiReference[] getReferences();
 
-  List<String> getOptionalParameters();
+  LinkedHashMap<String, String> getOptionalParameters();
 
   List<String> getRequiredParameters();
 

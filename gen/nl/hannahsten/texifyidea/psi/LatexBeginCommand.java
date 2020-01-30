@@ -4,6 +4,7 @@ package nl.hannahsten.texifyidea.psi;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface LatexBeginCommand extends PsiElement {
@@ -11,7 +12,7 @@ public interface LatexBeginCommand extends PsiElement {
   @NotNull
   List<LatexParameter> getParameterList();
 
-  List<String> getOptionalParameters();
+  LinkedHashMap<String, String> getOptionalParameters();
 
   List<String> getRequiredParameters();
 
