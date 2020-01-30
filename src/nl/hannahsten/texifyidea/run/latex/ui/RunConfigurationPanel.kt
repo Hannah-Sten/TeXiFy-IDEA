@@ -3,13 +3,10 @@ package nl.hannahsten.texifyidea.run.latex.ui
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
-import com.intellij.ui.AnActionButton
 import com.intellij.ui.HideableTitledPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
-import com.intellij.util.IconUtil
 import java.awt.BorderLayout
 import javax.swing.DefaultListSelectionModel
 import javax.swing.JPanel
@@ -26,7 +23,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     private val hidePanel: HideableTitledPanel
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
 
-    var configurations: List<RunnerAndConfigurationSettings?> = emptyList()
+    var configurations: MutableSet<RunnerAndConfigurationSettings> = mutableSetOf()
         set(value) {
             field = value
             configurationChanged()
@@ -49,37 +46,23 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
             // Cell height
             prototypeCellValue = RunManagerImpl.getInstanceImpl(project).allSettings.firstOrNull()
 
-            // Disable selection
-            selectionModel = object : DefaultListSelectionModel() {
-                override fun setSelectionInterval(index0: Int, index1: Int) {
-                    super.setSelectionInterval(-1, -1)
-                    fireValueChanged(-1, -1, false)
-                }
-            }
+            selectionModel = DefaultListSelectionModel()
         }
 
         val toolbar = ToolbarDecorator.createDecorator(list).apply {
             setAsUsualTopToolbar()
 
             disableUpDownActions()
-            disableRemoveAction()
 
-            // todo make add/edit?/remove behave like normal
-            setAddIcon(IconUtil.getEditIcon())
             setAddAction {
-                configurations = askRunConfigurations()
+                configurations.addAll(askRunConfigurations())
+                configurationChanged()
             }
 
-            val removeAction = object : AnActionButton("Remove", IconUtil.getRemoveIcon()) {
-
-                override fun isEnabled() = !list.isEmpty
-
-                override fun actionPerformed(e: AnActionEvent) {
-                    configurations = emptyList()
-                }
+            setRemoveAction {
+                configurations.removeAll(list.selectedValuesList)
+                configurationChanged()
             }
-
-            addExtraAction(removeAction)
         }
 
         contentPanel.add(toolbar.createPanel(), BorderLayout.CENTER)
@@ -101,7 +84,8 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
     private fun configurationChanged() {
         if (configurations.isNotEmpty()) {
-            list.setListData(configurations.mapNotNull { it }.toTypedArray() )
+            list.setListData(configurations.map { it }.toTypedArray() )
+            // Set cell height based on the size of the content
             list.visibleRowCount = configurations.size
 
             // Mock value change to commit changes (otherwise the apply button is not activated)

@@ -86,11 +86,12 @@ class LatexRunConfiguration constructor(project: Project,
     var allowFocusChange = true
 
     private var bibRunConfigIds = mutableSetOf<String>()
-    var bibRunConfigs: List<RunnerAndConfigurationSettings?>
+    var bibRunConfigs: Set<RunnerAndConfigurationSettings?>
         get() = bibRunConfigIds.map {
             RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
-        }.toList()
+        }.toSet()
         set(bibRunConfigs) {
+            bibRunConfigIds = mutableSetOf()
             bibRunConfigs.forEach {
                 bibRunConfigIds.add(it?.uniqueID ?: "")
             }
@@ -330,7 +331,7 @@ class LatexRunConfiguration constructor(project: Project,
 
         runManager.addConfiguration(bibSettings)
 
-        bibRunConfigs = listOf(bibSettings)
+        bibRunConfigs = setOf(bibSettings)
     }
 
     /**

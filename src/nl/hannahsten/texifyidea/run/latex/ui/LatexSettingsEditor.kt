@@ -132,10 +132,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         project = runConfiguration.project
 
         // Reset bibliography
-        bibliographyPanel.configurations = runConfiguration.bibRunConfigs
+        bibliographyPanel.configurations = runConfiguration.bibRunConfigs.filterNotNull().toMutableSet()
 
         // Reset makeindex
-        makeindexPanel.configurations = listOf(runConfiguration.makeindexRunConfig)
+        makeindexPanel.configurations = if (runConfiguration.makeindexRunConfig != null) mutableSetOf(runConfiguration.makeindexRunConfig!!) else mutableSetOf()
     }
 
     // Confirm the changes, i.e. copy current UI state into the target settings object.
@@ -147,7 +147,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Remove bibtex run config when switching to a compiler which includes running bibtex
         if (runConfiguration.compiler?.includesBibtex == true) {
-            runConfiguration.bibRunConfigs = listOf()
+            runConfiguration.bibRunConfigs = setOf()
             bibliographyPanel.isVisible = false
         }
         else {
@@ -165,6 +165,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             makeindexPanel.isVisible = true
 
             // Apply makeindex
+            // todo run not just the first one
             runConfiguration.makeindexRunConfig = makeindexPanel.configurations.firstOrNull()
         }
 
