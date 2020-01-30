@@ -85,12 +85,14 @@ class LatexRunConfiguration constructor(project: Project,
     /** Whether the pdf viewer is allowed to claim focus after compilation. */
     var allowFocusChange = true
 
-    private var bibRunConfigId = ""
-    var bibRunConfig: RunnerAndConfigurationSettings?
-        get() = RunManagerImpl.getInstanceImpl(project)
-                .getConfigurationById(bibRunConfigId)
-        set(bibRunConfig) {
-            this.bibRunConfigId = bibRunConfig?.uniqueID ?: ""
+    private var bibRunConfigIds = mutableListOf<String>()
+    var bibRunConfigs: List<RunnerAndConfigurationSettings?> = emptyList()
+        get() = field.mapIndexed { index, _ -> RunManagerImpl.getInstanceImpl(project)
+                .getConfigurationById(bibRunConfigIds[index]) }
+        set(bibRunConfigs) {
+            bibRunConfigs.forEach {
+                bibRunConfigIds.add(it?.uniqueID ?: "")
+            }
         }
 
     private var makeindexRunConfigId = ""
@@ -205,7 +207,8 @@ class LatexRunConfiguration constructor(project: Project,
 
         // Read bibliography run configuration
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
-        this.bibRunConfigId = bibRunConfigElt ?: ""
+        // todo deserialize list?
+//        this.bibRunConfigIds = bibRunConfigElt ?: ""
 
         // Read makeindex run configuration
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
@@ -285,7 +288,7 @@ class LatexRunConfiguration constructor(project: Project,
 
         // Write bibliography run configuration
         val bibRunConfigElt = Element(BIB_RUN_CONFIG)
-        bibRunConfigElt.text = bibRunConfigId
+        bibRunConfigElt.text = bibRunConfigIds.toString()
         parent.addContent(bibRunConfigElt)
 
         // Write makeindex run configuration
@@ -312,6 +315,7 @@ class LatexRunConfiguration constructor(project: Project,
 
         val runManager = RunManagerImpl.getInstanceImpl(project)
 
+        // todo when using chapterbib, create more bib run configs
         val bibSettings = runManager.createConfiguration(
                 "",
                 LatexConfigurationFactory(BibtexRunConfigurationType())
@@ -325,7 +329,7 @@ class LatexRunConfiguration constructor(project: Project,
 
         runManager.addConfiguration(bibSettings)
 
-        bibRunConfig = bibSettings
+        bibRunConfigs = listOf(bibSettings)
     }
 
     /**

@@ -56,7 +56,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (!runConfig.hasBeenRun) {
             // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
             // checking for bibliography commands
-            if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
+            if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
                 runConfig.generateBibRunConfig()
             }
         }
@@ -85,7 +85,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         runConfig.hasBeenRun = true
 
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
-        if (runConfig.bibRunConfig == null && !isMakeindexNeeded) {
+        if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded) {
             if (!runConfig.compileTwice) {
                 runConfig.isLastRunConfig = true
             }
@@ -97,19 +97,22 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
 
-        runConfig.bibRunConfig?.let {
+        runConfig.bibRunConfigs.forEach {
             if (!runConfig.isFirstRunConfig) {
-                return@let
+                return@forEach
             }
 
+            val bibSettings = it ?: return@forEach
+
             // Pass necessary latex run configurations settings to the bibtex run configuration.
-            (it.configuration as? BibtexRunConfiguration)?.apply {
+            (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
                 this.mainFile = mainFile
                 // Check if the aux, out, or src folder should be used as bib working dir.
                 this.bibWorkingDir = runConfig.getAuxilDirectory()
             }
 
-            handler.addProcessListener(RunBibtexListener(it, runConfig, environment))
+            // todo should these be run back-to-back instead of all after the current run?
+            handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment))
 
             // Skip the other handlers
             return handler

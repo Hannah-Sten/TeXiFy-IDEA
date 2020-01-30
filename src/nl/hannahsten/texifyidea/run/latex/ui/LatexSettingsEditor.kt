@@ -132,10 +132,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         project = runConfiguration.project
 
         // Reset bibliography
-        bibliographyPanel.configurations = runConfiguration.bibRunConfig
+        bibliographyPanel.configurations = runConfiguration.bibRunConfigs
 
         // Reset makeindex
-        makeindexPanel.configurations = runConfiguration.makeindexRunConfig
+        makeindexPanel.configurations = listOf(runConfiguration.makeindexRunConfig)
     }
 
     // Confirm the changes, i.e. copy current UI state into the target settings object.
@@ -147,14 +147,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Remove bibtex run config when switching to a compiler which includes running bibtex
         if (runConfiguration.compiler?.includesBibtex == true) {
-            runConfiguration.bibRunConfig = null
+            runConfiguration.bibRunConfigs = listOf()
             bibliographyPanel.isVisible = false
         }
         else {
             bibliographyPanel.isVisible = true
 
             // Apply bibliography, only if not hidden
-            runConfiguration.bibRunConfig = bibliographyPanel.configurations
+            runConfiguration.bibRunConfigs = bibliographyPanel.configurations
         }
 
         if (runConfiguration.compiler?.includesMakeindex == true) {
@@ -165,7 +165,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             makeindexPanel.isVisible = true
 
             // Apply makeindex
-            runConfiguration.makeindexRunConfig = makeindexPanel.configurations
+            runConfiguration.makeindexRunConfig = makeindexPanel.configurations.firstOrNull()
         }
 
         // Apply custom compiler path if applicable

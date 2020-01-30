@@ -26,7 +26,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     private val hidePanel: HideableTitledPanel
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
 
-    var configurations: List<RunnerAndConfigurationSettings> = emptyList()
+    var configurations: List<RunnerAndConfigurationSettings?> = emptyList()
         set(value) {
             field = value
             configurationChanged()
@@ -43,20 +43,20 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
     private fun createPanel() {
         list = JBList<RunnerAndConfigurationSettings>().apply {
-            visibleRowCount = 1
-            emptyText.text = "No run configuration selected."
+//            visibleRowCount = 1
+            emptyText.text = "No run configurations selected."
             cellRenderer = RunConfigCellRenderer(project)
 
             // Cell height
             prototypeCellValue = RunManagerImpl.getInstanceImpl(project).allSettings.firstOrNull()
 
             // Disable selection
-            selectionModel = object : DefaultListSelectionModel() {
-                override fun setSelectionInterval(index0: Int, index1: Int) {
-                    super.setSelectionInterval(-1, -1)
-                    fireValueChanged(-1, -1, false)
-                }
-            }
+//            selectionModel = object : DefaultListSelectionModel() {
+//                override fun setSelectionInterval(index0: Int, index1: Int) {
+//                    super.setSelectionInterval(-1, -1)
+//                    fireValueChanged(-1, -1, false)
+//                }
+//            }
         }
 
         val toolbar = ToolbarDecorator.createDecorator(list).apply {
@@ -101,7 +101,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
     private fun configurationChanged() {
         if (configurations.isNotEmpty()) {
-            list = JBList(configurations)
+            list = JBList(configurations.mapNotNull { it })
 
             // Mock value change to commit changes (otherwise the apply button is not activated)
             list.setSelectionInterval(-1, -1)
