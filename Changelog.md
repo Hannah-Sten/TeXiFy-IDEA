@@ -17,7 +17,7 @@
 * Ignore \ifoot for \if-like commands. (#1220)
 * Fixed crashes. (#1211)
 
-Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko) and Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) for contributing to this release.
+Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko), Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) and [@Lukas-Heiligenbrunner](https://github.com/Lukas-Heiligenbrunner) for contributing to this release.
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/18?closed=1).
 
