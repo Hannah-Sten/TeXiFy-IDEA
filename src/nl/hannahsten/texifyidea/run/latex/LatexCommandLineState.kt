@@ -58,6 +58,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // checking for bibliography commands
             if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
                 runConfig.generateBibRunConfig()
+
+                runConfig.bibRunConfigs.forEach {
+                    val bibSettings = it ?: return@forEach
+
+                    // Pass necessary latex run configurations settings to the bibtex run configuration.
+                    (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
+                        this.mainFile = mainFile
+                        // Check if the aux, out, or src folder should be used as bib working dir.
+                        this.bibWorkingDir = runConfig.getAuxilDirectory()
+                    }
+                }
             }
         }
 
@@ -97,25 +108,22 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
 
-        runConfig.bibRunConfigs.forEach {
+        runConfig.bibRunConfigs.forEachIndexed { index, bibSettings ->
             if (!runConfig.isFirstRunConfig) {
-                return@forEach
+                return@forEachIndexed
             }
 
-            val bibSettings = it ?: return@forEach
-
-            // Pass necessary latex run configurations settings to the bibtex run configuration.
-            (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
-                this.mainFile = mainFile
-                // Check if the aux, out, or src folder should be used as bib working dir.
-                this.bibWorkingDir = runConfig.getAuxilDirectory()
+            if (bibSettings == null) {
+                return@forEachIndexed
             }
 
-            // todo should these be run back-to-back instead of all after the current run?
-            handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment))
-
-            // Skip the other handlers
-            return handler
+            // Only run latex after the last one
+            if (index == runConfig.bibRunConfigs.size - 1) {
+                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, true))
+            }
+            else {
+                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, false))
+            }
         }
 
         // Do not schedule to open the pdf viewer when this is not the last run config in the chain

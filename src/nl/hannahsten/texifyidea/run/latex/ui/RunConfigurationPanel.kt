@@ -38,6 +38,8 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
         add(hidePanel, BorderLayout.CENTER)
     }
 
+    // todo after adding run config, need to click on it to enable apply button
+    // todo apply button also activated when just selecting a run config
     private fun createPanel() {
         list = JBList<RunnerAndConfigurationSettings>().apply {
             emptyText.text = "No run configurations selected."
