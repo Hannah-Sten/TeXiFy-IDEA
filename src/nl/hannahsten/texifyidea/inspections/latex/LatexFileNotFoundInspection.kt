@@ -24,10 +24,7 @@ import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
 import nl.hannahsten.texifyidea.util.Magic.Command.includeOnlyExtensions
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.createFile
-import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 import java.util.*
 
@@ -47,7 +44,25 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.commandsInFile()
+
+        val allcommands = file.commandsInFileSet() //get all comands of project
+        val commands = file.commandsInFile()  //get commands of this file
+
+        var generaloffsetdefined = ""
+
+        //check if there is an includegraphics in commandset
+        if (commands.any { it.name == "\\includegraphics" }) {
+            //check if a graphicspath is defined
+            val collection = allcommands.filter { it.name == "\\graphicspath" }
+            if (collection.size == 1) {
+                //found graphicspath
+                val args = collection[0].parameterList
+                var path = args[0].text.substring(2)
+                path = path.substring(0, path.length - 2)
+                generaloffsetdefined = path
+            }//todo general error handling on double define
+        }
+
         for (command in commands) {
             // Only consider default commands with a file argument.
             val default = LatexCommand.lookup(command.name) ?: continue
@@ -57,6 +72,13 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
             // Remove optional parameters from list of parameters
             val parameters = command.parameterList.filter { it.requiredParam != null }
+
+            val offset: String = if (command.name.equals("\\includegraphics")) {
+                //append only if current command is a \includegraphics
+                generaloffsetdefined
+            }
+            else ""
+
 
             for (i in arguments.indices) {
                 // when there are more required arguments than actual present break the loop
@@ -78,9 +100,12 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 // get the virtual file of the root file
                 val containingDirectory = root.containingDirectory.virtualFile
 
-                for (filePath in fileNames) {
+                for (f in fileNames) {
+                    val filePath = offset + f //add offset to general file path
+
                     // check if the given name is reachable from the root file
                     var relative = containingDirectory.findFile(filePath, extensions)
+                    if (relative == null) relative = containingDirectory.findFile(f, extensions) //check also in root folder
 
                     // If not, check if it is reachable from any content root which will be included when using MiKTeX
                     if (LatexDistribution.isMiktex) {
@@ -89,6 +114,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                                 break
                             }
                             relative = moduleRoot.findFile(filePath, extensions)
+                            if (relative == null) relative = moduleRoot.findFile(f, extensions) //check also in root folder
                         }
                     }
 
@@ -109,14 +135,14 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     val extension = if (command.commandToken.text in includeOnlyExtensions.keys) {
                         includeOnlyExtensions[command.commandToken.text]?.toList()?.first() ?: "tex"
                     }
-                    else {
-                        "tex"
-                    }
+                    else "tex"
 
-                    val parameterOffset = parameter.text.trimRange(1,1).indexOf(filePath)
+                    val parameterOffset = parameter.text.trimRange(1, 1).indexOf(filePath)
+                    val endoffset: Int = if (filePath.length > 15) 15 else filePath.length
+
                     descriptors.add(manager.createProblemDescriptor(
                             parameter,
-                            TextRange(parameterOffset + 1, parameterOffset + filePath.length + 1),
+                            TextRange(parameterOffset + 1, parameterOffset + endoffset + 1),
                             "File '${filePath.appendExtension(extension)}' not found",
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly,
