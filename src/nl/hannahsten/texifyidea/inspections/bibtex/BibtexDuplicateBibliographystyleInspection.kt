@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
+import nl.hannahsten.texifyidea.util.includedPackages
 
 /**
  * @author Hannah Schellekens
@@ -29,6 +30,12 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Duplicate bibliography style commands"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
+
+        // Chapterbib allows multiple bibliographies
+        if (file.includedPackages().any { it == "chapterbib" }) {
+            return mutableListOf()
+        }
+
         val descriptors = descriptorList()
 
         // Check if a bibliography is present.
@@ -42,7 +49,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
                         descriptors.add(manager.createProblemDescriptor(
                                 it,
                                 TextRange(0, it.commandToken.textLength),
-                                "\\bibliographystyle is already used elsewhere", // todo not for chapterbib
+                                "\\bibliographystyle is already used elsewhere",
                                 ProblemHighlightType.GENERIC_ERROR,
                                 isOntheFly,
                                 RemoveOtherCommandsFix

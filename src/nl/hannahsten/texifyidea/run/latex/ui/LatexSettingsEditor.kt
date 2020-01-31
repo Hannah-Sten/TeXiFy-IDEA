@@ -165,7 +165,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             makeindexPanel.isVisible = true
 
             // Apply makeindex
-            // todo run not just the first one
+            // For now we just run the first one, this can be extended to run all of them but that requires some extra work
             runConfiguration.makeindexRunConfig = makeindexPanel.configurations.firstOrNull()
         }
 
