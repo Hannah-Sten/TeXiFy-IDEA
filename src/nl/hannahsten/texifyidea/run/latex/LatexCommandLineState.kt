@@ -64,7 +64,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
                     // Pass necessary latex run configurations settings to the bibtex run configuration.
                     (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
-                        this.mainFile = mainFile
                         // Check if the aux, out, or src folder should be used as bib working dir.
                         this.bibWorkingDir = runConfig.getAuxilDirectory()
                     }

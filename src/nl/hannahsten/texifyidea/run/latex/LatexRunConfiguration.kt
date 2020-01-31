@@ -21,9 +21,10 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.util.LatexDistribution
-import nl.hannahsten.texifyidea.util.hasBibliography
-import nl.hannahsten.texifyidea.util.usesBiber
+import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.findRelativeFile
+import nl.hannahsten.texifyidea.util.files.referencedFiles
 import org.jdom.Element
 
 /**
@@ -300,6 +301,28 @@ class LatexRunConfiguration constructor(project: Project,
     }
 
     /**
+     * Create a new bib run config and add it to the set.
+     */
+    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?) {
+        val runManager = RunManagerImpl.getInstanceImpl(project)
+
+        val bibSettings = runManager.createConfiguration(
+                "",
+                LatexConfigurationFactory(BibtexRunConfigurationType())
+        )
+
+        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
+
+        bibtexRunConfiguration.compiler = defaultCompiler
+        bibtexRunConfiguration.mainFile = mainFile
+        bibtexRunConfiguration.setSuggestedName()
+
+        runManager.addConfiguration(bibSettings)
+
+        bibRunConfigs = bibRunConfigs + setOf(bibSettings)
+    }
+
+    /**
      * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
      */
     internal fun generateBibRunConfig() {
@@ -315,23 +338,37 @@ class LatexRunConfiguration constructor(project: Project,
             this.hasOutputDirectories = false
         }
 
-        val runManager = RunManagerImpl.getInstanceImpl(project)
 
-        // todo when using chapterbib, create more bib run configs
-        val bibSettings = runManager.createConfiguration(
-                "",
-                LatexConfigurationFactory(BibtexRunConfigurationType())
-        )
+        // When chapterbib is used, every chapter has its own bibliography and needs its own run config
+        val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
 
-        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
 
-        bibtexRunConfiguration.compiler = defaultCompiler
-        bibtexRunConfiguration.mainFile = mainFile
-        bibtexRunConfiguration.setSuggestedName()
 
-        runManager.addConfiguration(bibSettings)
+        if (!usesChapterbib) {
+            addBibRunConfig(defaultCompiler, mainFile)
+        }
+        else if (psiFile != null) {
+            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == "\\bibliography" }
 
-        bibRunConfigs = setOf(bibSettings)
+            // We know that there can only be one bibliography per top-level \include,
+            // however not all of them may contain a bibliography, and the ones
+            // that do have one can have it in any included file
+            psiFile!!.allCommands()
+                .filter { it.name == "\\include" }
+                .flatMap { command -> command.requiredParameters }
+                .forEach {filename ->
+                    // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
+                    val chapterMainFile = psiFile!!.findRelativeFile(filename) ?: return@forEach
+
+                    val chapterFiles = chapterMainFile.referencedFiles().toMutableSet().apply { add(chapterMainFile) }
+
+                    val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
+
+                    if (chapterHasBibliography) {
+                        addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile)
+                    }
+                }
+        }
     }
 
     /**

@@ -56,7 +56,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 TextRange(parameterIndex, parameterIndex + fileName.length).shiftRight(command.commandToken.textLength + 1),
-                                "Bibliography file '$fileName' is included multiple times",
+                                "Bibliography file '$fileName' is included multiple times", // todo not for chapterbib
                                 ProblemHighlightType.GENERIC_ERROR,
                                 isOntheFly,
                                 RemoveOtherCommandsFix(fileName, commands)

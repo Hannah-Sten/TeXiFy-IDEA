@@ -42,7 +42,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
                         descriptors.add(manager.createProblemDescriptor(
                                 it,
                                 TextRange(0, it.commandToken.textLength),
-                                "\\bibliographystyle is already used elsewhere",
+                                "\\bibliographystyle is already used elsewhere", // todo not for chapterbib
                                 ProblemHighlightType.GENERIC_ERROR,
                                 isOntheFly,
                                 RemoveOtherCommandsFix
