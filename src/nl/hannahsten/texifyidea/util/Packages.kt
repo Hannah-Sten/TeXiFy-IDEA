@@ -244,10 +244,10 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Except a class, because a class is not a package
             val packages = if (cmd.commandToken.text == "\\documentclass" || cmd.commandToken.text == "\\LoadClass") {
-                setOf(cmd.optionalParameters)
+                setOf(cmd.optionalParameters.keys.toList())
             }
             else {
-                setOf(cmd.requiredParameters, cmd.optionalParameters)
+                setOf(cmd.requiredParameters, cmd.optionalParameters.keys.toList())
             }
 
             for (list in packages) {

@@ -182,9 +182,9 @@ object Magic {
         val labeled = mapOfVarargs(
                 "figure", "fig",
                 "table", "tab",
-                "tabular", "tab",
                 "equation", "eq",
-                "algorithm", "alg"
+                "algorithm", "alg",
+                "lstlisting", "lst"
         )
 
         /**
