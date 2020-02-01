@@ -191,6 +191,12 @@ object Magic {
         )
 
         /**
+         * Environments that define their label via an optional parameter
+         */
+        @JvmField
+        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
+
+        /**
          * Environments that introduce figures
          */
         val figures = hashSetOf("figure")

@@ -20,6 +20,6 @@ public interface LatexEnvironment extends PsiElement, StubBasedPsiElement<LatexE
 
   String getEnvironmentName();
 
-  boolean hasLabel();
+  String getLabel();
 
 }

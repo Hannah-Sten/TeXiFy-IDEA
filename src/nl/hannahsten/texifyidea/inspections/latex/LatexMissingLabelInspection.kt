@@ -80,7 +80,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
     private fun addEnvironmentDescriptor(environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>,
                                          manager: InspectionManager, isOntheFly: Boolean): Boolean {
-        if (environment.hasLabel()) {
+        if (environment.label != null) {
             return false
         }
 
