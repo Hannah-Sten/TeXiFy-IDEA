@@ -152,7 +152,7 @@ intellij {
     sameSinceUntilBuild = true
 
     // Comment out to use the latest EAP snapshot
-    version '2019.3'
+    version '2019.3.2'
 }
 
 test {
