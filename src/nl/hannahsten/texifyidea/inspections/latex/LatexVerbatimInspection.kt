@@ -8,6 +8,7 @@ import com.intellij.formatting.blocks.prev
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
@@ -23,6 +24,9 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
 
     override val inspectionId: String = "UseOfVerbatimEnvironment"
 
+    private val onTag = CodeStyleSettings.getDefaults().FORMATTER_ON_TAG
+    private val offTag = CodeStyleSettings.getDefaults().FORMATTER_OFF_TAG
+
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
@@ -34,7 +38,7 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
                 // Don't trigger the inspection when the verbatim environment is in its own file.
                 if (Magic.Environment.verbatim.any { file.text.startsWith("\\begin{$it}") }) continue
                 // Don't trigger the inspection when the verbatim environment is surrounded by formatter comments.
-                if (begin.node.treeParent.prev()?.text?.contains("@formatter:off") == true) continue
+                if (begin.node.treeParent.prev()?.text?.contains(offTag) == true) continue
 
                 descriptors.add(manager.createProblemDescriptor(
                         begin,
@@ -42,7 +46,7 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
                         "Verbatim environment might break TeXiFy formatter and/or parser",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
-                        InsertFormatterCommentsFix(),
+                        InsertFormatterCommentsFix(onTag, offTag),
                         MoveToFileFix()
                 ))
             }
@@ -51,7 +55,7 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    class InsertFormatterCommentsFix : LocalQuickFix {
+    class InsertFormatterCommentsFix(val onTag: String, val offTag: String) : LocalQuickFix {
         override fun getFamilyName(): String =
                 "Insert comments to disable the formatter (fixes formatter issues)"
 
@@ -61,8 +65,8 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
 
             val editor = beginCommand.containingFile.openedEditor() ?: return
             val indent: String = editor.document.lineIndentationByOffset(beginCommand.textOffset)
-            val offComment = "% @formatter:off\n$indent"
-            val onComment = "\n$indent% @formatter:on"
+            val offComment = "% $offTag\n$indent"
+            val onComment = "\n$indent% $onTag"
 
             editor.insertAndMove(beginCommand.textOffset, offComment)
             editor.insertAndMove(endCommand.endOffset() + offComment.length, onComment)
