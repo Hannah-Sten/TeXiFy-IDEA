@@ -4,6 +4,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.formatting.blocks.prev
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
@@ -25,6 +26,11 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
             val beginEnvironment = begin.environmentName() ?: continue
 
             if (Magic.Environment.verbatim.any { it == beginEnvironment }) {
+                // Don't trigger the inspection when the verbatim environment is in its own file.
+                if (Magic.Environment.verbatim.any { file.text.startsWith("\\begin{$it}") }) continue
+                // Don't trigger the inspection when the verbatim environment is surrounded by formatter comments.
+                if (begin.node.treeParent.prev()?.text?.contains("@formatter:off") == true) continue
+
                 descriptors.add(manager.createProblemDescriptor(
                         begin,
                         begin,
