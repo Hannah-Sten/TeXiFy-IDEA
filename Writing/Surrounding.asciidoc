@@ -1,3 +1,5 @@
+:experimental:
+
 == Surrounding selection with quotes or dollars
 _since b0.6.9_
 
