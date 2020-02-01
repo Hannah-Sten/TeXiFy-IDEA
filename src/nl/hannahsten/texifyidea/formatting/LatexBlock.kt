@@ -4,10 +4,7 @@ import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
-import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.*
 
 /**
@@ -47,14 +44,7 @@ class LatexBlock(
                 // somehow they are not placed inside environments.
                 || myNode.elementType === LatexTypes.COMMENT_TOKEN
                 && myNode.treeParent.elementType === LatexTypes.ENVIRONMENT) {
-
-            val environment = myNode.treeParent.psi.originalElement as LatexEnvironmentImpl
-            // Check if we are in a listings environment by checking the required
-            // parameter of the begin command.
-            return if (environment.beginCommand.requiredParameters().any { it.text.contains(DefaultEnvironment.LISTINGS.environmentName) }) {
-                Indent.getAbsoluteNoneIndent()
-            }
-            else Indent.getNormalIndent(true)
+            return Indent.getNormalIndent(true)
         }
 
         // Indent content of groups. Not relative to their parent, because that

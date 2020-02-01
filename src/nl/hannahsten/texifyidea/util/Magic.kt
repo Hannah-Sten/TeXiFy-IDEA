@@ -191,6 +191,8 @@ object Magic {
          * Environments that introduce figures
          */
         val figures = hashSetOf("figure")
+
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
     }
 
     /**
