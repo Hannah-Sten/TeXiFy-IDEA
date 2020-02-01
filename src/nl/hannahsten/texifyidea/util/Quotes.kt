@@ -6,8 +6,8 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
  * Define what the replacements are for opening and closing quotes, in case that is relevant for the user setting.
  */
 fun getOpenAndCloseQuotes(char: Char): Pair<String, String> {
-    var openingQuotes = ""
-    var closingQuotes = ""
+    var openingQuotes = char.toString()
+    var closingQuotes = char.toString()
 
     // Get the saved value to find the correct replacement
     val quoteSetting = TexifySettings.getInstance().automaticQuoteReplacement
