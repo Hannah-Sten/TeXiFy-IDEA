@@ -46,7 +46,7 @@ toc::[]
 * link:Grazie[Support for the Grazie grammar and spellchecking plugin]
 * link:Soft-wraps[Soft wraps and wrap on typing]
 * link:Shortcuts[Many useful shortcuts]
-* Automatic insertion of `\item` in list environments like itemize and enumerate
+* link:Item-insertion[Automatic insertion of `\item` in list environments like itemize and enumerate]
 * Automatic insertion of `\end` when typing `\begin` for environments
 * On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
 * link:Surrounding[Surround with dollars, quotes, or braces]
