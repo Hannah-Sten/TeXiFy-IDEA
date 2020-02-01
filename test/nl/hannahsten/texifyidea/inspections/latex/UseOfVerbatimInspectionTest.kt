@@ -15,7 +15,21 @@ class UseOfVerbatimInspectionTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testUseOfVerbatim() {
+    fun testUseOfVerbatimWarnings() {
+        val testName = getTestName(false)
+        myFixture.configureByFile("$testName.tex")
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    @Test
+    fun testSingleVerbatimNoWarnings() {
+        val testName = getTestName(false)
+        myFixture.configureByFile("$testName.tex")
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    @Test
+    fun testVerbatimCommentsNoWarnings() {
         val testName = getTestName(false)
         myFixture.configureByFile("$testName.tex")
         myFixture.checkHighlighting(false, false, true, false)

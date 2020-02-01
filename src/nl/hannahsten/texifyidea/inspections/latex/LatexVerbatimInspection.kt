@@ -9,9 +9,8 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.environmentName
+import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.openedEditor
 
 class LatexVerbatimInspection : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
@@ -41,6 +40,25 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
         return descriptors
     }
 
+    class InsertFormatterCommentsFix : LocalQuickFix {
+        override fun getFamilyName(): String =
+                "Insert comments to disable the formatter (fixes formatter issues)"
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val beginCommand = descriptor.startElement as LatexBeginCommand
+            val endCommand = beginCommand.endCommand() ?: return
+
+            val editor = beginCommand.containingFile.openedEditor() ?: return
+            val indent: String = editor.document.lineIndentationByOffset(beginCommand.textOffset)
+            val offComment = "% @formatter:off\n$indent"
+            val onComment = "\n$indent% @formatter:on"
+
+            editor.insertAndMove(beginCommand.textOffset, offComment)
+            editor.insertAndMove(endCommand.endOffset() + offComment.length, onComment)
+
+        }
+    }
+
     class MoveToFileFix : LocalQuickFix {
         override fun getFamilyName(): String =
                 "Move verbatim environment to another file (fixes formatter and parser issues)"
@@ -48,15 +66,5 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             println("move verbatim to file")
         }
-    }
-
-    class InsertFormatterCommentsFix : LocalQuickFix {
-        override fun getFamilyName(): String =
-                "Insert comments to disable the formatter (fixes formatter issues)"
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            println("insert formatting comments")
-        }
-
     }
 }
