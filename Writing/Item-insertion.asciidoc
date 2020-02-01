@@ -9,6 +9,6 @@ If your cursor is in the middle of a line and you want to split it, but without 
 
 An example which shows the use of kbd:[Enter], kbd:[Shift + Enter] and kbd:[Ctrl + Enter] (in that order):
 
-image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/writing/figures/itemize-enter.gif[]
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/itemize-enter.gif[]
 
 Note that for even quicker insertion of an itemize you can use live templates (`itm` for itemize by default) as described in link:Live-templates[Live templates].
