@@ -18,3 +18,5 @@ This shortcut can also be used to bring the Evince window in view when you do no
 === Backward or inverse search
 
 You can also do the reverse: press kbd:[Ctrl] and click in Evince in a pdf you just compiled, and it should make your cursor go to the correct location in IntelliJ.
+
+Note you need at least Evince 2.32 for this, you can check your version with `evince --version`. Especially on Linux Mint it may be that your version is too old, in which case simply `apt install evince` to update.
