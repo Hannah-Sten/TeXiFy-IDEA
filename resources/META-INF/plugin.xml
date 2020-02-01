@@ -418,6 +418,7 @@
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.ContinuousPreviewBackspacehandler"/>
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
+        <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
