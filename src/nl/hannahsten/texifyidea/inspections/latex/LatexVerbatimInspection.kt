@@ -61,7 +61,6 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
 
             editor.insertAndMove(beginCommand.textOffset, offComment)
             editor.insertAndMove(endCommand.endOffset() + offComment.length, onComment)
-
         }
     }
 
