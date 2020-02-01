@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import org.intellij.lang.annotations.Language
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 /**
  * Capitalises the first character of the string.
@@ -178,3 +180,25 @@ fun String.splitWhitespace() = split(Regex("\\s+"))
  * @see [Magic.Pattern.htmlTag]
  */
 fun String.removeHtmlTags() = this.replace(Magic.Pattern.htmlTag.toRegex(), "")
+
+/**
+ * Run a command in the terminal.
+ *
+ * @return The output of the command or null if an exception was thrown.
+ */
+fun String.runCommand(): String? {
+    return try {
+        val parts = this.split("\\s".toRegex())
+        val proc = ProcessBuilder(*parts.toTypedArray())
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
+
+        // Timeout value
+        proc.waitFor(10, TimeUnit.SECONDS)
+        proc.inputStream.bufferedReader().readText() + proc.errorStream.bufferedReader().readText()
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
