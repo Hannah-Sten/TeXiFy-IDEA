@@ -9,7 +9,7 @@ import org.junit.Test
 
 class LatexGutterTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
-        return "testData/gutter"
+        return "test/resources/gutter"
     }
 
     @Test

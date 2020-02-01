@@ -29,7 +29,7 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
                 descriptors.add(manager.createProblemDescriptor(
                         begin,
                         begin,
-                        "Verbatim environment might break the formatter and/or the parser",
+                        "Verbatim environment might break TeXiFy formatter and/or parser",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
                         InsertFormatterCommentsFix(),

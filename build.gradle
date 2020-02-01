@@ -33,6 +33,7 @@ sourceSets {
     // Specify test directories
     test.java.srcDirs += 'test/'
     test.kotlin.srcDirs += 'test/'
+    test.resources.srcDirs += 'test/resources/'
 }
 
 // Java target version

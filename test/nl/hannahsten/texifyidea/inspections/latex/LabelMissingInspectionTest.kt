@@ -6,7 +6,7 @@ import org.junit.Test
 
 class LabelMissingInspectionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
-        return "testData/inspections/latex"
+        return "test/resources/inspections/latex/missinglabel"
     }
 
     override fun setUp() {
