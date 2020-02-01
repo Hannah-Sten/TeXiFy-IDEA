@@ -4,6 +4,7 @@
 * Add go to definition for labels, citations and new commands. (#1191, #2)
 * Add support for opening source files of installed LaTeX packages and classes. (#1191)
 * Add support for opening files from include commands. (#1191)
+* Add support for a custom output or auxiliary directory. (#1201)
 * Add biblatex commands to the autocomplete. (#1195)
 * Add more user configurable live templates. (#1203)
 * Add inspection which checks that floating environments have a label. (#1216)
