@@ -49,8 +49,10 @@ toc::[]
 * Automatic insertion of `\item` in list environments like itemize and enumerate
 * Automatic insertion of `\end` when typing `\begin` for environments
 * On typing `\[` automatic insertion of `\]`, after kbd:[Enter] also with correct indentation
+* link:Surrounding[Surround with dollars, quotes, or braces]
 * Automatic insertion of braces of first required parameter
 * Typing `}` at closing brace skips over it, same for `$..$`
+*
 * Multi-cursors
 * link:Math-environment-switcher[Easy switching to other math environments]
 
