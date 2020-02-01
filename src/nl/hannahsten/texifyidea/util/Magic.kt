@@ -42,6 +42,7 @@ object Magic {
                 |
                 |% Package imports.
                 |\usepackage{amsmath}
+                |\usepackage{listings}
                 |
                 |% Document wide TikZ settings.
                 |\tikzset{

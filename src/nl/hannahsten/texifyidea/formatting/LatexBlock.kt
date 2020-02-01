@@ -5,6 +5,8 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.inDirectEnvironment
 import java.util.*
 
 /**
@@ -52,6 +54,10 @@ class LatexBlock(
         // (usually) command.
         if (myNode.elementType === LatexTypes.CONTENT
                 && myNode.treeParent.elementType in setOf(LatexTypes.GROUP, LatexTypes.OPEN_GROUP)) {
+            // When in a verbatim environment, don't touch the indentation inside a group (doesn't always work).
+            if (myNode.psi.inDirectEnvironment(Magic.Environment.verbatim)) {
+                return null
+            }
             return Indent.getNormalIndent()
         }
 
