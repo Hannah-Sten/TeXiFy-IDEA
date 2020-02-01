@@ -295,6 +295,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 ==== Writing organisation recommendations
 * Might break TeXiFy functionality
+
 * link:Writing-organisation-recommendations#too-large-section[Too large section]
 
 == Intentions
