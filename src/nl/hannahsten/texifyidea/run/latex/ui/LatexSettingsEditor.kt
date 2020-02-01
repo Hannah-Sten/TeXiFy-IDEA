@@ -249,33 +249,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
         panel.add(mainFile)
 
-        // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
-        if (LatexDistribution.isMiktex) {
-
-            val auxilPathField = TextFieldWithBrowseButton()
-            auxilPathField.addBrowseFolderListener(
-                    TextBrowseFolderListener(
-                            FileChooserDescriptor(false, true, false, false, false, false)
-                                .withTitle("Choose a directory for auxiliary files")
-                                    .withRoots(*ProjectRootManager.getInstance(project!!)
-                                            .contentRootsFromAllModules)
-                    )
-            )
-            auxilPath = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
-            panel.add(auxilPath)
-        }
-
-        val outputPathField = TextFieldWithBrowseButton()
-        outputPathField.addBrowseFolderListener(
-                TextBrowseFolderListener(
-                        FileChooserDescriptor(false, true, false, false, false, false)
-                                .withTitle("Choose a directory for output files")
-                                .withRoots(*ProjectRootManager.getInstance(project!!)
-                                        .contentRootsFromAllModules)
-                )
-        )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX)")
-        panel.add(outputPath)
+        addOutputPathField(panel)
 
         compileTwice = JBCheckBox("Always compile twice")
         compileTwice!!.isSelected = false
@@ -296,6 +270,36 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         makeindexPanel = RunConfigurationPanel(project!!, "Makeindex: ", MakeindexRunConfigurationType::class.java)
         panel.add(makeindexPanel)
+    }
+
+    private fun addOutputPathField(panel: JPanel) {
+        // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
+        if (LatexDistribution.isMiktex) {
+
+            val auxilPathField = TextFieldWithBrowseButton()
+            auxilPathField.addBrowseFolderListener(
+                    TextBrowseFolderListener(
+                            FileChooserDescriptor(false, true, false, false, false, false)
+                                    .withTitle("Choose a directory for auxiliary files")
+                                    .withRoots(*ProjectRootManager.getInstance(project!!)
+                                            .contentRootsFromAllModules)
+                    )
+            )
+            auxilPath = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
+            panel.add(auxilPath)
+        }
+
+        val outputPathField = TextFieldWithBrowseButton()
+        outputPathField.addBrowseFolderListener(
+                TextBrowseFolderListener(
+                        FileChooserDescriptor(false, true, false, false, false, false)
+                                .withTitle("Choose a directory for output files")
+                                .withRoots(*ProjectRootManager.getInstance(project!!)
+                                        .contentRootsFromAllModules)
+                )
+        )
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX)")
+        panel.add(outputPath)
     }
 
     /**

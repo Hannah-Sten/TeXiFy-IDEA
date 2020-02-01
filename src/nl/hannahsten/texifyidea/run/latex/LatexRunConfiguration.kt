@@ -120,6 +120,10 @@ class LatexRunConfiguration constructor(project: Project,
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
+        // It is not possible to create the directory when it doesn't exist, because we do not know when the user is done editing (LatexSettingsEditor.applyEditorTo is called a lot of times)
+        if (outputPath == null) {
+            throw RuntimeConfigurationError("Run configuration is invalid: output path cannot be found")
+        }
     }
 
     @Throws(ExecutionException::class)
