@@ -14,7 +14,7 @@ class PackageDoesNotExist : BasePlatformTestCase() {
     }
 
     @Test
-    fun testPackageDoesNotExistWarnings() {
+    fun testPackageMayNotExistWarnings() {
         val testName = getTestName(false)
         myFixture.configureByFile("$testName.tex")
         myFixture.checkHighlighting(true, false, false, false)
