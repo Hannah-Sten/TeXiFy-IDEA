@@ -8,6 +8,8 @@
 * Add biblatex commands to the autocomplete. (#1195)
 * Add a warning to update Evince when the version is too old for backwards/forward search. (#1226)
 * Add more user configurable live templates. (#1203)
+* Surround text with $..$ or [..] using a shortcut or by typing $ or [. (#1207)
+* Surround text with quotes depending on your Smart quotes setting. (#1207)
 * Add inspection which checks that floating environments have a label. (#1216)
 * Remove second $ of an empty inline math environment when deleting the first one. (#1227)
 
