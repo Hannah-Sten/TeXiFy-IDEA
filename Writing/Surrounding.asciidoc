@@ -1,7 +1,7 @@
 :experimental:
 
 == Surrounding selection with quotes or dollars
-_since b0.6.9_
+_Since b0.6.9_
 
 With some text selected, press kbd:[Ctrl + Alt + T] (surround with) to surround text with quotes, dollar signs (inline math) or braces.
 When surrounding with quotes, quotes will be inserted according to the link:Global-settings#smart-quotes[settings].
