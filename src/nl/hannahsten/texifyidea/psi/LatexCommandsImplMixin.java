@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiNameIdentifierOwner;
@@ -10,16 +9,9 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.IncorrectOperationException;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
-import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * This class is a mixin for LatexCommandsImpl. We use a separate mixin class instead of [LatexPsiImplUtil] because we need to add an instance variable
@@ -52,18 +44,10 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
         return "LatexCommandsImpl(COMMANDS)[STUB]{" + getName() + "}";
     }
 
-    @NotNull
     @Override
-    public TextRange getTextRangeInParent() {
-        String regex = Magic.Command.definitionsAndRedefinitions.stream().map(it -> it.replace("\\", "\\\\")).collect(Collectors.joining("|"));
-        Matcher matcher = Pattern.compile(regex).matcher(getNode().getText());
-        // TODO this for all definition commands.
-        if (matcher.find()) {
-            String command = getNode().getText().split("\\{")[0];
-            int start = command.length() + 1;
-            return TextRange.from(start, getName().length());
-        }
-        else return super.getTextRangeInParent();
+    public int getTextOffset() {
+        int offset = getNode().getText().indexOf(getName()) + getNode().getStartOffset();
+        return offset == -1 ? super.getTextOffset() : offset;
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {

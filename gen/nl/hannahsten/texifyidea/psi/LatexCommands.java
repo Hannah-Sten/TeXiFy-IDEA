@@ -28,6 +28,8 @@ public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiEleme
 
   boolean hasLabel();
 
+  int getTextOffset();
+
   String getName();
 
 }

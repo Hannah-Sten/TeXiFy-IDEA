@@ -33,7 +33,7 @@ public class LatexPsiImplUtil {
     static final Pattern OPTIONAL_SPLIT = Pattern.compile(",\\s*");
 
     @NotNull
-    public static PsiReference[] getReferences(@NotNull LatexCommands element) {
+    public static PsiReference[]  getReferences(@NotNull LatexCommands element) {
         final LatexRequiredParam firstParam = readFirstParam(element);
 
         if (REFERENCE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
