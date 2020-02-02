@@ -49,6 +49,12 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
     }
 
+    @Override
+    public boolean isReferenceTo(@NotNull PsiElement element) {
+//        return Arrays.stream(multiResolve(false)).anyMatch(it -> it.getElement() == element);
+        return true;
+    }
+
     @NotNull
     @Override
     public Object[] getVariants() {

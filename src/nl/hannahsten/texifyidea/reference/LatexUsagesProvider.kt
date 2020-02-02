@@ -24,11 +24,12 @@ class LatexUsagesProvider : FindUsagesProvider {
                         LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM,
                         LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END,
                         LatexTypes.INLINE_MATH_START, LatexTypes.INLINE_MATH_END,
+                        LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT,
                         LatexTypes.STAR),
                 // Comments.
                 TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),
                 // Literals.
-                TokenSet.create(LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT,
+                TokenSet.create(
                         LatexTypes.ENVIRONMENT_CONTENT, LatexTypes.CONTENT,
                         LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
                         LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH, LatexTypes.INLINE_MATH,
