@@ -11,6 +11,8 @@ A file that contains only a verbatim environment will not be touched by the form
 If the verbatim environment caused any parse errors in the original file, the errors will now be in the included file and therefore won't harm the original file.
 This fixes formatting issues in the verbatim environment, and parse errors in the original file.
 
+Note you can add the formatter magic comments in batch by using menu:Analyze[Inspect code], select the scope, select the correct inspection and click 'Insert comments to disable the formatter'.
+
 == [[too-large-section]]Too large section
 
 Similar to link:Intentions#selection-to-file[move selection contents to separate file] and link:Intentions#move-section-to-file[move section contents to separate file], except that this is a visible warning on a section command whenever a section is too large (currently some thousand characters).
