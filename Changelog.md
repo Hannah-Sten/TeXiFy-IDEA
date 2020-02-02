@@ -12,6 +12,7 @@
 * Surround text with quotes depending on your Smart quotes setting. (#1207)
 * Add inspection which checks that floating environments have a label. (#1216)
 * Remove second $ of an empty inline math environment when deleting the first one. (#1227)
+* Use Ctrl+Enter to split lines in an itemize. (#1228)
 
 ## Changes
 * If a file has a run configuration associated, treat it as a root file. (#1198)
