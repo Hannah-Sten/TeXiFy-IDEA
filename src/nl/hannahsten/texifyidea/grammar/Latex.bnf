@@ -16,6 +16,8 @@
     extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
     implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
 
+    extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
+
     tokens=[
         WHITE_SPACE='regexp:\s+'
         DISPLAY_MATH_START='\['
@@ -41,7 +43,12 @@ no_math_content ::= comment | environment | math_environment | commands | group 
 
 normal_text ::= (NORMAL_TEXT_WORD | STAR)+
 
-environment ::= begin_command environment_content? end_command { pin=1 }
+environment ::= begin_command environment_content? end_command {
+    pin=1
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
+    stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
+    methods=[getEnvironmentName hasLabel]
+ }
 
 environment_content ::= content+
 
@@ -50,10 +57,13 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getOptionalParameters getRequiredParameters hasLabel]
+    methods=[getReferences getOptionalParameters getRequiredParameters hasLabel getName]
 }
 
-begin_command ::= BEGIN_TOKEN STAR? parameter* { pin=1 }
+begin_command ::= BEGIN_TOKEN STAR? parameter* {
+    pin=1
+    methods=[getOptionalParameters getRequiredParameters]
+}
 
 end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 

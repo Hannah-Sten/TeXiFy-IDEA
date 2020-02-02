@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.execution.RunManager
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileType
@@ -21,9 +23,12 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -155,14 +160,7 @@ fun Module.createExcludedDir(path: String) {
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
-    val documentClass = this.commandsInFile()
-            .find { it.name == "\\documentclass" }
-
-    // Function to avoid unnecessary evaluation
-    fun usesSubFiles() = documentClass?.requiredParameters?.contains("subfiles") == true
-
-    // When using subfiles, a file with a documentclass does not have to be the root
-    if (documentClass != null && !usesSubFiles()) {
+    if (this.isRoot()) {
         return this
     }
 
@@ -253,7 +251,18 @@ fun PsiFile.isRoot(): Boolean {
         return false
     }
 
-    return commandsInFile().find { it.commandToken.text == "\\documentclass" } != null
+    // Function to avoid unnecessary evaluation
+    fun documentClass() = this.commandsInFile().find { it.commandToken.text == "\\documentclass" }
+
+    // Whether the document makes use of the subfiles class, in which case it is not a root file
+    fun usesSubFiles() = documentClass()?.requiredParameters?.contains("subfiles") == true
+
+    // Go through all run configurations, to check if there is one which contains the current file.
+    // If so, then we assume that the file is compilable and must be a root file.
+    val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
+    val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
+
+    return isMainFileInAnyConfiguration || documentClass() != null && !usesSubFiles()
 }
 
 /**
@@ -401,6 +410,11 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  * @see [LatexCommandsIndex.getItems]
  */
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
+
+/**
+ * @see [LatexEnvironmentsIndex.getItems]
+ */
+fun PsiFile.environmentsInFile(): Collection<LatexEnvironment> = LatexEnvironmentsIndex.getItems(this)
 
 /**
  * Get the editor of the file if it is currently opened.

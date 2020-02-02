@@ -1,9 +1,13 @@
 package nl.hannahsten.texifyidea.run.linuxpdfviewer.evince
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.project.Project
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import nl.hannahsten.texifyidea.util.runCommand
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -20,7 +24,26 @@ class EvinceInverseSearchListener {
     /**
      * Starts a listener which listens for inverse search actions from Evince.
      */
-    fun start() {
+    fun start(project: Project) {
+        // Check if Evince version supports dbus
+        // Technically only version 2.32 is needed, but since 3.0 was released back
+        // in 2011 we just check for major version 3, much easier
+
+        try {
+            // Assumes version will be given in the format GNOME Document Viewer 3.34.2
+            val majorVersion = "evince --version".runCommand()
+                    ?.split(" ")
+                    ?.lastOrNull()
+                    ?.split(".")
+                    ?.firstOrNull()
+                    ?.toInt()
+            if (majorVersion != null && majorVersion < 3) {
+                Notification("EvinceInverseSearchListener", "Old Evince version found", "Please update Evince to at least version 3 to use forward/backward search", NotificationType.ERROR).notify(project)
+                return
+            }
+        }
+        catch (ignored: NumberFormatException) {}
+
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
         GlobalScope.launch {

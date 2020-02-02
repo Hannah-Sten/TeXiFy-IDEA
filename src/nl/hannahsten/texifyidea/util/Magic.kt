@@ -42,6 +42,7 @@ object Magic {
                 |
                 |% Package imports.
                 |\usepackage{amsmath}
+                |\usepackage{listings}
                 |
                 |% Document wide TikZ settings.
                 |\tikzset{
@@ -89,6 +90,7 @@ object Magic {
                 |    \]</displayMath>
                 |    
                 |    \paragraph{Programming}
+                |    % @formatter:off
                 |    \begin{lstlisting}[language=Kotlin]
                 |fun Int?.ifPositiveAddTwo(): Int =
                 |        this?.let {
@@ -96,6 +98,7 @@ object Magic {
                 |            else this
                 |        } ?: 0
                 |    \end{lstlisting}
+                |    % @formatter:on
                 |
                 |    \subsection{More work}\label{subsec:moreWork}
                 |    A much longer \LaTeXe{} example was written by Henk-Jan~\cite{Gil:02}.
@@ -182,15 +185,17 @@ object Magic {
         val labeled = mapOfVarargs(
                 "figure", "fig",
                 "table", "tab",
-                "tabular", "tab",
                 "equation", "eq",
-                "algorithm", "alg"
+                "algorithm", "alg",
+                "lstlisting", "lst"
         )
 
         /**
          * Environments that introduce figures
          */
         val figures = hashSetOf("figure")
+
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
     }
 
     /**
@@ -237,14 +242,22 @@ object Magic {
         )
 
         /**
-         * All commands that represent a reference to a bibiography entry/item.
+         * All commands that represent a reference to a bibliography entry/item.
+         * Commands listed here should also be listed in [nl.hannahsten.texifyidea.lang.LatexRegularCommand].
          */
         @JvmField
         val bibliographyReference = hashSetOf(
                 "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
                 "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
                 "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
-                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar"
+                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar", "\\parencite", "\\Parencite",
+                "\\footcite", "\\footcitetext", "\\textcite", "\\Textcite", "\\smartcite", "\\Smartcite",
+                "\\cite*", "\\parencite*", "\\supercite", "\\autocite", "\\Autocite", "\\autocite*",
+                "\\Autocite*", "\\citetitle", "\\citetitle*", "\\citeyear*", "\\citedate", "\\citedate*",
+                "\\citeurl", "\\volcite", "\\Volcite", "\\pvolcite", "\\Pvolcite", "\\fvolcite",
+                "\\Fvolcite", "\\ftvolcite", "\\svolcite", "\\Svolcite", "\\tvolcite", "\\Tvolcite",
+                "\\avolcite", "\\Avolcite", "\\fullcite", "\\footfullcite", "\\notecite", "\\Notecite",
+                "\\pnotecite", "\\fnotecite"
         )
 
         /**
@@ -403,7 +416,7 @@ object Magic {
          * All commands that at first glance look like \if-esque commands, but that actually aren't.
          */
         @JvmField
-        val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle")
+        val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot")
 
         /**
          * List of all TeX style primitives.

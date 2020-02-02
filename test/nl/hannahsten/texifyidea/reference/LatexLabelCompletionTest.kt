@@ -6,7 +6,7 @@ import org.junit.Test
 
 class LatexLabelCompletionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
-        return "testData/completion/cite"
+        return "test/resources/completion/cite"
     }
 
     @Throws(Exception::class)

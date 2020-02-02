@@ -6,8 +6,11 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
+import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import nl.hannahsten.texifyidea.reference.InputFileReference;
 import nl.hannahsten.texifyidea.reference.LatexLabelReference;
+import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.PsiCommandsKt;
@@ -27,7 +30,7 @@ public class LatexPsiImplUtil {
     static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
     static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
     static final Set<String> DEFINITION_COMMANDS = Magic.Command.commandDefinitions;
-    static final Pattern OPTIONAL_SPLIT = Pattern.compile(",");
+    static final Pattern OPTIONAL_SPLIT = Pattern.compile(",\\s*");
 
     @NotNull
     public static PsiReference[] getReferences(@NotNull LatexCommands element) {
@@ -111,35 +114,54 @@ public class LatexPsiImplUtil {
     }
 
     /**
-     * Generates a list of all names of all optional parameters in the command.
+     * Generates a list of all optional parameter names and values.
      */
-    public static List<String> getOptionalParameters(@NotNull LatexCommands element) {
-        return element.getParameterList().stream()
-                .map(LatexParameter::getOptionalParam)
-                .filter(Objects::nonNull)
-                .flatMap(op -> {
-                    if (op == null || op.getOpenGroup() == null) {
-                        return Stream.empty();
-                    }
-
-                    return op.getOpenGroup().getContentList().stream()
-                            .map(LatexContent::getNoMathContent);
-                })
-                .filter(Objects::nonNull)
-                .map(LatexNoMathContent::getNormalText)
-                .filter(Objects::nonNull)
-                .map(PsiElement::getText)
-                .filter(Objects::nonNull)
-                .flatMap(OPTIONAL_SPLIT::splitAsStream)
-                .collect(Collectors.toList());
+    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexCommands element) {
+        return getOptionalParameters(element.getParameterList());
     }
 
     /**
-     * Generates a list of all names of all required parameters in the command.
+     * Generates a list of all optional parameter names and values.
      */
-    public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
-        return element.getParameterList().stream()
-                .map(LatexParameter::getRequiredParam)
+    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexBeginCommand element) {
+        return getOptionalParameters(element.getParameterList());
+    }
+
+    /**
+     * Generates a map of parameter names and values for all optional parameters
+     */
+    // Explicitly use a LinkedHashMap to preserve iteration order
+    private static LinkedHashMap<String, String> getOptionalParameters(@NotNull List<LatexParameter> parameters) {
+        LinkedHashMap<String, String> parameterMap = new LinkedHashMap<>();
+        String parameterString = parameters.stream()
+                // we care only about optional parameters
+                .map(LatexParameter::getOptionalParam)
+                .filter(Objects::nonNull)
+                // extract the content of each parameter element
+                .flatMap(op -> op.getOpenGroup().getContentList().stream()
+                        .map(LatexContent::getNoMathContent))
+                .map(c -> {
+                    // the content is either simple text
+                    LatexNormalText text = c.getNormalText();
+                    if (text != null) return text.getText();
+
+                    // or a group like in param={some value}
+                    if (c.getGroup() == null) return null;
+                    return c.getGroup().getContentList().stream()
+                            .map(PsiElement::getText).collect(Collectors.joining());
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining());
+
+        for (String parameter : parameterString.split(",")) {
+            String[] parts = parameter.split("=");
+            parameterMap.put(parts[0], parts.length > 1 ? parts[1] : "");
+        }
+        return parameterMap;
+    }
+
+    private static List<String> getRequiredParameters(@NotNull List<LatexParameter> parameters) {
+        return parameters.stream().map(LatexParameter::getRequiredParam)
                 .flatMap(rp -> {
                     if (rp == null || rp.getGroup() == null) {
                         return Stream.empty();
@@ -171,6 +193,23 @@ public class LatexPsiImplUtil {
     }
 
     /**
+     * Generates a list of all names of all required parameters in the command.
+     */
+    public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
+        return getRequiredParameters(element.getParameterList());
+    }
+
+    public static List<String> getRequiredParameters(@NotNull LatexBeginCommand element) {
+        return getRequiredParameters(element.getParameterList());
+    }
+
+    public static String getName(@NotNull LatexCommands element) {
+        LatexCommandsStub stub = element.getStub();
+        if (stub != null) return stub.getName();
+        return element.getCommandToken().getText();
+    }
+
+    /**
      * Checks if the command is followed by a label.
      */
     public static boolean hasLabel(@NotNull LatexCommands element) {
@@ -187,5 +226,51 @@ public class LatexPsiImplUtil {
 
         LatexCommands labelMaybe = children.iterator().next();
         return TexifySettings.getInstance().getLabelPreviousCommands().containsKey(labelMaybe.getCommandToken().getText());
+    }
+
+    /**
+     * Checks if the environment contains a label.
+     */
+    public static boolean hasLabel(@NotNull LatexEnvironment element) {
+        PsiElement content = element.getEnvironmentContent();
+        if (content == null) {
+            return false;
+        }
+
+        boolean labelFound = false;
+
+        // see if we can find a label command inside the environment
+        Collection<LatexCommands> children = PsiTreeUtil.findChildrenOfType(content, LatexCommands.class);
+        if (!children.isEmpty()) {
+            LatexCommands labelMaybe = children.iterator().next();
+            Map<String, LabelingCommandInformation> labelCommands = TexifySettings.getInstance().getLabelPreviousCommands();
+            labelFound = children.stream().anyMatch(c -> labelCommands.containsKey(c.getName()));
+        }
+
+        // see if we can find a label option
+        Set<String> optionalParameters = getOptionalParameters(element.getBeginCommand().getParameterList()).keySet();
+        labelFound = labelFound || optionalParameters.contains("label");
+
+        return labelFound;
+    }
+
+    public static String getEnvironmentName(@NotNull LatexEnvironment element) {
+        LatexEnvironmentStub stub = element.getStub();
+        if (stub != null) return stub.getEnvironmentName();
+
+        List<LatexParameter> parameters = element.getBeginCommand().getParameterList();
+        if (parameters.isEmpty()) return "";
+
+        LatexParameter environmentNameParam = parameters.get(0);
+        LatexRequiredParam requiredParam = environmentNameParam.getRequiredParam();
+        if (requiredParam == null) return "";
+
+        List<LatexContent> contentList = requiredParam.getGroup().getContentList();
+        if (contentList.isEmpty()) return "";
+
+        LatexNormalText paramText = contentList.get(0).getNoMathContent().getNormalText();
+        if (paramText == null) return "";
+
+        return paramText.getText();
     }
 }

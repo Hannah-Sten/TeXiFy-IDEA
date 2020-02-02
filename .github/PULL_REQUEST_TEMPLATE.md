@@ -1,7 +1,15 @@
-#### Additions
+<!-- The issue that is fixed by this PR, if applicable: -->
+Fixes #
 
+#### Summary of additions and changes
 
-#### Changes
+* 
 
+#### How to test this pull request
 
-#### Backwards incompatible changes
+* 
+
+#### Wiki
+
+<!-- Add link to updated wiki page -->
+- [ ] Updated the wiki:

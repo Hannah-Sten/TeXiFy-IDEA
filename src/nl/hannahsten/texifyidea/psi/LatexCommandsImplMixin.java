@@ -48,18 +48,6 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
     }
 
     @Override
-    public String getName() {
-        if (new ArrayList<>(Magic.Command.definitionsAndRedefinitions).stream().anyMatch(it -> getNode().getText().startsWith(it))) {
-            List<String> requiredParameters = getRequiredParameters(this);
-            if (requiredParameters.size() > 0) {
-                return requiredParameters.get(0);
-            }
-            else return name;
-        }
-        else return name;
-    }
-
-    @Override
     public String toString() {
         return "LatexCommandsImpl(COMMANDS)[STUB]{" + getName() + "}";
     }
@@ -98,12 +86,5 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
     @Override
     public PsiElement getNameIdentifier() {
         return this;
-    }
-
-    private List<String> getRequiredParameters(PsiElement element) {
-        if (element instanceof LatexCommands) {
-            return LatexPsiImplUtil.getRequiredParameters((LatexCommands) element);
-        }
-        else return null;
     }
 }
