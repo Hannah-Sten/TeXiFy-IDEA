@@ -614,6 +614,9 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerbatimInspection"
                          groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser" shortName="LatexUseOfVerbatimEnvironment"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageMayNotExistInspection"
+                         groupName="LaTeX" displayName="Package may not exist"
+                         enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
