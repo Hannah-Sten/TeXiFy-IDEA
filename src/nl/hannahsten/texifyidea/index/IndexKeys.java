@@ -20,4 +20,7 @@ public class IndexKeys {
 
     public static final StubIndexKey<String, LatexEnvironment> ENVIRONMENTS_KEY =
             StubIndexKey.createIndexKey("nl.hannahsten.texifyidea.environments");
+
+    public static final StubIndexKey<String, LatexEnvironment> LABELED_ENVIRONMENTS_KEY =
+            StubIndexKey.createIndexKey("nl.hannahsten.texifyidea.labeledenvironments");
 }

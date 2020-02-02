@@ -238,6 +238,9 @@ public class LatexPsiImplUtil {
      */
     public static String getLabel(@NotNull LatexEnvironment element) {
 
+        LatexEnvironmentStub stub = element.getStub();
+        if (stub != null) return stub.getLabel();
+
         if (Magic.Environment.labelAsParameter.contains(element.getEnvironmentName())) {
             // see if we can find a label option
             LinkedHashMap<String, String> optionalParameters = getOptionalParameters(element.getBeginCommand().getParameterList());
