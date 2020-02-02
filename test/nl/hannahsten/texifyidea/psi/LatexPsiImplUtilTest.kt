@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import org.junit.Test
 
@@ -10,10 +11,12 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         return "test/resources/psi"
     }
 
+    val optionalParameters = """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""
+
     @Test
     fun testOptionalParameterSplitting() {
         // given
-        myFixture.configureByFiles("OptionalParameters.tex")
+        myFixture.configureByText(LatexFileType, optionalParameters)
 
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
@@ -29,7 +32,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
     @Test
     fun testOptionalParameterNameOrder() {
         // given
-        myFixture.configureByFiles("OptionalParameters.tex")
+        myFixture.configureByText(LatexFileType, optionalParameters)
 
         // when
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
@@ -40,5 +43,19 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         assertEquals("backend", optionalParameters[0])
         assertEquals("style", optionalParameters[1])
         assertEquals("optionwithoutvalue", optionalParameters[2])
+    }
+
+    @Test
+    fun testEmptyOptionalParameters() {
+        // given
+        myFixture.configureByText(LatexFileType, """\usepackage{bibtex}""")
+
+        // when
+        val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
+        val element = psiFile.children.first().firstChildOfType(LatexCommands::class)!!
+        val optionalParameters = element.optionalParameters
+
+        // then
+        assertEmpty(optionalParameters.toList())
     }
 }

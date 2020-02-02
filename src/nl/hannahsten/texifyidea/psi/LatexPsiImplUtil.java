@@ -153,9 +153,11 @@ public class LatexPsiImplUtil {
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining());
 
-        for (String parameter : parameterString.split(",")) {
-            String[] parts = parameter.split("=");
-            parameterMap.put(parts[0], parts.length > 1 ? parts[1] : "");
+        if (parameterString.trim().length() > 0) {
+            for (String parameter : parameterString.split(",")) {
+                String[] parts = parameter.split("=");
+                parameterMap.put(parts[0], parts.length > 1 ? parts[1] : "");
+            }
         }
         return parameterMap;
     }
