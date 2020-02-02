@@ -205,8 +205,13 @@ public class LatexPsiImplUtil {
 
     public static String getName(@NotNull LatexCommands element) {
         LatexCommandsStub stub = element.getStub();
-        if (stub != null) return stub.getName();
-        return element.getCommandToken().getText();
+        String name = stub != null ? stub.getName() : element.getCommandToken().getText();
+        // If the name is a (re)definition, return the name of the command it defines.
+        if (Magic.Command.definitionsAndRedefinitions.contains(name)) {
+            List<String> parameters = element.getRequiredParameters();
+            if (!parameters.isEmpty()) return parameters.get(0);
+        }
+        return name;
     }
 
     /**
