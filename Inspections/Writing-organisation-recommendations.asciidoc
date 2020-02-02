@@ -1,3 +1,5 @@
+:experimental:
+
 == Might break TeXiFy functionality
 == [[verbatim]]Verbatim environments might break TeXiFy
 Using a verbatim environment, like `verbatim` or `lstlisting`, might break the parser.
