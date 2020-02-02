@@ -6,8 +6,15 @@
 * Add support for opening files from include commands. (#1191)
 * Add support for a custom output or auxiliary directory. (#1201)
 * Add biblatex commands to the autocomplete. (#1195)
+* Add a warning to update Evince when the version is too old for backwards/forward search. (#1226)
 * Add more user configurable live templates. (#1203)
+* Surround text with $..$ or [..] using a shortcut or by typing $ or [. (#1207)
+* Surround text with quotes depending on your Smart quotes setting. (#1207)
 * Add inspection which checks that floating environments have a label. (#1216)
+* Remove second $ of an empty inline math environment when deleting the first one. (#1227)
+* Use Ctrl+Enter to split lines in an itemize. (#1228)
+* Disable the formatter on files that only contain a verbatim-like environment. (#1225)
+* Add inspection plus quickfix to insert formatter magic comments or move verbatim-like environments to a separate file. (#1225)
 
 ## Changes
 * If a file has a run configuration associated, treat it as a root file. (#1198)
