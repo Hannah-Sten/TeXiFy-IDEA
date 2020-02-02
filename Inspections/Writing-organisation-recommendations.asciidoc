@@ -1,14 +1,14 @@
 == Might break TeXiFy functionality
 == [[verbatim]]Verbatim environments might break TeXiFy
 Using a verbatim environment, like `verbatim` or `lstlisting`, might break the parser.
-The contents of a verbatim environment will often be touched by the formatter (they shouldn't).
-This inspection warns you of this behaviour, and suggests two fixes:
+The contents of a verbatim environment will often be touched by the formatter (they shouldn't). The original bug report can be found at https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/101[#101].
+This inspection warns you of this behaviour, and suggests two workarounds:
 
 - Surround the environment with `% @formatter:off` and `% @formatter:on` comments to link:Code-formatting[disable the formatter] in the environment.
 This only fixes the formatting issues.
 - Move the environment to a separate file.
 A file that contains only a verbatim environment will not be touched by the formatter.
-If the verbatim environment caused any parse errors in the original file, these will be resolved.
+If the verbatim environment caused any parse errors in the original file, the errors will now be in the included file and therefore won't harm the original file.
 This fixes formatting issues in the verbatim environment, and parse errors in the original file.
 
 == [[too-large-section]]Too large section
