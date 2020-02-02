@@ -77,6 +77,8 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
         override fun getFamilyName(): String =
                 "Move verbatim environment to another file (fixes formatter and parser issues)"
 
+        override fun startInWriteAction() = false
+
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val begin = descriptor.startElement as LatexBeginCommand
             val end = begin.endCommand() ?: return
