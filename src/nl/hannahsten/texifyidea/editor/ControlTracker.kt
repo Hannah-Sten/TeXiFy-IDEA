@@ -28,7 +28,7 @@ object ControlTracker : KeyListener, TypedHandlerDelegate() {
     private var registered: MutableSet<JComponent> = HashSet()
 
     /**
-     * Setsup the control tracker.
+     * Set up the control tracker.
      */
     @JvmStatic
     fun setup(component: JComponent) {
