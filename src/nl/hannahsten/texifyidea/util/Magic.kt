@@ -187,7 +187,8 @@ object Magic {
                 "table", "tab",
                 "equation", "eq",
                 "algorithm", "alg",
-                "lstlisting", "lst"
+                "lstlisting", "lst",
+                "Verbatim", "verb"
         )
 
         /**
