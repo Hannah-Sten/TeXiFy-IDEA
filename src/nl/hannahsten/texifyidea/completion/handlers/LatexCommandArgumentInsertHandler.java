@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.LatexMathCommand;
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,18 +35,15 @@ public class LatexCommandArgumentInsertHandler implements InsertHandler<LookupEl
     }
 
     private void insertCommands(LatexCommands commands, InsertionContext context) {
-        List<String> optional = commands.getOptionalParameters();
+        List<String> optional = new LinkedList<>(commands.getOptionalParameters().keySet());
         if (optional.isEmpty()) {
             return;
         }
 
         int cmdParameterCount = 0;
-        if (!optional.isEmpty()) {
-            try {
-                cmdParameterCount = Integer.parseInt(optional.get(0));
-            }
-            catch (NumberFormatException ignore) {
-            }
+        try {
+            cmdParameterCount = Integer.parseInt(optional.get(0));
+        } catch (NumberFormatException ignore) {
         }
 
         if (cmdParameterCount > 0) {

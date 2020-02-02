@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class LatexCommandsStubElementType extends IStubElementType<LatexCommands
         latexCommands.setName(commandToken);
 
         List<String> requiredParameters = latexCommands.getRequiredParameters();
-        List<String> optionalParameters = latexCommands.getOptionalParameters();
+        List<String> optionalParameters = new LinkedList<>(latexCommands.getOptionalParameters().keySet());
 
         return new LatexCommandsStubImpl(
                 parent, this,

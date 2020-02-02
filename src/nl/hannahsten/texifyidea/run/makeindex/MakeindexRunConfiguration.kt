@@ -145,7 +145,7 @@ class MakeindexRunConfiguration(
             LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
                     .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
                     .filter { command -> command.requiredParameters.any { it == "imakeidx" } }
-                    .flatMap { it.optionalParameters }
+                    .flatMap { it.optionalParameters.keys }
         }
     }
 
@@ -158,15 +158,8 @@ class MakeindexRunConfiguration(
             val makeindexOptions = HashMap<String, String>()
             LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
                     .filter { it.commandToken.text == "\\makeindex" }
-                    .flatMap { it.optionalParameters }
-                    .map { it.split("=") }
                     .forEach {
-                        if (it.size == 1) {
-                            makeindexOptions[it.first()] = ""
-                        }
-                        else if (it.size == 2) {
-                            makeindexOptions[it.first()] = it.last()
-                        }
+                        makeindexOptions.putAll(it.optionalParameters)
                     }
             makeindexOptions
         }
