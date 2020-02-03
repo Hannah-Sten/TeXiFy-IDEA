@@ -279,12 +279,6 @@ object Magic {
         val bibliographyItems = setOf("\\bibitem")
 
         /**
-         * All label definition commands.
-         */
-        @JvmField
-        val labels = setOf("\\label")
-
-        /**
          * All math operators without a leading slash.
          */
         @JvmField
