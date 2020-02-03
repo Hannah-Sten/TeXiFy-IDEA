@@ -94,6 +94,7 @@ enum class LatexRegularCommand(
     GLOSSARY("glossary", "text".asRequired(Type.TEXT)),
     GLQ("glq", display = ","),
     GLQQ("glqq", display = "„"),
+    GRAPHICSPATH("graphicspath","path".asRequired(Type.FILE), dependency = GRAPHICX),
     GRQ("grq", display = "‘"),
     GRQQ("grqq", display = "“"),
     GUILLEMOTLEFT("guillemotleft", dependency = FONTENC.with("T1"), display = "«"),
