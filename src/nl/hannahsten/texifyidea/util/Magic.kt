@@ -42,6 +42,7 @@ object Magic {
                 |
                 |% Package imports.
                 |\usepackage{amsmath}
+                |\usepackage{listings}
                 |
                 |% Document wide TikZ settings.
                 |\tikzset{
@@ -89,6 +90,7 @@ object Magic {
                 |    \]</displayMath>
                 |    
                 |    \paragraph{Programming}
+                |    % @formatter:off
                 |    \begin{lstlisting}[language=Kotlin]
                 |fun Int?.ifPositiveAddTwo(): Int =
                 |        this?.let {
@@ -96,6 +98,7 @@ object Magic {
                 |            else this
                 |        } ?: 0
                 |    \end{lstlisting}
+                |    % @formatter:on
                 |
                 |    \subsection{More work}\label{subsec:moreWork}
                 |    A much longer \LaTeXe{} example was written by Henk-Jan~\cite{Gil:02}.
@@ -191,6 +194,8 @@ object Magic {
          * Environments that introduce figures
          */
         val figures = hashSetOf("figure")
+
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
     }
 
     /**

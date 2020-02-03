@@ -7,7 +7,7 @@ import org.junit.Test
 
 class LatexPsiImplUtilTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
-        return "testData/psi"
+        return "test/resources/psi"
     }
 
     @Test

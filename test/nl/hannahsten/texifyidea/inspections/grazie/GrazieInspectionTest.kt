@@ -12,7 +12,7 @@ import org.junit.Test
 
 class GrazieInspectionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
-        return "testData/inspections/grazie"
+        return "test/resources/inspections/grazie"
     }
 
     override fun setUp() {

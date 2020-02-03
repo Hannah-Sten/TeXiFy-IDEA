@@ -107,7 +107,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
 
             val factory = LatexPsiFactory(project)
-            val labelCommand = factory.createUniqueLabelCommandFor(command) ?: return
+            val labelCommand = LatexPsiFactory.createUniqueLabelCommandFor(factory, command) ?: return
 
             // Insert label
             // command -> NoMathContent -> Content -> Container containing the command
@@ -127,7 +127,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEnvironment
             val factory = LatexPsiFactory(project)
-            val labelCommand = factory.createUniqueLabelCommandFor(command) ?: return
+            val labelCommand = LatexPsiFactory.createUniqueLabelCommandFor(factory, command) ?: return
             if (command.environmentContent == null) {
                 command.addAfter(factory.createEnvironmentContent(), command.beginCommand)
             }

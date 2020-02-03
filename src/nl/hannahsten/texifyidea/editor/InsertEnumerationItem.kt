@@ -23,15 +23,22 @@ class InsertEnumerationItem : EnterHandlerDelegate {
 
     override fun postProcessEnter(file: PsiFile, editor: Editor,
                                   context: DataContext): Result {
-        ShiftTracker.setup(editor.contentComponent)
         if (file.fileType != LatexFileType) {
             return Result.Continue
         }
+
+        ShiftTracker.setup(editor.contentComponent)
+        ControlTracker.setup(editor.contentComponent)
 
         val caret = editor.caretModel
         val element = file.findElementAt(caret.offset)
         if (hasValidContext(element)) {
             editor.insertAndMove(caret.offset, getInsertionString(element!!))
+        }
+        else {
+            if (ControlTracker.isControlPressed) {
+                editor.insertAndMove(caret.offset, "")
+            }
         }
 
         return Result.Continue
@@ -111,7 +118,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
      * @return `true` insertion desired, `false` insertion not desired or element is `null`.
      */
     private fun hasValidContext(element: PsiElement?): Boolean {
-        if (!TexifySettings.getInstance().automaticItemInItemize || element == null || ShiftTracker.isShiftPressed() || element.inMathContext()) {
+        if (!TexifySettings.getInstance().automaticItemInItemize || element == null || ShiftTracker.isShiftPressed() || ControlTracker.isControlPressed || element.inMathContext()) {
             return false
         }
 
