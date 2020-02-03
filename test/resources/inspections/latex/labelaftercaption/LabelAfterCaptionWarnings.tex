@@ -1,0 +1,21 @@
+\documentclass{article}
+
+\begin{document}
+    \begin{figure}
+        \caption{figure}
+        \label{fig:good-label}
+    \end{figure}
+
+    <weak_warning descr="Missing label">\begin{figure}
+        \caption{figure}
+    \end{figure}</weak_warning>
+
+    \begin{figure}
+        <weak_warning descr="A label should come after the caption">\label{fig:wrong-label}
+        \caption{figure}</weak_warning>
+    \end{figure}
+
+    \begin{figure}
+        <weak_warning descr="A label should come after the caption">\label{fig:wrong-label2}\caption{figure}</weak_warning>
+    \end{figure}
+\end{document}
