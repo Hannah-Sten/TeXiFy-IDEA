@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.parentOfType
@@ -93,10 +94,27 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         val psiManager = PsiManager.getInstance(element.project)
 
+        var pathOffset = ""
+
+        // Get all comands of project.
+        val allCommands = element.containingFile.commandsInFileSet()
+
+        // Check if a graphicspath is defined
+        val collection = allCommands.filter { it.name == "\\graphicspath" }
+        if (collection.isNotEmpty()) {
+            // graphicspath set
+            // Check if current command is a includegraphics
+            if (fullCommand == "\\includegraphics") {
+                val args = collection[0].parameterList.filter { it.requiredParam != null }
+                val path = args[0].splitContent()[0]
+                pathOffset = path
+            }
+        }
+
         val files: List<PsiFile> = fileNames
                 .map { fileName ->
                     for (root in roots) {
-                        val foundFile = root.findFile(fileName, argument.supportedExtensions)
+                        val foundFile = root.findFile(pathOffset + fileName, argument.supportedExtensions)
                         if (foundFile != null) {
                             return@map psiManager.findFile(foundFile)
                         }
