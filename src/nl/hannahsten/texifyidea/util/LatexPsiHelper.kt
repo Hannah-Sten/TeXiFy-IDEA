@@ -52,6 +52,52 @@ class LatexPsiHelper(private val project: Project) {
         }
     }
 
+    fun createRequiredParameter(content: String): LatexRequiredParam {
+        val commandText = "\\label{$content}"
+        return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
+    }
+
+    /**
+     * Replaces the optional parameter with the supplied name. If a value is supplied, the new parameter will
+     * have a value appended with an equal sign (e.g., param={value}). The new parameter has the same position
+     * as the old one. If no parameter with the supplied name is found, no action will be performed.
+     */
+    fun replaceOptionalParameter(parameters: List<LatexParameter>, name: String, newValue: String?) {
+        val optionalParam = parameters.first { p -> p.optionalParam != null }.optionalParam!!
+
+        var parameterText = if (newValue != null) {
+            "$name={$newValue}"
+        }
+        else {
+            name
+        }
+
+        val labelRegex = "label\\s*=\\s*[^,]*".toRegex()
+        val elementsToReplace = mutableListOf<LatexContent>()
+        val elementIterator = optionalParam.openGroup.contentList.iterator()
+        while (elementIterator.hasNext()) {
+            val latexContent = elementIterator.next()
+            val elementIsLabel = latexContent.noMathContent.normalText?.text?.contains(labelRegex) ?: false
+            if (elementIsLabel) {
+                elementsToReplace.add(latexContent)
+
+                // check if the label name is part of the text or in a separate group
+                if (latexContent.noMathContent.normalText!!.text.split("=")[1].trim().isEmpty()) {
+                    val group = elementIterator.next()
+                    elementsToReplace.add(group)
+                }
+            }
+        }
+
+        val newContents = createOptionalParameterContent(parameterText)
+        newContents.forEach { optionalParam.openGroup.addBefore(it, elementsToReplace.first()) }
+        elementsToReplace.forEach { it.delete() }
+    }
+
+    /**
+     * Add an optional parameter of the form "param" or "param={value}" to the list of optional parameters.
+     * If there already are optional parameters, the new parameter will be appended with a "," as the separator.
+     */
     fun addOptionalParameter(command: LatexBeginCommand, name: String, value: String?) {
         val existingParameters = command.optionalParameters
         if (existingParameters.isEmpty()) {

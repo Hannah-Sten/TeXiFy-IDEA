@@ -56,6 +56,24 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun testMissingListingLabelQuickFixExistingLabel() {
+        testQuickFix("""
+            \begin{document}
+                \label{lst:lstlisting}
+                \begin{lstlisting}
+                \end{lstlisting}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \label{lst:lstlisting}
+                \begin{lstlisting}[label={lst:lstlisting2}]
+                \end{lstlisting}
+            \end{document}
+        """.trimIndent())
+
+    }
+
+    @Test
     fun testMissingListingLabelQuickFixExistingParameters() {
         testQuickFix("""
             \begin{document}

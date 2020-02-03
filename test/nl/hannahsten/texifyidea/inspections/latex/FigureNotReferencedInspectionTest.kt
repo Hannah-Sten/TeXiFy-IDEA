@@ -1,13 +1,9 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
-class FigureNotReferencedInspectionTest : BasePlatformTestCase() {
-    override fun setUp() {
-        super.setUp()
-        myFixture.enableInspections(LatexFigureNotReferencedInspection())
-    }
+class FigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNotReferencedInspection()) {
 
     fun testFigureNotReferencedWarning() {
         myFixture.configureByText(LatexFileType, """

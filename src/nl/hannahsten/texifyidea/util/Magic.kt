@@ -182,6 +182,7 @@ object Magic {
          *
          * environment name `=>` label prefix without colon
          */
+        @JvmField
         val labeled = mapOfVarargs(
                 "figure", "fig",
                 "table", "tab",

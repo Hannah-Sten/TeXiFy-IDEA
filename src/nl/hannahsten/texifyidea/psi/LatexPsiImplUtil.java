@@ -247,6 +247,8 @@ public class LatexPsiImplUtil {
             return optionalParameters.getOrDefault("label", null);
         }
         else {
+            if (!Magic.Environment.labeled.containsKey(element.getEnvironmentName())) return null;
+
             PsiElement content = element.getEnvironmentContent();
             if (content == null) return null;
 
