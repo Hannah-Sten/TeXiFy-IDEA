@@ -37,18 +37,25 @@ class LatexPsiHelper(private val project: Project) {
     private fun createFromText(text: String): PsiElement =
             PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
 
-
-    fun addToContent(environment: LatexEnvironment, element: PsiElement, after: PsiElement? = null) {
+    /**
+     * Adds the supplied element to the content of the environment.
+     * @param environment The environment whose content should be manipulated
+     * @param element The element to be inserted
+     * @param after If specified, the new element will be inserted after this element
+     * @return The new element in the PSI tree. Note that this element is *not* necessarily equal
+     * to the supplied element. For example, the new element might have an updated endOffset
+     */
+    fun addToContent(environment: LatexEnvironment, element: PsiElement, after: PsiElement? = null): PsiElement {
         if (environment.environmentContent == null) {
             environment.addAfter(createEnvironmentContent(), environment.beginCommand)
         }
         val environmentContent = environment.environmentContent!!
 
         if (after != null) {
-            environmentContent.addAfter(element, after)
+            return environmentContent.addAfter(element, after)
         }
         else {
-            environmentContent.add(element)
+            return environmentContent.add(element)
         }
     }
 
@@ -97,8 +104,10 @@ class LatexPsiHelper(private val project: Project) {
     /**
      * Add an optional parameter of the form "param" or "param={value}" to the list of optional parameters.
      * If there already are optional parameters, the new parameter will be appended with a "," as the separator.
+     *
+     * @return A list containing the newly inserted elements from left to right
      */
-    fun addOptionalParameter(command: LatexBeginCommand, name: String, value: String?) {
+    fun addOptionalParameter(command: LatexBeginCommand, name: String, value: String?): List<PsiElement> {
         val existingParameters = command.optionalParameters
         if (existingParameters.isEmpty()) {
             command.addAfter(createLatexOptionalParam(), command.parameterList[0])
@@ -117,7 +126,12 @@ class LatexPsiHelper(private val project: Project) {
         if (existingParameters.isNotEmpty()) {
             parameterText = ",$parameterText";
         }
+        val newElements = mutableListOf<PsiElement>()
         val contents = createOptionalParameterContent(parameterText)
-        contents.forEach { optionalParam.openGroup.addBefore(it, optionalParam.openGroup.lastChild) }
+        contents.forEach {
+            val inserted = optionalParam.openGroup.addBefore(it, optionalParam.openGroup.lastChild)
+            newElements.add(inserted)
+        }
+        return newElements
     }
 }

@@ -5,6 +5,7 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -163,21 +164,23 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                     Magic.Environment.labeled[command.environmentName], command.containingFile)
 
 
+            val moveCaretAfter: PsiElement;
             if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
-                helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
+                val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
+                moveCaretAfter = insertedElements.last()
             }
             else {
                 // in a float environment the label must be inserted after a caption
-                val labelCommand = helper.createLabelCommand(createdLabel)
-                helper.addToContent(command, labelCommand,
+                val labelCommand = helper.addToContent(command, helper.createLabelCommand(createdLabel),
                         command.environmentContent?.childrenOfType<LatexCommands>()
                                 ?.findLast { c -> c.name == "\\caption" })
-
-                // Adjust caret offset
-                val openedEditor = command.containingFile.openedEditor() ?: return
-                val caretModel = openedEditor.caretModel
-                caretModel.moveToOffset(labelCommand.endOffset())
+                moveCaretAfter = labelCommand
             }
+
+            // Adjust caret offset
+            val openedEditor = command.containingFile.openedEditor() ?: return
+            val caretModel = openedEditor.caretModel
+            caretModel.moveToOffset(moveCaretAfter.endOffset())
         }
 
     }

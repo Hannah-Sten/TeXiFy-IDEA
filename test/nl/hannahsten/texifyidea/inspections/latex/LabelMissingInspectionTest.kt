@@ -53,7 +53,7 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         """.trimIndent(), """
             \begin{document}
                 \begin{figure}
-                    \caption{Some Caption}\label{fig:figure}
+                    \caption{Some Caption}\label{fig:figure}<caret>
                 \end{figure}
             \end{document}
         """.trimIndent())
@@ -69,7 +69,7 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         """.trimIndent(), """
             \begin{document}
                 \begin{figure}
-                    \label{fig:figure}
+                    \label{fig:figure}<caret>
             
                 \end{figure}
             \end{document}
@@ -102,7 +102,7 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
             \end{document}
         """.trimIndent(), """
             \begin{document}
-                \begin{lstlisting}[label={lst:lstlisting}]
+                \begin{lstlisting}[label={lst:lstlisting}<caret>]
                 \end{lstlisting}
             \end{document}
         """.trimIndent())
@@ -120,7 +120,7 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         """.trimIndent(), """
             \begin{document}
                 \label{lst:lstlisting}
-                \begin{lstlisting}[label={lst:lstlisting2}]
+                \begin{lstlisting}[label={lst:lstlisting2}<caret>]
                 \end{lstlisting}
             \end{document}
         """.trimIndent())
@@ -136,7 +136,7 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
             \end{document}
         """.trimIndent(), """
             \begin{document}
-                \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
+                \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}<caret>]
                 \end{lstlisting}
             \end{document}
         """.trimIndent())
