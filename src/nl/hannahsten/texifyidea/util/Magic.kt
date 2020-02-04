@@ -456,6 +456,18 @@ object Magic {
                 "\\paragraph" to Color(222, 222, 222),
                 "\\subparagraph" to Color(232, 232, 232)
         )
+
+        /**
+         * All LaTeX commands that contain a url (in their first parameter).
+         */
+        @JvmField
+        val urls = hashSetOf("\\url", "\\href")
+
+        /**
+         * All BibTeX tags that take a url as their parameter.
+         */
+        @JvmField
+        val bibUrls = hashSetOf("url", "biburl")
     }
 
     /**

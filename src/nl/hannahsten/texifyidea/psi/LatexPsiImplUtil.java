@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.paths.WebReference;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -30,6 +31,7 @@ public class LatexPsiImplUtil {
     static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
     static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
     static final Set<String> DEFINITION_COMMANDS = Magic.Command.commandDefinitions;
+    static final Set<String> URL_COMMANDS = Magic.Command.urls;
     static final Pattern OPTIONAL_SPLIT = Pattern.compile(",\\s*");
 
     @NotNull
@@ -43,6 +45,11 @@ public class LatexPsiImplUtil {
 
         if (INCLUDE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
             List<PsiReference> references = extractIncludes(element, firstParam);
+            return references.toArray(new PsiReference[references.size()]);
+        }
+
+        if (URL_COMMANDS.contains(element.getName()) && firstParam != null) {
+            List<PsiReference> references = extractUrlReferences(element, firstParam);
             return references.toArray(new PsiReference[references.size()]);
         }
 
@@ -74,6 +81,19 @@ public class LatexPsiImplUtil {
         List<PsiReference> references = new ArrayList<>();
         for (TextRange range : subParamRanges) {
             references.add(new LatexLabelReference(
+                    element, range.shiftRight(firstParam.getTextOffset() - element.getTextOffset())
+            ));
+        }
+        return references;
+    }
+
+    @NotNull
+    private static List<PsiReference> extractUrlReferences(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
+        List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
+
+        List<PsiReference> references = new ArrayList<>();
+        for (TextRange range : subParamRanges) {
+            references.add(new WebReference(
                     element, range.shiftRight(firstParam.getTextOffset() - element.getTextOffset())
             ));
         }
