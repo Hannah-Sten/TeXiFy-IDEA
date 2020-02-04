@@ -142,6 +142,42 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         """.trimIndent())
     }
 
+    fun testMissingChapterLabelQuickFix() {
+        testQuickFix("""
+            \begin{document}
+                \chapter{Chapter without label}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \chapter{Chapter without label}\label{ch:chapter-without-label}<caret>
+            \end{document}
+        """.trimIndent())
+    }
+
+    fun testMissingSectionLabelQuickFix() {
+        testQuickFix("""
+            \begin{document}
+                \section{Section without label}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \section{Section without label}\label{sec:section-without-label}<caret>
+            \end{document}
+        """.trimIndent())
+    }
+
+    fun testMissingSubsectionLabelQuickFix() {
+        testQuickFix("""
+            \begin{document}
+                \subsection{Subsection without label}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \subsection{Subsection without label}\label{subsec:subsection-without-label}<caret>
+            \end{document}
+        """.trimIndent())
+    }
+
     private fun testQuickFix(before: String, after: String) {
         myFixture.configureByText(LatexFileType, before)
         val quickFixes = myFixture.getAllQuickFixes()
@@ -151,21 +187,5 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         }
 
         myFixture.checkResult(after)
-    }
-
-    @Test
-    fun testInsertCommandLabelQuickFix() {
-        val testName = getTestName(false)
-        myFixture.configureByFile("${testName}_before.tex")
-        do {
-            // we need to collect the fixes again after applying a fix because otherwise
-            // the problem descriptors use a cached element from before the applying the fix
-            val allQuickFixes = myFixture.getAllQuickFixes()
-            val fix = allQuickFixes.firstOrNull()
-            writeCommand(myFixture.project) {
-                fix?.invoke(myFixture.project, myFixture.editor, myFixture.file)
-            }
-        } while (fix != null)
-        myFixture.checkResultByFile("${testName}_after.tex")
     }
 }

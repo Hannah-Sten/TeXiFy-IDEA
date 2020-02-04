@@ -143,8 +143,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             // Insert label
             // command -> NoMathContent -> Content -> Container containing the command
             val commandContent = command.parent.parent
-            val labelCommand = factory.createLabelCommand(createdLabel)
-            commandContent.parent.addAfter(labelCommand, commandContent)
+            val labelCommand = commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
 
             // Adjust caret offset.
             val editor = command.containingFile.openedEditor() ?: return
