@@ -273,7 +273,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * File not found
 * Inclusion loops
 * Nested includes
-* link:Probable-bugs#Label-before-caption[Label is before caption]
+* link:Probable-bugs#label-is-before-caption[Label is before caption]
 
 ==== Redundant LaTeX
 * Redundant escape when Unicode is enabled
