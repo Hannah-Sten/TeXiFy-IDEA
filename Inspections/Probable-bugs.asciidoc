@@ -106,3 +106,8 @@ For more information, see link:Automatic-package-importing[Automagically import 
 == File not found
 == Inclusion loops
 == Nested includes
+
+== Label is before caption
+
+A label command in an environment (e.g., a figure or table environment) should go after the caption.
+This inspection shows a weak warning when the order is the wrong way around, and a quickfix is available to swap the commands.
