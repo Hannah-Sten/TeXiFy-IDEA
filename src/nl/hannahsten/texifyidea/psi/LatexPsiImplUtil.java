@@ -32,28 +32,40 @@ public class LatexPsiImplUtil {
     static final Set<String> DEFINITION_COMMANDS = Magic.Command.commandDefinitions;
     static final Pattern OPTIONAL_SPLIT = Pattern.compile(",\\s*");
 
+    /**
+     * Get the references for this command.
+     * For example for a \ref{label1,label2} command, then label1 and label2 are the references.
+     */
     @NotNull
-    public static PsiReference[]  getReferences(@NotNull LatexCommands element) {
+    public static PsiReference[] getReferences(@NotNull LatexCommands element) {
         final LatexRequiredParam firstParam = readFirstParam(element);
 
+        // If it is a reference to a label
         if (REFERENCE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
-            List<PsiReference> references = extractReferences(element, firstParam);
+            List<PsiReference> references = extractLabelReferences(element, firstParam);
             return references.toArray(new PsiReference[references.size()]);
         }
 
+        // If it is a reference to a file
         if (INCLUDE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
             List<PsiReference> references = extractIncludes(element, firstParam);
             return references.toArray(new PsiReference[references.size()]);
         }
 
+        // Else, we assume the command itself is important instead of its parameters,
+        // and the user is interested in the location of the command definition
         List<PsiReference> userDefinedReferences = LatexPsiImplUtilKtKt.userDefinedCommandReferences(element);
         if (userDefinedReferences.size() > 0) {
             return userDefinedReferences.toArray(new PsiReference[userDefinedReferences.size()]);
         }
 
+        // Fallback
         return new PsiReference[0];
     }
 
+    /**
+     * Create file references from the command parameter given.
+     */
     @NotNull
     private static List<PsiReference> extractIncludes(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
         List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
@@ -67,8 +79,11 @@ public class LatexPsiImplUtil {
         return references;
     }
 
+    /**
+     * Create label references from the command parameter given.
+     */
     @NotNull
-    private static List<PsiReference> extractReferences(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
+    private static List<PsiReference> extractLabelReferences(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
         List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
 
         List<PsiReference> references = new ArrayList<>();

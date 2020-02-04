@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * A reference to a label.
+ * When resolved, it points to the label declaration.
+ *
  * @author Hannah Schellekens, Sten Wessel
  */
 public class LatexLabelReference extends PsiReferenceBase<LatexCommands> implements PsiPolyVariantReference {
@@ -34,6 +37,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         setRangeInElement(range);
     }
 
+    // Get all label definitions
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean b) {
@@ -42,6 +46,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         return labels.stream().map(PsiElementResolveResult::new).toArray(ResolveResult[]::new);
     }
 
+    // Get the label definition if there is exactly one, none otherwise
     @Nullable
     @Override
     public PsiElement resolve() {

@@ -7,6 +7,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.projectSearchScope
 
 /**
+ * Command reference. When resolved, points to the command definition.
+ *
  * @author Abby Berkers
  */
 class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<LatexCommands>(element), PsiPolyVariantReference {
@@ -17,6 +19,7 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val project = element.project
         return LatexDefinitionIndex.getCommandsByName(element.name ?: return emptyArray(), project, project.projectSearchScope)
+                // todo commandToken does not implement PsiNamedElement?
                 .map { PsiElementResolveResult(it.commandToken) }
                 .toArray(emptyArray())
     }
