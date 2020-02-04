@@ -22,6 +22,60 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting(false, false, true, false)
     }
 
+    fun testMissingFigureLabelWarnings() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{document}
+                % figure without label
+                <weak_warning descr="Missing label">\begin{figure}
+                \end{figure}</weak_warning>
+    
+                % figure with label
+                \begin{figure}
+                    \label{fig:figure-label}
+                \end{figure}
+    
+                % figure with label in caption
+                \begin{figure}
+                    \caption{Some text \label{fig:figure-caption-label}}
+                \end{figure}
+            \end{document}
+        """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    fun testMissingFigureLabelQuickFixWithCaption() {
+        testQuickFix("""
+            \begin{document}
+                \begin{figure}
+                    \caption{Some Caption}
+                \end{figure}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \begin{figure}
+                    \caption{Some Caption}\label{fig:figure}
+                \end{figure}
+            \end{document}
+        """.trimIndent())
+    }
+
+    fun testMissingFigureLabelQuickFix() {
+        testQuickFix("""
+            \begin{document}
+                \begin{figure}
+            
+                \end{figure}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \begin{figure}
+                    \label{fig:figure}
+            
+                \end{figure}
+            \end{document}
+        """.trimIndent())
+    }
+
     fun testMissingListingLabelWarnings() {
         myFixture.configureByText(LatexFileType, """
             \usepackage{listings}
