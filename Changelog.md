@@ -16,6 +16,7 @@
 * Use Ctrl+Enter to split lines in an itemize. (#1228)
 * Disable the formatter on files that only contain a verbatim-like environment. (#1225)
 * Add inspection plus quickfix to insert formatter magic comments or move verbatim-like environments to a separate file. (#1225)
+* Add inspection to check that the label comes after the caption. (#1235)
 
 ## Changes
 * If a file has a run configuration associated, treat it as a root file. (#1198)
