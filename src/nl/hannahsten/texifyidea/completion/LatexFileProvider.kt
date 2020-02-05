@@ -14,7 +14,9 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.Kindness
+import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
@@ -56,12 +58,14 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
 
         // Add all included graphicspaths.
         val graphicsPaths = parameters.originalFile.commandsInFileSet().filter { it.commandToken.text == "\\graphicspath" }
-        graphicsPaths.asSequence()
-                .mapNotNull { it.requiredParameter(0) }
-                .mapNotNull { it.println(); baseDirectory.findFileByRelativePath(it) }
-                .filter { it.isDirectory && it != baseDirectory }
-                .toSet()
-                .forEach { addByDirectory(it, autocompleteText, result) }
+        graphicsPaths.forEach {
+            it.parameterList.filter { it1 -> it1.requiredParam != null }[0]
+                    .childrenOfType(LatexNormalText::class).forEach { it2 ->
+                        baseDirectory.findFileByRelativePath(it2.text)?.apply {
+                            addByDirectory(this, autocompleteText, result)
+                        }
+                    }
+        }
     }
 
     private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String, result: CompletionResultSet) {

@@ -135,11 +135,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .filterNotNull()
                 .toList()
 
-        // Only place icon if at least one file found
-        if (files.isEmpty()) {
-            return
-        }
-
         // Build gutter icon.
 
         // Get the icon from the file extension when applicable and there exists an icon for this extension,
