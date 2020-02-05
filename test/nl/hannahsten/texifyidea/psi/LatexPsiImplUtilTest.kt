@@ -11,7 +11,26 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         return "test/resources/psi"
     }
 
-    val optionalParameters = """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""
+    private val optionalParameters = """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""
+
+    private val requiredParameters = """\bibliography{library1,library2}"""
+
+    @Test
+    fun testRequiredParameterSplitting() {
+        // given
+        myFixture.configureByText(LatexFileType, requiredParameters)
+
+        // when
+        val requiredParameters = PsiDocumentManager.getInstance(myFixture.project)
+                .getPsiFile(myFixture.editor.document)!!
+                .children
+                .first()
+                .firstChildOfType(LatexCommands::class)!!
+                .requiredParameters
+
+        // then
+        assertEquals("library1,library2", requiredParameters[0])
+    }
 
     @Test
     fun testOptionalParameterSplitting() {

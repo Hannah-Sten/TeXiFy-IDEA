@@ -93,9 +93,11 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
             }
             .joinToString(separator = "")
 
-    for (parameter in parameterString.split(",")) {
-        val parts = parameter.split("=".toRegex()).toTypedArray()
-        parameterMap[parts[0]] = if (parts.size > 1) parts[1] else ""
+    if (parameterString.trim { it <= ' ' }.isNotEmpty()) {
+        for (parameter in parameterString.split(",")) {
+            val parts = parameter.split("=".toRegex()).toTypedArray()
+            parameterMap[parts[0]] = if (parts.size > 1) parts[1] else ""
+        }
     }
     return parameterMap
 }
