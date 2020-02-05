@@ -182,13 +182,21 @@ object Magic {
          *
          * environment name `=>` label prefix without colon
          */
+        @JvmField
         val labeled = mapOfVarargs(
                 "figure", "fig",
                 "table", "tab",
                 "equation", "eq",
                 "algorithm", "alg",
-                "lstlisting", "lst"
+                "lstlisting", "lst",
+                "Verbatim", "verb"
         )
+
+        /**
+         * Environments that define their label via an optional parameter
+         */
+        @JvmField
+        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
 
         /**
          * Environments that introduce figures
@@ -277,12 +285,6 @@ object Magic {
          */
         @JvmField
         val bibliographyItems = setOf("\\bibitem")
-
-        /**
-         * All label definition commands.
-         */
-        @JvmField
-        val labels = setOf("\\label")
 
         /**
          * All math operators without a leading slash.

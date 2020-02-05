@@ -47,7 +47,7 @@ environment ::= begin_command environment_content? end_command {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
-    methods=[getEnvironmentName hasLabel]
+    methods=[getEnvironmentName getLabel]
  }
 
 environment_content ::= content+

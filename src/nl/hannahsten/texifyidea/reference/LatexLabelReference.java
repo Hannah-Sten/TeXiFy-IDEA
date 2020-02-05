@@ -97,26 +97,15 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         else if (Magic.Command.labelReference.contains(command)) {
             return LabelsKt.findLabels(file)
                     .stream()
-                    .filter(element -> (element instanceof LatexCommands))
-                    .map(element -> (LatexCommands) element)
-                    .map(labelingCommand -> {
-                        List<String> parameters = labelingCommand.getRequiredParameters();
-                        LabelingCommandInformation cmdInfo = commands.get(labelingCommand.getName());
-                        if (parameters != null && cmdInfo != null && parameters.size() >= cmdInfo.getPosition()) {
-                            String label = parameters.get(cmdInfo.getPosition() - 1);
-                            return LookupElementBuilder.create(label)
-                                    .bold()
-                                    .withInsertHandler(new LatexReferenceInsertHandler())
-                                    .withTypeText(labelingCommand.getContainingFile().getName() + ":"
-                                            + (1 + StringUtil.offsetToLineNumber(
-                                            labelingCommand.getContainingFile().getText(),
-                                            labelingCommand.getTextOffset())), true)
-                                    .withIcon(TexifyIcons.DOT_LABEL);
-                        }
-                        else {
-                            return null;
-                        }
-                    }).filter(Objects::nonNull).toArray();
+                    .map(labelingCommand -> LookupElementBuilder
+                            .create(LabelsKt.extractLabelName(labelingCommand))
+                            .bold()
+                            .withInsertHandler(new LatexReferenceInsertHandler())
+                            .withTypeText(labelingCommand.getContainingFile().getName() + ":"
+                                    + (1 + StringUtil.offsetToLineNumber(
+                                    labelingCommand.getContainingFile().getText(),
+                                    labelingCommand.getTextOffset())), true)
+                            .withIcon(TexifyIcons.DOT_LABEL)).toArray();
         }
         // if command isn't ref or cite-styled return empty array
         return new Object[]{};

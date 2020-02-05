@@ -119,28 +119,45 @@ public class LatexPsiImplUtil {
     }
 
     /**
-     * Checks if the environment contains a label.
+     * Find the label of the environment. The method finds labels inside the environment content as well as labels
+     * specified via an optional parameter
+     *
+     * @return the label name if any, null otherwise
      */
-    public static boolean hasLabel(@NotNull LatexEnvironment element) {
-        PsiElement content = element.getEnvironmentContent();
-        if (content == null) {
-            return false;
+    public static String getLabel(@NotNull LatexEnvironment element) {
+
+        LatexEnvironmentStub stub = element.getStub();
+        if (stub != null) return stub.getLabel();
+
+        if (Magic.Environment.labelAsParameter.contains(element.getEnvironmentName())) {
+            // see if we can find a label option
+            LinkedHashMap<String, String> optionalParameters = getOptionalParameters(element.getBeginCommand().getParameterList());
+            return optionalParameters.getOrDefault("label", null);
         }
+        else {
+            if (!Magic.Environment.labeled.containsKey(element.getEnvironmentName())) return null;
 
-        boolean labelFound = false;
+            PsiElement content = element.getEnvironmentContent();
+            if (content == null) return null;
 
-        // see if we can find a label command inside the environment
-        Collection<LatexCommands> children = PsiTreeUtil.findChildrenOfType(content, LatexCommands.class);
-        if (!children.isEmpty()) {
-            Map<String, LabelingCommandInformation> labelCommands = TexifySettings.getInstance().getLabelPreviousCommands();
-            labelFound = children.stream().anyMatch(c -> labelCommands.containsKey(c.getName()));
+            // see if we can find a label command inside the environment
+            Collection<LatexCommands> children = PsiTreeUtil.findChildrenOfType(content, LatexCommands.class);
+            if (!children.isEmpty()) {
+                Map<String, LabelingCommandInformation> labelCommands = TexifySettings.getInstance().getLabelPreviousCommands();
+                Optional<LatexCommands> labelCommandOptional = children.stream()
+                        .filter(c -> labelCommands.containsKey(c.getName())).findFirst();
+
+                if (!labelCommandOptional.isPresent()) return null;
+                LatexCommands labelCommand = labelCommandOptional.get();
+                List<String> requiredParameters = labelCommand.getRequiredParameters();
+                if (requiredParameters.isEmpty()) return null;
+                int parameterPosition = labelCommands.get(labelCommand.getName()).getPosition() - 1;
+                if (parameterPosition > requiredParameters.size() - 1 || parameterPosition < 0) return null;
+                return requiredParameters.get(parameterPosition);
+            }
+
+            return null;
         }
-
-        // see if we can find a label option
-        Set<String> optionalParameters = LatexPsiImplUtilKtKt.getOptionalParameters(element.getBeginCommand().getParameterList()).keySet();
-        labelFound = labelFound || optionalParameters.contains("label");
-
-        return labelFound;
     }
 
     public static String getEnvironmentName(@NotNull LatexEnvironment element) {

@@ -36,7 +36,7 @@ open class LatexEquationReferenceInspection : TexifyRegexInspection(
     override fun applyFixes(descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>) {
         super.applyFixes(descriptor, replacementRanges, replacements, groups)
 
-        // We overrided applyFixes instead of applyFix because all fixes need to be applied together, and only after that we insert any required package.
+        // We overrode applyFixes instead of applyFix because all fixes need to be applied together, and only after that we insert any required package.
         val file = descriptor.psiElement.containingFile ?: return
         file.insertUsepackage(Package.AMSMATH)
     }

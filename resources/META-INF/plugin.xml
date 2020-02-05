@@ -452,6 +452,7 @@
 
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
@@ -509,6 +510,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingLabelInspection"
                          groupName="LaTeX" displayName="Missing labels"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelBeforeCaptionInspection"
+                         groupName="LaTeX" displayName="Label before caption"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
                          groupName="LaTeX" displayName="Duplicate labels"
