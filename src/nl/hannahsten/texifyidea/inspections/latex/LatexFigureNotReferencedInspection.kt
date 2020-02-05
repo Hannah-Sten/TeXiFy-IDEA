@@ -8,8 +8,11 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.findLabelingCommandsSequence
+import nl.hannahsten.texifyidea.util.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -53,7 +56,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             )
 
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
-            file.findLatexLabels().asSequence()
+            file.findLabelingCommandsSequence()
                     .filter(this::isFigureLabel)
                     .associateBy(LatexCommands::labelName)
                     .toMutableMap()
@@ -62,9 +65,6 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     private fun isFigureLabel(label: LatexCommands): Boolean =
             label.inDirectEnvironment(Magic.Environment.figures)
 }
-
-private fun PsiFile.findLatexLabels(): Collection<LatexCommands> =
-        findLabelsInFileSet().filterIsInstance<LatexCommands>()
 
 private val LatexCommands.labelName: String?
     get() = requiredParameter(0)
