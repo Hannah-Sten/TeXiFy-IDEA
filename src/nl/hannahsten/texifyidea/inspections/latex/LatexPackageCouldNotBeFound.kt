@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 
-class LatexPackageMayNotExistInspection : TexifyInspectionBase() {
+class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =
@@ -34,7 +34,7 @@ class LatexPackageMayNotExistInspection : TexifyInspectionBase() {
             if (!packages.contains(`package`)) {
                 descriptors.add(manager.createProblemDescriptor(
                         command,
-                        "Package may not exist",
+                        "Package could not be found",
                         Magic.General.noQuickFix,
                         ProblemHighlightType.WARNING,
                         isOntheFly

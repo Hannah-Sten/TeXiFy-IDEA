@@ -3,18 +3,18 @@ package nl.hannahsten.texifyidea.inspections.latex
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
 
-class PackageMayNotExist : BasePlatformTestCase() {
+class PackageCouldNotBeFound : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/nonexistent-package"
+        return "test/resources/inspections/latex/packagenotfound"
     }
 
     override fun setUp() {
         super.setUp()
-        myFixture.enableInspections(LatexPackageMayNotExistInspection())
+        myFixture.enableInspections(LatexPackageCouldNotBeFound())
     }
 
     @Test
-    fun testPackageMayNotExistWarnings() {
+    fun testPackageCouldNotBeFoundWarnings() {
         val testName = getTestName(false)
         myFixture.configureByFile("$testName.tex")
         myFixture.checkHighlighting(true, false, false, false)
