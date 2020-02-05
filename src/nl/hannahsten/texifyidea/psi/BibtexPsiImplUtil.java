@@ -32,21 +32,27 @@ public class BibtexPsiImplUtil {
     }
 
     public static PsiReference[] getReferences(@NotNull BibtexEntry element) {
+        // Get all references from a URL to a website.
         if (URL_COMMANDS.stream().anyMatch(urlTag -> !element.getTagContent(urlTag).isEmpty())) {
             String contentText = element.getEntryContent().getText();
+            // Compute all the ranges that contain a url, relative to the content of the entry.
             List<TextRange> rangesInParent = URL_COMMANDS.stream().map(urlTag ->
                     TextRange.from(contentText.indexOf(element.getTagContent(urlTag)), element.getTagContent(urlTag).length())
             ).collect(Collectors.toList());
 
-            List<PsiReference> references = new ArrayList<>();
-            for (TextRange range : rangesInParent) {
-                references.add(new WebReference(
-                        element, range.shiftRight(element.getEntryContent().getTextOffset() - element.getTextOffset())
-                ));
-            }
-            return references.toArray(new PsiReference[references.size()]);
+            return extractWebReferences(rangesInParent, element);
         }
         return new PsiReference[0];
+    }
+
+    private static PsiReference[] extractWebReferences(List<TextRange> rangesInParent, @NotNull BibtexEntry element) {
+        List<PsiReference> references = new ArrayList<>();
+        for (TextRange range : rangesInParent) {
+            references.add(new WebReference(
+                    element, range.shiftRight(element.getEntryContent().getTextOffset() - element.getTextOffset())
+            ));
+        }
+        return references.toArray(new PsiReference[references.size()]);
     }
 
     public static PsiElement setName(@NotNull BibtexEntry element, @NotNull @NonNls String name) {
