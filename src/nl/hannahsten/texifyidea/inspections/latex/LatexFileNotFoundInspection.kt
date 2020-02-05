@@ -10,6 +10,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
@@ -18,6 +19,8 @@ import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
@@ -27,6 +30,7 @@ import nl.hannahsten.texifyidea.util.Magic.Command.includeOnlyExtensions
 import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Hannah Schellekens
@@ -49,43 +53,22 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         // Get commands of this file.
         val commands = file.commandsInFile()
 
-        var pathOffset = ""
+        val graphPaths: ArrayList<String> = ArrayList()
 
         // Check if a graphicspath is defined
         val collection = allCommands.filter { it.name == "\\graphicspath" }
 
+        // Is a graphicspath defined?
         if (collection.isNotEmpty()) {
-            // Found graphicspath
             // Check if there is even an includegraphics in local commandset
             if (commands.any { it.name == "\\includegraphics" }) {
                 val args = collection[0].parameterList.filter { it.requiredParam != null }
-                val path = args[0].splitContent()[0]
-                pathOffset = path
+                val subArgs = args[0].childrenOfType(LatexNormalText::class)
+                subArgs.forEach { graphPaths.add(it.text) }
             }
         }
 
-        if (collection.size > 1) {
-            // Check if path is set in current file
-            if (commands.any { it.name == "\\graphicspath" }) {
-                val graphicPaths = commands.filter { it.name == "\\graphicspath" }
-                for (i in graphicPaths) {
-                    if (i == graphicPaths.first()) continue
-                    descriptors.add(manager.createProblemDescriptor(
-                            i,
-                            TextRange(1, i.text.length),
-                            "Multiple definition of \\graphicspath",
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly,
-                            RemoveFix()
-                    ))
-                }
-
-            }
-
-        }
-
-
-
+        // Loop through commands of file
         for (command in commands) {
             // Only consider default commands with a file argument.
             val default = LatexCommand.lookup(command.name) ?: continue
@@ -96,6 +79,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             // Remove optional parameters from list of parameters
             val parameters = command.parameterList.filter { it.requiredParam != null }
 
+            // Loop through arguments
             for (i in arguments.indices) {
                 // when there are more required arguments than actual present break the loop
                 if (i >= parameters.size) {
@@ -107,87 +91,96 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 val extensions = fileArgument.supportedExtensions
                 val parameter = parameters[i]
 
-                // get file name of the command or continue with next parameter
-                val fileNames = parameter.splitContent()
-
-                // get root file of the document actual worked with
-                val root = file.findRootFile()
-
-                // get the virtual file of the root file
-                val containingDirectory = root.containingDirectory.virtualFile
-
-                for (fileName in fileNames) {
-                    // Add offset to filename.
-                    val filePath: String = if (command.name.equals("\\includegraphics")) {
-                        // Append only if current command is a \includegraphics
-                        pathOffset + fileName
-                    }
-                    else fileName
-
-                    // check if the given name is reachable from the given folder
-                    var relative = containingDirectory.findFile(filePath, extensions)
-                    // check also the root folder
-                    if (relative == null) relative = containingDirectory.findFile(fileName, extensions)
-
-                    // If not, check if it is reachable from any content root which will be included when using MiKTeX
-                    if (LatexDistribution.isMiktex) {
-                        for (moduleRoot in ProjectRootManager.getInstance(file.project).contentSourceRoots) {
-                            if (relative != null) {
-                                break
-                            }
-                            relative = moduleRoot.findFile(filePath, extensions)
-                            if (relative == null) relative = moduleRoot.findFile(fileName, extensions)
-                        }
-                    }
-
-                    if (relative != null) continue
-
-                    val newFileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), filePath)
-                    val fixes = mutableListOf(CreateFilePathFix(file, newFileLocation))
-
-                    // Create quick fixes for all extensions if none was supplied in the argument
-                    if (extensions.none { filePath.endsWith(".$it") }) {
-                        extensions.forEach {
-                            val fileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), "$filePath.$it")
-                            fixes.add(CreateFilePathFix(file, fileLocation))
-                        }
-                    }
-
-                    // Find extension
-                    val extension = if (command.commandToken.text in includeOnlyExtensions.keys) {
-                        includeOnlyExtensions[command.commandToken.text]?.toList()?.first() ?: "tex"
-                    }
-                    else "tex"
-
-                    val parameterOffset = parameter.text.trimRange(1, 1).indexOf(fileName)
-
-                    descriptors.add(manager.createProblemDescriptor(
-                            parameter,
-                            TextRange(parameterOffset + 1, parameterOffset + fileName.length + 1),
-                            "File '${fileName.appendExtension(extension)}' not found",
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly,
-                            InspectionFix(filePath, extension)
-                    ))
-                }
+                goThroughFileNames(file, parameter, command, graphPaths, extensions, manager, isOntheFly, descriptors)
             }
         }
 
         return descriptors
     }
 
-    /**
-     * Remove the command line.
-     */
-    class RemoveFix : LocalQuickFix {
-        override fun getFamilyName(): String {
-            return "Remove Command"
+    private fun goThroughFileNames(file: PsiFile, parameter: LatexParameter, command: LatexCommands, graphPaths: ArrayList<String>,
+                                   extensions: Set<String>, manager: InspectionManager, isOntheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        // get file name of the command or continue with next parameter
+        val fileNames = parameter.splitContent()
+
+        // get root file of the document actual worked with
+        val root = file.findRootFile()
+
+        // get the virtual file of the root file
+        val containingDirectory = root.containingDirectory.virtualFile
+
+        for (fileName in fileNames) {
+            // Check if command is a includegraphics - next file if it exists
+            if (command.name.equals("\\includegraphics")) {
+                if (findGraphicsFile(containingDirectory, graphPaths, fileName)) continue
+            }
+            else {
+                if (findGeneralFile(containingDirectory, file, extensions, fileName)) continue
+            }
+
+            val newFileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), fileName)
+            val fixes = mutableListOf(CreateFilePathFix(file, newFileLocation))
+
+            // Create quick fixes for all extensions if none was supplied in the argument
+            if (extensions.none { fileName.endsWith(".$it") }) {
+                extensions.forEach {
+                    val fileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), "$fileName.$it")
+                    fixes.add(CreateFilePathFix(file, fileLocation))
+                }
+            }
+
+            // Find extension
+            val extension = if (command.commandToken.text in includeOnlyExtensions.keys) {
+                includeOnlyExtensions[command.commandToken.text]?.toList()?.first() ?: "tex"
+            }
+            else "tex"
+
+            val parameterOffset = parameter.text.trimRange(1, 1).indexOf(fileName)
+
+            descriptors.add(manager.createProblemDescriptor(
+                    parameter,
+                    TextRange(parameterOffset + 1, parameterOffset + fileName.length + 1),
+                    "File '${fileName.appendExtension(extension)}' not found",
+                    ProblemHighlightType.GENERIC_ERROR,
+                    isOntheFly,
+                    InspectionFix(fileName, extension)
+            ))
+        }
+    }
+
+    private fun findGeneralFile(containingDir: VirtualFile, file: PsiFile, validExtenions: Set<String>, fileName: String): Boolean {
+        // check if the given name is reachable from the given folder
+        var relative = containingDir.findFile(fileName, validExtenions)
+
+        // If not, check if it is reachable from any content root which will be included when using MiKTeX
+        if (LatexDistribution.isMiktex) {
+            for (moduleRoot in ProjectRootManager.getInstance(file.project).contentSourceRoots) {
+                if (relative != null) {
+                    break
+                }
+                relative = moduleRoot.findFile(fileName, validExtenions)
+            }
         }
 
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            descriptor.psiElement.delete()
+        // If file was found continue with next file
+        return (relative != null)
+    }
+
+    private fun findGraphicsFile(containingDir: VirtualFile, searchPaths: ArrayList<String>, fileName: String): Boolean {
+        searchPaths.forEach {
+            val file = File(it + fileName)
+            if (file.isAbsolute) {
+                // If file was found continue with next file
+                if (file.exists()) return true
+            }
+            else {
+                // check if the given name is reachable from the given folder
+                if (containingDir.findFileByRelativePath(it + fileName) != null) return true
+            }
         }
 
+        // check also the root folder
+        return (containingDir.findFileByRelativePath(fileName) != null)
     }
 
     /**
