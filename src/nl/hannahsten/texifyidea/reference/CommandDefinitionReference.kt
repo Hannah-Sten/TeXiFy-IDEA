@@ -19,17 +19,23 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
     }
 
     // Find all command definitions and redefinitions which define the current element
-    // todo should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         return LatexDefinitionIndex.getCommandsByNames(Magic.Command.commandDefinitions, element.project, element.project.projectSearchScope)
                 .filter { it.requiredParameters.firstOrNull() == element.name }
-                .map {newcommand ->
+                .mapNotNull {newcommand ->
                     // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
-                    val definedCommand = newcommand.childrenOfType<LatexCommands>().first()
-                    PsiElementResolveResult(definedCommand as PsiElement)
+                    // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
+                    val definedCommand = newcommand.childrenOfType<LatexCommands>().firstOrNull()
+
+                    // Don't resolve to itself
+                    if (definedCommand == null || definedCommand == element) {
+                        null
+                    }
+                    else {
+                        PsiElementResolveResult(definedCommand as PsiElement)
+                    }
                 }
                 .toArray(emptyArray())
-
     }
 
     override fun resolve(): PsiElement? {
