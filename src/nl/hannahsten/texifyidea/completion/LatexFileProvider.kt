@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import java.io.File
 import java.util.*
 import java.util.regex.Pattern
 
@@ -56,16 +57,22 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
                 .toSet()
                 .forEach { addByDirectory(it, autocompleteText, result) }
 
-        // Add all included graphicspaths.
-        val graphicsPaths = parameters.originalFile.commandsInFileSet().filter { it.commandToken.text == "\\graphicspath" }
-        graphicsPaths.forEach {
-            it.parameterList.filter { it1 -> it1.requiredParam != null }[0]
-                    .childrenOfType(LatexNormalText::class).forEach { it2 ->
+        // Add last included graphicspaths.
+        val graphicsPath = parameters.originalFile.commandsInFileSet().last { it.commandToken.text == "\\graphicspath" }
+        graphicsPath.parameterList.first { it1 -> it1.requiredParam != null }
+                .childrenOfType(LatexNormalText::class).forEach { it2 ->
+                    // Check if graphicspath is an absolute or relative path
+                    if (File(it2.text).isAbsolute) {
+                        baseDirectory.fileSystem.findFileByPath(it2.text)?.apply {
+                            addByDirectory(this, autocompleteText, result)
+                        }
+                    }
+                    else {
                         baseDirectory.findFileByRelativePath(it2.text)?.apply {
                             addByDirectory(this, autocompleteText, result)
                         }
                     }
-        }
+                }
     }
 
     private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String, result: CompletionResultSet) {

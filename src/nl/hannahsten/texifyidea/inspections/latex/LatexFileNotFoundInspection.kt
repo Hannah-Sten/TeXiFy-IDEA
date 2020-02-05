@@ -62,8 +62,8 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         if (collection.isNotEmpty()) {
             // Check if there is even an includegraphics in local commandset
             if (commands.any { it.name == "\\includegraphics" }) {
-                val args = collection[0].parameterList.filter { it.requiredParam != null }
-                val subArgs = args[0].childrenOfType(LatexNormalText::class)
+                val args = collection.last().parameterList.filter { it.requiredParam != null }
+                val subArgs = args.first().childrenOfType(LatexNormalText::class)
                 subArgs.forEach { graphPaths.add(it.text) }
             }
         }
@@ -133,7 +133,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             val extension = if (command.commandToken.text in includeOnlyExtensions.keys) {
                 includeOnlyExtensions[command.commandToken.text]?.toList()?.first() ?: "tex"
             }
-            else "tex"
+            else fileName.getFileExtention()
 
             val parameterOffset = parameter.text.trimRange(1, 1).indexOf(fileName)
 

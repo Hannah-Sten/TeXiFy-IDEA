@@ -47,6 +47,11 @@ object FileUtil {
     val FILE_EXTENSION = Pattern.compile("\\.[^.]+$")!!
 
     /**
+     * Matches the file body, including the dot
+     */
+    val FILE_BODY = Pattern.compile(".*\\.")!!
+
+    /**
      * Get the FileType instance that corresponds to the given file extension.
      *
      * @param extensionWithoutDot
@@ -143,6 +148,11 @@ private fun VirtualFile.allChildFiles(files: MutableSet<VirtualFile>) {
  * Removes the extension from a given file name.
  */
 fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replaceAll("")!!
+
+/**
+ * Returns the extension of given filename
+ */
+fun String.getFileExtention(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
 
 /**
  * Creates a project directory at `path` which will be marked as excluded.

@@ -31,7 +31,6 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
         // Throw error on multiple definition of \graphicspath.
         if (paths.size > 1) {
             for (i in paths) {
-                if (i == paths.first()) continue
                 descriptors.add(manager.createProblemDescriptor(
                         i,
                         TextRange(0, i.text.length),
