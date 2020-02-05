@@ -22,7 +22,8 @@ bibtexFile ::= (entry | comment)*
 entry ::= type (OPEN_BRACE | OPEN_PARENTHESIS) (id? entry_content | preamble) comment* endtry comment* SEPARATOR? {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.BibtexEntryStub"
-    methods=[getTitle getAuthors getYear getIdentifier getAbstract getTagContent getName setName]
+    mixin="nl.hannahsten.texifyidea.psi.BibtexEntryImplMixin"
+    methods=[getReferences getTitle getAuthors getYear getIdentifier getAbstract getTagContent getName setName]
 }
 
 entry_content ::= tag (SEPARATOR tag)* SEPARATOR? { pin=1 }

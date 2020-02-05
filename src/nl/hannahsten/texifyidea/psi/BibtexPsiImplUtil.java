@@ -1,21 +1,28 @@
 package nl.hannahsten.texifyidea.psi;
 
+import com.intellij.openapi.paths.WebReference;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import nl.hannahsten.texifyidea.reference.BibtexStringReference;
 import nl.hannahsten.texifyidea.util.BibtexKt;
+import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class is used for method injection in generated classes.
  * Documentation can be found at https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md#34-implement-interface-via-method-injection.
  */
 public class BibtexPsiImplUtil {
+    static final Set<String> URL_COMMANDS = Magic.Command.bibUrls;
 
     /**
      * Get a reference to the declaration of the string variable.
@@ -24,11 +31,31 @@ public class BibtexPsiImplUtil {
         return new BibtexStringReference(element);
     }
 
+    public static PsiReference[] getReferences(@NotNull BibtexEntry element) {
+        if (URL_COMMANDS.stream().anyMatch(urlTag -> !element.getTagContent(urlTag).isEmpty())) {
+            String contentText = element.getEntryContent().getText();
+            List<TextRange> rangesInParent = URL_COMMANDS.stream().map(urlTag ->
+                    TextRange.from(contentText.indexOf(element.getTagContent(urlTag)), element.getTagContent(urlTag).length())
+            ).collect(Collectors.toList());
+
+            List<PsiReference> references = new ArrayList<>();
+            for (TextRange range : rangesInParent) {
+                references.add(new WebReference(
+                        element, range.shiftRight(element.getEntryContent().getTextOffset() - element.getTextOffset())
+                ));
+            }
+            return references.toArray(new PsiReference[references.size()]);
+        }
+        return new PsiReference[0];
+    }
+
     public static PsiElement setName(@NotNull BibtexEntry element, @NotNull @NonNls String name) {
         return element;
     }
 
     public static String getName(@NotNull BibtexEntry element) {
+        BibtexEntryStub stub = element.getStub();
+        if (stub != null) return stub.getName();
         return element.getIdentifier();
     }
 

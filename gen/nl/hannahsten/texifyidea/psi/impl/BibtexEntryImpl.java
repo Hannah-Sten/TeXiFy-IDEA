@@ -1,11 +1,10 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -17,17 +16,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> implements BibtexEntry, PsiNameIdentifierOwner {
+public class BibtexEntryImpl extends BibtexEntryImplMixin implements BibtexEntry {
 
-  public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType type) {
-    super(stub, type);
+  public BibtexEntryImpl(@NotNull BibtexEntryStub stub, @NotNull IStubElementType<?, ?> nodeType) {
+    super(stub, nodeType);
   }
 
   public BibtexEntryImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  public BibtexEntryImpl(BibtexEntryStub stub, IElementType type, ASTNode node) {
+  public BibtexEntryImpl(@Nullable BibtexEntryStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
     super(stub, type, node);
   }
 
@@ -77,6 +76,11 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
   }
 
   @Override
+  public PsiReference[] getReferences() {
+    return BibtexPsiImplUtil.getReferences(this);
+  }
+
+  @Override
   public String getTitle() {
     return BibtexPsiImplUtil.getTitle(this);
   }
@@ -116,9 +120,4 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
     return BibtexPsiImplUtil.setName(this, name);
   }
 
-  @Nullable
-  @Override
-  public PsiElement getNameIdentifier() {
-    return this;
-  }
 }
