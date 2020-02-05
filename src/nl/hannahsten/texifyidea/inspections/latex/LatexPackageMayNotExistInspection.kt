@@ -8,10 +8,7 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.projectSearchScope
+import nl.hannahsten.texifyidea.util.*
 
 class LatexPackageMayNotExistInspection : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
@@ -26,7 +23,7 @@ class LatexPackageMayNotExistInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES
-        val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project.projectSearchScope)
+        val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project.projectSearchScope).map { it.requiredParameter(0) }
         val packages = ctanPackages + customPackages
 
         val commands = file.childrenOfType(LatexCommands::class)
