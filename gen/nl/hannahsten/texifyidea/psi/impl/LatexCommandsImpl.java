@@ -59,6 +59,11 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
+  public PsiReference getReference() {
+    return LatexPsiImplUtil.getReference(this);
+  }
+
+  @Override
   public LinkedHashMap<String, String> getOptionalParameters() {
     return LatexPsiImplUtil.getOptionalParameters(this);
   }

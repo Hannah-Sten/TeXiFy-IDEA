@@ -4,6 +4,7 @@ import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.projectSearchScope
 
 /**
@@ -16,12 +17,13 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
+    // Find all command definitions and redefinitions which define the current element
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val project = element.project
-        return LatexDefinitionIndex.getCommandsByName(element.name ?: return emptyArray(), project, project.projectSearchScope)
-                // todo commandToken does not implement PsiNamedElement?
-                .map { PsiElementResolveResult(it.commandToken) }
+        return LatexDefinitionIndex.getCommandsByNames(Magic.Command.commandDefinitions, element.project, element.project.projectSearchScope)
+                .filter { it.requiredParameters.firstOrNull() == element.name }
+                .map { PsiElementResolveResult(it) }
                 .toArray(emptyArray())
+
     }
 
     override fun resolve(): PsiElement? {
@@ -29,8 +31,8 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
         return if (resolveResults.size == 1) resolveResults[0].element else null
     }
 
+    // Check if this reference resolves to the given element
     override fun isReferenceTo(element: PsiElement): Boolean {
-//        return multiResolve(false).any { it.element == element }
-        return true
+        return multiResolve(false).any { it.element == element }
     }
 }

@@ -8,6 +8,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
+import nl.hannahsten.texifyidea.reference.CommandDefinitionReference;
 import nl.hannahsten.texifyidea.reference.InputFileReference;
 import nl.hannahsten.texifyidea.reference.LatexLabelReference;
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
@@ -54,13 +55,30 @@ public class LatexPsiImplUtil {
 
         // Else, we assume the command itself is important instead of its parameters,
         // and the user is interested in the location of the command definition
-        List<PsiReference> userDefinedReferences = LatexPsiImplUtilKtKt.userDefinedCommandReferences(element);
-        if (userDefinedReferences.size() > 0) {
-            return userDefinedReferences.toArray(new PsiReference[userDefinedReferences.size()]);
-        }
+        return new CommandDefinitionReference[]{new CommandDefinitionReference(element)};
+
+
+//        List<PsiReference> userDefinedReferences = LatexPsiImplUtilKtKt.userDefinedCommandReferences(element);
+//        if (userDefinedReferences.size() > 0) {
+//            return userDefinedReferences.toArray(new PsiReference[userDefinedReferences.size()]);
+//        }
+
 
         // Fallback
-        return new PsiReference[0];
+//        return new PsiReference[0];
+    }
+
+    /**
+     * Get the reference for this command, assuming it has exactly one reference (return null otherwise).
+     */
+    public static PsiReference getReference(@NotNull LatexCommands element) {
+        PsiReference[] references = getReferences(element);
+        if (references.length != 1) {
+            return null;
+        }
+        else {
+            return references[0];
+        }
     }
 
     /**
@@ -218,15 +236,23 @@ public class LatexPsiImplUtil {
         return getRequiredParameters(element.getParameterList());
     }
 
+    /**
+     * Get the name of the command, for example \newcommand.
+     */
+//    public static String getName(@NotNull LatexCommands element) {
+//        LatexCommandsStub stub = element.getStub();
+//        String name = stub != null ? stub.getName() : element.getCommandToken().getText();
+//        // If the name is a (re)definition, return the name of the command it defines.
+//        if (Magic.Command.definitionsAndRedefinitions.contains(name)) {
+//            List<String> parameters = element.getRequiredParameters();
+//            if (!parameters.isEmpty()) return parameters.get(0);
+//        }
+//        return name;
+//    }
     public static String getName(@NotNull LatexCommands element) {
         LatexCommandsStub stub = element.getStub();
-        String name = stub != null ? stub.getName() : element.getCommandToken().getText();
-        // If the name is a (re)definition, return the name of the command it defines.
-        if (Magic.Command.definitionsAndRedefinitions.contains(name)) {
-            List<String> parameters = element.getRequiredParameters();
-            if (!parameters.isEmpty()) return parameters.get(0);
-        }
-        return name;
+        if (stub != null) return stub.getName();
+        return element.getCommandToken().getText();
     }
 
     /**

@@ -347,6 +347,7 @@ object Magic {
 
         @JvmField
         val definitionsAndRedefinitions = definitions + redefinitions
+
         /**
          * All commands that include other files.
          */
