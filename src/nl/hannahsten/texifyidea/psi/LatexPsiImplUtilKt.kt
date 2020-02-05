@@ -1,21 +1,119 @@
 package nl.hannahsten.texifyidea.psi
 
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.util.Computable
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
-import nl.hannahsten.texifyidea.util.projectSearchScope
+import nl.hannahsten.texifyidea.reference.InputFileReference
+import nl.hannahsten.texifyidea.reference.LatexLabelReference
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.requiredParameters
+import java.util.*
+import java.util.regex.Pattern
+import java.util.stream.Collectors
+
 
 /**
- * Get a list of references to definitions of this command.
- * Will return the empty list if no definitions of this command could be found. // todo wrong?
+ * Create file references from the command parameter given.
  */
-fun LatexCommands.userDefinedCommandReferences(): List<PsiReference> {
-    // Get all commands that define this command.
-    val definitionCommands = LatexDefinitionIndex.getCommandsByName(name ?: return emptyList(), project, project.projectSearchScope)
-    // Return a reference for this command, which implements the resolve to its definition(s).
-    if (definitionCommands.isNotEmpty()) return listOf(CommandDefinitionReference(this))
-    return emptyList()
+fun extractIncludes(element: LatexCommands, firstParam: LatexRequiredParam): List<PsiReference> {
+    val subParamRanges = extractSubParameterRanges(firstParam)
+    val references: MutableList<PsiReference> = ArrayList()
+    for (range in subParamRanges) {
+        references.add(InputFileReference(
+                element, range.shiftRight(firstParam.textOffset - element.textOffset)
+        ))
+    }
+    return references
+}
 
-//    LatexDefinitionIndex.getCommandsByNames(Magic.Command.commandDefinitions, project, project.projectSearchScope)
-//            .filter { it.requiredParameters.firstOrNull() == name }
+
+/**
+ * Create label references from the command parameter given.
+ */
+fun extractLabelReferences(element: LatexCommands, firstParam: LatexRequiredParam): List<PsiReference> {
+    val subParamRanges = extractSubParameterRanges(firstParam)
+    val references: MutableList<PsiReference> = ArrayList()
+    for (range in subParamRanges) {
+        references.add(LatexLabelReference(
+                element, range.shiftRight(firstParam.textOffset - element.textOffset)
+        ))
+    }
+    return references
+}
+
+fun readFirstParam(element: LatexCommands): LatexRequiredParam? {
+    return ApplicationManager.getApplication().runReadAction(Computable {
+        val params: List<LatexRequiredParam> = element.requiredParameters()
+        if (params.isEmpty()) null else params[0]
+    })
+}
+
+fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
+    return splitToRanges(stripGroup(param.text), Magic.Pattern.parameterSplit).stream()
+            .map { r: TextRange -> r.shiftRight(1) }.collect(Collectors.toList())
+}
+
+fun splitToRanges(text: String, pattern: Pattern): List<TextRange> {
+    val parts = pattern.split(text)
+    val ranges: MutableList<TextRange> = ArrayList()
+    var currentOffset = 0
+    for (part in parts) {
+        val partStartOffset = text.indexOf(part, currentOffset)
+        ranges.add(TextRange.from(partStartOffset, part.length))
+        currentOffset = partStartOffset + part.length
+    }
+    return ranges
+}
+
+fun stripGroup(text: String): String {
+    return text.substring(1, text.length - 1)
+}
+
+
+/**
+ * Generates a map of parameter names and values for all optional parameters
+ */
+// Explicitly use a LinkedHashMap to preserve iteration order
+
+fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
+    val parameterMap = LinkedHashMap<String, String>()
+    val parameterString = parameters.mapNotNull { it.optionalParam }
+            // extract the content of each parameter element
+            .flatMap { param ->
+                param.openGroup.contentList.map { it.noMathContent }
+            }
+            .mapNotNull { content: LatexNoMathContent ->
+                // the content is either simple text
+                val text = content.normalText
+                if (text != null) return@mapNotNull text.text
+                // or a group like in param={some value}
+                if (content.group == null) return@mapNotNull null
+                content.group!!.contentList.joinToString { it.text }
+            }
+            .joinToString(separator = "")
+
+    for (parameter in parameterString.split(",")) {
+        val parts = parameter.split("=".toRegex()).toTypedArray()
+        parameterMap[parts[0]] = if (parts.size > 1) parts[1] else ""
+    }
+    return parameterMap
+}
+
+fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
+    return parameters.mapNotNull { it.requiredParam?.group }
+            .map {
+                it.contentList.map { c: LatexContent ->
+                    val content = c.noMathContent
+                    if (content.commands != null && content.normalText == null) {
+                        content.commands!!.commandToken.text
+                    }
+                    else if (content.normalText != null) {
+                        content.normalText!!.text
+                    }
+                    else {
+                        null
+                    }
+                }.joinToString(separator = "")
+            }
 }

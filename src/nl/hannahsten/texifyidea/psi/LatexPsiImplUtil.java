@@ -1,26 +1,20 @@
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference;
-import nl.hannahsten.texifyidea.reference.InputFileReference;
-import nl.hannahsten.texifyidea.reference.LatexLabelReference;
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.Magic;
-import nl.hannahsten.texifyidea.util.PsiCommandsKt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static nl.hannahsten.texifyidea.psi.LatexPsiImplUtilKtKt.*;
 
 /**
  * This class is used for method injection in generated parser classes.
@@ -56,16 +50,6 @@ public class LatexPsiImplUtil {
         // Else, we assume the command itself is important instead of its parameters,
         // and the user is interested in the location of the command definition
         return new CommandDefinitionReference[]{new CommandDefinitionReference(element)};
-
-
-//        List<PsiReference> userDefinedReferences = LatexPsiImplUtilKtKt.userDefinedCommandReferences(element);
-//        if (userDefinedReferences.size() > 0) {
-//            return userDefinedReferences.toArray(new PsiReference[userDefinedReferences.size()]);
-//        }
-
-
-        // Fallback
-//        return new PsiReference[0];
     }
 
     /**
@@ -82,173 +66,33 @@ public class LatexPsiImplUtil {
     }
 
     /**
-     * Create file references from the command parameter given.
-     */
-    @NotNull
-    private static List<PsiReference> extractIncludes(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
-        List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
-
-        List<PsiReference> references = new ArrayList<>();
-        for (TextRange range : subParamRanges) {
-            references.add(new InputFileReference(
-                    element, range.shiftRight(firstParam.getTextOffset() - element.getTextOffset())
-            ));
-        }
-        return references;
-    }
-
-    /**
-     * Create label references from the command parameter given.
-     */
-    @NotNull
-    private static List<PsiReference> extractLabelReferences(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
-        List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
-
-        List<PsiReference> references = new ArrayList<>();
-        for (TextRange range : subParamRanges) {
-            references.add(new LatexLabelReference(
-                    element, range.shiftRight(firstParam.getTextOffset() - element.getTextOffset())
-            ));
-        }
-        return references;
-    }
-
-    private static LatexRequiredParam readFirstParam(@NotNull LatexCommands element) {
-        return ApplicationManager.getApplication().runReadAction((Computable<LatexRequiredParam>) () -> {
-            List<LatexRequiredParam> params = PsiCommandsKt.requiredParameters(element);
-            return params.isEmpty() ? null : params.get(0);
-        });
-    }
-
-    @NotNull
-    private static List<TextRange> extractSubParameterRanges(LatexRequiredParam param) {
-        return splitToRanges(stripGroup(param.getText()), Magic.Pattern.parameterSplit).stream()
-                .map(r -> r.shiftRight(1)).collect(Collectors.toList());
-    }
-
-    @NotNull
-    private static List<TextRange> splitToRanges(String text, Pattern pattern) {
-        String[] parts = pattern.split(text);
-
-        List<TextRange> ranges = new ArrayList<>();
-
-        int currentOffset = 0;
-        for (String part : parts) {
-            final int partStartOffset = text.indexOf(part, currentOffset);
-            ranges.add(TextRange.from(partStartOffset, part.length()));
-            currentOffset = partStartOffset + part.length();
-        }
-
-        return ranges;
-    }
-
-    private static String stripGroup(String text) {
-        return text.substring(1, text.length() - 1);
-    }
-
-    /**
      * Generates a list of all optional parameter names and values.
      */
     public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexCommands element) {
-        return getOptionalParameters(element.getParameterList());
+        return LatexPsiImplUtilKtKt.getOptionalParameters(element.getParameterList());
     }
 
     /**
      * Generates a list of all optional parameter names and values.
      */
     public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexBeginCommand element) {
-        return getOptionalParameters(element.getParameterList());
-    }
-
-    /**
-     * Generates a map of parameter names and values for all optional parameters
-     */
-    // Explicitly use a LinkedHashMap to preserve iteration order
-    private static LinkedHashMap<String, String> getOptionalParameters(@NotNull List<LatexParameter> parameters) {
-        LinkedHashMap<String, String> parameterMap = new LinkedHashMap<>();
-        String parameterString = parameters.stream()
-                // we care only about optional parameters
-                .map(LatexParameter::getOptionalParam)
-                .filter(Objects::nonNull)
-                // extract the content of each parameter element
-                .flatMap(op -> op.getOpenGroup().getContentList().stream()
-                        .map(LatexContent::getNoMathContent))
-                .map(c -> {
-                    // the content is either simple text
-                    LatexNormalText text = c.getNormalText();
-                    if (text != null) return text.getText();
-
-                    // or a group like in param={some value}
-                    if (c.getGroup() == null) return null;
-                    return c.getGroup().getContentList().stream()
-                            .map(PsiElement::getText).collect(Collectors.joining());
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining());
-
-        for (String parameter : parameterString.split(",")) {
-            String[] parts = parameter.split("=");
-            parameterMap.put(parts[0], parts.length > 1 ? parts[1] : "");
-        }
-        return parameterMap;
-    }
-
-    private static List<String> getRequiredParameters(@NotNull List<LatexParameter> parameters) {
-        return parameters.stream().map(LatexParameter::getRequiredParam)
-                .flatMap(rp -> {
-                    if (rp == null || rp.getGroup() == null) {
-                        return Stream.empty();
-                    }
-
-                    return Stream.of(rp.getGroup());
-                })
-                .map(group -> {
-                    return String.join("", group.getContentList().stream()
-                            .flatMap(c -> {
-                                LatexNoMathContent content = c.getNoMathContent();
-
-                                if (content == null) {
-                                    return Stream.empty();
-                                }
-
-                                if (content.getCommands() != null && content.getNormalText() == null) {
-                                    return Stream.of(content.getCommands().getCommandToken().getText());
-                                }
-                                else if (content.getNormalText() != null) {
-                                    return Stream.of(content.getNormalText().getText());
-                                }
-
-                                return Stream.empty();
-                            })
-                            .collect(Collectors.toList()));
-                })
-                .collect(Collectors.toList());
+        return LatexPsiImplUtilKtKt.getOptionalParameters(element.getParameterList());
     }
 
     /**
      * Generates a list of all names of all required parameters in the command.
      */
     public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
-        return getRequiredParameters(element.getParameterList());
+        return LatexPsiImplUtilKtKt.getRequiredParameters(element.getParameterList());
     }
 
     public static List<String> getRequiredParameters(@NotNull LatexBeginCommand element) {
-        return getRequiredParameters(element.getParameterList());
+        return LatexPsiImplUtilKtKt.getRequiredParameters(element.getParameterList());
     }
 
     /**
      * Get the name of the command, for example \newcommand.
      */
-//    public static String getName(@NotNull LatexCommands element) {
-//        LatexCommandsStub stub = element.getStub();
-//        String name = stub != null ? stub.getName() : element.getCommandToken().getText();
-//        // If the name is a (re)definition, return the name of the command it defines.
-//        if (Magic.Command.definitionsAndRedefinitions.contains(name)) {
-//            List<String> parameters = element.getRequiredParameters();
-//            if (!parameters.isEmpty()) return parameters.get(0);
-//        }
-//        return name;
-//    }
     public static String getName(@NotNull LatexCommands element) {
         LatexCommandsStub stub = element.getStub();
         if (stub != null) return stub.getName();
@@ -288,13 +132,12 @@ public class LatexPsiImplUtil {
         // see if we can find a label command inside the environment
         Collection<LatexCommands> children = PsiTreeUtil.findChildrenOfType(content, LatexCommands.class);
         if (!children.isEmpty()) {
-            LatexCommands labelMaybe = children.iterator().next();
             Map<String, LabelingCommandInformation> labelCommands = TexifySettings.getInstance().getLabelPreviousCommands();
             labelFound = children.stream().anyMatch(c -> labelCommands.containsKey(c.getName()));
         }
 
         // see if we can find a label option
-        Set<String> optionalParameters = getOptionalParameters(element.getBeginCommand().getParameterList()).keySet();
+        Set<String> optionalParameters = LatexPsiImplUtilKtKt.getOptionalParameters(element.getBeginCommand().getParameterList()).keySet();
         labelFound = labelFound || optionalParameters.contains("label");
 
         return labelFound;
