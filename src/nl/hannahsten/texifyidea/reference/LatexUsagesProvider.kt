@@ -13,27 +13,31 @@ class LatexUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? {
         return DefaultWordsScanner(LatexLexerAdapter(),
                 // Identifiers.
-                TokenSet.create(LatexTypes.COMMAND_TOKEN, LatexTypes.COMMANDS,
-                        LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
-                        LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
-                        LatexTypes.OPEN_BRACE, LatexTypes.OPEN_BRACKET,
-                        LatexTypes.OPEN_BRACE, LatexTypes.OPEN_PAREN,
-                        LatexTypes.M_OPEN_BRACKET, LatexTypes.CLOSE_BRACE,
-                        LatexTypes.CLOSE_BRACKET, LatexTypes.CLOSE_PAREN,
-                        LatexTypes.M_CLOSE_BRACKET, LatexTypes.PARAMETER,
-                        LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM,
-                        LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END,
-                        LatexTypes.INLINE_MATH_START, LatexTypes.INLINE_MATH_END,
-                        LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT,
-                        LatexTypes.STAR),
+                TokenSet.create(LatexTypes.COMMAND_TOKEN
+//                        LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
+//                        LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
+//                        LatexTypes.OPEN_BRACE, LatexTypes.OPEN_BRACKET,
+//                        LatexTypes.OPEN_BRACE, LatexTypes.OPEN_PAREN,
+//                        LatexTypes.M_OPEN_BRACKET, LatexTypes.CLOSE_BRACE,
+//                        LatexTypes.CLOSE_BRACKET, LatexTypes.CLOSE_PAREN,
+//                        LatexTypes.M_CLOSE_BRACKET, LatexTypes.PARAMETER,
+//                        LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM,
+//                        LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END,
+//                        LatexTypes.INLINE_MATH_START, LatexTypes.INLINE_MATH_END,
+//                        LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT,
+//                        LatexTypes.STAR
+                ),
                 // Comments.
-                TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),
+//                TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),
+                TokenSet.EMPTY, TokenSet.EMPTY
                 // Literals.
-                TokenSet.create(
-                        LatexTypes.ENVIRONMENT_CONTENT, LatexTypes.CONTENT,
-                        LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
-                        LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH, LatexTypes.INLINE_MATH,
-                        LatexTypes.GROUP, LatexTypes.OPEN_GROUP, LatexTypes.NO_MATH_CONTENT)
+//                TokenSet.create(
+////                        LatexTypes.ENVIRONMENT_CONTENT, LatexTypes.CONTENT,
+////                        LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
+//                        LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH, LatexTypes.INLINE_MATH,
+////                        LatexTypes.NO_MATH_CONTENT,
+//                        LatexTypes.GROUP, LatexTypes.OPEN_GROUP
+//                )
         )
     }
 
