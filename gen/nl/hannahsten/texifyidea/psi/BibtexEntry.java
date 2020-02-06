@@ -5,8 +5,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.StubBasedPsiElement;
-import com.intellij.util.IncorrectOperationException;
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,13 +42,14 @@ public interface BibtexEntry extends PsiNameIdentifierOwner, StubBasedPsiElement
 
   String getIdentifier();
 
+  PsiElement getNameIdentifier();
+
   String getAbstract();
 
   String getTagContent(String tagName);
 
   String getName();
 
-  @NotNull
-  PsiElement setName(@NotNull String name) throws IncorrectOperationException;
+  PsiElement setName(@NotNull @NonNls String name);
 
 }

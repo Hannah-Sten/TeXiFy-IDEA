@@ -93,6 +93,10 @@ public class BibtexPsiImplUtil {
         return identifier;
     }
 
+    public static PsiElement getNameIdentifier(@NotNull BibtexEntry element) {
+        return element;
+    }
+
     public static String getAbstract(@NotNull BibtexEntry element) {
         return element.getTagContent("abstract");
     }
