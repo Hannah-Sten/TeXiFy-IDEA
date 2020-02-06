@@ -58,21 +58,23 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
                 .forEach { addByDirectory(it, autocompleteText, result) }
 
         // Add last included graphicspaths.
-        val graphicsPath = parameters.originalFile.commandsInFileSet().last { it.commandToken.text == "\\graphicspath" }
-        graphicsPath.parameterList.first { it1 -> it1.requiredParam != null }
-                .childrenOfType(LatexNormalText::class).forEach { it2 ->
-                    // Check if graphicspath is an absolute or relative path
-                    if (File(it2.text).isAbsolute) {
-                        baseDirectory.fileSystem.findFileByPath(it2.text)?.apply {
-                            addByDirectory(this, autocompleteText, result)
+        val graphicsPath = parameters.originalFile.commandsInFileSet().filter { it.commandToken.text == "\\graphicspath" }
+        if (graphicsPath.isNotEmpty()) {
+            graphicsPath.last().parameterList.first { firstParam -> firstParam.requiredParam != null }
+                    .childrenOfType(LatexNormalText::class).forEach { path ->
+                        // Check if graphicspath is an absolute or relative path
+                        if (File(path.text).isAbsolute) {
+                            baseDirectory.fileSystem.findFileByPath(path.text)?.apply {
+                                addByDirectory(this, autocompleteText, result)
+                            }
+                        }
+                        else {
+                            baseDirectory.findFileByRelativePath(path.text)?.apply {
+                                addByDirectory(this, autocompleteText, result)
+                            }
                         }
                     }
-                    else {
-                        baseDirectory.findFileByRelativePath(it2.text)?.apply {
-                            addByDirectory(this, autocompleteText, result)
-                        }
-                    }
-                }
+        }
     }
 
     private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String, result: CompletionResultSet) {
@@ -106,7 +108,7 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
         for (directory in directories) {
             val directoryName = directory.presentableName
             result.addElement(
-                    LookupElementBuilder.create(noBack(autocompleteText) + directory.name)
+                    LookupElementBuilder.create(noBack(autocompleteText) + directory.name + "/")
                             .withPresentableText(directoryName)
                             .withIcon(PlatformIcons.PACKAGE_ICON)
             )

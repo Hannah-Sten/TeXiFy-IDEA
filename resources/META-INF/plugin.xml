@@ -605,35 +605,28 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRequiredExtensionInspection"
                          groupName="LaTeX" displayName="File argument should include the extension"
                          enabledByDefault="true"/>
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexNestedIncludesInspection"
                          groupName="LaTeX" displayName="Nested includes"
                          enabledByDefault="true"/>
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
                          groupName="LaTeX" displayName="Figure not referenced"
                          enabledByDefault="true"/>
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerbatimInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerbatimInspection"
                          groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser"
                          shortName="LatexUseOfVerbatimEnvironment"
                          enabledByDefault="true"/>
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
                          groupName="LaTeX" displayName="Multiple definition of graphicspath"
                          enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
-        <localInspection language="Bibtex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
+        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
                          enabledByDefault="true"/>
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
                          enabledByDefault="true"/>
-        <localInspection language="Latex"
-                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"

@@ -34,7 +34,7 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
                 descriptors.add(manager.createProblemDescriptor(
                         i,
                         TextRange(0, i.text.length),
-                        "Multiple definition of \\graphicspath",
+                        "\\graphicspath is already used elsewhere",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly,
                         RemoveFix()
