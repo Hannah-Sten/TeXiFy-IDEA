@@ -14,7 +14,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =
-            "PackageMayNotExist"
+            "PackageCouldNotBeFound"
 
     override fun getDisplayName(): String {
         return "Package may not exist"
