@@ -55,6 +55,7 @@ toc::[]
 *
 * Multi-cursors
 * link:Math-environment-switcher[Easy switching to other math environments]
+* link:Graphicspath-support[Support for `\graphicspath` from the graphicx package.]
 
 == Reading
 * Customizable syntax highlighting
