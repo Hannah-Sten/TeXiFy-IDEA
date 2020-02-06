@@ -70,6 +70,9 @@ public class BibtexPsiImplUtil {
 
         for (BibtexTag bibtexTag : entryContent.getTagList()) {
             BibtexContent content = bibtexTag.getContent();
+            if (content == null) {
+                continue;
+            }
             if (tagName.equalsIgnoreCase(bibtexTag.getKey().getText())) {
                 String text = BibtexKt.evaluate(content);
 

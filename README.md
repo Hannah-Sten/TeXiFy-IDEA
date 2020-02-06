@@ -34,7 +34,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Formatter for LaTeX and BibTeX
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
-* SumatraPDF (Windows) and Evince (Linux) support with forward and backward search
+* SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search
 * Smart Quotes
 * Unicode math preview
 * Equation preview

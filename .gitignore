@@ -5,3 +5,4 @@ build
 *iml
 idea-flex.skeleton
 jflex-*.jar
+scripts/venv

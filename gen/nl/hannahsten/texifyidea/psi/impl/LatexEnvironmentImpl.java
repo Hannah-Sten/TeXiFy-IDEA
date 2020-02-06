@@ -59,8 +59,8 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
   }
 
   @Override
-  public boolean hasLabel() {
-    return LatexPsiImplUtil.hasLabel(this);
+  public String getLabel() {
+    return LatexPsiImplUtil.getLabel(this);
   }
 
 }
