@@ -110,7 +110,7 @@
             <li> Add code style settings for BibTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1169">#1169</a>)</li>
             <li> The LaTeX formatter now also indents inside groups. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1147">#1147</a>)</li>
             <li> Add settings to specify the number of blank lines before sectioning commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1155">#1155</a>)</li>
-            <li> Add the code generation code style settings (as found for other languages)</li> for LaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1164">#1164</a>)</li>
+            <li> Add the code generation code style settings (as found for other languages) for LaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1164">#1164</a>)</li>
         </ul>
         <br>
         <p>
