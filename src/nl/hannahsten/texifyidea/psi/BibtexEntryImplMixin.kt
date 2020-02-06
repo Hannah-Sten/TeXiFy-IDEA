@@ -20,7 +20,8 @@ open class BibtexEntryImplMixin : StubBasedPsiElementBase<BibtexEntryStub?>, Psi
 
     @Throws(IncorrectOperationException::class)
     override fun setName(name: String): PsiElement {
-        // TODO should this do something?
+        // Similar to the setName in BibtexEntryImpl. Does nothing and just
+        // returns the original element.
         return this
     }
 }
