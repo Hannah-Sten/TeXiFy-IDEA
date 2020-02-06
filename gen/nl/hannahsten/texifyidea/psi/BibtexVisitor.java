@@ -1,10 +1,10 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiNameIdentifierOwner;
+import org.jetbrains.annotations.NotNull;
 
 public class BibtexVisitor extends PsiElementVisitor {
 
@@ -29,7 +29,7 @@ public class BibtexVisitor extends PsiElementVisitor {
   }
 
   public void visitEntry(@NotNull BibtexEntry o) {
-    visitPsiNamedElement(o);
+    visitPsiNameIdentifierOwner(o);
   }
 
   public void visitEntryContent(@NotNull BibtexEntryContent o) {
@@ -68,7 +68,7 @@ public class BibtexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitPsiNamedElement(@NotNull PsiNamedElement o) {
+  public void visitPsiNameIdentifierOwner(@NotNull PsiNameIdentifierOwner o) {
     visitElement(o);
   }
 
