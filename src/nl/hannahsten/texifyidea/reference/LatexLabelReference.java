@@ -15,10 +15,7 @@ import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A reference to a label.
@@ -56,8 +53,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
 
     @Override
     public boolean isReferenceTo(@NotNull PsiElement element) {
-//        return Arrays.stream(multiResolve(false)).anyMatch(it -> it.getElement() == element);
-        return true;
+        return Arrays.stream(multiResolve(false)).anyMatch(it -> it.getElement() == element);
     }
 
     @NotNull

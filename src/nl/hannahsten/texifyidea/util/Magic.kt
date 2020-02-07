@@ -355,7 +355,7 @@ object Magic {
          */
         @JvmField
         val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\documentclass", "\\subfile"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\documentclass", "\\subfile", "\\includegraphics"
         )
 
         /**

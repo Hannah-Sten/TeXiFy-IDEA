@@ -46,13 +46,19 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
 
     @Override
     public int getTextOffset() {
-        int offset = getNode().getText().indexOf(getName());
-        return offset == -1 ? super.getTextOffset() : getNode().getStartOffset() + offset;
+        String name = getName();
+        if (name == null) {
+            return super.getTextOffset();
+        }
+        else {
+            int offset = getNode().getText().indexOf(name);
+            return offset == -1 ? super.getTextOffset() : getNode().getStartOffset() + offset;
+        }
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
         if (visitor instanceof LatexVisitor) {
-            accept((LatexVisitor) visitor);
+            accept(visitor);
         }
         else {
             super.accept(visitor);
