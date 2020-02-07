@@ -55,7 +55,7 @@ enum class LatexRegularCommand(
     CREF("cref", "label".asRequired(), dependency = CLEVEREF),
     CREF_CAPITAL("Cref", "label".asRequired(), dependency = CLEVEREF),
     DATE("date", "text".asRequired(Type.TEXT)),
-    DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT)),
+    DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT), dependency = AMSMATH),
     DEF("def"),
     DIRECTLUA("directlua", "luacode".asRequired()),
     DOCUMENTCLASS("documentclass", "options".asOptional(), "class".asRequired()),
