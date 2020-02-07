@@ -49,7 +49,14 @@ public class LatexPsiImplUtil {
 
         // Else, we assume the command itself is important instead of its parameters,
         // and the user is interested in the location of the command definition
-        return new CommandDefinitionReference[]{new CommandDefinitionReference(element)};
+        CommandDefinitionReference reference = new CommandDefinitionReference(element);
+        // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
+        if (reference.multiResolve(false).length == 0) {
+            return new PsiReference[0];
+        }
+        else {
+            return new CommandDefinitionReference[]{reference};
+        }
     }
 
     /**

@@ -15,12 +15,27 @@ class LatexCompletionTest : BasePlatformTestCase() {
     @Test
     fun testCompleteLatexReferences(){
         // given
-        myFixture.configureByText(LatexFileType, "\\app")
+        myFixture.configureByText(LatexFileType, """\ap<caret>""")
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
         // then
-        assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString == "\\appendix"})
+        assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString == "appendix"})
+    }
+
+    @Test
+    fun testCompleteCustomCommandReferences(){
+        // given
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\hi}{hi}
+            \h<caret>
+            """.trimIndent())
+
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertTrue("LaTeX autocompletion of custom commands should be available", result.any { it.lookupString == "hi"})
     }
 }
