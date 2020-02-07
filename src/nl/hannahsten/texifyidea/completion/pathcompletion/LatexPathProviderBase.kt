@@ -57,7 +57,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * eg. project root
      * eg. \includegraphics roots
      */
-    abstract fun selectScanRoots(file : PsiFile): ArrayList<VirtualFile>
+    abstract fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile>
 
     abstract fun searchFolders(): Boolean
 
@@ -130,6 +130,21 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             // Find stuff.
             val directories = getContents(searchDirectory, true)
             println("totalfoundfolders=" + directories.size)
+
+            // Add return directory.
+            result.addElement(
+                    LookupElementBuilder.create(pathOffset + "../")
+                            .withPresentableText("..")
+                            .withIcon(PlatformIcons.PACKAGE_ICON)
+                    // todo per relative path typed ../ completion doesnt work
+            )
+
+            // Add curr directory.
+            result.addElement(
+                    LookupElementBuilder.create(pathOffset + "./")
+                            .withPresentableText(".")
+                            .withIcon(PlatformIcons.PACKAGE_ICON)
+            )
 
             // Add directories.
             for (directory in directories) {
