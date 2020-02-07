@@ -1,0 +1,6 @@
+:experimental:
+
+As a complement for link:Go-to-declaration[Go to declaration], you can easily find usages of LaTeX commands you defined in your document, for example using `\newcommand` or `\DeclareMathOperator`, using kbd:[Ctrl + B].
+Note that this is the same shortcut as for Go to declaration.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/find-usages.png[]
