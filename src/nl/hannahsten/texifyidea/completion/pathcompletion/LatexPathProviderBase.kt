@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
+import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import java.io.File
@@ -24,19 +26,13 @@ import java.util.regex.Pattern
  * @author Lukas Heiligenbrunner
  */
 abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>() {
-
-
     private var parameters: CompletionParameters? = null
     private var resultSet: CompletionResultSet? = null
+    private var validExtensions : Set<String>? = null
 
     companion object {
-
         private val TRIM_SLASH = Pattern.compile("/[^/]*$")
-        private val TRIM_BACK = Pattern.compile("\\.\\./")
-    }
-
-    init {
-
+        private val EXTENSION = Pattern.compile("\\..*")
     }
 
 
@@ -47,8 +43,13 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         val autocompleteText = processAutocompleteText(parameters.position.text)
         resultSet = result.withPrefixMatcher(autocompleteText)
 
+        val parentCommand = context.get("type")
+        if (parentCommand is RequiredFileArgument) {
+            validExtensions = parentCommand.supportedExtensions
+        }
+
         selectScanRoots(parameters.originalFile).forEach {
-            addByDirectory(it, autocompleteText, result)
+            addByDirectory(it, autocompleteText)
         }
     }
 
@@ -59,131 +60,125 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      */
     abstract fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile>
 
+    /**
+     * enable folder search?
+     */
     abstract fun searchFolders(): Boolean
 
+    /**
+     * enable file search?
+     */
     abstract fun searchFiles(): Boolean
 
-    private fun addByDirectory(baseDirectory: VirtualFile, completionText: String, givenResultSet: CompletionResultSet) {
 
-        println()
-        println("baseDirectory.path=" + baseDirectory.path)
-        println("autocompletetext=" + completionText)
-
-        val result = givenResultSet.withPrefixMatcher(completionText)
-
-        var searchDirectory: VirtualFile? = null
-        var autoCompleteText = completionText
-
-        var pathOffset = ""
-
-        // search for right VirtualFile for searchfolder
+    /**
+     * scan directory for completions
+     */
+    private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String) {
         // Check if path is relative or absolute
         if (File(autoCompleteText).isAbsolute) {
-            println("is absolute path")
-
             // Split text in path and completion text
-            pathOffset = trimAutocompleteText(autoCompleteText)
-            autoCompleteText = autoCompleteText.replaceBeforeLast(pathOffset, "")
-
-            baseDirectory.fileSystem.findFileByPath(pathOffset)?.apply {
-                searchDirectory = this
-            }
+            val pathOffset = trimAutocompleteText(autoCompleteText)
+            addAbsolutePathCompletion(pathOffset)
         }
         else {
-            val directoryPath = baseDirectory.path + "/" + autoCompleteText
-            println("direcotrypath=" + directoryPath)
-            println("is relative path")
-            LocalFileSystem.getInstance().findFileByPath(directoryPath)?.apply {
-                searchDirectory = this
-                pathOffset = if (autoCompleteText != "")
-                    autoCompleteText.substring(0, autoCompleteText.length - 1)
-                else ""
-                println("founf file=" + this.path)
-            }
+            val pathOffset = trimAutocompleteText(autoCompleteText)
+            addRelativePathCompletion(baseDirectory, pathOffset)
+        }
+    }
 
-            // scan dir without completiontext if not found
-            if (searchDirectory == null) {
-                pathOffset = trimAutocompleteText(autoCompleteText)
-                autoCompleteText = autoCompleteText.replaceBeforeLast(pathOffset, "")
-                println("pathoffset=" + pathOffset)
-                searchDirectory = if (pathOffset.isEmpty()) {
-                    println("assigned basedirectory")
-                    baseDirectory
-
-                }
-                else {
-                    println("assigned trimmed dings")
-                    LocalFileSystem.getInstance().findFileByPath(baseDirectory.path + "/" + pathOffset)
+    /**
+     * add completion entries for relative path
+     */
+    private fun addRelativePathCompletion(projectDir: VirtualFile, pathOffset: String) {
+        LocalFileSystem.getInstance().findFileByPath(projectDir.path + "/" + pathOffset)?.let { baseDir ->
+            if (searchFolders()) {
+                addFolderNavigations(pathOffset)
+                getContents(baseDir, true).forEach {
+                    addDirectoryCompletion(pathOffset, it)
                 }
             }
 
-        }
-
-        if (searchDirectory == null) {
-            println("isnull")
-            return
-        }
-
-        println("autocompletetext after=" + autoCompleteText)
-
-        if (searchFolders()) {
-            // Find stuff.
-            val directories = getContents(searchDirectory, true)
-            println("totalfoundfolders=" + directories.size)
-
-            // Add return directory.
-            result.addElement(
-                    LookupElementBuilder.create(pathOffset + "../")
-                            .withPresentableText("..")
-                            .withIcon(PlatformIcons.PACKAGE_ICON)
-                    // todo per relative path typed ../ completion doesnt work
-            )
-
-            // Add curr directory.
-            result.addElement(
-                    LookupElementBuilder.create(pathOffset + "./")
-                            .withPresentableText(".")
-                            .withIcon(PlatformIcons.PACKAGE_ICON)
-            )
-
-            // Add directories.
-            for (directory in directories) {
-                println(directory.name)
-//                if(!directory.name.contains(autoCompleteText)) continue
-                println("continued!")
-                val directoryName = directory.presentableName
-                println("presenatablename=" + directory.presentableName)
-                result.addElement(
-                        LookupElementBuilder.create(pathOffset + directory.name + "/")
-                                .withPresentableText(directoryName)
-                                .withIcon(PlatformIcons.PACKAGE_ICON)
-                )
-                println("FINISH=" + pathOffset + directory.name + "/")
+            if (searchFiles()) getContents(baseDir, false).forEach {
+                addFileCompletion(pathOffset, it)
             }
         }
+    }
 
-        if (searchFiles()) {
-            val files = getContents(searchDirectory, false)
-            // Add files.
-            for (file in files) {
-                val fileName = file.presentableName
-                val icon = TexifyIcons.getIconFromExtension(file.extension)
-                result.addElement(
-                        LookupElementBuilder.create(noBack(autoCompleteText) + file.name)
-                                .withPresentableText(fileName)
-                                .withInsertHandler(CompositeHandler<LookupElement>(
-                                        LatexReferenceInsertHandler(),
-                                        FileNameInsertionHandler()
-                                ))
-                                .withIcon(icon)
-                )
+    /**
+     * add completion entries for absolute path
+     */
+    private fun addAbsolutePathCompletion(baseDir: String) {
+        LocalFileSystem.getInstance().findFileByPath(baseDir)?.let { dirFile ->
+            if (searchFolders()) {
+                addFolderNavigations(baseDir)
+                getContents(dirFile, true).forEach {
+                    addDirectoryCompletion(baseDir, it)
+                }
+            }
+
+            if (searchFiles()) getContents(dirFile, false).forEach {
+                addFileCompletion(baseDir, it)
             }
         }
+    }
 
+    /**
+     * add basic folder navigation options such as ../ and ./
+     */
+    private fun addFolderNavigations(baseDir: String) {
+        // Add current directory.
+        resultSet?.addElement(
+                LookupElementBuilder.create("$baseDir./")
+                        .withPresentableText(".")
+                        .withIcon(PlatformIcons.PACKAGE_ICON)
+        )
+
+        // Add return directory.
+        resultSet?.addElement(
+                LookupElementBuilder.create("$baseDir../")
+                        .withPresentableText("..")
+                        .withIcon(PlatformIcons.PACKAGE_ICON)
+        )
+    }
+
+    /**
+     * add Directory to autocompletion dialog
+     */
+    private fun addDirectoryCompletion(baseDir: String, foundFile: VirtualFile) {
+        resultSet?.addElement(
+                LookupElementBuilder.create(baseDir + foundFile.name + "/")
+                        .withPresentableText(foundFile.presentableName)
+                        .withIcon(PlatformIcons.PACKAGE_ICON)
+        )
+    }
+
+    /**
+     * add file to autocompletion dialog
+     */
+    private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
+        if(validExtensions != null) {
+            if(validExtensions!!.contains(foundFile.extension).not()) return
+        }
+
+        val icon = TexifyIcons.getIconFromExtension(foundFile.extension)
+        resultSet?.addElement(
+                LookupElementBuilder.create(baseDir + foundFile.name)
+                        .withPresentableText(foundFile.presentableName)
+                        .withInsertHandler(CompositeHandler<LookupElement>(
+                                LatexReferenceInsertHandler(),
+                                FileNameInsertionHandler()
+                        ))
+                        .withIcon(icon)
+        )
     }
 
 
-    public fun getProjectRoots(): ArrayList<VirtualFile> {
+    /**
+     * Get project roots
+     * @return all Project Root directories as VirtualFile
+     */
+    fun getProjectRoots(): ArrayList<VirtualFile> {
         val resultList = ArrayList<VirtualFile>()
         if (parameters == null) return resultList
         // Get base data.
@@ -204,6 +199,10 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     }
 
 
+    /**
+     * @param autoCompleteText full path (relative or absolute) including the completion offset
+     * @return path without autocompletion text including forward slash at end
+     */
     private fun trimAutocompleteText(autoCompleteText: String): String {
         return if (!autoCompleteText.contains("/")) {
             ""
@@ -212,13 +211,14 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         // delete last subpath occurence
     }
 
-    private fun noBack(stuff: String): String {
-        return TRIM_BACK.matcher(stuff).replaceAll("")
+    private fun getFileExtension(fileName: String): String {
+        val matcher = EXTENSION.matcher(fileName)
+        if (matcher.find()) return matcher.group()
+        else return ""
     }
 
-
     /**
-     * prepare auto-complete text
+     * prepare auto-complete text before searching for files
      */
     private fun processAutocompleteText(autocompleteText: String): String {
         var result = if (autocompleteText.endsWith("}")) {
@@ -231,10 +231,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         // parameter, no commas will be present so the split will do nothing.
         result = result.replace("IntellijIdeaRulezzz", "")
                 .split(",").last()
-
-        if (result.endsWith(".")) {
-            result = result.substring(0, result.length - 1) + "/"
-        }
 
         // Prevent double ./
         if (result.startsWith("./")) {
@@ -249,6 +245,9 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         return result
     }
 
+    /**
+     * search in given path for subfiles or directories
+     */
     private fun getContents(base: VirtualFile?, directory: Boolean): List<VirtualFile> {
         val contents = java.util.ArrayList<VirtualFile>()
 

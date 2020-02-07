@@ -85,12 +85,15 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("File name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                                        ?: return false
 
                                 val name = command.commandToken.text
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
                                 val args = cmd.getArgumentsOf(RequiredFileArgument::class)
+                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+
                                 return args.isNotEmpty()
                             }
                         })
@@ -112,6 +115,8 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
                                 val args = cmd.getArgumentsOf(RequiredFolderArgument::class)
+                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+
                                 return args.isNotEmpty()
                             }
                         })
@@ -133,6 +138,8 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
                                 val args = cmd.getArgumentsOf(RequiredPicturePathArgument::class)
+                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+
                                 return args.isNotEmpty()
                             }
                         })
