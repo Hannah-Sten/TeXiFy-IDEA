@@ -74,7 +74,7 @@ toc::[]
 == Navigation
 * link:++Structure view++[Structure view with filters]
 * link:Go-to-declaration[Go to declaration of labels, citations and custom commands]
-* Link:Find-usages[Find usages for commands defined in a \newcommand-like way]
+* link:Find-usages[Find usages for commands defined in a \newcommand-like way]
 * "Goto Symbol" support for section names, labels, bibitems, new environments and new commands
 * link:File-inclusion-navigation[Gutter icons and navigation shortcuts for file inclusions]
 * Breadcrumbs for environments and commands
