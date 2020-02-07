@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.lang.LatexMode
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.RequiredFolderArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import java.util.*
@@ -94,6 +95,27 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexFileProvider()
+        )
+
+        // Folder names
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                        .inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
+                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                                        ?: return false
+
+                                val name = command.commandToken.text
+                                val cmd = LatexRegularCommand[name.substring(1)] ?: return false
+
+                                val args = cmd.getArgumentsOf(RequiredFolderArgument::class)
+                                return args.isNotEmpty()
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexFolderProvider()
         )
 
         // Magic comments keys.

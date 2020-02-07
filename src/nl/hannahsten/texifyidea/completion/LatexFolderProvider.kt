@@ -1,18 +1,16 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.openapi.vfs.VirtualFile
-import kotlin.collections.ArrayList
 
 /**
- * @author Hannah Schellekens
+ * @author Lukas Heiligenbrunner
  */
-class LatexFileProvider : LatexPathProviderBase() {
+class LatexFolderProvider : LatexPathProviderBase() {
     override fun selectScanRoots(): ArrayList<VirtualFile> {
         return getProjectRoots()
     }
 
     override fun searchFolders(): Boolean = true
 
-    override fun searchFiles(): Boolean = true
-
+    override fun searchFiles(): Boolean = false
 }
