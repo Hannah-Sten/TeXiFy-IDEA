@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.completion
+package nl.hannahsten.texifyidea.completion.pathcompletion
 
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
@@ -8,6 +8,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -19,6 +20,9 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 import java.io.File
 import java.util.regex.Pattern
 
+/**
+ * @author Lukas Heiligenbrunner
+ */
 abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>() {
 
 
@@ -43,7 +47,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         val autocompleteText = processAutocompleteText(parameters.position.text)
         resultSet = result.withPrefixMatcher(autocompleteText)
 
-        selectScanRoots().forEach {
+        selectScanRoots(parameters.originalFile).forEach {
             addByDirectory(it, autocompleteText, result)
         }
     }
@@ -53,7 +57,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * eg. project root
      * eg. \includegraphics roots
      */
-    abstract fun selectScanRoots(): ArrayList<VirtualFile>
+    abstract fun selectScanRoots(file : PsiFile): ArrayList<VirtualFile>
 
     abstract fun searchFolders(): Boolean
 
@@ -70,14 +74,19 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         var searchDirectory: VirtualFile? = null
         var autoCompleteText = completionText
 
-        var pathOffset: String = ""
+        var pathOffset = ""
+
         // search for right VirtualFile for searchfolder
         // Check if path is relative or absolute
         if (File(autoCompleteText).isAbsolute) {
             println("is absolute path")
-            baseDirectory.fileSystem.findFileByPath(autoCompleteText)?.apply {
+
+            // Split text in path and completion text
+            pathOffset = trimAutocompleteText(autoCompleteText)
+            autoCompleteText = autoCompleteText.replaceBeforeLast(pathOffset, "")
+
+            baseDirectory.fileSystem.findFileByPath(pathOffset)?.apply {
                 searchDirectory = this
-                println("founf file=" + this.path)
             }
         }
         else {
@@ -92,10 +101,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
                 println("founf file=" + this.path)
             }
 
-            // todo check if neccessary
-
-
-            //todo better var name
+            // scan dir without completiontext if not found
             if (searchDirectory == null) {
                 pathOffset = trimAutocompleteText(autoCompleteText)
                 autoCompleteText = autoCompleteText.replaceBeforeLast(pathOffset, "")
@@ -117,10 +123,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             println("isnull")
             return
         }
-
-//        if (autoCompleteText.isNotEmpty() && !autoCompleteText.endsWith("/")) {
-//            return
-//        }
 
         println("autocompletetext after=" + autoCompleteText)
 
@@ -225,9 +227,9 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         }
 
         // Prevent double /
-//        if (result.startsWith("/")) {
-//            result = result.substring(1)
-//        }
+        if (result.startsWith("//")) {
+            result = result.substring(1)
+        }
 
         return result
     }
