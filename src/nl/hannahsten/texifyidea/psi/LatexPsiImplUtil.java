@@ -186,4 +186,24 @@ public class LatexPsiImplUtil {
 
         return paramText.getText();
     }
+
+    /*
+     * LatexNormalText
+     */
+
+    public static PsiReference[] getReferences(@NotNull LatexNormalText element) {
+        return LatexNormalTextUtilKt.getReferences(element);
+    }
+
+    public static PsiElement getNameIdentifier(@NotNull LatexNormalText element) {
+        return LatexNormalTextUtilKt.getNameIdentifier(element);
+    }
+
+    public static PsiElement setName(@NotNull LatexNormalText element, String name) {
+        return LatexNormalTextUtilKt.setName(element, name);
+    }
+
+    public static String getName(@NotNull LatexNormalText element) {
+        return LatexNormalTextUtilKt.getName(element);
+    }
 }
