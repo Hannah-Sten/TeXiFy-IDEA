@@ -7,8 +7,9 @@
 * Add support for a custom output or auxiliary directory. (#1201)
 * Add biblatex commands to the autocomplete. (#1195)
 * Add support for labels defined with Verbatim or lstlisting environments. (#1232)
-* Add support for `\graphicspath` from the graphicx package. (#1224)
+* Add support for \graphicspath from the graphicx package. (#1224)
 * Add a warning to update Evince when the version is too old for backwards/forward search. (#1226)
+* Add chapterbib support. (#1223)
 * Add more user configurable live templates. (#1203)
 * Surround text with $..$ or [..] using a shortcut or by typing $ or [. (#1207)
 * Surround text with quotes depending on your Smart quotes setting. (#1207)
@@ -23,10 +24,10 @@
 # Changes
 * If a file has a run configuration associated, treat it as a root file. (#1198)
 * Improve performance of line markers. (#1200)
+* Ignore \ifoot for \if-like commands. (#1220)
+* Also execute Grazie grammar checking at the beginning of sentences. (#1196)
 
 # Bug fixes
-* Also execute Grazie grammar checking at the beginning of sentences. (#1196)
-* Ignore \ifoot for \if-like commands. (#1220)
 * Fixed crashes. (#1211)
 
 Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko), Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) and [@Lukas-Heiligenbrunner](https://github.com/Lukas-Heiligenbrunner) for contributing to this release.
