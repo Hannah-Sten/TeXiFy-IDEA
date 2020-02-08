@@ -41,7 +41,7 @@ inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> =
 fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
     for (child in children) {
         if (predicate(this)) {
-            return child as? T
+            return this as? T
         }
 
         val first = child.findFirstChild<T>(predicate)
