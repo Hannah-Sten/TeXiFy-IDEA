@@ -15,7 +15,7 @@ class StartEvinceInverseSearchListener : StartupActivity, DumbAware {
 
     override fun runActivity(project: Project) {
         if (SystemInfo.isLinux && TexifySettings.getInstance().pdfViewer == PdfViewer.EVINCE) {
-            EvinceInverseSearchListener().start()
+            EvinceInverseSearchListener().start(project)
         }
     }
 }

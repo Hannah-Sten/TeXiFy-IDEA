@@ -42,11 +42,6 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
     public String toString() {
         return "LatexCommandsImpl(COMMANDS)[STUB]{" + getName() + "}";
     }

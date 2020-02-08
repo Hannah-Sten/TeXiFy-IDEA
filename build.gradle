@@ -16,7 +16,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.52'
+version '0.6.8'
 
 repositories {
     mavenCentral()
@@ -33,6 +33,7 @@ sourceSets {
     // Specify test directories
     test.java.srcDirs += 'test/'
     test.kotlin.srcDirs += 'test/'
+    test.resources.srcDirs += 'test/resources/'
 }
 
 // Java target version
@@ -87,7 +88,7 @@ dependencies {
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.0-M1")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testCompile("org.junit.platform:junit-platform-runner:1.6.0-M1")
+    testCompile("org.junit.platform:junit-platform-runner:1.6.0")
 
     // just in case
     testCompile "org.jetbrains.kotlin:kotlin-test"

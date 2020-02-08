@@ -6,7 +6,6 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.ex.WindowManagerEx
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -14,8 +13,12 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.splitContent
 import java.util.*
@@ -32,12 +35,15 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(element: PsiElement,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
-        // Only make markers when dealing with commands.
-        if (element !is LatexCommands) {
-            return
-        }
 
-        val fullCommand = element.commandToken.text ?: return
+        // Gutters should only be used with leaf elements.
+        // Filter for text nodes and then lookup their LatexCommands parent
+        if (element.firstChild != null || element.parent !is LatexNormalText) return
+
+        // Only make markers when dealing with commands.
+        val command = element.parentOfType(LatexCommands::class) ?: return
+
+        val fullCommand = command.commandToken.text ?: return
 
         // True when it doesn't have a required _file_ argument, but must be handled.
         val ignoreFileArgument = IGNORE_FILE_ARGUMENTS.contains(fullCommand)
@@ -54,7 +60,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             return
         }
 
-        val requiredParams = element.requiredParameters()
+        val requiredParams = command.requiredParameters()
         if (requiredParams.isEmpty()) {
             return
         }
@@ -75,9 +81,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             arguments[0]
         }
 
-
         // Look up target file.
-        val containingFile = element.getContainingFile() ?: return
+        val containingFile = element.containingFile ?: return
 
         val roots = ArrayList<VirtualFile>()
         val rootFile = containingFile.findRootFile()
@@ -85,17 +90,44 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             return
         }
         roots.add(rootFile.containingDirectory.virtualFile)
-        val rootManager = ProjectRootManager.getInstance(element.getProject())
+        val rootManager = ProjectRootManager.getInstance(element.project)
         Collections.addAll(roots, *rootManager.contentSourceRoots)
 
         val psiManager = PsiManager.getInstance(element.project)
 
+        // Get all comands of project.
+        val allCommands = element.containingFile.commandsInFileSet()
+
+        val graphPaths: ArrayList<String> = ArrayList()
+
+        // Check if a graphicspath is defined
+        val pathCommands = allCommands.filter { it.name == "\\graphicspath" }
+        // Is a graphicspath defined?
+        if (pathCommands.isNotEmpty()) {
+            // Check if current command is a includegraphics
+            if (fullCommand == "\\includegraphics") {
+                val args = pathCommands[0].parameterList.filter { it.requiredParam != null }
+                val subArgs = args[0].childrenOfType(LatexNormalText::class)
+                subArgs.forEach { graphPaths.add(it.text) }
+            }
+        }
+
         val files: List<PsiFile> = fileNames
                 .map { fileName ->
                     for (root in roots) {
-                        val foundFile = root.findFile(fileName, argument.supportedExtensions)
-                        if (foundFile != null) {
-                            return@map psiManager.findFile(foundFile)
+                        // Iterate through defined Graphicpaths
+                        graphPaths.forEach {
+                            root.findFile(it + fileName, argument.supportedExtensions)?.apply {
+                                return@map psiManager.findFile(this)
+                            }
+                            // Find also files defined by absolute path
+                            root.fileSystem.findFileByPath(it + fileName)?.apply {
+                                return@map psiManager.findFile(this)
+                            }
+                        }
+                        // Find files in root folder
+                        root.findFile(fileName, argument.supportedExtensions)?.apply {
+                            return@map psiManager.findFile(this)
                         }
                     }
                     null
@@ -104,8 +136,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .toList()
 
         // Build gutter icon.
-        val maxSize = WindowManagerEx.getInstanceEx().getFrame(element.getProject())?.size?.width
-                ?: return
 
         // Get the icon from the file extension when applicable and there exists an icon for this extension,
         // otherwise get the default icon for this argument.
@@ -123,7 +153,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 .setTargets(files)
                 .setPopupTitle("Navigate to Referenced File")
                 .setTooltipText("Go to referenced file")
-                .setCellRenderer(GotoFileCellRenderer(maxSize))
+                .setCellRenderer(GotoFileCellRenderer(0))
 
         result.add(builder.createLineMarkerInfo(element))
     }

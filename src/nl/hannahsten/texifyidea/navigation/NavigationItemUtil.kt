@@ -27,7 +27,7 @@ object NavigationItemUtil {
                 }
                 return GoToSymbolProvider.BaseNavigationItem(psiElement,
                         text,
-                        if (psiElement.name in Magic.Command.labels ||
+                        if (psiElement.name in Magic.Command.labelDefinition ||
                                 TexifySettings.getInstance().labelCommands.containsKey(psiElement.name)) {
                             TexifyIcons.DOT_LABEL
                         }

@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.psi
 
+import com.intellij.openapi.paths.WebReference
 import com.intellij.psi.PsiReference
+import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
@@ -18,3 +20,8 @@ fun LatexCommands.userDefinedCommandReferences(): List<PsiReference> {
     }
     return emptyList()
 }
+
+fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
+        LatexPsiImplUtil.extractSubParameterRanges(firstParam)
+                .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
+                .toArray(emptyArray())

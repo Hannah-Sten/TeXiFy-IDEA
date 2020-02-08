@@ -15,7 +15,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
     init {
         // Fetch parameter amount.
-        val optional = newCommand.optionalParameters
+        val optional = newCommand.optionalParameters.keys.toList()
         var params = -1
         if (optional.isNotEmpty()) {
             try {

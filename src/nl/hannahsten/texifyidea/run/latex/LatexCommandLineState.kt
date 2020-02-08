@@ -85,8 +85,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             if (isMakeindexNeeded) {
                 // Some packages do handle makeindex themselves
                 // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
-                val usesAuxDir = runConfig.hasAuxiliaryDirectories || runConfig.hasOutputDirectories
-                if (!includedPackages.contains("imakeidx") || usesAuxDir) {
+                if (!includedPackages.contains("imakeidx") || runConfig.usesAuxilOrOutDirectory()) {
                     handler.addProcessListener(RunMakeindexListener(runConfig, environment))
                 }
             }
