@@ -149,31 +149,38 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     }
 
     private fun findGeneralFile(containingDir: VirtualFile, file: PsiFile, validExtenions: Set<String>, fileName: String): Boolean {
-        // check if the given name is reachable from the given folder
-        var relative = containingDir.findFile(fileName, validExtenions)
-
-        // If not, check if it is reachable from any content root which will be included when using MiKTeX
-        if (LatexDistribution.isMiktex) {
-            for (moduleRoot in ProjectRootManager.getInstance(file.project).contentSourceRoots) {
-                if (relative != null) {
-                    break
-                }
-                relative = moduleRoot.findFile(fileName, validExtenions)
-            }
+        val jfile = File(fileName)
+        if (jfile.isAbsolute) {
+            if (jfile.exists()) return true
         }
+        else {
+            // check if the given name is reachable from the given folder
+            var relative = containingDir.findFile(fileName, validExtenions)
 
-        // If file was found continue with next file
-        return (relative != null)
+            // If not, check if it is reachable from any content root which will be included when using MiKTeX
+            if (LatexDistribution.isMiktex) {
+                for (moduleRoot in ProjectRootManager.getInstance(file.project).contentSourceRoots) {
+                    if (relative != null) {
+                        break
+                    }
+                    relative = moduleRoot.findFile(fileName, validExtenions)
+                }
+            }
+
+            // If file was found continue with next file
+            return (relative != null)
+        }
+        return false
     }
 
     private fun findGraphicsFile(containingDir: VirtualFile, searchPaths: ArrayList<String>, fileName: String): Boolean {
-        searchPaths.forEach {
-            val file = File(it + fileName)
-            if (file.isAbsolute) {
-                // If file was found continue with next file
-                if (file.exists()) return true
-            }
-            else {
+        val file = File(fileName)
+        if (file.isAbsolute) {
+            // If file was found continue with next file
+            if (file.exists()) return true
+        }
+        else {
+            searchPaths.forEach {
                 // check if the given name is reachable from the given folder
                 if (containingDir.findFileByRelativePath(it + fileName) != null) return true
             }
