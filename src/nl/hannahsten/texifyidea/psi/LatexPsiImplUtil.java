@@ -49,8 +49,7 @@ public class LatexPsiImplUtil {
         }
 
         if (URL_COMMANDS.contains(element.getName()) && firstParam != null) {
-            List<PsiReference> references = extractUrlReferences(element, firstParam);
-            return references.toArray(new PsiReference[references.size()]);
+            return LatexPsiImplUtilKtKt.extractUrlReferences(element, firstParam);
         }
 
         List<PsiReference> userDefinedReferences = LatexPsiImplUtilKtKt.userDefinedCommandReferences(element);
@@ -88,7 +87,7 @@ public class LatexPsiImplUtil {
     }
 
     @NotNull
-    private static List<PsiReference> extractUrlReferences(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
+    public static List<PsiReference> extractUrlReferences(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
         List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
 
         List<PsiReference> references = new ArrayList<>();
@@ -108,7 +107,7 @@ public class LatexPsiImplUtil {
     }
 
     @NotNull
-    private static List<TextRange> extractSubParameterRanges(LatexRequiredParam param) {
+    public static List<TextRange> extractSubParameterRanges(LatexRequiredParam param) {
         return splitToRanges(stripGroup(param.getText()), Magic.Pattern.parameterSplit).stream()
                 .map(r -> r.shiftRight(1)).collect(Collectors.toList());
     }
