@@ -14,10 +14,13 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.Kindness
+import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import java.io.File
 import java.util.*
 import java.util.regex.Pattern
 
@@ -54,14 +57,24 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
                 .toSet()
                 .forEach { addByDirectory(it, autocompleteText, result) }
 
-        // Add all included graphicspaths.
-        val graphicsPaths = parameters.originalFile.commandsInFileSet().filter { it.commandToken.text == "\\graphicspath" }
-        graphicsPaths.asSequence()
-                .mapNotNull { it.requiredParameter(0) }
-                .mapNotNull { it.println(); baseDirectory.findFileByRelativePath(it) }
-                .filter { it.isDirectory && it != baseDirectory }
-                .toSet()
-                .forEach { addByDirectory(it, autocompleteText, result) }
+        // Add last included graphicspaths.
+        val graphicsPath = parameters.originalFile.commandsInFileSet().filter { it.commandToken.text == "\\graphicspath" }
+        if (graphicsPath.isNotEmpty()) {
+            graphicsPath.last().parameterList.first { firstParam -> firstParam.requiredParam != null }
+                    .childrenOfType(LatexNormalText::class).forEach { path ->
+                        // Check if graphicspath is an absolute or relative path
+                        if (File(path.text).isAbsolute) {
+                            baseDirectory.fileSystem.findFileByPath(path.text)?.apply {
+                                addByDirectory(this, autocompleteText, result)
+                            }
+                        }
+                        else {
+                            baseDirectory.findFileByRelativePath(path.text)?.apply {
+                                addByDirectory(this, autocompleteText, result)
+                            }
+                        }
+                    }
+        }
     }
 
     private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String, result: CompletionResultSet) {
@@ -95,7 +108,7 @@ class LatexFileProvider : CompletionProvider<CompletionParameters>() {
         for (directory in directories) {
             val directoryName = directory.presentableName
             result.addElement(
-                    LookupElementBuilder.create(noBack(autocompleteText) + directory.name)
+                    LookupElementBuilder.create(noBack(autocompleteText) + directory.name + "/")
                             .withPresentableText(directoryName)
                             .withIcon(PlatformIcons.PACKAGE_ICON)
             )

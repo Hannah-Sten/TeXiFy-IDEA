@@ -630,7 +630,11 @@
                          groupName="LaTeX" displayName="Figure not referenced"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerbatimInspection"
-                         groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser" shortName="LatexUseOfVerbatimEnvironment"
+                         groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser"
+                         shortName="LatexUseOfVerbatimEnvironment"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
+                         groupName="LaTeX" displayName="Multiple definition of graphicspath"
                          enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
