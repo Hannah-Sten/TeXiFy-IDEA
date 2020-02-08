@@ -44,7 +44,7 @@ fun getTagContent(element: BibtexEntry, tagName: String): String {
             val text = it.content?.evaluate() ?: return ""
 
             // Deal with braced strings.
-            return if (text[0] == '{' && text[-1] == '}') {
+            return if (text.first() == '{' && text.last() == '}') {
                 text.substring(1, text.length - 1)
             }
             else text
