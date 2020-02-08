@@ -1,5 +1,9 @@
 package nl.hannahsten.texifyidea.psi;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.paths.WebReference;
+import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -25,6 +29,7 @@ public class LatexPsiImplUtil {
     static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
     static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
     static final Set<String> DEFINITION_COMMANDS = Magic.Command.commandDefinitions;
+    static final Set<String> URL_COMMANDS = Magic.Command.urls;
     static final Pattern OPTIONAL_SPLIT = Pattern.compile(",\\s*");
 
     /**
@@ -47,6 +52,10 @@ public class LatexPsiImplUtil {
             return references.toArray(new PsiReference[references.size()]);
         }
 
+        if (URL_COMMANDS.contains(element.getName()) && firstParam != null) {
+            return LatexPsiImplUtilKtKt.extractUrlReferences(element, firstParam);
+        }
+
         // Else, we assume the command itself is important instead of its parameters,
         // and the user is interested in the location of the command definition
         CommandDefinitionReference reference = new CommandDefinitionReference(element);
@@ -57,6 +66,41 @@ public class LatexPsiImplUtil {
         else {
             return new CommandDefinitionReference[]{reference};
         }
+    }
+
+    @NotNull
+    private static List<PsiReference> extractIncludes(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
+        List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
+
+        List<PsiReference> references = new ArrayList<>();
+        for (TextRange range : subParamRanges) {
+            references.add(new InputFileReference(
+                    element, range.shiftRight(firstParam.getTextOffset() - element.getTextOffset())
+            ));
+        }
+        else {
+            return new CommandDefinitionReference[]{reference};
+        }
+    }
+
+    @NotNull
+    public static List<PsiReference> extractUrlReferences(@NotNull LatexCommands element, LatexRequiredParam firstParam) {
+        List<TextRange> subParamRanges = extractSubParameterRanges(firstParam);
+
+        List<PsiReference> references = new ArrayList<>();
+        for (TextRange range : subParamRanges) {
+            references.add(new WebReference(
+                    element, range.shiftRight(firstParam.getTextOffset() - element.getTextOffset())
+            ));
+        }
+        return references;
+    }
+
+    private static LatexRequiredParam readFirstParam(@NotNull LatexCommands element) {
+        return ApplicationManager.getApplication().runReadAction((Computable<LatexRequiredParam>) () -> {
+            List<LatexRequiredParam> params = PsiCommandsKt.requiredParameters(element);
+            return params.isEmpty() ? null : params.get(0);
+        });
     }
 
     /**

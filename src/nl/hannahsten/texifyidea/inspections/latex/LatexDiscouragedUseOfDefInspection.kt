@@ -49,8 +49,6 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
                         NewcommandFix(),
                         NewcommandFix("\\renewcommand")
                 ))
-
-                // TODO: Determine new/renew based on context.
             }
         }
 
