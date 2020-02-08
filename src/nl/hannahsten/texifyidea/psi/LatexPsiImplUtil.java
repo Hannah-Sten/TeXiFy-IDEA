@@ -195,6 +195,10 @@ public class LatexPsiImplUtil {
         return LatexNormalTextUtilKt.getReferences(element);
     }
 
+    public static PsiReference getReference(@NotNull LatexNormalText element) {
+        return LatexNormalTextUtilKt.getReference(element);
+    }
+
     public static PsiElement getNameIdentifier(@NotNull LatexNormalText element) {
         return LatexNormalTextUtilKt.getNameIdentifier(element);
     }

@@ -7,6 +7,18 @@ fun getReferences(element: LatexNormalText): Array<PsiReference> {
     return emptyArray() // todo
 }
 
+/**
+ * If [getReferences] returns one reference return that one, null otherwise.
+ */
+fun getReference(element: LatexNormalText): PsiReference? {
+    val references = getReferences(element)
+    return if (references.size != 1) {
+        null
+    } else {
+        references[0]
+    }
+}
+
 fun getNameIdentifier(element: LatexNormalText): PsiElement {
     return element
 }
