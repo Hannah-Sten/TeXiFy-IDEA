@@ -13,6 +13,7 @@
 * Surround text with $..$ or [..] using a shortcut or by typing $ or [. (#1207)
 * Surround text with quotes depending on your Smart quotes setting. (#1207)
 * Add inspection which checks that floating environments have a label. (#1216)
+* Make links in \url and \href commands clickable. (#1238)
 * Remove second $ of an empty inline math environment when deleting the first one. (#1227)
 * Use Ctrl+Enter to split lines in an itemize. (#1228)
 * Disable the formatter on files that only contain a verbatim-like environment. (#1225)
