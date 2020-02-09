@@ -28,7 +28,8 @@ import java.util.regex.Pattern
 abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>() {
     private var parameters: CompletionParameters? = null
     private var resultSet: CompletionResultSet? = null
-    private var validExtensions : Set<String>? = null
+    private var validExtensions: Set<String>? = null
+    private var absolutePathSupport = true
 
     companion object {
         private val TRIM_SLASH = Pattern.compile("/[^/]*$")
@@ -46,6 +47,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         val parentCommand = context.get("type")
         if (parentCommand is RequiredFileArgument) {
             validExtensions = parentCommand.supportedExtensions
+            absolutePathSupport = parentCommand.isAbsolutePathSupported
         }
 
         selectScanRoots(parameters.originalFile).forEach {
@@ -77,9 +79,11 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String) {
         // Check if path is relative or absolute
         if (File(autoCompleteText).isAbsolute) {
-            // Split text in path and completion text
-            val pathOffset = trimAutocompleteText(autoCompleteText)
-            addAbsolutePathCompletion(pathOffset)
+            if (absolutePathSupport) {
+                // Split text in path and completion text
+                val pathOffset = trimAutocompleteText(autoCompleteText)
+                addAbsolutePathCompletion(pathOffset)
+            }
         }
         else {
             val pathOffset = trimAutocompleteText(autoCompleteText)
@@ -157,8 +161,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add file to autocompletion dialog
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
-        if(validExtensions != null) {
-            if(validExtensions!!.contains(foundFile.extension).not()) return
+        if (validExtensions != null) {
+            if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 
         val icon = TexifyIcons.getIconFromExtension(foundFile.extension)
