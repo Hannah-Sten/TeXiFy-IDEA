@@ -10,6 +10,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
@@ -112,7 +113,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         for (fileName in fileNames) {
             // Check if command is a includegraphics - next file if it exists
             if (command.name.equals("\\includegraphics")) {
-                if (findGraphicsFile(containingDirectory, graphPaths, fileName)) continue
+                if (findGraphicsFile(containingDirectory, extensions, graphPaths, fileName)) continue
             }
             else {
                 if (findGeneralFile(containingDirectory, file, extensions, fileName)) continue
@@ -151,7 +152,12 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     private fun findGeneralFile(containingDir: VirtualFile, file: PsiFile, validExtenions: Set<String>, fileName: String): Boolean {
         val jfile = File(fileName)
         if (jfile.isAbsolute) {
-            if (jfile.exists()) return true
+            val fs = LocalFileSystem.getInstance()
+
+            if (fs.findFileByPath(fileName) != null) return true
+            validExtenions.forEach {
+                if (fs.findFileByPath("$fileName.$it") != null) return true
+            }
         }
         else {
             // check if the given name is reachable from the given folder
@@ -173,21 +179,27 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         return false
     }
 
-    private fun findGraphicsFile(containingDir: VirtualFile, searchPaths: ArrayList<String>, fileName: String): Boolean {
+    private fun findGraphicsFile(containingDir: VirtualFile, validExtenions: Set<String>, searchPaths: ArrayList<String>, fileName: String): Boolean {
         val file = File(fileName)
         if (file.isAbsolute) {
+            val fs = LocalFileSystem.getInstance()
+
             // If file was found continue with next file
-            if (file.exists()) return true
+            if (fs.findFileByPath(fileName) != null) return true
+            validExtenions.forEach {
+                if (fs.findFileByPath("$fileName.$it") != null) return true
+            }
         }
         else {
             searchPaths.forEach {
                 // check if the given name is reachable from the given folder
-                if (containingDir.findFileByRelativePath(it + fileName) != null) return true
+                if (containingDir.findFile(it + fileName, validExtenions) != null) return true
             }
-        }
 
-        // check also the root folder
-        return (containingDir.findFileByRelativePath(fileName) != null)
+            // check also the root folder
+            return (containingDir.findFile(fileName, validExtenions) != null)
+        }
+        return false
     }
 
     /**
