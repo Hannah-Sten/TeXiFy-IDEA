@@ -25,7 +25,7 @@ public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements Latex
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof LatexVisitor) accept((LatexVisitor) visitor);
+    if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);
   }
 

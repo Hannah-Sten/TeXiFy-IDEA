@@ -22,11 +22,15 @@ public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiEleme
   @NotNull
   PsiReference[] getReferences();
 
+  PsiReference getReference();
+
   LinkedHashMap<String, String> getOptionalParameters();
 
   List<String> getRequiredParameters();
 
   boolean hasLabel();
+
+  int getTextOffset();
 
   String getName();
 

@@ -47,7 +47,7 @@ class RunMakeindexListener(
             if (!copyIndexFile(indexFilename)) return
 
             // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
-            if (latexRunConfig.bibRunConfig == null) {
+            if (latexRunConfig.bibRunConfigs.isEmpty()) {
                 // LaTeX twice
                 latexRunConfig.isFirstRunConfig = false
                 val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)

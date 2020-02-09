@@ -205,7 +205,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
-            // Display a dialog to ask for the location and name of the new file. // todo may be bib file
+            // Display a dialog to ask for the location and name of the new file.
             val newFilePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, filePath.formatAsFilePath())
                     .newFileFullPath ?: return
 

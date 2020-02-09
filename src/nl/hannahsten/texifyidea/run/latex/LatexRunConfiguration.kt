@@ -22,9 +22,10 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.util.LatexDistribution
-import nl.hannahsten.texifyidea.util.hasBibliography
-import nl.hannahsten.texifyidea.util.usesBiber
+import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.findRelativeFile
+import nl.hannahsten.texifyidea.util.files.referencedFiles
 import org.jdom.Element
 
 /**
@@ -91,12 +92,16 @@ class LatexRunConfiguration constructor(project: Project,
     /** Whether the pdf viewer is allowed to claim focus after compilation. */
     var allowFocusChange = true
 
-    private var bibRunConfigId = ""
-    var bibRunConfig: RunnerAndConfigurationSettings?
-        get() = RunManagerImpl.getInstanceImpl(project)
-                .getConfigurationById(bibRunConfigId)
-        set(bibRunConfig) {
-            this.bibRunConfigId = bibRunConfig?.uniqueID ?: ""
+    private var bibRunConfigIds = mutableSetOf<String>()
+    var bibRunConfigs: Set<RunnerAndConfigurationSettings?>
+        get() = bibRunConfigIds.map {
+            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
+        }.toSet()
+        set(bibRunConfigs) {
+            bibRunConfigIds = mutableSetOf()
+            bibRunConfigs.forEach {
+                bibRunConfigIds.add(it?.uniqueID ?: "")
+            }
         }
 
     private var makeindexRunConfigId = ""
@@ -230,9 +235,10 @@ class LatexRunConfiguration constructor(project: Project,
         val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
         this.hasBeenRun = hasBeenRunString?.toBoolean() ?: false
 
-        // Read bibliography run configuration
+        // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
-        this.bibRunConfigId = bibRunConfigElt ?: ""
+        // Assume the list is of the form [id 1,id 2]
+        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
 
         // Read makeindex run configuration
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
@@ -312,13 +318,35 @@ class LatexRunConfiguration constructor(project: Project,
 
         // Write bibliography run configuration
         val bibRunConfigElt = Element(BIB_RUN_CONFIG)
-        bibRunConfigElt.text = bibRunConfigId
+        bibRunConfigElt.text = bibRunConfigIds.toString()
         parent.addContent(bibRunConfigElt)
 
         // Write makeindex run configuration
         val makeindexRunConfigElt = Element(MAKEINDEX_RUN_CONFIG)
         makeindexRunConfigElt.text = makeindexRunConfigId
         parent.addContent(makeindexRunConfigElt)
+    }
+
+    /**
+     * Create a new bib run config and add it to the set.
+     */
+    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?) {
+        val runManager = RunManagerImpl.getInstanceImpl(project)
+
+        val bibSettings = runManager.createConfiguration(
+                "",
+                LatexConfigurationFactory(BibtexRunConfigurationType())
+        )
+
+        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
+
+        bibtexRunConfiguration.compiler = defaultCompiler
+        bibtexRunConfiguration.mainFile = mainFile
+        bibtexRunConfiguration.setSuggestedName()
+
+        runManager.addConfiguration(bibSettings)
+
+        bibRunConfigs = bibRunConfigs + setOf(bibSettings)
     }
 
     /**
@@ -340,22 +368,37 @@ class LatexRunConfiguration constructor(project: Project,
             }
         }
 
-        val runManager = RunManagerImpl.getInstanceImpl(project)
 
-        val bibSettings = runManager.createConfiguration(
-                "",
-                LatexConfigurationFactory(BibtexRunConfigurationType())
-        )
+        // When chapterbib is used, every chapter has its own bibliography and needs its own run config
+        val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
 
-        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
 
-        bibtexRunConfiguration.compiler = defaultCompiler
-        bibtexRunConfiguration.mainFile = mainFile
-        bibtexRunConfiguration.setSuggestedName()
 
-        runManager.addConfiguration(bibSettings)
+        if (!usesChapterbib) {
+            addBibRunConfig(defaultCompiler, mainFile)
+        }
+        else if (psiFile != null) {
+            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == "\\bibliography" }
 
-        bibRunConfig = bibSettings
+            // We know that there can only be one bibliography per top-level \include,
+            // however not all of them may contain a bibliography, and the ones
+            // that do have one can have it in any included file
+            psiFile!!.allCommands()
+                .filter { it.name == "\\include" }
+                .flatMap { command -> command.requiredParameters }
+                .forEach {filename ->
+                    // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
+                    val chapterMainFile = psiFile!!.findRelativeFile(filename) ?: return@forEach
+
+                    val chapterFiles = chapterMainFile.referencedFiles().toMutableSet().apply { add(chapterMainFile) }
+
+                    val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
+
+                    if (chapterHasBibliography) {
+                        addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile)
+                    }
+                }
+        }
     }
 
     /**

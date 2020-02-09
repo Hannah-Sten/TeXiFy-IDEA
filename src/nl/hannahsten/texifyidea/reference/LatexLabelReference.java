@@ -15,12 +15,12 @@ import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
+ * A reference to a label.
+ * When resolved, it points to the label declaration.
+ *
  * @author Hannah Schellekens, Sten Wessel
  */
 public class LatexLabelReference extends PsiReferenceBase<LatexCommands> implements PsiPolyVariantReference {
@@ -34,6 +34,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         setRangeInElement(range);
     }
 
+    // Get all label definitions
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean b) {
@@ -42,11 +43,17 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         return labels.stream().map(PsiElementResolveResult::new).toArray(ResolveResult[]::new);
     }
 
+    // Get the label definition if there is exactly one, none otherwise
     @Nullable
     @Override
     public PsiElement resolve() {
         ResolveResult[] resolveResults = multiResolve(false);
         return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
+    }
+
+    @Override
+    public boolean isReferenceTo(@NotNull PsiElement element) {
+        return Arrays.stream(multiResolve(false)).anyMatch(it -> it.getElement() == element);
     }
 
     @NotNull

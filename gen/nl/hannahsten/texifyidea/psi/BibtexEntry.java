@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.StubBasedPsiElement;
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import org.jetbrains.annotations.NonNls;
@@ -31,6 +32,8 @@ public interface BibtexEntry extends PsiNameIdentifierOwner, StubBasedPsiElement
   @NotNull
   BibtexType getType();
 
+  PsiReference[] getReferences();
+
   String getTitle();
 
   List<String> getAuthors();
@@ -38,6 +41,8 @@ public interface BibtexEntry extends PsiNameIdentifierOwner, StubBasedPsiElement
   String getYear();
 
   String getIdentifier();
+
+  PsiElement getNameIdentifier();
 
   String getAbstract();
 

@@ -417,6 +417,7 @@
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
+        <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>

@@ -24,11 +24,17 @@ public class BibtexPsiImplUtil {
         return new BibtexStringReference(element);
     }
 
+    public static PsiReference[] getReferences(@NotNull BibtexEntry element) {
+        return BibtexEntryUtilKt.getReferences(element);
+    }
+
     public static PsiElement setName(@NotNull BibtexEntry element, @NotNull @NonNls String name) {
         return element;
     }
 
     public static String getName(@NotNull BibtexEntry element) {
+        BibtexEntryStub stub = element.getStub();
+        if (stub != null) return stub.getName();
         return element.getIdentifier();
     }
 
@@ -60,31 +66,15 @@ public class BibtexPsiImplUtil {
         return identifier;
     }
 
+    public static PsiElement getNameIdentifier(@NotNull BibtexEntry element) {
+        return element;
+    }
+
     public static String getAbstract(@NotNull BibtexEntry element) {
         return element.getTagContent("abstract");
     }
 
     public static String getTagContent(@NotNull BibtexEntry element, String tagName) {
-        BibtexEntryContent entryContent = element.getEntryContent();
-        if (entryContent == null) return "";
-
-        for (BibtexTag bibtexTag : entryContent.getTagList()) {
-            BibtexContent content = bibtexTag.getContent();
-            if (content == null) {
-                continue;
-            }
-            if (tagName.equalsIgnoreCase(bibtexTag.getKey().getText())) {
-                String text = BibtexKt.evaluate(content);
-
-                // sanitise double braced strings
-                if (text.charAt(0) == '{' && text.charAt(text.length()-1) == '}') {
-                    return text.substring(1, text.length() - 1);
-                }
-
-                return text;
-            }
-        }
-
-        return "";
+        return BibtexEntryUtilKt.getTagContent(element, tagName);
     }
 }
