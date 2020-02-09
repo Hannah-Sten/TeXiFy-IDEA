@@ -170,6 +170,18 @@ test {
     }
 }
 
+// Test coverage reporting
+jacocoTestReport {
+    // Enable xml for codecov
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        xml.setDestination(file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml" as Object))
+    }
+
+    sourceSets project.sourceSets.main
+}
+
 // Allow publishing to the Jetbrains repo via a Gradle task
 // This requires to put a Jetbrains Hub token, see http://www.jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html for more details
 // Generate a Hub token at https://hub.jetbrains.com/users/me?tab=authentification
