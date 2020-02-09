@@ -13,6 +13,9 @@ plugins {
     // Used to debug in a different IDE
     id 'maven'
     id 'de.undercouch.download' version '4.0.2'
+
+    // Test coverage
+    id 'jacoco'
 }
 
 group 'nl.hannahsten'
