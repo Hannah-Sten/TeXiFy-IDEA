@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.7</version>
+    <version>0.6.8</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
@@ -82,10 +82,10 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.7</strong></p>
+        <p><strong>Beta 0.6.8</strong></p>
         <p>
-            We welcome you to yet another instance of our bimestrial updates containing a plethora of changes and bug fixes.
-            Get excited about Okular support, a table creation wizard, makeindex support and much more!
+            Welcome to TeXiFy IDEA 0.6.8, another update with many exciting features and helpful bug fixes.
+            This update adds code style settings, support for the Grazie grammar and spellchecking plugin, support for Skim on MacOS and much more!
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -96,44 +96,58 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li>Table creation wizard. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/907">#907</a>)</li>
-            <li>Added support for multiple citations in one command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/921">#921</a>)</li>
-            <li>Project-specific setting to change compiler compatibility. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/891">#891</a>)</li>
-            <li>Added an option to the run config to always compile twice. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/908">#908</a>)</li>
-            <li>Added support for automatically running makeindex in auxiliary directories. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/924">#924</a>)</li>
-            <li>Added support for Okular. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1064">#1064</a>)</li>
-            <li>Added inspection that checks whether the \addbibresource has a file extension. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/956">#956</a>)</li>
-            <li>Added support for including packages in package or documentclass options. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/911">#911</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/949">#949</a>)</li>
-            <li>Added menu entry to clear all generated files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/971">#971</a>)</li>
-            <li>Added continuous preview of math and TikZ pictures. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/923">#923</a>)</li>
-            <li>Specify custom commands that define a label. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/815">#815</a>)</li>
+            <li> Add support for the Grazie grammar and spellchecking plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1120">#1120</a>)</li>
+            <li> BibTeX autocompletion now also gives suggestions when typing author or title. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1152">#1152</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1190">#1190</a>)</li>
+            <li> Add support for Skim on MacOS including forward and backward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1163">#1163</a>)</li>
+            <li> Add folding for bibtex entries. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1167">#1167</a>)</li>
+            <li> Add support for texdoc on TeX Live. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1125">#1125</a>)</li>
+            <li> Add support for automatic compilation. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1140">#1140</a>)</li>
+            <li> Add support for run configuration templates. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1174">#1174</a>)</li>
+            <li> Add option to disable auto package insert. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1131">#1131</a>)</li>
+            <li> Add support for compression prevention from the cleveref package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1134">#1134</a>)</li>
+            <li> Add subfiles support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1131">#1131</a>)</li>
+            <li> Add code style settings for LaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1147">#1147</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1169">#1169</a>)</li>
+            <li> Add code style settings for BibTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1169">#1169</a>)</li>
+            <li> The LaTeX formatter now also indents inside groups. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1147">#1147</a>)</li>
+            <li> Add settings to specify the number of blank lines before sectioning commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1155">#1155</a>)</li>
+            <li> Add the code generation code style settings (as found for other languages) for LaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1164">#1164</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li>Performance improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/932">#932</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/944">#944</a>)</li>
-            <li>Inspection for normal space after abbreviation will not be triggered in comments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/983">#983</a>)</li>
-            <li>The 'file not found' inspection quickfix now also uses the file creation dialog. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1004">#1004</a>)</li>
-            <li>Internal code improvements.</li>
+            <li> Improve the math environment switcher. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1080">#1080</a>)</li>
+            <li> Remove obsolete soft wraps setting which is built-in in IDEA now. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1084">#1084</a>)</li>
+            <li> Improve exception handling for forward search on Linux. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1087">#1087</a>)</li>
+            <li> Disable unicode quickfixes for TeX Live versions 2018 or later as these are included by default. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1088">#1088</a>)</li>
+            <li> First stop Sumatra before starting it with new inverse search settings. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1128">#1128</a>)</li>
+            <li> Skip unicode check also for XeLaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1182">#1182</a>)</li>
+            <li> Internal parser improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1156">#1156</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1162">#1162</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1157">#1157</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1165">#1165</a>)</li>
+            <li> Replace api calls deprecated in IDEA 2020.1. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1185">#1185</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li>Renamed labels will now be renamed in all files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/950">#950</a>)</li>
-            <li>Fixed not being able to disable bibtex. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/945">#945</a>)</li>
-            <li>Fixed package dependencies being inserted in the wrong file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/942">#942</a>)</li>
-            <li>Support compilation of non-project files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/987">#987</a>)</li>
-            <li>Fixed crash when providing optional parameters to a \ref command as comma separated list. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/980">#980</a>)</li>
-            <li>Fixed missing autocompletion when a file name is equal to a folder name. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/937">#937</a>)</li>
-            <li>Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/909">#909</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/948">#948</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/963">#963</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1055">#1055</a>)</li>
+            <li> Include commands like \bibliography and \input can now recognize multiple files as argument. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/782">#782</a>)</li>
+            <li> Add forward slash as valid bibtex identifier. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1086">#1086</a>)</li>
+            <li> Allow number-only bibtex identifiers. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1126">#1126</a>)</li>
+            <li> Show correct gutter icons for included files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1137">#1137</a>)</li>
+            <li> Include files included by class file in fileset. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1123">#1123</a>)</li>
+            <li> Fix parsing of linenumber for Evince backward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1181">#1181</a>)</li>
+            <li> Add custom command names to the structure view when braces are left out. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1173">#1173</a>)</li>
+            <li> Only check for normal spaces after abbreviations when they end with a full stop. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1129">#1129</a>)</li>
+            <li> Use actual instead of incorrectly indexed command name for missing label inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1136">#1136</a>)</li>
+            <li> Command definitions using \newif need not be closed with \fi. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1187">#1187</a>)</li>
+            <li> Register the analyze menu action group using a service instead of a deprecated application component. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1144">#1144</a>)</li>
+            <li> Fix BibTeX formatter inserting spaces in braced words. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1168">#1168</a>)</li>
+            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1085">#1085</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1178">#1178</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1184">#1184</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1185">#1185</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1189">#1189</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1199">#1199</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1210">#1210</a>)</li>
         </ul>
         <br>
         <p>
-            Thanks to <a href="https://github.com/pschuprikov">@pschuprikov</a>, <a href="https://github.com/Qwlouse">@Qwlouse</a>, <a href="https://github.com/ice1000">@ice1000</a> and <a href="https://github.com/Stainzl">@Stainzl</a> for contributing to this release.
+            Thanks to <a href="https://github.com/TanVD">@TanVD</a>, <a href="https://github.com/fberlakovich">@fberlakovich</a> and <a href="https://github.com/stsundermann">@stsundermann</a> for contributing to this release.
         </p>
         <br>
         <p>
@@ -403,6 +417,7 @@
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
+        <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
@@ -451,6 +466,7 @@
 
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
@@ -508,6 +524,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingLabelInspection"
                          groupName="LaTeX" displayName="Missing labels"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelBeforeCaptionInspection"
+                         groupName="LaTeX" displayName="Label before caption"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDuplicateLabelInspection"
                          groupName="LaTeX" displayName="Duplicate labels"
@@ -612,7 +631,11 @@
                          groupName="LaTeX" displayName="Figure not referenced"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerbatimInspection"
-                         groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser" shortName="LatexUseOfVerbatimEnvironment"
+                         groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser"
+                         shortName="LatexUseOfVerbatimEnvironment"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
+                         groupName="LaTeX" displayName="Multiple definition of graphicspath"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageCouldNotBeFound"
                          groupName="LaTeX" displayName="Package could not be found"

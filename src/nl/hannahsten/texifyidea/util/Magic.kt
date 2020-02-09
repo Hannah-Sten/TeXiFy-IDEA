@@ -182,13 +182,21 @@ object Magic {
          *
          * environment name `=>` label prefix without colon
          */
+        @JvmField
         val labeled = mapOfVarargs(
                 "figure", "fig",
                 "table", "tab",
                 "equation", "eq",
                 "algorithm", "alg",
-                "lstlisting", "lst"
+                "lstlisting", "lst",
+                "Verbatim", "verb"
         )
+
+        /**
+         * Environments that define their label via an optional parameter
+         */
+        @JvmField
+        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
 
         /**
          * Environments that introduce figures
@@ -279,12 +287,6 @@ object Magic {
         val bibliographyItems = setOf("\\bibitem")
 
         /**
-         * All label definition commands.
-         */
-        @JvmField
-        val labels = setOf("\\label")
-
-        /**
          * All math operators without a leading slash.
          */
         @JvmField
@@ -345,12 +347,15 @@ object Magic {
         @JvmField
         val redefinitions = hashSetOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
 
+        @JvmField
+        val definitionsAndRedefinitions = definitions + redefinitions
+
         /**
          * All commands that include other files.
          */
         @JvmField
         val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\documentclass", "\\subfile"
+                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\documentclass", "\\subfile", "\\includegraphics"
         )
 
         /**
@@ -456,6 +461,18 @@ object Magic {
                 "\\paragraph" to Color(222, 222, 222),
                 "\\subparagraph" to Color(232, 232, 232)
         )
+
+        /**
+         * All LaTeX commands that contain a url (in their first parameter).
+         */
+        @JvmField
+        val urls = hashSetOf("\\url", "\\href")
+
+        /**
+         * All BibTeX tags that take a url as their parameter.
+         */
+        @JvmField
+        val bibUrls = hashSetOf("url", "biburl")
     }
 
     /**

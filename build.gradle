@@ -13,10 +13,13 @@ plugins {
     // Used to debug in a different IDE
     id 'maven'
     id 'de.undercouch.download' version '4.0.2'
+
+    // Test coverage
+    id 'jacoco'
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.52'
+version '0.6.8'
 
 repositories {
     mavenCentral()
@@ -165,6 +168,18 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
+}
+
+// Test coverage reporting
+jacocoTestReport {
+    // Enable xml for codecov
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        xml.setDestination(file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml" as Object))
+    }
+
+    sourceSets project.sourceSets.main
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task

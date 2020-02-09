@@ -56,8 +56,18 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (!runConfig.hasBeenRun) {
             // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
             // checking for bibliography commands
-            if (runConfig.bibRunConfig == null && !compiler.includesBibtex) {
+            if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
                 runConfig.generateBibRunConfig()
+
+                runConfig.bibRunConfigs.forEach {
+                    val bibSettings = it ?: return@forEach
+
+                    // Pass necessary latex run configurations settings to the bibtex run configuration.
+                    (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
+                        // Check if the aux, out, or src folder should be used as bib working dir.
+                        this.bibWorkingDir = runConfig.getAuxilDirectory()
+                    }
+                }
             }
         }
 
@@ -84,7 +94,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         runConfig.hasBeenRun = true
 
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
-        if (runConfig.bibRunConfig == null && !isMakeindexNeeded) {
+        if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded) {
             if (!runConfig.compileTwice) {
                 runConfig.isLastRunConfig = true
             }
@@ -96,22 +106,22 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
 
-        runConfig.bibRunConfig?.let {
+        runConfig.bibRunConfigs.forEachIndexed { index, bibSettings ->
             if (!runConfig.isFirstRunConfig) {
-                return@let
+                return@forEachIndexed
             }
 
-            // Pass necessary latex run configurations settings to the bibtex run configuration.
-            (it.configuration as? BibtexRunConfiguration)?.apply {
-                this.mainFile = mainFile
-                // Check if the aux, out, or src folder should be used as bib working dir.
-                this.bibWorkingDir = runConfig.getAuxilDirectory()
+            if (bibSettings == null) {
+                return@forEachIndexed
             }
 
-            handler.addProcessListener(RunBibtexListener(it, runConfig, environment))
-
-            // Skip the other handlers
-            return handler
+            // Only run latex after the last one
+            if (index == runConfig.bibRunConfigs.size - 1) {
+                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, true))
+            }
+            else {
+                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, false))
+            }
         }
 
         // Do not schedule to open the pdf viewer when this is not the last run config in the chain
