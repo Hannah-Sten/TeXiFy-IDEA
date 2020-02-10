@@ -32,7 +32,6 @@ object PackageUtils {
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
-     * todo all callers should use other usepackage?
      *
      * @param file
      *          The file to add the usepackage statement to.

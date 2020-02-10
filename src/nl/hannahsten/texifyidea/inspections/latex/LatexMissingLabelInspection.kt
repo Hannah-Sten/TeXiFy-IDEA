@@ -5,6 +5,7 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -46,7 +47,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         val environments = file.environmentsInFile()
         for (environment in environments) {
-            if (!Magic.Environment.labeled.containsKey(environment.environmentName) || environment.environmentName == "lstlisting") {
+            if (!Magic.Environment.labeled.containsKey(environment.environmentName)) {
                 continue
             }
 
@@ -80,7 +81,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
     private fun addEnvironmentDescriptor(environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>,
                                          manager: InspectionManager, isOntheFly: Boolean): Boolean {
-        if (environment.hasLabel()) {
+        if (environment.label != null) {
             return false
         }
 
@@ -96,23 +97,53 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         return true
     }
 
+    abstract class LabelQuickFix : LocalQuickFix {
+        protected fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
+            val labelBase = "$prefix:$base"
+            val allLabels = file.findLabelsInFileSet()
+            return appendCounter(labelBase, allLabels)
+        }
+
+        /**
+         * Keeps adding a counter behind the label until there is no other label with that name.
+         */
+        private fun appendCounter(label: String, allLabels: Set<String>): String {
+            var counter = 2
+            var candidate = label
+
+            while (allLabels.contains(candidate)) {
+                candidate = label + (counter++)
+            }
+
+            return candidate
+        }
+    }
+
     /**
      * @author Hannah Schellekens
      */
-    private class InsertLabelAfterCommandFix : LocalQuickFix {
+    private class InsertLabelAfterCommandFix : LabelQuickFix() {
 
         override fun getFamilyName() = "Insert label"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
 
-            val factory = LatexPsiFactory(project)
-            val labelCommand = factory.createUniqueLabelCommandFor(command) ?: return
+            // Determine label name.
+            val required = command.requiredParameters
+            if (required.isEmpty()) {
+                return
+            }
+
+            val createdLabel = getUniqueLabelName(required[0].formatAsLabel(),
+                    Magic.Command.labeled[command.name!!], command.containingFile)
+
+            val factory = LatexPsiHelper(project)
 
             // Insert label
             // command -> NoMathContent -> Content -> Container containing the command
             val commandContent = command.parent.parent
-            commandContent.parent.addAfter(labelCommand, commandContent)
+            val labelCommand = commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
 
             // Adjust caret offset.
             val editor = command.containingFile.openedEditor() ?: return
@@ -121,32 +152,34 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         }
     }
 
-    private class InsertLabelInEnvironmentFix : LocalQuickFix {
+    private class InsertLabelInEnvironmentFix : LabelQuickFix() {
         override fun getFamilyName() = "Insert label"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEnvironment
-            val factory = LatexPsiFactory(project)
-            val labelCommand = factory.createUniqueLabelCommandFor(command) ?: return
-            if (command.environmentContent == null) {
-                command.addAfter(factory.createEnvironmentContent(), command.beginCommand)
-            }
+            val helper = LatexPsiHelper(project)
+            // Determine label name.
+            val createdLabel = getUniqueLabelName(command.environmentName.formatAsLabel(),
+                    Magic.Environment.labeled[command.environmentName], command.containingFile)
 
-            val environmentContent = command.environmentContent!!
 
-            // in a float environment the label must be inserted after a caption
-            val caption = environmentContent.childrenOfType<LatexCommands>().findLast { c -> c.name == "\\caption" }
-            if (caption != null) {
-                environmentContent.addAfter(labelCommand, caption.parent.parent)
+            val moveCaretAfter: PsiElement;
+            if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
+                val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
+                moveCaretAfter = insertedElements.last()
             }
             else {
-                environmentContent.add(labelCommand)
+                // in a float environment the label must be inserted after a caption
+                val labelCommand = helper.addToContent(command, helper.createLabelCommand(createdLabel),
+                        command.environmentContent?.childrenOfType<LatexCommands>()
+                                ?.findLast { c -> c.name == "\\caption" })
+                moveCaretAfter = labelCommand
             }
 
             // Adjust caret offset
             val openedEditor = command.containingFile.openedEditor() ?: return
             val caretModel = openedEditor.caretModel
-            caretModel.moveToOffset(labelCommand.endOffset())
+            caretModel.moveToOffset(moveCaretAfter.endOffset())
         }
 
     }

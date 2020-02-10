@@ -31,6 +31,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
 
         val labels = file.findLabelsInFileSet()
         val commands = file.commandsInFile()
+
         for (command in commands) {
             if (!Magic.Command.reference.contains(command.name)) {
                 continue

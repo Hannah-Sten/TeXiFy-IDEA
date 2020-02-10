@@ -28,7 +28,13 @@ public class LatexParserDefinition implements ParserDefinition {
 
     public static final IStubFileElementType FILE = new IStubFileElementType(
             Language.findInstance(LatexLanguage.class)
-    );
+
+    ) {
+        @Override
+        public int getStubVersion() {
+            return 5;
+        }
+    };
 
     @NotNull
     @Override

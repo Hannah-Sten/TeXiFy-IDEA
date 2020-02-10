@@ -12,11 +12,8 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.includedFileNames
-import nl.hannahsten.texifyidea.util.replaceString
-import nl.hannahsten.texifyidea.util.requiredParameter
-import nl.hannahsten.texifyidea.util.trimRange
 
 /**
  * @author Sten Wessel
@@ -33,6 +30,12 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Same bibliography is included multiple times"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+
+        // Chapterbib allows multiple bibliographies
+        if (file.includedPackages().any { it == "chapterbib" }) {
+            return emptyList()
+        }
+
         val descriptors = descriptorList()
 
         // Map each bibliography file to all the commands which include it

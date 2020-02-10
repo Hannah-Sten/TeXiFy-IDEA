@@ -7,5 +7,6 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 
 data class LatexEnvironmentStubImpl(val parent: StubElement<*>,
                                     val elementType: IStubElementType<LatexEnvironmentStub, LatexEnvironment>,
-                                    override val environmentName: String) :
+                                    override val environmentName: String,
+                                    override val label: String) :
         StubBase<LatexEnvironment>(parent, elementType), LatexEnvironmentStub

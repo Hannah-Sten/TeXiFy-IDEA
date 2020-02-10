@@ -5,6 +5,8 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.inDirectEnvironment
 
 /**
  *
@@ -18,6 +20,24 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
     val latexCommonSettings = settings.getCommonSettings(LatexLanguage.INSTANCE)
 
     return rules(latexCommonSettings) {
+
+        custom {
+            customRule { parent, _, right ->
+                // Don't insert of remove spaces inside the text in a verbatim environment.
+                if (parent.node?.elementType === NORMAL_TEXT) {
+                    if (parent.node?.psi?.inDirectEnvironment(Magic.Environment.verbatim) == true) {
+                        return@customRule Spacing.getReadOnlySpacing()
+                    }
+                }
+                // Don't insert or remove spaces in front of the first word in a verbatim environment.
+                else if (right.node?.elementType === ENVIRONMENT_CONTENT) {
+                    if (right.node?.psi?.inDirectEnvironment(Magic.Environment.verbatim) == true) {
+                        return@customRule Spacing.getReadOnlySpacing()
+                    }
+                }
+                return@customRule null
+            }
+        }
 
         simple {
             between(NORMAL_TEXT_WORD, NORMAL_TEXT_WORD).spaces(1)
@@ -40,7 +60,9 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             }
 
             inPosition(right = COMMENT_TOKEN).spacing(commentSpacing(0))
+        }
 
+        custom {
             // Make sure the number of new lines before a sectioning command is
             // as much as the user specified in the settings.
             // BUG? Does not work for a command that immediately follows
