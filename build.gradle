@@ -19,7 +19,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.6.8'
+version '0.7-alpha.56'
 
 repositories {
     mavenCentral()
@@ -147,7 +147,8 @@ intellij {
         alternativeIdePath ".gradle/ide/pycharm-${pycharmVersion}"
     }
 
-    plugins = ['tanvd.grazi:201.4515.32', 'java']
+    // https://plugins.jetbrains.com/plugin/12175-grazie/versions
+    plugins = ['tanvd.grazi:201.4865.12', 'java']
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
