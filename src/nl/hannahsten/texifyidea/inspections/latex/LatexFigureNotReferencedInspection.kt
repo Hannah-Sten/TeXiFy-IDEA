@@ -8,11 +8,9 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.findLabelingCommandsSequence
-import nl.hannahsten.texifyidea.util.inDirectEnvironment
-import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -39,7 +37,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     }
 
     private fun removeReferencedLabels(file: PsiFile, figureLabels: MutableMap<String?, LatexCommands>) {
-        for (command in file.commandsInFile()) {
+        for (command in file.commandsInFileSet()) {
             if (Magic.Command.labelReference.contains(command.name)) {
                 figureLabels.remove(command.referencedLabelName)
             }
@@ -56,7 +54,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             )
 
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
-            file.findLabelingCommandsSequence()
+            file.findLabelingCommandsInFileAsSequence()
                     .filter(this::isFigureLabel)
                     .associateBy(LatexCommands::labelName)
                     .toMutableMap()
