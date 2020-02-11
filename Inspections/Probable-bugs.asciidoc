@@ -105,7 +105,12 @@ For more information, see link:Automatic-package-importing[Automagically import 
 == Open if-then-else control sequence
 == File not found
 
+If a Latex command takes a path argument TeXiFy checks wether the file or path exists and throws an error if not. 
+
 == Absolute path not allowed
+
+With some special commands absolute paths are not allowed. E.g. \include and \includeonly. 
+A error is thrown if you still enter an absolute path. 
 
 == Inclusion loops
 == Nested includes
