@@ -18,6 +18,7 @@
     implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
+    implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
 
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
     implements("normal_text")="com.intellij.psi.PsiNameIdentifierOwner"
@@ -58,7 +59,7 @@ environment ::= begin_command environment_content? end_command {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
-    methods=[getEnvironmentName getLabel]
+    methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
  }
 
 environment_content ::= <<injection_env_content raw_text>> | content+
