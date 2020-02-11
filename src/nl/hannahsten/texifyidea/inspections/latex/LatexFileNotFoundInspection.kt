@@ -17,6 +17,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -131,10 +132,14 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             }
 
             // Find extension
-            val extension = if (command.commandToken.text in includeOnlyExtensions.keys) {
-                includeOnlyExtensions[command.commandToken.text]?.toList()?.first() ?: "tex"
+            var extension = fileName.getFileExtention()
+            if (extension == "") {
+                val name = command.commandToken.text
+                LatexRegularCommand[name.substring(1)]?.apply {
+                    val args = this.getArgumentsOf(RequiredFileArgument::class)
+                    if (args.isNotEmpty()) extension = args.first().defaultExtension
+                }
             }
-            else fileName.getFileExtention()
 
             val parameterOffset = parameter.text.trimRange(1, 1).indexOf(fileName)
 
