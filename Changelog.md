@@ -9,6 +9,7 @@
 * Add biblatex commands to the autocomplete. (#1195)
 * Add support for labels defined with Verbatim or lstlisting environments. (#1232)
 * Add support for \graphicspath from the graphicx package. (#1224)
+* Add support for using \input with absolute paths. (#1244)
 * Add a warning to update Evince when the version is too old for backwards/forward search. (#1226)
 * Add more user configurable live templates. (#1203)
 * Surround text with $..$ or [..] using a shortcut or by typing $ or [. (#1207)
