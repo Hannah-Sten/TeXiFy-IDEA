@@ -10,12 +10,14 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -26,7 +28,6 @@ import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
-import nl.hannahsten.texifyidea.util.Magic.Command.includeOnlyExtensions
 import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 import java.util.*
@@ -107,12 +108,12 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         val root = file.findRootFile()
 
         // get the virtual file of the root file
-        val containingDirectory = root.containingDirectory.virtualFile
+        val containingDirectory = root.containingDirectory?.virtualFile ?: return
 
         for (fileName in fileNames) {
             // Check if command is a includegraphics - next file if it exists
             if (command.name.equals("\\includegraphics")) {
-                if (findGraphicsFile(containingDirectory, graphPaths, fileName)) continue
+                if (findGraphicsFile(containingDirectory, extensions, graphPaths, fileName)) continue
             }
             else {
                 if (findGeneralFile(containingDirectory, file, extensions, fileName)) continue
@@ -130,10 +131,14 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             }
 
             // Find extension
-            val extension = if (command.commandToken.text in includeOnlyExtensions.keys) {
-                includeOnlyExtensions[command.commandToken.text]?.toList()?.first() ?: "tex"
+            var extension = fileName.getFileExtention()
+            if (extension == "") {
+                val name = command.commandToken.text
+                LatexRegularCommand[name.substring(1)]?.apply {
+                    val args = this.getArgumentsOf(RequiredFileArgument::class)
+                    if (args.isNotEmpty()) extension = args.first().defaultExtension
+                }
             }
-            else fileName.getFileExtention()
 
             val parameterOffset = parameter.text.trimRange(1, 1).indexOf(fileName)
 
@@ -149,38 +154,63 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     }
 
     private fun findGeneralFile(containingDir: VirtualFile, file: PsiFile, validExtenions: Set<String>, fileName: String): Boolean {
-        // check if the given name is reachable from the given folder
-        var relative = containingDir.findFile(fileName, validExtenions)
+        if (File(fileName).isAbsolute) {
+            val fs = LocalFileSystem.getInstance()
 
-        // If not, check if it is reachable from any content root which will be included when using MiKTeX
-        if (LatexDistribution.isMiktex) {
-            for (moduleRoot in ProjectRootManager.getInstance(file.project).contentSourceRoots) {
-                if (relative != null) {
-                    break
-                }
-                relative = moduleRoot.findFile(fileName, validExtenions)
+            if (fs.findFileByPath(fileName) != null) return true
+            validExtenions.forEach {
+                if (fs.findFileByPath("$fileName.$it") != null) return true
             }
         }
+        else {
+            // check if the given name is reachable from the given folder
+            var relative = containingDir.findFile(fileName, validExtenions)
 
-        // If file was found continue with next file
-        return (relative != null)
+            // If not, check if it is reachable from any content root which will be included when using MiKTeX
+            if (LatexDistribution.isMiktex) {
+                for (moduleRoot in ProjectRootManager.getInstance(file.project).contentSourceRoots) {
+                    if (relative != null) {
+                        break
+                    }
+                    relative = moduleRoot.findFile(fileName, validExtenions)
+                }
+            }
+
+            // If file was found continue with next file
+            return (relative != null)
+        }
+        return false
     }
 
-    private fun findGraphicsFile(containingDir: VirtualFile, searchPaths: ArrayList<String>, fileName: String): Boolean {
-        searchPaths.forEach {
-            val file = File(it + fileName)
-            if (file.isAbsolute) {
-                // If file was found continue with next file
-                if (file.exists()) return true
-            }
-            else {
-                // check if the given name is reachable from the given folder
-                if (containingDir.findFileByRelativePath(it + fileName) != null) return true
+    private fun findGraphicsFile(containingDir: VirtualFile, validExtenions: Set<String>, searchPaths: ArrayList<String>, fileName: String): Boolean {
+        val fs = LocalFileSystem.getInstance()
+        if (File(fileName).isAbsolute) {
+            // If file was found continue with next file
+            if (fs.findFileByPath(fileName) != null) return true
+            validExtenions.forEach {
+                if (fs.findFileByPath("$fileName.$it") != null) return true
             }
         }
+        else {
+            searchPaths.forEach { searchPath ->
+                // graphicspath can be absolute or relative
+                if (File(searchPath).isAbsolute) {
+                    if (fs.findFileByPath(searchPath + fileName) != null) return true
+                    // search for supported extensions
+                    validExtenions.forEach { extension ->
+                        if (fs.findFileByPath("$searchPath$fileName.$extension") != null) return true
+                    }
+                }
+                else {
+                    // find relative file
+                    if (containingDir.findFile(searchPath + fileName, validExtenions) != null) return true
+                }
+            }
 
-        // check also the root folder
-        return (containingDir.findFileByRelativePath(fileName) != null)
+            // check also the root folder
+            return (containingDir.findFile(fileName, validExtenions) != null)
+        }
+        return false
     }
 
     /**
@@ -194,7 +224,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexParameter
-            val file = cmd.containingFile
+            val file = cmd.containingFile ?: return
             val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
