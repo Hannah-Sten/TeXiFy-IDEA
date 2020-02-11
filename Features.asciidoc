@@ -272,7 +272,8 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * Unresolved references
 * Non matching environment commands
 * Open if-then-else control sequence
-* File not found
+* link:Probable-bugs#File-not-found[File not found]
+* link:Probable-bugs#Absolute-path-not-allowed[Absolute path not allowed]
 * Inclusion loops
 * Nested includes
 * link:Probable-bugs#label-is-before-caption[Label is before caption]

@@ -104,6 +104,9 @@ For more information, see link:Automatic-package-importing[Automagically import 
 == Non matching environment commands
 == Open if-then-else control sequence
 == File not found
+
+== Absolute path not allowed
+
 == Inclusion loops
 == Nested includes
 
