@@ -589,6 +589,11 @@
                          groupName="LaTeX" displayName="Package could not be found"
                          enabledByDefault="true"/>
 
+        <!-- Element manipulator -->
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
+                                 implementationClass="nl.hannahsten.texifyidea.psi.LatexEnvironmentManipulator"/>
+
+
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"

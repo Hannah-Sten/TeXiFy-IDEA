@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
@@ -188,4 +187,20 @@ public class LatexPsiImplUtil {
 
         return paramText.getText();
     }
+
+
+    public static boolean isValidHost(@NotNull LatexEnvironment element) {
+        return true;
+    }
+
+    public static PsiLanguageInjectionHost updateText(@NotNull LatexEnvironment element, @NotNull String text) {
+        return ElementManipulators.handleContentChange(element, text);
+    }
+
+    @NotNull
+    public static LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper(@NotNull LatexEnvironment element) {
+        return LiteralTextEscaper.createSimple(element);
+    }
+
+
 }

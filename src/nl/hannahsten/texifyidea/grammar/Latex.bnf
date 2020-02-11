@@ -17,6 +17,7 @@
     implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
+    implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
 
     tokens=[
         WHITE_SPACE='regexp:\s+'
@@ -47,7 +48,7 @@ environment ::= begin_command environment_content? end_command {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
-    methods=[getEnvironmentName getLabel]
+    methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
  }
 
 environment_content ::= content+
