@@ -22,12 +22,12 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
                     .childrenOfType(LatexNormalText::class).forEach { path ->
                         // Check if graphicspath is an absolute or relative path
                         if (File(path.text).isAbsolute) {
-                            file.findRootFile().containingDirectory.virtualFile.fileSystem.findFileByPath(path.text)?.apply {
+                            file.findRootFile().containingDirectory?.virtualFile?.fileSystem?.findFileByPath(path.text)?.apply {
                                 paths.add(this)
                             }
                         }
                         else {
-                            file.originalFile.findRootFile().containingDirectory.virtualFile.findFileByRelativePath(path.text)?.apply {
+                            file.originalFile.findRootFile().containingDirectory?.virtualFile?.findFileByRelativePath(path.text)?.apply {
                                 paths.add(this)
                             }
                         }

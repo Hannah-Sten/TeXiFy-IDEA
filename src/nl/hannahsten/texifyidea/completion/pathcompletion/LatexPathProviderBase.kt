@@ -16,7 +16,6 @@ import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
-import nl.hannahsten.texifyidea.lang.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import java.io.File
@@ -33,7 +32,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
 
     companion object {
         private val TRIM_SLASH = Pattern.compile("/[^/]*$")
-        private val EXTENSION = Pattern.compile("\\..*")
     }
 
 
@@ -184,20 +182,24 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      */
     fun getProjectRoots(): ArrayList<VirtualFile> {
         val resultList = ArrayList<VirtualFile>()
-        if (parameters == null) return resultList
-        // Get base data.
-        val baseFile = parameters!!.originalFile.virtualFile
 
-        if (parameters!!.originalFile.isLatexFile()) {
-            resultList.add(parameters!!.originalFile.findRootFile().containingDirectory.virtualFile)
+        parameters?.apply {
+            // Get base data.
+            val baseFile = this.originalFile.virtualFile
+
+            if (this.originalFile.isLatexFile()) {
+                this.originalFile.findRootFile().containingDirectory?.virtualFile?.apply {
+                    resultList.add(this)
+                }
+            }
+            else resultList.add(baseFile.parent)
+
+            val rootManager = ProjectRootManager.getInstance(this.originalFile.project)
+            rootManager.contentSourceRoots.asSequence()
+                    .filter { it != resultList.first() }
+                    .toSet()
+                    .forEach { resultList.add(it) }
         }
-        else resultList.add(baseFile.parent)
-
-        val rootManager = ProjectRootManager.getInstance(parameters!!.originalFile.project)
-        rootManager.contentSourceRoots.asSequence()
-                .filter { it != resultList.first() }
-                .toSet()
-                .forEach { resultList.add(it) }
 
         return resultList
     }
@@ -213,12 +215,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         }
         else TRIM_SLASH.matcher(autoCompleteText).replaceAll("/")
         // delete last subpath occurence
-    }
-
-    private fun getFileExtension(fileName: String): String {
-        val matcher = EXTENSION.matcher(fileName)
-        if (matcher.find()) return matcher.group()
-        else return ""
     }
 
     /**

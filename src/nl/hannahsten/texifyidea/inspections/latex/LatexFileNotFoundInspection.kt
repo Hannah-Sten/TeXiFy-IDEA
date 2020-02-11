@@ -28,7 +28,6 @@ import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
-import nl.hannahsten.texifyidea.util.Magic.Command.includeOnlyExtensions
 import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 import java.util.*
@@ -109,7 +108,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         val root = file.findRootFile()
 
         // get the virtual file of the root file
-        val containingDirectory = root.containingDirectory.virtualFile
+        val containingDirectory = root.containingDirectory?.virtualFile ?: return
 
         for (fileName in fileNames) {
             // Check if command is a includegraphics - next file if it exists
@@ -225,7 +224,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexParameter
-            val file = cmd.containingFile
+            val file = cmd.containingFile ?: return
             val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
