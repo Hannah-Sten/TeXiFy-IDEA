@@ -21,8 +21,13 @@ fun getReferences(element: BibtexEntry): Array<PsiReference> {
         // doesn't know which text to underline). So we have to return a list of
         // WebReference(element, text range) instead.
         val contentText = element.entryContent?.text ?: return emptyArray()
-        val rangesInParent = urls.map {
-            TextRange.from(contentText.indexOf(it), it.length)
+        val rangesInParent = urls.mapNotNull {
+            if (it in contentText) {
+                null
+            }
+            else {
+                TextRange.from(contentText.indexOf(it), it.length)
+            }
         }
 
         return rangesInParent.map {
