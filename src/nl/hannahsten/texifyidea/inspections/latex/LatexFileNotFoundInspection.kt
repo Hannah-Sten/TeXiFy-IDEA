@@ -150,8 +150,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     }
 
     private fun findGeneralFile(containingDir: VirtualFile, file: PsiFile, validExtenions: Set<String>, fileName: String): Boolean {
-        val jfile = File(fileName)
-        if (jfile.isAbsolute) {
+        if (File(fileName).isAbsolute) {
             val fs = LocalFileSystem.getInstance()
 
             if (fs.findFileByPath(fileName) != null) return true
@@ -180,10 +179,8 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     }
 
     private fun findGraphicsFile(containingDir: VirtualFile, validExtenions: Set<String>, searchPaths: ArrayList<String>, fileName: String): Boolean {
-        val file = File(fileName)
-        if (file.isAbsolute) {
-            val fs = LocalFileSystem.getInstance()
-
+        val fs = LocalFileSystem.getInstance()
+        if (File(fileName).isAbsolute) {
             // If file was found continue with next file
             if (fs.findFileByPath(fileName) != null) return true
             validExtenions.forEach {
@@ -191,9 +188,19 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             }
         }
         else {
-            searchPaths.forEach {
-                // check if the given name is reachable from the given folder
-                if (containingDir.findFile(it + fileName, validExtenions) != null) return true
+            searchPaths.forEach { searchPath ->
+                // graphicspath can be absolute or relative
+                if (File(searchPath).isAbsolute) {
+                    if (fs.findFileByPath(searchPath + fileName) != null) return true
+                    // search for supported extensions
+                    validExtenions.forEach { extension ->
+                        if (fs.findFileByPath("$searchPath$fileName.$extension") != null) return true
+                    }
+                }
+                else {
+                    // find relative file
+                    if (containingDir.findFile(searchPath + fileName, validExtenions) != null) return true
+                }
             }
 
             // check also the root folder

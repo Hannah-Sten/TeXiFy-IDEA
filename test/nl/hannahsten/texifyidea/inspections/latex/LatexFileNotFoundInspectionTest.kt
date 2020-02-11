@@ -48,4 +48,25 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         }
     }
 
+    @Test
+    fun testAbsoluteGraphicsDirWithInclude() {
+        myFixture.configureByText(LatexFileType, """
+            \graphicspath{{$absoluteWorkingPath/test/resources/completion/path/}}
+            \includegraphics{<error>myPicture.png</error>}
+            """.trimIndent())
+
+        assertFails {
+            myFixture.checkHighlighting()
+        }
+    }
+
+    @Test
+    fun testDefaultExtensionCompletion() {
+        myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture</error>}""")
+
+        assertFails {
+            myFixture.checkHighlighting()
+        }
+    }
+
 }
