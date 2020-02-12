@@ -16,7 +16,6 @@ import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 /**
  * @author Hannah Schellekens
  */
-@Suppress("UnstableApiUsage")
 open class LatexAnnotator : Annotator {
 
     companion object {
@@ -81,12 +80,12 @@ open class LatexAnnotator : Annotator {
 
             // Begin/End commands
             if (psiElement is LatexEnvironment) {
-                annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                     .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
                     .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
                     .create()
 
-                annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+                annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                         .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4))
                         .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
                         .create()
@@ -111,7 +110,7 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateInlineMath(inlineMathElement: LatexInlineMath,
                                    annotationHolder: AnnotationHolder) {
-        annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                 .range(inlineMathElement)
                 .textAttributes(LatexSyntaxHighlighter.INLINE_MATH)
                 .create()
@@ -129,7 +128,7 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateDisplayMath(displayMathElement: PsiElement,
                                     annotationHolder: AnnotationHolder) {
-        annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                 .range(displayMathElement)
                 .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
                 .create()
@@ -153,7 +152,7 @@ open class LatexAnnotator : Annotator {
         }
         else LatexSyntaxHighlighter.COMMENT
 
-        annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                 .range(comment)
                 .textAttributes(textAttributes)
                 .create()
@@ -177,7 +176,7 @@ open class LatexAnnotator : Annotator {
 
             val token = element.commandToken
 
-            annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                     .range(token)
                     .textAttributes(highlighter)
                     .create()
@@ -197,7 +196,7 @@ open class LatexAnnotator : Annotator {
             val noMathContent = element.noMathContent
             val toStyle = noMathContent.normalText ?: continue
 
-            annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                     .range(toStyle)
                     .textAttributes(LatexSyntaxHighlighter.OPTIONAL_PARAM)
                     .create()
@@ -261,7 +260,7 @@ open class LatexAnnotator : Annotator {
      */
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
         val content = parameter.firstChildOfType(LatexContent::class) ?: return
-        this.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+        this.newAnnotation(HighlightSeverity.INFORMATION, "")
                 .range(content)
                 .textAttributes(style)
                 .create()

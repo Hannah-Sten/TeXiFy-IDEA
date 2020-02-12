@@ -38,6 +38,7 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
                 // Don't trigger the inspection when the verbatim environment is in its own file.
                 if (Magic.Environment.verbatim.any { file.text.startsWith("\\begin{$it}") }) continue
                 // Don't trigger the inspection when the verbatim environment is surrounded by formatter comments.
+                // todo replace deprecated call
                 if (begin.node.treeParent.prev()?.text?.contains(offTag) == true) continue
 
                 descriptors.add(manager.createProblemDescriptor(
