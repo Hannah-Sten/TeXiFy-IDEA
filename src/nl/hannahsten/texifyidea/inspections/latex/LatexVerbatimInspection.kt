@@ -4,11 +4,14 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.formatting.blocks.prev
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.codeStyle.CodeStyleSettings
+import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import com.intellij.psi.impl.source.tree.TreeUtil
+import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
@@ -38,8 +41,7 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
                 // Don't trigger the inspection when the verbatim environment is in its own file.
                 if (Magic.Environment.verbatim.any { file.text.startsWith("\\begin{$it}") }) continue
                 // Don't trigger the inspection when the verbatim environment is surrounded by formatter comments.
-                // todo replace deprecated call
-                if (begin.node.treeParent.prev()?.text?.contains(offTag) == true) continue
+                if (begin.parent.parent.parent.previousSiblingIgnoreWhitespace()?.text?.contains(offTag) == true) continue
 
                 descriptors.add(manager.createProblemDescriptor(
                         begin,
