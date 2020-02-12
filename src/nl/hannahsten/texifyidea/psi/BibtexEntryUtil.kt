@@ -22,7 +22,7 @@ fun getReferences(element: BibtexEntry): Array<PsiReference> {
         // WebReference(element, text range) instead.
         val contentText = element.entryContent?.text ?: return emptyArray()
         val rangesInParent = urls.mapNotNull {
-            if (it in contentText) {
+            if (it !in contentText) {
                 null
             }
             else {
