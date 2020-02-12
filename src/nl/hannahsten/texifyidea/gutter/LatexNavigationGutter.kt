@@ -5,6 +5,7 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -21,6 +22,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.splitContent
+import java.io.File
 import java.util.*
 import javax.swing.Icon
 
@@ -115,19 +117,27 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val files: List<PsiFile> = fileNames
                 .map { fileName ->
                     for (root in roots) {
-                        // Iterate through defined Graphicpaths
-                        graphPaths.forEach {
-                            root.findFile(it + fileName, argument.supportedExtensions)?.apply {
-                                return@map psiManager.findFile(this)
-                            }
-                            // Find also files defined by absolute path
-                            root.fileSystem.findFileByPath(it + fileName)?.apply {
+                        val file = File(fileName)
+                        if (file.isAbsolute) {
+                            LocalFileSystem.getInstance().findFileByPath(fileName)?.apply {
                                 return@map psiManager.findFile(this)
                             }
                         }
-                        // Find files in root folder
-                        root.findFile(fileName, argument.supportedExtensions)?.apply {
-                            return@map psiManager.findFile(this)
+                        else {
+                            // Iterate through defined Graphicpaths
+                            graphPaths.forEach {
+                                root.findFile(it + fileName, argument.supportedExtensions)?.apply {
+                                    return@map psiManager.findFile(this)
+                                }
+                                // Find also files defined by absolute path
+                                root.fileSystem.findFileByPath(it + fileName)?.apply {
+                                    return@map psiManager.findFile(this)
+                                }
+                            }
+                            // Find files in root folder
+                            root.findFile(fileName, argument.supportedExtensions)?.apply {
+                                return@map psiManager.findFile(this)
+                            }
                         }
                     }
                     null

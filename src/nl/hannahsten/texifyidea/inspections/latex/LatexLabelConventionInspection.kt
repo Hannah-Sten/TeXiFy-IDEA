@@ -82,9 +82,8 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     private fun checkLabels(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
                             descriptors: MutableList<ProblemDescriptor>) {
-        val labelDefinitions = file.findLabels()
-        for (label in labelDefinitions) {
-            val labeledCommand = getLabeledCommand(label) ?: continue
+        file.findLabelsInFileAsSequence().forEach{ label ->
+            val labeledCommand = getLabeledCommand(label) ?: return@forEach
             val expectedPrefix = getLabelPrefix(labeledCommand)
             val labelName = label.extractLabelName()
             if (!labelName.startsWith("$expectedPrefix:")) {
@@ -123,7 +122,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 "$prefix:$labelName"
             }
 
-            val createdLabel = appendCounter(createdLabelBase, baseFile.findLabelsInFileSet())
+            val createdLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelsInFileSet())
 
             // Replace in command label definition
             if (command is LatexCommands) {

@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.findLabelsInFileSet
+import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelsInFileSet
 import java.util.*
 
 /**
@@ -29,7 +29,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val labels = file.findLabelsInFileSet()
+        val labels = file.findLatexAndBibtexLabelsInFileSet()
         val commands = file.commandsInFile()
 
         for (command in commands) {

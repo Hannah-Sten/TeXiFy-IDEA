@@ -18,6 +18,7 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
     private Set<String> extensions;
     private String defaultExtension;
     private Pattern pattern;
+    private Boolean absolutePathSupport;
 
     /**
      * Create a new required file argument with a given name and a pattern that matches
@@ -31,7 +32,13 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
      *         All supported extensions, of which the first extension is the default extension.
      */
     public RequiredFileArgument(String name, String... extensions) {
+        this(name,true, extensions);
+    }
+
+    public RequiredFileArgument(String name, Boolean allowAbsolutePaths, String... extensions) {
         super(name, Type.FILE);
+        this.absolutePathSupport = allowAbsolutePaths;
+
         setExtensions(extensions);
     }
 
@@ -83,6 +90,10 @@ public class RequiredFileArgument extends RequiredArgument implements FileNameMa
 
     public String getDefaultExtension() {
         return defaultExtension;
+    }
+
+    public Boolean isAbsolutePathSupported(){
+        return absolutePathSupport;
     }
 
     @Override
