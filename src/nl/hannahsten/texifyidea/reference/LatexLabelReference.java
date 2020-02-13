@@ -1,66 +1,46 @@
 package nl.hannahsten.texifyidea.reference;
 
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiReferenceBase;
 import nl.hannahsten.texifyidea.TexifyIcons;
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
-import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
-import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.LabelsKt;
 import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * A reference to a label.
- * When resolved, it points to the label declaration.
+ * A reference to a label, used only for autocompletion. For the real referencing, see {@link LatexLabelParameterReference}.
  *
  * @author Hannah Schellekens, Sten Wessel
  */
-public class LatexLabelReference extends PsiReferenceBase<LatexCommands> implements PsiPolyVariantReference {
-    private final String key;
+public class LatexLabelReference extends PsiReferenceBase<LatexCommands> {
 
     public LatexLabelReference(@NotNull LatexCommands element, TextRange range) {
         super(element);
-        key = range.substring(element.getText());
 
         // Only show Ctrl+click underline under the reference name
         setRangeInElement(range);
     }
 
-    // Get all label definitions
-    @NotNull
-    @Override
-    public ResolveResult[] multiResolve(boolean b) {
-        Project project = myElement.getProject();
-        final Collection<PsiElement> labels = LabelsKt.findLabels(project, key);
-        return labels.stream().map(PsiElementResolveResult::new).toArray(ResolveResult[]::new);
-    }
-
-    // Get the label definition if there is exactly one, none otherwise
     @Nullable
     @Override
     public PsiElement resolve() {
-        ResolveResult[] resolveResults = multiResolve(false);
-        return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
-    }
-
-    @Override
-    public boolean isReferenceTo(@NotNull PsiElement element) {
-        return Arrays.stream(multiResolve(false)).anyMatch(it -> it.getElement() == element);
+        return null;
     }
 
     @NotNull
     @Override
     public Object[] getVariants() {
         PsiFile file = myElement.getContainingFile().getOriginalFile();
-        Map<String, LabelingCommandInformation> commands = TexifySettings.getInstance().getLabelCommands();
 
         String command = myElement.getCommandToken().getText();
 
