@@ -41,6 +41,18 @@ fun getNameIdentifier(element: LatexNormalText): PsiElement {
 }
 
 fun setName(element: LatexNormalText, name: String): PsiElement {
+    // todo only if it's label text
+
+    // Get a new psi element for the complete label command (\label included)
+    val newElement = LatexPsiHelper(element.project).createFromText(name).firstChild
+    val oldNode = element.node
+    val newNode = newElement.node
+    if (oldNode == null) {
+        element.parent.node.addChild(newNode)
+    }
+    else {
+        element.parent.node.replaceChild(oldNode, newNode)
+    }
     return element
 }
 

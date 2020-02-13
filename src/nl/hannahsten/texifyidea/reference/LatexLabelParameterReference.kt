@@ -45,4 +45,9 @@ class LatexLabelParameterReference(element: LatexNormalText) : PsiReferenceBase<
                 .toList()
                 .toArray(emptyArray())
     }
+
+    override fun handleElementRename(newElementName: String): PsiElement {
+        myElement.setName(newElementName)
+        return myElement
+    }
 }
