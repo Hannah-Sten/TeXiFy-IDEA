@@ -31,7 +31,7 @@ public class LatexPsiImplUtil {
      */
     @NotNull
     public static PsiReference[] getReferences(@NotNull LatexCommands element) {
-        final LatexRequiredParam firstParam = LatexPsiImplUtilKtKt.readFirstParam(element);
+        final LatexRequiredParam firstParam = readFirstParam(element);
 
         // If it is a reference to a label
         if (REFERENCE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
@@ -41,12 +41,12 @@ public class LatexPsiImplUtil {
 
         // If it is a reference to a file
         if (INCLUDE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
-            List<PsiReference> references = LatexPsiImplUtilKtKt.extractIncludes(element, firstParam);
+            List<PsiReference> references = extractIncludes(element, firstParam);
             return references.toArray(new PsiReference[references.size()]);
         }
 
         if (URL_COMMANDS.contains(element.getName()) && firstParam != null) {
-            return LatexPsiImplUtilKtKt.extractUrlReferences(element, firstParam);
+            return extractUrlReferences(element, firstParam);
         }
 
         // Else, we assume the command itself is important instead of its parameters,

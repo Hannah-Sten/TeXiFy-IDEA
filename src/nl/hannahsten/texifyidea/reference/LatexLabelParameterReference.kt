@@ -1,7 +1,10 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
+import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.extractLabelName
+import nl.hannahsten.texifyidea.util.findLatexLabelPsiElementsInFileAsSequence
 
 /**
  * The difference with [LatexLabelReference] is that this reference works on normal text, i.e. the actual label parameters.
@@ -25,6 +28,11 @@ class LatexLabelParameterReference(element: LatexNormalText) : PsiReferenceBase<
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        TODO("Not yet implemented")
+        // Find the label definition
+        return myElement.containingFile.findLatexLabelPsiElementsInFileAsSequence()
+                .filter { it.extractLabelName() == myElement.name }
+                .map { PsiElementResolveResult(it) }
+                .toList()
+                .toArray(emptyArray())
     }
 }

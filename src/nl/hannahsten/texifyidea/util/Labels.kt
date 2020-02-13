@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexAndBibtexLabelsInFileSet(): Set<String> = (findLatexLabelsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
+fun PsiFile.findLatexAndBibtexLabelsInFileSet(): Set<String> = (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
 
 /**
  * Find all defined labels in the fileset.
@@ -30,7 +30,7 @@ fun PsiFile.findLatexAndBibtexLabelsInFileSetAsSequence(): Sequence<LatexCommand
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexLabelsInFileSetAsSequence(): Sequence<String> {
+fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
     return sequenceOf(
             LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence().map { it.extractLabelName() },
             findLabelingCommandsInFileSetAsSequence()
@@ -38,6 +38,12 @@ fun PsiFile.findLatexLabelsInFileSetAsSequence(): Sequence<String> {
                         it.extractLabelName()
                     }.filterNot { it == "" }).flatten()
 }
+
+/**
+ * @see [findLabelsInFileSetAsCollection]
+ */
+fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileAsSequence(),
+        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
 
 /**
  * Finds all the defined bibtex labels in the fileset of the file.
@@ -79,12 +85,6 @@ fun PsiFile.findLabelsInFileSetAsCollection(): Collection<PsiElement> = sequence
         LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten().toList()
 
 /**
- * @see [findLabelsInFileSetAsCollection]
- */
-fun PsiFile.findLabelsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileAsSequence(),
-        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
-
-/**
  * Make a sequence of all commands in the file set that specify a label. This does not include commands which define a label via an
  * optional parameter.
  */
@@ -114,7 +114,7 @@ fun Project.findLabels(): Collection<PsiElement> {
     val commands = LatexCommandsIndex.getItems(this).findLabels()
     val bibtexIds = BibtexEntryIndex.getIndexedEntries(this)
     val environments = LatexParameterLabeledEnvironmentsIndex.getItems(this)
-    val result = ArrayList<PsiElement>(commands)
+    val result = ArrayList(commands)
     result.addAll(bibtexIds)
     result.addAll(environments)
     return result
