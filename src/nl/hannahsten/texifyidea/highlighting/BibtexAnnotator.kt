@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.util.tokenType
 /**
  * @author Hannah Schellekens
  */
-@Suppress("UnstableApiUsage")
 open class BibtexAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
@@ -29,7 +28,7 @@ open class BibtexAnnotator : Annotator {
      * Adds syntax highlighting to all {Braced Strings}.
      */
     private fun annotate(bracedString: BibtexBracedString, holder: AnnotationHolder) {
-        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+        holder.newAnnotation(HighlightSeverity.INFORMATION, "")
                 .range(bracedString)
                 .textAttributes(BibtexSyntaxHighlighter.VALUE)
                 .create()
@@ -39,7 +38,7 @@ open class BibtexAnnotator : Annotator {
      * Adds syntax highlighting to all "Quoted Strings".
      */
     private fun annotate(quotedString: BibtexQuotedString, holder: AnnotationHolder) {
-        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+        holder.newAnnotation(HighlightSeverity.INFORMATION, "")
                 .range(quotedString)
                 .textAttributes(BibtexSyntaxHighlighter.STRING)
                 .create()
@@ -55,7 +54,7 @@ open class BibtexAnnotator : Annotator {
             return
         }
 
-        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "")
+        holder.newAnnotation(HighlightSeverity.INFORMATION, "")
                 .range(key)
                 .textAttributes(BibtexSyntaxHighlighter.KEY)
                 .create()
