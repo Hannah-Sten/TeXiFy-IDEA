@@ -17,6 +17,7 @@ import static nl.hannahsten.texifyidea.psi.LatexCommandsImplUtilKt.*;
 
 /**
  * This class is used for method injection in generated parser classes.
+ * It has to be in Java for Grammar-Kit to be able to generate the parser classes correctly.
  */
 @SuppressWarnings("ToArrayCallWithZeroLengthArrayArgument")
 public class LatexPsiImplUtil {
