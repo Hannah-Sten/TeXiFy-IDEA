@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static nl.hannahsten.texifyidea.psi.LatexPsiImplUtilKtKt.*;
+import static nl.hannahsten.texifyidea.psi.LatexCommandsImplUtilKt.*;
 
 /**
  * This class is used for method injection in generated parser classes.
@@ -76,25 +76,25 @@ public class LatexPsiImplUtil {
      * Generates a list of all optional parameter names and values.
      */
     public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexCommands element) {
-        return LatexPsiImplUtilKtKt.getOptionalParameters(element.getParameterList());
+        return LatexCommandsImplUtilKt.getOptionalParameters(element.getParameterList());
     }
 
     /**
      * Generates a list of all optional parameter names and values.
      */
     public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexBeginCommand element) {
-        return LatexPsiImplUtilKtKt.getOptionalParameters(element.getParameterList());
+        return LatexCommandsImplUtilKt.getOptionalParameters(element.getParameterList());
     }
 
     /**
      * Generates a list of all names of all required parameters in the command.
      */
     public static List<String> getRequiredParameters(@NotNull LatexCommands element) {
-        return LatexPsiImplUtilKtKt.getRequiredParameters(element.getParameterList());
+        return LatexCommandsImplUtilKt.getRequiredParameters(element.getParameterList());
     }
 
     public static List<String> getRequiredParameters(@NotNull LatexBeginCommand element) {
-        return LatexPsiImplUtilKtKt.getRequiredParameters(element.getParameterList());
+        return LatexCommandsImplUtilKt.getRequiredParameters(element.getParameterList());
     }
 
     /**
@@ -138,7 +138,7 @@ public class LatexPsiImplUtil {
 
         if (Magic.Environment.labelAsParameter.contains(element.getEnvironmentName())) {
             // see if we can find a label option
-            LinkedHashMap<String, String> optionalParameters = LatexPsiImplUtilKtKt.getOptionalParameters(element.getBeginCommand().getParameterList());
+            LinkedHashMap<String, String> optionalParameters = LatexCommandsImplUtilKt.getOptionalParameters(element.getBeginCommand().getParameterList());
             return optionalParameters.getOrDefault("label", null);
         }
         else {
