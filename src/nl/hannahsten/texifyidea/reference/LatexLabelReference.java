@@ -91,7 +91,7 @@ public class LatexLabelReference extends PsiReferenceBase<LatexCommands> impleme
         }
         // add all labels to \ref-styled commands
         else if (Magic.Command.labelReference.contains(command)) {
-            return LabelsKt.findLabels(file)
+            return LabelsKt.findLabelsInFileSetAsCollection(file)
                     .stream()
                     .map(labelingCommand -> LookupElementBuilder
                             .create(LabelsKt.extractLabelName(labelingCommand))

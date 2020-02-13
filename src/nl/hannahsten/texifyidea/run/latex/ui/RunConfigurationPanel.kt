@@ -3,13 +3,10 @@ package nl.hannahsten.texifyidea.run.latex.ui
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
-import com.intellij.ui.AnActionButton
 import com.intellij.ui.HideableTitledPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
-import com.intellij.util.IconUtil
 import java.awt.BorderLayout
 import javax.swing.DefaultListSelectionModel
 import javax.swing.JPanel
@@ -26,7 +23,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     private val hidePanel: HideableTitledPanel
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
 
-    var configuration: RunnerAndConfigurationSettings? = null
+    var configurations: MutableSet<RunnerAndConfigurationSettings> = mutableSetOf()
         set(value) {
             field = value
             configurationChanged()
@@ -43,49 +40,36 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
     private fun createPanel() {
         list = JBList<RunnerAndConfigurationSettings>().apply {
-            visibleRowCount = 1
-            emptyText.text = "No run configuration selected."
+            emptyText.text = "No run configurations selected."
             cellRenderer = RunConfigCellRenderer(project)
 
             // Cell height
             prototypeCellValue = RunManagerImpl.getInstanceImpl(project).allSettings.firstOrNull()
 
-            // Disable selection
-            selectionModel = object : DefaultListSelectionModel() {
-                override fun setSelectionInterval(index0: Int, index1: Int) {
-                    super.setSelectionInterval(-1, -1)
-                    fireValueChanged(-1, -1, false)
-                }
-            }
+            selectionModel = DefaultListSelectionModel()
         }
 
         val toolbar = ToolbarDecorator.createDecorator(list).apply {
             setAsUsualTopToolbar()
 
+            // No support for executing run configs in a certain order (yet)
             disableUpDownActions()
-            disableRemoveAction()
 
-            setAddIcon(IconUtil.getEditIcon())
             setAddAction {
-                configuration = askRunConfiguration() ?: return@setAddAction
+                configurations.addAll(askRunConfigurations())
+                configurationChanged()
             }
 
-            val removeAction = object : AnActionButton("Remove", IconUtil.getRemoveIcon()) {
-
-                override fun isEnabled() = !list.isEmpty
-
-                override fun actionPerformed(e: AnActionEvent) {
-                    configuration = null
-                }
+            setRemoveAction {
+                configurations.removeAll(list.selectedValuesList)
+                configurationChanged()
             }
-
-            addExtraAction(removeAction)
         }
 
         contentPanel.add(toolbar.createPanel(), BorderLayout.CENTER)
     }
 
-    private fun askRunConfiguration(): RunnerAndConfigurationSettings? {
+    private fun askRunConfigurations(): List<RunnerAndConfigurationSettings> {
         val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type.javaClass == runConfigurationType  }
 
         val dialog = RunConfigurationSelectionDialog(project, configurations)
@@ -100,16 +84,19 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     }
 
     private fun configurationChanged() {
-        if (configuration != null) {
-            list.setListData(Array(1) { configuration })
+        if (configurations.isNotEmpty()) {
+            list.setListData(configurations.map { it }.toTypedArray() )
+            // Set cell height based on the size of the content
+            list.visibleRowCount = configurations.size
 
             // Mock value change to commit changes (otherwise the apply button is not activated)
-            list.setSelectionInterval(-1, -1)
+            list.setSelectionInterval(0, 0)
             changeTitle("Enabled")
             return
         }
 
         list.setListData(emptyArray())
+        list.visibleRowCount = 1
 
         // Mock value change to commit changes (otherwise the apply button is not activated)
         list.setSelectionInterval(-1, -1)

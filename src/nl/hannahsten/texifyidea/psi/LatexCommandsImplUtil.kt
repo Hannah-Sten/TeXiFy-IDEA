@@ -1,9 +1,11 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
+import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
@@ -11,7 +13,6 @@ import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
-
 
 /**
  * Create file references from the command parameter given.
@@ -119,3 +120,9 @@ fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
                 }.joinToString(separator = "")
             }
 }
+
+
+fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
+        extractSubParameterRanges(firstParam)
+                .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
+                .toArray(emptyArray())

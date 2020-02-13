@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static nl.hannahsten.texifyidea.psi.LatexCommandsImplUtilKt.*;
 
@@ -24,8 +23,7 @@ public class LatexPsiImplUtil {
 
     static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
     static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
-    static final Set<String> DEFINITION_COMMANDS = Magic.Command.commandDefinitions;
-    static final Pattern OPTIONAL_SPLIT = Pattern.compile(",\\s*");
+    static final Set<String> URL_COMMANDS = Magic.Command.urls;
 
     /**
      * Get the references for this command.
@@ -33,7 +31,7 @@ public class LatexPsiImplUtil {
      */
     @NotNull
     public static PsiReference[] getReferences(@NotNull LatexCommands element) {
-        final LatexRequiredParam firstParam = readFirstParam(element);
+        final LatexRequiredParam firstParam = LatexPsiImplUtilKtKt.readFirstParam(element);
 
         // If it is a reference to a label
         if (REFERENCE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
@@ -43,8 +41,12 @@ public class LatexPsiImplUtil {
 
         // If it is a reference to a file
         if (INCLUDE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
-            List<PsiReference> references = extractIncludes(element, firstParam);
+            List<PsiReference> references = LatexPsiImplUtilKtKt.extractIncludes(element, firstParam);
             return references.toArray(new PsiReference[references.size()]);
+        }
+
+        if (URL_COMMANDS.contains(element.getName()) && firstParam != null) {
+            return LatexPsiImplUtilKtKt.extractUrlReferences(element, firstParam);
         }
 
         // Else, we assume the command itself is important instead of its parameters,
