@@ -41,7 +41,15 @@ class LatexVerbatimInspection : TexifyInspectionBase() {
                 // Don't trigger the inspection when the verbatim environment is in its own file.
                 if (Magic.Environment.verbatim.any { file.text.startsWith("\\begin{$it}") }) continue
                 // Don't trigger the inspection when the verbatim environment is surrounded by formatter comments.
-                if (begin.parent.parent.parent.previousSiblingIgnoreWhitespace()?.text?.contains(offTag) == true) continue
+                // Find the previous psi element
+                var parentNode = begin.parent
+                // For some reason the height of the previous sibling varies
+                var height = 0
+                while (parentNode.previousSiblingIgnoreWhitespace() == null && height < 10) {
+                    parentNode = parentNode.parent
+                    height++
+                }
+                if (parentNode.previousSiblingIgnoreWhitespace()?.text?.contains(offTag) == true) continue
 
                 descriptors.add(manager.createProblemDescriptor(
                         begin,
