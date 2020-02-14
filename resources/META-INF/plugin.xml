@@ -417,8 +417,6 @@
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
-        <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
-        <lang.refactoringSupport language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexRefactoringSupportProvider" />
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
@@ -436,6 +434,11 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
+
+        <!-- References and refactoring -->
+        <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
+        <lang.refactoringSupport language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexRefactoringSupportProvider" />
+        <lang.namesValidator language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexNamesValidator" />
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
