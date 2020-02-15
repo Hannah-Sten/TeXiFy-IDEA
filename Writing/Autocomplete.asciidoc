@@ -1,0 +1,11 @@
+:experimental:
+
+TeXiFy supports autocomplete of labels, many common commands, user defined commands, and (user defined) environments.
+
+== Autocompletion of required parameters
+_Since b0.6.9_
+
+When invoking autocomplete on a command that takes required parameters, TeXiFy will insert a brace pair for each parameter.
+The caret is placed in the first pair, and you can use kbd:[Tab] to skip to the next pair.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/required-parameters-autocomplete.gif[]
