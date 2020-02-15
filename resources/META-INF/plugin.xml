@@ -191,8 +191,7 @@
         </group>
 
         <!-- LaTeX Tools commands -->
-        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true"
-               class="nl.hannahsten.texifyidea.action.group.LatexToolsMenuGroup">
+        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Clear files -->
