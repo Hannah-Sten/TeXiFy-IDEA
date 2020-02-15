@@ -3,8 +3,9 @@ package nl.hannahsten.texifyidea.completion.handlers
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.codeInsight.template.TemplateBuilderImpl
 import com.intellij.codeInsight.template.TemplateManager
+import com.intellij.codeInsight.template.impl.TemplateImpl
+import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
@@ -12,7 +13,6 @@ import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.psiFile
 import java.util.*
 
 /**
@@ -50,13 +50,15 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
 
     private fun insertMathCommand(mathCommand: LatexMathCommand, context: InsertionContext) {
         if (mathCommand.autoInsertRequired()) {
-            insert(context, mathCommand.arguments.count { it is RequiredArgument })
+            insert(context, mathCommand.arguments
+                    .count { it is RequiredArgument })
         }
     }
 
     private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext) {
         if (noMathCommand.autoInsertRequired()) {
-            insert(context, noMathCommand.arguments.count { it is RequiredArgument })
+            insert(context, noMathCommand.arguments
+                    .count { it is RequiredArgument })
         }
     }
 
@@ -69,8 +71,7 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         // When not followed by {}, insert {}.
         if (offset >= document.textLength - 1 ||
                 document.getText(TextRange.from(offset, 1)) != "{") {
-            insertBracketTemplate(editor, caret, context, nBrackets)
-//            insertSquigglyBracketPair(editor, caret)
+            insertSquigglyBracketPair(editor, nBrackets)
         }
         else {
             skipSquigglyBrackets(editor, caret)
@@ -94,16 +95,9 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         }
     }
 
-    private fun insertSquigglyBracketPair(editor: Editor, caret: CaretModel) {
-        editor.document.insertString(caret.offset, "{}")
-        caret.moveToOffset(caret.offset + 1)
-    }
-
-    private fun insertBracketTemplate(editor: Editor, caret: CaretModel, context: InsertionContext, nBrackets: Int = 1) {
-        val command = editor.document.psiFile(editor.project ?: return)?.findElementAt(caret.offset - 1) ?: return
-        val builder = TemplateBuilderImpl(command)
-        builder.replaceElement(command, LatexBracketsExpression(command.parent as LatexCommands, nBrackets))
-        val template = builder.buildTemplate()
+    private fun insertSquigglyBracketPair(editor: Editor, nBrackets: Int) {
+        val template = TemplateImpl("", (0 until nBrackets).joinToString("") { "{\$__Variable$it\$}" }, "")
+        repeat(nBrackets) { template.addVariable(TextExpression(""), true) }
         TemplateManager.getInstance(editor.project).startTemplate(editor, template)
     }
 }

@@ -27,12 +27,6 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    fun createCommandWithRequiredParameters(command: String, nParameters: Int): PsiElement {
-        val commandText = "\\${command}${List(nParameters) {"{}"}}"
-        val fileFromText = createFromText(commandText)
-        return fileFromText.firstChild
-    }
-
     private fun createOptionalParameterContent(parameter: String): List<LatexContent> {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
