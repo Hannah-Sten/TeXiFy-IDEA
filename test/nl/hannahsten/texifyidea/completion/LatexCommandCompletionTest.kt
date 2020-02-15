@@ -49,7 +49,7 @@ class LatexCommandCompletionTest : BasePlatformTestCase() {
         myFixture.completeBasic()
 
         // then
-        assert(myFixture.file.text == after.removeRange(finalCaretOffset, finalCaretOffset + 7))
-        assert(myFixture.caretOffset == finalCaretOffset)
+        assertEquals(after.removeRange(finalCaretOffset, finalCaretOffset + 7), myFixture.file.text)
+        assertEquals(finalCaretOffset, myFixture.caretOffset)
     }
 }
