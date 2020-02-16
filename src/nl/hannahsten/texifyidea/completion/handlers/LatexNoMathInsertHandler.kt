@@ -6,8 +6,9 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.template.Template
 import com.intellij.codeInsight.template.TemplateEditingListener
 import com.intellij.codeInsight.template.TemplateManager
-import com.intellij.codeInsight.template.impl.TemplateSettings
+import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TemplateState
+import com.intellij.codeInsight.template.impl.TextExpression
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.util.*
@@ -36,8 +37,10 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
      * Inserts the `LATEX.begin` live template.
      */
     private fun insertBegin(context: InsertionContext) {
-        val templateSettings = TemplateSettings.getInstance()
-        val template = templateSettings.getTemplateById("LATEX.begin")
+        val template = object : TemplateImpl("", "{\$__Variable0\$}\n\$END\$\n\\end{\$__Variable0\$}", "") {
+            override fun isToReformat(): Boolean = true
+        }
+        template.addVariable(TextExpression(""), true)
 
         val editor = context.editor
         val templateManager = TemplateManager.getInstance(context.project)
