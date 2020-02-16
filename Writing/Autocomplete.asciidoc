@@ -8,5 +8,9 @@ _Since b0.6.9_
 When invoking autocomplete on a command or environment that takes required parameters, TeXiFy will insert a brace pair for each parameter.
 The caret is placed in the first pair, and you can use kbd:[Tab] to skip to the next pair.
 
+[.float-group]
+--
+[.left]
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/required-parameters-autocomplete.gif[]
-image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/required-parameters-environment.gif[]
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/required-parameters-environments.gif[]
+--
