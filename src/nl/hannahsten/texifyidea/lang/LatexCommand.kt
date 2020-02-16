@@ -16,9 +16,9 @@ interface LatexCommand : Dependend {
          *
          * @param commandName
          *          The command name to look up. Can start with or without `\`
-         * @return The found command, or `null` when the command doesn't exist.
+         * @return The found commands, or `null` when the command doesn't exist.
          */
-        fun lookup(commandName: String?): LatexCommand? {
+        fun lookup(commandName: String?): Set<LatexCommand>? {
             var result = commandName ?: return null
             if (result.startsWith("\\")) {
                 result = result.substring(1)
@@ -33,7 +33,7 @@ interface LatexCommand : Dependend {
          * @param command The command PSI element to look up. Takes into account whether it is placed in math mode.
          * @return The found command, or `null` when the command does not exist.
          */
-        fun lookup(command: LatexCommands): LatexCommand? {
+        fun lookup(command: LatexCommands): Set<LatexCommand>? {
             val name = command.commandToken.text
             val commandName = name.substring(1)
 

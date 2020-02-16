@@ -33,7 +33,7 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
             val name = command.commandToken.text
             val cmd = LatexRegularCommand[name.substring(1)] ?: continue
 
-            val args = cmd.getArgumentsOf(RequiredFileArgument::class)
+            val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
             if (args.isEmpty()) continue
 
             val support = args.first().isAbsolutePathSupported

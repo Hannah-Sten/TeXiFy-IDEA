@@ -420,23 +420,23 @@ enum class LatexRegularCommand(
 
     companion object {
 
-        private val lookup = HashMap<String, LatexRegularCommand>()
-        private val lookupDisplay = HashMap<String, LatexRegularCommand>()
+        private val lookup = HashMap<String, MutableSet<LatexRegularCommand>>()
+        private val lookupDisplay = HashMap<String, MutableSet<LatexRegularCommand>>()
 
         init {
             @Suppress("RemoveRedundantQualifierName")
             for (command in LatexRegularCommand.values()) {
-                lookup[command.command] = command
+                lookup.getOrPut(command.command) { mutableSetOf() }.add(command)
                 if (command.display != null) {
-                    lookupDisplay.putIfAbsent(command.display!!, command)
+                    lookupDisplay.putIfAbsent(command.display!!, mutableSetOf(command))?.add(command)
                 }
             }
         }
 
         @JvmStatic
-        operator fun get(command: String) = lookup[command]
+        operator fun get(command: String) = lookup[command]?.toSet()
 
         @JvmStatic
-        fun findByDisplay(display: String) = lookupDisplay[display]
+        fun findByDisplay(display: String) = lookupDisplay[display]?.toSet()
     }
 }
