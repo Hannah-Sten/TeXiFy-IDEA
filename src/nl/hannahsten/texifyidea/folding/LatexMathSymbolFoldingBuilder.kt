@@ -25,7 +25,7 @@ class LatexMathSymbolFoldingBuilder : FoldingBuilderEx() {
             val commands = mathEnvironment.childrenOfType(LatexCommands::class)
 
             for (command in commands) {
-                val display = LatexMathCommand[command.commandToken.text.substring(1)]?.display ?:continue
+                val display = LatexMathCommand[command.commandToken.text.substring(1)]?.first()?.display ?:continue
 
                 descriptors.add(object : FoldingDescriptor(command.commandToken.node, command.commandToken.textRange, group) {
                     override fun getPlaceholderText() = display

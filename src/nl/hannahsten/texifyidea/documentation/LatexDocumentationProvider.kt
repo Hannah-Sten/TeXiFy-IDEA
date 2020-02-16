@@ -43,12 +43,12 @@ class LatexDocumentationProvider : DocumentationProvider {
         val command = LatexCommand.lookup(element) ?: return null
 
         // Special case for package inclusion commands
-        if (command.command in PACKAGE_COMMANDS) {
+        if (command.first().command in PACKAGE_COMMANDS) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
             return runTexdoc(Package(pkg))
         }
 
-        return runTexdoc(command.dependency)
+        return runTexdoc(command.first().dependency)
     }
 
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {

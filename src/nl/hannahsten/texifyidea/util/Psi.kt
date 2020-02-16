@@ -73,6 +73,21 @@ fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
 }
 
 /**
+ * Finds the first parent of a certain type.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.firstParentOfType(clazz: KClass<T>): T? {
+    var current: PsiElement? = this
+    while (current != null) {
+        if (clazz.java.isAssignableFrom(current.javaClass)) {
+            return current as? T
+        }
+        current = current.parent
+    }
+    return null
+}
+
+/**
  * Finds the last child of a certain type.
  */
 @Suppress("UNCHECKED_CAST")
