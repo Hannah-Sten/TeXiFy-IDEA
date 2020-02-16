@@ -11,3 +11,10 @@ image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation
 
 Note that your cursor has to be placed somewhere in the parameter of the referencing command, not on the command itself.
 For example in the case of `\re|f{mylabel}` where `|` denotes the cursor, then it will not work, but for `\ref{my|label}` it will.
+
+== Peek definition
+
+For the elements for which Go To Declaration is implemented, you also have a Peek Definition, by default kbd:[Ctrl + Shift + I].
+For more information, see https://www.jetbrains.com/help/idea/viewing-reference-information.html#
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/peek-definition.png[]
