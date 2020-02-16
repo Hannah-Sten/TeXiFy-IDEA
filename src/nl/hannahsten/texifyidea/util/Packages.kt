@@ -104,7 +104,7 @@ object PackageUtils {
 
     /**
      * Inserts a usepackage statement for the given package in the root file of the fileset containing the given file.
-     * Will not insert a new statement when the package has already been included.
+     * Will not insert a new statement when the package has already been included, or when a conflicting package is already included.
      *
      * @param file
      *         The file to add the usepackage statement to.
@@ -119,6 +119,16 @@ object PackageUtils {
 
         if (file.includedPackages().contains(pack.name)) {
             return
+        }
+
+        // Don't insert when a conflicting package is already present
+        if (Magic.Package.conflictingPackages.any { it.contains(pack) }) {
+            for (conflicts in Magic.Package.conflictingPackages) {
+                // Assuming the package is not already included
+                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts.map {it.name }).isNotEmpty()) {
+                    return
+                }
+            }
         }
 
         // Packages should always be included in the root file

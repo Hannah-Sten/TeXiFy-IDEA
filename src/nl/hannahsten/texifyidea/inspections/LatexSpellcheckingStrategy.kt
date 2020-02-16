@@ -73,11 +73,11 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
     private fun getArguments(commandName: String): Array<out Argument>? {
         val cmdHuh = LatexRegularCommand[commandName]
         if (cmdHuh != null) {
-            return cmdHuh.arguments
+            return cmdHuh.first().arguments
         }
 
         val mathCmdHuh = LatexMathCommand[commandName] ?: return null
 
-        return mathCmdHuh.arguments
+        return mathCmdHuh.first().arguments
     }
 }

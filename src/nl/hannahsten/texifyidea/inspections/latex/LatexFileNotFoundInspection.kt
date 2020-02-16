@@ -75,7 +75,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             val default = LatexCommand.lookup(command.name) ?: continue
 
             // Remove optional arguments from list of commands
-            val arguments = default.arguments.mapNotNull { it as? RequiredArgument }
+            val arguments = default.first().arguments.mapNotNull { it as? RequiredArgument }
 
             // Remove optional parameters from list of parameters
             val parameters = command.parameterList.filter { it.requiredParam != null }
@@ -135,7 +135,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             if (extension == "") {
                 val name = command.commandToken.text
                 LatexRegularCommand[name.substring(1)]?.apply {
-                    val args = this.getArgumentsOf(RequiredFileArgument::class)
+                    val args = this.first().getArgumentsOf(RequiredFileArgument::class)
                     if (args.isNotEmpty()) extension = args.first().defaultExtension
                 }
             }
