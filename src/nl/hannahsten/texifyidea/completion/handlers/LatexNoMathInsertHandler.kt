@@ -11,6 +11,7 @@ import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.codeInsight.template.impl.TextExpression
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 
@@ -37,14 +38,32 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
      * Inserts the `LATEX.begin` live template.
      */
     private fun insertBegin(context: InsertionContext) {
-        val template = object : TemplateImpl("", "{\$__Variable0\$}\n\$END\$\n\\end{\$__Variable0\$}", "") {
+        val templateText = "{\$__Variable0\$}\$END\$\n\\end{\$__Variable0\$}"
+        val template = object : TemplateImpl("", templateText, "") {
             override fun isToReformat(): Boolean = true
         }
         template.addVariable(TextExpression(""), true)
 
-        val editor = context.editor
-        val templateManager = TemplateManager.getInstance(context.project)
-        templateManager.startTemplate(editor, template, EnvironmentInsertImports(context))
+        TemplateManager.getInstance(context.project)
+                .startTemplate(context.editor, template, EnvironmentInsertImports(context))
+    }
+
+    /**
+     * Insert live template for the required arguments. When there is no required argument, the
+     * template will insert a new line and move the cursor to the content of the environment.
+     */
+    private fun insertRequiredArguments(environment: Environment?, context: InsertionContext) {
+        val numberRequiredArguments = environment?.arguments
+                ?.count { it is RequiredArgument } ?: 0
+
+        val templateText = List(numberRequiredArguments) { "{\$__Variable${it}\$}" }.joinToString("") + "\n\$END\$"
+        val parameterTemplate = object : TemplateImpl("", templateText, "") {
+            override fun isToReformat(): Boolean = true
+        }
+        repeat(numberRequiredArguments) { parameterTemplate.addVariable(TextExpression(""), true) }
+
+        TemplateManager.getInstance(context.project)
+                .startTemplate(context.editor, parameterTemplate)
     }
 
     /**
@@ -55,8 +74,12 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
     private inner class EnvironmentInsertImports(val context: InsertionContext) : TemplateEditingListener {
 
         override fun beforeTemplateFinished(templateState: TemplateState, template: Template?) {
-            val envName = templateState.getVariableValue("ENVNAME")?.text ?: return
-            val environment = Environment[envName] ?: return
+            val envName = templateState.getVariableValue("__Variable0")?.text ?: return
+
+            val environment = Environment[envName]
+            insertRequiredArguments(environment, context)
+            environment ?: return
+
             val pack = environment.dependency
             val file = context.file
             val editor = context.editor
