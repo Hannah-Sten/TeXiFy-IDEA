@@ -1,11 +1,15 @@
 package nl.hannahsten.texifyidea.lang
 
+import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
+
 /**
  * @author Hannah Schellekens
  */
 enum class BibtexDefaultEntryType(
         override val fieldName: String,
-        override val description: String
+        override val description: String,
+        override val dependency: Package = DEFAULT
 ) : BibtexEntryField {
 
     ADDRESS("address", "Publisher's address (usually just the city, but can be the full address for lesser-known publishers)"),
@@ -31,5 +35,9 @@ enum class BibtexDefaultEntryType(
     TITLE("title", "The title of the work"),
     TYPE("type", "The field overriding the default type of publication (e.g. \"Research Note\" for techreport, \"{PhD} dissertation\" for phdthesis, \"Section\" for inbook/incollection)"),
     VOLUME("volume", "The volume of a journal or multi-volume book"),
-    YEAR("year", "The year of publication (or, if unpublished, the year of creation)");
+    YEAR("year", "The year of publication (or, if unpublished, the year of creation)"),
+
+    // BibLaTeX
+    DATE("date", "The publication date.", BIBLATEX),
+    URL("url", "The url of an online publication. If it is not URL-escaped (no '%' chars) it will be URI-escaped according to RFC 3987, that is, even Unicode chars will be correctly escaped.", BIBLATEX);
 }

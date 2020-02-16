@@ -233,4 +233,19 @@
         </context>
     </template>
 
+    <template id="BIBTEX.type.online" name="online"
+              value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;url = {$URL$},&#10;&#32;&#32;&#32;&#32;date = {$DATE$},$END$&#10;}"
+              description="Starts a new @online entry." toReformat="false" toShortenFQNames="false">
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="URL" expression="" defaultValue="&quot;url&quot;" alwaysStopAt="true"/>
+        <variable name="DATE" expression="" defaultValue="&quot;date&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="BIBTEX" value="true"/>
+        </context>
+    </template>
+
+
 </templateSet>

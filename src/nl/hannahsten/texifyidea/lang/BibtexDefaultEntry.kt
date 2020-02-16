@@ -9,7 +9,8 @@ enum class BibtexDefaultEntry(
         override val token: String,
         override val description: String,
         override val required: Array<BibtexEntryField>,
-        override val optional: Array<BibtexEntryField>
+        override val optional: Array<BibtexEntryField>,
+        override val dependency: Package = Package.DEFAULT
 ) : BibtexEntryType {
 
     // Regular entry types.
@@ -62,6 +63,12 @@ enum class BibtexDefaultEntry(
             "For use when nothing else fits.",
             emptyArray(),
             arrayOf(AUTHOR, TITLE, HOWPUBLISHED, MONTH, YEAR, NOTE, KEY)
+    ),
+    ONLINE("online",
+            "A website.",
+            arrayOf(AUTHOR, TITLE, DATE, URL),
+            arrayOf(),
+            Package.BIBLATEX
     ),
     PHDTHESIS("phdthesis",
             "A Ph.D. thesis.",

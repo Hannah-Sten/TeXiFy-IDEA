@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.lang
 /**
  * @author Hannah Schellekens
  */
-interface BibtexEntryType : Described {
+interface BibtexEntryType : Described, Dependend {
 
     /**
      * The token used to identify the BibTeX token _without_ `@` prefix.

@@ -21,6 +21,7 @@ object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
                     .withPresentableText(it.token)
                     .bold()
                     .withIcon(PlatformIcons.ANNOTATION_TYPE_ICON)
+                    .withTailText("  (${it.dependency.name})", true)
                     .withInsertHandler(TokenTypeInsertHandler)
         })
     }
