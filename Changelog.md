@@ -2,7 +2,8 @@
 
 # Additions
 * Add go to definition for labels, citations and new commands. (#1191, #2)
-* Add find usages action for new commands. (#1237)
+* Add find usages action for new commands and labels. (#1237, #1252)
+* Add support for refactor (rename) of labels. (#1255)
 * Add support for opening source files of installed LaTeX packages and classes. (#1191)
 * Add support for opening files from include commands. (#1191)
 * Add support for a custom output or auxiliary directory. (#1201)
@@ -16,12 +17,14 @@
 * Surround text with quotes depending on your Smart quotes setting. (#1207)
 * Add inspection which checks that floating environments have a label. (#1216)
 * Add inspection to check if an included package could not be found. (#1230)
+* Use live templates for inserting braces for all required parameters of commands and environments. (#1258, #1261)
 * Make links in \url and \href commands clickable. (#1238)
 * Remove second $ of an empty inline math environment when deleting the first one. (#1227)
 * Add chapterbib support. (#1223)
 * Use Ctrl+Enter to split lines in an itemize. (#1228)
 * Disable the formatter on files that only contain a verbatim-like environment. (#1225)
 * Add inspection plus quickfix to insert formatter magic comments or move verbatim-like environments to a separate file. (#1225)
+* Add support for commands with the same name from different packages. (#1262)
 * Add inspection to check that the label comes after the caption. (#1235)
 
 # Changes
