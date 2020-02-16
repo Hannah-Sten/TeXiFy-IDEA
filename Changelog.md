@@ -29,6 +29,7 @@
 * Improve performance of line markers. (#1200)
 * Ignore \ifoot for \if-like commands. (#1220)
 * Also execute Grazie grammar checking at the beginning of sentences. (#1196)
+* Always show LaTeX Tools menu to avoid performance problems. (#1257)
 
 # Bug fixes
 * Fixed crashes. (#1211)
