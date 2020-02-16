@@ -122,7 +122,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
                 env -> LookupElementBuilder.create(env, env.getEnvironmentName())
                         .withPresentableText(env.getEnvironmentName())
                         .bold()
-                        .withTailText(packageName(env), true)
+                        .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
                         .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         ));
         result.addLookupAdvertisement(Kindness.getKindWords());
