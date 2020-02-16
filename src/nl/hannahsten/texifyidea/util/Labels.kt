@@ -45,6 +45,9 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
 fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileAsSequence(),
         LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
 
+fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileSetAsSequence(),
+        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
+
 /**
  * Finds all the defined bibtex labels in the fileset of the file.
  *
