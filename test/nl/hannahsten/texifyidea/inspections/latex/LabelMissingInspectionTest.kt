@@ -93,6 +93,20 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         myFixture.checkHighlighting(false, false, true, false)
     }
 
+    fun testListingLabelIsNotMissingWarnings() {
+        myFixture.configureByText(LatexFileType, """
+            \usepackage{listings}
+            \begin{document}
+                \begin{lstlisting}[language=Python, label=somelabel]
+                \end{lstlisting}
+                
+                \begin{lstlisting}[label={label with spaces}]
+                \end{lstlisting}
+            \end{document}
+        """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
     @Test
     fun testMissingListingLabelQuickFixNoParameters() {
         testQuickFix("""

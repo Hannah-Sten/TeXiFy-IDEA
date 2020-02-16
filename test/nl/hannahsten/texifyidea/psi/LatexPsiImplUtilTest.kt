@@ -104,4 +104,36 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
                 url
         )
     }
+
+    @Test
+    fun testBeginCommandOptionalParameterSplitting() {
+        myFixture.configureByText(LatexFileType, """\begin{lstlisting}[language=Python, label={lst:listing}]\end{lstlisting}""")
+
+        val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
+        val element = psiFile.children.first().firstChildOfType(LatexBeginCommand::class)!!
+        val optionalParameters = element.optionalParameters
+
+        assertEquals("Python", optionalParameters["language"])
+        assertEquals("lst:listing", optionalParameters["label"])
+    }
+
+    @Test
+    fun testLabelFirstArgumentEnvironment() {
+        myFixture.configureByText(LatexFileType, """\begin{lstlisting}[label={lst:listing}, language=Python]\end{lstlisting}""")
+
+        val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
+        val element = psiFile.children.first().firstChildOfType(LatexEnvironment::class)!!
+
+        assertEquals("lst:listing", element.label)
+    }
+
+    @Test
+    fun testLabelNotFirstParameterEnvironment() {
+        myFixture.configureByText(LatexFileType, """\begin{lstlisting}[language=Python, label={lst:listing}]\end{lstlisting}""")
+
+        val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
+        val element = psiFile.children.first().firstChildOfType(LatexEnvironment::class)!!
+
+        assertEquals("lst:listing", element.label)
+    }
 }
