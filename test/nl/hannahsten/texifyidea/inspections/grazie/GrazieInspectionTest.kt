@@ -1,9 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.grazie
 
-import com.intellij.grazie.GrazieConfig
 import com.intellij.grazie.ide.GrazieInspection
 import com.intellij.grazie.ide.msg.GrazieStateLifecycle
-import com.intellij.grazie.jlanguage.Lang
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.spellchecker.inspections.SpellCheckingInspection
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -19,10 +17,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         super.setUp()
         myFixture.enableInspections(GrazieInspection(), SpellCheckingInspection())
         (myFixture as? CodeInsightTestFixtureImpl)?.canChangeDocumentDuringHighlighting(true)
-
-        GrazieConfig.update { state ->
-            state.update(enabledLanguages = Lang.values().toSet())
-        }
 
         while (ApplicationManager.getApplication().messageBus.hasUndeliveredEvents(GrazieStateLifecycle.topic)) {
             Thread.sleep(100)
