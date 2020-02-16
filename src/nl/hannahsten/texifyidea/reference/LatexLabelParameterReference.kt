@@ -4,7 +4,7 @@ import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.findLatexLabelPsiElementsInFileAsSequence
+import nl.hannahsten.texifyidea.util.findLatexLabelPsiElementsInFileSetAsSequence
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
 /**
@@ -32,7 +32,7 @@ class LatexLabelParameterReference(element: LatexNormalText) : PsiReferenceBase<
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         // Find the label definition
-        return myElement.containingFile.findLatexLabelPsiElementsInFileAsSequence()
+        return myElement.containingFile.findLatexLabelPsiElementsInFileSetAsSequence()
                 .filter { it.extractLabelName() == myElement.name }
                 .mapNotNull {
                     // Find the normal text in the label command.

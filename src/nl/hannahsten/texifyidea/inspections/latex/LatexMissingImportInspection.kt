@@ -4,6 +4,8 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
@@ -105,31 +107,36 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         val commands = file.commandsInFile()
         for (command in commands) {
             val name = command.commandToken.text.substring(1)
-            val latexCommand = LatexCommand.lookup(name) ?: continue
-            val pack = latexCommand.dependency
+            val latexCommands = LatexCommand.lookup(name) ?: continue
 
-            if (pack.isDefault) {
+            // In case there are multiple commands with this name, we don't know which one the user wants.
+            // So we don't know which of the dependencies the user needs: we assume that if at least one of them is present it will be the right one.
+            val dependencies = latexCommands.map { it.dependency }
+
+            if (dependencies.isEmpty() || dependencies.any { it.isDefault }) {
                 continue
             }
 
-            // amsfonts is included in amssymb
-            if (pack == AMSFONTS && includedPackages.contains(AMSSYMB.name)) {
-                continue
+            // Packages included in other packages
+            for (packageInclusion in Magic.Package.packagesLoadingOtherPackages) {
+                if (packageInclusion.value.intersect(dependencies.toSet()).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
+                    continue
+                }
             }
 
-            // amsmath is included in mathtools
-            if (pack == AMSMATH && includedPackages.contains(MATHTOOLS.name)) {
-                continue
-            }
-
-            if (!includedPackages.contains(pack.name)) {
+            // If none of the dependencies are included
+            if (includedPackages.toSet().intersect(dependencies.map { it.name }).isEmpty()) {
+                // We know dependencies is not empty
+                val range = TextRange(0, latexCommands.minBy { it.command.length }!!.command.length + 1)
+                val dependencyNames = dependencies.joinToString { it.name }.replaceAfterLast(", ", "or ${dependencies.last().name}")
+                val fixes = dependencies.map { ImportCommandFix(it) }.toTypedArray()
                 descriptors.add(manager.createProblemDescriptor(
                         command,
-                        TextRange(0, latexCommand.command.length + 1),
-                        "Command requires ${pack.name} package",
+                        range,
+                        "Command requires $dependencyNames package",
                         ProblemHighlightType.ERROR,
                         isOntheFly,
-                        ImportCommandFix(pack.name)
+                        *fixes
                 ))
             }
         }
@@ -138,16 +145,17 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
     /**
      * @author Hannah Schellekens
      */
-    private class ImportCommandFix(val import: String) : LocalQuickFix {
+    private class ImportCommandFix(val pack: nl.hannahsten.texifyidea.lang.Package) : LocalQuickFix {
 
-        override fun getFamilyName() = "Add import for package '$import'"
+        override fun getFamilyName() = "Add import for package '${pack.name}'"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val latexCommand = LatexCommand.lookup(command.commandToken.text) ?: return
             val file = command.containingFile
 
-            PackageUtils.insertUsepackage(file, latexCommand.dependency)
+            if (!PackageUtils.insertUsepackage(file, pack)) {
+                Notification("LatexMissingImportInspection", "Conflicting package detected", "The package ${pack.name} was not inserted because a conflicting package was detected.", NotificationType.INFORMATION).notify(project)
+            }
         }
     }
 

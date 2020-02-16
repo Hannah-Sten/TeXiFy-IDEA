@@ -180,8 +180,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
             // Find file
             val latexCommandHuh = LatexRegularCommand[name.substring(1)] ?: continue
-            val argument = latexCommandHuh
-                    .getArgumentsOf(RequiredFileArgument::class.java)[0]
+            val argument = latexCommandHuh.first().getArgumentsOf(RequiredFileArgument::class.java)[0]
 
             val fileNames = cmd.includedFileNames() ?: continue
             val containingFile = element.containingFile
