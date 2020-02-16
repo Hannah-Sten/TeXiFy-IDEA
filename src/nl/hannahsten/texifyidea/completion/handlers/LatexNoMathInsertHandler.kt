@@ -35,7 +35,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
     }
 
     /**
-     * Inserts the `LATEX.begin` live template.
+     * Inserts a live template to make the end command match the begin command.
      */
     private fun insertBegin(context: InsertionContext) {
         val templateText = "{\$__Variable0\$}\$END\$\n\\end{\$__Variable0\$}"
@@ -49,8 +49,8 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
     }
 
     /**
-     * Insert live template for the required arguments. When there is no required argument, the
-     * template will insert a new line and move the cursor to the content of the environment.
+     * Insert a live template for the required arguments. When there are  no required
+     * arguments, move to the content of the environment.
      */
     private fun insertRequiredArguments(environment: Environment?, context: InsertionContext) {
         val numberRequiredArguments = environment?.arguments

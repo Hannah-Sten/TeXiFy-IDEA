@@ -9,5 +9,5 @@ class LatexLiveTemplateProvider : DefaultLiveTemplatesProvider {
 
     override fun getDefaultLiveTemplateFiles() = emptyArray<String>()
 
-    override fun getHiddenLiveTemplateFiles() = arrayOf("liveTemplates/hidden/LaTeX", "liveTemplates/hidden/Math")
+    override fun getHiddenLiveTemplateFiles() = arrayOf("liveTemplates/hidden/Math")
 }
