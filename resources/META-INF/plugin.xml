@@ -127,8 +127,7 @@
         </group>
 
         <!-- LaTeX Tools commands -->
-        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true"
-               class="nl.hannahsten.texifyidea.action.group.LatexToolsMenuGroup">
+        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Clear files -->
@@ -361,7 +360,6 @@
         <lang.formatter language="Latex" implementationClass="nl.hannahsten.texifyidea.formatting.LatexFormattingModelBuilder"/>
         <lang.formatter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.formatting.BibtexFormattingModelBuilder"/>
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
-        <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
@@ -379,6 +377,11 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
+
+        <!-- References and refactoring -->
+        <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
+        <lang.refactoringSupport language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexRefactoringSupportProvider" />
+        <lang.namesValidator language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexNamesValidator" />
 
         <!-- Tool windows -->
         <toolWindow id="Equation Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/equation-preview.svg" canCloseContents="true" />

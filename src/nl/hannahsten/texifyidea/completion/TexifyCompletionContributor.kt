@@ -91,7 +91,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val name = command.commandToken.text
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
-                                val args = cmd.getArgumentsOf(RequiredFileArgument::class)
+                                val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
                                 if (args.isNotEmpty()) processingContext.put("type", args.first())
 
                                 return args.isNotEmpty()
@@ -114,7 +114,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val name = command.commandToken.text
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
-                                val args = cmd.getArgumentsOf(RequiredFolderArgument::class)
+                                val args = cmd.first().getArgumentsOf(RequiredFolderArgument::class)
                                 if (args.isNotEmpty()) processingContext.put("type", args.first())
 
                                 return args.isNotEmpty()
@@ -137,7 +137,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 val name = command.commandToken.text
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
-                                val args = cmd.getArgumentsOf(RequiredPicturePathArgument::class)
+                                val args = cmd.first().getArgumentsOf(RequiredPicturePathArgument::class)
                                 if (args.isNotEmpty()) processingContext.put("type", args.first())
 
                                 return args.isNotEmpty()

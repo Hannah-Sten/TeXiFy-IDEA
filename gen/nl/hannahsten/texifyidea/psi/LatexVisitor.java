@@ -61,7 +61,7 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitNormalText(@NotNull LatexNormalText o) {
-    visitPsiElement(o);
+    visitPsiNameIdentifierOwner(o);
   }
 
   public void visitOpenGroup(@NotNull LatexOpenGroup o) {

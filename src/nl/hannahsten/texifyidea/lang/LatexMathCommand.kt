@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.LATEXSYMB
 /**
  * @author Sten Wessel
  */
+@Suppress("unused")
 enum class LatexMathCommand(
         override val command: String,
         override vararg val arguments: Argument = emptyArray(),
@@ -347,22 +348,22 @@ enum class LatexMathCommand(
 
     companion object {
 
-        private val lookup = HashMap<String, LatexMathCommand>()
-        private val lookupDisplay = HashMap<String, LatexMathCommand>()
+        private val lookup = HashMap<String, MutableSet<LatexMathCommand>>()
+        private val lookupDisplay = HashMap<String, MutableSet<LatexMathCommand>>()
 
         init {
             for (command in values()) {
-                lookup[command.command] = command
+                lookup.getOrPut(command.command) { mutableSetOf() }.add(command)
                 if (command.display != null) {
-                    lookupDisplay.putIfAbsent(command.display!!, command)
+                    lookupDisplay.putIfAbsent(command.display!!, mutableSetOf(command))?.add(command)
                 }
             }
         }
 
         @JvmStatic
-        operator fun get(command: String) = lookup[command]
+        operator fun get(command: String) = lookup[command]?.toSet()
 
         @JvmStatic
-        fun findByDisplay(display: String) = lookupDisplay[display]
+        fun findByDisplay(display: String) = lookupDisplay[display]?.toSet()
     }
 }

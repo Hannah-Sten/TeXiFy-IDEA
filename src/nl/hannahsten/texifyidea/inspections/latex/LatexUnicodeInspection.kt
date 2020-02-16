@@ -200,10 +200,10 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             // Try to find in lookup for special command
             val replacement: String?
             val command: LatexCommand? = if (inMathMode) {
-                LatexMathCommand.findByDisplay(c)
+                LatexMathCommand.findByDisplay(c)?.firstOrNull()
             }
             else {
-                LatexRegularCommand.findByDisplay(c)
+                LatexRegularCommand.findByDisplay(c)?.firstOrNull()
             }
 
             // Replace with found command or with standard substitution

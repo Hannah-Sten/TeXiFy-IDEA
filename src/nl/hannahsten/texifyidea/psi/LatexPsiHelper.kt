@@ -1,16 +1,17 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.psi
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.findFirstChild
+import nl.hannahsten.texifyidea.util.firstChildOfType
 
 class LatexPsiHelper(private val project: Project) {
 
     private fun createEnvironmentContent(): LatexEnvironmentContent {
         val environment = createFromText("\\begin{figure}\n" +
-                "        Placehodler\n" +
+                "        Placeholder\n" +
                 "    \\end{figure}").firstChildOfType(LatexEnvironment::class)!!
         environment.environmentContent!!.firstChild.delete()
         return environment.environmentContent!!
@@ -21,6 +22,9 @@ class LatexPsiHelper(private val project: Project) {
                 .findFirstChild { c -> c is LatexParameter && c.optionalParam != null }!!
     }
 
+    /**
+     * Create a label command \label{labelName}.
+     */
     fun createLabelCommand(labelName: String): PsiElement {
         val labelText = "\\label{$labelName}"
         val fileFromText = createFromText(labelText)
@@ -34,7 +38,7 @@ class LatexPsiHelper(private val project: Project) {
         return optionalParam.openGroup.contentList
     }
 
-    private fun createFromText(text: String): PsiElement =
+    fun createFromText(text: String): PsiElement =
             PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
 
     /**
