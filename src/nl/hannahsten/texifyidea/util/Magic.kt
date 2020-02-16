@@ -6,7 +6,11 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
+import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
 import org.intellij.lang.annotations.Language
 import java.awt.Color
@@ -677,6 +681,14 @@ object Magic {
          */
         val conflictingPackages = listOf(
                 setOf(BIBLATEX, NATBIB)
+        )
+
+        /**
+         * Maps packages to the packages it loads.
+         */
+        val packagesLoadingOtherPackages = mapOf(
+                AMSSYMB to setOf(AMSFONTS),
+                MATHTOOLS to setOf(AMSMATH)
         )
     }
 

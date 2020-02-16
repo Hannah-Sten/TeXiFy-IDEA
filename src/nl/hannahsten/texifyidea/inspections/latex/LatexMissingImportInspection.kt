@@ -4,6 +4,8 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
@@ -115,14 +117,11 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 continue
             }
 
-            // amsfonts is included in amssymb
-            if (dependencies.contains(AMSFONTS) && includedPackages.contains(AMSSYMB.name)) {
-                continue
-            }
-
-            // amsmath is included in mathtools
-            if (dependencies.contains(AMSMATH) && includedPackages.contains(MATHTOOLS.name)) {
-                continue
+            // Packages included in other packages
+            for (packageInclusion in Magic.Package.packagesLoadingOtherPackages) {
+                if (packageInclusion.value.intersect(dependencies.toSet()).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
+                    continue
+                }
             }
 
             // If none of the dependencies are included
@@ -154,7 +153,9 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
 
-            PackageUtils.insertUsepackage(file, pack)
+            if (!PackageUtils.insertUsepackage(file, pack)) {
+                Notification("LatexMissingImportInspection", "Conflicting package detected", "The package ${pack.name} was not inserted because a conflicting package was detected.", NotificationType.INFORMATION).notify(project)
+            }
         }
     }
 
