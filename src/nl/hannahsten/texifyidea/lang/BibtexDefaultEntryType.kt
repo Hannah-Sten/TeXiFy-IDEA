@@ -108,5 +108,29 @@ enum class BibtexDefaultEntryType(
     URLDATE("urldate", "The access date of the addres specified in the url field.", BIBLATEX),
     VENUE("venue", "The location of a conference, a symposium, or some other event in @proceedings and @inproceedings entries.", BIBLATEX),
     VERSION("version", "The revision number of a piece of software, a manual, etc.", BIBLATEX),
-    VOLUMES("volumes", "The total number of volumes of a multi-volume work.", BIBLATEX);
+    VOLUMES("volumes", "The total number of volumes of a multi-volume work.", BIBLATEX),
+    
+    // Special BibLaTeX fields
+    ENTRYSET("entryset", "This field is specific to entry sets.", BIBLATEX),
+    EXECUTE("execute", "A special field which holds arbitrary TeX code to be executed whenever the data of the respective entry is accessed.", BIBLATEX),
+    GENDER("gender", "The gender of the author or the gender of the editor if there is no author.", BIBLATEX),
+    LANGID("langid", "The language id of the bib entry.", BIBLATEX),
+    LANGIDOPTS("langidopts", "For polyglossia users, allows per-entry language specific options.", BIBLATEX),
+    IDS("ids", "Citation key aliases for the main citation key.", BIBLATEX),
+    INDEXSORTTITLE("indexsorttitle", "The title used when sorting the index.", BIBLATEX),
+    KEYWORDS("keywords", "A separated list of keywords.", BIBLATEX),
+    OPTIONS("options", "A separated list of options in <key>=<value> notation.", BIBLATEX),
+    PRESORT("presort", "A special field used to modify the sorting order of the bibliography.", BIBLATEX),
+    RELATED("related", "Citation keys of other entries which have a relationship to this entry.", BIBLATEX),
+    RELATEDOPTIONS("relatedoptions", "Per-type options to set for a related entry.", BIBLATEX),
+    RELATEDTYPE("relatedtype", "An identifier which specified the type of relationships for the keys listed in the related field.", BIBLATEX),
+    RELATEDSTRING("relatedstring", "A field used to override the bib string specified in relatedtype.", BIBLATEX),
+    SORTKEY("sortkey", "A field used to modify the sorting order of the bibliography.", BIBLATEX),
+    SORTNAME("sortname", "A name or list of names used to modify the sorting order of the bibliography.", BIBLATEX),
+    SORTSHORTHAND("sortshorthand", "Similar to sortkey but used in the list of shorthands.", BIBLATEX),
+    SORTTITLE("sorttitle", "A field used to modify the sorting order of the bibliography.", BIBLATEX),
+    SORTYEAR("sortyear", "A field used to modify the sorting order of the bibliography.", BIBLATEX),
+    XDATA("xdata", "This field inherits data from one or more @xdata entries.", BIBLATEX),
+    XREF("xref", "This field is an alternative cross-referencing mechanism.", BIBLATEX);
+
 }
