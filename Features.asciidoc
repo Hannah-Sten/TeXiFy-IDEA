@@ -35,7 +35,7 @@ toc::[]
 * link:Automatic-package-importing[Automagically import packages of common commands]
 * Shortcuts for styling text
 * Line and block commenting shortcut
-* link:Refactoring[Renaming of labels]
+* link:Refactoring[Renaming of labels and environments]
 * Support for user-created document classes and packages
 * Toggle star action
 * Custom shortcuts for menu items
