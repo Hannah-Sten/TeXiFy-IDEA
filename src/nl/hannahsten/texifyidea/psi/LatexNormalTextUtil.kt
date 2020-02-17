@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
+import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
@@ -16,10 +17,15 @@ fun getReferences(element: LatexNormalText): Array<PsiReference> {
         val reference = LatexLabelParameterReference(element)
         if (reference.multiResolve(false).isNotEmpty()) {
             arrayOf<PsiReference>(reference)
-        } else {
+        }
+        else {
             emptyArray<PsiReference>()
         }
-    } else {
+    }
+    else if (element.firstParentOfType(LatexEndCommand::class) != null) {
+        arrayOf<PsiReference>(LatexEnvironmentReference(element))
+    }
+    else {
         emptyArray<PsiReference>()
     }
 }
@@ -31,7 +37,8 @@ fun getReference(element: LatexNormalText): PsiReference? {
     val references = getReferences(element)
     return if (references.size != 1) {
         null
-    } else {
+    }
+    else {
         references[0]
     }
 }
