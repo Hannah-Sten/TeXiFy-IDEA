@@ -1,10 +1,28 @@
 :experimental:
 _Since b0.6.9_
 
-Currently, refactoring (renaming) elements is only support for labels.
+Currently, refactoring (renaming) elements is only supported for labels and environments.
 
-To use it, place your cursor on a label definition or reference, e.g. `\ref{some-<cursor>label}` and press kbd:[Shift+F6].
+To rename a label, place your cursor on a label definition or reference, e.g. `\ref{some-<cursor>label}` and press kbd:[Shift+F6].
 
 To find out what elements need to be renamed as well (definition and other usages), the functionality from link:Find-usages[Find usages] is used.
 
-When you try to rename an element for which refactoring is not supported, a warning "Inserted identifier is not valid" will be shown.
+Similarly, you can easily rename an environment, i.e. replace
+
+[source,latex]
+----
+\begin{center}
+\end{center}
+----
+
+with
+
+[source,latex]
+----
+\begin{abstract}
+\end{abstract}
+----
+
+by making sure your cursor is on the environment name inside either the `\begin` or `\end` command and using kbd:[Shift + F6].
+
+When you try to rename an element for which refactoring is not supported, the element will simply not change or in some cases a warning "Inserted identifier is not valid" will be shown.
