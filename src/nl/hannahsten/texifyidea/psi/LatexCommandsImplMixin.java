@@ -65,6 +65,7 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
         }
     }
 
+    // todo is this when subtree for files is changed, or when the PSI subtree changed?
     @Override
     public void subtreeChanged() {
         ReferencedFileSetService setService = ReferencedFileSetService.getInstance(getProject());

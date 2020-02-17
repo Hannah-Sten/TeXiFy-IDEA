@@ -58,7 +58,7 @@ class ReferencedFileSetCache(val project: Project) {
     fun fileSetFor(file: PsiFile): Set<PsiFile> {
         val cache = fileSetCache[file] ?: buildCacheFor(file)
         return cache.value ?: emptySet()
-    }
+    } // todo cache.value will call buildCachesFor
 
     /**
      * Clears the cache for base file `file`.
