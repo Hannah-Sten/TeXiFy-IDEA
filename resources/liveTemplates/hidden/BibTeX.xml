@@ -1,39 +1,4 @@
 <templateSet>
-    <!-- INSERT NEW TAG -->
-    <template id="BIBTEX.tag" name="tag"
-              value="$KEY$ = $CONTENT$,$END$"
-              description="Inserts a new tag in the entry." toReformat="false" toShortenFQNames="false">
-        <variable name="KEY" expression="" defaultValue="&quot;key&quot;" alwaysStopAt="true"/>
-        <variable name="CONTENT" expression="complete()" defaultValue="&quot;content&quot;" alwaysStopAt="true"/>
-
-        <context>
-            <option name="BIBTEX" value="true"/>
-        </context>
-    </template>
-
-    <!-- @STRING -->
-    <template id="BIBTEX.type.string" name="string"
-              value="{ $IDENTIFIER$ = &quot;$VALUE$&quot; }$END$"
-              description="Inserts a new string definition." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
-        <variable name="VALUE" expression="complete()" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
-
-        <context>
-            <option name="BIBTEX" value="true"/>
-        </context>
-    </template>
-
-    <!-- @PREAMBLE -->
-    <template id="BIBTEX.type.preamble" name="preamble"
-              value="{&#10;&#32;&#32;&#32;&#32;&quot;$PREAMBLE$&quot;&#10;}$END$"
-              description="Inserts a new tag in the entry." toReformat="false" toShortenFQNames="false">
-        <variable name="PREAMBLE" expression="complete()" defaultValue="" alwaysStopAt="true"/>
-
-        <context>
-            <option name="BIBTEX" value="true"/>
-        </context>
-    </template>
-
     <!-- @ARTICLE -->
     <template id="BIBTEX.type.article" name="article"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;journal = {$JOURNAL$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
@@ -176,6 +141,21 @@
         </context>
     </template>
 
+    <!-- @ONLINE -->
+    <template id="BIBTEX.type.online" name="online"
+              value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;date = {$DATE$},&#10;&#32;&#32;&#32;&#32;url = {$URL$},$END$&#10;}"
+              description="Starts a new @online entry." toReformat="false" toShortenFQNames="false">
+        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
+        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
+        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
+        <variable name="DATE" expression="" defaultValue="&quot;date&quot;" alwaysStopAt="true"/>
+        <variable name="URL" expression="" defaultValue="&quot;url&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="BIBTEX" value="true"/>
+        </context>
+    </template>
+
     <!-- @PHDTHESIS -->
     <template id="BIBTEX.type.phdthesis" name="phdthesis"
               value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;school = {$SCHOOL$},&#10;&#32;&#32;&#32;&#32;year = {$YEAR$},$END$&#10;}"
@@ -232,20 +212,5 @@
             <option name="BIBTEX" value="true"/>
         </context>
     </template>
-
-    <template id="BIBTEX.type.online" name="online"
-              value="{$IDENTIFIER$,&#10;&#32;&#32;&#32;&#32;author = {$AUTHOR$},&#10;&#32;&#32;&#32;&#32;title = {$TITLE$},&#10;&#32;&#32;&#32;&#32;url = {$URL$},&#10;&#32;&#32;&#32;&#32;date = {$DATE$},$END$&#10;}"
-              description="Starts a new @online entry." toReformat="false" toShortenFQNames="false">
-        <variable name="IDENTIFIER" expression="" defaultValue="&quot;identifier&quot;" alwaysStopAt="true"/>
-        <variable name="AUTHOR" expression="" defaultValue="&quot;author&quot;" alwaysStopAt="true"/>
-        <variable name="TITLE" expression="" defaultValue="&quot;title&quot;" alwaysStopAt="true"/>
-        <variable name="URL" expression="" defaultValue="&quot;url&quot;" alwaysStopAt="true"/>
-        <variable name="DATE" expression="" defaultValue="&quot;date&quot;" alwaysStopAt="true"/>
-
-        <context>
-            <option name="BIBTEX" value="true"/>
-        </context>
-    </template>
-
 
 </templateSet>
