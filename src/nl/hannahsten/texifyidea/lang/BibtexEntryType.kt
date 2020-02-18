@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.lang
 
+import com.intellij.codeInsight.template.impl.TemplateImpl
+import com.intellij.codeInsight.template.impl.TextExpression
+
 /**
  * @author Hannah Schellekens
  */
@@ -28,5 +31,28 @@ interface BibtexEntryType : Described, Dependend {
         list.addAll(required)
         list.addAll(optional)
         return list
+    }
+
+    fun bibPackage(): String = when (dependency) {
+        Package.BIBLATEX -> "BIBLATEX"
+        else -> "BIBTEX"
+    }
+
+    /**
+     * Create a template to insert when inserting this BibTeX entry.
+     */
+    fun template(): TemplateImpl {
+        val keyValueString = required.mapIndexed { i: Int, field: BibtexEntryField ->
+            "${field.fieldName} = {\$__Variable${i + 1}\$}"
+        }.joinToString(",\n")
+
+        val templateString = "{\$__Variable0\$,\n$keyValueString,\$END\$\n}"
+
+        val template = object : TemplateImpl("", templateString, "") {
+            override fun isToReformat(): Boolean = true
+        }
+        template.addVariable(TextExpression("identifier"), true)
+        required.forEach { template.addVariable(TextExpression(it.fieldName), true) }
+        return template
     }
 }

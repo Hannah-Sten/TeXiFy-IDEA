@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntryType.*
+import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
 
 /**
  * @author Hannah Schellekens
@@ -98,11 +99,17 @@ enum class BibtexDefaultEntry(
     ),
 
     // BibLaTeX entries
+    BIBLATEX_ARTICLE("article", 
+            "An article in a journal, magazine, newspaper, or other periodical which forms a self-contained unit with its own title.",
+            arrayOf(AUTHOR, TITLE, JOURNALTITLE, YEAR),
+            arrayOf(),
+            BIBLATEX
+    ),
     ONLINE("online",
             "A website.",
             arrayOf(AUTHOR, TITLE, DATE, URL),
             arrayOf(SUBTITLE, TITLEADDON, LANGUAGE, VERSION, NOTE, ORGANISATION, ADDENDUM, PUBSTATE, EPRINTCLASS, EPRINTTYPE, URLDATE),
-            Package.BIBLATEX
+            BIBLATEX
     );
 
     companion object {
