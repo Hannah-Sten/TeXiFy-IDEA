@@ -80,7 +80,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     ?.psiFile(runConfig.project)
                     ?.includedPackages()
                     ?: setOf()
-            isMakeindexNeeded = includedPackages.intersect(index.asIterable()).isNotEmpty()
+            isMakeindexNeeded = includedPackages.intersect(index.asIterable()).isNotEmpty() && runConfig.compiler?.includesMakeindex == false
 
             if (isMakeindexNeeded) {
                 // Some packages do handle makeindex themselves
