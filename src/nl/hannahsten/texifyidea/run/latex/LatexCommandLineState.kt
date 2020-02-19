@@ -60,7 +60,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 runConfig.generateBibRunConfig()
 
                 runConfig.bibRunConfigs.forEach {
-                    val bibSettings = it ?: return@forEach
+                    val bibSettings = it
 
                     // Pass necessary latex run configurations settings to the bibtex run configuration.
                     (bibSettings.configuration as? BibtexRunConfiguration)?.apply {
@@ -108,10 +108,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         runConfig.bibRunConfigs.forEachIndexed { index, bibSettings ->
             if (!runConfig.isFirstRunConfig) {
-                return@forEachIndexed
-            }
-
-            if (bibSettings == null) {
                 return@forEachIndexed
             }
 

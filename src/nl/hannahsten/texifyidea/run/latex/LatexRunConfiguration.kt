@@ -93,14 +93,14 @@ class LatexRunConfiguration constructor(project: Project,
     var allowFocusChange = true
 
     private var bibRunConfigIds = mutableSetOf<String>()
-    var bibRunConfigs: Set<RunnerAndConfigurationSettings?>
-        get() = bibRunConfigIds.map {
+    var bibRunConfigs: Set<RunnerAndConfigurationSettings>
+        get() = bibRunConfigIds.mapNotNull {
             RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
         }.toSet()
         set(bibRunConfigs) {
             bibRunConfigIds = mutableSetOf()
             bibRunConfigs.forEach {
-                bibRunConfigIds.add(it?.uniqueID ?: "")
+                bibRunConfigIds.add(it.uniqueID)
             }
         }
 
@@ -482,7 +482,7 @@ class LatexRunConfiguration constructor(project: Project,
     /**
      * Whether the current output path is the default.
      */
-    fun isDefaultOutputPath() = getDefaultOutputPath() == outputPath
+    private fun isDefaultOutputPath() = getDefaultOutputPath() == outputPath
 
     /**
      * Assuming the main file is known, set a default auxil path if not already set.
