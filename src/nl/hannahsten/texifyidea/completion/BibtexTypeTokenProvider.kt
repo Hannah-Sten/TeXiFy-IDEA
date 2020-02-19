@@ -9,7 +9,6 @@ import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntry
-import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Package
 
 /**
@@ -23,15 +22,19 @@ object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
                     .withPresentableText(it.token)
                     .bold()
                     .withIcon(PlatformIcons.ANNOTATION_TYPE_ICON)
-                    .withTailText(packageName(it), true)
+                    .withTailText(" " + tags(it) + " " + packageName(it), true)
                     .withInsertHandler(TokenTypeInsertHandler)
         })
     }
 
-    private fun packageName(dependend: Dependend): String {
-        return when(val dependency = dependend.dependency) {
+    private fun tags(entry: BibtexDefaultEntry): String {
+        return " {" + entry.required.joinToString { it.toString().toLowerCase() } + "}"
+    }
+
+    private fun packageName(entry: BibtexDefaultEntry): String {
+        return when(val dependency = entry.dependency) {
             Package.DEFAULT -> ""
-            else -> "  (${dependency.name})"
+            else -> " (${dependency.name})"
         }
     }
 }
