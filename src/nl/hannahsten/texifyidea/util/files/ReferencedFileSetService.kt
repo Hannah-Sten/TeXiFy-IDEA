@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.components.ServiceManager
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 
 /**
@@ -12,8 +12,8 @@ interface ReferencedFileSetService {
     companion object {
 
         @JvmStatic
-        fun getInstance(project: Project): ReferencedFileSetService {
-            return ServiceManager.getService(project, ReferencedFileSetService::class.java)
+        fun getInstance(): ReferencedFileSetService {
+            return ServiceManager.getService(ReferencedFileSetService::class.java)
         }
     }
 
@@ -25,5 +25,7 @@ interface ReferencedFileSetService {
     /**
      * Invalidates the caches for the given file.
      */
-    fun dropCaches(psiFile: PsiFile)
+    fun dropCaches(file: VirtualFile)
+
+    fun dropAllCaches()
 }

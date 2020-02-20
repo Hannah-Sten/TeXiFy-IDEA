@@ -336,6 +336,12 @@
 
     </actions>
 
+    <!-- Listeners -->
+
+    <applicationListeners>
+        <listener class="nl.hannahsten.texifyidea.file.listeners.VfsChangeListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    </applicationListeners>
+
     <!-- Hooks for plugin functionality -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- Startup -->
@@ -478,7 +484,7 @@
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Other Services -->
-        <projectService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
+        <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
                         serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
 
         <!-- Inspections -->

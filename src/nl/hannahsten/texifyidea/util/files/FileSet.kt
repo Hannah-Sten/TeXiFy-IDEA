@@ -62,7 +62,7 @@ fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
  * @return All the files that are cross referenced between each other.
  */
 fun PsiFile.referencedFileSet(): Set<PsiFile> {
-    return ReferencedFileSetService.getInstance(project).referencedFileSetOf(this)
+    return ReferencedFileSetService.getInstance().referencedFileSetOf(this)
 }
 
 /**
