@@ -31,7 +31,12 @@ class ReferencedFileSetCache {
      */
     @Synchronized
     fun fileSetFor(file: PsiFile): Set<PsiFile> {
-        return fileSetCache.getOrPut(file.virtualFile) { findReferencedFileSet(file) }
+        return if (file.virtualFile != null) {
+            fileSetCache.getOrPut(file.virtualFile) { findReferencedFileSet(file) }
+        }
+        else {
+            emptySet()
+        }
     }
 
     /**
