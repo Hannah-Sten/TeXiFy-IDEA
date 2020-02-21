@@ -5,7 +5,6 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -22,7 +21,6 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.splitContent
-import java.io.File
 import java.util.*
 import javax.swing.Icon
 
@@ -70,8 +68,18 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // Find filenames.
         val fileNames = splitContent(requiredParams[0], ",")
 
-        // Get the required file arguments.
-        val argument = if (ignoreFileArgument) {
+        val argument = getRequiredFileArgument(ignoreFileArgument, commandName, arguments)
+        val roots = getContentRoots(element) ?: return
+        val graphicsPaths = getGraphicsPaths(element, fullCommand)
+        val files: List<PsiFile> = getFiles(fileNames, element, roots, graphicsPaths, argument)
+
+        val builder = buildGutterIcon(fileNames, files, ignoreFileArgument, argument)
+        result.add(builder.createLineMarkerInfo(element))
+    }
+
+    private fun getRequiredFileArgument(ignoreFileArgument: Boolean, commandName: String, arguments: List<RequiredFileArgument>): RequiredFileArgument {
+
+        return if (ignoreFileArgument) {
             if (commandName == LatexRegularCommand.DOCUMENTCLASS.command) {
                 RequiredFileArgument("", "cls")
             }
@@ -82,25 +90,29 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         else {
             arguments[0]
         }
+    }
 
+    private fun getContentRoots(element: PsiElement): ArrayList<VirtualFile>? {
         // Look up target file.
-        val containingFile = element.containingFile ?: return
+        val containingFile = element.containingFile ?: return null
 
         val roots = ArrayList<VirtualFile>()
         val rootFile = containingFile.findRootFile()
         if (rootFile.containingDirectory == null) {
-            return
+            return null
         }
         roots.add(rootFile.containingDirectory.virtualFile)
         val rootManager = ProjectRootManager.getInstance(element.project)
         Collections.addAll(roots, *rootManager.contentSourceRoots)
 
-        val psiManager = PsiManager.getInstance(element.project)
+        return roots
+    }
 
+    private fun getGraphicsPaths(element: PsiElement, fullCommand: String): ArrayList<String> {
         // Get all comands of project.
         val allCommands = element.containingFile.commandsInFileSet()
 
-        val graphPaths: ArrayList<String> = ArrayList()
+        val graphicsPaths: ArrayList<String> = ArrayList()
 
         // Check if a graphicspath is defined
         val pathCommands = allCommands.filter { it.name == "\\graphicspath" }
@@ -110,16 +122,22 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             if (fullCommand == "\\includegraphics") {
                 val args = pathCommands[0].parameterList.filter { it.requiredParam != null }
                 val subArgs = args[0].childrenOfType(LatexNormalText::class)
-                subArgs.forEach { graphPaths.add(it.text) }
+                subArgs.forEach { graphicsPaths.add(it.text) }
             }
         }
 
-        val files: List<PsiFile> = fileNames
+        return graphicsPaths
+    }
+
+    private fun getFiles(fileNames: List<String>, element: PsiElement, roots: ArrayList<VirtualFile>, graphPaths: ArrayList<String>, argument: RequiredFileArgument): List<PsiFile> {
+        val psiManager = PsiManager.getInstance(element.project)
+
+        return fileNames
                 .map { fileName ->
                     for (root in roots) {
-                        val file = File(fileName)
+                        val file = java.io.File(fileName)
                         if (file.isAbsolute) {
-                            LocalFileSystem.getInstance().findFileByPath(fileName)?.apply {
+                            com.intellij.openapi.vfs.LocalFileSystem.getInstance().findFileByPath(fileName)?.apply {
                                 return@map psiManager.findFile(this)
                             }
                         }
@@ -144,9 +162,9 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                 }
                 .filterNotNull()
                 .toList()
+    }
 
-        // Build gutter icon.
-
+    private fun buildGutterIcon(fileNames: List<String>, files: List<PsiFile>, ignoreFileArgument: Boolean, argument: RequiredFileArgument): NavigationGutterIconBuilder<PsiElement> {
         // Get the icon from the file extension when applicable and there exists an icon for this extension,
         // otherwise get the default icon for this argument.
         val extension = fileNames.firstOrNull()?.split(".")?.last()
@@ -158,14 +176,12 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             TexifyIcons.getIconFromExtension(extension)
         }
 
-        val builder = NavigationGutterIconBuilder
+        return NavigationGutterIconBuilder
                 .create(icon)
                 .setTargets(files)
                 .setPopupTitle("Navigate to Referenced File")
                 .setTooltipText("Go to referenced file")
                 .setCellRenderer(GotoFileCellRenderer(0))
-
-        result.add(builder.createLineMarkerInfo(element))
     }
 
     override fun getName(): String? {
