@@ -4,6 +4,7 @@
 * Add go to definition for labels, citations and new commands. (#1191, #2)
 * Add find usages action for new commands and labels. (#1237, #1252)
 * Add support for refactor (rename) of labels. (#1255)
+* Add support for refactor (rename) of environments. (#1264)
 * Add support for opening source files of installed LaTeX packages and classes. (#1191)
 * Add support for opening files from include commands. (#1191)
 * Add support for a custom output or auxiliary directory. (#1201)
@@ -35,7 +36,7 @@
 * Always show LaTeX Tools menu to avoid performance problems. (#1257)
 
 # Bug fixes
-* Fixed crashes. (#1211)
+* Fixed crashes. (#1211, #1269)
 
 Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko), Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) and [@Lukas-Heiligenbrunner](https://github.com/Lukas-Heiligenbrunner) for contributing to this release.
 
