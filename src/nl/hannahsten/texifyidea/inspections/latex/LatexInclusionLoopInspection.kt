@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.util.files.findInclusions
-import nl.hannahsten.texifyidea.util.files.findRelativeFile
+import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.includedFileNames
 
@@ -61,7 +61,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
             val fileNames = command.includedFileNames() ?: continue
             for (fileName in fileNames) {
-                val targetFile = root.findRelativeFile(fileName)
+                val targetFile = root.findFile(fileName)
                 if (targetFile in duplicate) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,

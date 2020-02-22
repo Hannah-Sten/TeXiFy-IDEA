@@ -6,28 +6,49 @@ import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.reference.InputFileReference
+import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.getFileArgumentsReferences
 import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
 /**
- * Create file references from the command parameter given.
+ * Get the references for this command.
+ * For example for a \ref{label1,label2} command, then label1 and label2 are the references.
  */
-fun extractIncludes(element: LatexCommands, firstParam: LatexRequiredParam): List<PsiReference> {
-    val subParamRanges = extractSubParameterRanges(firstParam)
-    val references: MutableList<PsiReference> = ArrayList()
-    for (range in subParamRanges) {
-        references.add(InputFileReference(
-                element, range.shiftRight(firstParam.textOffset - element.textOffset)
-        ))
-    }
-    return references
-}
+fun getReferences(element: LatexCommands): Array<PsiReference> {
+    val firstParam = readFirstParam(element)
 
+    // If it is a reference to a label
+    if (Magic.Command.reference.contains(element.commandToken.text) && firstParam != null) {
+        val references = extractLabelReferences(element, firstParam)
+        return references.toTypedArray()
+    }
+
+    // If it is a reference to a file
+    val references: List<PsiReference> = element.getFileArgumentsReferences()
+    if (firstParam != null && references.isNotEmpty()) {
+        return references.toTypedArray()
+    }
+
+    if (Magic.Command.urls.contains(element.name) && firstParam != null) {
+        return element.extractUrlReferences(firstParam)
+    }
+
+    // Else, we assume the command itself is important instead of its parameters,
+    // and the user is interested in the location of the command definition
+    val reference = CommandDefinitionReference(element)
+    // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
+    return if (reference.multiResolve(false).isEmpty()) {
+        emptyArray()
+    }
+    else {
+        arrayOf(reference)
+    }
+}
 
 /**
  * Create label references from the command parameter given.

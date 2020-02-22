@@ -48,6 +48,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // True when it doesn't have a required _file_ argument, but must be handled.
         val ignoreFileArgument = IGNORE_FILE_ARGUMENTS.contains(fullCommand)
 
+        // todo reuse code, same as filenotfoundinspection
         // Fetch the corresponding LatexRegularCommand object.
         val commandName = fullCommand.substring(1)
         val commandHuh = LatexRegularCommand[commandName]

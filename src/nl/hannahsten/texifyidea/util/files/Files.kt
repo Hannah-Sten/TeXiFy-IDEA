@@ -98,24 +98,35 @@ val PsiFile.fileSearchScope: GlobalSearchScope
 fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(project).findFile(this)
 
 /**
- * Looks for a certain file relative to this directory.
+ * Looks for a certain file, relative to this directory or if the given path is absolute use that directly.
  *
  * First looks if the file including extensions exists, when it doesn't it tries to append all
  * possible extensions until it finds a good one.
  *
- * @param fileName
- *         The name of the file relative to the directory.
+ * @param filePath
+ *         The name of the file relative to the directory, or an absolute path.
  * @param extensions
  *         Set of all supported extensions to look for.
  * @return The matching file, or `null` when the file couldn't be found.
  */
-fun VirtualFile.findFile(fileName: String, extensions: Set<String> = emptySet()): VirtualFile? {
-    var file = findFileByRelativePath(fileName)
+fun VirtualFile.findFile(filePath: String, extensions: Set<String> = emptySet()): VirtualFile? {
+    val isAbsolute = File(filePath).isAbsolute
+    var file = if (!isAbsolute) {
+        findFileByRelativePath(filePath)
+    }
+    else {
+        LocalFileSystem.getInstance().findFileByPath(filePath)
+    }
     if (file != null && !file.isDirectory) return file
 
     extensions.forEach { extension ->
-        val lookFor = if (fileName.endsWith(".$extension")) fileName else "$fileName.$extension"
-        file = findFileByRelativePath(lookFor)
+        val lookFor = if (filePath.endsWith(".$extension")) filePath else "$filePath.$extension"
+        file = if (!isAbsolute) {
+            findFileByRelativePath(lookFor)
+        }
+        else {
+            LocalFileSystem.getInstance().findFileByPath(lookFor)
+        }
 
         if (file != null && !file!!.isDirectory) return file
     }
@@ -152,7 +163,7 @@ fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replace
 /**
  * Returns the extension of given filename
  */
-fun String.getFileExtention(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
+fun String.getFileExtension(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
 
 /**
  * Creates a project directory at `path` which will be marked as excluded.
@@ -231,7 +242,7 @@ fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
         val declaredIn = command.containingFile
 
         for (includedName in includedNames) {
-            val referenced = declaredIn.findRelativeFile(includedName)
+            val referenced = declaredIn.findFile(includedName)
                     ?: continue
 
             // When it looks like a file includes itself, we skip it
@@ -285,7 +296,7 @@ fun PsiFile.findInclusions(): List<PsiFile> {
     return LatexIncludesIndex.getItems(this).asSequence()
             .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
             .flatMap { it.includedFileNames()?.asSequence() ?: emptySequence() }
-            .mapNotNull { root.findRelativeFile(it) }
+            .mapNotNull { root.findFile(it) }
             .toList()
 }
 
@@ -313,7 +324,7 @@ fun PsiFile.documentClassFile(): PsiFile? {
             .filter { it.name == "\\documentclass" }
             .firstOrNull() ?: return null
     val argument = command.requiredParameter(0) ?: return null
-    return findRelativeFile("$argument.cls")
+    return findFile("$argument.cls")
 }
 
 /**
@@ -359,7 +370,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
         val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
 
         for (fileName in fileNames) {
-            val included = rootFile.findRelativeFile(fileName, extensions)
+            val included = rootFile.findFile(fileName, extensions)
                     ?: return@forEach
             if (included in files) return@forEach
             files.add(included)
@@ -375,7 +386,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
  *         The path relative to this file.
  * @return The found file, or `null` when the file could not be found.
  */
-fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): PsiFile? {
+fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val directory = containingDirectory.virtualFile
 
     val file = directory.findFile(path, extensions
@@ -392,7 +403,7 @@ fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): Psi
 }
 
 /**
- * [findRelativeFile] but then it scans all content roots.
+ * [findFile] but then it scans all content roots.
  *
  * @param path
  *         The path relative to {@code original}.
