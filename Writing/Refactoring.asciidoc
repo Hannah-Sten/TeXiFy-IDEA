@@ -23,6 +23,6 @@ with
 \end{abstract}
 ----
 
-by making sure your cursor is on the environment name inside either the `\begin` or `\end` command and using kbd:[Shift + F6].
+by making sure your cursor is on the environment name inside either the `\begin` or `\end` command and using kbd:[Shift + F6], then type the new name.
 
 When you try to rename an element for which refactoring is not supported, the element will simply not change or in some cases a warning "Inserted identifier is not valid" will be shown.
