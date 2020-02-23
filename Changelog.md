@@ -3,8 +3,7 @@
 # Additions
 * Add go to definition for labels, citations and new commands. (#1191, #2)
 * Add find usages action for new commands and labels. (#1237, #1252)
-* Add support for refactor (rename) of labels. (#1255)
-* Add support for refactor (rename) of environments. (#1264)
+* Add support for refactor (rename) of labels, environments and files. (#1255, #1264, #1266)
 * Add support for opening source files of installed LaTeX packages and classes. (#1191)
 * Add support for opening files from include commands. (#1191)
 * Add support for a custom output or auxiliary directory. (#1201)
