@@ -1,8 +1,11 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.progress.runBackgroundableTask
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
@@ -40,16 +43,35 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             for (command in commands) {
                 val `package` = command.requiredParameters.first().toLowerCase()
                 if (`package` !in packages) {
-                    descriptors.add(manager.createProblemDescriptor(
-                            command,
-                            "Package is not installed",
-                            Magic.General.noQuickFix,
-                            ProblemHighlightType.WARNING,
-                            isOntheFly
-                    ))
+                    // Manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
+                    if ("tlmgr search --file /$`package`.sty".runCommand()?.isEmpty() != false) {
+                        descriptors.add(manager.createProblemDescriptor(
+                                command,
+                                "Package is not installed",
+                                InstallPackage(`package`),
+                                ProblemHighlightType.WARNING,
+                                isOntheFly
+                        ))
+                    }
                 }
             }
         }
         return descriptors
+    }
+
+    private class InstallPackage(val packageName: String) : LocalQuickFix {
+        override fun getFamilyName(): String = "Install $packageName"
+
+        /**
+         * Install the package in the background and add it to the list of installed
+         * packages when done.
+         */
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            runBackgroundableTask("Installing $packageName", project) {
+                val tlname = TexLivePackages.findTexLiveName(packageName)
+                "tlmgr install $tlname".runCommand()
+                TexLivePackages.packageList.add(packageName)
+            }
+        }
     }
 }

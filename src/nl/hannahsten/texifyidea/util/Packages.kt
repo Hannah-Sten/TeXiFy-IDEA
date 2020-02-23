@@ -299,6 +299,18 @@ object PackageUtils {
 
 object TexLivePackages {
     lateinit var packageList: MutableList<String>
+
+    /**
+     * Given a package name used in \usepackage or \RequirePackage, find the
+     * name needed to install from TeX Live. E.g. to be able to use \usepackage{rubikrotation}
+     * we need to install the rubik package.
+     */
+    fun findTexLiveName(packageName: String): String? {
+        // Find the package name for tlmgr.
+        val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand() ?: return null
+        return searchResult.split('\n')[1].dropLast(1)
+    }
+
 }
 
 /**
