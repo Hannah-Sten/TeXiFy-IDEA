@@ -25,10 +25,6 @@ object PackageUtils {
             .split(";")
             .toList()
 
-    val i by lazy {
-        4
-    }
-
     /** Commands which can include packages in optional or required arguments. **/
     val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
     private val TIKZ_IMPORT_COMMANDS = setOf("\\usetikzlibrary")
