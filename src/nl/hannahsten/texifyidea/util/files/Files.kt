@@ -337,10 +337,11 @@ fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
 
 /**
  * Scans the whole document (recursively) for all referenced/included files.
+ * Never use this directly, use the cached [referencedFileSet] instead.
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
-fun PsiFile.referencedFiles(): Set<PsiFile> {
+internal fun PsiFile.referencedFiles(): Set<PsiFile> {
     val result = HashSet<PsiFile>()
     referencedFiles(result)
     return result

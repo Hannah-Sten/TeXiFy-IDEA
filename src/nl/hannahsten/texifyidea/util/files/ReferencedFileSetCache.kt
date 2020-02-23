@@ -1,11 +1,17 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
+import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Caches the values for [findReferencedFileSet] calls.
+ * Caches the values for [findReferencedFileSetWithoutCache] calls.
  *
  * @author Hannah Schellekens
  */
@@ -23,7 +29,9 @@ class ReferencedFileSetCache {
      * but virtual files are not project-specific (can be opened in multiple projects). See [VfsChangeListener].
      * For the same reason we do not use a CachedValue, because the CachedValuesManager is project-specific.
      */
-    private val fileSetCache = HashMap<VirtualFile, Set<PsiFile>>()
+    private val fileSetCache = ConcurrentHashMap<VirtualFile, Set<PsiFile>>()
+
+    private val mutex = Mutex()
 
     /**
      * Get the file set of base file `file`.
@@ -32,7 +40,19 @@ class ReferencedFileSetCache {
     @Synchronized
     fun fileSetFor(file: PsiFile): Set<PsiFile> {
         return if (file.virtualFile != null) {
-            fileSetCache.getOrPut(file.virtualFile) { findReferencedFileSet(file) }
+            // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
+            // Wrapping the code with synchronized (myLock) { ... } also didn't work
+            // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
+            GlobalScope.launch {
+                mutex.withLock {
+                    if (!fileSetCache.containsKey(file.virtualFile)) {
+                        runReadAction {
+                            fileSetCache[file.virtualFile] = findReferencedFileSetWithoutCache(file)
+                        }
+                    }
+                }
+            }
+            fileSetCache[file.virtualFile] ?: emptySet()
         }
         else {
             emptySet()

@@ -20,7 +20,8 @@ import nl.hannahsten.texifyidea.util.isDefinition
  *         The file to find the reference set of.
  * @return All the files that are cross referenced between each other.
  */
-fun findReferencedFileSet(baseFile: PsiFile): Set<PsiFile> {
+// Internal because only ReferencedFileSetCache should call this
+internal fun findReferencedFileSetWithoutCache(baseFile: PsiFile): Set<PsiFile> {
     // Setup.
     val project = baseFile.project
     val includes = LatexIncludesIndex.getItems(project)

@@ -18,7 +18,7 @@ interface ReferencedFileSetService {
     }
 
     /**
-     * [findReferencedFileSet], but then with cached values.
+     * [findReferencedFileSetWithoutCache], but then with cached values.
      */
     fun referencedFileSetOf(psiFile: PsiFile): Set<PsiFile>
 
