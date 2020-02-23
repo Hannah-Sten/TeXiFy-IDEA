@@ -7,8 +7,11 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.MessageCategory
+import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.substringEnd
 import org.apache.commons.collections.buffer.CircularFifoBuffer
 import java.awt.BorderLayout
@@ -22,13 +25,12 @@ import javax.swing.JComponent
  *
  * @author Sten Wessel
  */
-class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
+class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
     private val listModel = DefaultListModel<String>()
     private val treeView = LatexCompileMessageTreeView(project)
 
     init {
-
         add(treeView, BorderLayout.CENTER)
         startedProcess.addProcessListener(LatexOutputListener(), this)
     }
@@ -88,6 +90,12 @@ class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : A
 
                 // Check if we have found an error
                 ERROR_REGEX.find(text)?.apply {
+                    val line = groups["line"]?.value?.toInt()?.minus(1) ?: return
+                    val file = ProjectRootManager.getInstance(this@LatexLogTabComponent.project).contentSourceRoots.map {
+                        it.findFile(groups["file"]?.value?.trim() ?: return)
+                    }.firstOrNull {
+                        it?.exists() == true
+                    }
                     val message = groups["message"]?.value?.removeSuffix(newText)?: ""
 
                     if (text.substringEnd(newText.length).length >= lineWidth) {
@@ -99,14 +107,14 @@ class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : A
                     else {
                         // Avoid adding a message twice.
                         if (listModel.isEmpty || listModel.lastElement() != message) {
-                            addMessageToLog(message)
+                            addMessageToLog(message, file, line)
                         }
                     }
                 }
 
                 // Check if we have found a warning
                 if (TEX_WARNINGS.any { text.startsWith(it) }) {
-                    val message = text.substringEnd(newText.length)
+                    val message = text.removeSuffix(newText)
 
                     if (message.length >= lineWidth) {
                         // Keep on collecting output for this message
@@ -119,7 +127,6 @@ class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : A
                     }
                 }
             }
-
         }
 
         private fun collectMessageLine(newText: String) {
@@ -131,8 +138,8 @@ class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : A
             }
         }
 
-        private fun addMessageToLog(message: String) {
-            treeView.addMessage(MessageCategory.ERROR, arrayOf(message), null, 0, 0, null)
+        private fun addMessageToLog(message: String, file: VirtualFile? = null, line: Int = 0) {
+            treeView.addMessage(MessageCategory.ERROR, arrayOf(message), file, line, 0, null)
             listModel.addElement(message)
         }
 
@@ -179,5 +186,5 @@ class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : A
         )
     }
 
-    private enum class LatexLogMessageType { ERROR, PACKAGE_ERROR, WARNING, FONT_WARNING }
+    enum class LatexLogMessageType { ERROR, PACKAGE_ERROR, WARNING, FONT_WARNING }
 }
