@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
@@ -33,27 +34,25 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     // Arguments from the LatexCommand (so the command as hardcoded in e.g. LatexRegularCommand)
     val requiredArguments = command.arguments.mapNotNull { it as? RequiredArgument }
 
-    // Actual parameters from the current LatexCommands (so the command as in the PSI tree)
-    val requiredParameters = this.parameterList.filter { it.requiredParam != null }
-
     val firstParam = readFirstParam(this) ?: return emptyList()
     val subParamRanges = extractSubParameterRanges(firstParam)
 
     // Loop through arguments
     for (i in requiredArguments.indices) {
         // When there are more required arguments than actually present break the loop
-        if (i >= requiredArguments.size || i >= subParamRanges.size) {
+        if (i >= subParamRanges.size) {
             break
         }
 
         // Check if the actual argument is a file argument or continue with the next argument
-        val parameter = requiredParameters[i]
-        val fileArgument = parameter as? RequiredFileArgument ?: continue
+        val fileArgument = requiredArguments[i] as? RequiredFileArgument ?: continue
         val extensions = fileArgument.supportedExtensions
 
-        val range = subParamRanges[i]
+        // Parameter ranges have an offset equal to the command name length (plus backslash)
+        val offset = command.command.length + 1
+        val range = TextRange(offset + subParamRanges[i].startOffset, offset + subParamRanges[i].endOffset)
 
-        inputFileReferences.add(InputFileReference(this, range, extensions))
+        inputFileReferences.add(InputFileReference(this, range, extensions, fileArgument.defaultExtension))
     }
 
     return inputFileReferences

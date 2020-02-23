@@ -1,23 +1,15 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import com.intellij.codeInsight.daemon.quickFix.CreateFilePathFix
-import com.intellij.codeInsight.daemon.quickFix.NewFileLocation
-import com.intellij.codeInsight.daemon.quickFix.TargetDirectory
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
@@ -56,7 +48,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             val referencesList = command.getFileArgumentsReferences()
             for (reference in referencesList) {
                 if (reference.resolve() == null) {
-                    createQuickFixes(file, reference, command, descriptors, manager, isOntheFly)
+                    createQuickFixes(reference, descriptors, manager, isOntheFly)
                 }
             }
         }
@@ -64,35 +56,28 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private fun createQuickFixes(file: PsiFile, reference: InputFileReference, command: LatexCommands, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
-        val root = file.findRootFile()
+    private fun createQuickFixes(reference: InputFileReference, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
         val fileName = reference.key
         val extensions = reference.extensions
 
-        val newFileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), fileName)
-        val fixes = mutableListOf(CreateFilePathFix(file, newFileLocation))
+        val fixes = mutableListOf<LocalQuickFix>()
 
         // Create quick fixes for all extensions if no correct one was supplied in the argument
-        if (extensions.none { fileName.endsWith(".$it") }) {
-            extensions.forEach {
-                val fileLocation = NewFileLocation(listOf(TargetDirectory(root.containingDirectory)), "$fileName.$it")
-                fixes.add(CreateFilePathFix(file, fileLocation))
-            }
+        extensions.forEach {
+            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference))
         }
 
         // Find expected extension
-        var extension = fileName.getFileExtension()
-        if (extension == "") {
-            val name = command.commandToken.text
-            LatexRegularCommand[name.substring(1)]?.apply {
-                val args = this.first().getArgumentsOf(RequiredFileArgument::class)
-                if (args.isNotEmpty()) extension = args.first().defaultExtension
-            }
+        val extension = if (fileName.getFileExtension().isNotEmpty()) {
+            fileName.getFileExtension()
+        }
+        else {
+            reference.defaultExtension
         }
 
         descriptors.add(manager.createProblemDescriptor(
                 reference.element,
-                reference.range,
+                reference.rangeInElement,
                 "File '${fileName.appendExtension(extension)}' not found",
                 ProblemHighlightType.GENERIC_ERROR,
                 isOntheFly,
@@ -102,24 +87,23 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
     /**
      * Create a new file.
+     *
+     * @param filePath Path relative to the root file parent.
      */
-    class InspectionFix(private val filePath: String, private val extension: String) : LocalQuickFix {
+    class CreateNewFileWithDialogQuickFix(private val filePath: String, private val extension: String, private val reference: InputFileReference) : LocalQuickFix {
 
         override fun getFamilyName() = "Create file ${filePath.appendExtension(extension)}"
 
         override fun startInWriteAction() = false
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val cmd = descriptor.psiElement as LatexParameter
+            val cmd = descriptor.psiElement
             val file = cmd.containingFile ?: return
             val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
-            val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             val newFilePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, filePath.formatAsFilePath())
                     .newFileFullPath ?: return
-
-            val parameterIndex = cmd.text.indexOf(filePath)
 
             runWriteAction {
                 val createdFile = createFile("$newFilePath.$extension", "")
@@ -129,12 +113,12 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                         .replace(File.separator, "/")
                         .replace("$root/", "")
 
-                val command = (cmd.context as LatexCommandsImpl).commandToken.text
+                val command = (cmd as? LatexCommands)?.name
                 if (command in illegalExtensions) {
                     illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
                 }
 
-                document.replaceString(cmd.textOffset + parameterIndex, cmd.textOffset + parameterIndex + filePath.length, fileNameRelativeToRoot)
+                reference.handleElementRename(fileNameRelativeToRoot)
             }
         }
     }

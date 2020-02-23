@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.util.getFileArgumentsReferences
 import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.*
 import java.util.regex.Pattern
-import java.util.stream.Collectors
 
 /**
  * Get the references for this command.
@@ -72,8 +71,8 @@ fun readFirstParam(element: LatexCommands): LatexRequiredParam? {
 }
 
 fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
-    return splitToRanges(stripGroup(param.text), Magic.Pattern.parameterSplit).stream()
-            .map { r: TextRange -> r.shiftRight(1) }.collect(Collectors.toList())
+    return splitToRanges(stripGroup(param.text), Magic.Pattern.parameterSplit)
+            .map { r: TextRange -> r.shiftRight(1) }
 }
 
 fun splitToRanges(text: String, pattern: Pattern): List<TextRange> {

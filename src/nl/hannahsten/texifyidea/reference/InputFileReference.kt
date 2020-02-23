@@ -6,8 +6,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
@@ -22,9 +22,11 @@ import java.io.InputStreamReader
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
  *
+ * @param defaultExtension Default extension of the command in which this reference is.
+ *
  * @author Abby Berkers
  */
-class InputFileReference(element: LatexCommands, val range: TextRange, val extensions: Set<String>) : PsiReferenceBase<LatexCommands>(element) {
+class InputFileReference(element: LatexCommands, val range: TextRange, val extensions: Set<String>, val defaultExtension: String) : PsiReferenceBase<LatexCommands>(element) {
     init {
         rangeInElement = range
     }
