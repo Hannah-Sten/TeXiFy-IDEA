@@ -23,9 +23,11 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import java.io.File
@@ -43,6 +45,11 @@ object FileUtil {
      * Matches the extension of a file name, including the dot.
      */
     val FILE_EXTENSION = Pattern.compile("\\.[^.]+$")!!
+
+    /**
+     * Matches the file body, including the dot
+     */
+    val FILE_BODY = Pattern.compile(".*\\.")!!
 
     /**
      * Get the FileType instance that corresponds to the given file extension.
@@ -88,7 +95,10 @@ val PsiFile.fileSearchScope: GlobalSearchScope
 /**
  * Looks up the PsiFile that corresponds to the Virtual File.
  */
-fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(project).findFile(this)
+fun VirtualFile.psiFile(project: Project): PsiFile? {
+    if (!this.isValid) return null
+    return PsiManager.getInstance(project).findFile(this)
+}
 
 /**
  * Looks for a certain file relative to this directory.
@@ -141,6 +151,11 @@ private fun VirtualFile.allChildFiles(files: MutableSet<VirtualFile>) {
  * Removes the extension from a given file name.
  */
 fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replaceAll("")!!
+
+/**
+ * Returns the extension of given filename
+ */
+fun String.getFileExtention(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
 
 /**
  * Creates a project directory at `path` which will be marked as excluded.
@@ -408,6 +423,11 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  * @see [LatexCommandsIndex.getItems]
  */
 fun PsiFile.commandsInFile(): Collection<LatexCommands> = LatexCommandsIndex.getItems(this)
+
+/**
+ * @see [LatexEnvironmentsIndex.getItems]
+ */
+fun PsiFile.environmentsInFile(): Collection<LatexEnvironment> = LatexEnvironmentsIndex.getItems(this)
 
 /**
  * Get the editor of the file if it is currently opened.

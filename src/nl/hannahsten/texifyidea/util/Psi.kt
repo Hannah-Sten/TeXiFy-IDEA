@@ -41,7 +41,7 @@ inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> =
 fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
     for (child in children) {
         if (predicate(this)) {
-            return child as? T
+            return this as? T
         }
 
         val first = child.findFirstChild<T>(predicate)
@@ -69,6 +69,21 @@ fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
         }
     }
 
+    return null
+}
+
+/**
+ * Finds the first parent of a certain type.
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : PsiElement> PsiElement.firstParentOfType(clazz: KClass<T>): T? {
+    var current: PsiElement? = this
+    while (current != null) {
+        if (clazz.java.isAssignableFrom(current.javaClass)) {
+            return current as? T
+        }
+        current = current.parent
+    }
     return null
 }
 

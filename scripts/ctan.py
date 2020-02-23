@@ -26,7 +26,7 @@ print("CTAN Fetcher 1.0 (Hannah Schellekens)\n")
 count = 0
 allPackages = []
 sep = ""
-file = codecs.open("packages.txt", "w", "utf-8")
+file = codecs.open("../resources/nl/hannahsten/texifyidea/packages/package.list", "w", "utf-8")
 for char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
     print("Fetching packages starting with {}..".format(char))
     for pack in fetch_packages(char):

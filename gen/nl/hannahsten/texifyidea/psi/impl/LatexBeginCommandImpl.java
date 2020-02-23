@@ -1,15 +1,18 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import nl.hannahsten.texifyidea.psi.*;
+import nl.hannahsten.texifyidea.psi.LatexBeginCommand;
+import nl.hannahsten.texifyidea.psi.LatexParameter;
+import nl.hannahsten.texifyidea.psi.LatexPsiImplUtil;
+import nl.hannahsten.texifyidea.psi.LatexVisitor;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements LatexBeginCommand {
 
@@ -30,6 +33,16 @@ public class LatexBeginCommandImpl extends ASTWrapperPsiElement implements Latex
   @NotNull
   public List<LatexParameter> getParameterList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexParameter.class);
+  }
+
+  @Override
+  public LinkedHashMap<String, String> getOptionalParameters() {
+    return LatexPsiImplUtil.getOptionalParameters(this);
+  }
+
+  @Override
+  public List<String> getRequiredParameters() {
+    return LatexPsiImplUtil.getRequiredParameters(this);
   }
 
 }

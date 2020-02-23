@@ -11,10 +11,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.BibtexLanguage
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.lang.LatexMode
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
+import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
+import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
@@ -83,17 +85,66 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("File name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java) ?: return false
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                                        ?: return false
 
                                 val name = command.commandToken.text
                                 val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
-                                val args = cmd.getArgumentsOf(RequiredFileArgument::class)
+                                val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
+                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+
                                 return args.isNotEmpty()
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexFileProvider()
+        )
+
+        // Folder names
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                        .inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
+                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                                        ?: return false
+
+                                val name = command.commandToken.text
+                                val cmd = LatexRegularCommand[name.substring(1)] ?: return false
+
+                                val args = cmd.first().getArgumentsOf(RequiredFolderArgument::class)
+                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+
+                                return args.isNotEmpty()
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexFolderProvider()
+        )
+
+        // Graphics paths
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                        .inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
+                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                                        ?: return false
+
+                                val name = command.commandToken.text
+                                val cmd = LatexRegularCommand[name.substring(1)] ?: return false
+
+                                val args = cmd.first().getArgumentsOf(RequiredPicturePathArgument::class)
+                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+
+                                return args.isNotEmpty()
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexGraphicsPathProvider()
         )
 
         // Magic comments keys.

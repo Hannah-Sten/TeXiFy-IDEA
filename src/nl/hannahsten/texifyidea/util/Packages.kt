@@ -32,7 +32,6 @@ object PackageUtils {
 
     /**
      * Inserts a usepackage statement for the given package in a certain file.
-     * todo all callers should use other usepackage?
      *
      * @param file
      *          The file to add the usepackage statement to.
@@ -105,31 +104,43 @@ object PackageUtils {
 
     /**
      * Inserts a usepackage statement for the given package in the root file of the fileset containing the given file.
-     * Will not insert a new statement when the package has already been included.
+     * Will not insert a new statement when the package has already been included, or when a conflicting package is already included.
      *
-     * @param file
-     *         The file to add the usepackage statement to.
-     * @param pack
-     *          The package to include.
+     * @param file The file to add the usepackage statement to.
+     * @param pack The package to include.
+     *
+     * @return false if the package was not inserted, because a conflicting package is already present.
      */
     @JvmStatic
-    fun insertUsepackage(file: PsiFile, pack: Package) {
+    fun insertUsepackage(file: PsiFile, pack: Package): Boolean {
         if (pack.isDefault) {
-            return
+            return true
         }
 
         if (file.includedPackages().contains(pack.name)) {
-            return
+            return true
+        }
+
+        // Don't insert when a conflicting package is already present
+        if (Magic.Package.conflictingPackages.any { it.contains(pack) }) {
+            for (conflicts in Magic.Package.conflictingPackages) {
+                // Assuming the package is not already included
+                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts.map {it.name }).isNotEmpty()) {
+                    return false
+                }
+            }
         }
 
         // Packages should always be included in the root file
         val rootFile = file.findRootFile()
 
-        val document = rootFile.document() ?: return
+        val document = rootFile.document() ?: return true
 
         val params = pack.parameters
         val parameterString = StringUtil.join(params, ",")
         insertUsepackage(document, rootFile, pack.name, parameterString)
+
+        return true
     }
 
     /**
@@ -244,10 +255,10 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Except a class, because a class is not a package
             val packages = if (cmd.commandToken.text == "\\documentclass" || cmd.commandToken.text == "\\LoadClass") {
-                setOf(cmd.optionalParameters)
+                setOf(cmd.optionalParameters.keys.toList())
             }
             else {
-                setOf(cmd.requiredParameters, cmd.optionalParameters)
+                setOf(cmd.requiredParameters, cmd.optionalParameters.keys.toList())
             }
 
             for (list in packages) {

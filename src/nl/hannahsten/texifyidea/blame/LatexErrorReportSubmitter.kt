@@ -38,7 +38,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             builder.append("&body=")
             builder.append(URLEncoder.encode("### Description\n", ENCODING))
             builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
-            builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n$body\n```", ENCODING))
+            builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(7000)}\n```", ENCODING))
         }
         catch (e: UnsupportedEncodingException) {
             consumer.consume(SubmittedReportInfo(

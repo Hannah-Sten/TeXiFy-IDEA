@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.skim.SkimConversation
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
+import nl.hannahsten.texifyidea.util.runCommand
 
 /**
  * List of supported PDF viewers on Linux.

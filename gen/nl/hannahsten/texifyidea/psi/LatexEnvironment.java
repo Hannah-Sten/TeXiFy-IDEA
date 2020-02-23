@@ -4,8 +4,10 @@ package nl.hannahsten.texifyidea.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.StubBasedPsiElement;
+import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 
-public interface LatexEnvironment extends PsiElement {
+public interface LatexEnvironment extends PsiElement, StubBasedPsiElement<LatexEnvironmentStub> {
 
   @NotNull
   LatexBeginCommand getBeginCommand();
@@ -15,5 +17,9 @@ public interface LatexEnvironment extends PsiElement {
 
   @Nullable
   LatexEnvironmentContent getEnvironmentContent();
+
+  String getEnvironmentName();
+
+  String getLabel();
 
 }

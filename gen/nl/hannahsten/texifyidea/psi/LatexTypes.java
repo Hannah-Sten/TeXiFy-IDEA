@@ -5,6 +5,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
+import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
 import nl.hannahsten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
@@ -15,7 +16,7 @@ public interface LatexTypes {
   IElementType CONTENT = new LatexElementType("CONTENT");
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");
   IElementType END_COMMAND = new LatexElementType("END_COMMAND");
-  IElementType ENVIRONMENT = new LatexElementType("ENVIRONMENT");
+  IElementType ENVIRONMENT = new LatexEnvironmentStubElementType("ENVIRONMENT");
   IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");

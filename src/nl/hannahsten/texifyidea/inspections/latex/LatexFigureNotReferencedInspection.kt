@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -36,9 +36,9 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     }
 
     private fun removeReferencedLabels(file: PsiFile, figureLabels: MutableMap<String?, LatexCommands>) {
-        for (command in file.commandsInFile()) {
+        for (command in file.commandsInFileSet()) {
             if (Magic.Command.labelReference.contains(command.name)) {
-                figureLabels.remove(command.referencedLabelName)
+                command.referencedLabelNames.forEach { figureLabels.remove(it) }
             }
         }
     }
@@ -53,7 +53,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             )
 
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
-            file.findLatexLabels().asSequence()
+            file.findLabelingCommandsInFileAsSequence()
                     .filter(this::isFigureLabel)
                     .associateBy(LatexCommands::labelName)
                     .toMutableMap()
@@ -63,11 +63,8 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             label.inDirectEnvironment(Magic.Environment.figures)
 }
 
-private fun PsiFile.findLatexLabels(): Collection<LatexCommands> =
-        findLabelsInFileSet().filterIsInstance<LatexCommands>()
-
 private val LatexCommands.labelName: String?
     get() = requiredParameter(0)
 
-private val LatexCommands.referencedLabelName: String?
-    get() = requiredParameter(0)
+private val LatexCommands.referencedLabelNames: List<String>
+    get() = requiredParameter(0)?.split(",") ?: emptyList()

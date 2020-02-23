@@ -1,8 +1,9 @@
-[![Travis (.org)](https://img.shields.io/travis/Hannah-Sten/TeXiFy-IDEA.svg?style=flat-square)](https://travis-ci.org/Hannah-Sten/TeXiFy-IDEA)
+[![Travis (.org)](https://img.shields.io/travis/Hannah-Sten/TeXiFy-IDEA/master?style=flat-square)](https://travis-ci.org/Hannah-Sten/TeXiFy-IDEA)
 [![Version](https://img.shields.io/jetbrains/plugin/v/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
 [![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/RubenSchellekens)
+[![codecov](https://img.shields.io/codecov/c/github/Hannah-Sten/TeXiFy-IDEA/master?style=flat-square)](https://codecov.io/gh/Hannah-Sten/TeXiFy-IDEA)
 
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
@@ -34,7 +35,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Formatter for LaTeX and BibTeX
 * Structure view for LaTeX and BibTeX with filters
 * Code folding for imports, sections, and environments
-* SumatraPDF (Windows) and Evince (Linux) support with forward and backward search
+* SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search
 * Smart Quotes
 * Unicode math preview
 * Equation preview

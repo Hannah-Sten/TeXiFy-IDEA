@@ -23,18 +23,18 @@ class AnalyzeMenuRegistration : StartupActivity, DumbAware {
         // In PyCharm (and others) we will use the Code group.
         val applicationName = ApplicationNamesInfo.getInstance().scriptName
 
-        if (applicationName == "idea") {
+        val analyzeGroup: DefaultActionGroup = if (applicationName == "idea") {
             // Get an instance of the Analyze action group by ID
-            val analyzeGroup: DefaultActionGroup = ActionManager.getInstance().getAction(IdeActions.GROUP_ANALYZE) as DefaultActionGroup
-
-            // Add the group which contains the LaTeX actions to the Analyze menu
-            analyzeGroup.add(latexAnalyzeMenuGroup)
+            ActionManager.getInstance().getAction(IdeActions.GROUP_ANALYZE) as DefaultActionGroup
         }
         else {
             // Get an instance of the Code action group by ID
-            val analyzeGroup: DefaultActionGroup = ActionManager.getInstance().getAction("CodeMenu") as DefaultActionGroup
-
-            analyzeGroup.add(latexAnalyzeMenuGroup)
+            ActionManager.getInstance().getAction("CodeMenu") as DefaultActionGroup
         }
+
+        // Add the group which contains the LaTeX actions to the Analyze menu
+        // First remove it, to avoid adding it twice
+        analyzeGroup.remove(latexAnalyzeMenuGroup)
+        analyzeGroup.add(latexAnalyzeMenuGroup)
     }
 }

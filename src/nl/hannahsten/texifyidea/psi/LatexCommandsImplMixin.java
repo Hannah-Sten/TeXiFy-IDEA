@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiNameIdentifierOwner;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
  * in order to implement [getName] and [setName] correctly.
  */
 public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommandsStub> implements PsiNameIdentifierOwner {
-
 
     public String name;
 
@@ -42,24 +40,25 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
     public String toString() {
         return "LatexCommandsImpl(COMMANDS)[STUB]{" + getName() + "}";
     }
 
-    @NotNull
     @Override
-    public TextRange getTextRangeInParent() {
-        return null;
+    public int getTextOffset() {
+        String name = getName();
+        if (name == null) {
+            return super.getTextOffset();
+        }
+        else {
+            int offset = getNode().getText().indexOf(name);
+            return offset == -1 ? super.getTextOffset() : getNode().getStartOffset() + offset;
+        }
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
         if (visitor instanceof LatexVisitor) {
-            accept((LatexVisitor) visitor);
+            accept(visitor);
         }
         else {
             super.accept(visitor);
