@@ -89,9 +89,16 @@ For example if you want to include a bibliography in `references.bib` then `\add
 == Missing documentclass
 == Missing document environment
 
+== Package is not installed
+_Since b0.6.9_
+
+This inspection is for TeX Live only, MiKTeX automatically installs packages on the fly.
+When using `\usepackage` or `\RequirePackage`, TeXiFy checks if the packages is installed.
+If it isn't installed, it provides a quick fix to install the package.
+
 == Package may not exist
 When using `\usepackage` or `\RequirePackage`, we check if the package exists.
-To do this, we check the project for use defined packages, and we check a list of CTAN packages.
+To do this, we check the project for use defined packages, and we check a list of all available CTAN packages.
 This list of CTAN packages is manually updated by us, and might be out of date.
 
 == Missing imports
