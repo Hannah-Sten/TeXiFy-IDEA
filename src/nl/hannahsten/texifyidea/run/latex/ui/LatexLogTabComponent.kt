@@ -88,7 +88,7 @@ class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : A
 
                 // Check if we have found an error
                 ERROR_REGEX.find(text)?.apply {
-                    val message = groups["message"]?.value?.substringEnd(newText.length) ?: ""
+                    val message = groups["message"]?.value?.removeSuffix(newText)?: ""
 
                     if (text.substringEnd(newText.length).length >= lineWidth) {
                         // Keep on collecting output for this message
@@ -97,7 +97,10 @@ class LatexLogTabComponent(project: Project, startedProcess: ProcessHandler) : A
                         collectMessageLine(newText)
                     }
                     else {
-                        addMessageToLog(message)
+                        // Avoid adding a message twice.
+                        if (listModel.isEmpty || listModel.lastElement() != message) {
+                            addMessageToLog(message)
+                        }
                     }
                 }
 
