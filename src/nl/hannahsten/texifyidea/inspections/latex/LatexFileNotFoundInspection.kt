@@ -12,15 +12,12 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
-import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
-import nl.hannahsten.texifyidea.util.formatAsFilePath
-import nl.hannahsten.texifyidea.util.getFileArgumentsReferences
-import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
 import java.util.*
 
@@ -60,9 +57,15 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         val fileName = reference.key
         val extensions = reference.extensions
 
+        // CTAN packages are no targets of the InputFileReference, so we check them here and don't show a warning if a CTAN package is included
+        if (extensions.contains("sty")) {
+            val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.toLowerCase() }
+            if (reference.key in ctanPackages) return
+        }
+
         val fixes = mutableListOf<LocalQuickFix>()
 
-        // Create quick fixes for all extensions if no correct one was supplied in the argument
+        // Create quick fixes for all extensions
         extensions.forEach {
             fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference))
         }

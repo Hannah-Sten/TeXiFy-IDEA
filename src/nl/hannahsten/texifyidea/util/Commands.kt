@@ -1,11 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.RequiredArgument
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.extractSubParameterRanges
 import nl.hannahsten.texifyidea.psi.readFirstParam
@@ -23,7 +20,17 @@ fun Project.findCommandDefinitions(): Collection<LatexCommands> {
 }
 
 /**
- * Check if the command has required file arguments, and if so return [InputFileReference] instances for them.
+ * Get all commands that include other files, including backslashes.
+ */
+fun getIncludeCommands(): Set<String> {
+    return LatexRegularCommand.values()
+            .filter { command -> command.arguments.any { it is RequiredFileArgument || it is RequiredPicturePathArgument }}
+            .map { "\\" + it.command }
+            .toSet()
+}
+
+/**
+ * Check if the command includes other files, and if so return [InputFileReference] instances for them.
  */
 fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     val inputFileReferences = mutableListOf<InputFileReference>()
@@ -38,19 +45,16 @@ fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
     val subParamRanges = extractSubParameterRanges(firstParam)
 
     // Loop through arguments
-    for (i in requiredArguments.indices) {
-        // When there are more required arguments than actually present break the loop
-        if (i >= subParamRanges.size) {
-            break
-        }
+    for (i in subParamRanges.indices) {
+
+        // Find the corresponding requiredArgument
+        val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.last { it is RequiredFileArgument }
 
         // Check if the actual argument is a file argument or continue with the next argument
-        val fileArgument = requiredArguments[i] as? RequiredFileArgument ?: continue
+        val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
         val extensions = fileArgument.supportedExtensions
 
-        // Parameter ranges have an offset equal to the command name length (plus backslash)
-        val offset = command.command.length + 1
-        val range = TextRange(offset + subParamRanges[i].startOffset, offset + subParamRanges[i].endOffset)
+        val range = subParamRanges[i].shiftRight(firstParam.textOffset - this.textOffset)
 
         inputFileReferences.add(InputFileReference(this, range, extensions, fileArgument.defaultExtension))
     }

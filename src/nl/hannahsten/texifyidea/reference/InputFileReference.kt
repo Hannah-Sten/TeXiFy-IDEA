@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -35,7 +36,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         rangeInElement.substring(element.text)
     }
 
-    override fun resolve(): PsiElement? {
+    override fun resolve(): PsiFile? {
         // Get a list of extra paths to search in for the file, absolute or relative
         val searchPaths = if (element.name == "\\includegraphics") {
             getGraphicsPaths()

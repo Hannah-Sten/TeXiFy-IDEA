@@ -138,7 +138,7 @@ fun LatexCommands.findIndentation(): String {
  * are no required parameters.
  */
 fun LatexCommands.includedFileNames(): List<String>? {
-    if (commandToken.text !in Magic.Command.includes) return null
+    if (commandToken.text !in getIncludeCommands()) return null
     val required = requiredParameters
     if (required.isEmpty()) return null
     return required.first().split(',')
