@@ -86,7 +86,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             val labeledCommand = getLabeledCommand(label) ?: return@forEach
             val expectedPrefix = getLabelPrefix(labeledCommand)
             val labelName = label.extractLabelName()
-            if (!labelName.startsWith("$expectedPrefix:")) {
+            if (!expectedPrefix.isNullOrBlank() && !labelName.startsWith("$expectedPrefix:")) {
                 descriptors.add(manager.createProblemDescriptor(
                         label,
                         "Unconventional label prefix",

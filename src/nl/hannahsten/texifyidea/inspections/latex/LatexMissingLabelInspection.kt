@@ -125,7 +125,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
      */
     private class InsertLabelAfterCommandFix : LabelQuickFix() {
 
-        override fun getFamilyName() = "Insert label"
+        override fun getFamilyName() = "Insert label for this command"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
@@ -154,7 +154,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     }
 
     private class InsertLabelInEnvironmentFix : LabelQuickFix() {
-        override fun getFamilyName() = "Insert label"
+        override fun getFamilyName() = "Insert label for this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEnvironment

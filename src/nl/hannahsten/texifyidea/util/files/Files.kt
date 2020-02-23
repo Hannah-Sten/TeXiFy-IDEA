@@ -95,7 +95,10 @@ val PsiFile.fileSearchScope: GlobalSearchScope
 /**
  * Looks up the PsiFile that corresponds to the Virtual File.
  */
-fun VirtualFile.psiFile(project: Project): PsiFile? = PsiManager.getInstance(project).findFile(this)
+fun VirtualFile.psiFile(project: Project): PsiFile? {
+    if (!this.isValid) return null
+    return PsiManager.getInstance(project).findFile(this)
+}
 
 /**
  * Looks for a certain file, relative to this directory or if the given path is absolute use that directly.
