@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.grazie
 
-import com.intellij.grazie.ide.GrazieInspection
+import com.intellij.grazie.ide.inspection.grammar.GrazieInspection
 import com.intellij.grazie.ide.msg.GrazieStateLifecycle
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.spellchecker.inspections.SpellCheckingInspection
