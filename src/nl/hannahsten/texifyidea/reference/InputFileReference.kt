@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -40,6 +41,21 @@ class InputFileReference(element: LatexCommands, val range: TextRange) : PsiRefe
                 ?: return null
         // Return a reference to the target file.
         return PsiManager.getInstance(element.project).findFile(targetFile)
+    }
+
+    override fun handleElementRename(newElementName: String): PsiElement {
+        // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
+        // It seems to be problematic to find the old filename we want to replace
+        val commandText = "${myElement?.name}{$newElementName}"
+        val oldNode = myElement?.node
+        val newNode = LatexPsiHelper(element.project).createFromText(commandText).firstChild.node
+        if (oldNode == null) {
+            myElement?.parent?.node?.addChild(newNode)
+        }
+        else {
+            myElement.parent.node.replaceChild(oldNode, newNode)
+        }
+        return myElement
     }
 
     /**
