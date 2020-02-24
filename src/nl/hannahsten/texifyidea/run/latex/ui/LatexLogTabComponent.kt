@@ -107,7 +107,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
                     else {
                         // Avoid adding a message twice.
                         if (listModel.isEmpty || listModel.lastElement() != message) {
-                            addMessageToLog(message, file, line)
+                            addMessageToLog(message, file, line, MessageCategory.ERROR)
                         }
                     }
                 }
@@ -123,7 +123,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
                         collectMessageLine(newText)
                     }
                     else {
-                        addMessageToLog(message)
+                        addMessageToLog(message, category = MessageCategory.WARNING)
                     }
                 }
             }
@@ -138,8 +138,8 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
             }
         }
 
-        private fun addMessageToLog(message: String, file: VirtualFile? = null, line: Int = 0) {
-            treeView.addMessage(MessageCategory.ERROR, arrayOf(message), file, line, 0, null)
+        private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 0, category: Int = MessageCategory.ERROR) {
+            treeView.addMessage(category, arrayOf(message), file, line, 0, null)
             listModel.addElement(message)
         }
 
