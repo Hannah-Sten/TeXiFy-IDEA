@@ -648,7 +648,7 @@
                          groupName="LaTeX" displayName="Package could not be found"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
-                         groupName="LaTeX" displayName="Package is not installed"/>
+                         groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
