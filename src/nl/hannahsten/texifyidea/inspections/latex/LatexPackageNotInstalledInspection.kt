@@ -1,10 +1,13 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.progress.runBackgroundableTask
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
@@ -44,11 +47,12 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                 val `package` = command.requiredParameters.first().toLowerCase()
                 if (`package` !in packages) {
                     // Manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
-                    if ("tlmgr search --file /$`package`.sty".runCommand()?.isEmpty() != false) {
+                    if ("tlmgr search --file /$`package`.sty".runCommand()
+                                    ?.isEmpty() != false) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed",
-                                InstallPackage(`package`),
+                                InstallPackage(file, `package`),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
                         ))
@@ -59,7 +63,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private class InstallPackage(val packageName: String) : LocalQuickFix {
+    private class InstallPackage(val file: PsiFile, val packageName: String) : LocalQuickFix {
         override fun getFamilyName(): String = "Install $packageName"
 
         /**
@@ -67,11 +71,21 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
          * packages when done.
          */
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            runBackgroundableTask("Installing $packageName", project) {
-                val tlname = TexLivePackages.findTexLiveName(packageName)
-                "tlmgr install $tlname".runCommand()
-                TexLivePackages.packageList.add(packageName)
-            }
+            ProgressManager.getInstance()
+                    .run(object : Task.Backgroundable(project, "Installing $packageName...") {
+                        override fun run(indicator: ProgressIndicator) {
+                            val tlname = TexLivePackages.findTexLiveName(packageName)
+                            "tlmgr install $tlname".runCommand()
+                        }
+
+                        override fun onSuccess() {
+                            TexLivePackages.packageList.add(packageName)
+                            DaemonCodeAnalyzer.getInstance(project)
+                                    .restart(file)
+                        }
+
+                    })
         }
+
     }
 }
