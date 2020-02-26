@@ -3,7 +3,7 @@
 # Additions
 * Add go to definition for labels, citations and new commands. (#1191, #2)
 * Add find usages action for new commands and labels. (#1237, #1252)
-* Add support for refactor (rename) of labels, environments and files. (#1255, #1264, #1266)
+* Add support for refactor (rename) of labels, environments and files. (#1255, #1264, #1266, #1275)
 * Add support for opening source files of installed LaTeX packages and classes. (#1191)
 * Add support for opening files from include commands. (#1191)
 * Add support for a custom output or auxiliary directory. (#1201)
@@ -16,7 +16,8 @@
 * Surround text with $..$ or [..] using a shortcut or by typing $ or [. (#1207)
 * Surround text with quotes depending on your Smart quotes setting. (#1207)
 * Add inspection which checks that floating environments have a label. (#1216)
-* Add inspection to check if an included package could not be found. (#1230)
+* Add inspection to check if an included package could not be found in the CTAN list. (#1230)
+* Add inspection to check if a TeX Live package is installed locally, with a quickfix to install it. (#1276)
 * Use live templates for inserting braces for all required parameters of commands and environments. (#1258, #1261)
 * Make links in \url and \href commands clickable. (#1238)
 * Remove second $ of an empty inline math environment when deleting the first one. (#1227)
