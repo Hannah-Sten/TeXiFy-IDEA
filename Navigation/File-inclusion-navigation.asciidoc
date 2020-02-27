@@ -6,4 +6,12 @@ This includes commands like `\documentclass`, `\usepackage` and `\includegraphic
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-file-inclusion.gif[]
 
+== Import package
 
+TeXiFy supports the `import` package with which you can include other LaTeX files.
+Its main feature is the ability to set import path prefixes when you included a file.
+For example, if you have `main.tex` which contains `\subimport{chapters/}{chapter-one.tex}`, and two files `chapters/chapter-one.tex` and `chapters/included.tex`, then in `chapter-one.tex` you can do `\input{included.tex` and it will resolve correctly.
+Without the import package, you would need to write `\input{chapters/included.tex}` for the include to work.
+
+The package also has the `\import` command for absolute instead of relative paths.
+For more information, see http://mirrors.ctan.org/macros/latex/contrib/import/import.pdf

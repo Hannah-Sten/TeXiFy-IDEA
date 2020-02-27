@@ -77,6 +77,7 @@ toc::[]
 * link:Find-usages[Find usages for commands defined in a \newcommand-like way]
 * "Goto Symbol" support for section names, labels, bibitems, new environments and new commands
 * link:File-inclusion-navigation[Gutter icons and navigation shortcuts for file inclusions]
+* link:File-inclusion-navigation#import-package[Support for the import package]
 * Breadcrumbs for environments and commands
 
 == Running
