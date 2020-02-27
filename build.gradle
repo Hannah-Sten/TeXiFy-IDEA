@@ -148,7 +148,7 @@ intellij {
     }
 
     // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    plugins = ['tanvd.grazi:201.5616.10', 'java']
+    plugins = ['tanvd.grazi:201.5985.25', 'java']
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
