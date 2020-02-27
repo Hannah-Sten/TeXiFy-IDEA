@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getExternalFile
+import nl.hannahsten.texifyidea.util.includedPackages
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -43,9 +44,55 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         }
         else {
             emptyList()
-        }
+        }.toMutableList()
 
         // todo add search paths, in case of \input or \include, from including files which use \import-like commands
+        if (element.containingFile.includedPackages().contains("import")) {
+            // If using an absolute path to include a file
+            if (element.name in setOf("\\includefrom", "\\inputfrom", "\\import")) {
+                val absolutePath = element.requiredParameters.firstOrNull()
+                if (absolutePath != null) {
+                    searchPaths.add(absolutePath)
+                }
+            }
+            // If using a relative path, these could be nested from other inclusions
+            val relativePathCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
+            if (element.name in relativePathCommands) {
+                var relativeSearchPaths = listOf("")
+
+                // Get all commands in the file set which have a relative import
+                val allRelativeIncludeCommands = element.containingFile.commandsInFileSet().filter { it.name in relativePathCommands }
+
+                // Navigate upwards
+                // Commands which include the current file
+                var includingCommands = allRelativeIncludeCommands.filter { command -> command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(element.containingFile.name) }
+                var parents = includingCommands
+                        .map { it.containingFile }
+                        .filter { it != element.containingFile }
+                        .toSet()
+
+                // Avoid endless loop (in case of a file inclusion loop)
+                val maxDepth = allRelativeIncludeCommands.size
+                var counter = 0
+                while (parents.isNotEmpty() && counter < maxDepth) {
+                    val newSearchPaths = mutableListOf<String>()
+                    for (oldPath in relativeSearchPaths) {
+                        // Each of the search paths gets prepended by one of the new relative paths found
+                        for (command in includingCommands) {
+                            newSearchPaths.add(command.requiredParameters.firstOrNull() + oldPath)
+                        }
+                    }
+                    relativeSearchPaths = newSearchPaths
+
+                    includingCommands = allRelativeIncludeCommands.filter { command -> parents.any { command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(it.name) } }
+                    parents = includingCommands.map { it.containingFile }.toSet()
+
+                    counter++
+                }
+
+                searchPaths.addAll(relativeSearchPaths)
+            }
+        }
 
         // Find the sources root of the current file.
         val root = element.containingFile.findRootFile()

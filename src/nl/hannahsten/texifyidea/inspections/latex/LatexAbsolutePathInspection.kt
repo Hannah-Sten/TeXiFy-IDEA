@@ -7,15 +7,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
-import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import java.io.File
 
 /**
- * @author Lukas Heiligenbrunner
+ * @author Thomas
  */
 class LatexAbsolutePathInspection : TexifyInspectionBase() {
     override val inspectionGroup = InsightGroup.LATEX
@@ -29,22 +28,28 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
 
         // Loop through commands of file
         for (command in commands) {
-            // Only consider default commands with a file argument.
-            val name = command.commandToken.text
-            val cmd = LatexRegularCommand[name.substring(1)] ?: continue
 
-            val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
-            if (args.isEmpty()) continue
+            // There may be multiple commands with this name, just guess the first one
+            val latexCommand = LatexCommand.lookup(command.name)?.firstOrNull() ?: continue
 
-            val support = args.first().isAbsolutePathSupported
+            // Arguments from the LatexCommand (so the command as hardcoded in e.g. LatexRegularCommand)
+            val requiredArguments = latexCommand.arguments.mapNotNull { it as? RequiredArgument }
 
-            command.parameterList.first { firstParam -> firstParam.requiredParam != null }.childrenOfType(LatexNormalText::class).forEach { path ->
-                if (File(path.text).isAbsolute && !support) {
-                    // when absolute path and is not supported throw error
+            // Loop through arguments
+            for (i in command.requiredParameters.indices) {
 
+                // Find the corresponding requiredArgument
+                val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.last { it is RequiredFileArgument }
+
+                // Check if the actual argument is a file argument or continue with the next argument
+                val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
+                val offset = command.text.indexOf(command.requiredParameters[i])
+                val range = TextRange(0, command.requiredParameters[i].length).shiftRight(offset)
+
+                if (File(range.substring(command.text)).isAbsolute && !fileArgument.isAbsolutePathSupported) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,
-                            TextRange(0, command.text.length),
+                            range,
                             "No absolute path allowed here",
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly
