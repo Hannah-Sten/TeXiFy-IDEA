@@ -151,7 +151,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
         PsiFile file = parameters.getOriginalFile();
         Set<PsiFile> files = new HashSet<>(FileSetKt.referencedFileSet(file));
         PsiFile root = FilesKt.findRootFile(file);
-        PsiFile documentClass = FilesKt.documentClassFile(root);
+        PsiFile documentClass = FilesKt.documentClassFileInProject(root);
         if (documentClass != null) {
             files.add(documentClass);
         }

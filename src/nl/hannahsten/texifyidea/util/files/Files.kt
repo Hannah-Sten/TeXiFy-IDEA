@@ -295,13 +295,20 @@ fun PsiFile.isRoot(): Boolean {
  *
  * @return A list containing all included files.
  */
-fun PsiFile.findInclusions(): List<PsiFile> { // todo ?
-    val root = findRootFile()
-    return LatexIncludesIndex.getItems(this).asSequence()
-            .filter { it.name in getIncludeCommands() }
-            .flatMap { it.getAllRequiredArguments()?.asSequence() ?: emptySequence() }
-            .mapNotNull { root.findFile(it) }
+fun PsiFile.findInclusions(): List<PsiFile> {
+    return LatexIncludesIndex.getItems(this)
+            .flatMap { it.getIncludedFiles() }
             .toList()
+}
+
+/**
+ * Get all required arguments, also if comma separated in a group.
+ * e.g. \mycommand{arg1,arg2}{arg3} will return [arg1, arg2, arg3].
+ */
+private fun LatexCommands.getAllRequiredArguments(): List<String>? {
+    val required = requiredParameters
+    if (required.isEmpty()) return null
+    return required.flatMap { it.split(',')}
 }
 
 /**
@@ -321,9 +328,10 @@ fun PsiFile.isStyleFile() = virtualFile.extension == "sty"
 fun PsiFile.isClassFile() = virtualFile.extension == "cls"
 
 /**
- * Looks up the argument that is in the documentclass command.
+ * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
+ * Note this explicitly does not find files elsewhere on the system.
  */
-fun PsiFile.documentClassFile(): PsiFile? { // todo ?
+fun PsiFile.documentClassFileInProject(): PsiFile? {
     val command = commandsInFile().asSequence()
             .filter { it.name == "\\documentclass" }
             .firstOrNull() ?: return null

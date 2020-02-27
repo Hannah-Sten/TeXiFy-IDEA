@@ -133,16 +133,6 @@ fun LatexCommands.findIndentation(): String {
     return document.lineIndentation(lineNumber)
 }
 
-/**
- * Get all required arguments, also if comma separated in a group.
- * e.g. \mycommand{arg1,arg2}{arg3} will return [arg1, arg2, arg3].
- */
-fun LatexCommands.getAllRequiredArguments(): List<String>? { // todo check callers
-    val required = requiredParameters
-    if (required.isEmpty()) return null
-    return required.flatMap { it.split(',')}
-}
-
 fun LatexCommands.getIncludedFiles(): List<PsiFile> {
     return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }
 }

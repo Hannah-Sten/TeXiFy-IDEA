@@ -141,61 +141,6 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        // Include documentclass.
-//        if (commands.isNotEmpty()) {
-//            val baseFile = commands[0].containingFile
-//            val root = baseFile.findRootFile()
-//            val documentClass = root.documentClassFile()
-//            if (documentClass != null) {
-//                val command = baseFile.commandsInFile().asSequence()
-//                        .filter { cmd -> "\\documentclass" == cmd.name }
-//                        .firstOrNull()
-//                if (command != null) {
-//                    val elt = LatexStructureViewCommandElement(command)
-//                    elt.addChild(LatexStructureViewElement(documentClass))
-//                    treeElements.add(elt)
-//                }
-//            }
-//        }
-//
-//        // Scan for normal includes.
-//        for (cmd in commands) {
-//            val name = cmd.commandToken.text
-//            if (name != "\\include" && name != "\\includeonly" && name != "\\input"
-//                    && name != "\\bibliography" && name != "\\addbibresource") {
-//                continue
-//            }
-//
-//            val required = cmd.requiredParameters
-//            if (required.isEmpty()) {
-//                continue
-//            }
-//
-//            // Find file
-//            val latexCommandHuh = LatexRegularCommand[name.substring(1)] ?: continue
-//            val argument = latexCommandHuh.first().getArgumentsOf(RequiredFileArgument::class.java)[0]
-//
-//            val fileNames = cmd.getAllRequiredArguments() ?: continue
-//            val containingFile = element.containingFile
-//            val containingDirectory = containingFile.findRootFile()
-//                    .containingDirectory ?: continue
-//            val directory = containingDirectory.virtualFile
-//
-//            val elt = LatexStructureViewCommandElement(cmd)
-//            for (fileName in fileNames) {
-//                val file = directory.findFile(fileName, argument.supportedExtensions) ?: continue
-//                val psiFile = PsiManager.getInstance(element.project).findFile(file) ?: continue
-//
-//                if (BibtexFileType == psiFile.fileType) {
-//                    elt.addChild(BibtexStructureViewElement(psiFile))
-//                }
-//                else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
-//                    elt.addChild(LatexStructureViewElement(psiFile))
-//                }
-//            }
-//            treeElements.add(elt)
-//        }
-
         for (command in commands) {
             val elt = LatexStructureViewCommandElement(command)
             for (psiFile in command.getIncludedFiles()) {

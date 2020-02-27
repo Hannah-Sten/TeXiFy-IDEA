@@ -50,6 +50,48 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             emptyList()
         }.toMutableList()
 
+        checkImportPaths(searchPaths)
+
+        // Find the sources root of the current file.
+        val root = element.containingFile.findRootFile()
+                .containingDirectory.virtualFile
+        // Find the target file, by first searching through the project directory.
+        var targetFile = root.findFile(key, extensions)
+
+        // Try content roots
+        if (targetFile == null && LatexDistribution.isMiktex) {
+            for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
+                targetFile = moduleRoot.findFile(key, extensions)
+                if (targetFile != null) break
+            }
+        }
+
+        // Try search paths
+        if (targetFile == null) {
+            for (searchPath in searchPaths) {
+                targetFile = root.findFile(searchPath + key, extensions)
+                if (targetFile != null) break
+            }
+        }
+
+        // Look for it elsewhere using the kpsewhich command.
+        if (targetFile == null) {
+            targetFile = element.getFileNameWithExtensions(key)
+                    ?.map { runKpsewhich(it) }
+                    ?.map { getExternalFile(it ?: return null) }
+                    ?.firstOrNull { it != null }
+        }
+
+        if (targetFile == null) return null
+
+        // Return a reference to the target file.
+        return PsiManager.getInstance(element.project).findFile(targetFile)
+    }
+
+    /**
+     * Check for search paths from the 'import' package.
+     */
+    private fun checkImportPaths(searchPaths: MutableList<String>) {
         // If using an absolute path to include a file
         if (element.name in setOf("\\includefrom", "\\inputfrom", "\\import")) {
             val absolutePath = element.requiredParameters.firstOrNull()
@@ -95,41 +137,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
             searchPaths.addAll(relativeSearchPaths)
         }
-
-        // Find the sources root of the current file.
-        val root = element.containingFile.findRootFile()
-                .containingDirectory.virtualFile
-        // Find the target file, by first searching through the project directory.
-        var targetFile = root.findFile(key, extensions)
-
-        // Try content roots
-        if (targetFile == null && LatexDistribution.isMiktex) {
-            for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
-                targetFile = moduleRoot.findFile(key, extensions)
-                if (targetFile != null) break
-            }
-        }
-
-        // Try search paths
-        if (targetFile == null) {
-            for (searchPath in searchPaths) {
-                targetFile = root.findFile(searchPath + key, extensions)
-                if (targetFile != null) break
-            }
-        }
-
-        // Look for it elsewhere using the kpsewhich command.
-        if (targetFile == null) {
-            targetFile = element.getFileNameWithExtensions(key)
-                    ?.map { runKpsewhich(it) }
-                    ?.map { getExternalFile(it ?: return null) }
-                    ?.firstOrNull { it != null }
-        }
-
-        if (targetFile == null) return null
-
-        // Return a reference to the target file.
-        return PsiManager.getInstance(element.project).findFile(targetFile)
     }
 
     /**
