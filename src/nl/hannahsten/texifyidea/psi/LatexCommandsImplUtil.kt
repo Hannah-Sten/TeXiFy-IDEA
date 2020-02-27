@@ -6,10 +6,13 @@ import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
+import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.RequiredArgument
+import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.getFileArgumentsReferences
 import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.*
 import java.util.regex.Pattern
@@ -47,6 +50,43 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
     else {
         arrayOf(reference)
     }
+}
+
+
+/**
+ * Check if the command includes other files, and if so return [InputFileReference] instances for them.
+ *
+ * Do not use this method directly, use command.references.filterIsInstance<InputFileReference>() instead.
+ */
+private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference> {
+    val inputFileReferences = mutableListOf<InputFileReference>()
+
+    // There may be multiple commands with this name, just guess the first one
+    val command = LatexCommand.lookup(this.name)?.firstOrNull() ?: return emptyList()
+
+    // Arguments from the LatexCommand (so the command as hardcoded in e.g. LatexRegularCommand)
+    val requiredArguments = command.arguments.mapNotNull { it as? RequiredArgument }
+
+    // Find file references within required parameters and across required parameters (think \referencing{reference1,reference2}{reference3} )
+    for (i in requiredParameters().indices) {
+        val subParamRanges = extractSubParameterRanges(requiredParameters()[i])
+
+        for (subParamRange in subParamRanges) {
+
+            // Find the corresponding requiredArgument
+            val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull() { it is RequiredFileArgument } ?: continue
+
+            // Check if the actual argument is a file argument or continue with the next argument
+            val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
+            val extensions = fileArgument.supportedExtensions
+
+            val range = subParamRange.shiftRight(requiredParameters()[i].textOffset - this.textOffset)
+
+            inputFileReferences.add(InputFileReference(this, range, extensions, fileArgument.defaultExtension))
+        }
+    }
+
+    return inputFileReferences
 }
 
 /**

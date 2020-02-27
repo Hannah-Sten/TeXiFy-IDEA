@@ -28,6 +28,7 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import java.io.File
@@ -241,7 +242,7 @@ fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
 
     // Find all related files.
     for (command in commands) {
-        val includedNames = command.includedFileNames() ?: continue
+        val includedNames = command.getAllRequiredArguments() ?: continue
         val declaredIn = command.containingFile
 
         for (includedName in includedNames) {
@@ -294,11 +295,11 @@ fun PsiFile.isRoot(): Boolean {
  *
  * @return A list containing all included files.
  */
-fun PsiFile.findInclusions(): List<PsiFile> {
+fun PsiFile.findInclusions(): List<PsiFile> { // todo ?
     val root = findRootFile()
     return LatexIncludesIndex.getItems(this).asSequence()
-            .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
-            .flatMap { it.includedFileNames()?.asSequence() ?: emptySequence() }
+            .filter { it.name in getIncludeCommands() }
+            .flatMap { it.getAllRequiredArguments()?.asSequence() ?: emptySequence() }
             .mapNotNull { root.findFile(it) }
             .toList()
 }
@@ -322,7 +323,7 @@ fun PsiFile.isClassFile() = virtualFile.extension == "cls"
 /**
  * Looks up the argument that is in the documentclass command.
  */
-fun PsiFile.documentClassFile(): PsiFile? {
+fun PsiFile.documentClassFile(): PsiFile? { // todo ?
     val command = commandsInFile().asSequence()
             .filter { it.name == "\\documentclass" }
             .firstOrNull() ?: return null
@@ -364,21 +365,15 @@ fun PsiFile.referencedFiles(): Set<PsiFile> {
  * Recursive implementation of [referencedFiles].
  */
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
-    val scope = fileSearchScope
-    val commands = LatexIncludesIndex.getItems(project, scope)
-    val rootFile = findRootFile()
-
-    commands.forEach { command ->
-        val fileNames = command.includedFileNames() ?: return@forEach
-        val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
-
-        for (fileName in fileNames) {
-            val included = rootFile.findFile(fileName, extensions)
-                    ?: return@forEach
-            if (included in files) return@forEach
-            files.add(included)
-            included.referencedFiles(files)
-        }
+    LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
+        command.references.filterIsInstance<InputFileReference>()
+                .mapNotNull { it.resolve() }
+                .forEach {
+                    // Do not re-add all referenced files if we already did that
+                    if (it in files) return@forEach
+                    files.add(it)
+                    it.referencedFiles(files)
+                }
     }
 }
 

@@ -6,25 +6,20 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.getFileExtension
-import nl.hannahsten.texifyidea.util.getFileArgumentsReferences
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameters
-import java.util.*
 import javax.swing.Icon
 
 /**
  * @author Hannah Schellekens
  */
 class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
-
-    companion object {
-        private val IGNORE_FILE_ARGUMENTS = HashSet(listOf("\\RequirePackage", "\\usepackage", "\\documentclass", "\\LoadClass", "\\LoadClassWithOptions"))
-    }
 
     override fun collectNavigationMarkers(element: PsiElement,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
@@ -38,12 +33,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         val fullCommand = command.name ?: return
 
-        // True when it doesn't have a required _file_ argument, but must be handled.
-        val ignoreFileArgument = IGNORE_FILE_ARGUMENTS.contains(fullCommand)
-
         // Fetch the corresponding LatexRegularCommand object.
-        val commandName = fullCommand.substring(1)
-        val commandHuh = LatexRegularCommand[commandName] ?: return
+        val commandHuh = LatexCommand.lookup(fullCommand.substring(1)) ?: return
 
         val arguments = commandHuh.firstOrNull()?.getArgumentsOf(RequiredFileArgument::class.java)
         if (arguments?.isNullOrEmpty() == true) {
@@ -56,13 +47,13 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
             return
         }
 
-        val referencesList = command.getFileArgumentsReferences()
+        val referencesList = command.references.filterIsInstance<InputFileReference>()
         if (referencesList.isEmpty()) return
         val files = referencesList.mapNotNull { it.resolve() }
 
         val defaultIcon = TexifyIcons.getIconFromExtension(referencesList.first().defaultExtension)
         val extension = if (files.isNotEmpty()) { files.first().name.getFileExtension() } else ""
-        val icon = if (ignoreFileArgument || (!files.isNullOrEmpty() && TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE)) {
+        val icon = if (!files.isNullOrEmpty() && TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE) {
             defaultIcon
         }
         else {

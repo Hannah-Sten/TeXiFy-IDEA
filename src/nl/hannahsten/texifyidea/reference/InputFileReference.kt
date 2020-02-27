@@ -6,17 +6,18 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
+import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getExternalFile
-import nl.hannahsten.texifyidea.util.includedPackages
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -38,6 +39,9 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     }
 
     override fun resolve(): PsiFile? {
+
+        // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
+
         // Get a list of extra paths to search in for the file, absolute or relative
         val searchPaths = if (element.name == "\\includegraphics") {
             getGraphicsPaths()
@@ -46,52 +50,50 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             emptyList()
         }.toMutableList()
 
-        // todo add search paths, in case of \input or \include, from including files which use \import-like commands
-        if (element.containingFile.includedPackages().contains("import")) {
-            // If using an absolute path to include a file
-            if (element.name in setOf("\\includefrom", "\\inputfrom", "\\import")) {
-                val absolutePath = element.requiredParameters.firstOrNull()
-                if (absolutePath != null) {
-                    searchPaths.add(absolutePath)
-                }
+        // If using an absolute path to include a file
+        if (element.name in setOf("\\includefrom", "\\inputfrom", "\\import")) {
+            val absolutePath = element.requiredParameters.firstOrNull()
+            if (absolutePath != null) {
+                searchPaths.add(absolutePath)
             }
-            // If using a relative path, these could be nested from other inclusions
-            val relativePathCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
-            if (element.name in relativePathCommands) {
-                var relativeSearchPaths = listOf("")
+        }
 
-                // Get all commands in the file set which have a relative import
-                val allRelativeIncludeCommands = element.containingFile.commandsInFileSet().filter { it.name in relativePathCommands }
+        // If using a relative path, these could be nested from other inclusions
+        val relativePathCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
+        if (element.name in relativePathCommands) {
+            var relativeSearchPaths = listOf(element.requiredParameters.firstOrNull() ?: "")
 
-                // Navigate upwards
-                // Commands which include the current file
-                var includingCommands = allRelativeIncludeCommands.filter { command -> command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(element.containingFile.name) }
-                var parents = includingCommands
-                        .map { it.containingFile }
-                        .filter { it != element.containingFile }
-                        .toSet()
+            // Get all commands in the file set which have a relative import
+            val allRelativeIncludeCommands = LatexIncludesIndex.getCommandsByNames(relativePathCommands, element.project, GlobalSearchScope.projectScope(element.project))
 
-                // Avoid endless loop (in case of a file inclusion loop)
-                val maxDepth = allRelativeIncludeCommands.size
-                var counter = 0
-                while (parents.isNotEmpty() && counter < maxDepth) {
-                    val newSearchPaths = mutableListOf<String>()
-                    for (oldPath in relativeSearchPaths) {
-                        // Each of the search paths gets prepended by one of the new relative paths found
-                        for (command in includingCommands) {
-                            newSearchPaths.add(command.requiredParameters.firstOrNull() + oldPath)
-                        }
+            // Navigate upwards
+            // Commands which include the current file
+            var includingCommands = allRelativeIncludeCommands.filter { command -> command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(element.containingFile.name) }
+            var parents = includingCommands
+                    .map { it.containingFile }
+                    .filter { it != element.containingFile }
+                    .toSet()
+
+            // Avoid endless loop (in case of a file inclusion loop)
+            val maxDepth = allRelativeIncludeCommands.size
+            var counter = 0
+            while (parents.isNotEmpty() && counter < maxDepth) {
+                val newSearchPaths = mutableListOf<String>()
+                for (oldPath in relativeSearchPaths) {
+                    // Each of the search paths gets prepended by one of the new relative paths found
+                    for (command in includingCommands) {
+                        newSearchPaths.add(command.requiredParameters.firstOrNull() + oldPath)
                     }
-                    relativeSearchPaths = newSearchPaths
-
-                    includingCommands = allRelativeIncludeCommands.filter { command -> parents.any { command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(it.name) } }
-                    parents = includingCommands.map { it.containingFile }.toSet()
-
-                    counter++
                 }
+                relativeSearchPaths = newSearchPaths
 
-                searchPaths.addAll(relativeSearchPaths)
+                includingCommands = allRelativeIncludeCommands.filter { command -> parents.any { command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(it.name) } }
+                parents = includingCommands.map { it.containingFile }.toSet()
+
+                counter++
             }
+
+            searchPaths.addAll(relativeSearchPaths)
         }
 
         // Find the sources root of the current file.
@@ -100,13 +102,12 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Find the target file, by first searching through the project directory.
         var targetFile = root.findFile(key, extensions)
 
-        // When the file does not exist in the project directory, look for
-        // it elsewhere using the kpsewhich command.
-        if (targetFile == null) {
-            targetFile = element.getFileNameWithExtensions(key)
-                    ?.map { runKpsewhich(it) }
-                    ?.map { getExternalFile(it ?: return null) }
-                    ?.firstOrNull { it != null }
+        // Try content roots
+        if (targetFile == null && LatexDistribution.isMiktex) {
+            for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
+                targetFile = moduleRoot.findFile(key, extensions)
+                if (targetFile != null) break
+            }
         }
 
         // Try search paths
@@ -117,12 +118,12 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             }
         }
 
-        // Try content roots
-        if (targetFile == null && LatexDistribution.isMiktex) {
-            for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
-                targetFile = moduleRoot.findFile(key, extensions)
-                if (targetFile != null) break
-            }
+        // Look for it elsewhere using the kpsewhich command.
+        if (targetFile == null) {
+            targetFile = element.getFileNameWithExtensions(key)
+                    ?.map { runKpsewhich(it) }
+                    ?.map { getExternalFile(it ?: return null) }
+                    ?.firstOrNull { it != null }
         }
 
         if (targetFile == null) return null
@@ -138,7 +139,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     private fun getGraphicsPaths(): List<String> {
 
         val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = element.containingFile.commandsInFileSet().filter { it.name == "\\graphicspath" }
+        val graphicsPathCommands = LatexCommandsIndex.getItemsByName("\\graphicspath", element.project, GlobalSearchScope.projectScope(element.project))
 
         // Is a graphicspath defined?
         if (graphicsPathCommands.isNotEmpty()) {

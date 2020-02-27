@@ -12,12 +12,15 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
+import nl.hannahsten.texifyidea.util.PackageUtils
+import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
+import nl.hannahsten.texifyidea.util.formatAsFilePath
+import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
 import java.util.*
 
@@ -42,7 +45,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         // Loop through commands of file
         for (command in commands) {
-            val referencesList = command.getFileArgumentsReferences()
+            val referencesList = command.references.filterIsInstance<InputFileReference>()
             for (reference in referencesList) {
                 if (reference.resolve() == null) {
                     createQuickFixes(reference, descriptors, manager, isOntheFly)

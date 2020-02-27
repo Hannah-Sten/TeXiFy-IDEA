@@ -9,10 +9,10 @@ import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.files.findInclusions
 import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.findInclusions
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.includedFileNames
+import nl.hannahsten.texifyidea.util.getAllRequiredArguments
 
 /**
  * @author Hannah Schellekens
@@ -59,7 +59,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val fileNames = command.includedFileNames() ?: continue
+            val fileNames = command.getAllRequiredArguments() ?: continue
             for (fileName in fileNames) {
                 val targetFile = root.findFile(fileName)
                 if (targetFile in duplicate) {
