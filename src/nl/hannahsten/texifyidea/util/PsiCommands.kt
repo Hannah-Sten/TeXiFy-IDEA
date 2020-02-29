@@ -1,11 +1,13 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
 
 /**
@@ -131,17 +133,8 @@ fun LatexCommands.findIndentation(): String {
     return document.lineIndentation(lineNumber)
 }
 
-/**
- * If the given command is an include command, the contents of the first argument will be read.
- *
- * @return The included filenames or `null` when it's not an include command or when there
- * are no required parameters.
- */
-fun LatexCommands.includedFileNames(): List<String>? {
-    if (commandToken.text !in Magic.Command.includes) return null
-    val required = requiredParameters
-    if (required.isEmpty()) return null
-    return required.first().split(',')
+fun LatexCommands.getIncludedFiles(): List<PsiFile> {
+    return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }
 }
 
 /**

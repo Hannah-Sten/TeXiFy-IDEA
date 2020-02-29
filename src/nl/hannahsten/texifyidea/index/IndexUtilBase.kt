@@ -6,7 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
-import nl.hannahsten.texifyidea.util.files.documentClassFile
+import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.files.referencedFiles
@@ -44,7 +44,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 
         // Add document class.
         val root = baseFile.findRootFile()
-        val documentClass = root.documentClassFile()
+        val documentClass = root.documentClassFileInProject()
         if (documentClass != null) {
             searchFiles.add(documentClass.virtualFile)
             documentClass.referencedFiles().asSequence()
@@ -68,7 +68,7 @@ abstract class IndexUtilBase<T : PsiElement>(
 
         // Find all files to search in
         val searchFiles = baseFile.referencedFileSet().toMutableSet()
-        val documentclass = baseFile.findRootFile().documentClassFile()
+        val documentclass = baseFile.findRootFile().documentClassFileInProject()
         if (documentclass != null) {
             searchFiles.add(documentclass)
         }

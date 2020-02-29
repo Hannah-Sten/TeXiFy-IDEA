@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.findRelativeFile
+import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.referencedFiles
 import org.jdom.Element
 
@@ -93,14 +93,14 @@ class LatexRunConfiguration constructor(project: Project,
     var allowFocusChange = true
 
     private var bibRunConfigIds = mutableSetOf<String>()
-    var bibRunConfigs: Set<RunnerAndConfigurationSettings?>
-        get() = bibRunConfigIds.map {
+    var bibRunConfigs: Set<RunnerAndConfigurationSettings>
+        get() = bibRunConfigIds.mapNotNull {
             RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
         }.toSet()
         set(bibRunConfigs) {
             bibRunConfigIds = mutableSetOf()
             bibRunConfigs.forEach {
-                bibRunConfigIds.add(it?.uniqueID ?: "")
+                bibRunConfigIds.add(it.uniqueID)
             }
         }
 
@@ -188,7 +188,12 @@ class LatexRunConfiguration constructor(project: Project,
         // Read output path
         val outputPathString = parent.getChildText(OUTPUT_PATH)
         if (outputPathString != null) {
-            this.outputPath = fileSystem.findFileByPath(outputPathString)
+            if (outputPathString.endsWith("/bin")) {
+                this.outputPath = getDefaultOutputPath()
+            }
+            else {
+                this.outputPath = fileSystem.findFileByPath(outputPathString)
+            }
         }
 
         // Read auxil path
@@ -388,7 +393,7 @@ class LatexRunConfiguration constructor(project: Project,
                 .flatMap { command -> command.requiredParameters }
                 .forEach {filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile!!.findRelativeFile(filename) ?: return@forEach
+                    val chapterMainFile = psiFile!!.findFile(filename) ?: return@forEach
 
                     val chapterFiles = chapterMainFile.referencedFiles().toMutableSet().apply { add(chapterMainFile) }
 
@@ -463,7 +468,12 @@ class LatexRunConfiguration constructor(project: Project,
      * Set [outputPath]
      */
     override fun setFileOutputPath(fileOutputPath: String) {
-        this.outputPath = LocalFileSystem.getInstance().findFileByPath(fileOutputPath)
+        if (fileOutputPath.endsWith("/bin")) {
+            this.outputPath = getDefaultOutputPath()
+        }
+        else {
+            this.outputPath = LocalFileSystem.getInstance().findFileByPath(fileOutputPath)
+        }
     }
 
     /**
@@ -475,14 +485,19 @@ class LatexRunConfiguration constructor(project: Project,
     }
 
     private fun getDefaultOutputPath(): VirtualFile? {
-        val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-        return LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/out")
+        if (mainFile == null) return null
+        var defaultOutputPath: VirtualFile? = null
+        runReadAction {
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+            defaultOutputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/out")
+        }
+        return defaultOutputPath
     }
 
     /**
      * Whether the current output path is the default.
      */
-    fun isDefaultOutputPath() = getDefaultOutputPath() == outputPath
+    private fun isDefaultOutputPath() = getDefaultOutputPath() == outputPath
 
     /**
      * Assuming the main file is known, set a default auxil path if not already set.
