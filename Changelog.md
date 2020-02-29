@@ -22,6 +22,7 @@
 * Make links in \url and \href commands clickable. (#1238)
 * Remove second $ of an empty inline math environment when deleting the first one. (#1227)
 * Add chapterbib support. (#1223)
+* Add biblatex entry types to the autocomplete. (#1270)
 * Use Ctrl+Enter to split lines in an itemize. (#1228)
 * Disable the formatter on files that only contain a verbatim-like environment. (#1225)
 * Add inspection plus quickfix to insert formatter magic comments or move verbatim-like environments to a separate file. (#1225)
