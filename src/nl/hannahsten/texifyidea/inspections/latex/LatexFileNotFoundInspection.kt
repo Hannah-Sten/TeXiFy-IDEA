@@ -131,7 +131,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             }
 
             // Find extension
-            var extension = fileName.getFileExtention()
+            var extension = fileName.getFileExtension()
             if (extension == "") {
                 val name = command.commandToken.text
                 LatexRegularCommand[name.substring(1)]?.apply {

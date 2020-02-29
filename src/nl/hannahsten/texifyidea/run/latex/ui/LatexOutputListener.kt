@@ -4,7 +4,6 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.MessageCategory
@@ -55,8 +54,10 @@ class LatexOutputListener(
             // If now the first entry in window is an empty line: ignore this and skip to the next line
             if ((window.firstOrNull() as? String).isNullOrEmpty()) return
 
-            val (message, file, line, type) =
+            val (message, fileName, line, type) =
                     findMessage(text, newText) ?: return
+
+            val file = mainFile?.parent?.findFile(fileName ?: mainFile.name, setOf("tex"))
 
             if (message.length >= lineWidth) {
                 // Keep on collecting output for this message
@@ -73,20 +74,13 @@ class LatexOutputListener(
         }
     }
 
-    private fun findMessage(text: String, newText: String): LatexLogMessage? {
+    fun findMessage(text: String, newText: String): LatexLogMessage? {
         // Check if we have found an error
         ERROR_REGEX.find(text)?.apply {
-            val line = groups["line"]?.value?.toInt()?.minus(1) ?: return@apply
-            val file = ProjectRootManager.getInstance(project)
-                    .contentSourceRoots.map {
-                        it.findFile(groups["file"]?.value?.trim()
-                                ?: return@apply)
-                    }.firstOrNull {
-                        it?.exists() == true
-                    }
-            val message = groups["message"]?.value?.removeSuffix(newText)
-                    ?: ""
-            return LatexLogMessage(message, file, line, ERROR)
+            val line = groups["line"]?.value?.toInt()?.minus(1)
+            val fileName = groups["file"]?.value?.trim()
+            val message = groups["message"]?.value?.removeSuffix(newText) ?: ""
+            return LatexLogMessage(message, fileName, line, ERROR)
         }
 
         // Check if we have found a warning
@@ -152,7 +146,7 @@ class LatexOutputListener(
         )
     }
 
-    data class LatexLogMessage(val message: String, val file: VirtualFile? = null, val line: Int? = null, val type: LatexLogMessageType = WARNING)
+    data class LatexLogMessage(val message: String, val fileName: String? = null, val line: Int? = null, val type: LatexLogMessageType = WARNING)
 
     enum class LatexLogMessageType(val category: Int) {
         ERROR(MessageCategory.ERROR),
