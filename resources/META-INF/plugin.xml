@@ -33,7 +33,7 @@
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="193.4099.13"/>
+    <idea-version since-build="193.4099.13" until-build="193.*"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
@@ -82,76 +82,12 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.8</strong></p>
+        <p><strong>Alpha releases</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.6.8, another update with many exciting features and helpful bug fixes.
-            This update adds code style settings, support for the Grazie grammar and spellchecking plugin, support for Skim on MacOS and much more!
+            This is an alpha release, which contains the very latest features of TeXiFy IDEA.
         <p>
         <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
-        </p>
-        <br>
-        <p>
-            <em>Additions</em>
-        </p>
-        <ul>
-            <li> Add support for the Grazie grammar and spellchecking plugin. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1120">#1120</a>)</li>
-            <li> BibTeX autocompletion now also gives suggestions when typing author or title. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1152">#1152</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1190">#1190</a>)</li>
-            <li> Add support for Skim on MacOS including forward and backward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1163">#1163</a>)</li>
-            <li> Add folding for bibtex entries. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1167">#1167</a>)</li>
-            <li> Add support for texdoc on TeX Live. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1125">#1125</a>)</li>
-            <li> Add support for automatic compilation. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1140">#1140</a>)</li>
-            <li> Add support for run configuration templates. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1174">#1174</a>)</li>
-            <li> Add option to disable auto package insert. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1131">#1131</a>)</li>
-            <li> Add support for compression prevention from the cleveref package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1134">#1134</a>)</li>
-            <li> Add subfiles support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1131">#1131</a>)</li>
-            <li> Add code style settings for LaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1147">#1147</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1169">#1169</a>)</li>
-            <li> Add code style settings for BibTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1169">#1169</a>)</li>
-            <li> The LaTeX formatter now also indents inside groups. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1147">#1147</a>)</li>
-            <li> Add settings to specify the number of blank lines before sectioning commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1155">#1155</a>)</li>
-            <li> Add the code generation code style settings (as found for other languages) for LaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1164">#1164</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li> Improve the math environment switcher. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1080">#1080</a>)</li>
-            <li> Remove obsolete soft wraps setting which is built-in in IDEA now. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1084">#1084</a>)</li>
-            <li> Improve exception handling for forward search on Linux. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1087">#1087</a>)</li>
-            <li> Disable unicode quickfixes for TeX Live versions 2018 or later as these are included by default. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1088">#1088</a>)</li>
-            <li> First stop Sumatra before starting it with new inverse search settings. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1128">#1128</a>)</li>
-            <li> Skip unicode check also for XeLaTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1182">#1182</a>)</li>
-            <li> Internal parser improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1156">#1156</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1162">#1162</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1157">#1157</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1165">#1165</a>)</li>
-            <li> Replace api calls deprecated in IDEA 2020.1. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1185">#1185</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Bug fixes</em>
-        </p>
-        <ul>
-            <li> Include commands like \bibliography and \input can now recognize multiple files as argument. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/782">#782</a>)</li>
-            <li> Add forward slash as valid bibtex identifier. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1086">#1086</a>)</li>
-            <li> Allow number-only bibtex identifiers. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1126">#1126</a>)</li>
-            <li> Show correct gutter icons for included files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1137">#1137</a>)</li>
-            <li> Include files included by class file in fileset. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1123">#1123</a>)</li>
-            <li> Fix parsing of linenumber for Evince backward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1181">#1181</a>)</li>
-            <li> Add custom command names to the structure view when braces are left out. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1173">#1173</a>)</li>
-            <li> Only check for normal spaces after abbreviations when they end with a full stop. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1129">#1129</a>)</li>
-            <li> Use actual instead of incorrectly indexed command name for missing label inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1136">#1136</a>)</li>
-            <li> Command definitions using \newif need not be closed with \fi. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1187">#1187</a>)</li>
-            <li> Register the analyze menu action group using a service instead of a deprecated application component. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1144">#1144</a>)</li>
-            <li> Fix BibTeX formatter inserting spaces in braced words. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1168">#1168</a>)</li>
-            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1085">#1085</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1178">#1178</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1184">#1184</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1185">#1185</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1189">#1189</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1199">#1199</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1210">#1210</a>)</li>
-        </ul>
-        <br>
-        <p>
-            Thanks to <a href="https://github.com/TanVD">@TanVD</a>, <a href="https://github.com/fberlakovich">@fberlakovich</a> and <a href="https://github.com/stsundermann">@stsundermann</a> for contributing to this release.
-        </p>
-        <br>
-        <p>
-            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date.
         </p>
     ]]></change-notes>
 
@@ -365,7 +301,6 @@
         <fileTemplateGroup implementation="nl.hannahsten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Live templates -->
-        <defaultLiveTemplatesProvider implementation="nl.hannahsten.texifyidea.templates.BibtexLiveTemplateProvider"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 

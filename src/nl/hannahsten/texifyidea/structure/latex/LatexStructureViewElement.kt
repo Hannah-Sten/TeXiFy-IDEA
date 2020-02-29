@@ -104,10 +104,6 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                 continue
             }
 
-            if (docClass != "book" && (token == "\\part" || token == "\\chapter")) {
-                continue
-            }
-
             if (currentCmd.requiredParameters.isEmpty()) {
                 continue
             }
