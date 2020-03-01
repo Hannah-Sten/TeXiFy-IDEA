@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import java.awt.BorderLayout
-import javax.swing.DefaultListModel
 import javax.swing.JComponent
 
 /**
@@ -18,7 +17,7 @@ import javax.swing.JComponent
  */
 class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
-    private val listModel = DefaultListModel<String>()
+    private val listModel = mutableListOf<LatexOutputListener.LatexLogMessage>()
     private val treeView = LatexCompileMessageTreeView(project)
 
     init {

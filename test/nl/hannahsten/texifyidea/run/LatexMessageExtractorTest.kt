@@ -6,7 +6,6 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener
 import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessageType.WARNING
-import javax.swing.DefaultListModel
 
 class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun testEnvironmentUndefinedError() {
@@ -21,15 +20,15 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
-    fun testPackageWarning() {
-        val text = "Package biblatex Warning: Please (re)run Biber on the file:"
-        val expected = LatexLogMessage("Package biblatex Warning: Please (re)run Biber on the file:", null, null, WARNING)
-        testMessageExtractor(text, expected)
-    }
-
     fun testPackageNotInstalledError() {
         val text = "! LaTeX Error: File `paralisy.sty' not found."
         val expected = LatexLogMessage("! LaTeX Error: File `paralisy.sty' not found.", null, null, WARNING)
+        testMessageExtractor(text, expected)
+    }
+
+    fun testPackageWarning() {
+        val text = "Package biblatex Warning: Please (re)run Biber on the file:"
+        val expected = LatexLogMessage("Package biblatex Warning: Please (re)run Biber on the file:", null, null, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -40,7 +39,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     private fun testMessageExtractor(text: String, expected: LatexLogMessage) {
-        val listModel = DefaultListModel<String>()
+        val listModel = mutableListOf<LatexLogMessage>()
         val treeView = LatexCompileMessageTreeView(project)
         val listener = LatexOutputListener(project, null, listModel, treeView)
 

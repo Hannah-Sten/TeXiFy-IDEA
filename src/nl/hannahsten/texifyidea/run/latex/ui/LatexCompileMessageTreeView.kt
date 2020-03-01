@@ -4,5 +4,4 @@ import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel
 import com.intellij.openapi.project.Project
 
 class LatexCompileMessageTreeView(project: Project) : NewErrorTreeViewPanel(project, null) {
-
 }

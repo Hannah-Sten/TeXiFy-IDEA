@@ -11,12 +11,11 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.buffer.CircularFifoBuffer
-import javax.swing.DefaultListModel
 
 class LatexOutputListener(
         val project: Project,
         val mainFile: VirtualFile?,
-        val listModel: DefaultListModel<String>,
+        val listModel: MutableList<LatexLogMessage>,
         val treeView: LatexCompileMessageTreeView,
         val lineWidth: Int = 79
 ) : ProcessListener {
@@ -43,6 +42,10 @@ class LatexOutputListener(
         // on the next line. This may not be accurate, but there is no way of distinguishing this.
 
         val newText = event.text.trimEnd('\n', '\r')
+        processNewText(newText)
+    }
+
+    fun processNewText(newText: String) {
         window.add(newText)
         val text = window.joinToString(separator = "")
 
@@ -66,9 +69,9 @@ class LatexOutputListener(
                 collectMessageLine(newText)
             }
             else {
-                if (listModel.isEmpty || listModel.lastElement() != message) {
+                if (listModel.isEmpty() || listModel.last().message != message) {
                     addMessageToLog(message, file ?: mainFile, line
-                            ?: 0, type.category)
+                            ?: 0, type)
                 }
             }
         }
@@ -99,9 +102,9 @@ class LatexOutputListener(
         }
     }
 
-    private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 0, category: Int = MessageCategory.ERROR) {
-        treeView.addMessage(category, arrayOf(message), file, line, 0, null)
-        listModel.addElement(message)
+    private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 0, type: LatexLogMessageType = ERROR) {
+        treeView.addMessage(type.category, arrayOf(message), file, line, 0, null)
+        listModel.add(LatexLogMessage(message, file?.name, line, type))
     }
 
     override fun processTerminated(event: ProcessEvent) {
