@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 class BibtexIdReference(element: LatexNormalText) : PsiReferenceBase<LatexNormalText>(element), PsiPolyVariantReference {
 
     init {
-        rangeInElement = ElementManipulators.getValueTextRange(element)
+        rangeInElement = ElementManipulators.getValueTextRange(element).grown(-1)
     }
 
     override fun resolve(): PsiElement? {
