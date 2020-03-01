@@ -24,6 +24,10 @@ public class BibtexPsiImplUtil {
         return new BibtexStringReference(element);
     }
 
+    /*
+     * BibtexEntry
+     */
+
     public static PsiReference[] getReferences(@NotNull BibtexEntry element) {
         return BibtexEntryUtilKt.getReferences(element);
     }
@@ -76,5 +80,21 @@ public class BibtexPsiImplUtil {
 
     public static String getTagContent(@NotNull BibtexEntry element, String tagName) {
         return BibtexEntryUtilKt.getTagContent(element, tagName);
+    }
+
+    /*
+     * BibtexId
+     */
+
+    public static PsiElement getNameIdentifier(@NotNull BibtexId element) {
+        return BibtexIdUtilKt.getNameIdentifier(element);
+    }
+
+    public static PsiElement setName(@NotNull BibtexId element, String name) {
+        return BibtexIdUtilKt.setName(element, name);
+    }
+
+    public static String getName(@NotNull BibtexId element) {
+        return BibtexIdUtilKt.getName(element);
     }
 }
