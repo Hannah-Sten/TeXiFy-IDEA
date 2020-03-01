@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 
 /**
  * Reference to a bibtex id.
+ * The LatexNormalText, for example the `knuth1990` in `\cite{knuth1990}` will resolve to the bibtex id, so the `knuth1990,` in `@Book{knuth1990,`
  */
 class BibtexIdReference(element: LatexNormalText) : PsiReferenceBase<LatexNormalText>(element), PsiPolyVariantReference {
 

@@ -373,6 +373,9 @@
         <lang.refactoringSupport language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexRefactoringSupportProvider" />
         <lang.namesValidator language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexNamesValidator" />
 
+        <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
+        <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
+
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoCommandDefinitionSymbolContributor"/>
