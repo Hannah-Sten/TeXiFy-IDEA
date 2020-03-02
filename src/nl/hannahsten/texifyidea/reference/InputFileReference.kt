@@ -83,7 +83,8 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         }
 
         // Look for packages elsewhere using the kpsewhich command.
-        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet()).contains("sty")) {
+        @Suppress("RemoveExplicitTypeArguments")
+        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).contains("sty")) {
             targetFile = element.getFileNameWithExtensions(key)
                     ?.map { runKpsewhich(it) }
                     ?.map { getExternalFile(it ?: return null) }

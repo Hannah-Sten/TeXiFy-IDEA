@@ -135,10 +135,10 @@ fun LatexCommands.findIndentation(): String {
 
 /**
  * Get files included by this command.
- * @param includedInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
+ * @param includeInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
  */
-fun LatexCommands.getIncludedFiles(includedInstalledPackages: Boolean): List<PsiFile> {
-    return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }
+fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
+    return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve(includeInstalledPackages) }
 }
 
 /**
