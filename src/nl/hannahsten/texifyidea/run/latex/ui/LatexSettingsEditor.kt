@@ -186,7 +186,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         runConfiguration.setMainFile(filePath)
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
-        runConfiguration.setFileOutputPath(outputPathTextField.text)
+        if (outputPathTextField.text.endsWith("/bin")) {
+            runConfiguration.setDefaultOutputPath()
+        }
+        else {
+            runConfiguration.setFileOutputPath(outputPathTextField.text)
+        }
 
         if (auxilPath != null) {
             val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton

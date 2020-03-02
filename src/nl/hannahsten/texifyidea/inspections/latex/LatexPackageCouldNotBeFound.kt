@@ -32,7 +32,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
                 .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
         for (command in commands) {
-            val `package` = command.requiredParameters.first().toLowerCase()
+            val `package` = command.requiredParameters.firstOrNull()?.toLowerCase()
             if (!packages.contains(`package`)) {
                 descriptors.add(manager.createProblemDescriptor(
                         command,
