@@ -44,7 +44,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         LatexIncludesIndex.getItemsInFileSet(file).asSequence()
                 .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
                 .forEach {command ->
-                    for (fileName in command.getIncludedFiles().map { it.name }) {
+                    for (fileName in command.getIncludedFiles(false).map { it.name }) {
                         groupedIncludes.getOrPut(fileName) { mutableListOf() }.add(command)
                     }
                 }

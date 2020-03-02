@@ -291,13 +291,13 @@ fun PsiFile.isRoot(): Boolean {
 }
 
 /**
- * Looks for all file inclusions in a given file.
+ * Looks for all file inclusions in a given file, excluding installed LaTeX packages.
  *
  * @return A list containing all included files.
  */
 fun PsiFile.findInclusions(): List<PsiFile> {
     return LatexIncludesIndex.getItems(this)
-            .flatMap { it.getIncludedFiles() }
+            .flatMap { it.getIncludedFiles(false) }
             .toList()
 }
 
@@ -359,7 +359,7 @@ fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this)
 fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
 
 /**
- * Scans the whole document (recursively) for all referenced/included files.
+ * Scans the whole document (recursively) for all referenced/included files, except installed LaTeX packages.
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
@@ -375,7 +375,7 @@ fun PsiFile.referencedFiles(): Set<PsiFile> {
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
     LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
         command.references.filterIsInstance<InputFileReference>()
-                .mapNotNull { it.resolve() }
+                .mapNotNull { it.resolve(false) }
                 .forEach {
                     // Do not re-add all referenced files if we already did that
                     if (it in files) return@forEach

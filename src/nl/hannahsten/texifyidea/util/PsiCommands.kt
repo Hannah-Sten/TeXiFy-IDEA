@@ -133,7 +133,11 @@ fun LatexCommands.findIndentation(): String {
     return document.lineIndentation(lineNumber)
 }
 
-fun LatexCommands.getIncludedFiles(): List<PsiFile> {
+/**
+ * Get files included by this command.
+ * @param includedInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
+ */
+fun LatexCommands.getIncludedFiles(includedInstalledPackages: Boolean): List<PsiFile> {
     return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }
 }
 

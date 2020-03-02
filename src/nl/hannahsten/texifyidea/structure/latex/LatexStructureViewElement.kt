@@ -143,7 +143,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
         for (command in commands) {
             val elt = LatexStructureViewCommandElement(command)
-            for (psiFile in command.getIncludedFiles()) {
+            for (psiFile in command.getIncludedFiles(true)) {
                 if (BibtexFileType == psiFile.fileType) {
                     elt.addChild(BibtexStructureViewElement(psiFile))
                 }

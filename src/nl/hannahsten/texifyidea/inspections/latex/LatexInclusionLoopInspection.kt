@@ -54,7 +54,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
         val commands = LatexIncludesIndex.getItems(file)
         for (command in commands) {
             val name = command.name ?: continue
-            for (psiFile in command.getIncludedFiles()) {
+            for (psiFile in command.getIncludedFiles(false)) {
                 if (psiFile in duplicate) {
                     descriptors.add(manager.createProblemDescriptor(
                             command,
