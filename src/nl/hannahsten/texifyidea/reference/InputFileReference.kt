@@ -62,10 +62,11 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         checkImportPaths(searchPaths)
 
         // Find the sources root of the current file.
-        val root = rootFile ?: element.containingFile.findRootFile()
+        val rootDirectory = rootFile?.parent ?: element.containingFile.findRootFile()
                 .containingDirectory.virtualFile
-        // Find the target file, by first searching through the project directory.
-        var targetFile = root.findFile(key, extensions)
+
+        // Try to find the target file directly from the given path
+        var targetFile = rootDirectory.findFile(key, extensions)
 
         // Try content roots
         if (targetFile == null && LatexDistribution.isMiktex) {
@@ -78,7 +79,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Try search paths
         if (targetFile == null) {
             for (searchPath in searchPaths) {
-                targetFile = root.findFile(searchPath + key, extensions)
+                targetFile = rootDirectory.findFile(searchPath + key, extensions)
                 if (targetFile != null) break
             }
         }

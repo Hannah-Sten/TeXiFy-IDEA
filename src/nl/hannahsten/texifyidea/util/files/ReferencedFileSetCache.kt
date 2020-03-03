@@ -1,9 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import kotlinx.coroutines.GlobalScope
@@ -46,19 +43,15 @@ class ReferencedFileSetCache {
             // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
-            ProgressManager.getInstance().run(object : Task.Backgroundable(file.project, "Indexing fileset for ${file.name}...") {
-                override fun run(indicator: ProgressIndicator) {
-                    GlobalScope.launch {
-                        mutex.withLock {
-                            if (!fileSetCache.containsKey(file.virtualFile)) {
-                                runReadAction {
-                                    fileSetCache[file.virtualFile] = findReferencedFileSetWithoutCache(file)
-                                }
-                            }
+            GlobalScope.launch {
+                mutex.withLock {
+                    if (!fileSetCache.containsKey(file.virtualFile)) {
+                        runReadAction {
+                            fileSetCache[file.virtualFile] = findReferencedFileSetWithoutCache(file)
                         }
                     }
                 }
-            })
+            }
             fileSetCache[file.virtualFile] ?: emptySet()
         }
         else {
