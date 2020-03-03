@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -46,7 +47,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
      * @param lookForInstalledPackages Whether to look for packages installed elsewhere on the filesystem.
      * Set to false when it would make the operation too expensive, for example when trying to calculate the fileset of many files.
      */
-    fun resolve(lookForInstalledPackages: Boolean): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, rootFile: VirtualFile? = null): PsiFile? {
 
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
@@ -61,7 +62,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         checkImportPaths(searchPaths)
 
         // Find the sources root of the current file.
-        val root = element.containingFile.findRootFile()
+        val root = rootFile ?: element.containingFile.findRootFile()
                 .containingDirectory.virtualFile
         // Find the target file, by first searching through the project directory.
         var targetFile = root.findFile(key, extensions)
@@ -84,7 +85,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
         // Look for packages elsewhere using the kpsewhich command.
         @Suppress("RemoveExplicitTypeArguments")
-        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).contains("sty")) {
+        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
             targetFile = element.getFileNameWithExtensions(key)
                     ?.map { runKpsewhich(it) }
                     ?.map { getExternalFile(it ?: return null) }

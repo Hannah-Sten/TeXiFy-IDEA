@@ -364,24 +364,24 @@ fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
-internal fun PsiFile.referencedFiles(): Set<PsiFile> {
+internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
     val result = HashSet<PsiFile>()
-    referencedFiles(result)
+    referencedFiles(result, rootFile)
     return result
 }
 
 /**
  * Recursive implementation of [referencedFiles].
  */
-private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
+private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
     LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
         command.references.filterIsInstance<InputFileReference>()
-                .mapNotNull { it.resolve(false) }
+                .mapNotNull { it.resolve(false, rootFile) }
                 .forEach {
                     // Do not re-add all referenced files if we already did that
                     if (it in files) return@forEach
                     files.add(it)
-                    it.referencedFiles(files)
+                    it.referencedFiles(files, rootFile)
                 }
     }
 }
