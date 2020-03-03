@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 
@@ -41,7 +42,7 @@ object PackageUtils {
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
     @JvmStatic
-    fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
+    fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
 
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
@@ -64,9 +65,9 @@ object PackageUtils {
             }
         }
 
-        val newlines: String
-        val insertLocation: Int
-        var postNewlines: String? = null
+        val prependNewLine: Boolean
+        // The anchor after which the new element will be inserted
+        val anchorAfter: PsiElement?
 
         // When there are no usepackage commands: insert below documentclass.
         if (last == null) {
@@ -77,32 +78,39 @@ object PackageUtils {
                     }
                     .firstOrNull()
             if (classHuh != null) {
-                insertLocation = classHuh.textOffset + classHuh.textLength
-                newlines = "\n"
+                anchorAfter = classHuh
+                prependNewLine = true
             }
             else {
                 // No other sensible location can be found
-                insertLocation = 0
-                newlines = ""
-                postNewlines = "\n\n"
+                anchorAfter = null
+                prependNewLine = false
             }
 
         }
         // Otherwise, insert below the lowest usepackage.
         else {
-            insertLocation = last.textOffset + last.textLength
-            newlines = "\n"
+            anchorAfter = last
+            prependNewLine = true
         }
 
-        var command = newlines + commandName
+        var command = commandName
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
         command += "{$packageName}"
 
-        if (postNewlines != null) {
-            command += postNewlines
+        val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
+        if (anchorAfter != null) {
+            val anchorBefore = anchorAfter.node.treeNext
+            if (prependNewLine) {
+                val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                anchorAfter.parent.node.addChild(newLine, anchorBefore)
+            }
+            anchorAfter.parent.node.addChild(newNode, anchorBefore)
         }
-
-        document.insertString(insertLocation, command)
+        else {
+            // Insert at beginning
+            file.node.addChild(newNode, file.firstChild.node)
+        }
     }
 
     /**
@@ -139,11 +147,9 @@ object PackageUtils {
         // Packages should always be included in the root file
         val rootFile = file.findRootFile()
 
-        val document = rootFile.document() ?: return true
-
         val params = pack.parameters
         val parameterString = StringUtil.join(params, ",")
-        insertUsepackage(document, rootFile, pack.name, parameterString)
+        insertUsepackage(rootFile, pack.name, parameterString)
 
         return true
     }
@@ -189,28 +195,6 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedPackagesList(baseFile: PsiFile): List<String> {
         val commands = baseFile.commandsInFileSet()
-        return getIncludedPackages(commands, ArrayList())
-    }
-
-    /**
-     * Analyses the given file and finds all packages included in that file only (not the file set!)
-     *
-     * @return A set containing all used packages in the given file.
-     */
-    @JvmStatic
-    fun getIncludedPackagesOfSingleFile(baseFile: PsiFile): Set<String> {
-        val commands = baseFile.commandsInFile()
-        return getIncludedPackages(commands, HashSet())
-    }
-
-    /**
-     * Analyses the given file and finds all packages included in that file only (not the file set!)
-     *
-     * @return A list containing all used package names (including duplicates).
-     */
-    @JvmStatic
-    fun getIncludedPackagesOfSingleFileList(baseFile: PsiFile): List<String> {
-        val commands = baseFile.commandsInFile()
         return getIncludedPackages(commands, ArrayList())
     }
 
