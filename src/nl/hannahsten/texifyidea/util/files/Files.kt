@@ -28,6 +28,7 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.*
 import java.io.File
@@ -101,24 +102,35 @@ fun VirtualFile.psiFile(project: Project): PsiFile? {
 }
 
 /**
- * Looks for a certain file relative to this directory.
+ * Looks for a certain file, relative to this directory or if the given path is absolute use that directly.
  *
  * First looks if the file including extensions exists, when it doesn't it tries to append all
  * possible extensions until it finds a good one.
  *
- * @param fileName
- *         The name of the file relative to the directory.
+ * @param filePath
+ *         The name of the file relative to the directory, or an absolute path.
  * @param extensions
  *         Set of all supported extensions to look for.
  * @return The matching file, or `null` when the file couldn't be found.
  */
-fun VirtualFile.findFile(fileName: String, extensions: Set<String> = emptySet()): VirtualFile? {
-    var file = findFileByRelativePath(fileName)
+fun VirtualFile.findFile(filePath: String, extensions: Set<String> = emptySet()): VirtualFile? {
+    val isAbsolute = File(filePath).isAbsolute
+    var file = if (!isAbsolute) {
+        findFileByRelativePath(filePath)
+    }
+    else {
+        LocalFileSystem.getInstance().findFileByPath(filePath)
+    }
     if (file != null && !file.isDirectory) return file
 
     extensions.forEach { extension ->
-        val lookFor = if (fileName.endsWith(".$extension")) fileName else "$fileName.$extension"
-        file = findFileByRelativePath(lookFor)
+        val lookFor = if (filePath.endsWith(".$extension")) filePath else "$filePath.$extension"
+        file = if (!isAbsolute) {
+            findFileByRelativePath(lookFor)
+        }
+        else {
+            LocalFileSystem.getInstance().findFileByPath(lookFor)
+        }
 
         if (file != null && !file!!.isDirectory) return file
     }
@@ -155,7 +167,7 @@ fun String.removeFileExtension() = FileUtil.FILE_EXTENSION.matcher(this).replace
 /**
  * Returns the extension of given filename
  */
-fun String.getFileExtention(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
+fun String.getFileExtension(): String = if (this.contains(".")) FileUtil.FILE_BODY.matcher(this).replaceAll("")!! else ""
 
 /**
  * Creates a project directory at `path` which will be marked as excluded.
@@ -230,11 +242,11 @@ fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
 
     // Find all related files.
     for (command in commands) {
-        val includedNames = command.includedFileNames() ?: continue
+        val includedNames = command.getAllRequiredArguments() ?: continue
         val declaredIn = command.containingFile
 
         for (includedName in includedNames) {
-            val referenced = declaredIn.findRelativeFile(includedName)
+            val referenced = declaredIn.findFile(includedName)
                     ?: continue
 
             // When it looks like a file includes itself, we skip it
@@ -279,17 +291,24 @@ fun PsiFile.isRoot(): Boolean {
 }
 
 /**
- * Looks for all file inclusions in a given file.
+ * Looks for all file inclusions in a given file, excluding installed LaTeX packages.
  *
  * @return A list containing all included files.
  */
 fun PsiFile.findInclusions(): List<PsiFile> {
-    val root = findRootFile()
-    return LatexIncludesIndex.getItems(this).asSequence()
-            .filter { "\\input" == it.name || "\\include" == it.name || "\\includeonly" == it.name }
-            .flatMap { it.includedFileNames()?.asSequence() ?: emptySequence() }
-            .mapNotNull { root.findRelativeFile(it) }
+    return LatexIncludesIndex.getItems(this)
+            .flatMap { it.getIncludedFiles(false) }
             .toList()
+}
+
+/**
+ * Get all required arguments, also if comma separated in a group.
+ * e.g. \mycommand{arg1,arg2}{arg3} will return [arg1, arg2, arg3].
+ */
+private fun LatexCommands.getAllRequiredArguments(): List<String>? {
+    val required = requiredParameters
+    if (required.isEmpty()) return null
+    return required.flatMap { it.split(',')}
 }
 
 /**
@@ -309,14 +328,15 @@ fun PsiFile.isStyleFile() = virtualFile.extension == "sty"
 fun PsiFile.isClassFile() = virtualFile.extension == "cls"
 
 /**
- * Looks up the argument that is in the documentclass command.
+ * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
+ * Note this explicitly does not find files elsewhere on the system.
  */
-fun PsiFile.documentClassFile(): PsiFile? {
+fun PsiFile.documentClassFileInProject(): PsiFile? {
     val command = commandsInFile().asSequence()
             .filter { it.name == "\\documentclass" }
             .firstOrNull() ?: return null
     val argument = command.requiredParameter(0) ?: return null
-    return findRelativeFile("$argument.cls")
+    return findFile("$argument.cls")
 }
 
 /**
@@ -339,36 +359,30 @@ fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this)
 fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
 
 /**
- * Scans the whole document (recursively) for all referenced/included files.
+ * Scans the whole document (recursively) for all referenced/included files, except installed LaTeX packages.
  * Never use this directly, use the cached [referencedFileSet] instead.
  *
  * @return A collection containing all the PsiFiles that are referenced from this file.
  */
-internal fun PsiFile.referencedFiles(): Set<PsiFile> {
+internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
     val result = HashSet<PsiFile>()
-    referencedFiles(result)
+    referencedFiles(result, rootFile)
     return result
 }
 
 /**
  * Recursive implementation of [referencedFiles].
  */
-private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
-    val scope = fileSearchScope
-    val commands = LatexIncludesIndex.getItems(project, scope)
-    val rootFile = findRootFile()
-
-    commands.forEach { command ->
-        val fileNames = command.includedFileNames() ?: return@forEach
-        val extensions = Magic.Command.includeOnlyExtensions[command.commandToken.text]
-
-        for (fileName in fileNames) {
-            val included = rootFile.findRelativeFile(fileName, extensions)
-                    ?: return@forEach
-            if (included in files) return@forEach
-            files.add(included)
-            included.referencedFiles(files)
-        }
+private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
+    LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
+        command.references.filterIsInstance<InputFileReference>()
+                .mapNotNull { it.resolve(false, rootFile) }
+                .forEach {
+                    // Do not re-add all referenced files if we already did that
+                    if (it in files) return@forEach
+                    files.add(it)
+                    it.referencedFiles(files, rootFile)
+                }
     }
 }
 
@@ -379,7 +393,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>) {
  *         The path relative to this file.
  * @return The found file, or `null` when the file could not be found.
  */
-fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): PsiFile? {
+fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val directory = containingDirectory.virtualFile
 
     val file = directory.findFile(path, extensions
@@ -396,7 +410,7 @@ fun PsiFile.findRelativeFile(path: String, extensions: Set<String>? = null): Psi
 }
 
 /**
- * [findRelativeFile] but then it scans all content roots.
+ * [findFile] but then it scans all content roots.
  *
  * @param path
  *         The path relative to {@code original}.

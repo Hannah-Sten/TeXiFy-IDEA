@@ -36,7 +36,7 @@ internal fun findReferencedFileSetWithoutCache(baseFile: PsiFile): Set<PsiFile> 
     // Map root to all directly referenced files.
     val sets = HashMap<PsiFile, Set<PsiFile>>()
     for (root in roots) {
-        val referenced = root.referencedFiles() + root
+        val referenced = root.referencedFiles(root.virtualFile) + root
 
         if (referenced.contains(baseFile)) {
             return referenced + baseFile

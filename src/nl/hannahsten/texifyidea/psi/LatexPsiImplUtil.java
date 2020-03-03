@@ -5,7 +5,6 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
-import nl.hannahsten.texifyidea.reference.CommandDefinitionReference;
 import nl.hannahsten.texifyidea.settings.LabelingCommandInformation;
 import nl.hannahsten.texifyidea.settings.TexifySettings;
 import nl.hannahsten.texifyidea.util.Magic;
@@ -13,53 +12,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static nl.hannahsten.texifyidea.psi.LatexCommandsImplUtilKt.*;
-
 /**
  * This class is used for method injection in generated parser classes.
  * It has to be in Java for Grammar-Kit to be able to generate the parser classes correctly.
  */
-@SuppressWarnings("ToArrayCallWithZeroLengthArrayArgument")
 public class LatexPsiImplUtil {
 
-    static final Set<String> REFERENCE_COMMANDS = Magic.Command.reference;
-    static final Set<String> INCLUDE_COMMANDS = Magic.Command.includes;
-    static final Set<String> URL_COMMANDS = Magic.Command.urls;
-
-    /**
-     * Get the references for this command.
-     * For example for a \ref{label1,label2} command, then label1 and label2 are the references.
-     */
     @NotNull
     public static PsiReference[] getReferences(@NotNull LatexCommands element) {
-        final LatexRequiredParam firstParam = readFirstParam(element);
-
-        // If it is a reference to a label
-        if (REFERENCE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
-            List<PsiReference> references = extractLabelReferences(element, firstParam);
-            return references.toArray(new PsiReference[references.size()]);
-        }
-
-        // If it is a reference to a file
-        if (INCLUDE_COMMANDS.contains(element.getCommandToken().getText()) && firstParam != null) {
-            List<PsiReference> references = extractIncludes(element, firstParam);
-            return references.toArray(new PsiReference[references.size()]);
-        }
-
-        if (URL_COMMANDS.contains(element.getName()) && firstParam != null) {
-            return extractUrlReferences(element, firstParam);
-        }
-
-        // Else, we assume the command itself is important instead of its parameters,
-        // and the user is interested in the location of the command definition
-        CommandDefinitionReference reference = new CommandDefinitionReference(element);
-        // Only create a reference if there is something to resolve to, otherwise autocompletion won't work
-        if (reference.multiResolve(false).length == 0) {
-            return new PsiReference[0];
-        }
-        else {
-            return new CommandDefinitionReference[]{reference};
-        }
+        return LatexCommandsImplUtilKt.getReferences(element);
     }
 
     /**

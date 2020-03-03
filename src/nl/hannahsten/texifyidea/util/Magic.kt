@@ -357,14 +357,6 @@ object Magic {
         val definitionsAndRedefinitions = definitions + redefinitions
 
         /**
-         * All commands that include other files.
-         */
-        @JvmField
-        val includes = hashSetOf(
-                "\\includeonly", "\\include", "\\input", "\\bibliography", "\\addbibresource", "\\RequirePackage", "\\usepackage", "\\documentclass", "\\subfile", "\\includegraphics"
-        )
-
-        /**
          * Commands for which TeXiFy-IDEA has custom behaviour.
          */
         @JvmField

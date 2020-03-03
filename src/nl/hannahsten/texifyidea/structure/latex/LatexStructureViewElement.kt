@@ -7,15 +7,12 @@ import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -23,11 +20,7 @@ import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.allCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.documentClassFile
-import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.includedFileNames
+import nl.hannahsten.texifyidea.util.getIncludedFiles
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -144,51 +137,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        // Include documentclass.
-        if (commands.isNotEmpty()) {
-            val baseFile = commands[0].containingFile
-            val root = baseFile.findRootFile()
-            val documentClass = root.documentClassFile()
-            if (documentClass != null) {
-                val command = baseFile.commandsInFile().asSequence()
-                        .filter { cmd -> "\\documentclass" == cmd.name }
-                        .firstOrNull()
-                if (command != null) {
-                    val elt = LatexStructureViewCommandElement(command)
-                    elt.addChild(LatexStructureViewElement(documentClass))
-                    treeElements.add(elt)
-                }
-            }
-        }
-
-        // Scan for normal includes.
-        for (cmd in commands) {
-            val name = cmd.commandToken.text
-            if (name != "\\include" && name != "\\includeonly" && name != "\\input"
-                    && name != "\\bibliography" && name != "\\addbibresource") {
-                continue
-            }
-
-            val required = cmd.requiredParameters
-            if (required.isEmpty()) {
-                continue
-            }
-
-            // Find file
-            val latexCommandHuh = LatexRegularCommand[name.substring(1)] ?: continue
-            val argument = latexCommandHuh.first().getArgumentsOf(RequiredFileArgument::class.java)[0]
-
-            val fileNames = cmd.includedFileNames() ?: continue
-            val containingFile = element.containingFile
-            val containingDirectory = containingFile.findRootFile()
-                    .containingDirectory ?: continue
-            val directory = containingDirectory.virtualFile
-
-            val elt = LatexStructureViewCommandElement(cmd)
-            for (fileName in fileNames) {
-                val file = directory.findFile(fileName, argument.supportedExtensions) ?: continue
-                val psiFile = PsiManager.getInstance(element.project).findFile(file) ?: continue
-
+        for (command in commands) {
+            val elt = LatexStructureViewCommandElement(command)
+            for (psiFile in command.getIncludedFiles(true)) {
                 if (BibtexFileType == psiFile.fileType) {
                     elt.addChild(BibtexStructureViewElement(psiFile))
                 }

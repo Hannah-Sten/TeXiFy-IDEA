@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex;
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex;
 import nl.hannahsten.texifyidea.psi.LatexCommands;
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl;
+import nl.hannahsten.texifyidea.util.CommandsKt;
 import nl.hannahsten.texifyidea.util.Magic;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,7 +85,7 @@ public class LatexCommandsStubElementType extends IStubElementType<LatexCommands
         indexSink.occurrence(LatexCommandsIndex.Companion.key(), latexCommandsStub.getCommandToken());
 
         String token = latexCommandsStub.getCommandToken();
-        if (Magic.Command.includes.contains(token)) {
+        if (CommandsKt.getIncludeCommands().contains(token)) {
             indexSink.occurrence(LatexIncludesIndex.Companion.key(), token);
         }
 

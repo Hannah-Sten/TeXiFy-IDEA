@@ -31,17 +31,22 @@ open class IsChildDFS<Node>(
             return true
         }
 
+        // Maintain list of visited nodes, to detect loops
+        val visited = mutableSetOf<Node>()
+
         // Iterative implementation. Yay.
         val stack: Deque<Node> = ArrayDeque()
         stack.push(start)
 
         while (!stack.isEmpty()) {
             val child = stack.pop()
+            visited.add(child)
             if (isGoal(child)) {
                 return true
             }
 
-            children(child).forEach(stack::push)
+            // Don't visit nodes twice to avoid loops
+            children(child).filter { it !in visited}.forEach(stack::push)
         }
 
         return false
