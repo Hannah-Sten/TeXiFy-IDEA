@@ -3,7 +3,8 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result
 import com.intellij.codeInsight.template.TemplateManager
-import com.intellij.codeInsight.template.impl.TemplateSettings
+import com.intellij.codeInsight.template.impl.TemplateImpl
+import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
@@ -45,8 +46,9 @@ open class InsertBibtexTag : EnterHandlerDelegate {
      * Starts the tag insertion template process.
      */
     private fun startTemplate(file: PsiFile, editor: Editor) {
-        val templateSettings = TemplateSettings.getInstance()
-        val template = templateSettings.getTemplateById("BIBTEX.tag")
+        val template = TemplateImpl("","\$__Variable0\$ = {\$__Variable1\$},","")
+        template.addVariable(TextExpression("key"), true)
+        template.addVariable(TextExpression("value"), true)
 
         val templateManager = TemplateManager.getInstance(file.project)
         templateManager.startTemplate(editor, template)

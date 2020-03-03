@@ -1,3 +1,5 @@
+@file:Suppress("UnusedImport")
+
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.openapi.project.Project
@@ -9,7 +11,8 @@ import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.files.referencedFiles
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 
 /**
  * @author Hannah Schellekens
@@ -47,7 +50,7 @@ abstract class IndexUtilBase<T : PsiElement>(
         val documentClass = root.documentClassFileInProject()
         if (documentClass != null) {
             searchFiles.add(documentClass.virtualFile)
-            documentClass.referencedFiles().asSequence()
+            documentClass.referencedFileSet().asSequence()
                     .forEach { searchFiles.add(it.virtualFile) }
         }
 

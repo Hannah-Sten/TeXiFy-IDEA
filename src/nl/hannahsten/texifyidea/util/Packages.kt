@@ -71,7 +71,10 @@ object PackageUtils {
         // When there are no usepackage commands: insert below documentclass.
         if (last == null) {
             val classHuh = commands.asSequence()
-                    .filter { cmd -> "\\documentclass" == cmd.commandToken.text || "\\LoadClass" == cmd.commandToken.text }
+                    .filter { cmd ->
+                        "\\documentclass" == cmd.commandToken
+                                .text || "\\LoadClass" == cmd.commandToken.text
+                    }
                     .firstOrNull()
             if (classHuh != null) {
                 insertLocation = classHuh.textOffset + classHuh.textLength
@@ -125,7 +128,9 @@ object PackageUtils {
         if (Magic.Package.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in Magic.Package.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts.map {it.name }).isNotEmpty()) {
+                if (conflicts.contains(pack) && file.includedPackages().toSet()
+                                .intersect(conflicts.map { it.name })
+                                .isNotEmpty()) {
                     return false
                 }
             }
@@ -214,8 +219,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPackages(
-        commands: Collection<LatexCommands>,
-        result: T
+            commands: Collection<LatexCommands>,
+            result: T
     ) = getPackagesFromCommands(commands, PACKAGE_COMMANDS, result)
 
     /**
@@ -223,8 +228,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedTikzLibraries(
-        commands: Collection<LatexCommands>,
-        result: T
+            commands: Collection<LatexCommands>,
+            result: T
     ) = getPackagesFromCommands(commands, TIKZ_IMPORT_COMMANDS, result)
 
     /**
@@ -232,8 +237,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPgfLibraries(
-        commands: Collection<LatexCommands>,
-        result: T
+            commands: Collection<LatexCommands>,
+            result: T
     ) = getPackagesFromCommands(commands, PGF_IMPORT_COMMANDS, result)
 
     /**
@@ -243,9 +248,9 @@ object PackageUtils {
      * Note that not all elements returned may be valid package names.
      */
     private fun <T : MutableCollection<String>> getPackagesFromCommands(
-        commands: Collection<LatexCommands>,
-        packageCommands: Set<String>,
-        initial: T
+            commands: Collection<LatexCommands>,
+            packageCommands: Set<String>,
+            initial: T
     ): T {
         for (cmd in commands) {
             if (cmd.commandToken.text !in packageCommands) {
@@ -254,11 +259,14 @@ object PackageUtils {
 
             // Assume packages can be included in both optional and required parameters
             // Except a class, because a class is not a package
-            val packages = if (cmd.commandToken.text == "\\documentclass" || cmd.commandToken.text == "\\LoadClass") {
+            val packages = if (cmd.commandToken
+                            .text == "\\documentclass" || cmd.commandToken
+                            .text == "\\LoadClass") {
                 setOf(cmd.optionalParameters.keys.toList())
             }
             else {
-                setOf(cmd.requiredParameters, cmd.optionalParameters.keys.toList())
+                setOf(cmd.requiredParameters, cmd.optionalParameters.keys
+                        .toList())
             }
 
             for (list in packages) {
@@ -271,7 +279,8 @@ object PackageUtils {
 
                 // Multiple includes.
                 if (packageName.contains(",")) {
-                    initial.addAll(packageName.split(",").dropLastWhile(String::isNullOrEmpty))
+                    initial.addAll(packageName.split(",")
+                            .dropLastWhile(String::isNullOrEmpty))
                 }
                 // Single include.
                 else {
@@ -282,6 +291,22 @@ object PackageUtils {
 
         return initial
     }
+}
+
+object TexLivePackages {
+    lateinit var packageList: MutableList<String>
+
+    /**
+     * Given a package name used in \usepackage or \RequirePackage, find the
+     * name needed to install from TeX Live. E.g. to be able to use \usepackage{rubikrotation}
+     * we need to install the rubik package.
+     */
+    fun findTexLiveName(packageName: String): String? {
+        // Find the package name for tlmgr.
+        val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand() ?: return null
+        return searchResult.split('\n')[1].dropLast(1)
+    }
+
 }
 
 /**
