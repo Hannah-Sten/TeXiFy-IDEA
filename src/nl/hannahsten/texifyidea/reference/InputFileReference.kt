@@ -8,17 +8,15 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getExternalFile
+import nl.hannahsten.texifyidea.util.files.getGraphicsPaths
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -51,9 +49,9 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
-        // Get a list of extra paths to search in for the file, absolute or relative
+        // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = if (element.name == "\\includegraphics") {
-            getGraphicsPaths()
+            getGraphicsPaths(element.project)
         }
         else {
             emptyList()
@@ -148,26 +146,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
             searchPaths.addAll(relativeSearchPaths)
         }
-    }
-
-    /**
-     * When using \includegraphics from graphicx package, a path prefex can be set with \graphicspath.
-     * @return Graphicspaths defined in the fileset.
-     */
-    private fun getGraphicsPaths(): List<String> {
-
-        val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = LatexCommandsIndex.getItemsByName("\\graphicspath", element.project, GlobalSearchScope.projectScope(element.project))
-
-        // Is a graphicspath defined?
-        if (graphicsPathCommands.isNotEmpty()) {
-            // Only last defined one counts
-            val args = graphicsPathCommands.last().parameterList.filter { it.requiredParam != null }
-            val subArgs = args.first().childrenOfType(LatexNormalText::class)
-            subArgs.forEach { graphicsPaths.add(it.text) }
-        }
-
-        return graphicsPaths
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {

@@ -101,6 +101,16 @@ fun VirtualFile.psiFile(project: Project): PsiFile? {
     return PsiManager.getInstance(project).findFile(this)
 }
 
+fun VirtualFile.findVirtualFileByAbsoluteOrRelativePath(filePath: String): VirtualFile? {
+    val isAbsolute = File(filePath).isAbsolute
+    return if (!isAbsolute) {
+        findFileByRelativePath(filePath)
+    }
+    else {
+        LocalFileSystem.getInstance().findFileByPath(filePath)
+    }
+}
+
 /**
  * Looks for a certain file, relative to this directory or if the given path is absolute use that directly.
  *
