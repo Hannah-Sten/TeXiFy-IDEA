@@ -47,6 +47,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         createOutDirs(mainFile)
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
+                .withEnvironment(runConfig.environmentVariables.envs)
         val handler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated
