@@ -116,7 +116,7 @@ enum class LatexRegularCommand(
     INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     INPUT("input", RequiredFileArgument("sourcefile", "tex")),
     INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
-    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
+    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", true, "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, "tex")),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),

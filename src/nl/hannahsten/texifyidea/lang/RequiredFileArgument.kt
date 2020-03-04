@@ -9,7 +9,7 @@ import java.util.regex.Pattern
  *
  * @author Hannah Schellekens
  */
-open class RequiredFileArgument(name: String?, val isAbsolutePathSupported: Boolean = true, vararg extensions: String) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
+open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported: Boolean = true, vararg extensions: String) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
     lateinit var supportedExtensions: Set<String>
     lateinit var defaultExtension: String
         private set

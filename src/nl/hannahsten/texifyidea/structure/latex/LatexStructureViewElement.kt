@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.allCommands
+import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
 import java.util.*
 import kotlin.collections.ArrayList
@@ -101,7 +102,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                 continue
             }
 
-            val child = LatexStructureViewCommandElement(currentCmd)
+            val child = LatexStructureViewCommandElement.newCommand(currentCmd) ?: continue
 
             // First section.
             if (sections.isEmpty()) {
@@ -138,7 +139,11 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun addIncludes(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
         for (command in commands) {
-            val elt = LatexStructureViewCommandElement(command)
+            if (command.name !in getIncludeCommands()) {
+                continue
+            }
+
+            val elt = LatexStructureViewCommandElement.newCommand(command) ?: continue
             for (psiFile in command.getIncludedFiles(true)) {
                 if (BibtexFileType == psiFile.fileType) {
                     elt.addChild(BibtexStructureViewElement(psiFile))
