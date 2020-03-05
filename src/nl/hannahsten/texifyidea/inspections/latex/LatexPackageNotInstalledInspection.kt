@@ -76,7 +76,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             ProgressManager.getInstance()
                     .run(object : Task.Backgroundable(project, "Installing $packageName...") {
                         override fun run(indicator: ProgressIndicator) {
-                            val tlname = TexLivePackages.findTexLiveName(packageName)
+                            val tlname = TexLivePackages.findTexLiveName(packageName) ?: onCancel()
                             "tlmgr install $tlname".runCommand()
                         }
 

@@ -300,11 +300,27 @@ object TexLivePackages {
      * Given a package name used in \usepackage or \RequirePackage, find the
      * name needed to install from TeX Live. E.g. to be able to use \usepackage{rubikrotation}
      * we need to install the rubik package.
+     *
+     * In the output
+     *
+     *    tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
+     *    rubik:
+     *            texmf-dist/tex/latex/rubik/rubikrotation.sty
+     *
+     * we are looking for "rubik". Possibly tex live outputs a "TeX Live 2019 is frozen" message before, so
+     * we search for the line that starts with tlmgr. Then the name of the package we are
+     * looking for will be on the next line, if it exists.
      */
     fun findTexLiveName(packageName: String): String? {
         // Find the package name for tlmgr.
         val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand() ?: return null
-        return searchResult.split('\n')[1].dropLast(1)
+        val lines = searchResult.split('\n')
+        val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
+        return try {
+            lines[tlmgrIndex + 1].trim().dropLast(1) // Drop the : behind the package name.
+        } catch (e: IndexOutOfBoundsException) {
+            null
+        }
     }
 
 }
