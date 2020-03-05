@@ -27,6 +27,7 @@ import nl.hannahsten.texifyidea.util.Magic;
 import nl.hannahsten.texifyidea.util.PsiCommandsKt;
 import nl.hannahsten.texifyidea.util.files.FileSetKt;
 import nl.hannahsten.texifyidea.util.files.FilesKt;
+import nl.hannahsten.texifyidea.util.files.RootFileKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -150,7 +151,7 @@ public class LatexCommandProvider extends CompletionProvider<CompletionParameter
 
         PsiFile file = parameters.getOriginalFile();
         Set<PsiFile> files = new HashSet<>(FileSetKt.referencedFileSet(file));
-        PsiFile root = FilesKt.findRootFile(file);
+        PsiFile root = RootFileKt.findRootFile(file);
         PsiFile documentClass = FilesKt.documentClassFileInProject(root);
         if (documentClass != null) {
             files.add(documentClass);
