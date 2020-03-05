@@ -11,6 +11,8 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.Magic.Command.absoluteImportCommands
+import nl.hannahsten.texifyidea.util.Magic.Command.relativeImportCommands
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.isDefinition
 
@@ -75,6 +77,7 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> {
 /**
  * @see [BibtexEntryIndex.getIndexedEntriesInFileSet]
  */
+@Suppress("unused")
 fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
 
 /**
@@ -127,13 +130,9 @@ fun getGraphicsPaths(project: Project): List<String> {
  */
 fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
     val fileName = if (command.requiredParameters.size >= 2) command.requiredParameters[1] else null ?: return null
-    val possibleParentDirs = getParentDirectoryByImportPaths(command)
 
-    for (parentDir in possibleParentDirs) {
-        val fileMaybe = parentDir.findFileByRelativePath(fileName)
-        if (fileMaybe != null) {
-            return fileMaybe.psiFile(command.project)
-        }
+    getParentDirectoryByImportPaths(command).forEach {
+        parentDir -> parentDir.findFileByRelativePath(fileName)?.let { return it.psiFile(command.project) }
     }
 
     return null
@@ -143,9 +142,6 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
  * When the 'import' package is used, get all possible parent directories where a file included by the current command could hide.
  */
 fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
-    val absoluteImportCommands = setOf("\\includefrom", "\\inputfrom", "\\import")
-    val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
-
     // Check if import commands are used (do this now, to only search for import paths when needed)
     val allRelativeImportCommands = LatexIncludesIndex.getCommandsByNames(relativeImportCommands, command.project, GlobalSearchScope.projectScope(command.project))
     val allAbsoluteImportCommands = LatexIncludesIndex.getCommandsByNames(absoluteImportCommands, command.project, GlobalSearchScope.projectScope(command.project))
@@ -153,24 +149,33 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
         return emptyList()
     }
 
-    // If using an absolute path to include a file
-    if (command.name in absoluteImportCommands) {
-        val absolutePath = command.requiredParameters.firstOrNull()
-        if (absolutePath != null) {
-            // No need to search further, because using an absolute path overrides the rest
-            val dirMaybe = LocalFileSystem.getInstance().findFileByPath(absolutePath)
-            if (dirMaybe != null) {
-                return listOf(dirMaybe)
-            }
-        }
-        return emptyList()
-    }
+    checkForAbsolutePath(command)?.let { return listOf(it) }
 
-    var relativeSearchPaths = mutableListOf<String>()
+    val relativeSearchPaths = mutableListOf<String>()
     if (command.name in relativeImportCommands) {
         relativeSearchPaths.add(command.requiredParameters.firstOrNull() ?: "")
     }
 
+    return findRelativeSearchPathsForImportCommands(command, relativeSearchPaths)
+}
+
+/**
+ * If using an absolute path to include a file.
+ */
+fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
+    if (command.name in absoluteImportCommands) {
+        val absolutePath = command.requiredParameters.firstOrNull()
+        if (absolutePath != null) {
+            // No need to search further, because using an absolute path overrides the rest
+            LocalFileSystem.getInstance().findFileByPath(absolutePath)?.let { return it }
+        }
+    }
+
+    return null
+}
+
+fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf()): List<VirtualFile> {
+    var relativeSearchPaths = givenRelativeSearchPaths.toMutableList()
     val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
     var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(command.containingFile.name) } }
@@ -190,17 +195,7 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
 
         for (includingCommand in includingCommands) {
             // Stop searching when absolute path is found
-            if (includingCommand.name in absoluteImportCommands) {
-                val absolutePath = includingCommand.requiredParameters.firstOrNull()
-                if (absolutePath != null) {
-                    // No need to search further, because using an absolute path overrides the rest
-                    val dirMaybe = LocalFileSystem.getInstance().findFileByPath(absolutePath)
-                    if (dirMaybe != null) {
-                        return listOf(dirMaybe)
-                    }
-                }
-                return emptyList()
-            }
+            checkForAbsolutePath(command)?.let { return listOf(it) }
 
             // Each of the search paths gets prepended by one of the new relative paths found
             for (oldPath in relativeSearchPaths) {

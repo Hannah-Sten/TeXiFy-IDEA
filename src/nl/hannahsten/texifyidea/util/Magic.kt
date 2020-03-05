@@ -281,6 +281,16 @@ object Magic {
         val reference = labelReference + bibliographyReference
 
         /**
+         * Commands from the import package which require an absolute path as first parameter.
+         */
+        val absoluteImportCommands = setOf("\\includefrom", "\\inputfrom", "\\import")
+
+        /**
+         * Commands from the import package which require a relative path as first parameter.
+         */
+        val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
+
+        /**
          * All commands that define labels.
          */
         @JvmField

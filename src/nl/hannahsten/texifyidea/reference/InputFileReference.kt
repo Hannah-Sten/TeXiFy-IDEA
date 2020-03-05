@@ -60,7 +60,9 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
                 .containingDirectory.virtualFile
 
         // Try to find the target file directly from the given path
-        targetFile = rootDirectory.findFile(key, extensions)
+        if (targetFile == null) {
+            targetFile = rootDirectory.findFile(key, extensions)
+        }
 
         // Try content roots
         if (targetFile == null && LatexDistribution.isMiktex) {
