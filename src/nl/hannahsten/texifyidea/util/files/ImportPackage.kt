@@ -6,19 +6,26 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.Magic.Command.relativeImportCommands
 import nl.hannahsten.texifyidea.util.appendExtension
+import nl.hannahsten.texifyidea.util.requiredParameter
 
 
 /**
  * This method will try to find a file when the 'import' package is used, which means that including files have to be searched for import paths.
  */
-fun searchFileByImportPaths(command: LatexCommands, extensions: Set<String>): PsiFile? {
-    val fileName = if (command.requiredParameters.size >= 2) command.requiredParameters[1] else null ?: return null
+fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
+    // Use references to get filenames, take care not to resolve the references because this method is called during resolving them so that would be a loop
+    val references = command.references.filterIsInstance<InputFileReference>()
 
     getParentDirectoryByImportPaths(command).forEach {parentDir ->
-        for (extension in extensions) {
-            parentDir.findFileByRelativePath(fileName.appendExtension(extension))?.let { return it.psiFile(command.project) }
+        for (reference in references) {
+            val fileName = reference.key
+            for (extension in reference.extensions) {
+                parentDir.findFileByRelativePath(fileName.appendExtension(extension))?.let { return it.psiFile(command.project) }
+            }
         }
     }
 
@@ -65,7 +72,11 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableList()
     val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
-    var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(command.containingFile.name) } }
+    var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(command.containingFile.name.removeFileExtension()) } }
+
+    if (includingCommands.isEmpty() && command.name in relativeImportCommands) {
+        command.containingFile.containingDirectory.virtualFile.findFileByRelativePath(command.requiredParameter(0) ?: "")?.let { return listOf(it) }
+    }
 
     // Avoid endless loop (in case of a file inclusion loop)
     val maxDepth = allIncludeCommands.size
@@ -82,7 +93,9 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
 
         for (includingCommand in includingCommands) {
             // Stop searching when absolute path is found
-            checkForAbsolutePath(command)?.let { return listOf(it) }
+            checkForAbsolutePath(includingCommand)?.let { baseDir -> return listOf(baseDir) + relativeSearchPaths.mapNotNull {
+                baseDir.findFileByRelativePath(it)
+            } }
 
             // Each of the search paths gets prepended by one of the new relative paths found
             for (oldPath in relativeSearchPaths) {

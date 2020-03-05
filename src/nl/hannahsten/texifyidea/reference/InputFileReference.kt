@@ -52,7 +52,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             emptyList()
         }.toMutableList()
 
-        var targetFile = searchFileByImportPaths(element, extensions)?.virtualFile
+        var targetFile = searchFileByImportPaths(element)?.virtualFile
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
