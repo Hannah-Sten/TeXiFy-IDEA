@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.Magic
 import java.util.*
 
 
@@ -82,7 +83,7 @@ private fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
         val declaredIn = command.containingFile
 
         // Check if import package is used
-        val fileMaybe = searchFileByImportPaths(command)
+        val fileMaybe = searchFileByImportPaths(command, Magic.File.includeExtensions)
         if (fileMaybe != null) {
             inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(fileMaybe)
         }

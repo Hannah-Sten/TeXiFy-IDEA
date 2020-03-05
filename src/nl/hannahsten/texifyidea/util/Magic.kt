@@ -624,7 +624,7 @@ object Magic {
     object File {
 
         /**
-         * All file extensions of files that can be included.
+         * All file extensions of files that can be included (and where the included files contain language that needs to be considered).
          */
         @JvmField
         val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")

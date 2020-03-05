@@ -7,16 +7,19 @@ import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.appendExtension
 
 
 /**
  * This method will try to find a file when the 'import' package is used, which means that including files have to be searched for import paths.
  */
-fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
+fun searchFileByImportPaths(command: LatexCommands, extensions: Set<String>): PsiFile? {
     val fileName = if (command.requiredParameters.size >= 2) command.requiredParameters[1] else null ?: return null
 
-    getParentDirectoryByImportPaths(command).forEach {
-        parentDir -> parentDir.findFileByRelativePath(fileName)?.let { return it.psiFile(command.project) }
+    getParentDirectoryByImportPaths(command).forEach {parentDir ->
+        for (extension in extensions) {
+            parentDir.findFileByRelativePath(fileName.appendExtension(extension))?.let { return it.psiFile(command.project) }
+        }
     }
 
     return null

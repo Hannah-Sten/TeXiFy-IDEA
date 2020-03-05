@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePa
 import nl.hannahsten.texifyidea.util.files.getGraphicsPaths
 
 /**
- * @author Lukas Heiligenbrunner
+ * Autocompletion roots based on graphicspaths.
  */
 class LatexGraphicsPathProvider : LatexPathProviderBase() {
     override fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile> {
