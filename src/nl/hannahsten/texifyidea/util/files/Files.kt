@@ -199,7 +199,9 @@ fun PsiFile.findRootFile(): PsiFile {
         return this
     }
 
+    // We need to scan all file inclusions in the project, because any file could include the current file
     val inclusions = project.allFileInclusions()
+
     inclusions.forEach { (file, _) ->
         // Function to avoid unnecessary evaluation
         fun usesSubFiles() = file.commandsInFile()
@@ -245,28 +247,35 @@ private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiF
  * when `A`↦{`B`,`C`}. Then the files `B` and `C` get included by `A`.
  */
 fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
-    val commands = LatexIncludesIndex.getItems(this)
+    val allIncludeCommands = LatexIncludesIndex.getItems(this)
 
     // Maps every file to all the files it includes.
     val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
 
     // Find all related files.
-    for (command in commands) {
-        val includedNames = command.getAllRequiredArguments() ?: continue
+    for (command in allIncludeCommands) {
+        // Find included files
         val declaredIn = command.containingFile
 
-        for (includedName in includedNames) {
-            val referenced = declaredIn.findFile(includedName)
-                    ?: continue
+        // Check if import package is used
+        val fileMaybe = searchFileByImportPaths(command)
+        if (fileMaybe != null) {
+            inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(fileMaybe)
+        }
+        else {
+            val includedNames = command.getAllRequiredArguments() ?: continue
 
-            // When it looks like a file includes itself, we skip it
-            if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
-                continue
+            for (includedName in includedNames) {
+                val referenced = declaredIn.findFile(includedName)
+                        ?: continue
+
+                // When it looks like a file includes itself, we skip it
+                if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
+                    continue
+                }
+
+                inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
             }
-
-            val inclusionSet = inclusions[declaredIn] ?: HashSet()
-            inclusionSet.add(referenced)
-            inclusions[declaredIn] = inclusionSet
         }
 
     }
