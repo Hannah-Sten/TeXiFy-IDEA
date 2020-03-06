@@ -72,18 +72,16 @@ fun String.getIndent(): String {
  * @return A path ending with the given extension without duplications (e.g. `.tex.tex` is impossible.)
  */
 fun String.appendExtension(extensionWithoutDot: String): String {
-    if (extensionWithoutDot.equals("")) return this
+    if (extensionWithoutDot == "") return this
 
     val dottedExtension = ".${extensionWithoutDot.toLowerCase()}"
     val thisLower = toLowerCase()
 
-    return if (thisLower.endsWith(dottedExtension)) {
-        this
+    return when {
+        thisLower.endsWith(dottedExtension) -> this
+        endsWith('.') -> this + extensionWithoutDot
+        else -> this + dottedExtension
     }
-    else if (endsWith('.')) {
-        this + extensionWithoutDot
-    }
-    else this + dottedExtension
 }
 
 /**

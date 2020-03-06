@@ -1,11 +1,15 @@
 package nl.hannahsten.texifyidea.util.files
 
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.isDefinition
 
 /**
@@ -69,6 +73,7 @@ fun PsiFile.referencedFileSet(): Set<PsiFile> {
 /**
  * @see [BibtexEntryIndex.getIndexedEntriesInFileSet]
  */
+@Suppress("unused")
 fun PsiFile.bibtexIdsInFileSet() = BibtexEntryIndex.getIndexedEntriesInFileSet(this)
 
 /**
@@ -94,4 +99,24 @@ fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
  */
 fun PsiFile.definitionsAndRedefinitionsInFileSet(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItemsInFileSet(this)
+}
+
+/**
+ * When using \includegraphics from graphicx package, a path prefex can be set with \graphicspath.
+ * @return Graphicspaths defined in the fileset.
+ */
+fun getGraphicsPaths(project: Project): List<String> {
+
+    val graphicsPaths = mutableListOf<String>()
+    val graphicsPathCommands = LatexCommandsIndex.getItemsByName("\\graphicspath", project, GlobalSearchScope.projectScope(project))
+
+    // Is a graphicspath defined?
+    if (graphicsPathCommands.isNotEmpty()) {
+        // Only last defined one counts
+        val args = graphicsPathCommands.last().parameterList.filter { it.requiredParam != null }
+        val subArgs = args.first().childrenOfType(LatexNormalText::class)
+        subArgs.forEach { graphicsPaths.add(it.text) }
+    }
+
+    return graphicsPaths
 }
