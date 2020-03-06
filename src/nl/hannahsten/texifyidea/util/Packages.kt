@@ -330,15 +330,15 @@ object TexLivePackages {
     }
 
     fun extractRealPackageNameFromOutput(output: String): String? {
-        val tlFrozen = """
-            TeX Live 2019 is frozen forever and will no
-            longer be updated.  This happens in preparation for a new release.
+        val tlFrozen = Regex("""
+            TeX Live \d{4} is frozen forever and will no
+            longer be updated\.  This happens in preparation for a new release\.
 
-            If you're interested in helping to pretest the new release (when
-            pretests are available), please read https://tug.org/texlive/pretest.html.
-            Otherwise, just wait, and the new release will be ready in due time.
-        """.trimIndent()
-        val lines = output.removeAll(tlFrozen).trim().split('\n')
+            If you're interested in helping to pretest the new release \(when
+            pretests are available\), please read https:\/\/tug\.org\/texlive\/pretest\.html\.
+            Otherwise, just wait, and the new release will be ready in due time\.
+        """.trimIndent())
+        val lines = tlFrozen.replace(output, "").trim().split('\n')
         val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
         return try {
             lines[tlmgrIndex + 1].trim().dropLast(1) // Drop the : behind the package name.
