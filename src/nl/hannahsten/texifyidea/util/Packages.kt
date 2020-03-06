@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Package
@@ -311,9 +312,16 @@ object TexLivePackages {
      * we search for the line that starts with tlmgr. Then the name of the package we are
      * looking for will be on the next line, if it exists.
      */
-    fun findTexLiveName(packageName: String): String? {
+    fun findTexLiveName(task: Task.Backgroundable, packageName: String): String? {
         // Find the package name for tlmgr.
+        task.title = "Searching for $packageName..."
         val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand() ?: return null
+        // Check if tlmgr needs to be updated first, and do so if needed.
+        val tlmgrUpdateCommand = "tlmgr update --self"
+        if (searchResult.contains(tlmgrUpdateCommand)) {
+            task.title = "Updating tlmgr..."
+            tlmgrUpdateCommand.runCommand()
+        }
         val lines = searchResult.split('\n')
         val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
         return try {
