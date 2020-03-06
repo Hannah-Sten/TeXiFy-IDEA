@@ -87,6 +87,8 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                                         "Package $packageName was not installed because tlmgr could not find $packageName.sty anywhere. Try to install the package manually.",
                                         NotificationType.ERROR
                                 ).notify(project)
+
+                                indicator.cancel()
                             }
 
                             title = "Installing $packageName..."
