@@ -49,6 +49,9 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
     if (command.name in Magic.Command.relativeImportCommands) {
         relativeSearchPaths.add(command.requiredParameters.firstOrNull() ?: "")
     }
+    else {
+        relativeSearchPaths.add("")
+    }
 
     return findRelativeSearchPathsForImportCommands(command, relativeSearchPaths)
 }
@@ -68,7 +71,7 @@ fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
     return null
 }
 
-fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf()): List<VirtualFile> {
+fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelativeSearchPaths: List<String> = listOf("")): List<VirtualFile> {
     var relativeSearchPaths = givenRelativeSearchPaths.toMutableList()
     val allIncludeCommands = LatexIncludesIndex.getItems(command.project)
     // Commands which may include the current file (this is an overestimation, better would be to check for RequiredFileArguments)
@@ -111,7 +114,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
                 if (commandsIncludingThisFile.isEmpty()) {
                     // Cool, we supposedly have a root file, now try to find the directory containing the file being included by command
                     for (relativePath in newSearchPaths) {
-                        val searchDir = LocalFileSystem.getInstance().findFileByPath(file.containingDirectory.virtualFile.path + relativePath) ?: continue
+                        val searchDir = file.containingDirectory.virtualFile.findFileByRelativePath(relativePath) ?: continue
                         absoluteSearchDirs.add(searchDir)
                     }
                 }
