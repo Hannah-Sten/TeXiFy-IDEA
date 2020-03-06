@@ -5,6 +5,8 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -76,7 +78,17 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             ProgressManager.getInstance()
                     .run(object : Task.Backgroundable(project, "Installing $packageName...") {
                         override fun run(indicator: ProgressIndicator) {
-                            val tlname = TexLivePackages.findTexLiveName(this, packageName) ?: return
+                            val tlname = TexLivePackages.findTexLiveName(this, packageName)
+
+                            if (tlname == null) {
+                                Notification(
+                                        "Package Not Installed",
+                                        "Package $packageName not installed",
+                                        "Package $packageName was not installed because tlmgr could not find $packageName.sty anywhere. Try to install the package manually.",
+                                        NotificationType.ERROR
+                                ).notify(project)
+                            }
+
                             title = "Installing $packageName..."
                             "tlmgr install $tlname".runCommand()
                         }
@@ -84,7 +96,8 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                         override fun onSuccess() {
                             TexLivePackages.packageList.add(packageName)
                             DaemonCodeAnalyzer.getInstance(project)
-                                    .restart(filePointer.containingFile ?: return)
+                                    .restart(filePointer.containingFile
+                                            ?: return)
                         }
 
                     })
