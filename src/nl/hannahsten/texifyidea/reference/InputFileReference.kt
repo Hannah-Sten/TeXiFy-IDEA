@@ -4,6 +4,7 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -43,7 +44,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
      * @param lookForInstalledPackages Whether to look for packages installed elsewhere on the filesystem.
      * Set to false when it would make the operation too expensive, for example when trying to calculate the fileset of many files.
      */
-    fun resolve(lookForInstalledPackages: Boolean, rootFile: VirtualFile? = null): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null): PsiFile? {
 
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
@@ -54,6 +55,12 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         else {
             emptyList()
         }.toMutableList()
+
+
+        // Find the sources root of the current file.
+        // findRootFile will also call getImportPaths, so that will be executed twice
+        val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
+        val rootDirectory = rootFile.parent
 
         var targetFile = searchFileByImportPaths(element)?.virtualFile
 
@@ -66,15 +73,17 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
                 ?.envs
                 ?.getOrDefault("TEXINPUTS", null)
         if (texInputPath != null) {
-            // Path can be of the form //: but we need it to end with /
-            searchPaths.add(texInputPath.trimEnd(':', '/') + "/")
+            val path = texInputPath.trimEnd(':')
+            searchPaths.add(path.trimEnd('/'))
+            // See the kpathsea manual, // expands to subdirs
+            if (path.endsWith("//")) {
+                LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
+                    searchPaths.addAll(parent.allChildDirectories()
+                            .filter { it.isDirectory }
+                            .map { it.path })
+                }
+            }
         }
-        // todo other env vars?
-
-        // Find the sources root of the current file.
-        // findRootFile will also call getImportPaths, so that will be executed twice
-        val rootDirectory = rootFile?.parent ?: element.containingFile.findRootFile()
-                .containingDirectory.virtualFile
 
         // Try to find the target file directly from the given path
         if (targetFile == null) {
@@ -92,7 +101,8 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Try search paths
         if (targetFile == null) {
             for (searchPath in searchPaths) {
-                targetFile = rootDirectory.findFile(searchPath + key, extensions)
+                val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
+                targetFile = rootDirectory.findFile(path + key, extensions)
                 if (targetFile != null) break
             }
         }
