@@ -43,6 +43,13 @@ Extra arguments to pass to the compiler.
 It depends on the compiler which ones are there by default.
 For more info, check the implementation at https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/master/src/nl/hannahsten/texifyidea/run/compiler/LatexCompiler.kt
 
+=== Environment variables
+
+You can pass environment variables to the command that is run to compile the LaTeX file.
+There is an option to include system variables.
+You can use for example the `TEXINPUTS` environment variable to include LaTeX files in a different directory anywhere on your system.
+For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and TeXiFy) will search in any subdirectory of `/path/to/directory` for the file to be included.
+
 === Custom SumatraPDF path
 
 See link:Running/SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
