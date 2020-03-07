@@ -60,7 +60,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
         val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
-        val rootDirectory = rootFile.parent
+        val rootDirectory = rootFile.parent ?: return null
 
         var targetFile = searchFileByImportPaths(element)?.virtualFile
 

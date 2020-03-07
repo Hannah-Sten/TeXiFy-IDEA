@@ -5,6 +5,7 @@ import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
@@ -12,6 +13,7 @@ import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
+import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.*
@@ -128,6 +130,7 @@ fun splitToRanges(text: String, pattern: Pattern): List<TextRange> {
 }
 
 fun stripGroup(text: String): String {
+    if (text.length < 2) return ""
     return text.substring(1, text.length - 1)
 }
 
@@ -186,3 +189,18 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
         extractSubParameterRanges(firstParam)
                 .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
                 .toArray(emptyArray())
+
+
+/**
+ * Checks if the command is followed by a label.
+ */
+fun hasLabel(element: LatexCommands): Boolean {
+    val grandparent = element.parent.parent
+    val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return false
+    val children = PsiTreeUtil.findChildrenOfType(sibling, LatexCommands::class.java)
+    if (children.isEmpty()) {
+        return false
+    }
+    val labelMaybe = children.iterator().next()
+    return getInstance().labelPreviousCommands.containsKey(labelMaybe.commandToken.text)
+}

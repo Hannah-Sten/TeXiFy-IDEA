@@ -8,8 +8,10 @@ import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.util.parentsOfType
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException
 import java.io.InputStream
@@ -50,8 +52,12 @@ class LatexDocumentationProvider : DocumentationProvider {
         return runTexdoc(command.first().dependency)
     }
 
+    // originalElement: element under the mouse cursor
+    // element: element to which originalElement resolves
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
-        if (element is BibtexEntry) {
+        // We resolve to the bibtex id (not the entry), see LatexLabelParameterReference
+        if (element is BibtexId) {
+            val entry = element.parentsOfType(BibtexEntry::class).firstOrNull() ?: return null
             fun formatAuthor(author: String): String {
                 val parts = author.split(",")
                 if (parts.size < 2) return author
@@ -60,10 +66,10 @@ class LatexDocumentationProvider : DocumentationProvider {
                 return "$first $last"
             }
 
-            val stringBuilder = StringBuilder("<h3>${element.title} (${element.year})</h3>")
-            stringBuilder.append(element.authors.joinToString(", ") { a -> formatAuthor(a) })
+            val stringBuilder = StringBuilder("<h3>${entry.title} (${entry.year})</h3>")
+            stringBuilder.append(entry.authors.joinToString(", ") { a -> formatAuthor(a) })
             stringBuilder.append("<br/><br/>")
-            stringBuilder.append(element.abstract)
+            stringBuilder.append(entry.abstract)
             return stringBuilder.toString()
         }
 

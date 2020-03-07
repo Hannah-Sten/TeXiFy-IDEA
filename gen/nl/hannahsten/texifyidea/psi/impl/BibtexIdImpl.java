@@ -1,15 +1,18 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import nl.hannahsten.texifyidea.psi.*;
+import nl.hannahsten.texifyidea.psi.BibtexComment;
+import nl.hannahsten.texifyidea.psi.BibtexId;
+import nl.hannahsten.texifyidea.psi.BibtexPsiImplUtil;
+import nl.hannahsten.texifyidea.psi.BibtexVisitor;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
 
@@ -30,6 +33,21 @@ public class BibtexIdImpl extends ASTWrapperPsiElement implements BibtexId {
   @NotNull
   public List<BibtexComment> getCommentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexComment.class);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return BibtexPsiImplUtil.getNameIdentifier(this);
+  }
+
+  @Override
+  public String getName() {
+    return BibtexPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String name) {
+    return BibtexPsiImplUtil.setName(this, name);
   }
 
 }

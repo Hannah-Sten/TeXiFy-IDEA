@@ -49,10 +49,14 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
     }
 
     @Test
-    // see bug #1180
     fun testCompleteBibtexWithCorrectCase() {
+        // Using the following failed sometimes
+//        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
         val testName = getTestName(false)
-        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
+        myFixture.configureByFiles("${testName}_before.tex", "$testName.bib")
+        myFixture.complete(CompletionType.BASIC)
+        myFixture.findAllGutters() // This seems to allow the completion to complete, and to make the test pass
+        myFixture.checkResultByFile("${testName}_after.tex")
     }
 
     @Test
