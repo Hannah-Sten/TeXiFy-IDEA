@@ -130,6 +130,7 @@ fun splitToRanges(text: String, pattern: Pattern): List<TextRange> {
 }
 
 fun stripGroup(text: String): String {
+    if (text.length < 2) return ""
     return text.substring(1, text.length - 1)
 }
 

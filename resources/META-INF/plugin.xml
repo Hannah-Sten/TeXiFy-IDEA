@@ -272,11 +272,18 @@
 
     </actions>
 
+    <!-- Listeners -->
+
+    <applicationListeners>
+        <listener class="nl.hannahsten.texifyidea.file.listeners.VfsChangeListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    </applicationListeners>
+
     <!-- Hooks for plugin functionality -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- Startup -->
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.StartEvinceInverseSearchListener"/>
-        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.AnalyzeMenuRegistration" />
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.AnalyzeMenuRegistration"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.TexLivePackageListInitializer"/>
 
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
@@ -352,6 +359,7 @@
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexParameterInfoHandler"/>
@@ -416,7 +424,7 @@
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Other Services -->
-        <projectService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
+        <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
                         serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
 
         <!-- Inspections -->
@@ -583,6 +591,8 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageCouldNotBeFound"
                          groupName="LaTeX" displayName="Package could not be found"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
+                         groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"

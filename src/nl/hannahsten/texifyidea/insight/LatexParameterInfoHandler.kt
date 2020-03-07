@@ -29,9 +29,9 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegul
     }
 
     override fun showParameterInfo(element: LatexCommands, context: CreateParameterInfoContext) {
-        val commandHuh = LatexRegularCommand[element.commandToken.text.substring(1)] ?: return
+        val commands = LatexRegularCommand[element.commandToken.text.substring(1)] ?: return
 
-        context.itemsToShow = arrayOf<Any>(commandHuh)
+        context.itemsToShow = commands.toTypedArray()
         context.showHint(element, element.textOffset, this)
     }
 

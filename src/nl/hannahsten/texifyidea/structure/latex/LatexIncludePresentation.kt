@@ -18,7 +18,7 @@ class LatexIncludePresentation(labelCommand: LatexCommands) : ItemPresentation {
             throw IllegalArgumentException("Command $labelCommand is no include command")
         }
 
-        this.fileName = labelCommand.getIncludedFiles().joinToString { it.name }
+        this.fileName = labelCommand.getIncludedFiles(true).joinToString { it.name }
     }
 
     override fun getPresentableText() = fileName

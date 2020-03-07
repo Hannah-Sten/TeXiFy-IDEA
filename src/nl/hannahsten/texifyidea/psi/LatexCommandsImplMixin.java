@@ -9,7 +9,6 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.IncorrectOperationException;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,13 +62,6 @@ public class LatexCommandsImplMixin extends StubBasedPsiElementBase<LatexCommand
         else {
             super.accept(visitor);
         }
-    }
-
-    @Override
-    public void subtreeChanged() {
-        ReferencedFileSetService setService = ReferencedFileSetService.getInstance(getProject());
-        setService.dropCaches(getContainingFile());
-        super.subtreeChanged();
     }
 
     @Nullable

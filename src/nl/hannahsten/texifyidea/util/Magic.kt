@@ -281,6 +281,16 @@ object Magic {
         val reference = labelReference + bibliographyReference
 
         /**
+         * Commands from the import package which require an absolute path as first parameter.
+         */
+        val absoluteImportCommands = setOf("\\includefrom", "\\inputfrom", "\\import")
+
+        /**
+         * Commands from the import package which require a relative path as first parameter.
+         */
+        val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
+
+        /**
          * All commands that define labels.
          */
         @JvmField
@@ -614,7 +624,7 @@ object Magic {
     object File {
 
         /**
-         * All file extensions of files that can be included.
+         * All file extensions of files that can be included (and where the included files contain language that needs to be considered).
          */
         @JvmField
         val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")

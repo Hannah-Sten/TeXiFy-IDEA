@@ -2,22 +2,16 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.getExternalFile
+import nl.hannahsten.texifyidea.util.files.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -39,24 +33,36 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     }
 
     override fun resolve(): PsiFile? {
+        return resolve(true)
+    }
+
+    /**
+     * @param lookForInstalledPackages Whether to look for packages installed elsewhere on the filesystem.
+     * Set to false when it would make the operation too expensive, for example when trying to calculate the fileset of many files.
+     */
+    fun resolve(lookForInstalledPackages: Boolean, rootFile: VirtualFile? = null): PsiFile? {
 
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
-        // Get a list of extra paths to search in for the file, absolute or relative
+        // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = if (element.name == "\\includegraphics") {
-            getGraphicsPaths()
+            getGraphicsPaths(element.project)
         }
         else {
             emptyList()
         }.toMutableList()
 
-        checkImportPaths(searchPaths)
+        var targetFile = searchFileByImportPaths(element)?.virtualFile
 
         // Find the sources root of the current file.
-        val root = element.containingFile.findRootFile()
-                .containingDirectory.virtualFile
-        // Find the target file, by first searching through the project directory.
-        var targetFile = root.findFile(key, extensions)
+        // findRootFile will also call getImportPaths, so that will be executed twice
+        val rootDirectory = rootFile?.parent ?: element.containingFile.findRootFile()
+                .containingDirectory?.virtualFile ?: return null
+
+        // Try to find the target file directly from the given path
+        if (targetFile == null) {
+            targetFile = rootDirectory.findFile(key, extensions)
+        }
 
         // Try content roots
         if (targetFile == null && LatexDistribution.isMiktex) {
@@ -69,13 +75,14 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Try search paths
         if (targetFile == null) {
             for (searchPath in searchPaths) {
-                targetFile = root.findFile(searchPath + key, extensions)
+                targetFile = rootDirectory.findFile(searchPath + key, extensions)
                 if (targetFile != null) break
             }
         }
 
-        // Look for it elsewhere using the kpsewhich command.
-        if (targetFile == null) {
+        // Look for packages elsewhere using the kpsewhich command.
+        @Suppress("RemoveExplicitTypeArguments")
+        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
             targetFile = element.getFileNameWithExtensions(key)
                     ?.map { runKpsewhich(it) }
                     ?.map { getExternalFile(it ?: return null) }
@@ -86,77 +93,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
         // Return a reference to the target file.
         return PsiManager.getInstance(element.project).findFile(targetFile)
-    }
-
-    /**
-     * Check for search paths from the 'import' package.
-     */
-    private fun checkImportPaths(searchPaths: MutableList<String>) {
-        // If using an absolute path to include a file
-        if (element.name in setOf("\\includefrom", "\\inputfrom", "\\import")) {
-            val absolutePath = element.requiredParameters.firstOrNull()
-            if (absolutePath != null) {
-                searchPaths.add(absolutePath)
-            }
-        }
-
-        // If using a relative path, these could be nested from other inclusions
-        val relativePathCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
-        if (element.name in relativePathCommands) {
-            var relativeSearchPaths = listOf(element.requiredParameters.firstOrNull() ?: "")
-
-            // Get all commands in the file set which have a relative import
-            val allRelativeIncludeCommands = LatexIncludesIndex.getCommandsByNames(relativePathCommands, element.project, GlobalSearchScope.projectScope(element.project))
-
-            // Navigate upwards
-            // Commands which include the current file
-            var includingCommands = allRelativeIncludeCommands.filter { command -> command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(element.containingFile.name) }
-            var parents = includingCommands
-                    .map { it.containingFile }
-                    .filter { it != element.containingFile }
-                    .toSet()
-
-            // Avoid endless loop (in case of a file inclusion loop)
-            val maxDepth = allRelativeIncludeCommands.size
-            var counter = 0
-            while (parents.isNotEmpty() && counter < maxDepth) {
-                val newSearchPaths = mutableListOf<String>()
-                for (oldPath in relativeSearchPaths) {
-                    // Each of the search paths gets prepended by one of the new relative paths found
-                    for (command in includingCommands) {
-                        newSearchPaths.add(command.requiredParameters.firstOrNull() + oldPath)
-                    }
-                }
-                relativeSearchPaths = newSearchPaths
-
-                includingCommands = allRelativeIncludeCommands.filter { command -> parents.any { command.requiredParameters.size >= 2 && command.requiredParameters[1].contains(it.name) } }
-                parents = includingCommands.map { it.containingFile }.toSet()
-
-                counter++
-            }
-
-            searchPaths.addAll(relativeSearchPaths)
-        }
-    }
-
-    /**
-     * When using \includegraphics from graphicx package, a path prefex can be set with \graphicspath.
-     * @return Graphicspaths defined in the fileset.
-     */
-    private fun getGraphicsPaths(): List<String> {
-
-        val graphicsPaths = mutableListOf<String>()
-        val graphicsPathCommands = LatexCommandsIndex.getItemsByName("\\graphicspath", element.project, GlobalSearchScope.projectScope(element.project))
-
-        // Is a graphicspath defined?
-        if (graphicsPathCommands.isNotEmpty()) {
-            // Only last defined one counts
-            val args = graphicsPathCommands.last().parameterList.filter { it.requiredParam != null }
-            val subArgs = args.first().childrenOfType(LatexNormalText::class)
-            subArgs.forEach { graphicsPaths.add(it.text) }
-        }
-
-        return graphicsPaths
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {
