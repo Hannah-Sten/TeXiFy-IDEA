@@ -2,10 +2,11 @@
 
 # Additions
 * Add go to definition for labels, citations and new commands. (#1191, #2)
-* Add find usages action for new commands and labels. (#1237, #1252)
-* Add support for refactor (rename) of labels, environments and files. (#1255, #1264, #1266, #1275)
+* Add find usages action for labels, citations and new commands. (#1237, #1252)
+* Add support for refactor (rename) of labels, citations, environments and files. (#1255, #1264, #1266, #1275, #1284)
 * Add support for opening source files of installed LaTeX packages and classes. (#1191)
 * Add support for opening files from include commands. (#1191)
+* Many more improvements to file reference resolving. (#1281)
 * Add support for a custom output or auxiliary directory. (#1201)
 * Add biblatex commands to the autocomplete. (#1195)
 * Add support for labels defined with Verbatim or lstlisting environments. (#1232)
@@ -16,6 +17,7 @@
 * Surround text with $..$ or [..] using a shortcut or by typing $ or [. (#1207)
 * Surround text with quotes depending on your Smart quotes setting. (#1207)
 * Add inspection which checks that floating environments have a label. (#1216)
+* Add support for the import package to include files. (#1281)
 * Add inspection to check if an included package could not be found in the CTAN list. (#1230)
 * Add inspection to check if a TeX Live package is installed locally, with a quickfix to install it. (#1276)
 * Use live templates for inserting braces for all required parameters of commands and environments. (#1258, #1261)
@@ -36,9 +38,10 @@
 * Ignore \ifoot for \if-like commands. (#1220)
 * Also execute Grazie grammar checking at the beginning of sentences. (#1196)
 * Always show LaTeX Tools menu to avoid performance problems. (#1257)
+* Improve insertion of missing usepackage command. (#1286)
 
 # Bug fixes
-* Fixed crashes. (#1211, #1269)
+* Fixed crashes. (#1211, #1269, #1292)
 
 Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko), Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) and [@Lukas-Heiligenbrunner](https://github.com/Lukas-Heiligenbrunner) for contributing to this release.
 
