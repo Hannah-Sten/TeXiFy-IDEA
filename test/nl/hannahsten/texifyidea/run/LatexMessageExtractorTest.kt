@@ -10,19 +10,19 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessage
 class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun testEnvironmentUndefinedError() {
         val text = "./main.tex:1: LaTeX Error: Environment align undefined."
-        val expected = LatexLogMessage("LaTeX Error: Environment align undefined.", "./main.tex", 0, ERROR)
+        val expected = LatexLogMessage("Environment align undefined.", "main.tex", 0, ERROR)
         testMessageExtractor(text, expected)
     }
 
     fun testUndefinedControlSequenceInNestedFileError() {
         val text = "./nested/lipsum-one.tex:9: Undefined control sequence."
-        val expected = LatexLogMessage("Undefined control sequence.", "./nested/lipsum-one.tex", 8, ERROR)
+        val expected = LatexLogMessage("Undefined control sequence.", "nested/lipsum-one.tex", 8, ERROR)
         testMessageExtractor(text, expected)
     }
 
     fun testPackageNotInstalledError() {
         val text = "! LaTeX Error: File `paralisy.sty' not found."
-        val expected = LatexLogMessage("! LaTeX Error: File `paralisy.sty' not found.", null, null, WARNING)
+        val expected = LatexLogMessage("File `paralisy.sty' not found.", null, null, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -34,7 +34,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testUnresolvedReferencesWarning() {
         val text = "LaTeX Warning: There were undefined references."
-        val expected = LatexLogMessage("LaTeX Warning: There were undefined references.", null, null, WARNING)
+        val expected = LatexLogMessage("There were undefined references.", null, null, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -43,7 +43,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         val treeView = LatexCompileMessageTreeView(project)
         val listener = LatexOutputListener(project, null, listModel, treeView)
 
-        val real = listener.findMessage(text, "") ?: return fail()
+        val real = listener.findContextLessMessage(text, "") ?: return fail()
 
         assertEquals(expected, real)
     }

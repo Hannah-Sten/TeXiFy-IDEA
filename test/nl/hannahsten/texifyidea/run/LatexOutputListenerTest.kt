@@ -211,8 +211,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("Environment lstlisting undefined.", "lipsum.tex", 10, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "lipsum.tex", 12, ERROR),
                 LatexLogMessage("Undefined control sequence.", "nested/lipsum-one.tex", 8, ERROR),
-                LatexLogMessage("There were undefined references.", "lipsum.tex", null, WARNING),
-                LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "lipsum.tex", null, WARNING)
+                LatexLogMessage("There were undefined references.", "main.tex", null, WARNING),
+                LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", null, WARNING)
         )
 
         assertEquals(expectedMessages, listModel.toSet())

@@ -15,7 +15,7 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer
 class LatexOutputListener(
         val project: Project,
         val mainFile: VirtualFile?,
-        val listModel: MutableList<LatexLogMessage>,
+        val messageList: MutableList<LatexLogMessage>,
         val treeView: LatexCompileMessageTreeView,
         val lineWidth: Int = 79
 ) : ProcessListener {
@@ -57,9 +57,10 @@ class LatexOutputListener(
             // If now the first entry in window is an empty line: ignore this and skip to the next line
             if ((window.firstOrNull() as? String).isNullOrEmpty()) return
 
-            val (message, fileName, line, type) =
-                    findMessage(text, newText) ?: return
+            // First check if the current line contains an error/warning that does not need to know the file tex is parsing.
+            val (message, fileName, line, type) = findContextLessMessage(text, newText) ?: return
 
+            // Add the found message to the log, or collect the next line if necessary.
             val file = mainFile?.parent?.findFile(fileName ?: mainFile.name, setOf("tex"))
 
             if (message.length >= lineWidth) {
@@ -69,17 +70,29 @@ class LatexOutputListener(
                 collectMessageLine(newText)
             }
             else {
-                if (listModel.isEmpty() || listModel.last().message != message) {
+                if (messageList.isEmpty() || messageList.last().message != message) {
                     addMessageToLog(message, file ?: mainFile, line
                             ?: 0, type)
                 }
             }
+
+            // TODO (instead of return) If there was no such error/warning (i.e.
+            //  message, fileName, ... == null), look for file opens/closes or errors/warnings.
         }
     }
 
-    fun findMessage(text: String, newText: String): LatexLogMessage? {
+    /**
+     * Find all messages that do not need to know the file TeX is currently processing.
+     * This means that we can either extract the file from the message, or the
+     * message is a general error/warning that does not need to be attributed to
+     * a file. Examples:
+     *   - ./math.tex:7: Environment align undefined.
+     *   - ! LaTeX Error: File `does-not-exist.tex' not found.
+     * Return null if [text] does not contain such an error or warning.
+     */
+    fun findContextLessMessage(text: String, newText: String): LatexLogMessage? {
         // Check if we have found an error
-        ERROR_REGEX.find(text)?.apply {
+        FILE_LINE_ERROR_REGEX.find(text)?.apply {
             val line = groups["line"]?.value?.toInt()?.minus(1)
             val fileName = groups["file"]?.value?.trim()
             val message = groups["message"]?.value?.removeSuffix(newText) ?: ""
@@ -90,9 +103,14 @@ class LatexOutputListener(
         if (TEX_WARNINGS.any { text.startsWith(it) }) {
             return LatexLogMessage(text.removeSuffix(newText), type = WARNING)
         }
+
         return null
     }
 
+    /**
+     * Add the current/new message to the log if it does not continue on the
+     * next line.
+     */
     private fun collectMessageLine(newText: String) {
         currentMessageText += newText
 
@@ -104,7 +122,7 @@ class LatexOutputListener(
 
     private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 0, type: LatexLogMessageType = ERROR) {
         treeView.addMessage(type.category, arrayOf(message), file, line, 0, null)
-        listModel.add(LatexLogMessage(message, file?.name, line, type))
+        messageList.add(LatexLogMessage(message, file?.name, line, type))
     }
 
     override fun processTerminated(event: ProcessEvent) {
@@ -125,7 +143,7 @@ class LatexOutputListener(
     }
 
     companion object {
-        private val ERROR_REGEX = """^(?<file>.+)?:(?<line>\d+): (?<message>.+)$""".toRegex()
+        private val FILE_LINE_ERROR_REGEX = """^(?<file>.+)?:(?<line>\d+): (?<message>.+)$""".toRegex()
         private val TEX_WARNINGS = listOf(
                 "LaTeX Warning: ",
                 "LaTeX Font Warning: ",
