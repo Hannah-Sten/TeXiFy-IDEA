@@ -96,6 +96,7 @@ toc::[]
 * link:Makeindex[Automatically runs makeindex when needed, also when auxil/ or out/ is used]
 * Custom compiler path
 * Option to choose different output formats like PDF and DVI
+* link:Run-configurations#environment-variables[Support for TEXINPUTS and environment variables in general]
 
 == BibTeX
 
@@ -165,6 +166,7 @@ See link:Run-configurations#Run-configuration-settings[Run configurations settin
 * Choose compiler
 * Custom compiler path
 * Custom compiler arguments
+* Custom environment variables
 * (Windows) Choose a custom path to SumatraPDF
 * Custom pdf viewer
 * Choose LaTeX source file to compile
