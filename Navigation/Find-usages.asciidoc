@@ -2,6 +2,9 @@
 
 _Since b0.6.9_
 
+In general, if link:Go-to-declaration[Go to declaration] on something works, then Find Usages will probably work as well.
+This holds for at least command definitions, labels and bibtex citations.
+
 == Find usages for commands
 As a complement for link:Go-to-declaration[Go to declaration], you can easily find usages of LaTeX commands you defined in your document, for example using `\newcommand` or `\DeclareMathOperator`, using kbd:[Ctrl + B].
 Note that this is the same shortcut as for Go to declaration.
