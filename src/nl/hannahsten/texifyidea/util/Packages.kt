@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
