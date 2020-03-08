@@ -45,7 +45,7 @@ class LatexUsagesProvider : FindUsagesProvider {
     }
 
     override fun getDescriptiveName(element: PsiElement): String {
-        return element.node.elementType.toString() + element.text
+        return element.text
     }
 
     override fun getType(element: PsiElement): String {

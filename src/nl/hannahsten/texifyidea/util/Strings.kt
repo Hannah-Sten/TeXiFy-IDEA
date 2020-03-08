@@ -54,7 +54,10 @@ fun String.substringEnd(range: IntRange): String = substringEnd(range.first, ran
 /**
  * Trims `startTrim` characters from the front, and `endTrim` characters from the end.
  */
-fun String.trimRange(startTrim: Int, endTrim: Int): String = substring(startTrim).substringEnd(endTrim)
+fun String.trimRange(startTrim: Int, endTrim: Int): String {
+    if (startTrim + endTrim > length) return ""
+    return substring(startTrim).substringEnd(endTrim)
+}
 
 /**
  * Returns the leading whitespace of a string.
@@ -72,18 +75,16 @@ fun String.getIndent(): String {
  * @return A path ending with the given extension without duplications (e.g. `.tex.tex` is impossible.)
  */
 fun String.appendExtension(extensionWithoutDot: String): String {
-    if (extensionWithoutDot.equals("")) return this
+    if (extensionWithoutDot == "") return this
 
     val dottedExtension = ".${extensionWithoutDot.toLowerCase()}"
     val thisLower = toLowerCase()
 
-    return if (thisLower.endsWith(dottedExtension)) {
-        this
+    return when {
+        thisLower.endsWith(dottedExtension) -> this
+        endsWith('.') -> this + extensionWithoutDot
+        else -> this + dottedExtension
     }
-    else if (endsWith('.')) {
-        this + extensionWithoutDot
-    }
-    else this + dottedExtension
 }
 
 /**

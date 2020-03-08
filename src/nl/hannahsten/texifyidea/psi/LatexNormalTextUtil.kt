@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
+import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.Magic
@@ -13,8 +14,17 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
 @Suppress("RemoveExplicitTypeArguments") // Somehow they are needed
 fun getReferences(element: LatexNormalText): Array<PsiReference> {
     val command = element.firstParentOfType(LatexCommands::class)
-    return if (Magic.Command.reference.contains(command?.name)) {
+    return if (Magic.Command.labelReference.contains(command?.name)) {
         val reference = LatexLabelParameterReference(element)
+        if (reference.multiResolve(false).isNotEmpty()) {
+            arrayOf<PsiReference>(reference)
+        }
+        else {
+            emptyArray<PsiReference>()
+        }
+    }
+    else if (Magic.Command.bibliographyReference.contains(command?.name)) {
+        val reference = BibtexIdReference(element)
         if (reference.multiResolve(false).isNotEmpty()) {
             arrayOf<PsiReference>(reference)
         }
