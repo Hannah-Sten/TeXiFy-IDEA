@@ -1,10 +1,12 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.editor.Document
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 
@@ -41,7 +43,7 @@ object PackageUtils {
      *          Parameters to add to the statement, `null` or empty string for no parameters.
      */
     @JvmStatic
-    fun insertUsepackage(document: Document, file: PsiFile, packageName: String, parameters: String?) {
+    fun insertUsepackage(file: PsiFile, packageName: String, parameters: String?) {
 
         if (!TexifySettings.getInstance().automaticDependencyCheck) {
             return
@@ -64,42 +66,52 @@ object PackageUtils {
             }
         }
 
-        val newlines: String
-        val insertLocation: Int
-        var postNewlines: String? = null
+        val prependNewLine: Boolean
+        // The anchor after which the new element will be inserted
+        val anchorAfter: PsiElement?
 
         // When there are no usepackage commands: insert below documentclass.
         if (last == null) {
             val classHuh = commands.asSequence()
-                    .filter { cmd -> "\\documentclass" == cmd.commandToken.text || "\\LoadClass" == cmd.commandToken.text }
+                    .filter { cmd ->
+                        "\\documentclass" == cmd.commandToken
+                                .text || "\\LoadClass" == cmd.commandToken.text
+                    }
                     .firstOrNull()
             if (classHuh != null) {
-                insertLocation = classHuh.textOffset + classHuh.textLength
-                newlines = "\n"
+                anchorAfter = classHuh
+                prependNewLine = true
             }
             else {
                 // No other sensible location can be found
-                insertLocation = 0
-                newlines = ""
-                postNewlines = "\n\n"
+                anchorAfter = null
+                prependNewLine = false
             }
 
         }
         // Otherwise, insert below the lowest usepackage.
         else {
-            insertLocation = last.textOffset + last.textLength
-            newlines = "\n"
+            anchorAfter = last
+            prependNewLine = true
         }
 
-        var command = newlines + commandName
+        var command = commandName
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
         command += "{$packageName}"
 
-        if (postNewlines != null) {
-            command += postNewlines
+        val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
+        if (anchorAfter != null) {
+            val anchorBefore = anchorAfter.node.treeNext
+            if (prependNewLine) {
+                val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                anchorAfter.parent.node.addChild(newLine, anchorBefore)
+            }
+            anchorAfter.parent.node.addChild(newNode, anchorBefore)
         }
-
-        document.insertString(insertLocation, command)
+        else {
+            // Insert at beginning
+            file.node.addChild(newNode, file.firstChild.node)
+        }
     }
 
     /**
@@ -125,7 +137,9 @@ object PackageUtils {
         if (Magic.Package.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in Magic.Package.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts.map {it.name }).isNotEmpty()) {
+                if (conflicts.contains(pack) && file.includedPackages().toSet()
+                                .intersect(conflicts.map { it.name })
+                                .isNotEmpty()) {
                     return false
                 }
             }
@@ -134,11 +148,9 @@ object PackageUtils {
         // Packages should always be included in the root file
         val rootFile = file.findRootFile()
 
-        val document = rootFile.document() ?: return true
-
         val params = pack.parameters
         val parameterString = StringUtil.join(params, ",")
-        insertUsepackage(document, rootFile, pack.name, parameterString)
+        insertUsepackage(rootFile, pack.name, parameterString)
 
         return true
     }
@@ -188,34 +200,12 @@ object PackageUtils {
     }
 
     /**
-     * Analyses the given file and finds all packages included in that file only (not the file set!)
-     *
-     * @return A set containing all used packages in the given file.
-     */
-    @JvmStatic
-    fun getIncludedPackagesOfSingleFile(baseFile: PsiFile): Set<String> {
-        val commands = baseFile.commandsInFile()
-        return getIncludedPackages(commands, HashSet())
-    }
-
-    /**
-     * Analyses the given file and finds all packages included in that file only (not the file set!)
-     *
-     * @return A list containing all used package names (including duplicates).
-     */
-    @JvmStatic
-    fun getIncludedPackagesOfSingleFileList(baseFile: PsiFile): List<String> {
-        val commands = baseFile.commandsInFile()
-        return getIncludedPackages(commands, ArrayList())
-    }
-
-    /**
      * Gets all packages imported with [PACKAGE_COMMANDS].
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPackages(
-        commands: Collection<LatexCommands>,
-        result: T
+            commands: Collection<LatexCommands>,
+            result: T
     ) = getPackagesFromCommands(commands, PACKAGE_COMMANDS, result)
 
     /**
@@ -223,8 +213,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedTikzLibraries(
-        commands: Collection<LatexCommands>,
-        result: T
+            commands: Collection<LatexCommands>,
+            result: T
     ) = getPackagesFromCommands(commands, TIKZ_IMPORT_COMMANDS, result)
 
     /**
@@ -232,8 +222,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPgfLibraries(
-        commands: Collection<LatexCommands>,
-        result: T
+            commands: Collection<LatexCommands>,
+            result: T
     ) = getPackagesFromCommands(commands, PGF_IMPORT_COMMANDS, result)
 
     /**
@@ -243,9 +233,9 @@ object PackageUtils {
      * Note that not all elements returned may be valid package names.
      */
     private fun <T : MutableCollection<String>> getPackagesFromCommands(
-        commands: Collection<LatexCommands>,
-        packageCommands: Set<String>,
-        initial: T
+            commands: Collection<LatexCommands>,
+            packageCommands: Set<String>,
+            initial: T
     ): T {
         for (cmd in commands) {
             if (cmd.commandToken.text !in packageCommands) {
@@ -254,11 +244,14 @@ object PackageUtils {
 
             // Assume packages can be included in both optional and required parameters
             // Except a class, because a class is not a package
-            val packages = if (cmd.commandToken.text == "\\documentclass" || cmd.commandToken.text == "\\LoadClass") {
+            val packages = if (cmd.commandToken
+                            .text == "\\documentclass" || cmd.commandToken
+                            .text == "\\LoadClass") {
                 setOf(cmd.optionalParameters.keys.toList())
             }
             else {
-                setOf(cmd.requiredParameters, cmd.optionalParameters.keys.toList())
+                setOf(cmd.requiredParameters, cmd.optionalParameters.keys
+                        .toList())
             }
 
             for (list in packages) {
@@ -271,7 +264,8 @@ object PackageUtils {
 
                 // Multiple includes.
                 if (packageName.contains(",")) {
-                    initial.addAll(packageName.split(",").dropLastWhile(String::isNullOrEmpty))
+                    initial.addAll(packageName.split(",")
+                            .dropLastWhile(String::isNullOrEmpty))
                 }
                 // Single include.
                 else {
@@ -281,6 +275,60 @@ object PackageUtils {
         }
 
         return initial
+    }
+}
+
+object TexLivePackages {
+    lateinit var packageList: MutableList<String>
+
+    /**
+     * Given a package name used in \usepackage or \RequirePackage, find the
+     * name needed to install from TeX Live. E.g. to be able to use \usepackage{rubikrotation}
+     * we need to install the rubik package.
+     *
+     * In the output
+     *
+     *    tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
+     *    rubik:
+     *            texmf-dist/tex/latex/rubik/rubikrotation.sty
+     *
+     * we are looking for "rubik". Possibly tex live outputs a "TeX Live 2019 is frozen" message before, so
+     * we search for the line that starts with tlmgr. Then the name of the package we are
+     * looking for will be on the next line, if it exists.
+     */
+    fun findTexLiveName(task: Task.Backgroundable, packageName: String): String? {
+        // Find the package name for tlmgr.
+        task.title = "Searching for $packageName..."
+        val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand()
+                ?: return null
+
+        // Check if tlmgr needs to be updated first, and do so if needed.
+        val tlmgrUpdateCommand = "tlmgr update --self"
+        if (searchResult.contains(tlmgrUpdateCommand)) {
+            task.title = "Updating tlmgr..."
+            tlmgrUpdateCommand.runCommand()
+        }
+
+
+        return extractRealPackageNameFromOutput(searchResult)
+    }
+
+    fun extractRealPackageNameFromOutput(output: String): String? {
+        val tlFrozen = Regex("""
+            TeX Live \d{4} is frozen forever and will no
+            longer be updated\.  This happens in preparation for a new release\.
+
+            If you're interested in helping to pretest the new release \(when
+            pretests are available\), please read https:\/\/tug\.org\/texlive\/pretest\.html\.
+            Otherwise, just wait, and the new release will be ready in due time\.
+        """.trimIndent())
+        val lines = tlFrozen.replace(output, "").trim().split('\n')
+        val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
+        return try {
+            lines[tlmgrIndex + 1].trim().dropLast(1) // Drop the : behind the package name.
+        } catch (e: IndexOutOfBoundsException) {
+            null
+        }
     }
 }
 

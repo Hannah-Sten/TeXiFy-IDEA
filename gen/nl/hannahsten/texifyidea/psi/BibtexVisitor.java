@@ -37,7 +37,7 @@ public class BibtexVisitor extends PsiElementVisitor {
   }
 
   public void visitId(@NotNull BibtexId o) {
-    visitPsiElement(o);
+    visitPsiNameIdentifierOwner(o);
   }
 
   public void visitKey(@NotNull BibtexKey o) {

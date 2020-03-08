@@ -109,7 +109,7 @@ fun PsiFile.findLabelingCommandsInFileAsSequence(): Sequence<LatexCommands> {
 }
 
 /**
- * Finds all defined labels within the project.
+ * Finds all defined labels within the project, including bibtex entries.
  *
  * @return The found label commands.
  */

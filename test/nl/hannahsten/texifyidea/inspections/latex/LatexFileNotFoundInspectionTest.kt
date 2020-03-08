@@ -15,6 +15,10 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         absoluteWorkingPath = currentRelativePath.toAbsolutePath().toString()
     }
 
+    override fun getTestDataPath(): String {
+        return "test/resources/inspections/latex/filenotfound"
+    }
+
     @Test
     fun testInvalidAbsolutePath() {
         myFixture.configureByText(LatexFileType, """\includegraphics{<error>$absoluteWorkingPath/test/resources/completion/path/myPicture.myinvalidextension</error>}""")
@@ -69,4 +73,38 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         }
     }
 
+    // Test isn't working
+//    @Test
+//    fun testImportAbsolutePath() {
+//        myFixture.configureByFiles("ImportPackageAbsolutePath.tex", "chapters/included.tex")
+//        myFixture.type("$absoluteWorkingPath/chapters/")
+//        myFixture.checkHighlighting()
+//    }
+
+    @Test
+    fun testInvalidImportAbsolutePath() {
+        myFixture.copyFileToProject("chapters/included.tex")
+        myFixture.configureByText(LatexFileType, """\import{/does/not/exist}{<error>included</error>}""")
+        myFixture.checkHighlighting()
+    }
+
+    @Test
+    fun testImportAbsolutePathIncludedFile() {
+        val files = myFixture.configureByFiles("ImportPackageAbsolutePath.tex", "chapters/included.tex", "chapters/included2.tex")
+        myFixture.type("$absoluteWorkingPath/chapters/")
+        myFixture.openFileInEditor(files[1].virtualFile)
+        myFixture.checkHighlighting()
+    }
+
+    @Test
+    fun testImportRelativePathIncludedFile() {
+        myFixture.configureByFiles("chapters/included.tex", "ImportPackageRelativePath.tex", "chapters/included2.tex")
+        myFixture.checkHighlighting()
+    }
+
+    @Test
+    fun testInvalidImportRelativePathIncludedFile() {
+        myFixture.configureByFiles("chapters/notincluded.tex", "ImportPackageRelativePathInvalid.tex", "chapters/included2.tex")
+        myFixture.checkHighlighting()
+    }
 }

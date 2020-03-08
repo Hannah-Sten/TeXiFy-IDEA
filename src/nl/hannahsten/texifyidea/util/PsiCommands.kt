@@ -1,11 +1,13 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
 
 /**
@@ -132,16 +134,11 @@ fun LatexCommands.findIndentation(): String {
 }
 
 /**
- * If the given command is an include command, the contents of the first argument will be read.
- *
- * @return The included filenames or `null` when it's not an include command or when there
- * are no required parameters.
+ * Get files included by this command.
+ * @param includeInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
  */
-fun LatexCommands.includedFileNames(): List<String>? {
-    if (commandToken.text !in Magic.Command.includes) return null
-    val required = requiredParameters
-    if (required.isEmpty()) return null
-    return required.first().split(',')
+fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
+    return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve(includeInstalledPackages) }
 }
 
 /**

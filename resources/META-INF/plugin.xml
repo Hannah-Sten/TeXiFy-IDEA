@@ -272,11 +272,18 @@
 
     </actions>
 
+    <!-- Listeners -->
+
+    <applicationListeners>
+        <listener class="nl.hannahsten.texifyidea.file.listeners.VfsChangeListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    </applicationListeners>
+
     <!-- Hooks for plugin functionality -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- Startup -->
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.StartEvinceInverseSearchListener"/>
-        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.AnalyzeMenuRegistration" />
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.AnalyzeMenuRegistration"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.TexLivePackageListInitializer"/>
 
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
@@ -384,6 +391,9 @@
         <lang.refactoringSupport language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexRefactoringSupportProvider" />
         <lang.namesValidator language="Latex" implementationClass="nl.hannahsten.texifyidea.refactoring.LatexNamesValidator" />
 
+        <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
+        <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
+
         <!-- Tool windows -->
         <toolWindow id="Equation Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/equation-preview.svg" canCloseContents="true" />
         <toolWindow id="Tikz Picture Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/tikz-preview.svg" canCloseContents="true" />
@@ -428,7 +438,7 @@
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Other Services -->
-        <projectService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
+        <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
                         serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
 
         <!-- Inspections -->
@@ -595,6 +605,8 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageCouldNotBeFound"
                          groupName="LaTeX" displayName="Package could not be found"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
+                         groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"

@@ -10,9 +10,7 @@ import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
-import nl.hannahsten.texifyidea.lang.BibtexDefaultEntry
-import nl.hannahsten.texifyidea.lang.BibtexEntryField
-import nl.hannahsten.texifyidea.lang.SimpleBibtexEntryField
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.util.*
@@ -51,6 +49,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
                     .bold()
                     .withTypeText(message, true)
                     .withIcon(icon)
+                    .withTailText(packageName(it), true)
                     .withInsertHandler(TokenTypeInsertHandler)
         })
     }
@@ -66,7 +65,8 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
      */
     private fun findUserDefinedKeys(file: PsiFile, allFields: Collection<BibtexEntryField>): Set<BibtexEntryField> {
         val result = HashSet<BibtexEntryField>()
-        val presentFieldSet: MutableSet<String> = allFields.map { it.fieldName }.toMutableSet()
+        val presentFieldSet: MutableSet<String> = allFields.map { it.fieldName }
+                .toMutableSet()
 
         for (key in file.childrenOfType(BibtexKey::class)) {
             val name = key.text
@@ -77,5 +77,12 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         }
 
         return result
+    }
+
+    private fun packageName(dependend: Dependend): String {
+        return when (val dependency = dependend.dependency) {
+            Package.DEFAULT -> ""
+            else -> "  (${dependency.name})"
+        }
     }
 }

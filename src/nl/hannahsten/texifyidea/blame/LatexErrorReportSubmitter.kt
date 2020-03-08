@@ -36,6 +36,11 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         try {
             builder.append(URLEncoder.encode(title, ENCODING))
             builder.append("&body=")
+
+            builder.append(URLEncoder.encode("### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version\n\n", ENCODING))
+            builder.append(URLEncoder.encode("### Operating System \n" +
+                    "<!-- Windows, Ubuntu, Arch Linux, MacOS, etc. -->\n\n", ENCODING))
+            builder.append(URLEncoder.encode("### TeXiFy IDEA version\n\n", ENCODING))
             builder.append(URLEncoder.encode("### Description\n", ENCODING))
             builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
             builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(7000)}\n```", ENCODING))

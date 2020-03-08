@@ -1,23 +1,29 @@
 package nl.hannahsten.texifyidea.reference
 
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.getExternalFile
+import nl.hannahsten.texifyidea.util.files.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
 /**
+ * Reference to a file, based on the command and the range of the filename within the command text.
+ *
+ * @param defaultExtension Default extension of the command in which this reference is.
+ *
  * @author Abby Berkers
  */
-class InputFileReference(element: LatexCommands, val range: TextRange) : PsiReferenceBase<LatexCommands>(element) {
+class InputFileReference(element: LatexCommands, val range: TextRange, val extensions: Set<String>, val defaultExtension: String) : PsiReferenceBase<LatexCommands>(element) {
     init {
         rangeInElement = range
     }
@@ -26,19 +32,65 @@ class InputFileReference(element: LatexCommands, val range: TextRange) : PsiRefe
         rangeInElement.substring(element.text)
     }
 
-    override fun resolve(): PsiElement? {
+    override fun resolve(): PsiFile? {
+        return resolve(true)
+    }
+
+    /**
+     * @param lookForInstalledPackages Whether to look for packages installed elsewhere on the filesystem.
+     * Set to false when it would make the operation too expensive, for example when trying to calculate the fileset of many files.
+     */
+    fun resolve(lookForInstalledPackages: Boolean, rootFile: VirtualFile? = null): PsiFile? {
+
+        // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
+
+        // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
+        val searchPaths = if (element.name == "\\includegraphics") {
+            getGraphicsPaths(element.project)
+        }
+        else {
+            emptyList()
+        }.toMutableList()
+
+        var targetFile = searchFileByImportPaths(element)?.virtualFile
+
         // Find the sources root of the current file.
-        val root = element.containingFile.findRootFile()
-                .containingDirectory.virtualFile
-        // Find the target file, by first searching through the project directory.
-        val targetFile = root.findFile(key, Magic.File.includeExtensions)
-                // When the file does not exist in the project directory, look for
-                // it elsewhere using the kpsewhich command.
-                ?: element.getFileNameWithExtensions(key)?.map { runKpsewhich(it) }?.map {
-                    getExternalFile(it ?: return null)
-                }?.firstOrNull { it != null }
-                // If kpsewhich can also not find it, return null.
-                ?: return null
+        // findRootFile will also call getImportPaths, so that will be executed twice
+        val rootDirectory = rootFile?.parent ?: element.containingFile.findRootFile()
+                .containingDirectory?.virtualFile ?: return null
+
+        // Try to find the target file directly from the given path
+        if (targetFile == null) {
+            targetFile = rootDirectory.findFile(key, extensions)
+        }
+
+        // Try content roots
+        if (targetFile == null && LatexDistribution.isMiktex) {
+            for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
+                targetFile = moduleRoot.findFile(key, extensions)
+                if (targetFile != null) break
+            }
+        }
+
+        // Try search paths
+        if (targetFile == null) {
+            for (searchPath in searchPaths) {
+                targetFile = rootDirectory.findFile(searchPath + key, extensions)
+                if (targetFile != null) break
+            }
+        }
+
+        // Look for packages elsewhere using the kpsewhich command.
+        @Suppress("RemoveExplicitTypeArguments")
+        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
+            targetFile = element.getFileNameWithExtensions(key)
+                    ?.map { runKpsewhich(it) }
+                    ?.map { getExternalFile(it ?: return null) }
+                    ?.firstOrNull { it != null }
+        }
+
+        if (targetFile == null) return null
+
         // Return a reference to the target file.
         return PsiManager.getInstance(element.project).findFile(targetFile)
     }
@@ -72,7 +124,8 @@ class InputFileReference(element: LatexCommands, val range: TextRange) : PsiRefe
             BufferedReader(InputStreamReader(Runtime.getRuntime().exec(
                     "kpsewhich $arg"
             ).inputStream)).readLine()  // Returns null if no line read.
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             null
         }
     }

@@ -15,6 +15,7 @@
 
     extends("entry")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.BibtexEntryStub>"
     implements("entry")="com.intellij.psi.PsiNameIdentifierOwner"
+    implements("id")="com.intellij.psi.PsiNameIdentifierOwner"
 }
 
 bibtexFile ::= (entry | comment)*
@@ -33,7 +34,9 @@ type ::= TYPE_TOKEN
 
 preamble ::= (quoted_string (CONCATENATE quoted_string)*) | NUMBER | IDENTIFIER
 
-id ::= comment* IDENTIFIER comment* SEPARATOR
+id ::= comment* IDENTIFIER comment* SEPARATOR {
+    methods=[getNameIdentifier getName setName]
+}
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* { pin=2 }
 
