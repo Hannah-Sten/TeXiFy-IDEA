@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.files.findRelativeFile
+import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.requiredParameter
@@ -38,7 +38,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
         val root = file.findRootFile()
 
         val isInclude = LatexIncludesIndex.getItemsInFileSet(file).any {
-            it.name == "\\include" && it.requiredParameter(0)?.let { f -> root.findRelativeFile(f) } == file
+            it.name == "\\include" && it.requiredParameter(0)?.let { f -> root.findFile(f) } == file
         }
 
         if (!isInclude) {

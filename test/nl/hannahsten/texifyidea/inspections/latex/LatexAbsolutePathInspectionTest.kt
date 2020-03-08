@@ -16,7 +16,13 @@ class LatexAbsolutePathInspectionTest : TexifyInspectionTestBase(LatexAbsolutePa
 
     @Test
     fun testNotSupportedAbsolutePath() {
-        myFixture.configureByText(LatexFileType, """<error>\include{$absoluteWorkingPath/test/resources/completion/path/testfile.tex}</error>""")
+        myFixture.configureByText(LatexFileType, """\include{<error descr="No absolute path allowed here">$absoluteWorkingPath/test/resources/completion/path/testfile.tex</error>}""")
+        myFixture.checkHighlighting()
+    }
+
+    @Test
+    fun testNotSupportedAbsolutePathAsSecondParameter() {
+        myFixture.configureByText(LatexFileType, """\import{/absolute/path/to/}{<error descr="No absolute path allowed here">$absoluteWorkingPath/test/resources/completion/path/testfile.tex</error>}""")
         myFixture.checkHighlighting()
     }
 }

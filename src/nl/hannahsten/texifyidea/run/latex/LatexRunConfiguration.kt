@@ -28,8 +28,8 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.findRelativeFile
-import nl.hannahsten.texifyidea.util.files.referencedFiles
+import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import org.jdom.Element
 
 /**
@@ -408,9 +408,9 @@ class LatexRunConfiguration constructor(project: Project,
                 .flatMap { command -> command.requiredParameters }
                 .forEach {filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile!!.findRelativeFile(filename) ?: return@forEach
+                    val chapterMainFile = psiFile!!.findFile(filename) ?: return@forEach
 
-                    val chapterFiles = chapterMainFile.referencedFiles().toMutableSet().apply { add(chapterMainFile) }
+                    val chapterFiles = chapterMainFile.referencedFileSet().toMutableSet().apply { add(chapterMainFile) }
 
                     val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
 
