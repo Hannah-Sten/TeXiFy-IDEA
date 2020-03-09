@@ -12,7 +12,7 @@ import java.util.*
 /**
  * @author Hannah Schellekens
  */
-class LatexStructureViewCommandElement(private val element: LatexCommands) : StructureViewTreeElement, SortableTreeElement {
+class LatexStructureViewCommandElement private constructor(private val element: LatexCommands) : StructureViewTreeElement, SortableTreeElement {
 
     companion object {
 

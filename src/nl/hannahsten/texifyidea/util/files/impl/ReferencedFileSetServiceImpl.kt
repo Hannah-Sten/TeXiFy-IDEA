@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util.files.impl
 
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
@@ -8,11 +8,13 @@ import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 /**
  * @author Hannah Schellekens
  */
-class ReferencedFileSetServiceImpl(project: Project) : ReferencedFileSetService {
+class ReferencedFileSetServiceImpl : ReferencedFileSetService {
 
-    private val cache = ReferencedFileSetCache(project)
+    private val cache = ReferencedFileSetCache()
 
     override fun referencedFileSetOf(psiFile: PsiFile) = cache.fileSetFor(psiFile)
 
-    override fun dropCaches(psiFile: PsiFile) = cache.dropCaches(psiFile)
+    override fun dropCaches(file: VirtualFile) = cache.dropCaches(file)
+
+    override fun dropAllCaches() = cache.dropAllCaches()
 }

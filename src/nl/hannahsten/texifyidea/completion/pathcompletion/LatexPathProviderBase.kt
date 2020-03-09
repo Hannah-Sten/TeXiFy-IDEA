@@ -58,7 +58,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * eg. project root
      * eg. \includegraphics roots
      */
-    abstract fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile>
+    abstract fun selectScanRoots(file: PsiFile): Collection<VirtualFile>
 
     /**
      * enable folder search?

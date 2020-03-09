@@ -4,7 +4,6 @@ import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.template.TemplateManager
-import com.intellij.codeInsight.template.impl.TemplateSettings
 import nl.hannahsten.texifyidea.lang.BibtexEntryType
 
 /**
@@ -38,9 +37,7 @@ object TokenTypeInsertHandler : InsertHandler<LookupElement> {
     }
 
     private fun insertType(inserted: BibtexEntryType, context: InsertionContext) {
-        val templateSettings = TemplateSettings.getInstance()
-        val template = templateSettings.getTemplateById("BIBTEX.type.${inserted.token}")
-
+        val template = inserted.template()
         val editor = context.editor
         val templateManager = TemplateManager.getInstance(context.project)
         templateManager.startTemplate(editor, template)

@@ -19,7 +19,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.6.8'
+version '0.7-alpha.61'
 
 repositories {
     mavenCentral()
@@ -96,6 +96,7 @@ dependencies {
     // just in case
     testCompile "org.jetbrains.kotlin:kotlin-test"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.3.61"
 
 }
 
