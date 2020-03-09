@@ -1,10 +1,11 @@
-package nl.hannahsten.texifyidea.run.latex.ui
+package nl.hannahsten.texifyidea.run.latex.logtab
 
 import com.intellij.diagnostic.logging.AdditionalTabComponent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import java.awt.BorderLayout
 import javax.swing.JComponent
 
@@ -17,7 +18,7 @@ import javax.swing.JComponent
  */
 class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
-    private val listModel = mutableListOf<LatexOutputListener.LatexLogMessage>()
+    private val listModel = mutableListOf<LatexLogMessage>()
     private val treeView = LatexCompileMessageTreeView(project)
 
     init {

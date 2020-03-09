@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessage
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessageType.ERROR
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessageType.WARNING
 
 class LatexOutputListenerTest : BasePlatformTestCase() {
     val logText = """

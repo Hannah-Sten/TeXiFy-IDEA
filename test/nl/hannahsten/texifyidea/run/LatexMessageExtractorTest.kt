@@ -1,11 +1,10 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessage
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessageType.ERROR
-import nl.hannahsten.texifyidea.run.latex.ui.LatexOutputListener.LatexLogMessageType.WARNING
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageExtractor
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
 
 class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun testEnvironmentUndefinedError() {
@@ -39,12 +38,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     private fun testMessageExtractor(text: String, expected: LatexLogMessage) {
-        val listModel = mutableListOf<LatexLogMessage>()
-        val treeView = LatexCompileMessageTreeView(project)
-        val listener = LatexOutputListener(project, null, listModel, treeView)
-
-        val real = listener.findContextLessMessage(text, "") ?: return fail()
-
+        val real = LatexLogMessageExtractor(text, "", "").findMessage() ?: return fail()
         assertEquals(expected, real)
     }
 }

@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.run.latex.ui.LatexLogTabComponent
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
