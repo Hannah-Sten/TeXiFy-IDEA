@@ -62,6 +62,7 @@ class LatexOutputListener(
             val logMessage = LatexLogMessageExtractor(text, newText, fileStack.peek()).findMessage() ?: return
 
             // TODO check for potential file opens/closes, modify the stack accordingly
+            fileStack.update(text)
 
             // Finally add the message to the log, or continue collecting this message when necessary.
             addOrCollectMessage(newText, logMessage)

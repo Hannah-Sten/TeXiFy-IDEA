@@ -53,10 +53,10 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         (/home/abby/texlive/2019/texmf-dist/tex/latex/biblatex/lbx/english.lbx)
         (/home/abby/Documents/texify-test/out/main.aux)
         No file main.bbl.
-
+        
         LaTeX Warning: Citation 'DBLP.books.daglib.0076726' on page 1 undefined on inpu
         t line 7.
-
+        
         (./math.tex
 
         ./math.tex:7: LaTeX Error: Environment align undefined.

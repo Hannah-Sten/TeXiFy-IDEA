@@ -2,6 +2,16 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 
 class LatexLogMessageExtractor(val text: String, val newText: String, val currentFile: String?) {
     /**
+     * Pre-processing to check if line is worth looking at.
+     *
+     * A line is not worth looking at when:
+     *   - it starts with "latexmk:" or "Latexmk:"
+     */
+    fun skip(): Boolean {
+        return false
+    }
+
+    /**
      * Look for a warning or error message in [text].
      * Return null if [text] does not contain such an error or warning.
      */
