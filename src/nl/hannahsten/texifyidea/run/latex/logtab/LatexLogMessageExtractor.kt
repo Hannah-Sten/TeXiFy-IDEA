@@ -16,7 +16,7 @@ class LatexLogMessageExtractor(val text: String, val newText: String, val curren
 
         // Check if we have found a warning
         if (TEX_WARNINGS.any { text.startsWith(it) }) {
-            return LatexLogMessage(text.removeSuffix(newText), type = LatexLogMessageType.WARNING)
+            return LatexLogMessage(text.removeSuffix(newText), fileName = currentFile, type = LatexLogMessageType.WARNING)
         }
 
         return null
