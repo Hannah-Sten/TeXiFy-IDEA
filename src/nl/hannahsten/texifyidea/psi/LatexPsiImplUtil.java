@@ -18,6 +18,10 @@ public class LatexPsiImplUtil {
      * LatexCommands
      */
 
+    /**
+     * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexNormalText)}.
+     * For more info and an example, see {@link nl.hannahsten.texifyidea.reference.LatexLabelParameterReference}.
+     */
     @NotNull
     public static PsiReference[] getReferences(@NotNull LatexCommands element) {
         return LatexCommandsImplUtilKt.getReferences(element);

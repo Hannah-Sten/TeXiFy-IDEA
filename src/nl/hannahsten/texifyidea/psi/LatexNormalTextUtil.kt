@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
 @Suppress("RemoveExplicitTypeArguments") // Somehow they are needed
 fun getReferences(element: LatexNormalText): Array<PsiReference> {
     val command = element.firstParentOfType(LatexCommands::class)
+    // If the command is a label reference
     return if (Magic.Command.labelReference.contains(command?.name)) {
         val reference = LatexLabelParameterReference(element)
         if (reference.multiResolve(false).isNotEmpty()) {
@@ -23,6 +24,7 @@ fun getReferences(element: LatexNormalText): Array<PsiReference> {
             emptyArray<PsiReference>()
         }
     }
+    // If the command is a bibliography reference
     else if (Magic.Command.bibliographyReference.contains(command?.name)) {
         val reference = BibtexIdReference(element)
         if (reference.multiResolve(false).isNotEmpty()) {
@@ -32,6 +34,7 @@ fun getReferences(element: LatexNormalText): Array<PsiReference> {
             emptyArray<PsiReference>()
         }
     }
+    // If the command is an \end command (references to \begin)
     else if (element.firstParentOfType(LatexEndCommand::class) != null) {
         arrayOf<PsiReference>(LatexEnvironmentReference(element))
     }

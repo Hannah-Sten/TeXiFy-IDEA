@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub;
 import nl.hannahsten.texifyidea.reference.BibtexStringReference;
+import nl.hannahsten.texifyidea.reference.BibtexTagReference;
 import nl.hannahsten.texifyidea.util.BibtexKt;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -96,5 +97,13 @@ public class BibtexPsiImplUtil {
 
     public static String getName(@NotNull BibtexId element) {
         return BibtexIdUtilKt.getName(element);
+    }
+
+    /*
+     * BibtexTag
+     */
+
+    public static PsiReference getReference(BibtexTag element) {
+        return new BibtexTagReference(element);
     }
 }
