@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 
 class LatexOutputListenerTest : BasePlatformTestCase() {
-    val logText = """
+    val logTextLatexmk = """
         latexmk -pdf -file-line-error -interaction=nonstopmode -synctex=1 -output-format=pdf -output-directory=/home/abby/Documents/texify-test/out main.tex
         Latexmk: applying rule 'pdflatex'...
         This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex)
@@ -195,7 +195,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val treeView = LatexCompileMessageTreeView(project)
         val listener = LatexOutputListener(project, mainFile, listModel, treeView)
 
-        val input = logText.split('\n')
+        val input = logTextLatexmk.split('\n')
         input.forEach { listener.processNewText(it) }
 
         val expectedMessages = setOf(

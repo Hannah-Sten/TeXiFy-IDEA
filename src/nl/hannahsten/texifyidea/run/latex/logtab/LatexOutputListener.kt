@@ -25,6 +25,7 @@ class LatexOutputListener(
     val window = CircularFifoBuffer(2)
 
     var isCollectingMessage = false
+    var isLatexmk = false
     var currentMessageText: String? = null
     // Stack with the filenames, where the first is the current file.
     var fileStack = LatexFileStack()
@@ -55,17 +56,17 @@ class LatexOutputListener(
             collectMessageLine(newText)
         }
         else {
-            // If now the first entry in window is an empty line: ignore this and skip to the next line
-            if ((window.firstOrNull() as? String).isNullOrEmpty()) return
+            // Skip line if it is irrelevant.
+            if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String) || LatexLogMessageExtractor.skip(newText)) return
 
             // Find an error message or warning in the current text.
-            val logMessage = LatexLogMessageExtractor(text, newText, fileStack.peek()).findMessage() ?: return
+            val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek())
 
-            // TODO check for potential file opens/closes, modify the stack accordingly
-            fileStack.update(text)
+            // Check for potential file opens/closes, modify the stack accordingly.
+            fileStack.update(newText)
 
             // Finally add the message to the log, or continue collecting this message when necessary.
-            addOrCollectMessage(newText, logMessage)
+            addOrCollectMessage(newText, logMessage ?: return)
         }
     }
 
@@ -86,7 +87,7 @@ class LatexOutputListener(
             else {
                 val file = findProjectFileRelativeToMain(fileName)
 
-                if (messageList.isEmpty() || messageList.last().message != message) {
+                if (messageList.isEmpty() || !messageList.contains(logMessage)) {
                     addMessageToLog(message, file ?: mainFile, line
                             ?: 0, type)
                 }
@@ -107,8 +108,9 @@ class LatexOutputListener(
         }
     }
 
-    private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 0, type: LatexLogMessageType = ERROR) {
-        treeView.addMessage(type.category, arrayOf(message), file, line, 0, null)
+    private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 1, type: LatexLogMessageType = ERROR) {
+        // Correct the index because the treeview starts counting at line 0 instead of line 1.
+        treeView.addMessage(type.category, arrayOf(message), file, line - 1, 0, null)
         messageList.add(LatexLogMessage(message, file?.name, line, type))
     }
 

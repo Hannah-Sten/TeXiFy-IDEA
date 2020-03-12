@@ -40,7 +40,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     private fun testMessageExtractor(text: String, expected: LatexLogMessage) {
-        val real = LatexLogMessageExtractor(text, "", currentFile).findMessage() ?: return fail()
+        val real = LatexLogMessageExtractor.findMessage(text, "", currentFile) ?: return fail()
         assertEquals(expected, real)
     }
 }

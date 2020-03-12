@@ -21,7 +21,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-halt-on-error")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             if (runConfig.outputPath != null) {
@@ -53,7 +52,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-halt-on-error")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             if (runConfig.outputPath != null) {
@@ -81,7 +79,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-halt-on-error")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
             if (runConfig.outputPath != null) {
@@ -109,7 +106,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-halt-on-error")
 
             if (runConfig.outputFormat == Format.XDV) {
                 command.add("-no-pdf")

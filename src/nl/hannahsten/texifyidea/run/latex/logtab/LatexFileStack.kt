@@ -16,7 +16,7 @@ class LatexFileStack(vararg val file: String) : ArrayDeque<String>() {
      * (It works for rubber: https://github.com/tsgates/die/blob/master/bin/parse-latex-log.py)
      */
     fun update(line: String): LatexFileStack {
-        val fileRegex = Regex("""(\((?<file>\.*(/[\w-\d]+)+\.(\w{3}))|\))""")
+        val fileRegex = Regex("""(\((?<file>\.*(\/[\w-\d]+)+\.(\w{3}))|\))""")
 
         var result = fileRegex.find(line)
         var linePart = line
