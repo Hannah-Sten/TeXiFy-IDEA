@@ -40,7 +40,7 @@ id ::= comment* IDENTIFIER comment* SEPARATOR {
 
 tag ::= comment* key comment* ASSIGNMENT comment* content comment* {
     pin=2
-    methods=[getReference]
+    methods=[getReferences]
 }
 
 key ::= IDENTIFIER

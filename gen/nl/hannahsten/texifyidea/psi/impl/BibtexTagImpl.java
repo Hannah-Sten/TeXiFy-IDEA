@@ -46,8 +46,8 @@ public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
   }
 
   @Override
-  public PsiReference getReference() {
-    return BibtexPsiImplUtil.getReference(this);
+  public PsiReference[] getReferences() {
+    return BibtexPsiImplUtil.getReferences(this);
   }
 
 }
