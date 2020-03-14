@@ -22,14 +22,14 @@ object LatexLogMessageExtractor {
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach {
-            if(it.regex.containsMatchIn(text)) return it.findMessage(text, newText, currentFile)
+            if(it.regex.any { it.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
         }
 
         // Handles all other file line errors. Only check the in the first line,
         // because other errors might need the two lines, and would be
         // (partly) duplicated in the log if we allow the fallback to inspect
         // the two lines (or just the first).
-        if (LatexFileLineErrorHandler.regex.containsMatchIn(text.removeSuffix(newText))) {
+        if (LatexFileLineErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText))}) {
             return LatexFileLineErrorHandler.findMessage(text, newText, currentFile)
         }
 
