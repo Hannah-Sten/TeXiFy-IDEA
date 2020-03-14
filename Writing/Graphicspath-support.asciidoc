@@ -9,6 +9,7 @@ For example, if you have images in a path `/path/to/figures` you could write
 
 [source,latex]
 ----
+\documentclass{article}
 \usepackage{graphicx}
 \graphicspath{{/path/to/figures/}}
 \begin{document}
