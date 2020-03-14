@@ -65,7 +65,7 @@ class LatexOutputListener(
             resetIfNeeded(newText)
 
             // Find an error message or warning in the current text.
-            val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek())
+            val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek()) ?: return
 
             // Check for potential file opens/closes, modify the stack accordingly.
             fileStack.update(newText)
@@ -102,7 +102,7 @@ class LatexOutputListener(
     private fun addOrCollectMessage(newText: String, logMessage: LatexLogMessage) {
         logMessage.apply {
             if (message.isEmpty()) return
-            
+
             if (message.length >= lineWidth) {
                 // Keep on collecting output for this message
                 currentMessageText = message

@@ -1,4 +1,9 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
+
+import nl.hannahsten.texifyidea.run.latex.logtab.messagefinders.LatexFileLineErrorHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagefinders.LatexUndefinedControlSequenceHandler
+import nl.hannahsten.texifyidea.util.removeAll
+
 object LatexLogMessageExtractor {
     /**
      * Pre-processing to check if line is worth looking at.
@@ -8,21 +13,29 @@ object LatexLogMessageExtractor {
     }
 
     /**
-     * Look for a warning or error message in [text].
+     * Look for a warning or error message in [text], and return a handler that
+     * can handle the warning (i.e., process it and output the correct log message).
      * Return null if [text] does not contain such an error or warning.
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
-        // Check if we have found an error
-        FILE_LINE_ERROR_REGEX.find(text)?.apply {
-            val line = groups["line"]?.value?.toInt()
-            val fileName = groups["file"]?.value?.trim() ?: currentFile
-            val message = groups["message"]?.value?.removeSuffix(newText) ?: ""
-            return LatexLogMessage(message, fileName, line, LatexLogMessageType.ERROR)
+        val specialErrorHandlersList = listOf(LatexUndefinedControlSequenceHandler)
+
+        // Look for errors that need special treatment.
+        specialErrorHandlersList.forEach {
+            if(it.regex.containsMatchIn(text)) return it.findMessage(text, newText, currentFile)
+        }
+
+        // Handles all other file line errors. Only check the in the first line,
+        // because other errors might need the two lines, and would be
+        // (partly) duplicated in the log if we allow the fallback to inspect
+        // the two lines (or just the first).
+        if (LatexFileLineErrorHandler.regex.containsMatchIn(text.removeSuffix(newText))) {
+            return LatexFileLineErrorHandler.findMessage(text, newText, currentFile)
         }
 
         // Check if we have found a warning
         if (TEX_MISC_WARNINGS.any { text.startsWith(it) }) {
-            return LatexLogMessage(text.removeSuffix(newText), fileName = currentFile, type = LatexLogMessageType.WARNING)
+            return LatexLogMessage(text.removeSuffix(newText).removeAll("LaTeX Warning:").trim(), fileName = currentFile, type = LatexLogMessageType.WARNING)
         }
 
         return null

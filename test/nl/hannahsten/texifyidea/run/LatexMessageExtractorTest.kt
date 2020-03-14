@@ -11,19 +11,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testEnvironmentUndefinedError() {
         val text = "./main.tex:1: LaTeX Error: Environment align undefined."
-        val expected = LatexLogMessage("Environment align undefined.", "main.tex", 0, ERROR)
-        testMessageExtractor(text, expected)
-    }
-
-    fun testUndefinedControlSequenceInNestedFileError() {
-        val text = "./nested/lipsum-one.tex:9: Undefined control sequence."
-        val expected = LatexLogMessage("Undefined control sequence.", "nested/lipsum-one.tex", 8, ERROR)
+        val expected = LatexLogMessage("Environment align undefined.", "./main.tex", 1, ERROR)
         testMessageExtractor(text, expected)
     }
 
     fun testPackageNotInstalledError() {
         val text = "! LaTeX Error: File `paralisy.sty' not found."
-        val expected = LatexLogMessage("File `paralisy.sty' not found.", currentFile, null, WARNING)
+        val expected = LatexLogMessage("File `paralisy.sty' not found.", currentFile, null, ERROR)
         testMessageExtractor(text, expected)
     }
 
@@ -39,8 +33,21 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
-    private fun testMessageExtractor(text: String, expected: LatexLogMessage) {
-        val real = LatexLogMessageExtractor.findMessage(text, "", currentFile) ?: return fail()
+    fun testUndefinedControlSequence() {
+        val text = """./nested/lipsum-one.tex:9: Undefined control sequence.
+        l.9 \bloop"""
+        val expected = LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR)
+        testMessageExtractor(text, expected)
+    }
+
+    fun testIncompleteUndefinedControlSequence() {
+        val text = "./nested/lipsum-one.tex:9: Undefined control sequence."
+        val expected = null
+        testMessageExtractor(text, expected, text)
+    }
+
+    private fun testMessageExtractor(text: String, expected: LatexLogMessage?, newText: String = "") {
+        val real = LatexLogMessageExtractor.findMessage(text, newText, currentFile)
         assertEquals(expected, real)
     }
 }
