@@ -8,6 +8,7 @@
 * Add support for opening files from include commands. (#1191)
 * Many more improvements to file reference resolving. (#1281)
 * Add support for a custom output or auxiliary directory. (#1201)
+* Add support for environment variables in the LaTeX run configuration. (#1289).
 * Add biblatex commands to the autocomplete. (#1195)
 * Add support for labels defined with Verbatim or lstlisting environments. (#1232)
 * Add support for \graphicspath from the graphicx package. (#1224)
@@ -19,7 +20,7 @@
 * Add inspection which checks that floating environments have a label. (#1216)
 * Add support for the import package to include files. (#1281)
 * Add inspection to check if an included package could not be found in the CTAN list. (#1230)
-* Add inspection to check if a TeX Live package is installed locally, with a quickfix to install it. (#1276)
+* Add inspection to check if a TeX Live package is installed locally, with a quickfix to install it. (#1276, #1291)
 * Use live templates for inserting braces for all required parameters of commands and environments. (#1258, #1261)
 * Make links in \url and \href commands clickable. (#1238)
 * Remove second $ of an empty inline math environment when deleting the first one. (#1227)
