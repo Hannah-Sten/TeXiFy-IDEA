@@ -38,7 +38,10 @@ id ::= comment* IDENTIFIER comment* SEPARATOR {
     methods=[getNameIdentifier getName setName]
 }
 
-tag ::= comment* key comment* ASSIGNMENT comment* content comment* { pin=2 }
+tag ::= comment* key comment* ASSIGNMENT comment* content comment* {
+    pin=2
+    methods=[getReference]
+}
 
 key ::= IDENTIFIER
 

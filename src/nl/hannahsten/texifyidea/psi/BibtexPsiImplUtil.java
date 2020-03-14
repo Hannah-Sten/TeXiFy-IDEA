@@ -103,7 +103,7 @@ public class BibtexPsiImplUtil {
      * BibtexTag
      */
 
-    public static PsiReference getReference(BibtexTag element) {
+    public static PsiReference getReference(@NotNull BibtexTag element) {
         return new BibtexTagReference(element);
     }
 }
