@@ -1,14 +1,10 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
-
 object LatexLogMessageExtractor {
     /**
      * Pre-processing to check if line is worth looking at.
-     *
-     * A line is not worth looking at when:
-     *   - it starts with "latexmk:" or "Latexmk:"
      */
     fun skip(text: String?): Boolean {
-        return text == null || PARENS_MESSAGES_TO_BE_SKIPPED.containsMatchIn(text)
+        return text == null
     }
 
     /**
@@ -19,7 +15,7 @@ object LatexLogMessageExtractor {
         // Check if we have found an error
         FILE_LINE_ERROR_REGEX.find(text)?.apply {
             val line = groups["line"]?.value?.toInt()
-            val fileName = groups["file"]?.value?.trim()
+            val fileName = groups["file"]?.value?.trim() ?: currentFile
             val message = groups["message"]?.value?.removeSuffix(newText) ?: ""
             return LatexLogMessage(message, fileName, line, LatexLogMessageType.ERROR)
         }
@@ -33,6 +29,7 @@ object LatexLogMessageExtractor {
     }
 
     /*
+    Can be useful. TODO remove when done
     re_loghead    = re.compile("This is [0-9a-zA-Z-]*(TeX|Omega)")
 re_rerun      = re.compile("LaTeX Warning:.*Rerun")
 re_file       = re.compile("(\\((?P<file>[^ \n\t(){}]*)|\\))")
@@ -47,12 +44,9 @@ re_label      = re.compile("LaTeX Warning: (?P<text>Label .*)$")
 re_warning    = re.compile("(LaTeX|Package)( (?P<pkg>.*))? Warning: (?P<text>.*)$")
 re_online     = re.compile("(; reported)? on input line (?P<line>[0-9]*)")
 re_ignored    = re.compile("; all text was ignored after line (?P<line>[0-9]*).$")
-
      */
-    private val FILE_LINE_ERROR_REGEX = """^(?<file>.+)?:(?<line>\d+): (?<message>.+)$""".toRegex()
 
-    private val PARENS_MESSAGES_TO_BE_SKIPPED =
-            """(This is [0-9a-zA-Z-]*(TeX|Omega))|(Please \(re\)run)|(\(\w*\))|(Latexmk: Summary of warnings from last run of \(pdf\)latex:)|(Collected error summary \(may duplicate other messages\):)|(Latex failed to resolve \d+ reference\(s\))|(Latex failed to resolve \d+ citation\(s\))|(\(see the transcript file for additional information\))""".toRegex()
+    private val FILE_LINE_ERROR_REGEX = """^(?<file>.+)?:(?<line>\d+): (?<message>.+)$""".toRegex()
 
     private val TEX_MISC_WARNINGS = listOf(
             "LaTeX Warning: ",

@@ -200,17 +200,17 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
                 LatexLogMessage("Citation 'DBLP.books.daglib.0076726' on page 1 undefined", "main.tex", 6, WARNING),
-                LatexLogMessage("Environment align undefined.", "math.tex", 6, ERROR),
-                LatexLogMessage("\\begin{document} ended by \\end{align}", "math.tex", 8, ERROR),
-                LatexLogMessage("Reference `fig:bla' on page 1 undefined", "math.tex", 9, WARNING),
-                LatexLogMessage("Environment align undefined.", "main.tex", 8, ERROR),
-                LatexLogMessage("Missing $ inserted.", "main.tex", 9, WARNING),
-                LatexLogMessage("\\begin{document} ended by \\end{align}", "math.tex", 10, ERROR),
-                LatexLogMessage("Missing $ inserted.", "main.tex", 10, ERROR),
-                LatexLogMessage("Reference `test' on page 1 undefined", "lipsum.tex", 3, WARNING),
-                LatexLogMessage("Environment lstlisting undefined.", "lipsum.tex", 10, ERROR),
-                LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "lipsum.tex", 12, ERROR),
-                LatexLogMessage("Undefined control sequence.", "nested/lipsum-one.tex", 8, ERROR),
+                LatexLogMessage("Environment align undefined.", "math.tex", 7, ERROR),
+                LatexLogMessage("\\begin{document} ended by \\end{align}", "math.tex", 9, ERROR),
+                LatexLogMessage("Reference `fig:bla' on page 1 undefined", "math.tex", 10, WARNING),
+                LatexLogMessage("Environment align undefined.", "main.tex", 9, ERROR),
+                LatexLogMessage("Missing $ inserted.", "main.tex", 10, WARNING),
+                LatexLogMessage("\\begin{document} ended by \\end{align}.", "main.tex", 11, ERROR),
+                LatexLogMessage("Missing $ inserted.", "main.tex", 11, ERROR),
+                LatexLogMessage("Reference `test' on page 1 undefined", "lipsum.tex", 4, WARNING),
+                LatexLogMessage("Environment lstlisting undefined.", "lipsum.tex", 11, ERROR),
+                LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "lipsum.tex", 13, ERROR),
+                LatexLogMessage("Undefined control sequence.", "lipsum-one.tex", 9, ERROR),
                 LatexLogMessage("There were undefined references.", "main.tex", null, WARNING),
                 LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", null, WARNING)
         )

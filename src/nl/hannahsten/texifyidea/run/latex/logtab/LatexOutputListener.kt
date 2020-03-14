@@ -25,7 +25,6 @@ class LatexOutputListener(
     val window = CircularFifoBuffer(2)
 
     var isCollectingMessage = false
-    var isLatexmk = false
     var currentMessageText: String? = null
     // Stack with the filenames, where the first is the current file.
     var fileStack = LatexFileStack()
