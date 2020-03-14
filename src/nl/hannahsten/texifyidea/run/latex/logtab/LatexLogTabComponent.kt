@@ -18,12 +18,13 @@ import javax.swing.JComponent
  */
 class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
-    private val listModel = mutableListOf<LatexLogMessage>()
+    private val latexMessageList = mutableListOf<LatexLogMessage>()
+    private val bibtexMessageList = mutableListOf<LatexLogMessage>()
     private val treeView = LatexCompileMessageTreeView(project)
 
     init {
         add(treeView, BorderLayout.CENTER)
-        startedProcess.addProcessListener(LatexOutputListener(project, mainFile, listModel, treeView), this)
+        startedProcess.addProcessListener(LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView), this)
     }
 
     override fun getTabTitle() = "Log messages"

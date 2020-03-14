@@ -101,6 +101,8 @@ class LatexOutputListener(
      */
     private fun addOrCollectMessage(newText: String, logMessage: LatexLogMessage) {
         logMessage.apply {
+            if (message.isEmpty()) return
+            
             if (message.length >= lineWidth) {
                 // Keep on collecting output for this message
                 currentMessageText = message

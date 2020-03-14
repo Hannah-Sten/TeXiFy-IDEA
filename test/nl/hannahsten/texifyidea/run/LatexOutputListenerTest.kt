@@ -191,9 +191,10 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val srcRoot = myFixture.copyDirectoryToProject("./", "./")
         val project = myFixture.project
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
-        val listModel = mutableListOf<LatexLogMessage>()
+        val latexMessageList = mutableListOf<LatexLogMessage>()
+        val bibtexMessageList = mutableListOf<LatexLogMessage>()
         val treeView = LatexCompileMessageTreeView(project)
-        val listener = LatexOutputListener(project, mainFile, listModel, treeView)
+        val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
 
         val input = logTextLatexmk.split('\n')
         input.forEach { listener.processNewText(it) }
@@ -215,6 +216,6 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", null, WARNING)
         )
 
-        assertEquals(expectedMessages, listModel.toSet())
+        assertEquals(expectedMessages, latexMessageList.toSet())
     }
 }
