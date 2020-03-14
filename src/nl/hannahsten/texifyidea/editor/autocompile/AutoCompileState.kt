@@ -69,9 +69,15 @@ object AutoCompileState {
         isCompiling = true
         hasChanged = false
 
+        // Get run configuration selected in the combobox and run that one
+        val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration
+
+        if (runConfigSettings?.configuration !is LatexRunConfiguration) {
+            Notification("AutoCompileState", "Could not auto-compile", "Please make sure you have a valid LaTeX run configuration selected.", NotificationType.WARNING).notify(null)
+            return
+        }
+
         GlobalScope.launch {
-            // Get run configuration selected in the combobox and run that one
-            val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration ?: return@launch
 
             // Changing focus would interrupt the user during typing
             (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
