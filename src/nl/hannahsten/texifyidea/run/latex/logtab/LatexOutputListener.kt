@@ -15,6 +15,7 @@ class LatexOutputListener(
         val project: Project,
         val mainFile: VirtualFile?,
         val messageList: MutableList<LatexLogMessage>,
+        val bibMessageList: MutableList<LatexLogMessage>,
         val treeView: LatexCompileMessageTreeView,
         val lineWidth: Int = 79
 ) : ProcessListener {
@@ -24,6 +25,9 @@ class LatexOutputListener(
      */
     val window = CircularFifoBuffer(2)
 
+    // For latexmk, collect the bibtex/biber messages in a separate list, so
+    // we don't lose them when resetting on each new (pdfla)tex run.
+    var isCollectingBib = false
     var isCollectingMessage = false
     var currentMessageText: String? = null
     // Stack with the filenames, where the first is the current file.
@@ -58,6 +62,8 @@ class LatexOutputListener(
             // Skip line if it is irrelevant.
             if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String) || LatexLogMessageExtractor.skip(newText)) return
 
+            resetIfNeeded(newText)
+
             // Find an error message or warning in the current text.
             val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek())
 
@@ -73,6 +79,24 @@ class LatexOutputListener(
             mainFile?.parent?.findFile(fileName ?: mainFile.name, setOf("tex"))
 
     /**
+     * Reset the tree view and the message list when starting a new run. (latexmk)
+     */
+    private fun resetIfNeeded(newText: String) {
+        """Latexmk: applying rule '(?<program>\w+)""".toRegex().apply {
+            val result = find(newText) ?: return@apply
+            if (result.groups["program"]?.value in setOf("biber", "bibtex")) {
+                isCollectingBib = true
+            }
+            else {
+                isCollectingBib = false
+                treeView.errorViewStructure.clear()
+                messageList.clear()
+                // Re-add the bib messages to the tree.
+                bibMessageList.forEach { addBibMessageToLog(it) }
+            }
+        }
+    }
+    /**
      * Keep collecting the message if necessary, otherwise add it to the log.
      */
     private fun addOrCollectMessage(newText: String, logMessage: LatexLogMessage) {
@@ -87,7 +111,8 @@ class LatexOutputListener(
                 val file = findProjectFileRelativeToMain(fileName)
 
                 if (messageList.isEmpty() || !messageList.contains(logMessage)) {
-                    addMessageToLog(message, file ?: mainFile, line
+                    if (isCollectingBib) addBibMessageToLog(logMessage)
+                    else addMessageToLog(message, file ?: mainFile, line
                             ?: 0, type)
                 }
             }
@@ -108,9 +133,13 @@ class LatexOutputListener(
     }
 
     private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 1, type: LatexLogMessageType = ERROR) {
+        messageList.add(LatexLogMessage(message, file?.name, line, type))
         // Correct the index because the treeview starts counting at line 0 instead of line 1.
         treeView.addMessage(type.category, arrayOf(message), file, line - 1, 0, null)
-        messageList.add(LatexLogMessage(message, file?.name, line, type))
+    }
+
+    private fun addBibMessageToLog(logMessage: LatexLogMessage) {
+
     }
 
     override fun processTerminated(event: ProcessEvent) {
