@@ -1,6 +1,6 @@
 :experimental:
 
-_Since 0.6.9_
+_Since b0.6.9_
 
 TeXiFy supports the use of the `\graphicspath` command from the `graphicx` package.
 You can use this to add extra directories in which graphicx will search for images.
