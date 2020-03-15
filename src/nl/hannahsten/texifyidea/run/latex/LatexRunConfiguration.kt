@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.filters.RegexpFilter
 import com.intellij.execution.impl.RunManagerImpl
@@ -68,6 +69,8 @@ class LatexRunConfiguration constructor(project: Project,
                 field = null
             }
         }
+
+    var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
@@ -173,6 +176,9 @@ class LatexRunConfiguration constructor(project: Project,
         // Read compiler arguments.
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
         compilerArguments = if (compilerArgumentsRead.isNullOrEmpty()) null else compilerArgumentsRead
+
+        // Read environment variables
+        environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
         // Read main file.
         val fileSystem = LocalFileSystem.getInstance()
@@ -290,6 +296,8 @@ class LatexRunConfiguration constructor(project: Project,
         val compilerArgsElt = Element(COMPILER_ARGUMENTS)
         compilerArgsElt.text = this.compilerArguments ?: ""
         parent.addContent(compilerArgsElt)
+
+        this.environmentVariables.writeExternal(parent)
 
         // Write main file.
         val mainFileElt = Element(MAIN_FILE)
