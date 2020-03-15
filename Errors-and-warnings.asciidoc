@@ -1,7 +1,9 @@
-This is a list of all the errors and warnings that are in Appendix B of _The Latex Companion_ <<mittelbach2004>>.
+This is a list of all the errors and warnings that are in Appendix B of _The Latex Companion_ <<mittelbach2004>>, plus some more we encountered while error/warning hunting.
 For each error/warning, we give a minimal working example, and the relevant part of the output log.
 For more info on a message, see <<mittelbach2004>>.
 Used by us for testing purposes, written down here for future reference.
+
+The logs here are when using `-file-line-error` flag when compiling.
 
 == Errors
 
@@ -20,6 +22,466 @@ Used by us for testing purposes, written down here for future reference.
 
 ----
 ./errors.tex:7: Package calc Error: `&' invalid at this point.
+----
+
+=== amsfonts: <command> allowed only in math mode
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{amsfonts}
+
+\begin{document}
+    \mathbb{A}
+\end{document}
+----
+
+----
+./errors.tex:6: LaTeX Error: \mathbb allowed only in math mode.
+----
+
+=== <name> undefined
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\renewcommand{\bloop}{nothing}
+
+\begin{document}
+    \bloop
+\end{document}
+----
+
+----
+./errors.tex:3: LaTeX Error: Command \bloop undefined.
+----
+
+=== \< in mid line
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \begin{tabbing}
+        One \= Two \\
+        1 \> \< 2 \\
+    \end{tabbing}
+\end{document}
+----
+
+----
+./errors.tex:6: LaTeX Error: \< in mid line.
+----
+
+=== A <Box> was supposed to be here
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\newcommand{\mybox}
+
+\begin{document}
+    \sbox{\mybox}{0}
+\end{document}
+----
+
+----
+./errors.tex:4: A <box> was supposed to be here.
+----
+
+=== textcomp: Accent <command> not provided by font family <name>
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{mathpazo}
+\usepackage{textcomp}
+
+\begin{document}
+    \textuparrow
+\end{document}
+----
+
+----
+./errors.tex:7: Package textcomp Error: Symbol \textuparrow not provided by
+(textcomp)                font family ppl in TS1 encoding.
+(textcomp)                Default family used instead.
+----
+
+=== Argument of <command> has an extra }
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \fbox}
+\end{document}
+----
+
+----
+./errors.tex:4: Argument of \fbox  has an extra }.
+----
+
+=== Bad \line or \vector argument
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \line(1,1){-1}
+\end{document}
+----
+
+----
+./errors.tex:4: LaTeX Error: Bad \line or \vector argument.
+----
+
+=== Bad math environment delimiter
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \]
+\end{document}
+----
+
+----
+./errors.tex:4: LaTeX Error: Bad math environment delimiter.
+----
+
+=== Bad register code (<code>)
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+hallo
+\sbox{\textwidth}{box}
+\end{document}
+----
+
+----
+./errors.tex:5: Bad register code (23592960).
+----
+
+=== \begin{<env>} ended by \end{<other env>}
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \end{centering}
+\end{document}
+----
+
+----
+./errors.tex:4: LaTeX Error: \begin{document} ended by \end{centering}.
+----
+
+=== amsmath: \begin{split} won't work here
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+    \begin{split}
+        \pi
+    \end{split}
+\end{document}
+----
+
+----
+./errors.tex:8: Package amsmath Error: \begin{split} won't work here.
+----
+
+=== Can be used only in preamble
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \begin{document}
+    \end{document}
+\end{document}
+----
+
+----
+./errors.tex:4: LaTeX Error: Can be used only in preamble.
+----
+
+=== Cannot be used in preamble
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\nocite{magic}
+
+\begin{document}
+\end{document}
+----
+
+----
+./errors.tex:3: LaTeX Error: Cannot be used in preamble.
+----
+
+=== graphicx/graphics: Cannot determine size of graphic in <file>
+Compile with pdflatex and `-output-format=dvi`
+
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{graphicx}
+
+\begin{document}
+    \includegraphics{figures/background-black-cat.jpg}
+\end{document}
+----
+
+----
+./errors.tex:6: LaTeX Error: Cannot determine size of graphic in figures/backgr
+ound-black-cat.jpg (no BoundingBox).
+----
+
+=== graphicx/graphics: Cannot include graphics of type: <ext>
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{graphicx}
+
+\begin{document}
+    \includegraphics[type=tex]{figures/background-black-cat.jpg}
+\end{document}
+----
+
+----
+./errors.tex:6: LaTeX Error: Can not include graphics of type: tex.
+----
+
+=== \caption outside float
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \caption{This is illegal.}
+\end{document}
+----
+
+----
+./errors.tex:4: LaTeX Error: \caption outside float.
+----
+
+=== Command <name> already defined
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\newcommand{\documentclass}{hahaha}
+
+\begin{document}
+\end{document}
+----
+
+----
+./errors.tex:3: LaTeX Error: Command \documentclass already defined.
+----
+
+=== Command <name> not defined as a math alphabet
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\SetMathAlphabet{\methit}{normal}{OT1}{ppl}{m}{it}
+
+\begin{document}
+    $x$
+\end{document}
+----
+
+----
+./errors.tex:3: LaTeX Error: Command `\methit' not defined as a math alphabet.
+----
+
+=== Counter too large
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\renewcommand{\theequation}{\alph{equation}}
+\setcounter{equation}{27}
+
+\begin{document}
+    \theequation
+\end{document}
+----
+
+----
+./errors.tex:6: LaTeX Error: Counter too large.
+----
+
+=== Dimension too large
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \rule{16384pt}{2pt}
+\end{document}
+----
+
+----
+./errors.tex:5: Dimension too large.
+----
+
+=== amsmath: \displaybreak cannot be applied here
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+    \[
+        \begin{aligned}
+            x \displaybreak y
+        \end{aligned}
+    \]
+\end{document}
+----
+
+----
+./errors.tex:8: Package amsmath Error: \displaybreak cannot be applied here.
+----
+
+=== graphicx/graphics: Division by 0
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{graphicx}
+
+\begin{document}
+    \includegraphics[angle=-90,height=3cm]{figures/background-black-cat.jpg}
+\end{document}
+----
+
+----
+./errors.tex:6: Package graphics Error: Division by 0.
+----
+
+=== Double subscript
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    $x_i_2$
+\end{document}
+----
+
+----
+./errors.tex:4: Double subscript.
+l.4     $x_i_
+             2$
+----
+
+=== Encoding scheme <name> unknown
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage[15]{fontenc}
+
+\begin{document}
+    text
+\end{document}
+----
+
+----
+/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:104: Package font
+enc Error: Encoding file `15enc.def' not found.
+(fontenc)                You might have misspelt the name of the encoding.
+
+/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:105: LaTeX Error:
+ Encoding scheme `15' unknown.
+
+./errors.tex:5: LaTeX Error: Encoding scheme `15' unknown.
+----
+
+=== Environment <name> undefined
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\renewenvironment{bla}{a}{b}
+
+\begin{document}
+\end{document}
+----
+
+----
+./errors.tex:3: LaTeX Error: Environment bla undefined.
+----
+
+=== amsmath: Erroneous nesting of equation structures
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+    \begin{align}
+        \begin{align}
+            x
+        \end{align}
+    \end{align}
+\end{document}
+----
+
+----
+./errors.tex:10: Package amsmath Error: Erroneous nesting of equation structure
+s;
+(amsmath)                trying to recover with `aligned'.
+----
+
+=== Extra alignment tab has been changed to \cr
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \begin{tabular}{2}
+        1 & 2 & 3 \\
+    \end{tabular}
+\end{document}
+----
+
+----
+./errors.tex:5: Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate
+
+l.5         1 & 2 &
+                    3 \\
+----
+
+=== Extra \endgroup
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \end{centering}
+\end{document}
+----
+
+----
+./errors.tex:4: Extra \endgroup.
 ----
 
 == Warnings
