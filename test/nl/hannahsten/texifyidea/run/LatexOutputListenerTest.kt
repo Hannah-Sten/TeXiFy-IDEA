@@ -51,8 +51,22 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         (/home/abby/texlive/2019/texmf-dist/tex/latex/biblatex/cbx/numeric.cbx)
         (/home/abby/texlive/2019/texmf-dist/tex/latex/biblatex/biblatex.cfg))
         (/home/abby/texlive/2019/texmf-dist/tex/latex/biblatex/lbx/english.lbx)
-        (/home/abby/Documents/texify-test/out/main.aux)
+        (/home/abby/Documents/texify-test/out/main.aux
+        LaTeX Warning: Label `mylabel' multiply defined.
+        )
+        
+        (/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty
+        /home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:104: Package font
+        enc Error: Encoding file `15enc.def' not found.
+        (fontenc)                You might have misspelt the name of the encoding.
+        )
         No file main.bbl.
+        
+        
+        ./main.tex:5: LaTeX Error: Encoding scheme `15' unknown.
+        
+        ./main.tex:6: LaTeX Error: Cannot determine size of graphic in figures/backgr
+        ound-black-cat.jpg (no BoundingBox).
         
         LaTeX Warning: Citation 'DBLP.books.daglib.0076726' on page 1 undefined on inpu
         t line 7.
@@ -153,6 +167,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         l.13 \end{lstlisting}
                              
         ) [2] (/home/abby/Documents/texify-test/out/main.aux)
+        
+        Loose \hbox (badness 0) in paragraph at lines 9--12
+        \OT1/cmr/m/n/10 The badness of this line is 1000.
 
         LaTeX Warning: There were undefined references.
 
@@ -200,6 +217,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         input.forEach { listener.processNewText(it) }
 
         val expectedMessages = setOf(
+                LatexLogMessage("Label `mylabel' multiply defined.", "main.tex", 0, WARNING),
+                LatexLogMessage("Encoding scheme `15' unknown.", "main.tex", 5, ERROR),
+                LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "main.tex", 6, ERROR),
                 LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "main.tex", 7, WARNING),
                 LatexLogMessage("Environment align undefined.", "math.tex", 7, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{align}.", "math.tex", 9, ERROR),
@@ -212,6 +232,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("Undefined control sequence. \\bloop", "lipsum-one.tex", 9, ERROR),
                 LatexLogMessage("Environment lstlisting undefined.", "lipsum.tex", 11, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "lipsum.tex", 13, ERROR),
+                LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12 \\OT1/cmr/m/n/10 The badness of this line is 1000.", "main.tex", 0, WARNING),
                 LatexLogMessage("There were undefined references.", "main.tex", 0, WARNING),
                 LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", 0, WARNING),
                 LatexLogMessage("biblatex: Please (re)run Biber on the file: main", "main.tex", 0, WARNING)
