@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.psi
 
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.SimpleFileReference
 import nl.hannahsten.texifyidea.util.Magic
@@ -17,16 +18,17 @@ fun getReferences(element: BibtexTag): Array<PsiReference> {
     for (part in contentParts) {
         // Possible split on : (maybe not necessary)
         val partSplit = part.split(":")
-        val filePath = if (partSplit.size > 1) {
+        if (partSplit.size > 1) {
             // Assume we are in Medeley format
-            "/" + partSplit[1] // todo what does it generate on Windows
-            // todo problem: now simplefilereference can't find the path in the element text
+            val filePath = "/" + partSplit[1] // todo what does it generate on Windows
+            val textRange = TextRange.from(element.text.indexOf(partSplit[1]), filePath.length)
+            references.add(SimpleFileReference(element, filePath, textRange))
         }
         else {
             // Assume we already have the filepath
-            partSplit[0]
+            val filePath = partSplit[0]
+            references.add(SimpleFileReference(element, filePath))
         }
-        references.add(SimpleFileReference(element, filePath))
     }
 
     return references.toTypedArray()

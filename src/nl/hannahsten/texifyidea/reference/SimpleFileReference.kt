@@ -9,11 +9,12 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
  * Assuming the given PsiElement contains the filePath (absolute or relative), this is a reference to the file.
+ * If textRange is given that will be used, otherwise the range of filePath will be used.
  */
-class SimpleFileReference(fileReference: PsiElement, val filePath: String) : PsiReferenceBase<PsiElement>(fileReference) {
+class SimpleFileReference(fileReference: PsiElement, val filePath: String, val textRange: TextRange? = null) : PsiReferenceBase<PsiElement>(fileReference) {
 
     init {
-        rangeInElement = TextRange.from(element.text.indexOf(filePath), filePath.length)
+        rangeInElement = textRange ?: TextRange.from(element.text.indexOf(filePath), filePath.length)
     }
 
     override fun resolve(): PsiFile? {
