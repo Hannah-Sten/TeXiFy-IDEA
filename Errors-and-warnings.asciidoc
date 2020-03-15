@@ -1,0 +1,21 @@
+== Errors
+
+=== calc: `<character>' invalid at this point.
+
+[source,latex,linenums]
+----
+\docmentclass{article}
+
+\usepackage{calc}
+
+\newcounter{error}
+\setcounter{error}{3}
+\setcounter{error}{\value{error} & 2}
+----
+
+[source, log]
+----
+./errors.tex:7: Package calc Error: `&' invalid at this point.
+----
+
+== Warnings
