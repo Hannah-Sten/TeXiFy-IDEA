@@ -39,7 +39,7 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
             for (i in command.requiredParameters.indices) {
 
                 // Find the corresponding requiredArgument
-                val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.last { it is RequiredFileArgument }
+                val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull() ?: continue
 
                 // Check if the actual argument is a file argument or continue with the next argument
                 val fileArgument = requiredArgument as? RequiredFileArgument ?: continue

@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.filters.RegexpFilter
 import com.intellij.execution.impl.RunManagerImpl
@@ -69,6 +70,8 @@ class LatexRunConfiguration constructor(project: Project,
             }
         }
 
+    var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
+
     var mainFile: VirtualFile? = null
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
@@ -76,6 +79,17 @@ class LatexRunConfiguration constructor(project: Project,
 
     /** Path to the directory containing the output files. */
     var outputPath: VirtualFile? = null
+    get() {
+        // When the user modifies the run configuration template, then this variable will magically be replaced with the
+        // path to the /bin folder of IntelliJ, without the setter being called.
+        return if (field?.path?.endsWith("/bin") == true) {
+            field = null
+            field
+        }
+        else {
+            field
+        }
+    }
     /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null
 
@@ -173,6 +187,9 @@ class LatexRunConfiguration constructor(project: Project,
         // Read compiler arguments.
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
         compilerArguments = if (compilerArgumentsRead.isNullOrEmpty()) null else compilerArgumentsRead
+
+        // Read environment variables
+        environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
         // Read main file.
         val fileSystem = LocalFileSystem.getInstance()
@@ -290,6 +307,8 @@ class LatexRunConfiguration constructor(project: Project,
         val compilerArgsElt = Element(COMPILER_ARGUMENTS)
         compilerArgsElt.text = this.compilerArguments ?: ""
         parent.addContent(compilerArgsElt)
+
+        this.environmentVariables.writeExternal(parent)
 
         // Write main file.
         val mainFileElt = Element(MAIN_FILE)
@@ -435,11 +454,17 @@ class LatexRunConfiguration constructor(project: Project,
      * @return The auxil folder when MiKTeX used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return when {
+        val auxilDir = when {
             auxilPath != null && LatexDistribution.isMiktex -> auxilPath
             outputPath != null -> outputPath
             mainFile != null -> mainFile?.parent
             else -> null
+        }
+        return if (auxilDir?.path?.endsWith("/bin") == true) {
+            mainFile?.parent
+        }
+        else {
+            auxilDir
         }
     }
 

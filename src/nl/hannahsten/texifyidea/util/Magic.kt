@@ -656,6 +656,11 @@ object Magic {
          */
         // Actually run.xml should be included (latexmk) but file extensions with a dot are not found currently, see Utils#File.extension
         val generatedFileTypes = auxiliaryFileTypes + arrayOf("blg", "dvi", "fdb_latexmk", "ilg", "log", "out.ps", "pdf", "xml", "sagetex.sage", "sagetex.scmd", "sagetex.sout", "synctex", "gz", "synctex(busy)", "upa", "doctest.sage", "xdv")
+
+        /**
+         * All bibtex keys which have a reference to a (local) file in the content.
+         */
+        val bibtexFileKeys = setOf("bibsource", "file")
     }
 
     /**
