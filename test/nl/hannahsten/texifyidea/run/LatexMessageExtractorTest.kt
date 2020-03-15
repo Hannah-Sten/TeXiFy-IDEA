@@ -22,8 +22,8 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun testPackageWarning() {
-        val text = "Package biblatex Warning: Please (re)run Biber on the file:"
-        val expected = LatexLogMessage("Package biblatex Warning: Please (re)run Biber on the file:", currentFile, null, WARNING)
+        val text = "Package biblatex Warning: Please (re)run Biber on the file:(biblatex)     main"
+        val expected = LatexLogMessage("biblatex: Please (re)run Biber on the file: main", currentFile, null, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -44,6 +44,12 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         val text = "./nested/lipsum-one.tex:9: Undefined control sequence."
         val expected = null
         testMessageExtractor(text, expected, text)
+    }
+
+    fun testReferenceOnLine() {
+        val text = "LaTeX Warning: Reference `fig:bla' on page 1 undefined on input line 10."
+        val expected = LatexLogMessage("Reference `fig:bla' undefined", currentFile, 10, WARNING)
+        testMessageExtractor(text, expected)
     }
 
     private fun testMessageExtractor(text: String, expected: LatexLogMessage?, newText: String = "") {

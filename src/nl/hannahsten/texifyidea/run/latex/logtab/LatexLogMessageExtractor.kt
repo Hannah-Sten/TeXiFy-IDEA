@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
-import nl.hannahsten.texifyidea.run.latex.logtab.messagefinders.LatexFileLineErrorHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.messagefinders.LatexUndefinedControlSequenceHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.*
 import nl.hannahsten.texifyidea.util.removeAll
 
 object LatexLogMessageExtractor {
@@ -9,7 +8,7 @@ object LatexLogMessageExtractor {
      * Pre-processing to check if line is worth looking at.
      */
     fun skip(text: String?): Boolean {
-        return text == null
+        return text.isNullOrBlank()
     }
 
     /**
@@ -19,6 +18,7 @@ object LatexLogMessageExtractor {
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         val specialErrorHandlersList = listOf(LatexUndefinedControlSequenceHandler)
+        val specialWarningHandlersList = listOf(LatexRerunBibtexWarningHandler, LatexPackageWarningHandler, LatexReferenceCitationWarningHandler)
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach {
@@ -29,13 +29,18 @@ object LatexLogMessageExtractor {
         // because other errors might need the two lines, and would be
         // (partly) duplicated in the log if we allow the fallback to inspect
         // the two lines (or just the first).
-        if (LatexFileLineErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText))}) {
-            return LatexFileLineErrorHandler.findMessage(text, newText, currentFile)
+        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText))}) {
+            return LatexErrorHandler.findMessage(text, newText, currentFile)
+        }
+
+        // Look for errors that need special treatment.
+        specialWarningHandlersList.forEach {
+            if(it.regex.any { it.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
         }
 
         // Check if we have found a warning
-        if (TEX_MISC_WARNINGS.any { text.startsWith(it) }) {
-            return LatexLogMessage(text.removeSuffix(newText).removeAll("LaTeX Warning:").trim(), fileName = currentFile, type = LatexLogMessageType.WARNING)
+        if (LatexMessageHandler.TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
+            return LatexLogMessage(text.removeAll("LaTeX Warning:").trim(), fileName = currentFile, type = LatexLogMessageType.WARNING)
         }
 
         return null
@@ -58,29 +63,4 @@ re_warning    = re.compile("(LaTeX|Package)( (?P<pkg>.*))? Warning: (?P<text>.*)
 re_online     = re.compile("(; reported)? on input line (?P<line>[0-9]*)")
 re_ignored    = re.compile("; all text was ignored after line (?P<line>[0-9]*).$")
      */
-
-    private val FILE_LINE_ERROR_REGEX = """^(?<file>.+)?:(?<line>\d+): (?<message>.+)$""".toRegex()
-
-    private val TEX_MISC_WARNINGS = listOf(
-            "LaTeX Warning: ",
-            "LaTeX Font Warning: ",
-            "AVAIL list clobbered at",
-            "Citation",
-            "Double-AVAIL list clobbered at",
-            "Doubly free location at",
-            "Bad flag at",
-            "Runaway definition",
-            "Runaway argument",
-            "Runaway text",
-            "Missing character: There is no",
-            "No pages of output.",
-            "Underfull \\hbox",
-            "Overfull \\hbox",
-            "Loose \\hbox",
-            "Tight \\hbox",
-            "Underfull \\vbox",
-            "Overfull \\vbox",
-            "Loose \\vbox",
-            "Tight \\vbox"
-    )
 }

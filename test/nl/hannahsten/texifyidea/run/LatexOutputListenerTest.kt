@@ -200,20 +200,21 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         input.forEach { listener.processNewText(it) }
 
         val expectedMessages = setOf(
-                LatexLogMessage("Citation 'DBLP.books.daglib.0076726' on page 1 undefined", "main.tex", 6, WARNING),
+                LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "main.tex", 7, WARNING),
                 LatexLogMessage("Environment align undefined.", "math.tex", 7, ERROR),
-                LatexLogMessage("\\begin{document} ended by \\end{align}", "math.tex", 9, ERROR),
-                LatexLogMessage("Reference `fig:bla' on page 1 undefined", "math.tex", 10, WARNING),
+                LatexLogMessage("\\begin{document} ended by \\end{align}.", "math.tex", 9, ERROR),
+                LatexLogMessage("Reference `fig:bla' undefined", "math.tex", 10, WARNING),
                 LatexLogMessage("Environment align undefined.", "main.tex", 9, ERROR),
-                LatexLogMessage("Missing $ inserted.", "main.tex", 10, WARNING),
+                LatexLogMessage("Missing $ inserted.", "main.tex", 10, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{align}.", "main.tex", 11, ERROR),
                 LatexLogMessage("Missing $ inserted.", "main.tex", 11, ERROR),
-                LatexLogMessage("Reference `test' on page 1 undefined", "lipsum.tex", 4, WARNING),
+                LatexLogMessage("Reference `test' undefined", "lipsum.tex", 4, WARNING),
+                LatexLogMessage("Undefined control sequence. \\bloop", "lipsum-one.tex", 9, ERROR),
                 LatexLogMessage("Environment lstlisting undefined.", "lipsum.tex", 11, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "lipsum.tex", 13, ERROR),
-                LatexLogMessage("Undefined control sequence. \\bloop", "lipsum-one.tex", 9, ERROR),
                 LatexLogMessage("There were undefined references.", "main.tex", 0, WARNING),
-                LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", 0, WARNING)
+                LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", 0, WARNING),
+                LatexLogMessage("biblatex: Please (re)run Biber on the file: main", "main.tex", 0, WARNING)
         )
 
         assertEquals(expectedMessages, latexMessageList.toSet())

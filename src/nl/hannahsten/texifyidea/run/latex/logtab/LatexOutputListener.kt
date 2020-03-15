@@ -60,12 +60,17 @@ class LatexOutputListener(
         }
         else {
             // Skip line if it is irrelevant.
-            if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String) || LatexLogMessageExtractor.skip(newText)) return
+            if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String)) {
+                // The first line might be irrelevant, but the new text could
+                // contain useful information about the file stack.
+                fileStack.update(newText)
+                return
+            }
 
             resetIfNeeded(newText)
 
             // Find an error message or warning in the current text.
-            val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek()) ?: return
+            val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek())
 
             // Check for potential file opens/closes, modify the stack accordingly.
             fileStack.update(newText)

@@ -1,12 +1,14 @@
-package nl.hannahsten.texifyidea.run.latex.logtab.messagefinders
+package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
+import nl.hannahsten.texifyidea.util.removeAll
 
-object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
-        """(^(?<file>.+)?:(?<line>\d+): (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)$)""".toRegex(),
-        """(! LaTeX Error: (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)${'$'})""".toRegex()
+object LatexErrorHandler : LatexMessageHandler(
+        LatexLogMessageType.ERROR,
+        """^$FILE_LINE_REGEX (?<message>.+)$""".toRegex(),
+        """^$LATEX_ERROR_REGEX (?<message>.+)${'$'}$""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
@@ -17,8 +19,9 @@ object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
                     Pair(null, currentFile)
                 }
 
-                val message = "${groups["message"]?.value} ${groups["command"]?.value}"
-                return LatexLogMessage(message, fileName, line, LatexLogMessageType.ERROR)
+                val message = groups["message"]?.value?.removeSuffix(newText)
+                        ?.removeAll("LaTeX Error:")?.trim() ?: ""
+                return LatexLogMessage(message, fileName, line, messageType)
             }
         }
         return null
