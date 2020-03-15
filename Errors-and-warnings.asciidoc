@@ -881,6 +881,69 @@ LaTeX Warning: There were multiply-defined labels.
 
 [source,latex,linenums]
 ----
+% https://tex.stackexchange.com/a/169245/98850
+\documentclass{article}
+
+\makeatletter
+
+\begin{document}
+\providecommand\r@foo{{1}{1}}
+\edef\@currentlabel{.\expandafter\@firstoftwo\r@foo}
+\label{foo}
+a
+
+\end{document}
+----
+
+----
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+----
+
+=== Loose \hbox (badness <number>) <somewhere>
+
+[source,latex,linenums]
+----
+% https://tex.stackexchange.com/q/496596/98850
+\documentclass{article}
+
+\begin{document}
+    \hbadness=-1 % to report the badness
+    \spaceskip.3333em \rightskip0pt plus20pt % allow only 20pt of stretchability
+    \def\text{The badness of this line is 1000.}
+    \setbox0=\hbox{\text}
+    \hsize=\wd0 \advance\hsize by 0.1pt \noindent\text\break
+    \end
+    Text.
+\end{document}
+----
+
+----
+Loose \hbox (badness 0) in paragraph at lines 9--12
+\OT1/cmr/m/n/10 The badness of this line is 1000.
+----
+
+=== Marginpar on page <number> moved
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    \marginpar{Text.} \marginpar{Text.}
+\end{document}
+----
+
+----
+LaTeX Warning: Marginpar on page 1 moved.
+
+
+LaTeX Warning: Marginpar on page 1 moved.
+----
+
+=== Missing character: There is no <char> in font <name>!
+
+[source,latex,linenums]
+----
 
 ----
 
