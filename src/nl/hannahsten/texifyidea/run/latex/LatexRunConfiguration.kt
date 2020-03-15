@@ -79,6 +79,17 @@ class LatexRunConfiguration constructor(project: Project,
 
     /** Path to the directory containing the output files. */
     var outputPath: VirtualFile? = null
+    get() {
+        // When the user modifies the run configuration template, then this variable will magically be replaced with the
+        // path to the /bin folder of IntelliJ, without the setter being called.
+        return if (field?.path?.endsWith("/bin") == true) {
+            field = null
+            field
+        }
+        else {
+            field
+        }
+    }
     /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null
 
@@ -443,11 +454,17 @@ class LatexRunConfiguration constructor(project: Project,
      * @return The auxil folder when MiKTeX used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return when {
+        val auxilDir = when {
             auxilPath != null && LatexDistribution.isMiktex -> auxilPath
             outputPath != null -> outputPath
             mainFile != null -> mainFile?.parent
             else -> null
+        }
+        return if (auxilDir?.path?.endsWith("/bin") == true) {
+            mainFile?.parent
+        }
+        else {
+            auxilDir
         }
     }
 
