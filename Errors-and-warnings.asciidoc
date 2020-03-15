@@ -18,12 +18,296 @@ Used by us for testing purposes, written down here for future reference.
 \setcounter{error}{\value{error} & 2}
 ----
 
-[source, log]
 ----
 ./errors.tex:7: Package calc Error: `&' invalid at this point.
 ----
 
 == Warnings
+
+
+
+=== Citation `<key>' on page <number> undefined
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    \cite{key}
+\end{document}
+----
+
+----
+LaTeX Warning: Citation `key' on page 1 undefined on input line 4.
+
+LaTeX Warning: There were undefined references.
+----
+
+=== Command <name> invalid in math mode
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    $ö$
+\end{document}
+----
+
+----
+
+LaTeX Warning: Command \" invalid in math mode on input line 4.
+
+./errors.tex:4: Please use \mathaccent for accents in math mode.
+\add@accent ...@spacefactor \spacefactor }\accent
+                                                  #1 #2\egroup \spacefactor ...
+l.4     $ö
+           $
+./errors.tex:4: You can't use `\spacefactor' in math mode.
+\add@accent ...}\accent #1 #2\egroup \spacefactor
+                                                  \accent@spacefactor
+l.4     $ö
+           $
+----
+
+=== Empty `thebibliography' environment
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    \begin{thebibliography}{}
+    \end{thebibliography}
+\end{document}
+----
+
+----
+LaTeX Warning: Empty `thebibliography' environment on input line 5.
+----
+
+=== (\end occurred inside a group at level <number)
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    {
+\end{document}
+----
+
+----
+(\end occurred inside a group at level 1)
+
+### simple group (level 1) entered at line 4 ({)
+### bottom level
+----
+
+=== (\end occurred when <condition> on line <line number> was incomplete)
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    \include{included}
+\end{document}
+----
+
+[source,latex,linenums]
+----
+\end{document}
+----
+
+----
+(\end occurred when \iftrue on line 4 was incomplete)
+(\end occurred when \ifnum on line 4 was incomplete)
+----
+
+=== File `<name>' already exists on the system. Not generating it from this source
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \begin{filecontents}{included.tex}
+    \end{filecontents}
+\end{document}
+----
+
+----
+LaTeX Warning: File `included.tex' already exists on the system.
+               Not generating it from this source.
+----
+
+=== Float too large for page by <value>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage{graphicx}
+\begin{document}
+    \begin{figure}
+        \begin{center}
+            \includegraphics[width=\textwidth]{fig.pdf}
+            \caption[Short caption]{Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text Long text}
+        \end{center}
+    \end{figure}
+\end{document}
+----
+
+----
+LaTeX Warning: Float too large for page by 5.92273pt on input line 9.
+----
+
+=== Font shape <font shape> in size <size> not available
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \fontsize{42pt}{50pt}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <42> not available
+(Font)              size <24.88> substituted on input line 5.
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 17.12pt have occurred.
+----
+
+=== Font shape <font shape> undefined. Using `<other shape>' instead
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \fontseries{b}\ttfamily Text.
+\end{document}
+----
+
+----
+LaTeX Font Warning: Font shape `OT1/cmtt/b/n' undefined
+(Font)              using `OT1/cmtt/m/n' instead on input line 3.
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+----
+
+=== amsmath: Foreign command <command>; \frac or \genfrac should be used instead
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+    $\primfrac{}{}$
+\end{document}
+----
+
+----
+Package amsmath Warning: Foreign command \;
+(amsmath)                \frac or \genfrac should be used instead
+(amsmath)                 on input line 4.
+----
+
+=== Form feed has been converted to Blank Line
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \begin{filecontents}{filecontents.tex}
+
+    \end{filecontents}
+\end{document}
+----
+
+----
+LaTeX Warning: Writing file `./filecontents.tex'.
+
+
+LaTeX Warning: Writing text `    ' before \end{filecontents}
+               as last line of filecontents.tex on input line 5.
+
+
+LaTeX Warning: Form Feed has been converted to Blank Line.
+----
+
+=== `h' float specifier changed to `ht'
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage{graphicx}
+\begin{document}
+    \begin{figure}[h]
+        \includegraphics{fig.pdf}
+    \end{figure}
+\end{document}
+----
+
+----
+Overfull \hbox (252.50682pt too wide) in paragraph at lines 5--6
+[][]
+
+LaTeX Warning: Float too large for page by 295.04504pt on input line 6.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+----
+
+=== Ignoring text `<text>' after \end{<env>}
+
+[source,latex,linenums]
+----
+\begin{filecontents}{filecontents2.tex}
+\end{filecontents} Text.
+\documentclass{article}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Warning: Writing file `./filecontents2.tex'.
+
+
+LaTeX Warning: Ignoring text ` Text.' after \end{filecontents} on input line 2.
+----
+
+=== Label `<key>' multiply defined
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    Text.
+    \label{mylabel}
+    Text.
+    \label{mylabel}
+\end{document}
+----
+
+----
+LaTeX Warning: Label `mylabel' multiply defined.
+
+LaTeX Warning: There were multiply-defined labels.
+----
+
+=== Label(s) may have changed. Rerun to get cross-references right
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
 
 [bibliography]
 == References
