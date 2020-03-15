@@ -1,3 +1,8 @@
+This is a list of all the errors and warnings that are in Appendix B of _The Latex Companion_ <<mittelbach2004>>.
+For each error/warning, we give a minimal working example, and the relevant part of the output log.
+For more info on a message, see <<mittelbach2004>>.
+Used by us for testing purposes, written down here for future reference.
+
 == Errors
 
 === calc: `<character>' invalid at this point.
@@ -19,3 +24,7 @@
 ----
 
 == Warnings
+
+[bibliography]
+== References
+- [[[mittelbach2004, 1]]] Frank Mittelbach, Michel Goossens, Johannes Braams, and Chris Rowley. 2004. _The Latex Companion. 2nd ed._ Boston: Addison-Wesley.
