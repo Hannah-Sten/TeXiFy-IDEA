@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.psi
 
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.SimpleFileReference
@@ -16,18 +17,24 @@ fun getReferences(element: BibtexTag): Array<PsiReference> {
     val references = mutableListOf<PsiReference>()
 
     for (part in contentParts) {
-        // Possible split on : (maybe not necessary)
-        val partSplit = part.split(":")
-        if (partSplit.size > 1) {
-            // Assume we are in Medeley format
-            val filePath = "/" + partSplit[1] // todo what does it generate on Windows
-            val textRange = TextRange.from(element.text.indexOf(partSplit[1]), filePath.length)
-            references.add(SimpleFileReference(element, filePath, textRange))
+        if (SystemInfo.isWindows) {
+            references.add(SimpleFileReference(element, part))
+            // The Mendeley format on Windows seems too inconsistent to work with, especially since the : has multiple meanings
         }
         else {
-            // Assume we already have the filepath
-            val filePath = partSplit[0]
-            references.add(SimpleFileReference(element, filePath))
+            // Possible split on : (maybe not necessary)
+            val partSplit = part.split(":")
+            if (partSplit.size > 1) {
+                // Assume we are in Mendeley format
+                val filePath = "/" + partSplit[1]
+                val textRange = TextRange.from(element.text.indexOf(partSplit[1]), filePath.length)
+                references.add(SimpleFileReference(element, filePath, textRange))
+            }
+            else {
+                // Assume we already have the filepath
+                val filePath = partSplit[0]
+                references.add(SimpleFileReference(element, filePath))
+            }
         }
     }
 

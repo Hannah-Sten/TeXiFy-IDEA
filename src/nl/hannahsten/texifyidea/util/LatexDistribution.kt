@@ -43,7 +43,8 @@ class LatexDistribution {
                 val startIndex = pdflatexVersionText.indexOf("TeX Live")
                 try {
                     pdflatexVersionText.substring(startIndex + "TeX Live ".length, startIndex + "TeX Live ".length + "2019".length).toInt()
-                } catch (e: NumberFormatException) {
+                }
+                catch (e: NumberFormatException) {
                     0
                 }
             }
@@ -64,7 +65,8 @@ class LatexDistribution {
                 proc.waitFor(10, TimeUnit.SECONDS)
                 val output = proc.inputStream.bufferedReader().readText()
                 return parsePdflatexOutput(output)
-            } catch (e: IOException) {
+            }
+            catch (e: IOException) {
                 e.printStackTrace()
             }
             return ""
@@ -79,7 +81,12 @@ class LatexDistribution {
             val splitLine = firstLine.split("(", ")")
 
             // Get one-to-last entry, as the last one will be empty after the closing )
-            return splitLine[splitLine.size - 2]
+            return if (splitLine.size >= 2) {
+                splitLine[splitLine.size - 2]
+            }
+            else {
+                ""
+            }
         }
     }
 }
