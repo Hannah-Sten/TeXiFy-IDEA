@@ -21,13 +21,7 @@ class LatexFileStack(vararg val file: String, var nonFileParCount: Int = 0) : Ar
 
         var result = fileRegex.find(line)
         var linePart = line
-        // When we find a closing par or no match, there can still be an open
-        // parenthesis somewhere on the current line (before the closing par).
-        // We want to detect this par, so we know that the next closing par does
-        // not close a file.
-        if (result == null) {
-            nonFileParCount += line.count { it == '(' }
-        }
+
         while(result != null) {
             if (linePart[result.range.first] == '(') {
                 push(result.groups["file"]?.value ?: break)
@@ -42,6 +36,13 @@ class LatexFileStack(vararg val file: String, var nonFileParCount: Int = 0) : Ar
             }
             linePart = linePart.substring(result.range.last + 1)
             result = fileRegex.find(linePart)
+        }
+        // When we find a closing par or no match, there can still be an open
+        // parenthesis somewhere on the current line (before the closing par).
+        // We want to detect this par, so we know that the next closing par does
+        // not close a file.
+        if (result == null) {
+            nonFileParCount += line.count { it == '(' }
         }
 
         return this
