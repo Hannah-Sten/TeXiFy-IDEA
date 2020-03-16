@@ -1006,6 +1006,37 @@ LaTeX Warning: Marginpar on page 1 moved.
 
 [source,latex,linenums]
 ----
+\documentclass{article}
+\tracingonline1
+\begin{document}
+    \symbol{1}
+\end{document}
+----
+
+----
+Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text
+;!
+----
+
+=== No \author given
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\title{}
+\begin{document}
+    \maketitle
+\end{document}
+----
+
+----
+LaTeX Warning: No \author given.
+----
+
+=== No auxiliary output files
+
+[source,latex,linenums]
+----
 
 ----
 
