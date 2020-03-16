@@ -7,8 +7,20 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 
 class LatexOutputListenerTester : BasePlatformTestCase() {
     val TEST_LOG = """
-        
+(main.tex
+LaTeX2e <2020-02-02> patch level 5
+L3 programming layer <2020-03-06> (test/test.cls
+Document Class: test/test 2019/12/19 test class
+ (test/package/language.sty
+) (test/package/titlepage.sty 
+)
+     ) 
+)
     """.trimIndent()
+
+    override fun getTestDataPath(): String {
+        return "test/resources/run"
+    }
 
     fun testRunLogParser() {
         val srcRoot = myFixture.copyDirectoryToProject("./", "./")
