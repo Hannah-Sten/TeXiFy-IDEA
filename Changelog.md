@@ -11,7 +11,7 @@
 * Add support for environment variables in the LaTeX run configuration. (#1289).
 * Add biblatex commands to the autocomplete. (#1195)
 * Add support for labels defined with Verbatim or lstlisting environments. (#1232)
-* Add support for \graphicspath from the graphicx package. (#1224)
+* Add support for \graphicspath from the graphicx package. (#1224, #1295)
 * Add support for using \input with absolute paths. (#1244)
 * Add a warning to update Evince when the version is too old for backwards/forward search. (#1226)
 * Add more user configurable live templates. (#1203)
@@ -34,7 +34,7 @@
 * Other performance improvements. (#1277)
 
 # Changes
-* If a file has a run configuration associated, treat it as a root file. (#1198)
+* If a file has a run configuration associated, treat it as a root file. (#1198, #1298)
 * Improve performance of line markers. (#1200)
 * Ignore \ifoot for \if-like commands. (#1220)
 * Also execute Grazie grammar checking at the beginning of sentences. (#1196)
