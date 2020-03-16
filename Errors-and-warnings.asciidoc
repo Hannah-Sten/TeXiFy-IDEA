@@ -601,6 +601,68 @@ l.4     \input{fakenews.tex}
 ----
 
 
+=== Font <name> not found
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== Font <internal-name>=<external-name> not loadable: Metric (TFM) file not found
+
+[source,latex,linenums]
+----
+% To reproduce, tlmgr remove collection-fontsrecommended
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+kpathsea: Running mktextfm ecrm1000
+/home/user/texlive/2019/texmf-dist/web2c/mktexnam: Could not map source abbreviation  for ecrm1000.
+/home/user/texlive/2019/texmf-dist/web2c/mktexnam: Need to update ?
+mktextfm: Running mf-nowin -progname=mf \mode:=ljfour; mag:=1; nonstopmode; input ecrm1000
+This is METAFONT, Version 2.7182818 (TeX Live 2019) (preloaded base=mf)
+
+kpathsea: Running mktexmf ecrm1000
+
+! I can't find file `ecrm1000'.
+<*> ...ljfour; mag:=1; nonstopmode; input ecrm1000
+
+Please type another input file name
+! Emergency stop.
+<*> ...ljfour; mag:=1; nonstopmode; input ecrm1000
+
+Transcript written on mfput.log.
+grep: ecrm1000.log: No such file or directory
+mktextfm: `mf-nowin -progname=mf \mode:=ljfour; mag:=1; nonstopmode; input ecrm1000' failed to make ecrm1000.tfm.
+kpathsea: Appending font creation commands to missfont.log.
+
+/home/user/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:105: Font T1/cm
+r/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.
+<to be read again>
+                   relax
+l.105 \fontencoding\encodingdefault\selectfont
+----
+
+=== Font <internal-name>=<external> not loaded: Not enough room left
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
 == Warnings
 
 
