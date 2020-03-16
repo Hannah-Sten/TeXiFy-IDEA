@@ -484,6 +484,123 @@ l.5         1 & 2 &
 ./errors.tex:4: Extra \endgroup.
 ----
 
+=== Extra \or
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\or
+----
+
+----
+./main.tex:3: Extra \or.
+l.3 \or
+----
+
+=== Extra \right
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    $(\right)$
+\end{document}
+----
+
+----
+./main.tex:4: Extra \right.
+l.4     $(\right)
+                 $
+----
+
+=== Extra }, or forgotten $
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    $x}$
+\end{document}
+----
+
+----
+./main.tex:4: Extra }, or forgotten $.
+l.4     $x}
+           $
+----
+
+=== Extra }, or forgotten \endgroup
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \begin{center}
+        text}
+    \end{center}
+\end{document}
+----
+
+----
+./main.tex:5: Extra }, or forgotten \endgroup.
+l.5         text}
+----
+
+=== File `<name>' not found
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \input{fakenews.tex}
+\end{document}
+----
+
+----
+! LaTeX Error: File `fakenews.tex' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: tex)
+
+Enter file name:
+./main.tex:4: Emergency stop.
+<read *>
+
+l.4     \input{fakenews.tex}
+
+./main.tex:4:  ==> Fatal error occurred, no output PDF file produced!
+----
+
+=== Float(s) lost
+[source, latex, numlines]
+----
+\documentclass{article}
+\usepackage{graphicx}
+
+\begin{document}
+    \footnote{\begin{figure}
+                  \includegraphics{figures/cat.tikz}
+    \end{figure}}
+\end{document}
+----
+
+----
+./main.tex:8: LaTeX Error: Float(s) lost.
+----
+
+=== Font family <cdp>+<family> unknown
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\DeclareFontShape{T1}{bla}{}{}{}{}
+----
+
+----
+./main.tex:3: LaTeX Error: Font family `T1+bla' unknown.
+----
+
+
 == Warnings
 
 
