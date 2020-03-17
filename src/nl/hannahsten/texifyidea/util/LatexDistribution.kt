@@ -15,6 +15,10 @@ class LatexDistribution {
             getDistribution()
         }
 
+        private val dockerImagesText: String by lazy {
+            runCommand("docker", "image", "ls")
+        }
+
         /**
          * Whether the user is using MikTeX or not.
          * This value is lazy, so only computed when first accessed, because it is unlikely that the user will change LaTeX distribution while using IntelliJ.
@@ -29,6 +33,13 @@ class LatexDistribution {
          */
         val isTexlive: Boolean by lazy {
             pdflatexVersionText.contains("TeX Live")
+        }
+
+        /**
+         * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
+         */
+        val isDockerMiktex: Boolean by lazy {
+            !isMiktex && !isTexlive && dockerImagesText.contains("miktex/miktex")
         }
 
         /**
@@ -54,8 +65,12 @@ class LatexDistribution {
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
         private fun getDistribution(): String {
+            return runCommand("pdflatex", "--version")
+        }
+
+        private fun runCommand(vararg commands: String): String {
             try {
-                val command = arrayListOf("pdflatex", "--version")
+                val command = arrayListOf(*commands)
                 val proc = ProcessBuilder(command)
                         .redirectOutput(ProcessBuilder.Redirect.PIPE)
                         .redirectError(ProcessBuilder.Redirect.PIPE)

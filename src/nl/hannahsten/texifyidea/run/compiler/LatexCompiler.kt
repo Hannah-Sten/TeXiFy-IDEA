@@ -5,6 +5,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
 
 /**
@@ -190,6 +191,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val moduleRoots = rootManager.contentSourceRoots
 
         val command = createCommand(runConfig, moduleRoot, moduleRoots)
+
+        if (LatexDistribution.isDockerMiktex) {
+            // See https://hub.docker.com/r/miktex/miktex
+            "docker volume create --name miktex".runCommand()
+
+            command.add(0, "docker run --rm -ti -v miktex:/miktex/.miktex -v $(pwd):/miktex/work -e MIKTEX_GID=$(id -g) -e MIKTEX_UID=$(id -u) miktex/miktex")
+        }
 
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->
