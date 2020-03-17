@@ -663,6 +663,214 @@ l.105 \fontencoding\encodingdefault\selectfont
 
 ----
 
+=== Font shape <font shape> not found
+[source, latex, numlines]
+----
+
+----
+
+----
+
+----
+
+=== I can't find file `<name>'
+From the LaTeX Companion:
+
+> LaTeX normally uses the error message "File `<name>' not found", which supports various user actions. However, depending on the package coding, you may get the current error instead.
+
+It seemed easier to reproduce using just TeX instead of LaTeX.
+
+[source, latex, numlines]
+----
+\input fake.tex
+\bye
+----
+
+----
+! I can't find file `fake.tex'.
+l.1 \input fake.tex
+----
+
+=== I can't write on file `<name>'
+[source, latex, numlines]
+Make the `main.aux` file read only with `chattr +i main.aux`, then compile as usual.
+
+----
+./main.tex:3: I can't write on file `main.aux'.
+\document ...ate \openout \@mainaux \jobname .aux
+                                                  \immediate \write \@mainau...
+l.3 \begin{document}
+----
+
+=== Illegal character in array arg
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \begin{tabular}{c!{--}}
+        3&4
+    \end{tabular}
+\end{document}
+----
+
+----
+./main.tex:4: LaTeX Error: Illegal character in array arg.
+----
+
+=== Illegal parameter number in definition of <command>
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\newcommand{\breakstuff}{#1}
+----
+
+----
+./main.tex:3: Illegal parameter number in definition of \breakstuff.
+<to be read again>
+                   1
+l.3 \newcommand{\breakstuff}{#1}
+----
+
+=== Illegal unit of measure (pt inserted)
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \rule{1}{3}
+\end{document}
+----
+
+----
+./main.tex:4: Illegal unit of measure (pt inserted).
+<to be read again>
+                   \relax
+l.4     \rule{1}{3}
+----
+
+=== Improper argument for math accent:
+According to <<amsmath>>, the following example should trigger this error.
+However, it triggers a bunch of other errors...
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+    $\tilde k_{\lambda_j} = P_{\tilde \mathcal{M}}$
+\end{document}
+----
+
+----
+./main.tex:7: Argument of \math@egroup has an extra }.
+<inserted text>
+                \par
+l.7 ...  \tilde k_{\lambda_j} = P_{\tilde \mathcal
+                                                  {M}}
+----
+
+Expected output <<amsmath>>:
+----
+! Package amsmath Error: Improper argument for math accent:
+(amsmath)                Extra braces must be added to
+(amsmath)                prevent wrong output.
+
+See the amsmath package documentation for explanation.
+Type  H <return>  for immediate help.
+...
+
+l.415 \tilde k_{\lambda_j} = P_{\tilde \mathcal
+                                               {M}}
+----
+
+=== Improper discretionary list
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\discretionary
+
+\begin{document}
+    hi
+\end{document}
+----
+
+----
+./main.tex:3: LaTeX Error: Missing \begin{document}.
+
+./main.tex:7: Improper discretionary list.
+<inserted text> }
+----
+
+=== Improper \hyphenation (will be flushed.)
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\hyphenation{bl\"oop-floop-gloop}
+----
+
+----
+./main.tex:3: Improper \hyphenation will be flushed.
+\leavevmode ->\unhbox
+                      \voidb@x
+l.3 \hyphenation{bl\"o
+                      op-floop-gloop}
+----
+
+=== Improper \prevdepth
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\discretionary
+
+\begin{document}
+    hi
+\end{document}
+----
+
+----
+./main.tex:7: Improper \prevdepth.
+\newpage ...everypar {}\fi \par \ifdim \prevdepth
+                                                  >\z@ \vskip -\ifdim \prevd...
+l.7 \end{document}
+----
+
+=== Improper \spacefactor
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \showthe\spacefactor
+\end{document}
+----
+
+----
+./main.tex:4: Improper \spacefactor.
+l.4     \showthe\spacefactor
+----
+
+=== \include cannot be nested
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \include{main}
+\end{document}
+----
+
+----
+./main.tex:4: LaTeX Error: \include cannot be nested.
+----
+
+
+
 == Warnings
 
 
@@ -1047,3 +1255,4 @@ LaTeX Warning: No \author given.
 [bibliography]
 == References
 - [[[mittelbach2004, 1]]] Frank Mittelbach, Michel Goossens, Johannes Braams, and Chris Rowley. 2004. _The Latex Companion. 2nd ed._ Boston: Addison-Wesley.
+- [[[amsmath, 2]]] User’s Guide for the amsmath Package. _http://mirrors.ctan.org/macros/latex/required/amsmath/amsldoc.pdf_
