@@ -869,6 +869,65 @@ l.4     \showthe\spacefactor
 ./main.tex:4: LaTeX Error: \include cannot be nested.
 ----
 
+=== Incompatible list can't be unboxed
+[source, latex, numlines]
+----
+\setbox0\vbox{}\unhbox0
+----
+
+----
+./main.tex:4: Incompatible list can't be unboxed.
+l.4     \setbox0\vbox{}\unhbox0
+----
+
+=== Incomplete <conditional>; all text was ignored after line <number>
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\newcommand{\x}{3}
+
+\begin{document}
+    \ifnum\x=3 tada \else bloop
+\end{document}
+----
+
+----
+! Incomplete \ifnum; all text was ignored after line 6.
+<inserted text>
+                \fi
+----
+
+=== Infinite glue shrinkage found in <somewhere>
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \hspace{0pt minus 1fil}
+\end{document}
+----
+
+----
+./main.tex:5: Infinite glue shrinkage found in a paragraph.
+----
+
+=== amsmath: Invalid use of <command>
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+    \intertext{tada}
+\end{document}
+----
+
+----
+./main.tex:6: Package amsmath Error: Invalid use of \intertext.
+----
+
 
 
 == Warnings
