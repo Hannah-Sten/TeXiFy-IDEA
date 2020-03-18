@@ -324,7 +324,10 @@ object Magic {
                 "\\newif",
                 "\\NewDocumentCommand",
                 "\\ProvideDocumentCommand",
-                "\\DeclareDocumentCommand"
+                "\\DeclareDocumentCommand",
+                "\\DeclarePairedDelimiter",
+                "\\DeclarePairedDelimiterX",
+                "\\DeclarePairedDelimiterXPP"
         )
 
         /**
