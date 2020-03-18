@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
+import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
@@ -129,6 +130,8 @@ enum class LatexRegularCommand(
     SCREAMING_LARGE("LARGE"),
     LATEX("LaTeX", display = "LaTeX"),
     LATEXE("LaTeXe", display = "LaTeX2ε"),
+    LBRACK("lbrack"),
+    LPAREN("lparen", dependency = MATHTOOLS),
     LDOTS("ldots", display = "…"),
     LEFTEQN("lefteqn"),
     LET("let"),
@@ -195,6 +198,8 @@ enum class LatexRegularCommand(
     PRINTBIBLIOGRAPHY("printbibliography", dependency = BIBLATEX),
     PRINTINDEX("printindex"),
     R("r", display = "˚ (accent)"),
+    RBRACK("rbrack"),
+    RPAREN("rparen", dependency = MATHTOOLS),
     REF("ref", "label".asRequired()),
     REFNAME("refname", "name".asRequired(Type.TEXT)),
     REQUIREPACKAGE("RequirePackage", "options".asOptional(), RequiredFileArgument("package", "sty")),
@@ -317,7 +322,7 @@ enum class LatexRegularCommand(
     VSPACE_STAR("vspace*", "length".asRequired()),
     WIDTH("width"),
 
-    /*
+    /**
      * New definitions
      */
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
@@ -328,6 +333,14 @@ enum class LatexRegularCommand(
     RENEWCOMMAND_STAR("renewcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWENVIRONMENT("newenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
     RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
+
+    /**
+     * mathtools definitions
+     */
+    DECLARE_PAIRED_DELIMITER("DeclarePairedDelimiter", "cmd".asRequired(), "left delimiter".asRequired(), "right delimiter".asRequired(), dependency = MATHTOOLS),
+    DECLARE_PAIRED_DELIMITER_X("DeclarePairedDelimiterX", "cmd".asRequired(), "num args".asOptional(), "left delimiter".asRequired(), "right delimiter".asRequired(), "body".asRequired(Type.TEXT), dependency = MATHTOOLS),
+    DECLARE_PAIRED_DELIMITER_XPP("DeclarePairedDelimiterXPP", "cmd".asRequired(), "num args".asOptional(), "pre code".asRequired(), "left delimiter".asRequired(), "right delimiter".asRequired(), "post code".asRequired(), "body".asRequired(Type.TEXT), dependency = MATHTOOLS),
+
 
     /**
      * Xparse definitions.
