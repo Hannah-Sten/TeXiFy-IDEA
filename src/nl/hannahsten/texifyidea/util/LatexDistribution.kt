@@ -39,7 +39,7 @@ class LatexDistribution {
          * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
          */
         val isDockerMiktex: Boolean by lazy {
-            !isMiktex && !isTexlive && dockerImagesText.contains("miktex/miktex")
+            !isMiktex && !isTexlive && dockerImagesText.contains("miktex")
         }
 
         /**
@@ -65,7 +65,7 @@ class LatexDistribution {
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
         private fun getDistribution(): String {
-            return runCommand("pdflatex", "--version")
+            return parsePdflatexOutput(runCommand("pdflatex", "--version"))
         }
 
         private fun runCommand(vararg commands: String): String {
@@ -78,8 +78,7 @@ class LatexDistribution {
 
                 // Timeout value
                 proc.waitFor(10, TimeUnit.SECONDS)
-                val output = proc.inputStream.bufferedReader().readText()
-                return parsePdflatexOutput(output)
+                return proc.inputStream.bufferedReader().readText()
             }
             catch (e: IOException) {
                 e.printStackTrace()

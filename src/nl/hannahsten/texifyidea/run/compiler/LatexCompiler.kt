@@ -24,7 +24,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -55,7 +55,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -82,7 +82,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -112,7 +112,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-no-pdf")
             }
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -196,7 +196,18 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // See https://hub.docker.com/r/miktex/miktex
             "docker volume create --name miktex".runCommand()
 
-            command.add(0, "docker run --rm -ti -v miktex:/miktex/.miktex -v $(pwd):/miktex/work -e MIKTEX_GID=$(id -g) -e MIKTEX_UID=$(id -u) miktex/miktex")
+            val parameterList = mutableListOf("docker", "run", "--rm", "-v", "miktex:/miktex/.miktex", "-v", "${mainFile.parent.path}:/miktex/work")
+
+            // Avoid mounting the mainfile parent also to /miktex/work/out,
+            // because there may be a good reason to make the output directory the same as the source directory
+            if(runConfig.outputPath != mainFile.parent) {
+                parameterList.addAll(listOf("-v", "${runConfig.outputPath?.path}:/miktex/work/out"))
+                command.add("-output-directory=/miktex/work/out")
+            }
+
+            parameterList.add("miktex/miktex")
+
+            command.addAll(0, parameterList)
         }
 
         // Custom compiler arguments specified by the user
