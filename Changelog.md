@@ -1,3 +1,10 @@
+# Beta 0.6.10
+
+# Additions
+* Add commands defined using the xparse package to the autocompletion. (#1312)
+
+A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/19?closed=1).
+
 # Beta 0.6.9
 
 # Additions
