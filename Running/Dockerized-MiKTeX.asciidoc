@@ -1,0 +1,8 @@
+When you have no TeX Live or MiKTeX installed directly on your system, but you do have a miktex docker image downloaded (it checks for 'miktex' in the output of `docker image ls`, TeXiFy assumes you want to use Dockerized MiKTeX.
+You can also turn it on in settings to always use Dockerized MiKTeX even if you have other LaTeX distributions installed.
+
+Since the official Docker image at https://hub.docker.com/r/miktex/miktex is a bit old, which can cause problems downloading new packages, we provide our own Dockerized MiKTeX via GitHub.
+You can pull it with `docker pull docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest`.
+
+You can then run your favourite LaTeX compiler like usual, and TeXify will make sure to perform the `docker run` (you can see the exact command at the top of the output log).
+Custom output directories are supported.

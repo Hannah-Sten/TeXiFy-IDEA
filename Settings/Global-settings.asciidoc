@@ -68,6 +68,11 @@ For continuous compilation of the complete document, see link:Compilers#Latexmk[
 
 image::continuous-preview.gif[Continuous preview]
 
+[#dockerized-miktex]
+== Option to always use Dockerized MiKTeX
+
+See link:Dockerized-MiKTeX[Dockerized MiKTeX].
+
 [#automatic-compilation]
 == Option to enable automatic compilation
 _Since b0.6.8_
