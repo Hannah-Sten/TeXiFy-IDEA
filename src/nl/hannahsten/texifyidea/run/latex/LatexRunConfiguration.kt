@@ -445,6 +445,27 @@ class LatexRunConfiguration constructor(project: Project,
         this.mainFile = null
     }
 
+
+    /**
+     * Try to find the virtual file, as absolute path or relative to a content root.
+     */
+    fun findVirtualFileByPath(path: String): VirtualFile? {
+        val fileSystem = LocalFileSystem.getInstance()
+
+        val file = fileSystem.findFileByPath(path)
+        if (file != null) {
+            return file
+        }
+        else {
+            // Maybe it is a relative path
+            ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
+                root.findFileByRelativePath(path)?.let { return it }
+            }
+        }
+
+        return null
+    }
+
     fun setDefaultCompiler() {
         compiler = LatexCompiler.PDFLATEX
     }
@@ -502,7 +523,7 @@ class LatexRunConfiguration constructor(project: Project,
             this.outputPath = getDefaultOutputPath()
         }
         else {
-            this.outputPath = LocalFileSystem.getInstance().findFileByPath(fileOutputPath)
+            this.outputPath = findVirtualFileByPath(fileOutputPath)
         }
     }
 
@@ -544,7 +565,7 @@ class LatexRunConfiguration constructor(project: Project,
      * Set [auxilPath]
      */
     fun setFileAuxilPath(fileAuxilPath: String) {
-        this.auxilPath = LocalFileSystem.getInstance().findFileByPath(fileAuxilPath)
+        this.auxilPath = findVirtualFileByPath(fileAuxilPath)
     }
 
     /**
