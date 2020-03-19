@@ -344,8 +344,6 @@ object Magic {
         @JvmField
         val commandDefinitions = regularCommandDefinitions + mathCommandDefinitions
 
-
-
         /**
          * All commands that define new documentclasses.
          */
@@ -716,6 +714,26 @@ object Magic {
         val packagesLoadingOtherPackages = mapOf(
                 AMSSYMB to setOf(AMSFONTS),
                 MATHTOOLS to setOf(AMSMATH)
+        )
+
+        /**
+         * Maps argument specifiers to whether they are required (true) or
+         * optional (false).
+         */
+        val xparseParamSpecifiers = mapOf(
+                'm' to true,
+                'r' to true,
+                'R' to true,
+                'v' to true,
+                'b' to true,
+                'o' to false,
+                'd' to false,
+                'O' to false,
+                'D' to false,
+                's' to false,
+                't' to false,
+                'e' to false,
+                'E' to false
         )
     }
 

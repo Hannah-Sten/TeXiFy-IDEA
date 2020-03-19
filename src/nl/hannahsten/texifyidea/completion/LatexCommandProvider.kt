@@ -198,6 +198,14 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                 (1..nrParams).joinToString("") { "{param}" }
             }
 
+            "\\NewDocumentCommand" -> {
+                val paramSpecification = commands.requiredParameters[1].removeAll("null", " ")
+                paramSpecification.map { c ->
+                    if (Magic.Package.xparseParamSpecifiers[c] ?: return "") "{param}"
+                    else "[]"
+                }.joinToString("")
+            }
+
             else -> ""
         }
     }
