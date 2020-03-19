@@ -24,7 +24,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -55,7 +55,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -82,7 +82,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -112,7 +112,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-no-pdf")
             }
 
-            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -192,7 +192,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         val command = createCommand(runConfig, moduleRoot, moduleRoots)
 
-        if (LatexDistribution.isDockerMiktex) {
+        if (LatexDistribution.isDockerMiktex()) {
             // See https://hub.docker.com/r/miktex/miktex
             "docker volume create --name miktex".runCommand()
 
@@ -205,7 +205,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-output-directory=/miktex/work/out")
             }
 
-            parameterList.add("miktex/miktex")
+            parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
 
             command.addAll(0, parameterList)
         }

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -38,9 +39,7 @@ class LatexDistribution {
         /**
          * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
          */
-        val isDockerMiktex: Boolean by lazy {
-            !isMiktex && !isTexlive && dockerImagesText.contains("miktex")
-        }
+        fun isDockerMiktex() = TexifySettings.getInstance().dockerizedMiktex || (!isMiktex && !isTexlive && dockerImagesText.contains("miktex"))
 
         /**
          * Returns year of texlive installation, 0 if it is not texlive.
