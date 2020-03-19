@@ -73,15 +73,9 @@ class LatexRunConfiguration constructor(project: Project,
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
-        private set
-
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
-
-    /** Whether the main file path was entered as a relative path, and thus should be saved as a relative path. */
-    var relativeMainFilePath = ""
-        private set
 
     /** Path to the directory containing the output files. */
     var outputPath: VirtualFile? = null
@@ -313,7 +307,7 @@ class LatexRunConfiguration constructor(project: Project,
 
         // Write main file.
         val mainFileElt = Element(MAIN_FILE)
-        mainFileElt.text = if (relativeMainFilePath.isNotEmpty()) relativeMainFilePath else mainFile?.path ?: ""
+        mainFileElt.text = mainFile?.path ?: ""
         parent.addContent(mainFileElt)
 
         // Write output path
@@ -427,22 +421,14 @@ class LatexRunConfiguration constructor(project: Project,
     }
 
     /**
-     * Set main file assuming that no relative path needs to be saved.
-     */
-    fun setMainFile(file: VirtualFile) {
-        this.mainFile = file
-        this.relativeMainFilePath = ""
-    }
-
-    /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
      */
-    fun setMainFile(filePath: String) {
+    fun setMainFile(mainFilePath: String) {
         val fileSystem = LocalFileSystem.getInstance()
-        val mainFile = fileSystem.findFileByPath(filePath)
+        // Check if the file is valid and exists
+        val mainFile = fileSystem.findFileByPath(mainFilePath)
         if (mainFile?.extension == "tex") {
-            setMainFile(mainFile)
-            return
+            this.mainFile = mainFile
         }
         else {
             // Maybe it is a relative path
