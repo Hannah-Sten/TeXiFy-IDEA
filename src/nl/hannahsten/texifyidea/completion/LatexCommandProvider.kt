@@ -171,23 +171,35 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     }
 
     private fun getTailText(commands: LatexCommands): String {
-        if ("\\newcommand" != commands.commandToken.text) {
-            return ""
-        }
-        val optional: List<String> = LinkedList(commands.optionalParameters.keys)
-        var cmdParameterCount = 0
-        if (optional.isNotEmpty()) {
-            try {
-                cmdParameterCount = optional[0].toInt()
+        return when (commands.commandToken.text) {
+            "\\newcommand" -> {
+                val optional
+                        : List<String> = LinkedList(commands.optionalParameters.keys)
+                var cmdParameterCount = 0
+                if (optional.isNotEmpty()) {
+                    try {
+                        cmdParameterCount = optional[0].toInt()
+                    } catch (ignore: NumberFormatException) {
+                    }
+                }
+                var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
+                if (cmdParameterCount > 4) {
+                    tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)"
+                }
+                tailText
             }
-            catch (ignore: NumberFormatException) {
+
+            "\\DeclarePairedDelimiter" -> "{param}"
+            "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> {
+                val optional = commands.optionalParameters.keys.first()
+                val nrParams = try {
+                    optional.toInt()
+                } catch (ignore: java.lang.NumberFormatException) { 0 }
+                (1..nrParams).joinToString("") { "{param}" }
             }
+
+            else -> ""
         }
-        var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
-        if (cmdParameterCount > 4) {
-            tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)"
-        }
-        return tailText
     }
 
     private fun getCommandName(commands: LatexCommands): String? {
