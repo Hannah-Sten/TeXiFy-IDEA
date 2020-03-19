@@ -43,7 +43,7 @@
 * Improve insertion of missing usepackage command. (#1286)
 
 # Bug fixes
-* Fixed crashes. (#1211, #1269, #1292)
+* Fixed crashes. (#1211, #1269, #1292, #1306, #1307)
 
 Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko), Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) and [@Lukas-Heiligenbrunner](https://github.com/Lukas-Heiligenbrunner) for contributing to this release.
 
