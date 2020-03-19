@@ -22,6 +22,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticDependencyCheck: JBCheckBox
     private lateinit var autoCompile: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
+    private lateinit var dockerizedMiktex: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var pdfViewer: ComboBox<String>
     private lateinit var labelDefiningCommands: TexifyConfigurableLabelCommands
@@ -43,6 +44,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
                 autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
+                dockerizedMiktex = addCheckbox("Always use Dockerized MiKTeX")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
                 add(labelDefiningCommands.getTable())
@@ -87,6 +89,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || automaticDependencyCheck.isSelected != settings.automaticDependencyCheck
                 || autoCompile.isSelected != settings.autoCompile
                 || continuousPreview.isSelected != settings.continuousPreview
+                || dockerizedMiktex.isSelected != settings.dockerizedMiktex
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
                 || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
                 || labelDefiningCommands.isModified()
@@ -99,6 +102,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticDependencyCheck = automaticDependencyCheck.isSelected
         settings.autoCompile = autoCompile.isSelected
         settings.continuousPreview = continuousPreview.isSelected
+        settings.dockerizedMiktex = dockerizedMiktex.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
         labelDefiningCommands.apply()
@@ -111,6 +115,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticDependencyCheck.isSelected = settings.automaticDependencyCheck
         autoCompile.isSelected = settings.autoCompile
         continuousPreview.isSelected = settings.continuousPreview
+        dockerizedMiktex.isSelected = settings.dockerizedMiktex
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
         pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
         labelDefiningCommands.reset()
