@@ -88,7 +88,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Reset the main file to compile.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
-        txtFile.text = runConfiguration.mainFile?.path ?: ""
+        txtFile.text = if (runConfiguration.relativeMainFilePath.isNotEmpty()) runConfiguration.relativeMainFilePath else runConfiguration.mainFile?.path ?: ""
 
         if (auxilPath != null) {
             val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
