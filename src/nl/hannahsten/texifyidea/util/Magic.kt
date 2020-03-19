@@ -313,22 +313,38 @@ object Magic {
         )
 
         /**
-         * All commands that define new commands.
+         * All commands that define regular commands.
          */
         @JvmField
-        val commandDefinitions = hashSetOf(
+        val regularCommandDefinitions = hashSetOf(
                 "\\newcommand",
                 "\\let",
                 "\\def",
-                "\\DeclareMathOperator",
                 "\\newif",
                 "\\NewDocumentCommand",
                 "\\ProvideDocumentCommand",
-                "\\DeclareDocumentCommand",
+                "\\DeclareDocumentCommand"
+        )
+
+        /**
+         * All commands that define commands that should be used exclusively
+         * in math mode.
+         */
+        @JvmField
+        val mathCommandDefinitions = hashSetOf(
+                "\\DeclareMathOperator",
                 "\\DeclarePairedDelimiter",
                 "\\DeclarePairedDelimiterX",
                 "\\DeclarePairedDelimiterXPP"
         )
+
+        /**
+         * All commands that define new commands.
+         */
+        @JvmField
+        val commandDefinitions = regularCommandDefinitions + mathCommandDefinitions
+
+
 
         /**
          * All commands that define new documentclasses.

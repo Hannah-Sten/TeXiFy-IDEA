@@ -133,7 +133,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
             if (!cmd.isDefinition() && !cmd.isEnvironmentDefinition()) {
                 continue
             }
-            if (mode !== LatexMode.MATH && "\\DeclareMathOperator" == cmd.name) {
+            if (mode !== LatexMode.MATH && cmd.name in Magic.Command.mathCommandDefinitions) {
                 continue
             }
             val cmdName = getCommandName(cmd) ?: continue
@@ -192,7 +192,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
 
     private fun getCommandName(commands: LatexCommands): String? {
         return when (commands.name) {
-            "\\DeclareMathOperator", "\\newcommand", "\\newif" -> getNewCommandName(commands)
+            in Magic.Command.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
             else -> getDefinitionName(commands)
         }
     }
