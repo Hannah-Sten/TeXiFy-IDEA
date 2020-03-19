@@ -429,14 +429,14 @@ class LatexRunConfiguration constructor(project: Project,
         val mainFile = fileSystem.findFileByPath(mainFilePath)
         if (mainFile?.extension == "tex") {
             this.mainFile = mainFile
+            return
         }
         else {
             // Maybe it is a relative path
             ProjectRootManager.getInstance(project).contentRoots.forEach {
-                val file = it.findFileByRelativePath(filePath)
+                val file = it.findFileByRelativePath(mainFilePath)
                 if (file?.extension == "tex") {
                     this.mainFile = file
-                    this.relativeMainFilePath = filePath
                     return
                 }
             }
