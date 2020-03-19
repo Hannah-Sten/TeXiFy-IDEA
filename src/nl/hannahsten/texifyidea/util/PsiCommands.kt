@@ -40,7 +40,7 @@ fun LatexCommands?.isCommandDefinition(): Boolean {
     return this != null && ("\\newcommand" == name ||
             "\\let" == name ||
             "\\def" == name ||
-            "\\DeclareMathOperator" == name ||
+            name in Magic.Command.mathCommandDefinitions ||
             "\\renewcommand" == name)
 }
 
@@ -92,7 +92,7 @@ fun LatexCommands.previousCommand(): LatexCommands? {
  * Get the name of the command that is defined by `this` command.
  */
 fun LatexCommands.definedCommandName() = when (name) {
-    "\\DeclareMathOperator", "\\newcommand" -> forcedFirstRequiredParameterAsCommand()?.name
+    in Magic.Command.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
     else -> definitionCommand()?.name
 }
 

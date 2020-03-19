@@ -40,7 +40,11 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
         // Get value.
         locationString = if (required.size > 1) {
-            required[1]
+            when(newCommand.commandToken.text) {
+                "\\newcommand" -> required[1]
+                "\\NewDocumentCommand" -> required[2]
+                else -> ""
+            }
         }
         else ""
     }

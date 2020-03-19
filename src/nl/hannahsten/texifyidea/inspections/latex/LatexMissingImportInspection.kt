@@ -105,7 +105,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                                 descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
                                 isOntheFly: Boolean) {
         val commands = file.commandsInFile()
-        for (command in commands) {
+        commandLoop@ for (command in commands) {
             val name = command.commandToken.text.substring(1)
             val latexCommands = LatexCommand.lookup(name) ?: continue
 
@@ -120,7 +120,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             // Packages included in other packages
             for (packageInclusion in Magic.Package.packagesLoadingOtherPackages) {
                 if (packageInclusion.value.intersect(dependencies.toSet()).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
-                    continue
+                    continue@commandLoop
                 }
             }
 
