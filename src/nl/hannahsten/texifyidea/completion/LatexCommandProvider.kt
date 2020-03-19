@@ -161,7 +161,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     }
 
     private fun getTypeText(commands: LatexCommands): String {
-        if ("\\newcommand" == commands.commandToken.text) {
+        if (commands.commandToken.text in Magic.Command.commandDefinitions) {
             return ""
         }
         val firstNext = commands.nextCommand() ?: return ""
