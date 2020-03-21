@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
 
 class LatexMessageExtractorTest : BasePlatformTestCase() {
-    val currentFile = "test.tex"
+    private val currentFile = "test.tex"
 
     /*
      * ERRORS
@@ -41,7 +41,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
      * WARNINGS
      */
     fun testPackageWarning() {
-        val text = "Package biblatex Warning: Please (re)run Biber on the file:(biblatex)     main"
+        val text = "Package biblatex Warning: Please (re)run Biber on the file:(biblatex) main"
         val expected = LatexLogMessage("biblatex: Please (re)run Biber on the file: main", currentFile, null, WARNING)
         testMessageExtractor(text, expected)
     }
@@ -77,32 +77,32 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun testFileAlreadyExists() {
-        val text = "LaTeX Warning: File `included.tex' already exists on the system.               Not generating it from this source."
+        val text = "LaTeX Warning: File `included.tex' already exists on the system. Not generating it from this source."
         val expected = LatexLogMessage("File `included.tex' already exists on the system. Not generating it from this source.", currentFile, null, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testFontSizeNotAvailable() {
-        val text = "LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <42> not available(Font)              size <24.88> substituted on input line 5."
+        val text = "LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <42> not available(Font) size <24.88> substituted on input line 5."
         val expected = LatexLogMessage("Font shape `OT1/cmr/m/n' in size <42> not available size <24.88> substituted", currentFile, 5, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testFontShapeUndefined() {
-        val text = "LaTeX Font Warning: Font shape `OT1/cmtt/b/n' undefined(Font)              using `OT1/cmtt/m/n' instead on input line 3."
+        val text = "LaTeX Font Warning: Font shape `OT1/cmtt/b/n' undefined(Font) using `OT1/cmtt/m/n' instead on input line 3."
         val expected = LatexLogMessage("Font shape `OT1/cmtt/b/n' undefined using `OT1/cmtt/m/n' instead", currentFile, 3, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testFileContents() {
-        val text = "LaTeX Warning: Writing text `    ' before \\end{filecontents}               as last line of filecontents.tex on input line 5."
+        val text = "LaTeX Warning: Writing text `    ' before \\end{filecontents} as last line of filecontents.tex on input line 5."
         val expected = LatexLogMessage("Writing text `    ' before \\end{filecontents} as last line of filecontents.tex", currentFile, 5, WARNING)
         testMessageExtractor(text, expected)
     }
 
-    fun testEmptyBracketRemoval() {
-        val text = "Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6[][]"
-        val expected = LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", currentFile, null, WARNING)
+    fun testMissingCharacter() {
+        val text = "Missing character: There is no in font !"
+        val expected = LatexLogMessage("Missing character: There is no in font !", currentFile, null, WARNING)
         testMessageExtractor(text, expected)
     }
 

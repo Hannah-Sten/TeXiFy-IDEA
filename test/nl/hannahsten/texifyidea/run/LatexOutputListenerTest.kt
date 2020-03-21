@@ -59,6 +59,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         /home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:104: Package font
         enc Error: Encoding file `15enc.def' not found.
         (fontenc)                You might have misspelt the name of the encoding.
+        /home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:105: Font T1/cmr/
+        m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.
         )
         No file main.bbl.
         
@@ -74,6 +76,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         (./math.tex
 
         ./math.tex:7: LaTeX Error: Environment align undefined.
+        
+        Overfull \hbox (252.50682pt too wide) in paragraph at lines 5--6
+        [][]
 
         Latexmk: Non-existent bbl file '/home/abby/Documents/texify-test/out/main.bbl'
          No file main.bbl.
@@ -217,8 +222,11 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         input.forEach { listener.processNewText(it) }
 
         val expectedMessages = setOf(
+                LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "main.tex", 0, ERROR),
+                LatexLogMessage("fontenc: Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "main.tex", 0, ERROR),
                 LatexLogMessage("Label `mylabel' multiply defined.", "main.tex", 0, WARNING),
                 LatexLogMessage("Encoding scheme `15' unknown.", "main.tex", 5, ERROR),
+                LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "main.tex", 5, WARNING),
                 LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "main.tex", 6, ERROR),
                 LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "main.tex", 7, WARNING),
                 LatexLogMessage("Environment align undefined.", "math.tex", 7, ERROR),
@@ -240,4 +248,5 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         assertEquals(expectedMessages, latexMessageList.toSet())
     }
+
 }

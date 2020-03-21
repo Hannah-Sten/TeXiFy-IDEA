@@ -1,8 +1,10 @@
-package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers
+package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.FILE_LINE_REGEX
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LATEX_ERROR_REGEX
 
 object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
         LatexLogMessageType.ERROR,

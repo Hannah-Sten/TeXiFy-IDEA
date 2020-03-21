@@ -1,6 +1,11 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
-import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.*
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.TEX_MISC_WARNINGS
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexPackageWarningHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexReferenceCitationWarningHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexRerunBibtexWarningHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexUndefinedControlSequenceHandler
 import nl.hannahsten.texifyidea.util.removeAll
 
 object LatexLogMessageExtractor {
@@ -39,7 +44,7 @@ object LatexLogMessageExtractor {
         }
 
         // Check if we have found a warning
-        if (LatexMessageHandler.TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
+        if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
             return LatexLogMessage(text.removeAll("LaTeX Warning:").trim(), fileName = currentFile, type = LatexLogMessageType.WARNING)
         }
 
