@@ -4,7 +4,6 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexPackageWarningHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexReferenceCitationWarningHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexRerunBibtexWarningHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexUndefinedControlSequenceHandler
 import nl.hannahsten.texifyidea.util.removeAll
 
@@ -23,7 +22,7 @@ object LatexLogMessageExtractor {
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         val specialErrorHandlersList = listOf(LatexUndefinedControlSequenceHandler)
-        val specialWarningHandlersList = listOf(LatexRerunBibtexWarningHandler, LatexPackageWarningHandler, LatexReferenceCitationWarningHandler)
+        val specialWarningHandlersList = listOf(LatexPackageWarningHandler, LatexPackageWarningHandler, LatexReferenceCitationWarningHandler)
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach {
@@ -40,7 +39,7 @@ object LatexLogMessageExtractor {
 
         // Look for errors that need special treatment.
         specialWarningHandlersList.forEach {
-            if(it.regex.any { it.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
+            if(it.regex.any { r -> r.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
         }
 
         // Check if we have found a warning
