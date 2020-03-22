@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -13,6 +14,10 @@ class LatexDistribution {
 
         private val pdflatexVersionText: String by lazy {
             getDistribution()
+        }
+
+        private val dockerImagesText: String by lazy {
+            runCommand("docker", "image", "ls")
         }
 
         /**
@@ -30,6 +35,11 @@ class LatexDistribution {
         val isTexlive: Boolean by lazy {
             pdflatexVersionText.contains("TeX Live")
         }
+
+        /**
+         * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
+         */
+        fun isDockerMiktex() = TexifySettings.getInstance().dockerizedMiktex || (!isMiktex && !isTexlive && dockerImagesText.contains("miktex"))
 
         /**
          * Returns year of texlive installation, 0 if it is not texlive.
@@ -54,8 +64,12 @@ class LatexDistribution {
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
         private fun getDistribution(): String {
+            return parsePdflatexOutput(runCommand("pdflatex", "--version"))
+        }
+
+        private fun runCommand(vararg commands: String): String {
             try {
-                val command = arrayListOf("pdflatex", "--version")
+                val command = arrayListOf(*commands)
                 val proc = ProcessBuilder(command)
                         .redirectOutput(ProcessBuilder.Redirect.PIPE)
                         .redirectError(ProcessBuilder.Redirect.PIPE)
@@ -63,8 +77,7 @@ class LatexDistribution {
 
                 // Timeout value
                 proc.waitFor(10, TimeUnit.SECONDS)
-                val output = proc.inputStream.bufferedReader().readText()
-                return parsePdflatexOutput(output)
+                return proc.inputStream.bufferedReader().readText()
             }
             catch (e: IOException) {
                 e.printStackTrace()

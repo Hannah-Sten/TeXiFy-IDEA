@@ -192,15 +192,10 @@ class LatexRunConfiguration constructor(project: Project,
         environmentVariables = EnvironmentVariablesData.readExternal(parent)
 
         // Read main file.
-        val fileSystem = LocalFileSystem.getInstance()
         val filePath = parent.getChildText(MAIN_FILE)
-        val mainFile = fileSystem.findFileByPath(filePath)
-        if (mainFile?.extension == "tex") {
-            this.mainFile = mainFile
-        }
-        else {
-            this.mainFile = null
-        }
+        setMainFile(filePath)
+
+        val fileSystem = LocalFileSystem.getInstance()
 
         // Read output path
         val outputPathString = parent.getChildText(OUTPUT_PATH)
@@ -434,10 +429,41 @@ class LatexRunConfiguration constructor(project: Project,
         val mainFile = fileSystem.findFileByPath(mainFilePath)
         if (mainFile?.extension == "tex") {
             this.mainFile = mainFile
+            return
         }
         else {
-            this.mainFile = null
+            // Maybe it is a relative path
+            ProjectRootManager.getInstance(project).contentRoots.forEach {
+                val file = it.findFileByRelativePath(mainFilePath)
+                if (file?.extension == "tex") {
+                    this.mainFile = file
+                    return
+                }
+            }
         }
+
+        this.mainFile = null
+    }
+
+
+    /**
+     * Try to find the virtual file, as absolute path or relative to a content root.
+     */
+    fun findVirtualFileByPath(path: String): VirtualFile? {
+        val fileSystem = LocalFileSystem.getInstance()
+
+        val file = fileSystem.findFileByPath(path)
+        if (file != null) {
+            return file
+        }
+        else {
+            // Maybe it is a relative path
+            ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
+                root.findFileByRelativePath(path)?.let { return it }
+            }
+        }
+
+        return null
     }
 
     fun setDefaultCompiler() {
@@ -497,7 +523,7 @@ class LatexRunConfiguration constructor(project: Project,
             this.outputPath = getDefaultOutputPath()
         }
         else {
-            this.outputPath = LocalFileSystem.getInstance().findFileByPath(fileOutputPath)
+            this.outputPath = findVirtualFileByPath(fileOutputPath)
         }
     }
 
@@ -539,7 +565,7 @@ class LatexRunConfiguration constructor(project: Project,
      * Set [auxilPath]
      */
     fun setFileAuxilPath(fileAuxilPath: String) {
-        this.auxilPath = LocalFileSystem.getInstance().findFileByPath(fileAuxilPath)
+        this.auxilPath = findVirtualFileByPath(fileAuxilPath)
     }
 
     /**

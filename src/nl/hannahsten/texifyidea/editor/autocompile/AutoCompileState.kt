@@ -70,6 +70,7 @@ object AutoCompileState {
         hasChanged = false
 
         // Get run configuration selected in the combobox and run that one
+        if (project!!.isDisposed) return
         val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration
 
         if (runConfigSettings?.configuration !is LatexRunConfiguration) {

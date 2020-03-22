@@ -313,19 +313,36 @@ object Magic {
         )
 
         /**
-         * All commands that define new commands.
+         * All commands that define regular commands.
          */
         @JvmField
-        val commandDefinitions = hashSetOf(
+        val regularCommandDefinitions = hashSetOf(
                 "\\newcommand",
                 "\\let",
                 "\\def",
-                "\\DeclareMathOperator",
                 "\\newif",
                 "\\NewDocumentCommand",
                 "\\ProvideDocumentCommand",
                 "\\DeclareDocumentCommand"
         )
+
+        /**
+         * All commands that define commands that should be used exclusively
+         * in math mode.
+         */
+        @JvmField
+        val mathCommandDefinitions = hashSetOf(
+                "\\DeclareMathOperator",
+                "\\DeclarePairedDelimiter",
+                "\\DeclarePairedDelimiterX",
+                "\\DeclarePairedDelimiterXPP"
+        )
+
+        /**
+         * All commands that define new commands.
+         */
+        @JvmField
+        val commandDefinitions = regularCommandDefinitions + mathCommandDefinitions
 
         /**
          * All commands that define new documentclasses.
@@ -697,6 +714,26 @@ object Magic {
         val packagesLoadingOtherPackages = mapOf(
                 AMSSYMB to setOf(AMSFONTS),
                 MATHTOOLS to setOf(AMSMATH)
+        )
+
+        /**
+         * Maps argument specifiers to whether they are required (true) or
+         * optional (false).
+         */
+        val xparseParamSpecifiers = mapOf(
+                'm' to true,
+                'r' to true,
+                'R' to true,
+                'v' to true,
+                'b' to true,
+                'o' to false,
+                'd' to false,
+                'O' to false,
+                'D' to false,
+                's' to false,
+                't' to false,
+                'e' to false,
+                'E' to false
         )
     }
 

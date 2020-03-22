@@ -5,6 +5,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
 
 /**
@@ -23,7 +24,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -54,7 +55,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -81,7 +82,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -111,7 +112,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-no-pdf")
             }
 
-            if (runConfig.outputPath != null) {
+            if (runConfig.outputPath != null && !LatexDistribution.isDockerMiktex()) {
                 command.add("-output-directory=" + runConfig.outputPath?.path)
             }
 
@@ -190,6 +191,24 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val moduleRoots = rootManager.contentSourceRoots
 
         val command = createCommand(runConfig, moduleRoot, moduleRoots)
+
+        if (LatexDistribution.isDockerMiktex()) {
+            // See https://hub.docker.com/r/miktex/miktex
+            "docker volume create --name miktex".runCommand()
+
+            val parameterList = mutableListOf("docker", "run", "--rm", "-v", "miktex:/miktex/.miktex", "-v", "${mainFile.parent.path}:/miktex/work")
+
+            // Avoid mounting the mainfile parent also to /miktex/work/out,
+            // because there may be a good reason to make the output directory the same as the source directory
+            if(runConfig.outputPath != mainFile.parent) {
+                parameterList.addAll(listOf("-v", "${runConfig.outputPath?.path}:/miktex/work/out"))
+                command.add("-output-directory=/miktex/work/out")
+            }
+
+            parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
+
+            command.addAll(0, parameterList)
+        }
 
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->

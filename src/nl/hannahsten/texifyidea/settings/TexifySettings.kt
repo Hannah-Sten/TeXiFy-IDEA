@@ -31,6 +31,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticDependencyCheck = true
     var autoCompile = false
     var continuousPreview = false
+    var dockerizedMiktex = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
@@ -48,6 +49,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
                 automaticDependencyCheck = automaticDependencyCheck,
                 autoCompile = autoCompile,
                 continuousPreview = continuousPreview,
+                dockerizedMiktex = dockerizedMiktex,
                 automaticQuoteReplacement = automaticQuoteReplacement,
                 pdfViewer = pdfViewer,
                 labelCommands = labelCommands.mapValues { it.value.toSerializableString() }
@@ -61,6 +63,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         automaticDependencyCheck = state.automaticDependencyCheck
         autoCompile = state.autoCompile
         continuousPreview = state.continuousPreview
+        dockerizedMiktex = state.dockerizedMiktex
         automaticQuoteReplacement = state.automaticQuoteReplacement
         pdfViewer = state.pdfViewer
         state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }

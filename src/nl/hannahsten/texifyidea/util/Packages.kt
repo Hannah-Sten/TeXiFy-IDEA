@@ -279,7 +279,7 @@ object PackageUtils {
 }
 
 object TexLivePackages {
-    lateinit var packageList: MutableList<String>
+    var packageList: MutableList<String> = mutableListOf()
 
     /**
      * Given a package name used in \usepackage or \RequirePackage, find the
