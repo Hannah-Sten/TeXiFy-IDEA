@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.firstParentOfType
 
 /**
@@ -13,7 +14,7 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
  */
 class LatexCommandSelectioner : ExtendWordSelectionHandlerBase() {
     override fun canSelect(e: PsiElement): Boolean {
-        return e.firstParentOfType(LatexCommands::class)?.text == e.text
+        return TexifySettings.getInstance().includeBackslashInSelection && e.firstParentOfType(LatexCommands::class)?.text == e.text
     }
 
     override fun select(e: PsiElement, editorText: CharSequence, cursorOffset: Int, editor: Editor): MutableList<TextRange>? {
