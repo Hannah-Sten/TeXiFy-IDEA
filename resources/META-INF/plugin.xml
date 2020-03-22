@@ -375,6 +375,8 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
+        <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
+        <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
 
         <!-- References and refactoring -->
         <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
