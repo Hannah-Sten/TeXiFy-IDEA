@@ -19,7 +19,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.63'
+version '0.7-alpha.65'
 
 repositories {
     mavenCentral()
@@ -151,7 +151,7 @@ intellij {
     }
 
     // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    plugins = ['tanvd.grazi:201.6251.20', 'java']
+    plugins = ['tanvd.grazi:201.6487.7', 'java']
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
