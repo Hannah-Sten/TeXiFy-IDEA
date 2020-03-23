@@ -4,6 +4,7 @@
 * Add commands defined using the xparse package to the autocompletion. (#1312)
 * Add support for Dockerized MiKTeX. (#1310)
 * Add support for entering relative paths in the run configuration. (#1311)
+* Add option to include backslash in word selection. (#1316)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/19?closed=1).
 
