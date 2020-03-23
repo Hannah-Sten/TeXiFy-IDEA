@@ -1341,6 +1341,75 @@ LaTeX Warning: No \author given.
 
 [source,latex,linenums]
 ----
+\documentclass{article}
+\nofiles
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+(./errors.tex
+LaTeX2e <2019-10-01> patch level 3
+(/home/user/texlive/2019/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2019/10/25 v1.4k Standard LaTeX document class
+(/home/user/texlive/2019/texmf-dist/tex/latex/base/size10.clo))
+No auxiliary output files.
+
+No file errors.aux.
+[1] )
+----
+
+=== No characters defined by input encoding change to <name>
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== No file <name>
+
+[source,latex,linenums]
+----
+% First delete .aux file
+\documentclass{article}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+No file errors.aux.
+----
+
+=== babel: No hyphenation patterns were loaded for the language `<language>'
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage[german]{babel}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+Package babel Warning: No hyphenation patterns were preloaded for
+(babel)                the language `German (trad. orthography)' into the forma
+t.
+(babel)                Please, configure your TeX system to add them and
+(babel)                rebuild the format. Now I will use the patterns
+(babel)                preloaded for english instead on input line 58.
+----
+
+=== babel: No input encoding specified for <language> language
+
+[source,latex,linenums]
+----
 
 ----
 
