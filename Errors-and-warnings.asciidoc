@@ -928,6 +928,43 @@ l.4     \setbox0\vbox{}\unhbox0
 ./main.tex:6: Package amsmath Error: Invalid use of \intertext.
 ----
 
+=== babel: Language definition file <language>.ldf not found
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\usepackage[bla]{babel}
+
+\begin{document}
+
+\end{document}
+----
+
+----
+/home/abby/texlive/2019/texmf-dist/tex/generic/babel/babel.sty:554: Package bab
+el Error: Unknown option `bla'. Either you misspelled it
+(babel)                or the language definition file bla.ldf was not found.
+----
+
+=== Limit controls must follow a math operator
+[source, latex, numlines]
+----
+\documentclass{article}
+
+\begin{document}
+    \limits
+\end{document}
+----
+
+----
+./main.tex:4: Missing $ inserted.
+<inserted text>
+                $
+l.4     \limits
+
+./main.tex:4: Limit controls must follow a math operator.
+----
+
 
 
 == Warnings
