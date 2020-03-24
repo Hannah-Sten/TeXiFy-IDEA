@@ -1,3 +1,12 @@
+# Beta 0.6.10
+
+# Additions
+* Add commands defined using the xparse package to the autocompletion. (#1312)
+* Add support for Dockerized MiKTeX. (#1310)
+* Add support for entering relative paths in the run configuration. (#1311)
+
+A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/19?closed=1).
+
 # Beta 0.6.9
 
 # Additions
@@ -43,7 +52,7 @@
 * Improve insertion of missing usepackage command. (#1286)
 
 # Bug fixes
-* Fixed crashes. (#1211, #1269, #1292)
+* Fixed crashes. (#1211, #1269, #1292, #1306, #1307)
 
 Thanks to Niko Strijbol [(@niknetniko)](https://github.com/niknetniko), Felix Berlakovich [(@fberlakovich)](https://github.com/fberlakovich) and [@Lukas-Heiligenbrunner](https://github.com/Lukas-Heiligenbrunner) for contributing to this release.
 

@@ -68,6 +68,18 @@ For continuous compilation of the complete document, see link:Compilers#Latexmk[
 
 image::continuous-preview.gif[Continuous preview]
 
+[#dockerized-miktex]
+== Option to always use Dockerized MiKTeX
+_Since b0.6.10_
+
+See link:Dockerized-MiKTeX[Dockerized MiKTeX].
+
+[#backslash-selection]
+== Option to include the backslash when selecting a LaTeX command
+_Since b0.6.10_
+
+When enabled, selecting a LaTeX command by for example double-clicking or using kbd:[Ctrl + W] will also include the backslash in the selection.
+
 [#automatic-compilation]
 == Option to enable automatic compilation
 _Since b0.6.8_

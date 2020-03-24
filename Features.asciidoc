@@ -97,6 +97,7 @@ toc::[]
 * Custom compiler path
 * Option to choose different output formats like PDF and DVI
 * link:Run-configurations#environment-variables[Support for TEXINPUTS and environment variables in general]
+* link:Dockerized-MiKTeX[Support for Dockerized MiKTeX]
 
 == BibTeX
 
@@ -149,6 +150,8 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#dependency-check[Option to disable automatic package dependency checks]
 * link:Global-settings#automatic-compilation[Option to enable automatic compilation]
 * link:Global-settings#continuous-preview[Option to enable continuous preview of math and TikZ environments]
+* link:Global-settings#dockerized-miktex[Option to always use Dockerized MiKTeX]
+* link:Global-settings#backslash-selection[Option to include the backslash when selecting a LaTeX command]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
 * link:Global-settings#pdfviewer[Option to select default PDF viewer]
 * link:Global-settings#labeldefining-commands[Option to specify custom commands that also define a label]
