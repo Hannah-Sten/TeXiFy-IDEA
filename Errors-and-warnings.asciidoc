@@ -1410,6 +1410,66 @@ t.
 
 [source,latex,linenums]
 ----
+% Install babel-russian
+\documentclass[12pt]{article}
+
+\usepackage[english,russian]{babel}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+
+\section{Здравствуйте}
+
+Здравствуйте! Как у вас дела? Меня зовут Калеб. Как вас зовут?
+
+\end{document}
+----
+
+----
+Package babel Warning: No Cyrillic font encoding has been loaded so far.
+(babel)                A font encoding should be declared before babel.
+(babel)                Default `T2A' encoding will be loaded  on input line 74.
+----
+
+=== No positions in optional float specifier. Default added ...
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    \begin{figure}[]
+
+    \end{figure}
+\end{document}
+----
+
+----
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 5.
+----
+
+=== textcomp: Oldstyle digits unavailable for family <name>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage[warn]{textcomp}
+\begin{document}
+    \fontfamily{phv}\selectfont Arno \oldstylenums{text}
+\end{document}
+----
+
+----
+Package textcomp Warning: Oldstyle digits unavailable for family phv.
+(textcomp)                Lining digits used instead on input line 4.
+----
+
+=== Optional argument of \twocolumn too tall on page <number>
+
+[source,latex,linenums]
+----
 
 ----
 
