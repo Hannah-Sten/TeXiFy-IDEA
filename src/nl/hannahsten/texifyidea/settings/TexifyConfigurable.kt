@@ -23,6 +23,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var autoCompile: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
     private lateinit var dockerizedMiktex: JBCheckBox
+    private lateinit var includeBackslashInSelection: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var pdfViewer: ComboBox<String>
     private lateinit var labelDefiningCommands: TexifyConfigurableLabelCommands
@@ -45,6 +46,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                 dockerizedMiktex = addCheckbox("Always use Dockerized MiKTeX")
+                includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
                 add(labelDefiningCommands.getTable())
@@ -90,6 +92,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 || autoCompile.isSelected != settings.autoCompile
                 || continuousPreview.isSelected != settings.continuousPreview
                 || dockerizedMiktex.isSelected != settings.dockerizedMiktex
+                || includeBackslashInSelection.isSelected != settings.includeBackslashInSelection
                 || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
                 || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
                 || labelDefiningCommands.isModified()
@@ -103,6 +106,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.autoCompile = autoCompile.isSelected
         settings.continuousPreview = continuousPreview.isSelected
         settings.dockerizedMiktex = dockerizedMiktex.isSelected
+        settings.includeBackslashInSelection = includeBackslashInSelection.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
         labelDefiningCommands.apply()
@@ -116,6 +120,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         autoCompile.isSelected = settings.autoCompile
         continuousPreview.isSelected = settings.continuousPreview
         dockerizedMiktex.isSelected = settings.dockerizedMiktex
+        includeBackslashInSelection.isSelected = settings.includeBackslashInSelection
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
         pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
         labelDefiningCommands.reset()
