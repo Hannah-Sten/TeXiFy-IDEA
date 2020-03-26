@@ -3,11 +3,9 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Test
 
 class LatexBracketParsingTest : BasePlatformTestCase() {
 
-    @Test
     fun testBrackets() {
         @Language("Latex")
         val text = """
