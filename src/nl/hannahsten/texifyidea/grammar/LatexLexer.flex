@@ -56,7 +56,7 @@ COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 
-%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH
+%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
@@ -72,8 +72,18 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
     {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
 }
 
+<NESTED_INLINE_MATH> {
+    "$"     { yypopState(); return INLINE_MATH_END; }
+}
+
 <INLINE_MATH> {
-    "$"                         { yypopState(); return INLINE_MATH_END; }
+    "$"       { yypopState(); string.append('$'); return INLINE_MATH_END; }
+    "\text{"  { yypushState(TEXT_INSIDE_INLINE_MATH); return INLINE_MATH_END; }
+}
+
+<TEXT_INSIDE_INLINE_MATH> {
+    "$"     { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START; }
+    "}"     { yypopState(); return INLINE_MATH_START; }
 }
 
 <INLINE_MATH_LATEX> {
