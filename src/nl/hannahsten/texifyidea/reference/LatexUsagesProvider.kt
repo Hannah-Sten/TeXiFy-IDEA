@@ -35,7 +35,7 @@ class LatexUsagesProvider : FindUsagesProvider {
                         LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
                         LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH,
                         LatexTypes.INLINE_MATH, LatexTypes.NO_MATH_CONTENT,
-                        LatexTypes.GROUP, LatexTypes.OPEN_GROUP
+                        LatexTypes.GROUP, LatexTypes.OPTIONAL_PARAM
                 )
         )
     }

@@ -1,15 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -307,7 +307,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | environment | math_environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
+  // comment | environment | math_environment | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -317,11 +317,12 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
-    if (!r) r = open_group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
     if (!r) r = consumeToken(b, M_OPEN_BRACKET);
     if (!r) r = consumeToken(b, M_CLOSE_BRACKET);
+    if (!r) r = consumeToken(b, OPEN_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_BRACKET);
     if (!r) r = normal_text(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -354,40 +355,46 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACKET content* CLOSE_BRACKET
-  public static boolean open_group(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "open_group")) return false;
+  // OPEN_BRACKET optional_param_content* CLOSE_BRACKET
+  public static boolean optional_param(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, OPEN_GROUP, null);
+    Marker m = enter_section_(b, l, _NONE_, OPTIONAL_PARAM, null);
     r = consumeToken(b, OPEN_BRACKET);
     p = r; // pin = 1
-    r = r && report_error_(b, open_group_1(b, l + 1));
+    r = r && report_error_(b, optional_param_1(b, l + 1));
     r = p && consumeToken(b, CLOSE_BRACKET) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // content*
-  private static boolean open_group_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "open_group_1")) return false;
+  // optional_param_content*
+  private static boolean optional_param_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "open_group_1", c)) break;
+      if (!optional_param_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "optional_param_1", c)) break;
     }
     return true;
   }
 
   /* ********************************************************** */
-  // open_group
-  public static boolean optional_param(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "optional_param")) return false;
-    if (!nextTokenIs(b, OPEN_BRACKET)) return false;
+  // comment | environment | math_environment | commands | group | OPEN_PAREN | CLOSE_PAREN | normal_text
+  public static boolean optional_param_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_content")) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = open_group(b, l + 1);
-    exit_section_(b, m, OPTIONAL_PARAM, r);
+    Marker m = enter_section_(b, l, _NONE_, OPTIONAL_PARAM_CONTENT, "<optional param content>");
+    r = comment(b, l + 1);
+    if (!r) r = environment(b, l + 1);
+    if (!r) r = math_environment(b, l + 1);
+    if (!r) r = commands(b, l + 1);
+    if (!r) r = group(b, l + 1);
+    if (!r) r = consumeToken(b, OPEN_PAREN);
+    if (!r) r = consumeToken(b, CLOSE_PAREN);
+    if (!r) r = normal_text(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
