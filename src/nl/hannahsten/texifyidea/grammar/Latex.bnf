@@ -32,7 +32,9 @@
         COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\n|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
-        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$\(\)]+'
+        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()]+'
+        // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
+        COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
     ]
 }
 
@@ -42,7 +44,7 @@ latexFile ::= content*
 
 content ::= no_math_content
 
-no_math_content ::= comment | environment | math_environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
+no_math_content ::= comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
 
 normal_text ::= (NORMAL_TEXT_WORD | STAR)+ {
     methods=[getReferences getReference getNameIdentifier getName setName]

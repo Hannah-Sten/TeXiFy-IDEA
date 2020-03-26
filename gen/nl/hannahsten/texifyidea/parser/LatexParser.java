@@ -307,7 +307,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | environment | math_environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
+  // comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -315,6 +315,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = math_environment(b, l + 1);
+    if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
     if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
     if (!r) r = open_group(b, l + 1);

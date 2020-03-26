@@ -68,4 +68,10 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
     return PsiTreeUtil.getChildOfType(this, LatexOpenGroup.class);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getCommandIfnextchar() {
+    return findChildByType(COMMAND_IFNEXTCHAR);
+  }
+
 }

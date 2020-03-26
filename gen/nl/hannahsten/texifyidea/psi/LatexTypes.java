@@ -33,6 +33,7 @@ public interface LatexTypes {
   IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
   IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");
   IElementType CLOSE_PAREN = new LatexTokenType("CLOSE_PAREN");
+  IElementType COMMAND_IFNEXTCHAR = new LatexTokenType("COMMAND_IFNEXTCHAR");
   IElementType COMMAND_TOKEN = new LatexTokenType("COMMAND_TOKEN");
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");

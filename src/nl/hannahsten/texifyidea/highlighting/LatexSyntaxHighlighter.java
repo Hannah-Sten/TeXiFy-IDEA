@@ -44,6 +44,7 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
 
     private static final TokenSet COMMAND_TOKENS = TokenSet.create(
             LatexTypes.COMMAND_TOKEN,
+            LatexTypes.COMMAND_IFNEXTCHAR,
             LatexTypes.BEGIN_TOKEN,
             LatexTypes.END_TOKEN
     );

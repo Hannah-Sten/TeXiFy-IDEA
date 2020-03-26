@@ -53,6 +53,7 @@ WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
+COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 
@@ -98,6 +99,7 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 {BEGIN_TOKEN}        { return BEGIN_TOKEN; }
 {END_TOKEN}          { return END_TOKEN; }
 {COMMAND_TOKEN}      { return COMMAND_TOKEN; }
+{COMMAND_IFNEXTCHAR} { return COMMAND_IFNEXTCHAR; }
 {COMMENT_TOKEN}      { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}   { return NORMAL_TEXT_WORD; }
 
