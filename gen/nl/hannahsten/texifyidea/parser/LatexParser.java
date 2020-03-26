@@ -359,14 +359,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean optional_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, OPTIONAL_PARAM, null);
+    boolean r;
+    Marker m = enter_section_(b);
     r = consumeToken(b, OPEN_BRACKET);
-    p = r; // pin = 1
-    r = r && report_error_(b, optional_param_1(b, l + 1));
-    r = p && consumeToken(b, CLOSE_BRACKET) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+    r = r && optional_param_1(b, l + 1);
+    r = r && consumeToken(b, CLOSE_BRACKET);
+    exit_section_(b, m, OPTIONAL_PARAM, r);
+    return r;
   }
 
   // optional_param_content*

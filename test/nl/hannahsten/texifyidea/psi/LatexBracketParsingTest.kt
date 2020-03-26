@@ -2,13 +2,15 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
 
 class LatexBracketParsingTest : BasePlatformTestCase() {
 
     @Test
     fun testBrackets() {
-        myFixture.configureByText(LatexFileType, """
+        @Language("Latex")
+        val text = """
             \documentclass{article}
 
             \begin{document}
@@ -28,6 +30,15 @@ class LatexBracketParsingTest : BasePlatformTestCase() {
 
                     ~\ref{eq:equation}
                 \]
+                
+                \[
+                    [
+                \]
+                
+                \begin{center}
+                    [
+                \end{center}
+
                 text
                 \begin{equation}
                     ]
@@ -39,8 +50,9 @@ class LatexBracketParsingTest : BasePlatformTestCase() {
             %[0,2)
                 ${'$'}[0,2)${'$'}
             \end{document}
-        """.trimIndent())
+        """.trimIndent()
 
+        myFixture.configureByText(LatexFileType, text)
         myFixture.checkHighlighting()
     }
 }

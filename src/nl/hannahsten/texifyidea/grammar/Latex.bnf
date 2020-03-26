@@ -74,7 +74,12 @@ end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 
 parameter ::= optional_param | required_param
 
-optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=1 }
+// pin=3 makes sure that an optional parameter is only matched successfully when
+// it also encounters a close bracket. So '[' at the beginning of a (math) environment
+// will be seen as simply an open bracket, but '[x]' at the same location will
+// be parsed as optional parameter.
+// https://stackoverflow.com/a/48709143/6629569
+optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=3 }
 
 // content, but no brackets
 optional_param_content ::= comment | environment | math_environment | commands | group | OPEN_PAREN | CLOSE_PAREN | normal_text
