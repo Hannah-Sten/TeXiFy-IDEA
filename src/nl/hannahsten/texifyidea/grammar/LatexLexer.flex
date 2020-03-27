@@ -77,13 +77,16 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 }
 
 <INLINE_MATH> {
-    "$"       { yypopState(); string.append('$'); return INLINE_MATH_END; }
-    "\text{"  { yypushState(TEXT_INSIDE_INLINE_MATH); return INLINE_MATH_END; }
+    "$"       { yypopState(); return INLINE_MATH_END; }
+    // When already in inline math, when encountering a \text command we need to switch out of the math state
+    // because if we encounter another $, then it will be an inline_math_start, not an inline_math_end
+    \\text    { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN; }
 }
 
+// When in a \text in inline math, either start nested inline math or close the \text
 <TEXT_INSIDE_INLINE_MATH> {
     "$"     { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START; }
-    "}"     { yypopState(); return INLINE_MATH_START; }
+    "}"     { yypopState(); return CLOSE_BRACE; }
 }
 
 <INLINE_MATH_LATEX> {
