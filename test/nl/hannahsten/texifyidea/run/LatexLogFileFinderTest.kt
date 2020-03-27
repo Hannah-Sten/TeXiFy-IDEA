@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import junit.framework.Assert
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexFileStack
 
 class LatexLogFileFinderTest : BasePlatformTestCase() {
@@ -17,6 +18,13 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         val stack = LatexFileStack("/home/abby/texlive/2019/texmf-dist/tex/latex/base/article.cls", "./main.tex")
         val newStack = stack.update(line)
         assertEquals("/home/abby/texlive/2019/texmf-dist/tex/latex/base/article.cls", newStack.peek())
+    }
+
+    fun testWindowsEvilPath() {
+        val line = """("C:\Users\thomas\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmisc.sty""""
+        val stack = LatexFileStack("./main.tex")
+        val newStack = stack.update(line)
+        Assert.assertEquals(""""C:\Users\thomas\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmisc.sty"""", newStack.peek())
     }
 
     fun testNewFile() {
