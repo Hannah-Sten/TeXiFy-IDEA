@@ -2,11 +2,9 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import org.junit.jupiter.api.Test
 
 class LatexParserTest : BasePlatformTestCase() {
 
-    @Test
     fun testIfnextchar() {
         myFixture.configureByText(LatexFileType, """
             \newcommand{\xyz}{\@ifnextchar[{\@xyz}{\@xyz[default]}}
