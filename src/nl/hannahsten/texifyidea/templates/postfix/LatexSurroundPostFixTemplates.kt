@@ -5,11 +5,9 @@ import com.intellij.codeInsight.template.postfix.templates.PostfixTemplatePsiInf
 import com.intellij.codeInsight.template.postfix.templates.SurroundPostfixTemplateBase
 import com.intellij.lang.surroundWith.Surrounder
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.util.Function
+import nl.hannahsten.texifyidea.editor.surroundwith.LatexPairSurrounder
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 
 internal object LatexSurroundWithGroupPostfixTemplate : SurroundPostfixTemplateBase(
@@ -38,24 +36,7 @@ internal object LatexSurroundWithGroupPostfixTemplate : SurroundPostfixTemplateB
 ) {
 
     override fun getSurrounder(): Surrounder {
-        return object : Surrounder {
-            override fun isApplicable(elements: Array<out PsiElement>): Boolean {
-                return true
-            }
-
-            override fun surroundElements(project: Project, editor: Editor, elements: Array<out PsiElement>): TextRange? {
-                return TextRange(
-                        elements.minBy { it.textOffset }?.textOffset
-                                ?: return null,
-                        elements.maxBy { it.textRange.endOffset }?.textRange?.endOffset
-                                ?: return null
-                )
-            }
-
-            override fun getTemplateDescription(): String {
-                return description
-            }
-
-        }
+        return LatexPairSurrounder(Pair("{", "}"))
     }
 }
+
