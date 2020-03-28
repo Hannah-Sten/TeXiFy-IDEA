@@ -41,6 +41,7 @@ public class LatexSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey STYLE_OVERLINE = createKey("LATEX_STYLE_OVERLINE", DefaultLanguageHighlighterColors.IDENTIFIER);
     public static final TextAttributesKey STYLE_TYPEWRITER = createKey("LATEX_STYLE_TYPEWRITER", DefaultLanguageHighlighterColors.IDENTIFIER);
     public static final TextAttributesKey STYLE_SLANTED = createKey("LATEX_STYLE_SLANTED", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey MATH_NESTED_TEXT = createKey("LATEX_MATH_NESTED_TEXT", DefaultLanguageHighlighterColors.IDENTIFIER);
 
     private static final TokenSet COMMAND_TOKENS = TokenSet.create(
             LatexTypes.COMMAND_TOKEN,

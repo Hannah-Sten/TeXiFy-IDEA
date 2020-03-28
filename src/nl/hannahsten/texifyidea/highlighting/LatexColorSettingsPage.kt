@@ -32,6 +32,8 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 AttributesDescriptor("References//Citation", LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE),
                 AttributesDescriptor("Math//Inline math", LatexSyntaxHighlighter.INLINE_MATH),
                 AttributesDescriptor("Math//Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
+                AttributesDescriptor("Math//Text in math", LatexSyntaxHighlighter.MATH_NESTED_TEXT),
+
 
                 // Styles
                 AttributesDescriptor("Font style//Bold", LatexSyntaxHighlighter.STYLE_BOLD),
@@ -50,6 +52,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 "inlineCommand" to LatexSyntaxHighlighter.COMMAND_MATH_INLINE,
                 "displayMath" to LatexSyntaxHighlighter.DISPLAY_MATH,
                 "inlineMath" to LatexSyntaxHighlighter.INLINE_MATH,
+                "textInMath" to LatexSyntaxHighlighter.MATH_NESTED_TEXT,
                 "optionalParam" to LatexSyntaxHighlighter.OPTIONAL_PARAM,
                 "comment" to LatexSyntaxHighlighter.COMMENT,
                 "magicComment" to LatexSyntaxHighlighter.MAGIC_COMMENT,
@@ -126,7 +129,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 |
                 |    \section{Results}\label{<labelDefinition>sec:results</labelDefinition>}
                 |    In this section we describe the results. So basically <inlineMath>${'$'}x${'$'}</inlineMath> but maybe
-                |    also <inlineMath>${'$'}<inlineCommand>\hat</inlineCommand>{x}^{2y}${'$'}</inlineMath>.
+                |    also <inlineMath>${'$'}<inlineCommand>\hat</inlineCommand>{x}^{2y}<inlineCommand>\text</inlineCommand><textInMath>{if <inlineMath>${'$'}x > 0${'$'}</inlineMath> }</textInMath>${'$'}</inlineMath>.
                 |
                 |    Also, some text styles:
                 |    \textbf{<styleBold>Bold</styleBold>}
