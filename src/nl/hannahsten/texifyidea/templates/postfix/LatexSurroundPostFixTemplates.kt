@@ -10,16 +10,26 @@ import com.intellij.util.Function
 import nl.hannahsten.texifyidea.editor.surroundwith.LatexPairSurrounder
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 
-internal object LatexSurroundWithGroupPostfixTemplate : SurroundPostfixTemplateBase(
-        "group", "{expr}", object : PostfixTemplatePsiInfo() {
-    override fun getNegatedExpression(element: PsiElement): PsiElement {
-        return element
-    }
 
-    override fun createExpression(context: PsiElement, prefix: String, suffix: String): PsiElement {
-        return LatexPsiHelper(context.project).createFromText(prefix + context.text + suffix)
-    }
-}, object : PostfixTemplateExpressionSelector {
+object LatexSurroundWithGroupPostfixTemplate : LatexSurroundPostFixTemplate("group", "{expr}", Pair("{", "}"))
+
+open class LatexSurroundPostFixTemplate(
+        name: String,
+        description: String,
+        private val surrounderPair: Pair<String, String>)
+    : SurroundPostfixTemplateBase(
+        name, description, LatexPostfixTemplatePsiInfo, LatexPostFixExpressionSelector
+) {
+    override fun getSurrounder(): Surrounder = LatexPairSurrounder(surrounderPair)
+}
+
+object LatexPostfixTemplatePsiInfo : PostfixTemplatePsiInfo() {
+    override fun getNegatedExpression(element: PsiElement): PsiElement = element
+    override fun createExpression(context: PsiElement, prefix: String, suffix: String): PsiElement =
+            LatexPsiHelper(context.project).createFromText(prefix + context.text + suffix)
+}
+
+object LatexPostFixExpressionSelector : PostfixTemplateExpressionSelector {
     override fun hasExpression(context: PsiElement, copyDocument: Document, newOffset: Int): Boolean {
         return true
     }
@@ -33,10 +43,3 @@ internal object LatexSurroundWithGroupPostfixTemplate : SurroundPostfixTemplateB
     }
 
 }
-) {
-
-    override fun getSurrounder(): Surrounder {
-        return LatexPairSurrounder(Pair("{", "}"))
-    }
-}
-
