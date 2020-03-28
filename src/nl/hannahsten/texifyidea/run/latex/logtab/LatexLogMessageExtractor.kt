@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexLineWarningHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexPackageWarningHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexReferenceCitationWarningHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexUndefinedControlSequenceHandler
@@ -22,7 +23,7 @@ object LatexLogMessageExtractor {
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         val specialErrorHandlersList = listOf(LatexUndefinedControlSequenceHandler)
-        val specialWarningHandlersList = listOf(LatexPackageWarningHandler, LatexPackageWarningHandler, LatexReferenceCitationWarningHandler)
+        val specialWarningHandlersList = listOf(LatexLineWarningHandler, LatexPackageWarningHandler, LatexPackageWarningHandler, LatexReferenceCitationWarningHandler)
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach {

@@ -7,7 +7,7 @@ object LogMagicRegex {
     const val FILE_LINE_REGEX: String = """(?<file>.+)?:(?<line>\d+):"""
     const val LINE_REGEX: String = """on input line (?<line>\d+)."""
     const val LATEX_ERROR_REGEX: String = "!"
-    const val LATEX_WARNING_REGEX: String = "LaTeX Warning:"
+    const val LATEX_WARNING_REGEX: String = "LaTeX( Font)? Warning:"
     const val PACKAGE_REGEX: String = """(?<package>[\d\w]+)"""
     const val REFERENCE_REGEX: String = """(?<label>(`|').+')"""
 

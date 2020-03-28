@@ -60,7 +60,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testReferenceOnLine() {
         val text = "LaTeX Warning: Reference `fig:bla' on page 1 undefined on input line 10."
-        val expected = LatexLogMessage("Reference `fig:bla' undefined", currentFile, 10, WARNING)
+        val expected = LatexLogMessage("Reference `fig:bla' on page 1 undefined", currentFile, 10, WARNING)
         testMessageExtractor(text, expected)
     }
 
