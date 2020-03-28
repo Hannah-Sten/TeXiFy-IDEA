@@ -163,7 +163,7 @@ open class LatexAnnotator : Annotator {
             val token = element.commandToken
             val annotation = annotationHolder.createInfoAnnotation(token, null)
             annotation.textAttributes = highlighter
-            if (element.name == "\\text") {
+            if (element.name == "\\text" || element.name == "\\intertext") {
                 val textAnnotation = annotationHolder.createInfoAnnotation(element.requiredParameters().first(), null)
                 textAnnotation.textAttributes = LatexSyntaxHighlighter.MATH_NESTED_TEXT
             }
