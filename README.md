@@ -1,4 +1,5 @@
 [![Travis (.org)](https://img.shields.io/travis/Hannah-Sten/TeXiFy-IDEA/master?style=flat-square)](https://travis-ci.org/Hannah-Sten/TeXiFy-IDEA)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/Hannah-Sten/TeXiFy-IDEA/CI/master?style=flat-square)
 [![Version](https://img.shields.io/jetbrains/plugin/v/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
