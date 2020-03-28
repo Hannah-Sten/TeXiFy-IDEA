@@ -56,7 +56,7 @@ COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 
-%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH
+%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH PREAMBLE_OPTION
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
@@ -80,11 +80,22 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
     {ROBUST_INLINE_MATH_END}    { yypopState(); return INLINE_MATH_END; }
 }
 
+<PREAMBLE_OPTION> {
+    "$"     { return NORMAL_TEXT_WORD; }
+    "}"     { yypopState(); return CLOSE_BRACE; }
+}
+
 <DISPLAY_MATH> {
     {M_OPEN_BRACKET}   { return M_OPEN_BRACKET; }
     {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
     "\\]"              { yypopState(); return DISPLAY_MATH_END; }
 }
+
+// The array package provides <{...} and >{...} preamble options for tables
+// which are often used with $, in which case the $ is not an inline_math_start (because there's only one $ in the group, which would be a parse errror)
+// It has to be prefixed by . because any other letter before the < or > may be seen as a normal text word together with the < or >, so we need to catch them together
+.\<\{                 { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
+.>\{                  { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 
 "*"                  { return STAR; }
 "["                  { return OPEN_BRACKET; }
