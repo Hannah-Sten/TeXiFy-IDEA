@@ -8,10 +8,13 @@ import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiElement
 import com.intellij.util.Function
 import nl.hannahsten.texifyidea.editor.surroundwith.LatexPairSurrounder
+import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 
 
 object LatexSurroundWithGroupPostfixTemplate : LatexSurroundPostFixTemplate("group", "{expr}", Pair("{", "}"))
+object LatexSurroundWithOpenGroupPostfixTemplate : LatexSurroundPostFixTemplate("ogroup", "[expr]", Pair("[", "]"))
+object LatexSurroundWithInlineMathPostfixTemplate : LatexSurroundPostFixTemplate("math", "\$expr\$", Pair("\$", "\$"))
 
 open class LatexSurroundPostFixTemplate(
         name: String,
@@ -31,7 +34,7 @@ object LatexPostfixTemplatePsiInfo : PostfixTemplatePsiInfo() {
 
 object LatexPostFixExpressionSelector : PostfixTemplateExpressionSelector {
     override fun hasExpression(context: PsiElement, copyDocument: Document, newOffset: Int): Boolean {
-        return true
+        return (context.parent is LatexNormalText || context is LatexNormalText)
     }
 
     override fun getRenderer(): Function<PsiElement, String> {

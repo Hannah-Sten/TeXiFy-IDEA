@@ -7,7 +7,9 @@ import com.intellij.psi.PsiFile
 
 class LatexPostFixTemplateProvider : PostfixTemplateProvider {
     private val templates = mutableSetOf<PostfixTemplate>(
-            LatexSurroundWithGroupPostfixTemplate
+            LatexSurroundWithGroupPostfixTemplate,
+            LatexSurroundWithOpenGroupPostfixTemplate,
+            LatexSurroundWithInlineMathPostfixTemplate
     )
 
     override fun getPresentableName(): String? = "LaTeX"
