@@ -57,7 +57,7 @@ public class LatexTypedHandler extends TypedHandlerDelegate {
             if (c == '$' && TexifySettings.getInstance().getAutomaticSecondInlineMathSymbol()) {
                 IElementType tokenType = getTypedTokenType(editor);
 
-                if (tokenType != LatexTypes.COMMAND_TOKEN && tokenType != LatexTypes.COMMENT_TOKEN) {
+                if (tokenType != LatexTypes.COMMAND_TOKEN && tokenType != LatexTypes.COMMENT_TOKEN && tokenType != LatexTypes.INLINE_MATH_END) {
                     editor.getDocument().insertString(
                             editor.getCaretModel().getOffset(),
                             String.valueOf(c)
