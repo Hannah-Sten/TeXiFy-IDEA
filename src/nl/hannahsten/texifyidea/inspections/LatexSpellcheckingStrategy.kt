@@ -28,6 +28,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         }
 
         if (psiElement.elementType == LatexTypes.COMMAND_TOKEN ||
+                psiElement.elementType == LatexTypes.COMMAND_IFNEXTCHAR ||
                 psiElement.elementType == LatexTypes.COMMENT_TOKEN ||
                 isBeginEnd(psiElement) ||
                 psiElement.hasParent(LatexOptionalParam::class)) {

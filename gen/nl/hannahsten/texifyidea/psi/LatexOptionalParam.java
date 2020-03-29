@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface LatexOptionalParam extends PsiElement {
 
   @NotNull
-  LatexOpenGroup getOpenGroup();
+  List<LatexOptionalParamContent> getOptionalParamContentList();
 
 }
