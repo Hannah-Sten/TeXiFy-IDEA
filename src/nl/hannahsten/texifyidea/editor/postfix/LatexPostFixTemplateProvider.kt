@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.templates.postfix
+package nl.hannahsten.texifyidea.editor.postfix
 
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
@@ -27,8 +27,6 @@ object LatexPostFixTemplateProvider : PostfixTemplateProvider {
             LatexWrapWithUnderlinePostfixTemplate,
             LatexWrapWithMathcalPostfixTemplate
     )
-
-    override fun getPresentableName(): String? = "LaTeX"
 
     override fun getTemplates(): MutableSet<PostfixTemplate> = (templates + wrapWithTextCommandTemplates + wrapWithMathCommandTemplates) as MutableSet<PostfixTemplate>
 

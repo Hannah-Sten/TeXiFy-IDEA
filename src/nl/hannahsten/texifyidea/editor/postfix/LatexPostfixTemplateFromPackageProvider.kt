@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.templates.postfix
+package nl.hannahsten.texifyidea.editor.postfix
 
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
@@ -8,8 +8,6 @@ import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.util.insertUsepackage
 
 abstract class LatexPostfixTemplateFromPackageProvider(private val pack: Package) : PostfixTemplateProvider {
-    override fun getPresentableName(): String? = "LaTeX"
-
     abstract override fun getTemplates(): MutableSet<PostfixTemplate>
 
     override fun isTerminalSymbol(currentChar: Char): Boolean =

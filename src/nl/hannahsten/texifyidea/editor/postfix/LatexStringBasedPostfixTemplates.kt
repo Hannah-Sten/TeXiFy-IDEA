@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.templates.postfix
+package nl.hannahsten.texifyidea.editor.postfix
 
 import com.intellij.codeInsight.template.Template
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
