@@ -1470,11 +1470,242 @@ Package textcomp Warning: Oldstyle digits unavailable for family phv.
 
 [source,latex,linenums]
 ----
+\documentclass{article}
+\usepackage{lipsum}
+\begin{document}
+    \twocolumn[\lipsum]
+\end{document}
+----
+
+----
+LaTeX Warning: Optional argument of \twocolumn too tall on page 1.
+
+
+Overfull \vbox (30.0pt too high) has occurred while \output is active
+
+LaTeX Warning: Text page 1 contains only floats.
+----
+
+=== \oval, \circle, or \line size unavailable
+=== Overfull \hbox (<number>pt too wide) <somewhere>
+=== Overfull \vbox (<number>pt too wide) <somewhere>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \oval(1,1)
+\end{document}
+----
+----
+LaTeX Warning: \oval, \circle, or \line size unavailable on input line 4.
+
+
+Overfull \vbox (2.99998pt too high) detected at line 4
+
+Overfull \vbox (2.99998pt too high) detected at line 4
+
+Overfull \hbox (2.99998pt too wide) detected at line 4
+
+
+Overfull \hbox (2.99998pt too wide) detected at line 4
+----
+
+=== Reference `<key>' on page <number> undefined
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \ref{test}
+\end{document}
+----
+
+----
+LaTeX Warning: Reference `test' on page 1 undefined on input line 3.
+----
+
+=== Size substitutions with differences up to <size> have occurred
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \fontsize{100}{100} text
+\end{document}
+----
+
+----
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 75.12pt have occurred.
+----
+
+=== Some font shapes were not available, defaults substituted
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{stmaryrd}
+
+\begin{document}
+    \chapter{Test}
+    Font substitution here : $\boldsymbol{\upomega}$
+\end{document}
+----
+
+----
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+----
+
+=== Tab has been converted to Blank Space
+
+[source,latex,linenums]
+----
+\begin{filecontents}{test}
+	Text.
+\end{filecontents}
+\documentclass{article}
+
+\begin{document}
+	Text.
+\end{document}
+----
+
+----
+LaTeX Warning: Writing file `./test'.
+
+
+LaTeX Warning: Tab has been converted to Blank Space.
+----
+
+=== Text page <number> contains only floats
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage{lipsum}
+\begin{document}
+    \twocolumn[\lipsum]
+\end{document}
+----
+
+----
+LaTeX Warning: Text page 1 contains only floats.
+----
+
+=== There were multiply-defined labels
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    Text.
+    \label{mylabel}
+    Text.
+    \label{mylabel}
+\end{document}
+----
+
+----
+LaTeX Warning: There were multiply-defined labels.
+----
+
+=== There were undefined references.
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \ref{test}
+\end{document}
+----
+
+----
+LaTeX Warning: There were undefined references.
+----
+
+=== Tight \hbox (badness <number>) <somewhere>
+=== Tight \vbox (badness <number>) <somewhere>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\hbadness=-1
+\begin{document}
+    Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text
+\end{document}
+----
+
+----
+Tight \hbox (badness 0) in paragraph at lines 4--5
+[]\OT1/cmr/m/n/10 Text text text text text text text text text text text text t
+ext text text text
+
+Tight \hbox (badness 3) in paragraph at lines 4--5
+\OT1/cmr/m/n/10 text text text text text text text text text text text text tex
+t text text text text
+----
+
+=== amsmath: Unable to redefine math accent <accent>
+
+[source,latex,linenums]
+----
+
+----
 
 ----
 
 ----
 
+=== Underfull \hbox (badness <number>) detected at line <line number>
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== Underfull \hbox (badness <number>) has occurred while \output is active
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== Underfull \hbox (badness <number>) in alignment at lines <line numbers>
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== Underfull \hbox (badness <number>) in paragraph at lines <line numbers>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+
+\begin{document}
+    Text.
+    \\
+\end{document}
+----
+
+----
+Underfull \hbox (badness 10000) in paragraph at lines 4--6
 ----
 
 [bibliography]
