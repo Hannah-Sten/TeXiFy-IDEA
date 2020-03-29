@@ -72,6 +72,8 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val STYLE_OVERLINE = createKey("LATEX_STYLE_OVERLINE", DefaultLanguageHighlighterColors.IDENTIFIER)
         val STYLE_TYPEWRITER = createKey("LATEX_STYLE_TYPEWRITER", DefaultLanguageHighlighterColors.IDENTIFIER)
         val STYLE_SLANTED = createKey("LATEX_STYLE_SLANTED", DefaultLanguageHighlighterColors.IDENTIFIER)
+        val MATH_NESTED_TEXT = createKey("LATEX_MATH_NESTED_TEXT", DefaultLanguageHighlighterColors.IDENTIFIER)
+
         private val COMMAND_TOKENS = TokenSet.create(
                 LatexTypes.COMMAND_TOKEN,
                 LatexTypes.COMMAND_IFNEXTCHAR,
