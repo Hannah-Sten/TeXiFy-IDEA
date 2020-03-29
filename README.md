@@ -12,7 +12,7 @@ LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com
 No idea where to start? Have a look at the [installation instructions](#installation-instructions). Otherwise, take a look at the [tips](#tips) instead.
 
 Create the most beautiful LaTeX documents with the user friendliness of the IntelliJ platform.
-This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin
+This plugin adds the tools to make creating LaTeX documents a breeze. We are currently doing our best to develop the plugin.
 
 ## Feedback and support
 You can share new ideas/feature requests/bugs/calls for help in multiple ways:
