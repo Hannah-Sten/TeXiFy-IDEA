@@ -27,15 +27,29 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: Package
     companion object {
         fun getProvider(pack: Package?): PostfixTemplateProvider {
             return when(pack) {
+                Package.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider
                 Package.AMSFONTS -> LatexPostfixTemplateFromAmsFontsProvider
+                Package.BM -> LatexPostfixTemplateFromBmProvider
                 else -> LatexPostFixTemplateProvider
             }
         }
     }
 }
 
+object LatexPostfixTemplateFromAmsMathProvider : LatexPostfixTemplateFromPackageProvider(Package.AMSMATH) {
+    override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
+            LatexWrapWithTextPostfixTemplate
+    )
+}
+
 object LatexPostfixTemplateFromAmsFontsProvider : LatexPostfixTemplateFromPackageProvider(Package.AMSFONTS) {
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
             LatexWrapWithMathbbPostfixTemplate
+    )
+}
+
+object LatexPostfixTemplateFromBmProvider : LatexPostfixTemplateFromPackageProvider(Package.BM) {
+    override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
+            LatexWrapWithBmPostfixTemplate
     )
 }

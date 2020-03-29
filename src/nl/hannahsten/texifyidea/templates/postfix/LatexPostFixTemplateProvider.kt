@@ -25,9 +25,7 @@ object LatexPostFixTemplateProvider : PostfixTemplateProvider {
             LatexWrapWithSquareRootPostfixTemplate,
             LatexWrapWithOverlinePostfixTemplate,
             LatexWrapWithUnderlinePostfixTemplate,
-            LatexWrapWithMathbfPostfixTemplate,
-            LatexWrapWithMathcalPostfixTemplate,
-            LatexWrapWithTextPostfixTemplate
+            LatexWrapWithMathcalPostfixTemplate
     )
 
     override fun getPresentableName(): String? = "LaTeX"
