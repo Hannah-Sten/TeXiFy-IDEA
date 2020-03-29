@@ -171,13 +171,12 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateOptionalParameters(optionalParamElement: LatexOptionalParam,
                                            annotationHolder: AnnotationHolder) {
-        for (element in optionalParamElement.openGroup.contentList) {
-            if (element !is LatexContent) {
+        for (element in optionalParamElement.optionalParamContentList) {
+            if (element !is LatexOptionalParamContent) {
                 continue
             }
 
-            val noMathContent = element.noMathContent
-            val toStyle = noMathContent.normalText ?: continue
+            val toStyle = element.normalText ?: continue
             val annotation = annotationHolder.createInfoAnnotation(toStyle, null)
             annotation.textAttributes = LatexSyntaxHighlighter.OPTIONAL_PARAM
         }
