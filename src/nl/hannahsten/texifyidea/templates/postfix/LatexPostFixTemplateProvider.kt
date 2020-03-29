@@ -7,14 +7,33 @@ import com.intellij.psi.PsiFile
 
 class LatexPostFixTemplateProvider : PostfixTemplateProvider {
     private val templates = mutableSetOf<PostfixTemplate>(
-            LatexSurroundWithGroupPostfixTemplate,
-            LatexSurroundWithOpenGroupPostfixTemplate,
-            LatexSurroundWithInlineMathPostfixTemplate
+            LatexWrapWithGroupPostfixTemplate,
+            LatexWrapWithOpenGroupPostfixTemplate,
+            LatexWrapWithInlineMathPostfixTemplate
+    )
+
+    private val wrapWithTextCommandTemplates = mutableSetOf<PostfixTemplate>(
+            LatexWrapWithBoldFacePostfixTemplate,
+            LatexWrapWithItalicFacePostfixTemplate,
+            LatexWrapWithEmphPostfixTemplate
+    )
+
+    private val wrapWithMathCommandTemplates = mutableSetOf<PostfixTemplate>(
+            LatexWrapWithTildePostfixTemplate,
+            LatexWrapWithHatPostfixTemplate,
+            LatexWrapWithBarPostfixTemplate,
+            LatexWrapWithSquareRootPostfixTemplate,
+            LatexWrapWithOverlinePostfixTemplate,
+            LatexWrapWithUnderlinePostfixTemplate,
+            LatexWrapWithMathbbPostfixTemplate,
+            LatexWrapWithMathbfPostfixTemplate,
+            LatexWrapWithMathcalPostfixTemplate,
+            LatexWrapWithTextPostfixTemplate
     )
 
     override fun getPresentableName(): String? = "LaTeX"
 
-    override fun getTemplates(): MutableSet<PostfixTemplate> = templates
+    override fun getTemplates(): MutableSet<PostfixTemplate> = (templates + wrapWithTextCommandTemplates + wrapWithMathCommandTemplates) as MutableSet<PostfixTemplate>
 
     override fun isTerminalSymbol(currentChar: Char): Boolean =
             (currentChar == '.')
