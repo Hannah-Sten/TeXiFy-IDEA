@@ -11,4 +11,12 @@ class LatexParserTest : BasePlatformTestCase() {
         """.trimIndent())
         myFixture.checkHighlighting()
     }
+
+    fun testIfnextchar() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\xyz}{\@ifnextchar[{\@xyz}{\@xyz[default]}}
+            \def\@xyz[#1]#2{do something with #1 and #2}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
 }

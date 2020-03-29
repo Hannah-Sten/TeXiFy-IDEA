@@ -32,7 +32,9 @@
         COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\n|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
-        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$\(\)]+'
+        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()]+'
+        // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
+        COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
     ]
 }
 
@@ -42,7 +44,7 @@ latexFile ::= content*
 
 content ::= no_math_content
 
-no_math_content ::= comment | environment | math_environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
+no_math_content ::= comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
 normal_text ::= (NORMAL_TEXT_WORD | STAR)+ {
     methods=[getReferences getReference getNameIdentifier getName setName]
@@ -74,13 +76,19 @@ end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 
 parameter ::= optional_param | required_param
 
-optional_param ::= open_group
+// pin=3 makes sure that an optional parameter is only matched successfully when
+// it also encounters a close bracket. So '[' at the beginning of a (math) environment
+// will be seen as simply an open bracket, but '[x]' at the same location will
+// be parsed as optional parameter.
+// https://stackoverflow.com/a/48709143/6629569
+optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=3 }
+
+// content, but no brackets
+optional_param_content ::= comment | environment | math_environment | commands | group | OPEN_PAREN | CLOSE_PAREN | normal_text
 
 required_param ::= group
 
 group ::= OPEN_BRACE content* CLOSE_BRACE { pin=1 }
-
-open_group ::= OPEN_BRACKET content* CLOSE_BRACKET { pin=1 }
 
 comment ::= COMMENT_TOKEN
 

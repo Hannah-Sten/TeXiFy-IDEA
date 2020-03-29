@@ -64,11 +64,11 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiNameIdentifierOwner(o);
   }
 
-  public void visitOpenGroup(@NotNull LatexOpenGroup o) {
+  public void visitOptionalParam(@NotNull LatexOptionalParam o) {
     visitPsiElement(o);
   }
 
-  public void visitOptionalParam(@NotNull LatexOptionalParam o) {
+  public void visitOptionalParamContent(@NotNull LatexOptionalParamContent o) {
     visitPsiElement(o);
   }
 

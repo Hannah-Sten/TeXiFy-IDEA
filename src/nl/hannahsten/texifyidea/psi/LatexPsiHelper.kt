@@ -31,11 +31,11 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createOptionalParameterContent(parameter: String): List<LatexContent> {
+    private fun createOptionalParameterContent(parameter: String): List<LatexOptionalParamContent> {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.openGroup.contentList
+        return optionalParam.optionalParamContentList
     }
 
     fun createFromText(text: String): PsiElement =
@@ -55,11 +55,11 @@ class LatexPsiHelper(private val project: Project) {
         }
         val environmentContent = environment.environmentContent!!
 
-        if (after != null) {
-            return environmentContent.addAfter(element, after)
+        return if (after != null) {
+            environmentContent.addAfter(element, after)
         }
         else {
-            return environmentContent.add(element)
+            environmentContent.add(element)
         }
     }
 
@@ -76,7 +76,7 @@ class LatexPsiHelper(private val project: Project) {
     fun replaceOptionalParameter(parameters: List<LatexParameter>, name: String, newValue: String?) {
         val optionalParam = parameters.first { p -> p.optionalParam != null }.optionalParam!!
 
-        var parameterText = if (newValue != null) {
+        val parameterText = if (newValue != null) {
             "$name={$newValue}"
         }
         else {
@@ -84,16 +84,16 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val labelRegex = "label\\s*=\\s*[^,]*".toRegex()
-        val elementsToReplace = mutableListOf<LatexContent>()
-        val elementIterator = optionalParam.openGroup.contentList.iterator()
+        val elementsToReplace = mutableListOf<LatexOptionalParamContent>()
+        val elementIterator = optionalParam.optionalParamContentList.iterator()
         while (elementIterator.hasNext()) {
             val latexContent = elementIterator.next()
-            val elementIsLabel = latexContent.noMathContent.normalText?.text?.contains(labelRegex) ?: false
+            val elementIsLabel = latexContent.normalText?.text?.contains(labelRegex) ?: false
             if (elementIsLabel) {
                 elementsToReplace.add(latexContent)
 
                 // check if the label name is part of the text or in a separate group
-                if (latexContent.noMathContent.normalText!!.text.split("=")[1].trim().isEmpty()) {
+                if (latexContent.normalText!!.text.split("=")[1].trim().isEmpty()) {
                     val group = elementIterator.next()
                     elementsToReplace.add(group)
                 }
@@ -101,7 +101,7 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val newContents = createOptionalParameterContent(parameterText)
-        newContents.forEach { optionalParam.openGroup.addBefore(it, elementsToReplace.first()) }
+        newContents.forEach { optionalParam.addBefore(it, elementsToReplace.first()) }
         elementsToReplace.forEach { it.delete() }
     }
 
@@ -128,12 +128,12 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         if (existingParameters.isNotEmpty()) {
-            parameterText = ",$parameterText";
+            parameterText = ",$parameterText"
         }
         val newElements = mutableListOf<PsiElement>()
         val contents = createOptionalParameterContent(parameterText)
         contents.forEach {
-            val inserted = optionalParam.openGroup.addBefore(it, optionalParam.openGroup.lastChild)
+            val inserted = optionalParam.addBefore(it, optionalParam.lastChild)
             newElements.add(inserted)
         }
         return newElements
