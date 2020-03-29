@@ -319,6 +319,7 @@
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
 
         <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.templates.postfix.LatexPostFixTemplateProvider"/>
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.templates.postfix.LatexPostfixTemplateFromAmsFontsProvider"/>
 
         <!-- Surrounders -->
         <lang.surroundDescriptor language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.surroundwith.LatexSurroundDescriptor"/>

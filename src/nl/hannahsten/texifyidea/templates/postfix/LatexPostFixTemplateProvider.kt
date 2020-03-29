@@ -5,7 +5,7 @@ import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvid
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 
-class LatexPostFixTemplateProvider : PostfixTemplateProvider {
+object LatexPostFixTemplateProvider : PostfixTemplateProvider {
     private val templates = mutableSetOf<PostfixTemplate>(
             LatexWrapWithGroupPostfixTemplate,
             LatexWrapWithOpenGroupPostfixTemplate,
@@ -25,7 +25,6 @@ class LatexPostFixTemplateProvider : PostfixTemplateProvider {
             LatexWrapWithSquareRootPostfixTemplate,
             LatexWrapWithOverlinePostfixTemplate,
             LatexWrapWithUnderlinePostfixTemplate,
-            LatexWrapWithMathbbPostfixTemplate,
             LatexWrapWithMathbfPostfixTemplate,
             LatexWrapWithMathcalPostfixTemplate,
             LatexWrapWithTextPostfixTemplate

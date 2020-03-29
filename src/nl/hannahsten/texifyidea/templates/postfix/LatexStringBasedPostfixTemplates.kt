@@ -1,9 +1,17 @@
 package nl.hannahsten.texifyidea.templates.postfix
 
+import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
 import com.intellij.codeInsight.template.postfix.templates.StringBasedPostfixTemplate
 import com.intellij.psi.PsiElement
+import nl.hannahsten.texifyidea.lang.Package
 
+/**
+ * When adding a template that inserts a command that requires a package, make
+ * sure that there exists a [LatexPostfixTemplateFromPackageProvider] for this
+ * package, and add it to [LatexPostfixTemplateFromPackageProvider.getProvider].
+ */
 
+/* General wrappers. */
 internal object LatexWrapWithInlineMathPostfixTemplate : ConstantStringBasedPostfixTemplate(
         "math",
         "\$expr\$",
@@ -36,17 +44,17 @@ internal object LatexWrapWithTildePostfixTemplate : LatexWrapWithCommandPostfixT
 internal object LatexWrapWithSquareRootPostfixTemplate : LatexWrapWithCommandPostfixTemplate("sqrt", mathOnly = true)
 internal object LatexWrapWithOverlinePostfixTemplate : LatexWrapWithCommandPostfixTemplate("overline", mathOnly = true)
 internal object LatexWrapWithUnderlinePostfixTemplate : LatexWrapWithCommandPostfixTemplate("underline", mathOnly = true)
-internal object LatexWrapWithMathbbPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathbb", name = "bb", mathOnly = true)
+internal object LatexWrapWithMathbbPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathbb", name = "bb", mathOnly = true, pack = Package.AMSFONTS)
 internal object LatexWrapWithMathbfPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathbf", name = "bf", mathOnly = true)  // TODO change to \bm
 internal object LatexWrapWithMathcalPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathcal", name = "cal", mathOnly = true)
 
 internal object LatexWrapWithTextPostfixTemplate : LatexWrapWithCommandPostfixTemplate("text", mathOnly = true)
 
-internal open class LatexWrapWithCommandPostfixTemplate(commandName: String, name: String = commandName, mathOnly: Boolean = false, textOnly: Boolean = false) : ConstantStringBasedPostfixTemplate(
+internal open class LatexWrapWithCommandPostfixTemplate(commandName: String, name: String = commandName, mathOnly: Boolean = false, textOnly: Boolean = false, pack: Package? = null) : ConstantStringBasedPostfixTemplate(
         name,
         "\\$commandName{expr}",
         "\\$commandName{\$expr$}\$END$",
-        mathOnly, textOnly
+        mathOnly, textOnly, pack
 )
 
 internal abstract class ConstantStringBasedPostfixTemplate(
@@ -54,8 +62,10 @@ internal abstract class ConstantStringBasedPostfixTemplate(
         desc: String,
         private val template: String,
         mathOnly: Boolean = false,
-        textOnly: Boolean = false
-) : StringBasedPostfixTemplate(name, desc, LatexPostfixExpressionSelector(mathOnly, textOnly), LatexPostFixTemplateProvider()) {
+        textOnly: Boolean = false,
+        pack: Package? = null,
+        provider: PostfixTemplateProvider = LatexPostfixTemplateFromPackageProvider.getProvider(pack)
+) : StringBasedPostfixTemplate(name, desc, LatexPostfixExpressionSelector(mathOnly, textOnly), provider) {
     override fun getTemplateString(element: PsiElement) = template
 
     override fun getElementToRemove(expr: PsiElement?) = expr
