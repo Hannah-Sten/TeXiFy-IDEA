@@ -36,7 +36,7 @@ internal object LatexWrapWithOpenGroupPostfixTemplate : ConstantStringBasedPostf
 internal object LatexWrapWithTextPostfixTemplate : ConstantStringBasedPostfixTemplate(
         "text",
         "\\text{expr}",
-        "\\text{\$expr$ \$more$}\$END$",
+        "\\text{\$expr$\$more$}\$END$",
         mathOnly = true,
         pack = Package.AMSMATH) {
     override fun setVariables(template: Template, element: PsiElement) {
