@@ -137,7 +137,7 @@ fun PsiFile.isRoot(): Boolean {
  * Get all required arguments, also if comma separated in a group.
  * e.g. \mycommand{arg1,arg2}{arg3} will return [arg1, arg2, arg3].
  */
-private fun LatexCommands.getAllRequiredArguments(): List<String>? {
+fun LatexCommands.getAllRequiredArguments(): List<String>? {
     val required = requiredParameters
     if (required.isEmpty()) return null
     return required.flatMap { it.split(',')}
