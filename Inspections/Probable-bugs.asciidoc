@@ -120,6 +120,10 @@ With some special commands absolute paths are not allowed. E.g. \include and \in
 A error is thrown if you still enter an absolute path. 
 
 == Inclusion loops
+
+When two files include each other, this will be detected.
+On one of the inclusions a warning will be shown.
+
 == Nested includes
 
 == Label is before caption
