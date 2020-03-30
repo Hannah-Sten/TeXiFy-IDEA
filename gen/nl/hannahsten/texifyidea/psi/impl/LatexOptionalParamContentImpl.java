@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements LatexNoMathContent {
+public class LatexOptionalParamContentImpl extends ASTWrapperPsiElement implements LatexOptionalParamContent {
 
-  public LatexNoMathContentImpl(@NotNull ASTNode node) {
+  public LatexOptionalParamContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitNoMathContent(this);
+    visitor.visitOptionalParamContent(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -60,12 +60,6 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
   @Nullable
   public LatexNormalText getNormalText() {
     return PsiTreeUtil.getChildOfType(this, LatexNormalText.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getCommandIfnextchar() {
-    return findChildByType(COMMAND_IFNEXTCHAR);
   }
 
 }

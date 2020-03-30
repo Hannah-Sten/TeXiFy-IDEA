@@ -159,7 +159,7 @@ open class LatexAnnotator : Annotator {
     }
 
     /**
-     * Annotates all command tokens of the comands that are included in the `elements`.
+     * Annotates all command tokens of the commands that are included in the `elements`.
      *
      * @param elements
      *              All elements to handle. Only elements that are [LatexCommands] are considered.
@@ -180,7 +180,13 @@ open class LatexAnnotator : Annotator {
                     .range(token)
                     .textAttributes(highlighter)
                     .create()
-        }
+
+            if (element.name == "\\text" || element.name == "\\intertext") {
+                annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+                        .range(element.requiredParameters().first())
+                        .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
+                        .create()
+            }
     }
 
     /**
@@ -188,13 +194,12 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateOptionalParameters(optionalParamElement: LatexOptionalParam,
                                            annotationHolder: AnnotationHolder) {
-        for (element in optionalParamElement.openGroup.contentList) {
-            if (element !is LatexContent) {
+        for (element in optionalParamElement.optionalParamContentList) {
+            if (element !is LatexOptionalParamContent) {
                 continue
             }
 
-            val noMathContent = element.noMathContent
-            val toStyle = noMathContent.normalText ?: continue
+            val toStyle = element.normalText ?: continue
 
             annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                     .range(toStyle)

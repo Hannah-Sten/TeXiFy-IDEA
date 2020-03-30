@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.psi.*
 class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
     private fun PsiElement.isNotInMathEnvironment() = parents().none { it is LatexMathEnvironment }
 
-    private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOpenGroup }
+    private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }
             ?.let { it is LatexGroup } ?: true
 
     override fun isMyContextRoot(element: PsiElement) = element is LatexNormalText && element.isNotInMathEnvironment() && element.isNotInSquareBrackets() || element is PsiComment
