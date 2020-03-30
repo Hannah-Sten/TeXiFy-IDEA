@@ -22,13 +22,13 @@ internal object LatexWrapWithInlineMathPostfixTemplate : ConstantStringBasedPost
 )
 
 internal object LatexWrapWithGroupPostfixTemplate : ConstantStringBasedPostfixTemplate(
-        "group",
+        "braces",
         "{expr}",
         "{\$expr$}\$END$"
 )
 
 internal object LatexWrapWithOpenGroupPostfixTemplate : ConstantStringBasedPostfixTemplate(
-        "opengroup",
+        "brackets",
         "[expr]",
         "[\$expr$]\$END$"
 )
