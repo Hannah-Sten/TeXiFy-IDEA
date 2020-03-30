@@ -81,9 +81,9 @@ open class LatexAnnotator : Annotator {
             // Begin/End commands
             if (psiElement is LatexEnvironment) {
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                    .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
-                    .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
-                    .create()
+                        .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
+                        .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                        .create()
 
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                         .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4))
@@ -187,6 +187,7 @@ open class LatexAnnotator : Annotator {
                         .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
                         .create()
             }
+        }
     }
 
     /**
@@ -235,7 +236,7 @@ open class LatexAnnotator : Annotator {
         }
 
         command.requiredParameters().firstOrNull()?.let {
-            annotationHolder.annotateRequiredParameter(it, style!!)
+            annotationHolder.annotateRequiredParameter(it, style)
         }
     }
 
