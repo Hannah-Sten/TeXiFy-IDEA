@@ -32,6 +32,7 @@
         COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\n|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
+        AMPERSAND='&'
         NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$\(\)]+'
     ]
 }
@@ -44,7 +45,7 @@ content ::= no_math_content
 
 no_math_content ::= comment | environment | math_environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR)+ {
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND)+ {
     methods=[getReferences getReference getNameIdentifier getName setName]
 }
 

@@ -87,6 +87,8 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 }
 
 "*"                  { return STAR; }
+// A separate token, used for example for aligning & in tables
+"&"                  { return AMPERSAND; }
 "["                  { return OPEN_BRACKET; }
 "]"                  { return CLOSE_BRACKET; }
 "{"                  { return OPEN_BRACE; }

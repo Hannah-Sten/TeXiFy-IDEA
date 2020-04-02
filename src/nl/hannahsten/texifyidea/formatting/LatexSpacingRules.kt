@@ -3,9 +3,13 @@ package nl.hannahsten.texifyidea.formatting
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.inDirectEnvironment
 
 /**
@@ -70,7 +74,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             // that anyway.
             customRule { _, _, right ->
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
-                    if (right.node?.text?.matches(Regex("\\${it.value}\\{.*\\}")) == true) {
+                    if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*\\}")) == true) {
                         return@customRule createSpacing(
                                 minSpaces = 0,
                                 maxSpaces = Int.MAX_VALUE,
@@ -80,6 +84,83 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                     }
                 }
                 return@customRule null
+            }
+        }
+
+        // Align & in tables
+        // Unfortunately we have to do this manually because Alignment only aligns characters if they are the first non-whitespace in a line of code
+        custom {
+            customRule { parent, left, right ->
+                // Check if parent is in environment content of a table environment
+                if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return@customRule null
+
+                if (right.node?.text != "&") return@customRule null
+
+                val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+                val content = contentElement?.text ?: return@customRule null
+                val contentTextOffset = contentElement.textOffset
+                val tableLineSeparator = "\\\\"
+                val contentLines = content.split(tableLineSeparator).toMutableList()
+                if (contentLines.size < 2) return@customRule null
+                val indent = contentLines[1].getIndent()
+
+                // Fix environment content not starting with indent
+                contentLines[0] = indent + contentLines.first()
+
+                // Find indices of &, relative to line start and text offset
+                var currentOffset = contentTextOffset
+                val ampersandIndices = contentLines.map {
+                    val indices = mutableListOf<Pair<Int, Int>>()
+                    for (indexValue in it.withIndex()) {
+                        if (indexValue.value == '&') {
+                            indices.add(Pair(indexValue.index, currentOffset))
+                        }
+                        currentOffset++
+                    }
+                    currentOffset += tableLineSeparator.length
+                    indices.toList()
+                }
+
+                // Get the desired index of the first &, second &, etc.
+                // Relative to the line start
+                val levelIndices = mutableListOf<Int>()
+                for (line in ampersandIndices) {
+                    for (i in line.indices) {
+                        if (i >= levelIndices.size) {
+                            levelIndices.add(line[i].first)
+                        }
+                        else if (line[i].first > levelIndices[i]) {
+                            levelIndices[i] = line[i].first
+                        }
+                    }
+                }
+
+                // Find level of 'right' block (which is a &)
+                val rightElementOffset = right.node?.psi?.textOffset ?: return@customRule null
+                // Current and desired index relative to line start, e.g. in case 'asdf__&` is desired, index 6
+                var currentLevelIndex = -1
+                var desiredLevelIndex = -1
+                for (line in ampersandIndices) {
+                    for (i in line.indices) {
+                        // Try to find the offset of the right & in the list of all & offsets
+                        if (line[i].second == rightElementOffset) {
+                            currentLevelIndex = line[i].first
+                            if (i < levelIndices.size) {
+                                desiredLevelIndex = levelIndices[i]
+                            }
+                        }
+                    }
+                }
+                if (currentLevelIndex == -1 || desiredLevelIndex == -1 || currentLevelIndex > desiredLevelIndex) return@customRule null
+
+                val spaces = desiredLevelIndex - currentLevelIndex
+
+                return@customRule createSpacing(
+                        minSpaces = spaces,
+                        maxSpaces = spaces,
+                        minLineFeeds = 0,
+                        keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
+                        keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
             }
         }
     }

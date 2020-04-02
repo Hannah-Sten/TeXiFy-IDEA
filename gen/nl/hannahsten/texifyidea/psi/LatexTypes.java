@@ -29,6 +29,7 @@ public interface LatexTypes {
   IElementType PARAMETER = new LatexElementType("PARAMETER");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
+  IElementType AMPERSAND = new LatexTokenType("&");
   IElementType BEGIN_TOKEN = new LatexTokenType("\\begin");
   IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
   IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");

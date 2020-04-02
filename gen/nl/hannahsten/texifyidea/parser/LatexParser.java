@@ -1,15 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -328,10 +328,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (NORMAL_TEXT_WORD | STAR)+
+  // (NORMAL_TEXT_WORD | STAR | AMPERSAND)+
   public static boolean normal_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text")) return false;
-    if (!nextTokenIs(b, "<normal text>", NORMAL_TEXT_WORD, STAR)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NORMAL_TEXT, "<normal text>");
     r = normal_text_0(b, l + 1);
@@ -344,12 +343,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT_WORD | STAR
+  // NORMAL_TEXT_WORD | STAR | AMPERSAND
   private static boolean normal_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text_0")) return false;
     boolean r;
     r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
+    if (!r) r = consumeToken(b, AMPERSAND);
     return r;
   }
 

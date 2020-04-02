@@ -183,6 +183,8 @@ object Magic {
         @JvmField
         val listingEnvironments = hashSetOf("itemize", "enumerate", "description")
 
+        val tableEnvironments = hashSetOf("tabular") // todo
+
         /**
          * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
          *
