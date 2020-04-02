@@ -5,16 +5,18 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.algorithm.BFS
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.files.findInclusions
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.getIncludedFiles
+import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
+import nl.hannahsten.texifyidea.util.files.searchFileByImportPaths
+import java.util.*
 
 /**
- * @author Hannah Schellekens
+ * This inspection only detects inclusion loops involving two files.
+ *
+ * If ever it is extended to more files, great care should be taken for a good performance.
  */
 open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
@@ -27,45 +29,45 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        // Run a BFS on all file inclusions to check for duplicate files.
-        val root = file.findRootFile()
-        val covered: MutableSet<PsiFile> = mutableSetOf(root)
-        val duplicate: MutableSet<PsiFile> = HashSet()
-        val bfs = BFS(root, PsiFile::findInclusions)
-        bfs.setIterationAction {
-            // Set that contains all the inclusions in the current file.
-            // This is used to disregard files that have been included multiple times in the same file.
-            val inThisFile = HashSet<PsiFile>()
-            val inclusions = it.findInclusions()
+        // See Project.allFileInclusions()
 
-            for (inclusion in inclusions) {
-                if (covered.contains(inclusion) && inclusion !in inThisFile) {
-                    duplicate.add(inclusion)
-                }
+        val allIncludeCommands = LatexIncludesIndex.getItems(file.project)
 
-                covered.add(inclusion)
-                inThisFile.add(inclusion)
+        // Maps every file to all the files it includes.
+        val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
+
+        // Find all related files.
+        for (command in allIncludeCommands) {
+            // Find included files
+            val declaredIn = command.containingFile
+
+            // Check if import package is used
+            val fileMaybe = searchFileByImportPaths(command)
+            if (fileMaybe != null) {
+                inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(fileMaybe)
             }
-            BFS.BFSAction.CONTINUE
-        }
-        bfs.execute()
+            else {
+                val includedNames = command.getAllRequiredArguments() ?: continue
 
-        // Look through all inclusion commands to see if they include duplicates.
-        val commands = LatexIncludesIndex.getItems(file)
-        for (command in commands) {
-            val name = command.name ?: continue
-            for (psiFile in command.getIncludedFiles(false)) {
-                if (psiFile in duplicate) {
-                    descriptors.add(manager.createProblemDescriptor(
-                            command,
-                            TextRange(name.length + 1, command.textLength - 1),
-                            "File inclusion loop found.",
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly
-                    ))
-                    break
+                for (includedName in includedNames) {
+                    val referenced = declaredIn.findFile(includedName)
+                            ?: continue
+
+                    inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
+
+                    if (declaredIn == file && (declaredIn.virtualFile.nameWithoutExtension == includedName || inclusions.getOrDefault(referenced, mutableSetOf()).contains(declaredIn))) {
+                        descriptors.add(manager.createProblemDescriptor(
+                                command,
+                                TextRange(0, command.textLength - 1),
+                                "File inclusion loop found for files ${referenced.name} and ${declaredIn.name}.",
+                                ProblemHighlightType.GENERIC_ERROR,
+                                isOntheFly
+                        ))
+                    }
+
                 }
             }
+
         }
 
         return descriptors

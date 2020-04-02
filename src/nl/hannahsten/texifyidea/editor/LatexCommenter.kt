@@ -9,11 +9,11 @@ open class LatexCommenter : Commenter {
 
     override fun getLineCommentPrefix() = "%"
 
-    override fun getBlockCommentPrefix() = ""
+    override fun getBlockCommentPrefix(): String? = null
 
-    override fun getBlockCommentSuffix() = ""
+    override fun getBlockCommentSuffix(): String? = null
 
-    override fun getCommentedBlockCommentPrefix() = ""
+    override fun getCommentedBlockCommentPrefix(): String? = null
 
-    override fun getCommentedBlockCommentSuffix() = ""
+    override fun getCommentedBlockCommentSuffix(): String? = null
 }
