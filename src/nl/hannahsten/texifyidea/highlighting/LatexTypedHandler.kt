@@ -39,7 +39,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
         if (file is LatexFile) {
             if (c == '$' && getInstance().automaticSecondInlineMathSymbol) {
                 val tokenType = getTypedTokenType(editor)
-                if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN) {
+                if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN && tokenType !== LatexTypes.INLINE_MATH_END) {
                     editor.document.insertString(
                             editor.caretModel.offset, c.toString())
                     return Result.STOP
