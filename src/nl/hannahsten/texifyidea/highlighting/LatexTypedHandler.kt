@@ -79,6 +79,14 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     }
 
     /**
+     * Disable autocomplete when typing a period, otherwise starting a new line
+     * at the end of a line would be impossible (because postfix templates).
+     */
+    override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
+        return if (charTyped != '.') super.checkAutoPopup(charTyped, project, editor, file) else Result.STOP
+    }
+
+    /**
      * Upon typing `\[`, inserts the closing delimiter `\]`.
      */
     private fun insertDisplayMathClose(editor: Editor): Result {

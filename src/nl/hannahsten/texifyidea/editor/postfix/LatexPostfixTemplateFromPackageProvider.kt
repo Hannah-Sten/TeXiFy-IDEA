@@ -10,8 +10,7 @@ import nl.hannahsten.texifyidea.util.insertUsepackage
 abstract class LatexPostfixTemplateFromPackageProvider(private val pack: Package) : PostfixTemplateProvider {
     abstract override fun getTemplates(): MutableSet<PostfixTemplate>
 
-    override fun isTerminalSymbol(currentChar: Char): Boolean =
-            (currentChar == '.')
+    override fun isTerminalSymbol(currentChar: Char): Boolean = (currentChar == '.' || currentChar == ',')
 
     override fun afterExpand(file: PsiFile, editor: Editor) {
         file.insertUsepackage(pack)

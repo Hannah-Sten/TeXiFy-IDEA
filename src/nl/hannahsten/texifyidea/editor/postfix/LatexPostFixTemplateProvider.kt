@@ -1,11 +1,12 @@
 package nl.hannahsten.texifyidea.editor.postfix
 
+import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 
-object LatexPostFixTemplateProvider : PostfixTemplateProvider {
+object LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContributor() {
     private val templates = mutableSetOf<PostfixTemplate>(
             LatexWrapWithGroupPostfixTemplate,
             LatexWrapWithOpenGroupPostfixTemplate,
@@ -30,8 +31,7 @@ object LatexPostFixTemplateProvider : PostfixTemplateProvider {
 
     override fun getTemplates(): MutableSet<PostfixTemplate> = (templates + wrapWithTextCommandTemplates + wrapWithMathCommandTemplates) as MutableSet<PostfixTemplate>
 
-    override fun isTerminalSymbol(currentChar: Char): Boolean =
-            (currentChar == '.')
+    override fun isTerminalSymbol(currentChar: Char): Boolean = (currentChar == '.')
 
     override fun afterExpand(file: PsiFile, editor: Editor) {}
 
