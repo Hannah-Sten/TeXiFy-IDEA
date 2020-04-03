@@ -33,11 +33,12 @@
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="193.4099.13" until-build="193.*"/>
+    <idea-version since-build="201.3119"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
 
     <description><![CDATA[
@@ -307,8 +308,18 @@
         <fileTemplateGroup implementation="nl.hannahsten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Live templates -->
-        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext"/>
+        <defaultLiveTemplates file="/liveTemplates/LaTeX" hidden="false"/>
+        <defaultLiveTemplates file="/liveTemplates/Surround" hidden="false"/>
+        <defaultLiveTemplates file="/liveTemplates/hidden/LaTeX" hidden="true"/>
+        <defaultLiveTemplates file="/liveTemplates/hidden/BibTeX" hidden="true"/>
+        <defaultLiveTemplates file="/liveTemplates/hidden/Math" hidden="true"/>
+
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic"/>
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
+
+        <!-- Surrounders -->
+        <lang.surroundDescriptor language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.surroundwith.LatexSurroundDescriptor"/>
 
         <!-- Application settings -->
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
@@ -383,6 +394,10 @@
 
         <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
         <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
+
+        <!-- Tool windows -->
+        <toolWindow id="Equation Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/equation-preview.svg" canCloseContents="true" />
+        <toolWindow id="Tikz Picture Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/tikz-preview.svg" canCloseContents="true" />
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>

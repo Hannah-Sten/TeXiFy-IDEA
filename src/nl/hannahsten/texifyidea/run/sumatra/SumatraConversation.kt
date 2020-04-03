@@ -19,6 +19,9 @@ val isSumatraAvailable: Boolean by lazy {
     try {
         DDEClientConversation()
     }
+    catch (e: UnsatisfiedLinkError) {
+        Log.logf("Native library DLLs could not be found.")
+        return@lazy false}
     catch (e: NoClassDefFoundError) {
         Log.logf("Native library DLLs could not be found.")
         return@lazy false

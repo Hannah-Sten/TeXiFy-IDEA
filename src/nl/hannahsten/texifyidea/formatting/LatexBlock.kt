@@ -28,7 +28,7 @@ class LatexBlock(
             if (child.elementType !== TokenType.WHITE_SPACE) {
                 val block: Block = LatexBlock(
                         child,
-                        wrappingStrategy.getWrap(child),
+                        wrappingStrategy.getWrap(),
                         null,
                         spacingBuilder,
                         wrappingStrategy
