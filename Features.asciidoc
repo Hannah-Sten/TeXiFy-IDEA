@@ -42,6 +42,7 @@ toc::[]
 * Brace matching
 * link:Live-templates[Live templates]
 * Custom live templates
+* link:Postfix-templates[Postfix templates]
 * Custom macros with shortcuts
 * Spellchecking with custom dictionaries
 * link:Grazie[Support for the Grazie grammar and spellchecking plugin]
