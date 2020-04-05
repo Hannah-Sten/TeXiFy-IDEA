@@ -310,9 +310,6 @@
         <!-- Live templates -->
         <defaultLiveTemplates file="/liveTemplates/LaTeX" hidden="false"/>
         <defaultLiveTemplates file="/liveTemplates/Surround" hidden="false"/>
-        <defaultLiveTemplates file="/liveTemplates/hidden/LaTeX" hidden="true"/>
-        <defaultLiveTemplates file="/liveTemplates/hidden/BibTeX" hidden="true"/>
-        <defaultLiveTemplates file="/liveTemplates/hidden/Math" hidden="true"/>
 
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
