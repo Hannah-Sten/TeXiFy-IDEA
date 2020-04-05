@@ -109,10 +109,10 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
                 if (right.node?.text != "&") return@customRule null
 
+                val tableLineSeparator = "\\\\"
                 val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
                 val content = contentElement?.text ?: return@customRule null
                 val contentTextOffset = contentElement.textOffset
-                val tableLineSeparator = "\\\\"
                 val contentLines = content.split(tableLineSeparator).toMutableList()
                 if (contentLines.size < 2) return@customRule null
                 val indent = contentLines[1].getIndent()
@@ -133,8 +133,21 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                     indices.toList()
                 }
 
+                val contentWithoutRules = content.split("\n").mapNotNull { line ->
+                    when {
+                        line.contains(tableLineSeparator) -> {
+                            // remove everything after \\
+                            line.split(tableLineSeparator).first() + tableLineSeparator
+                        }
+                        line.count { it == '&'} == 0 -> null
+                        else -> line
+                    }
+                }.joinToString("\n")
+                val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator).map { it + tableLineSeparator }.toMutableList()
+                contentLinesWithoutRules[0] = indent + contentLinesWithoutRules.first()
+
                 // Remove all extra spaces and remember how many we removed
-                val newLinesAndRelativeIndices = contentLines.map { line ->
+                val newLinesAndRelativeIndices = contentLinesWithoutRules.map { line ->
                     // (relative index after removing spaces, number of spaces removed on this line before this ampersand)
                     val indices = mutableListOf<Pair<Int, Int>>()
                     var newLine = ""
@@ -145,8 +158,11 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                                 indices += Pair(i - removedSpaces, removedSpaces)
                                 newLine += value
                             }
-                            ' ' -> {
-                                removedSpaces++
+                            in setOf(' ','\n') -> {
+                                if (i > 0 && i < line.length - 1) {
+                                    if (line[i-1] !in setOf(' ', '&', '\n') && line[i+1] !in  setOf(' ', '&', '\n')) newLine += value
+                                    else removedSpaces++
+                                }
                             }
                             else -> {
                                 newLine += value
@@ -168,6 +184,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 for (level in (0 until numberOfAmpersands)) {
                     for ((i, it) in relativeIndices.withIndex()) {
                         if (it.isEmpty()) continue
+                        if (i >= relativeIndices.size) continue
                         if (level >= relativeIndices.size) continue
 
                         // Get new index of this level based on movements of lower levels of this line

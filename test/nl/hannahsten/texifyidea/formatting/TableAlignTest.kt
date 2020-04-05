@@ -11,6 +11,23 @@ class TableAlignTest : BasePlatformTestCase() {
         super.setUp()
     }
 
+    fun testIssue() {
+        """
+            \begin{tabular}{l c r}
+                Date & In tree: & Raining? \\ \hline
+                April 26 & Yes & Yes \\
+                June 7 & Yes & No \\
+                Juli 20 & Yes & No \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{l c r}
+                Date     & In tree: & Raining? \\ \hline
+                April 26 & Yes      & Yes      \\
+                June 7   & Yes      & No       \\
+                Juli 20  & Yes      & No       \\
+            \end{tabular}
+        """.trimIndent()
+    }
     fun testTooMuchSpaces() {
         """
         \begin{tabular}{ccc}
@@ -72,7 +89,6 @@ class TableAlignTest : BasePlatformTestCase() {
             \begin{tabular}{ccc}
                 \hrule
                 a & b & \\
-                \hrule
                 cccc & d & \\
                 \hrule
             \end{tabular}
@@ -80,9 +96,103 @@ class TableAlignTest : BasePlatformTestCase() {
             \begin{tabular}{ccc}
                 \hrule
                 a    & b & \\
-                \hrule
                 cccc & d & \\
                 \hrule
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testHorizontalRules() {
+        """
+            \begin{tabular}{ccc}
+                \toprule
+                a & b & \\
+                \midrule
+                cccc & d & \\
+                cccc & d & \\
+                \bottomrule
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                \toprule
+                a    & b & \\
+                \midrule
+                cccc & d & \\
+                cccc & d & \\
+                \bottomrule
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testNewlines() {
+        """
+            \begin{tabular}{cccc}
+                aaa & b & 
+                a & d \\
+                c & d & 
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cccc}
+                aaa & b &
+                a     & d \\
+                c   & d &
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testNotAllNewlines() {
+        """
+            \begin{tabular}{cccc}
+                a & b & ccccc & d \\
+                aaa & b & 
+                a & d \\
+                c & d & 
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cccc}
+                a   & b & ccccc & d \\
+                aaa & b &
+                a     & d \\
+                c   & d &
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testWithWords() {
+        """
+            \begin{tabular}{ccc}
+                als ik naar de winkel fiets & b & \\
+                c & d & \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                als ik naar de winkel fiets & b & \\
+                c                           & d & \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+
+    fun testMultiLine() {
+        """
+            \begin{tabular}{ccc}
+                a hallo & b & \\
+                cccc    & d & \\
+                Ik      &
+                meer &
+                regels \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                a hallo & b & \\
+                cccc    & d & \\
+                Ik      &
+                meer &
+                regels \\
             \end{tabular}
         """.trimIndent()
     }
@@ -96,9 +206,9 @@ class TableAlignTest : BasePlatformTestCase() {
             \end{tabular}
         """.trimIndent() `should be reformatted to` """
             \begin{tabular}{ccc}
-                a    & b   & \\
-                cccc & d   & \\
-                     & aaa & \\
+                a    & b & \\
+                cccc & d & \\
+                & aaa    & \\
             \end{tabular}
         """.trimIndent()
     }
