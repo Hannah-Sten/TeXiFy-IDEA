@@ -308,8 +308,8 @@
         <fileTemplateGroup implementation="nl.hannahsten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Live templates -->
-        <defaultLiveTemplates file="/liveTemplates/LaTeX" hidden="false"/>
-        <defaultLiveTemplates file="/liveTemplates/Surround" hidden="false"/>
+        <defaultLiveTemplates file="liveTemplates/LaTeX" hidden="false"/>
+        <defaultLiveTemplates file="liveTemplates/Surround" hidden="false"/>
 
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
