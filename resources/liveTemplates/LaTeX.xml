@@ -37,7 +37,6 @@
     <template name="sum" value="\sum_{$FROM$}^{$TO$} $END$" description="Sum with sub- and superscript" toReformat="false" toShortenFQNames="true">
         <variable name="FROM" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="TO" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="CONTENT" expression="" defaultValue="" alwaysStopAt="true"/>
         <context>
             <option name="LATEX_MATH" value="true"/>
         </context>
@@ -46,7 +45,6 @@
     <template name="int" value="\int_{$FROM$}^{$TO$} $END$" description="Integral with sub- and superscript" toReformat="false" toShortenFQNames="true">
         <variable name="FROM" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="TO" expression="" defaultValue="" alwaysStopAt="true"/>
-        <variable name="CONTENT" expression="" defaultValue="" alwaysStopAt="true"/>
         <context>
             <option name="LATEX_MATH" value="true"/>
         </context>
