@@ -28,7 +28,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
         custom {
             customRule { parent, _, right ->
-                // Don't insert of remove spaces inside the text in a verbatim environment.
+                // Don't insert or remove spaces inside the text in a verbatim environment.
                 if (parent.node?.elementType === NORMAL_TEXT) {
                     if (parent.node?.psi?.inDirectEnvironment(Magic.Environment.verbatim) == true) {
                         return@customRule Spacing.getReadOnlySpacing()
@@ -91,7 +91,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         // Align & in tables
         // Unfortunately we have to do this manually because Alignment only aligns characters if they are the first non-whitespace in a line of code
         custom {
-            customRule { parent, _, right ->
+            customRule { parent, left, right ->
                 // Check if parent is in environment content of a table environment
                 if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return@customRule null
 
@@ -107,16 +107,25 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
                 // Fix environment content not starting with indent
                 contentLines[0] = indent + contentLines.first()
-
+                // Remove all duplicate white spaces around ampersands
+//                val contentLines = originalContentLines.map {
+//                    indent + it.replace("""\s+""".toRegex(), " ").drop(1)
+//                }
                 // Find indices of &, relative to line start and text offset
 
                 // We added fake content, but it doesn't count for the textoffset
                 var currentOffset = contentTextOffset - indent.length
-                val ampersandIndicesPerLine = contentLines.map {
-                    val indices = mutableListOf<Pair<Int, Int>>()
-                    for (indexValue in it.withIndex()) {
+                val ampersandIndicesPerLine = contentLines.map { line ->
+                    val indices = mutableListOf<Triple<Int, Int, Int>>()
+                    for (indexValue in line.withIndex()) {
                         if (indexValue.value == '&') {
-                            indices.add(Pair(indexValue.index, currentOffset))
+                            // Get the endoffset of the last non-whitespace character before this ampersand.
+                            // This is the size of the indent (the start of the line) if the ampersand is the first non whitespace character.
+                            val lastNonWhiteSpace = (indexValue.index - 1 downTo 0).firstOrNull { !line[it].isWhitespace() }
+                                    ?.plus(1)
+                                    ?: indent.length - 1
+
+                            indices.add(Triple(lastNonWhiteSpace, indexValue.index, currentOffset))
                         }
                         currentOffset++
                     }
@@ -137,7 +146,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                         // Get new index of this level based on movements of lower levels of this line
 
                         // Total added extra spaces on this line so far
-                        val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - initialRelativeAndAbsoluteIndices[level - 1].first
+                        val totalAddedSpaces = if (level == 0) 0 else listOf(0, levelIndices[level - 1] - initialRelativeAndAbsoluteIndices[level - 1].first, levelIndices[level - 1] - initialRelativeAndAbsoluteIndices[level - 1].second).min() ?: 0
 
                         val newIndex = totalAddedSpaces + initialRelativeAndAbsoluteIndices[level].first
 
@@ -159,7 +168,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 for (initialRelativeAndAbsoluteIndices in ampersandIndicesPerLine) {
                     for (level in initialRelativeAndAbsoluteIndices.indices) {
                         // Try to find the offset of the right & in the list of all & offsets
-                        if (initialRelativeAndAbsoluteIndices[level].second == rightElementOffset) {
+                        if (initialRelativeAndAbsoluteIndices[level].third == rightElementOffset) {
                             val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - initialRelativeAndAbsoluteIndices[level - 1].first
 
                             val currentLevelIndex = totalAddedSpaces + initialRelativeAndAbsoluteIndices[level].first
