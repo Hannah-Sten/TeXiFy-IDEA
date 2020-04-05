@@ -39,6 +39,20 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testBeginSpaceRemoval() {
+        """
+            \begin{tabular}{ccc}
+                a &   b & \\
+                c & d & \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                a & b & \\
+                c & d & \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
     fun testNormalTable() {
         """
         \begin{tabular}{ccc}

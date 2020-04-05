@@ -91,6 +91,18 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         // Align & in tables
         // Unfortunately we have to do this manually because Alignment only aligns characters if they are the first non-whitespace in a line of code
         custom {
+            customRule { parent, left, _ ->
+                if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return@customRule null
+
+                if (left.node?.text != "&") return@customRule null
+
+                return@customRule createSpacing(
+                        minSpaces = 1,
+                        maxSpaces = 1,
+                        minLineFeeds = 0,
+                        keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
+                        keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+            }
             customRule { parent, left, right ->
                 // Check if parent is in environment content of a table environment
                 if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return@customRule null
@@ -107,48 +119,63 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
                 // Fix environment content not starting with indent
                 contentLines[0] = indent + contentLines.first()
-                // Remove all duplicate white spaces around ampersands
-//                val contentLines = originalContentLines.map {
-//                    indent + it.replace("""\s+""".toRegex(), " ").drop(1)
-//                }
-                // Find indices of &, relative to line start and text offset
 
-                // We added fake content, but it doesn't count for the textoffset
+                // We added fake content, but it doesn't count for the text offset
                 var currentOffset = contentTextOffset - indent.length
-                val ampersandIndicesPerLine = contentLines.map { line ->
-                    val indices = mutableListOf<Triple<Int, Int, Int>>()
-                    for (indexValue in line.withIndex()) {
-                        if (indexValue.value == '&') {
-                            // Get the endoffset of the last non-whitespace character before this ampersand.
-                            // This is the size of the indent (the start of the line) if the ampersand is the first non whitespace character.
-                            val lastNonWhiteSpace = (indexValue.index - 1 downTo 0).firstOrNull { !line[it].isWhitespace() }
-                                    ?.plus(1)
-                                    ?: indent.length - 1
-
-                            indices.add(Triple(lastNonWhiteSpace, indexValue.index, currentOffset))
-                        }
+                // Find the current absolute offset of all the ampersands
+                val absoluteAmpersandIndicesPerLine = contentLines.map { line ->
+                    val indices = mutableListOf<Int>()
+                    line.forEach {
+                        if (it == '&') indices.add(currentOffset)
                         currentOffset++
                     }
                     currentOffset += tableLineSeparator.length
                     indices.toList()
                 }
 
+                // Remove all extra spaces and remember how many we removed
+                val newLinesAndRelativeIndices = contentLines.map { line ->
+                    // (relative index after removing spaces, number of spaces removed on this line before this ampersand)
+                    val indices = mutableListOf<Pair<Int, Int>>()
+                    var newLine = ""
+                    var removedSpaces = 0
+                    line.withIndex().forEach { (i, value) ->
+                        when (value){
+                            '&' -> {
+                                indices += Pair(i - removedSpaces, removedSpaces)
+                                newLine += value
+                            }
+                            ' ' -> {
+                                removedSpaces++
+                            }
+                            else -> {
+                                newLine += value
+                            }
+                        }
+                    }
+                    Pair(newLine, indices.toList())
+                }
+
+                val newContentLines = newLinesAndRelativeIndices.map { it.first }
+                val relativeIndices = newLinesAndRelativeIndices.map { it.second }
+
                 // Get the desired index of the first &, second &, etc.
                 // Relative to the line start
                 // Because the placement of the second & depends on the placement of the first one,
                 // we have to take them one by one
                 val levelIndices = mutableListOf<Int>()
-                val numberOfAmpersands = contentLines.first().count { it == '&' }
+                val numberOfAmpersands = newContentLines.first().count { it == '&' }
                 for (level in (0 until numberOfAmpersands)) {
-                    for (initialRelativeAndAbsoluteIndices in ampersandIndicesPerLine) {
-                        if (level >= initialRelativeAndAbsoluteIndices.size) continue
+                    for ((i, it) in relativeIndices.withIndex()) {
+                        if (it.isEmpty()) continue
+                        if (level >= relativeIndices.size) continue
 
                         // Get new index of this level based on movements of lower levels of this line
 
                         // Total added extra spaces on this line so far
-                        val totalAddedSpaces = if (level == 0) 0 else listOf(0, levelIndices[level - 1] - initialRelativeAndAbsoluteIndices[level - 1].first, levelIndices[level - 1] - initialRelativeAndAbsoluteIndices[level - 1].second).min() ?: 0
+                        val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - it[level - 1].first
 
-                        val newIndex = totalAddedSpaces + initialRelativeAndAbsoluteIndices[level].first
+                        val newIndex = totalAddedSpaces + it[level].first
 
                         // If this level does not exist yet
                         if (level >= levelIndices.size) {
@@ -165,13 +192,13 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 val rightElementOffset = right.node?.psi?.textOffset ?: return@customRule null
                 // Current and desired index relative to line start, e.g. in case 'asdf__&` is desired, index 6
                 var spaces: Int? = null
-                for (initialRelativeAndAbsoluteIndices in ampersandIndicesPerLine) {
-                    for (level in initialRelativeAndAbsoluteIndices.indices) {
+                for ((i, absoluteIndices) in absoluteAmpersandIndicesPerLine.withIndex()) {
+                    for (level in absoluteIndices.indices) {
                         // Try to find the offset of the right & in the list of all & offsets
-                        if (initialRelativeAndAbsoluteIndices[level].third == rightElementOffset) {
-                            val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - initialRelativeAndAbsoluteIndices[level - 1].first
+                        if (absoluteIndices[level] == rightElementOffset) {
+                            val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - relativeIndices[i][level - 1].first
 
-                            val currentLevelIndex = totalAddedSpaces + initialRelativeAndAbsoluteIndices[level].first
+                            val currentLevelIndex = totalAddedSpaces + relativeIndices[i][level].first
                             val desiredLevelIndex = if (level < levelIndices.size) {
                                 levelIndices[level]
                             }
