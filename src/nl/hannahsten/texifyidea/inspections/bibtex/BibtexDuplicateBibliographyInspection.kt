@@ -56,6 +56,8 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                         if (command.containingFile != file) continue
 
                         val parameterIndex = command.requiredParameter(0)?.indexOf(fileName) ?: break
+                        if (parameterIndex < 0) break
+
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 TextRange(parameterIndex, parameterIndex + fileName.length).shiftRight(command.commandToken.textLength + 1),
