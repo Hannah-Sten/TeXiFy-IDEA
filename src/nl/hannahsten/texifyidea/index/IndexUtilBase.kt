@@ -2,6 +2,7 @@
 
 package nl.hannahsten.texifyidea.index
 
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -130,7 +131,14 @@ abstract class IndexUtilBase<T : PsiElement>(
      * @param project
      *          The project instance.
      */
-    fun getKeys(project: Project) = StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray()
+    fun getKeys(project: Project): Array<String> {
+        return if (!DumbService.isDumb(project)) {
+            StubIndex.getInstance().getAllKeys(indexKey, project).toTypedArray()
+        }
+        else {
+            emptyArray()
+        }
+    }
 
     /**
      * Get the key of the index.

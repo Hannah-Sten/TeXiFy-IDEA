@@ -53,7 +53,7 @@ class LatexBlock(
         // would be relative to the open brace of the group instead of the
         // (usually) command.
         if (myNode.elementType === LatexTypes.CONTENT
-                && myNode.treeParent.elementType in setOf(LatexTypes.GROUP, LatexTypes.OPEN_GROUP)) {
+                && myNode.treeParent.elementType in setOf(LatexTypes.GROUP, LatexTypes.OPTIONAL_PARAM)) {
             // When in a verbatim environment, don't touch the indentation inside a group (doesn't always work).
             if (myNode.psi.inDirectEnvironment(Magic.Environment.verbatim)) {
                 return null

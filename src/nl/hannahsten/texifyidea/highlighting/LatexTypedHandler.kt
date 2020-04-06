@@ -46,10 +46,10 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             if (c == '$') {
                 val caret = editor.caretModel
                 val element = file.findElementAt(caret.offset)
-                val parent = PsiTreeUtil.getParentOfType(element, LatexInlineMath::class.java)
-                        ?: return Result.CONTINUE
+                val parent = PsiTreeUtil.getParentOfType(element, LatexInlineMath::class.java) ?: return Result.CONTINUE
                 val endOffset = parent.textRange.endOffset
-                if (caret.offset == endOffset - 1) { // Caret is at the end of the environment, so run over the closing $
+                if (caret.offset == endOffset - 1) {
+                    // Caret is at the end of the environment, so run over the closing $
                     caret.moveCaretRelatively(1, 0, false, false, true)
                     return Result.STOP
                 }
@@ -62,7 +62,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
         if (file is LatexFile) {
             if (c == '$' && getInstance().automaticSecondInlineMathSymbol) {
                 val tokenType = getTypedTokenType(editor)
-                if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN) {
+                if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN && tokenType !== LatexTypes.INLINE_MATH_END) {
                     editor.document.insertString(
                             editor.caretModel.offset, c.toString())
                     return Result.STOP
@@ -91,10 +91,10 @@ class LatexTypedHandler : TypedHandlerDelegate() {
      */
     private fun insertDisplayMathClose(editor: Editor): Result {
         val tokenType = getTypedTokenType(editor)
-        if (tokenType === LatexTypes.DISPLAY_MATH_START) { // Checks if a bracket has already been inserted, if so: don't insert a 2nd one.
+        if (tokenType === LatexTypes.DISPLAY_MATH_START) {
+            // Checks if a bracket has already been inserted, if so: don't insert a 2nd one.
             val offset = editor.caretModel.offset
-            val bracketHuh = editor.document
-                    .getText(TextRange.from(offset, 1))
+            val bracketHuh = editor.document.getText(TextRange.from(offset, 1))
             val insertString = "\\" + if ("]" == bracketHuh) "" else "]"
             editor.document.insertString(offset, insertString)
             return Result.STOP
@@ -107,9 +107,9 @@ class LatexTypedHandler : TypedHandlerDelegate() {
      */
     private fun insertRobustInlineMathClose(editor: Editor): Result {
         val tokenType = getTypedTokenType(editor)
-        if (tokenType === LatexTypes.INLINE_MATH_START) { // Only insert backslash because the closing parenthesis is already inserted by the PairedBraceMatcher.
-            editor.document
-                    .insertString(editor.caretModel.offset, "\\")
+        if (tokenType === LatexTypes.INLINE_MATH_START) {
+            // Only insert backslash because the closing parenthesis is already inserted by the PairedBraceMatcher.
+            editor.document.insertString(editor.caretModel.offset, "\\")
             return Result.STOP
         }
         return Result.CONTINUE
