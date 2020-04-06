@@ -6,12 +6,14 @@
 * Add support for entering relative paths in the run configuration. (#1311)
 * Add option to include backslash in word selection. (#1316)
 * Do not auto-insert a second $ when the first $ closes an inline math environment. (#1323)
+* Improve performance of the inclusion loop inspection. (#1327)
 
 # Bug fixes
 * Fix parse error on unmatched brackets in math environments. (#1319)
 * Fix parse error for \@ifnextchar. (#1320)
 * Fix parse error when inline math inside \text inside inline math is used. (#1322)
 * Fix parse error when dollar signs are used in table preamble. (#1324)
+* Fixed crashes. (#1332)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/19?closed=1).
 
@@ -25,7 +27,7 @@ A detailed overview of the changes can be found on the [milestone page](https://
 * Add support for opening files from include commands. (#1191)
 * Many more improvements to file reference resolving. (#1281)
 * Add support for a custom output or auxiliary directory. (#1201)
-* Add support for environment variables in the LaTeX run configuration. (#1289).
+* Add support for environment variables in the LaTeX run configuration. (#1289)
 * Add biblatex commands to the autocomplete. (#1195)
 * Add support for labels defined with Verbatim or lstlisting environments. (#1232)
 * Add support for \graphicspath from the graphicx package. (#1224, #1295)
