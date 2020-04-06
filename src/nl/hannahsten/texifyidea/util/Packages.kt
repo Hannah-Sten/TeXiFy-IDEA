@@ -101,19 +101,17 @@ object PackageUtils {
 
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
 
-        runWriteAction {
-            if (anchorAfter != null) {
-                val anchorBefore = anchorAfter.node.treeNext
-                if (prependNewLine) {
-                    val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
-                    anchorAfter.parent.node.addChild(newLine, anchorBefore)
-                }
-                anchorAfter.parent.node.addChild(newNode, anchorBefore)
+        if (anchorAfter != null) {
+            val anchorBefore = anchorAfter.node.treeNext
+            if (prependNewLine) {
+                val newLine = LatexPsiHelper(file.project).createFromText("\n").firstChild.node
+                anchorAfter.parent.node.addChild(newLine, anchorBefore)
             }
-            else {
-                // Insert at beginning
-                file.node.addChild(newNode, file.firstChild.node)
-            }
+            anchorAfter.parent.node.addChild(newNode, anchorBefore)
+        }
+        else {
+            // Insert at beginning
+            file.node.addChild(newNode, file.firstChild.node)
         }
     }
 
@@ -329,7 +327,8 @@ object TexLivePackages {
         val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
         return try {
             lines[tlmgrIndex + 1].trim().dropLast(1) // Drop the : behind the package name.
-        } catch (e: IndexOutOfBoundsException) {
+        }
+        catch (e: IndexOutOfBoundsException) {
             null
         }
     }
