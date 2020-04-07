@@ -92,8 +92,8 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             customRule { parent, left, _ ->
                 return@customRule rightTableSpaceAlign(latexCommonSettings, parent, left)
             }
-            customRule { parent, left, right ->
-                return@customRule leftTableSpaceAlign(latexCommonSettings, parent, left, right)
+            customRule { parent, _, right ->
+                return@customRule leftTableSpaceAlign(latexCommonSettings, parent, right)
             }
         }
     }

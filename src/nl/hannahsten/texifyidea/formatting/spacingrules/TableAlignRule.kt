@@ -28,7 +28,7 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
             keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
 }
 
-fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock, right: ASTBlock): Spacing? {
+fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     // Check if parent is in environment content of a table environment
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
 
@@ -37,7 +37,6 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     val tableLineSeparator = "\\\\"
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
     val content = contentElement?.text ?: return null
-    val contentTextOffset = contentElement.textOffset
     val contentLines = content.split(tableLineSeparator).toMutableList()
     if (contentLines.size < 2) return null
     val indent = contentLines[1].getIndent()
@@ -45,7 +44,7 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     // Fix environment content not starting with indent
     contentLines[0] = indent + contentLines.first()
 
-    val absoluteAmpersandIndicesPerLine = getAmpersandOffsets(contentTextOffset, indent, contentLines, tableLineSeparator)
+    val absoluteAmpersandIndicesPerLine = getAmpersandOffsets(contentElement.textOffset, indent, contentLines, tableLineSeparator)
 
     val contentWithoutRules = removeRules(content, tableLineSeparator)
 
@@ -77,6 +76,10 @@ fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: Mu
     }
 }
 
+/**
+ * Remove lines without &, and everything after \\ to avoid confusing while aligning the &'s
+ * Assumes users place things such as \hline or \midrule after the \\ or on a separate line
+ */
 fun removeRules(content: String, tableLineSeparator: String): String {
     return content.split("\n").mapNotNull { line ->
         when {
@@ -107,17 +110,19 @@ fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, r
 
 /**
  * Remove all extra spaces and remember how many we removed
+ *
+ * @return List of pairs, each pair consists of a line and a list of indice (the offset in the line for this ampersand)
  */
-private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): List<Pair<String, List<Pair<Int, Int>>>> {
+private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): List<Pair<String, List<Int>>> {
     return contentLinesWithoutRules.map { line ->
         // (relative index after removing spaces, number of spaces removed on this line before this ampersand)
-        val indices = mutableListOf<Pair<Int, Int>>()
+        val indices = mutableListOf<Int>()
         var newLine = ""
         var removedSpaces = 0
         line.withIndex().forEach { (i, value) ->
             when (value){
                 '&' -> {
-                    indices += Pair(i - removedSpaces, removedSpaces)
+                    indices += i - removedSpaces
                     newLine += value
                 }
                 in setOf(' ','\n') -> {
@@ -141,7 +146,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  * Because the placement of the second & depends on the placement of the first one,
  * we have to take them one by one
  */
-private fun getLevelIndices(newContentLines: List<String>, relativeIndices: List<List<Pair<Int, Int>>>): MutableList<Int> {
+private fun getLevelIndices(newContentLines: List<String>, relativeIndices: List<List<Int>>): MutableList<Int> {
     val levelIndices = mutableListOf<Int>()
     val numberOfAmpersands = newContentLines.first().count { it == '&' }
     for (level in (0 until numberOfAmpersands)) {
@@ -153,9 +158,9 @@ private fun getLevelIndices(newContentLines: List<String>, relativeIndices: List
             // Get new index of this level based on movements of lower levels of this line
 
             // Total added extra spaces on this line so far
-            val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - it[level - 1].first
+            val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - it[level - 1]
 
-            val newIndex = totalAddedSpaces + it[level].first
+            val newIndex = totalAddedSpaces + it[level]
 
             // If this level does not exist yet
             if (level >= levelIndices.size) {
@@ -173,7 +178,7 @@ private fun getLevelIndices(newContentLines: List<String>, relativeIndices: List
 /**
  * Find level of 'right' block (which is a &)
  */
-private fun getLevelOfRightBlock(right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, relativeIndices: List<List<Pair<Int, Int>>>, levelIndices: MutableList<Int>): Int? {
+private fun getLevelOfRightBlock(right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, relativeIndices: List<List<Int>>, levelIndices: MutableList<Int>): Int? {
     val rightElementOffset = right.node?.psi?.textOffset ?: return null
     // Current and desired index relative to line start, e.g. in case 'asdf__&` is desired, index 6
     var spaces: Int? = null
@@ -181,9 +186,9 @@ private fun getLevelOfRightBlock(right: ASTBlock, absoluteAmpersandIndicesPerLin
         for (level in absoluteIndices.indices) {
             // Try to find the offset of the right & in the list of all & offsets
             if (absoluteIndices[level] == rightElementOffset) {
-                val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - relativeIndices[i][level - 1].first
+                val totalAddedSpaces = if (level == 0) 0 else levelIndices[level - 1] - relativeIndices[i][level - 1]
 
-                val currentLevelIndex = totalAddedSpaces + relativeIndices[i][level].first
+                val currentLevelIndex = totalAddedSpaces + relativeIndices[i][level]
                 val desiredLevelIndex = if (level < levelIndices.size) {
                     levelIndices[level]
                 }
