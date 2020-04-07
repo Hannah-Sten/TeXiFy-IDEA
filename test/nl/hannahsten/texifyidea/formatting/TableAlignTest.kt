@@ -28,6 +28,7 @@ class TableAlignTest : BasePlatformTestCase() {
             \end{tabular}
         """.trimIndent()
     }
+
     fun testTooMuchSpaces() {
         """
         \begin{tabular}{ccc}
