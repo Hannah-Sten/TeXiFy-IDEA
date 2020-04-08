@@ -28,191 +28,205 @@ class TableAlignTest : BasePlatformTestCase() {
             \end{tabular}
         """.trimIndent()
     }
-//
-//    fun testTooMuchSpaces() {
-//        """
-//        \begin{tabular}{ccc}
-//            a    & b       & \\
-//            cccc      & d & \\
-//        \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//        \begin{tabular}{ccc}
-//            a    & b & \\
-//            cccc & d & \\
-//        \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testSpacesEverywhere() {
-//        """
-//            \begin{tabular}{ccc}
-//                a    &    b & \\
-//                cccc & d   & \\
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{ccc}
-//                a    & b & \\
-//                cccc & d & \\
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testBeginSpaceRemoval() {
-//        """
-//            \begin{tabular}{ccc}
-//                a &   b & \\
-//                c & d & \\
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{ccc}
-//                a & b & \\
-//                c & d & \\
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testNormalTable() {
-//        """
-//        \begin{tabular}{ccc}
-//            a & b & \\
-//            cccc & d & \\
-//        \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//        \begin{tabular}{ccc}
-//            a    & b & \\
-//            cccc & d & \\
-//        \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testIgnoreHorizontalRules() {
-//        """
-//            \begin{tabular}{ccc}
-//                \hrule
-//                a & b & \\
-//                cccc & d & \\
-//                \hrule
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{ccc}
-//                \hrule
-//                a    & b & \\
-//                cccc & d & \\
-//                \hrule
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testHorizontalRules() {
-//        """
-//            \begin{tabular}{ccc}
-//                \toprule
-//                a & b & \\
-//                \midrule
-//                cccc & d & \\
-//                cccc & d & \\
-//                \bottomrule
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{ccc}
-//                \toprule
-//                a    & b & \\
-//                \midrule
-//                cccc & d & \\
-//                cccc & d & \\
-//                \bottomrule
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testNewlines() {
-//        """
-//            \begin{tabular}{cccc}
-//                aaa & b &
-//                a & d \\
-//                c & d &
-//                aaaaa & d \\
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{cccc}
-//                aaa & b &
-//                a     & d \\
-//                c   & d &
-//                aaaaa & d \\
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testNotAllNewlines() {
-//        """
-//            \begin{tabular}{cccc}
-//                a & b & ccccc & d \\
-//                aaa & b &
-//                a & d \\
-//                c & d &
-//                aaaaa & d \\
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{cccc}
-//                a   & b & ccccc & d \\
-//                aaa & b &
-//                a     & d \\
-//                c   & d &
-//                aaaaa & d \\
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testWithWords() {
-//        """
-//            \begin{tabular}{ccc}
-//                als ik naar de winkel fiets & b & \\
-//                c & d & \\
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{ccc}
-//                als ik naar de winkel fiets & b & \\
-//                c                           & d & \\
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//
-//    fun testMultiLine() {
-//        """
-//            \begin{tabular}{ccc}
-//                a hallo & b & \\
-//                cccc    & d & \\
-//                Ik      &
-//                meer &
-//                regels \\
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{ccc}
-//                a hallo & b & \\
-//                cccc    & d & \\
-//                Ik      &
-//                meer &
-//                regels \\
-//            \end{tabular}
-//        """.trimIndent()
-//    }
-//
-//    fun testLineStartWithAmpersand() {
-//        """
-//            \begin{tabular}{ccc}
-//                a    & b & \\
-//                cccc & d & \\
-//                & aaa & \\
-//            \end{tabular}
-//        """.trimIndent() `should be reformatted to` """
-//            \begin{tabular}{ccc}
-//                a    & b & \\
-//                cccc & d & \\
-//                & aaa    & \\
-//            \end{tabular}
-//        """.trimIndent()
-//    }
+
+    fun testTooMuchSpaces() {
+        """
+        \begin{tabular}{ccc}
+            a    & b       & \\
+            cccc      & d & \\
+        \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+        \begin{tabular}{ccc}
+            a    & b & \\
+            cccc & d & \\
+        \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testSpacesEverywhere() {
+        """
+            \begin{tabular}{ccc}
+                a    &    b & \\
+                cccc & d   & \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                a    & b & \\
+                cccc & d & \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testBeginSpaceRemoval() {
+        """
+            \begin{tabular}{ccc}
+                a &   b & \\
+                c & d & \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                a & b & \\
+                c & d & \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testNormalTable() {
+        """
+        \begin{tabular}{ccc}
+            a & b & \\
+            cccc & d & \\
+        \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+        \begin{tabular}{ccc}
+            a    & b & \\
+            cccc & d & \\
+        \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testIgnoreHorizontalRules() {
+        """
+            \begin{tabular}{ccc}
+                \hrule
+                a & b & \\
+                cccc & d & \\
+                \hrule
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                \hrule
+                a    & b & \\
+                cccc & d & \\
+                \hrule
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testHorizontalRules() {
+        """
+            \begin{tabular}{ccc}
+                \toprule
+                a & b & \\
+                \midrule
+                cccc & d & \\
+                cccc & d & \\
+                \bottomrule
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                \toprule
+                a    & b & \\
+                \midrule
+                cccc & d & \\
+                cccc & d & \\
+                \bottomrule
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testNewlines() {
+        """
+            \begin{tabular}{cccc}
+                aaa & b &
+                a & d \\
+                c & d &
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cccc}
+                aaa & b &
+                a     & d \\
+                c   & d &
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testNotAllNewlines() {
+        """
+            \begin{tabular}{cccc}
+                a & b & ccccc & d \\
+                aaa & b &
+                a & d \\
+                c & d &
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cccc}
+                a   & b & ccccc & d \\
+                aaa & b &
+                a     & d \\
+                c   & d &
+                aaaaa & d \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testWithWords() {
+        """
+            \begin{tabular}{ccc}
+                als ik naar de winkel fiets & b & \\
+                c & d & \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                als ik naar de winkel fiets & b & \\
+                c                           & d & \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+
+    fun testMultiLine() {
+        """
+            \begin{tabular}{ccc}
+                a hallo & b & \\
+                cccc    & d & \\
+                Ik      &
+                meer &
+                regels \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                a hallo & b & \\
+                cccc    & d & \\
+                Ik      &
+                meer &
+                regels \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testLineStartWithAmpersand() {
+        """
+            \begin{tabular}{ccc}
+                a    & b & \\
+                cccc & d & \\
+                & aaa & \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                a    & b & \\
+                cccc & d & \\
+                & aaa    & \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testBacklashAlign() {
+        """
+            \begin{tabular}{ll}
+                aaaa & b \\
+                c & d    \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ll}
+                aaaa & b \\
+                c & d    \\
+            \end{tabular}
+        """.trimIndent()
+    }
 
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)

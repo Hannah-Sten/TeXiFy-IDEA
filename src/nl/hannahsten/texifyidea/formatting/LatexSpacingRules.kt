@@ -96,9 +96,6 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             customRule { parent, _, right ->
                 return@customRule leftTableSpaceAlign(latexCommonSettings, parent, right)
             }
-            customRule { parent, left, right ->
-                return@customRule tableLineSeparatorSpaceAlign(latexCommonSettings, parent, right)
-            }
         }
     }
 }

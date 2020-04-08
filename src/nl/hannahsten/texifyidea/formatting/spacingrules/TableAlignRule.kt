@@ -31,7 +31,7 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
 /**
  * Align spaces to the left of \\
  */
-fun tableLineSeparatorSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
+fun tableLineSeparatorSpaceAlign(parent: ASTBlock, right: ASTBlock): Int? {
 
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
     if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
@@ -45,34 +45,38 @@ fun tableLineSeparatorSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, p
     val indent = contentLines[1].getIndent()
     contentLines[0] = indent + contentLines.first()
 
+    val removedSpaces = mutableListOf<Int>()
+
+    // First remove spaces before \\, to calculate offsets consistently independent of the number of spaces before \\
+    for (i in contentLines.indices) {
+        val index = contentLines[i].lastIndexOf(tableLineSeparator)
+        if (index == -1) continue
+        val oldLength = contentLines[i].length
+        contentLines[i] = contentLines[i].substring(0, index).dropLastWhile { it.isWhitespace() } + contentLines[i].substring(index, contentLines[i].length)
+        removedSpaces.add(oldLength - contentLines[i].length)
+    }
+
     // Find maximum index of \\, relative to line start
-    val maxIndex = contentLines.fold(0) {
-        max, line -> max(max, line.lastIndexOf(tableLineSeparator))
+    val maxIndex = contentLines.fold(0) { max, line ->
+        max(max, line.lastIndexOf(tableLineSeparator))
     }
 
     // Find relative and absolute (relative to file start) indices of all \\
     var currentOffset = contentElement.textOffset - indent.length
 
-    val indices = contentLines.mapNotNull { line ->
+    val indices = contentLines.mapIndexedNotNull { i, line ->
         val absoluteOffset = currentOffset
-        currentOffset += line.length + "\n".length
+        currentOffset += line.length + removedSpaces[i] + "\n".length
         val relativeOffset = line.lastIndexOf(tableLineSeparator)
-        if (relativeOffset == -1) return@mapNotNull null
-        Pair(relativeOffset, absoluteOffset + relativeOffset)
+        if (relativeOffset == -1) return@mapIndexedNotNull null
+        Pair(relativeOffset, absoluteOffset + removedSpaces[i] + relativeOffset)
     }
 
     // Find the current \\
     val rightOffset = right.textRange.startOffset
     val relativeOffset = indices.find { it.second == rightOffset }?.first ?: return null
 
-    val spaces = maxIndex - relativeOffset + 1
-
-    return createSpacing(
-            minSpaces = spaces,
-            maxSpaces = spaces,
-            minLineFeeds = 0,
-            keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
-            keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+    return maxIndex - relativeOffset + 1
 }
 
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
@@ -80,9 +84,9 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
     if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
 
-    if (right.node?.text != "&") return null
-
     val tableLineSeparator = "\\\\"
+    if (right.node?.text != "&" && right.node?.text != tableLineSeparator) return null
+
     val content = contentElement?.text ?: return null
     val contentLines = content.split(tableLineSeparator).toMutableList()
     if (contentLines.size < 2) return null
@@ -134,7 +138,7 @@ fun removeRules(content: String, tableLineSeparator: String): String {
                 // remove everything after \\
                 line.split(tableLineSeparator).first() + tableLineSeparator
             }
-            line.count { it == '&'} == 0 -> null
+            line.count { it == '&' } == 0 -> null
             else -> line
         }
     }.joinToString("\n")
@@ -158,7 +162,7 @@ fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, r
 /**
  * Remove all extra spaces and remember how many we removed
  *
- * @return List of pairs, each pair consists of a line and a list of indice (the offset in the line for this ampersand)
+ * @return List of pairs, each pair consists of a line and a list of indices (the offset in the line for this ampersand)
  */
 private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): List<Pair<String, List<Int>>> {
     return contentLinesWithoutRules.map { line ->
@@ -167,14 +171,14 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
         var newLine = ""
         var removedSpaces = 0
         line.withIndex().forEach { (i, value) ->
-            when (value){
+            when (value) {
                 '&' -> {
                     indices += i - removedSpaces
                     newLine += value
                 }
-                in setOf(' ','\n') -> {
+                in setOf(' ', '\n') -> {
                     if (i > 0 && i < line.length - 1) {
-                        if (line[i-1] !in setOf(' ', '&', '\n') && line[i+1] !in  setOf(' ', '&', '\n')) newLine += value
+                        if (line[i - 1] !in setOf(' ', '&', '\n') && line[i + 1] !in setOf(' ', '&', '\n')) newLine += value
                         else removedSpaces++
                     }
                 }
