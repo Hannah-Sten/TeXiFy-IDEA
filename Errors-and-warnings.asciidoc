@@ -1685,11 +1685,19 @@ t text text text text
 
 [source,latex,linenums]
 ----
-
+\documentclass{article}
+\begin{document}
+    \begin{tabular*}{0.9\textwidth}{l}
+        \hline
+        Test \\
+        \hline
+    \end{tabular*}
+\end{document}
 ----
 
 ----
-
+Underfull \hbox (badness 10000) in alignment at lines 3--7
+[]
 ----
 
 === Underfull \hbox (badness <number>) in paragraph at lines <line numbers>
@@ -1706,6 +1714,133 @@ t text text text text
 
 ----
 Underfull \hbox (badness 10000) in paragraph at lines 4--6
+----
+
+=== Unused global option(s): [<option-list>]
+
+[source,latex,linenums]
+----
+\documentclass[harf]{article}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Warning: Unused global option(s):
+    [harf].
+----
+
+=== Writing file `<name>'
+
+[source,latex,linenums]
+----
+\begin{filecontents}{test423.tex}
+    Test.
+\end{filecontents}
+\documentclass{article}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Warning: Writing file `./test423.tex'.
+----
+
+=== Writing text `<text>' before \end{<env>} as last line of <file>
+
+[source,latex,linenums]
+----
+\begin{filecontents}{test424.tex}
+    Test.\end{filecontents}
+\documentclass{article}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Warning: Writing text `    Test.' before \end{filecontents}
+               as last line of test424.tex on input line 2.
+----
+
+=== babel: You have more than once selected the attribute `<attrib>' for language <language>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage[british]{babel}
+\languageattribute{british}{test,test}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+l.3 \languageattribute{british}{test,test}
+
+
+Package babel Warning: You have more than once selected the attribute 'test'
+(babel)                for language british. Reported on input line 3.
+----
+
+=== You have requested <package-or-class> `<name>', but the <package-or-class> provides `<alternate-name>'
+
+[source,latex,linenums]
+----
+\begin{filecontents}{test435.sty}
+\ProvidesPackage{Alternate name}
+\end{filecontents}
+
+\documentclass{article}
+\usepackage{test435}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Warning: You have requested package `test435',
+               but the package provides `Alternate name'.
+----
+
+=== You have requested release `<date>' of LaTeX, but only release `<old-date>' is available
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\NeedsTeXFormat{LaTeX2e}[9999/99/99]
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Warning: You have requested release `9999/99/99' of LaTeX,
+               but only release `2019-10-01' is available.
+----
+
+=== You have requested, on line <num>, version `<date>' of <name>, but only version `<old-date>' is available
+
+[source,latex,linenums]
+----
+\begin{filecontents}{test998.sty}
+\ProvidesPackage{test998}[2020/04/08]
+\end{filecontents}
+\documentclass{article}
+\usepackage{test998}[9999/99/99]
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+LaTeX Warning: You have requested, on input line 5, version
+               `9999/99/99' of package test998,
+               but only version
+               `2020/04/08'
+               is available.
 ----
 
 [bibliography]
