@@ -28,14 +28,61 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
             keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
 }
 
+/**
+ * Align spaces to the left of \\
+ */
+fun tableLineSeparatorSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
+
+    val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
+
+    val tableLineSeparator = "\\\\"
+    if (right.node?.text != tableLineSeparator) return null
+
+    val content = contentElement?.text ?: return null
+    val contentLines = content.split("\n").toMutableList()
+    if (contentLines.size < 2) return null
+    val indent = contentLines[1].getIndent()
+    contentLines[0] = indent + contentLines.first()
+
+    // Find maximum index of \\, relative to line start
+    val maxIndex = contentLines.fold(0) {
+        max, line -> max(max, line.lastIndexOf(tableLineSeparator))
+    }
+
+    // Find relative and absolute (relative to file start) indices of all \\
+    var currentOffset = contentElement.textOffset - indent.length
+
+    val indices = contentLines.mapNotNull { line ->
+        val absoluteOffset = currentOffset
+        currentOffset += line.length + "\n".length
+        val relativeOffset = line.lastIndexOf(tableLineSeparator)
+        if (relativeOffset == -1) return@mapNotNull null
+        Pair(relativeOffset, absoluteOffset + relativeOffset)
+    }
+
+    // Find the current \\
+    val rightOffset = right.textRange.startOffset
+    val relativeOffset = indices.find { it.second == rightOffset }?.first ?: return null
+
+    val spaces = maxIndex - relativeOffset + 1
+
+    return createSpacing(
+            minSpaces = spaces,
+            maxSpaces = spaces,
+            minLineFeeds = 0,
+            keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
+            keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+}
+
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     // Check if parent is in environment content of a table environment
-    if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
+    val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+    if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
 
     if (right.node?.text != "&") return null
 
     val tableLineSeparator = "\\\\"
-    val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
     val content = contentElement?.text ?: return null
     val contentLines = content.split(tableLineSeparator).toMutableList()
     if (contentLines.size < 2) return null

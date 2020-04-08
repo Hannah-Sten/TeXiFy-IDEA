@@ -5,6 +5,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
+import nl.hannahsten.texifyidea.formatting.spacingrules.tableLineSeparatorSpaceAlign
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.Magic
@@ -94,6 +95,9 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             }
             customRule { parent, _, right ->
                 return@customRule leftTableSpaceAlign(latexCommonSettings, parent, right)
+            }
+            customRule { parent, left, right ->
+                return@customRule tableLineSeparatorSpaceAlign(latexCommonSettings, parent, right)
             }
         }
     }
