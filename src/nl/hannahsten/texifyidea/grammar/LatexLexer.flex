@@ -24,6 +24,12 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
   public LatexLexer() {
     this((java.io.Reader)null);
   }
+
+  /**
+   * In order to avoid a parsing error for new environment definitions, this keeps track of the number of braces in the \newenvironment
+   * parameters, so as to know when the parameters are exited.
+   */
+  private int newEnvironmentBracesNesting = 0;
 %}
 
 %public
@@ -57,9 +63,13 @@ COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 
-%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
+%states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
+
+/*
+ * Inline math, display math and nested inline math
+ */
 
 "\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
@@ -104,6 +114,44 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
     {M_CLOSE_BRACKET}  { return M_CLOSE_BRACKET; }
     "\\]"              { yypopState(); return DISPLAY_MATH_END; }
 }
+
+/*
+ * \newenvironment definitions
+ */
+
+// A separate state is used to track when we start with the second parameter of \newenvironment, this state denotes the first one
+<NEW_ENVIRONMENT_DEFINITION_NAME> {
+    "}"     { yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION); return CLOSE_BRACE; }
+}
+
+// We are visiting a second parameter of a \newenvironment definition, so we need to keep track of braces
+// The idea is that we will skip the }{ separating the second and third parameter, so that the \begin and \end of the
+// environment to be defined will not appear in a separate group
+<NEW_ENVIRONMENT_DEFINITION> {
+    "{"     { newEnvironmentBracesNesting++; return OPEN_BRACE; }
+    "}"     { newEnvironmentBracesNesting--;
+          if(newEnvironmentBracesNesting == 0) {
+              yypopState(); yypushState(NEW_ENVIRONMENT_SKIP_BRACE);
+              // We could have return normal text, but in this way the braces still match
+              return OPEN_BRACE;
+          } else {
+              return CLOSE_BRACE;
+          }
+      }
+}
+
+// Skip the next open brace of the third parameter, just as we skipped the close brace of the second
+<NEW_ENVIRONMENT_SKIP_BRACE> {
+    "{"     { yypopState(); return CLOSE_BRACE; }
+}
+
+// For new environment definitions, we need to switch to new states because the \begin..\end will interleave with groups
+\\newenvironment     { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+\\renewenvironment   { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+
+/*
+ * Other elements
+ */
 
 // The array package provides <{...} and >{...} preamble options for tables
 // which are often used with $, in which case the $ is not an inline_math_start (because there's only one $ in the group, which would be a parse errror)

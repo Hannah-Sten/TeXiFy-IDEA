@@ -29,4 +29,11 @@ class LatexParserTest : BasePlatformTestCase() {
         """.trimIndent())
         myFixture.checkHighlighting()
     }
+
+    fun testNewEnvironmentDefinition() {
+        myFixture.configureByText(LatexFileType, """
+            \newenvironment{test}{\begin{center}}{\end{center}}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
 }
