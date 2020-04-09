@@ -41,10 +41,6 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         return "Error"
     }
 
-    override fun getCommandName(): String {
-        return ""
-    }
-
     override fun getActionName(psiDirectory: PsiDirectory, s: String): String {
         return ""
     }

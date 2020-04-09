@@ -24,8 +24,8 @@ public interface LatexTypes {
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
   IElementType NORMAL_TEXT = new LatexElementType("NORMAL_TEXT");
   IElementType NO_MATH_CONTENT = new LatexElementType("NO_MATH_CONTENT");
-  IElementType OPEN_GROUP = new LatexElementType("OPEN_GROUP");
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
+  IElementType OPTIONAL_PARAM_CONTENT = new LatexElementType("OPTIONAL_PARAM_CONTENT");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
@@ -34,6 +34,7 @@ public interface LatexTypes {
   IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
   IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");
   IElementType CLOSE_PAREN = new LatexTokenType("CLOSE_PAREN");
+  IElementType COMMAND_IFNEXTCHAR = new LatexTokenType("COMMAND_IFNEXTCHAR");
   IElementType COMMAND_TOKEN = new LatexTokenType("COMMAND_TOKEN");
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
@@ -94,11 +95,11 @@ public interface LatexTypes {
       else if (type == NO_MATH_CONTENT) {
         return new LatexNoMathContentImpl(node);
       }
-      else if (type == OPEN_GROUP) {
-        return new LatexOpenGroupImpl(node);
-      }
       else if (type == OPTIONAL_PARAM) {
         return new LatexOptionalParamImpl(node);
+      }
+      else if (type == OPTIONAL_PARAM_CONTENT) {
+        return new LatexOptionalParamContentImpl(node);
       }
       else if (type == PARAMETER) {
         return new LatexParameterImpl(node);

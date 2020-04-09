@@ -16,6 +16,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val AMSMATH = Package("amsmath")
         @JvmField val AMSSYMB = Package("amssymb")
         @JvmField val BIBLATEX = Package("biblatex")
+        @JvmField val BM = Package("bm")
         @JvmField val BOOKTABS = Package("booktabs")
         @JvmField val COMMENT = Package("comment")
         @JvmField val CLEVEREF = Package("cleveref")

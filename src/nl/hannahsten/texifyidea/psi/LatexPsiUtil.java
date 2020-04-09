@@ -168,18 +168,19 @@ public class LatexPsiUtil {
             result.add(noMathContent.getCommands());
             result.add(noMathContent.getComment());
             result.add(noMathContent.getGroup());
-            result.add(noMathContent.getOpenGroup());
+//            result.add(noMathContent.getOpenGroup());
             result.add(noMathContent.getNormalText());
         }
-        // LatexOpenGroup
-        else if (element instanceof LatexOpenGroup) {
-            LatexOpenGroup openGroup = (LatexOpenGroup)element;
-            result.addAll(openGroup.getContentList());
+        // LatexOptionalParamContent
+        else if (element instanceof LatexOptionalParamContent) {
+            LatexOptionalParamContent paramContent = (LatexOptionalParamContent)element;
+            result.add(paramContent.getGroup());
+            result.add(paramContent.getNormalText());
         }
         // LatexOptionalParam
         else if (element instanceof LatexOptionalParam) {
             LatexOptionalParam optionalParam = (LatexOptionalParam)element;
-            result.add(optionalParam.getOpenGroup());
+            result.addAll(optionalParam.getOptionalParamContentList());
         }
         // LatexParameter
         else if (element instanceof LatexParameter) {

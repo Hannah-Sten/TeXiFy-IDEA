@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    types: [opened, closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run tests
+      run: |
+        chmod +x gradlew
+        ./gradlew check jacocoTestReport
+    - name: Upload coverage report
+      if: success()
+      run: bash <(curl -s https://codecov.io/bash) | true
