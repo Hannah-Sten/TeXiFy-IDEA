@@ -19,7 +19,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.64'
+version '0.7-alpha.66'
 
 repositories {
     mavenCentral()
@@ -49,6 +49,7 @@ compileKotlin {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs = ['-Xjvm-default=enable']
     }
 }
 
@@ -59,6 +60,7 @@ compileTestKotlin {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs = ['-Xjvm-default=enable']
     }
 }
 
@@ -148,7 +150,8 @@ intellij {
         alternativeIdePath ".gradle/ide/pycharm-${pycharmVersion}"
     }
 
-    plugins = ['tanvd.grazi:2019.3-6.2.stable', 'java']
+    // https://plugins.jetbrains.com/plugin/12175-grazie/versions
+    plugins = ['tanvd.grazi:201.6668.73', 'java']
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -156,7 +159,8 @@ intellij {
     sameSinceUntilBuild = true
 
     // Comment out to use the latest EAP snapshot
-    version '2019.3.2'
+    // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
+     version '2020.1'
 }
 
 test {

@@ -100,6 +100,7 @@ object PackageUtils {
         command += "{$packageName}"
 
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
+
         if (anchorAfter != null) {
             val anchorBefore = anchorAfter.node.treeNext
             if (prependNewLine) {
@@ -326,7 +327,8 @@ object TexLivePackages {
         val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
         return try {
             lines[tlmgrIndex + 1].trim().dropLast(1) // Drop the : behind the package name.
-        } catch (e: IndexOutOfBoundsException) {
+        }
+        catch (e: IndexOutOfBoundsException) {
             null
         }
     }

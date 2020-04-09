@@ -19,7 +19,7 @@ class LatexFormattingModelBuilder : FormattingModelBuilder {
                         Wrap.createWrap(WrapType.NONE, false),
                         Alignment.createAlignment(),
                         createSpacingBuilder(settings),
-                        LatexWrappingStrategy(settings)
+                        LatexWrappingStrategy()
                 ),
                 settings
         )

@@ -29,4 +29,6 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
     }
 
     override fun getName() = factoryName
+
+    override fun getId() = factoryName
 }

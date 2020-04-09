@@ -3,10 +3,12 @@ package nl.hannahsten.texifyidea.run.latex.ui
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.project.Project
 import com.intellij.ui.HideableTitledPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
+import com.intellij.util.ui.JBUI
 import java.awt.BorderLayout
 import javax.swing.DefaultListSelectionModel
 import javax.swing.JPanel
@@ -50,7 +52,8 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
         }
 
         val toolbar = ToolbarDecorator.createDecorator(list).apply {
-            setAsUsualTopToolbar()
+            setToolbarPosition(ActionToolbarPosition.TOP)
+            setPanelBorder(JBUI.Borders.empty())
 
             // No support for executing run configs in a certain order (yet)
             disableUpDownActions()

@@ -46,7 +46,8 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * Word counting tool
 * File templates for .tex, .sty, .cls and .bib files
 * Automagically import packages of common commands
-* Go to declaration of labels
+* Go to declaration and find usages for labels, citations, and custom commands
+* Renaming of labels, citations, environments and files
 * Shortcuts for styling text
 * Line commenter
 * Support for user-created document classes and packages

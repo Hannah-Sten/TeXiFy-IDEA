@@ -53,7 +53,7 @@ CLOSE_PAREN=")"
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
+COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=]+
@@ -156,6 +156,10 @@ ANY_CHAR=.
 // It has to be prefixed by . because any other letter before the < or > may be seen as a normal text word together with the < or >, so we need to catch them together
 .\<\{                 { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 .>\{                  { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
+
+// In case a line ends with a backslash, then we do not want to lex the following newline as a command token,
+// because that will confuse the formatter because it will see the next line as being on this line
+\\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
 "*"                  { return STAR; }
 "["                  { return OPEN_BRACKET; }

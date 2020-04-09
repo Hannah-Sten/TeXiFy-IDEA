@@ -30,7 +30,7 @@
         INLINE_MATH_END='regexp:($|\\\))'
         BEGIN_TOKEN='\begin'
         END_TOKEN='\end'
-        COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\n|\r)'
+        COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
         NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=]+'

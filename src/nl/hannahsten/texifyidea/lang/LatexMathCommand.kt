@@ -259,6 +259,7 @@ enum class LatexMathCommand(
      */
     MATHBB("mathbb", "text".asRequired(Type.TEXT), dependency = AMSFONTS),
     MATHBF("mathbf", "text".asRequired()),
+    BM("bm", "text".asRequired(Type.TEXT), dependency = Package.BM),
     MATHCAL("mathcal", "text".asRequired()),
     MATHDS("mathds", "mathds".asRequired()),
     MATHELLIPSIS("mathellipsis"),
