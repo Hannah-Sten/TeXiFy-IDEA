@@ -160,7 +160,7 @@ intellij {
 
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
-//     version '2019.3'
+     version '2020.1'
 }
 
 test {
