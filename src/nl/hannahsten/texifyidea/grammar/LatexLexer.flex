@@ -55,11 +55,56 @@ END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
-NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
+NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=]+
+NORMAL_TEXT_CHAR=[|!\"=] // Separate because they can be \verb delimiters
+ANY_CHAR=.
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
+// Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
+%states INLINE_VERBATIM_START INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
+
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
+
+// Use a separate state to start verbatim, to be able to return a command token for \verb
+// todo use |
+\\verb         { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
+\\verb*        { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
+\\lstinline    { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
+
+<INLINE_VERBATIM_START> {
+    // todo return verbatim delimiter
+    "|"     { yypopState(); yypushState(INLINE_VERBATIM_PIPE); return OPEN_BRACE; }
+    "!"     { yypopState(); yypushState(INLINE_VERBATIM_EXCL_MARK); return NORMAL_TEXT_WORD; }
+    "\""    { yypopState(); yypushState(INLINE_VERBATIM_QUOTES); return NORMAL_TEXT_WORD; }
+    "="     { yypopState(); yypushState(INLINE_VERBATIM_EQUALS); return NORMAL_TEXT_WORD; }
+}
+
+// todo other chars
+<INLINE_VERBATIM_PIPE> {
+    "|"                     { yypopState(); return CLOSE_BRACE; }
+    {ANY_CHAR}       { return RAW_TEXT_TOKEN; }
+      "$" { return RAW_TEXT_TOKEN; }
+      "*"                  { return RAW_TEXT_TOKEN; }
+      "["                  { return RAW_TEXT_TOKEN; }
+      "]"                  { return RAW_TEXT_TOKEN; }
+      "{"                  { return RAW_TEXT_TOKEN; }
+      "}"                  { return RAW_TEXT_TOKEN; }
+      {OPEN_PAREN}         { return RAW_TEXT_TOKEN; }
+      {CLOSE_PAREN}        { return RAW_TEXT_TOKEN; }
+
+      {WHITE_SPACE}        { return RAW_TEXT_TOKEN; }
+      {BEGIN_TOKEN}        { return RAW_TEXT_TOKEN; }
+      {END_TOKEN}          { return RAW_TEXT_TOKEN; }
+      {COMMAND_TOKEN}      { return RAW_TEXT_TOKEN; }
+      {COMMAND_IFNEXTCHAR} { return RAW_TEXT_TOKEN; }
+      {COMMENT_TOKEN}      { return RAW_TEXT_TOKEN; }
+      {NORMAL_TEXT_WORD}   { return RAW_TEXT_TOKEN; }
+
+      "=" { return RAW_TEXT_TOKEN; }
+      "\"" { return RAW_TEXT_TOKEN; }
+      "!" { return RAW_TEXT_TOKEN; }
+}
 
 "\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
@@ -126,5 +171,6 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 {COMMAND_IFNEXTCHAR} { return COMMAND_IFNEXTCHAR; }
 {COMMENT_TOKEN}      { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}   { return NORMAL_TEXT_WORD; }
+{NORMAL_TEXT_CHAR}   { return NORMAL_TEXT_CHAR; }
 
 [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }

@@ -26,6 +26,9 @@ public interface LatexNoMathContent extends PsiElement {
   LatexNormalText getNormalText();
 
   @Nullable
+  LatexRawText getRawText();
+
+  @Nullable
   PsiElement getCommandIfnextchar();
 
 }

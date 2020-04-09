@@ -307,12 +307,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
+  // raw_text | comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NO_MATH_CONTENT, "<no math content>");
-    r = comment(b, l + 1);
+    r = raw_text(b, l + 1);
+    if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
@@ -330,10 +331,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (NORMAL_TEXT_WORD | STAR)+
+  // (NORMAL_TEXT_WORD | STAR | NORMAL_TEXT_CHAR)+
   public static boolean normal_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text")) return false;
-    if (!nextTokenIs(b, "<normal text>", NORMAL_TEXT_WORD, STAR)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NORMAL_TEXT, "<normal text>");
     r = normal_text_0(b, l + 1);
@@ -346,12 +346,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT_WORD | STAR
+  // NORMAL_TEXT_WORD | STAR | NORMAL_TEXT_CHAR
   private static boolean normal_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text_0")) return false;
     boolean r;
     r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
+    if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
     return r;
   }
 
@@ -408,6 +409,23 @@ public class LatexParser implements PsiParser, LightPsiParser {
     r = optional_param(b, l + 1);
     if (!r) r = required_param(b, l + 1);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // RAW_TEXT_TOKEN+
+  public static boolean raw_text(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "raw_text")) return false;
+    if (!nextTokenIs(b, RAW_TEXT_TOKEN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, RAW_TEXT_TOKEN);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, RAW_TEXT_TOKEN)) break;
+      if (!empty_element_parsed_guard_(b, "raw_text", c)) break;
+    }
+    exit_section_(b, m, RAW_TEXT, r);
     return r;
   }
 
