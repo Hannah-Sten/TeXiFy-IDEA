@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -31,6 +32,13 @@ class ReferencedFileSetCache {
      */
     private val fileSetCache = ConcurrentHashMap<VirtualFile, Set<PsiFile>>()
 
+    /**
+     * The number of includes in the include index at the time the cache was last filled.
+     * This is used to check if any includes were added or deleted since the last cache fill, and thus if the cache
+     * needs to be refreshed.
+     */
+    private var numberOfIncludes = 0
+
     private val mutex = Mutex()
 
     /**
@@ -40,12 +48,22 @@ class ReferencedFileSetCache {
     @Synchronized
     fun fileSetFor(file: PsiFile): Set<PsiFile> {
         return if (file.virtualFile != null) {
+            // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
+            val numberOfIncludesChanged = if (LatexIncludesIndex.getItems(file.project).size != numberOfIncludes) {
+                numberOfIncludes = LatexIncludesIndex.getItems(file.project).size
+                dropAllCaches()
+                true
+            }
+            else {
+                false
+            }
+
             // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
             GlobalScope.launch {
                 mutex.withLock {
-                    if (!fileSetCache.containsKey(file.virtualFile)) {
+                    if (!fileSetCache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                         runReadAction {
                             fileSetCache[file.virtualFile] = findReferencedFileSetWithoutCache(file)
                         }

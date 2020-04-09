@@ -10,6 +10,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.getOpenAndCloseQuotes
 import nl.hannahsten.texifyidea.util.insertUsepackage
 
 /**
@@ -54,7 +55,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
     private fun insertReplacement(document: Document, file: PsiFile, caret: CaretModel, offset: Int, char: Char) {
         val replacementPair = getOpenAndCloseQuotes(char)
         val openingQuotes = replacementPair.first
-        val closingQuotes = replacementPair.second
+        val closingQuotes = if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) "" else replacementPair.second
 
         // The default replacement of the typed double quotes is a pair of closing quotes
         var isOpeningQuotes = false
@@ -96,7 +97,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
     private fun handleCsquotesInsertion(document: Document, file: PsiFile, isOpeningQuotes: Boolean, caret: CaretModel, char: Char) {
         if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) {
             if (isOpeningQuotes) {
-                // Insert } after cursor to close the command
+                // Insert } after the cursor to close the command
                 document.insertString(caret.offset, "}")
             }
             else {
@@ -112,41 +113,5 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
                 file.insertUsepackage(LatexRegularCommand.ENQUOTE_STAR.dependency)
             }
         }
-    }
-
-    /**
-     * Define what the replacements are for opening and closing quotes, in case that is relevant for the user setting.
-     */
-    private fun getOpenAndCloseQuotes(char: Char): Pair<String, String> {
-        var openingQuotes = ""
-        var closingQuotes = ""
-
-        // Get the saved value to find the correct replacement
-        val quoteSetting = TexifySettings.getInstance().automaticQuoteReplacement
-
-        if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '"') {
-            openingQuotes = "``"
-            closingQuotes = "''"
-        }
-        else if (quoteSetting == TexifySettings.QuoteReplacement.COMMANDS && char == '"') {
-            openingQuotes = "\\lq\\lq{}"
-            closingQuotes = "\\rq\\rq{}"
-        }
-        else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '"') {
-            openingQuotes = "\\enquote{"
-        }
-        else if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '\'') {
-            openingQuotes = "`"
-            closingQuotes = "'"
-        }
-        else if (quoteSetting == TexifySettings.QuoteReplacement.COMMANDS && char == '\'') {
-            openingQuotes = "\\lq{}"
-            closingQuotes = "\\rq{}"
-        }
-        else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '\'') {
-            openingQuotes = "\\enquote*{"
-        }
-
-        return Pair(openingQuotes, closingQuotes)
     }
 }

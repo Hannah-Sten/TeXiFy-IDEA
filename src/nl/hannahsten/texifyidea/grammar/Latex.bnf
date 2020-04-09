@@ -21,6 +21,7 @@
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
     implements("normal_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
+    // See the lexer
     tokens=[
         WHITE_SPACE='regexp:\s+'
         DISPLAY_MATH_START='\['
@@ -29,12 +30,14 @@
         INLINE_MATH_END='regexp:($|\\\))'
         BEGIN_TOKEN='\begin'
         END_TOKEN='\end'
-        COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\n|\r)'
+        COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
-        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()]+'
+        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=]+'
+        NORMAL_TEXT_CHAR='regexp:[|!"=]'
         // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
         COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
+        RAW_TEXT_TOKEN='RAW_TEXT'
     ]
 }
 
@@ -44,9 +47,9 @@ latexFile ::= content*
 
 content ::= no_math_content
 
-no_math_content ::= comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
+no_math_content ::= raw_text | comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR)+ {
+normal_text ::= (NORMAL_TEXT_WORD | STAR | NORMAL_TEXT_CHAR)+ {
     methods=[getReferences getReference getNameIdentifier getName setName]
 }
 
@@ -99,3 +102,5 @@ inline_math ::= INLINE_MATH_START math_content? INLINE_MATH_END { pin=1 }
 display_math ::= DISPLAY_MATH_START math_content? DISPLAY_MATH_END { pin=1 }
 
 math_content ::= no_math_content+
+
+raw_text ::= RAW_TEXT_TOKEN+

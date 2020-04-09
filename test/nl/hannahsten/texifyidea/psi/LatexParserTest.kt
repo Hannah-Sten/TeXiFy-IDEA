@@ -38,4 +38,18 @@ class LatexParserTest : BasePlatformTestCase() {
         """.trimIndent())
         myFixture.checkHighlighting()
     }
+
+    fun testInlineVerbatim() {
+        myFixture.configureByText(LatexFileType, """
+            \verb| aaa $ { bbb | text $\xi$ not verb: |a|
+            \verb|aaa $ {" bbb| text $\xi$ 
+            \verb!$|! 
+            \verb=}{= 
+            \verb"}$"
+            \verb|%md|
+            \verb*|$|
+            \lstinline|$|
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
 }

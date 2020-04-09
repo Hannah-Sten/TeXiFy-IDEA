@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.highlighting
 
+import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
@@ -18,6 +19,28 @@ import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
  * @author Sten Wessel
  */
 class LatexTypedHandler : TypedHandlerDelegate() {
+    /**
+     * When pressing $ when text is selected, surround with $ signs.
+     */
+    override fun beforeSelectionRemoved(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
+        val selectionModel = editor.selectionModel
+        if (CodeInsightSettings.getInstance().SURROUND_SELECTION_ON_QUOTE_TYPED && selectionModel.hasSelection()) {
+            if (file is LatexFile && c == '$') {
+                val selectedText = selectionModel.selectedText
+                val selectionStartOffset = selectionModel.selectionStart
+                val selectionEndOffset = selectionModel.selectionEnd
+                // Remove the selected text.
+                editor.document.deleteString(selectionStartOffset, selectionEndOffset)
+                // Insert the selected text, surrounded by dollar signs.
+                editor.document.insertString(selectionStartOffset, "$c$selectedText$c")
+                // Move the caret to just before the second dollar sign (same behaviour as surrounding with quotes).
+                editor.caretModel.moveToOffset(selectionEndOffset + 1)
+                return Result.STOP
+            }
+        }
+        return super.beforeSelectionRemoved(c, project, editor, file)
+    }
+
     override fun beforeCharTyped(c: Char, project: Project, editor: Editor, file: PsiFile, fileType: FileType): Result {
         if (file is LatexFile) {
             if (c == '$') {
@@ -53,6 +76,14 @@ class LatexTypedHandler : TypedHandlerDelegate() {
             }
         }
         return Result.CONTINUE
+    }
+
+    /**
+     * Disable autocomplete when typing a period, otherwise starting a new line
+     * at the end of a line would be impossible (because postfix templates).
+     */
+    override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
+        return if (charTyped != '.') super.checkAutoPopup(charTyped, project, editor, file) else Result.STOP
     }
 
     /**
