@@ -13,7 +13,9 @@
 * Fix parse error for \@ifnextchar. (#1320)
 * Fix parse error when inline math inside \text inside inline math is used. (#1322)
 * Fix parse error when dollar signs are used in table preamble. (#1324)
-* Fixed crashes. (#1332)
+* Fix parse error for \verb|...|, \verb=...=, \verb"..." and \verb!...!. (#1344)
+* Avoid formatter confusion when ending a line with a backslash. (#1342)
+* Fixed crashes. (#1332, #1337)
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/19?closed=1).
 
