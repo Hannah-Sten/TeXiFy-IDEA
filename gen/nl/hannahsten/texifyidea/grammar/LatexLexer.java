@@ -2,11 +2,11 @@
 
 package nl.hannahsten.texifyidea.grammar;
 
-import com.intellij.lexer.FlexLexer;
-import com.intellij.psi.tree.IElementType;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
+
+import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.tree.IElementType;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
@@ -31,6 +31,11 @@ public class LatexLexer implements FlexLexer {
   public static final int TEXT_INSIDE_INLINE_MATH = 8;
   public static final int NESTED_INLINE_MATH = 10;
   public static final int PREAMBLE_OPTION = 12;
+  public static final int INLINE_VERBATIM_START = 14;
+  public static final int INLINE_VERBATIM_PIPE = 16;
+  public static final int INLINE_VERBATIM_EXCL_MARK = 18;
+  public static final int INLINE_VERBATIM_QUOTES = 20;
+  public static final int INLINE_VERBATIM_EQUALS = 22;
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
@@ -39,7 +44,8 @@ public class LatexLexer implements FlexLexer {
    * l is of the form l = 2*k, k a non negative integer
    */
   private static final int[] ZZ_LEXSTATE = {
-     0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5,  5,  6, 6
+     0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7, 
+     8,  8,  9,  9, 10, 10, 11, 11
   };
 
   /** 
@@ -61,11 +67,11 @@ public class LatexLexer implements FlexLexer {
 
   /* The ZZ_CMAP_A table has 640 entries */
   static final char[] ZZ_CMAP_A = zzUnpackCMap(
-    "\11\0\1\2\1\1\2\12\1\1\22\0\1\2\3\0\1\35\1\33\1\40\1\0\1\6\1\7\1\37\21\0\1"+
-    "\36\1\0\1\36\1\0\1\23\32\21\1\3\1\5\1\4\3\0\1\31\1\13\1\27\1\20\1\14\1\24"+
-    "\1\15\1\30\1\16\4\21\1\17\3\21\1\32\1\21\1\26\3\21\1\25\2\21\1\10\1\0\1\11"+
-    "\7\0\1\22\32\0\1\34\337\0\1\34\177\0\13\34\35\0\2\22\5\0\1\34\57\0\1\34\40"+
-    "\0");
+    "\11\0\1\3\1\2\2\13\1\1\22\0\1\3\1\44\1\45\1\0\1\47\1\34\1\36\1\0\1\7\1\10"+
+    "\1\40\21\0\1\50\1\46\1\50\1\0\1\24\32\22\1\4\1\6\1\5\3\0\1\32\1\14\1\30\1"+
+    "\21\1\15\1\25\1\16\1\31\1\17\2\22\1\41\1\22\1\20\3\22\1\33\1\42\1\27\1\22"+
+    "\1\37\1\22\1\26\2\22\1\11\1\43\1\12\7\0\1\23\32\0\1\35\337\0\1\35\177\0\13"+
+    "\35\35\0\2\23\5\0\1\35\57\0\1\35\40\0");
 
   /** 
    * Translates DFA states to action switch labels.
@@ -73,15 +79,17 @@ public class LatexLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\7\0\1\1\2\2\1\3\1\4\1\5\1\6\1\7"+
+    "\14\0\1\1\2\2\1\3\1\4\1\5\1\6\1\7"+
     "\1\10\1\11\1\5\1\12\1\5\1\13\1\14\1\15"+
-    "\1\16\1\17\1\5\1\20\3\5\1\21\1\22\3\1"+
-    "\1\0\1\23\1\24\1\25\5\23\2\12\1\23\1\20"+
-    "\1\26\1\27\3\23\1\27\2\23\1\30\4\23\1\31"+
-    "\1\32\7\23\1\33";
+    "\1\16\1\17\1\20\1\5\1\21\3\5\1\22\1\23"+
+    "\1\1\1\24\1\25\1\26\1\27\1\30\1\22\2\1"+
+    "\1\0\1\31\1\2\1\32\1\33\7\31\2\12\1\31"+
+    "\1\21\1\34\1\35\5\31\1\35\2\31\1\36\6\31"+
+    "\1\37\1\31\1\40\1\41\1\31\1\37\10\31\1\37"+
+    "\2\31\1\42";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[71];
+    int [] result = new int[98];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -106,18 +114,22 @@ public class LatexLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\41\0\102\0\143\0\204\0\245\0\306\0\347"+
-    "\0\u0108\0\u0129\0\u014a\0\u014a\0\u016b\0\u014a\0\u014a\0\u014a"+
-    "\0\u014a\0\u018c\0\u01ad\0\u014a\0\u014a\0\347\0\347\0\u014a"+
-    "\0\u014a\0\u01ce\0\u014a\0\u01ef\0\u0210\0\u0231\0\u014a\0\u014a"+
-    "\0\u014a\0\u0252\0\u0273\0\u0294\0\u018c\0\u018c\0\u018c\0\u02b5"+
-    "\0\u02d6\0\u02f7\0\u0318\0\u0294\0\u0339\0\u035a\0\u037b\0\u018c"+
-    "\0\u018c\0\u018c\0\u039c\0\u03bd\0\u03de\0\u0339\0\u03ff\0\u0420"+
-    "\0\u02f7\0\u0441\0\u0462\0\u0483\0\u04a4\0\u02f7\0\u02f7\0\u04c5"+
-    "\0\u04e6\0\u0507\0\u0528\0\u0549\0\u056a\0\u058b\0\u018c";
+    "\0\0\0\51\0\122\0\173\0\244\0\315\0\366\0\u011f"+
+    "\0\u0148\0\u0171\0\u019a\0\u01c3\0\u01ec\0\u0215\0\u023e\0\u0267"+
+    "\0\u0267\0\u0290\0\u0267\0\u0267\0\u0267\0\u0267\0\u02b9\0\u02e2"+
+    "\0\u0267\0\u0267\0\u01ec\0\u0267\0\u0267\0\u0267\0\u0267\0\u030b"+
+    "\0\u0267\0\u0334\0\u035d\0\u0386\0\u0267\0\u0267\0\u0267\0\u0267"+
+    "\0\u0267\0\u0267\0\u0267\0\u02b9\0\u02b9\0\u03af\0\u03d8\0\u0401"+
+    "\0\u02b9\0\u02b9\0\u02b9\0\u02b9\0\u042a\0\u0453\0\u047c\0\u04a5"+
+    "\0\u04ce\0\u04f7\0\u0401\0\u0520\0\u0549\0\u0572\0\u02b9\0\u02b9"+
+    "\0\u02b9\0\u059b\0\u05c4\0\u05ed\0\u0616\0\u063f\0\u0520\0\u0668"+
+    "\0\u0691\0\u047c\0\u06ba\0\u06e3\0\u070c\0\u0735\0\u075e\0\u0787"+
+    "\0\u07b0\0\u07d9\0\u047c\0\u047c\0\u0802\0\u02b9\0\u082b\0\u0854"+
+    "\0\u087d\0\u08a6\0\u08cf\0\u08f8\0\u0921\0\u094a\0\u047c\0\u0973"+
+    "\0\u099c\0\u02b9";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[71];
+    int [] result = new int[98];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -140,58 +152,96 @@ public class LatexLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17"+
-    "\1\20\1\21\1\11\7\10\1\22\10\10\1\23\1\24"+
-    "\1\25\1\10\1\26\1\27\1\10\1\11\1\12\1\30"+
-    "\1\31\1\32\1\16\1\17\1\20\1\21\1\11\7\10"+
-    "\1\22\10\10\1\23\1\24\1\33\1\10\1\26\1\27"+
-    "\1\10\1\11\1\12\1\30\1\31\1\34\1\16\1\17"+
-    "\1\20\1\21\1\11\7\10\1\22\10\10\1\23\2\24"+
-    "\1\10\1\26\1\27\1\10\1\11\1\12\1\30\1\31"+
-    "\1\35\1\16\1\17\1\20\1\21\1\11\7\10\1\22"+
-    "\10\10\1\23\1\24\1\25\1\10\1\26\1\27\1\10"+
-    "\1\11\1\12\1\13\1\14\1\36\1\16\1\17\1\20"+
-    "\1\37\1\11\7\10\1\22\10\10\1\23\1\24\1\40"+
-    "\1\10\1\26\1\27\1\10\1\11\1\12\1\13\1\14"+
-    "\1\36\1\16\1\17\1\20\1\21\1\11\7\10\1\22"+
-    "\10\10\1\23\1\24\1\33\1\10\1\26\1\27\1\10"+
-    "\1\11\1\12\1\13\1\14\1\36\1\16\1\17\1\20"+
-    "\1\37\1\11\7\10\1\22\10\10\1\23\1\24\1\41"+
-    "\1\10\1\26\1\27\1\42\12\0\7\42\1\0\10\42"+
-    "\3\0\1\43\2\42\1\0\2\11\7\0\1\11\27\0"+
-    "\2\11\7\0\1\11\23\0\1\44\40\0\1\44\2\0"+
-    "\3\45\1\46\2\45\1\47\3\45\1\0\1\50\1\51"+
-    "\5\52\1\0\1\53\7\52\3\45\1\54\2\45\41\0"+
-    "\1\55\1\0\34\55\1\56\2\55\3\45\1\46\6\45"+
-    "\1\0\1\50\1\51\5\52\1\0\1\53\2\52\1\57"+
-    "\4\52\3\45\1\54\5\45\1\46\3\45\1\60\2\45"+
-    "\1\0\1\50\1\51\5\52\1\0\1\53\7\52\3\45"+
-    "\1\54\5\45\1\46\1\61\1\45\1\47\3\45\1\0"+
-    "\1\50\1\51\5\52\1\0\1\53\7\52\3\45\1\54"+
-    "\5\45\1\46\6\45\1\0\1\50\1\51\5\52\1\0"+
-    "\1\53\7\52\3\45\1\54\2\45\1\42\12\0\7\42"+
-    "\1\0\10\42\3\0\4\42\7\0\1\62\2\0\7\42"+
-    "\1\0\10\42\3\0\3\42\10\0\1\62\43\0\1\52"+
-    "\1\63\5\52\1\0\10\52\21\0\4\52\1\64\2\52"+
-    "\1\0\10\52\21\0\7\52\1\0\10\52\21\0\3\52"+
-    "\1\65\3\52\1\0\10\52\6\0\1\55\1\0\40\55"+
-    "\1\0\6\55\1\66\30\55\13\0\1\52\1\67\5\52"+
-    "\1\0\10\52\21\0\2\52\1\70\4\52\1\0\10\52"+
-    "\21\0\5\52\1\71\1\52\1\0\10\52\21\0\7\52"+
-    "\1\0\1\52\1\72\6\52\21\0\7\52\1\0\2\52"+
-    "\1\73\5\52\21\0\3\52\1\74\3\52\1\0\10\52"+
-    "\21\0\4\52\1\75\2\52\1\0\10\52\21\0\7\52"+
-    "\1\0\3\52\1\76\4\52\21\0\4\52\1\77\2\52"+
-    "\1\0\10\52\21\0\1\52\1\100\5\52\1\0\10\52"+
-    "\21\0\7\52\1\0\2\52\1\101\5\52\21\0\7\52"+
-    "\1\0\3\52\1\102\4\52\21\0\7\52\1\0\4\52"+
-    "\1\103\3\52\21\0\7\52\1\0\5\52\1\104\2\52"+
-    "\21\0\7\52\1\0\6\52\1\105\1\52\21\0\7\52"+
-    "\1\0\7\52\1\106\6\0\1\107\1\0\10\107\1\0"+
-    "\7\52\1\0\10\52\6\107";
+    "\1\15\2\16\1\17\1\20\1\21\1\22\1\23\1\24"+
+    "\1\25\1\26\1\16\7\15\1\27\10\15\1\30\1\31"+
+    "\1\32\1\15\1\33\2\15\4\34\1\35\2\15\2\16"+
+    "\1\17\1\36\1\37\1\40\1\23\1\24\1\25\1\26"+
+    "\1\16\7\15\1\27\10\15\1\30\1\31\1\32\1\15"+
+    "\1\33\2\15\4\34\1\41\2\15\2\16\1\17\1\36"+
+    "\1\37\1\42\1\23\1\24\1\25\1\26\1\16\7\15"+
+    "\1\27\10\15\1\30\1\31\1\32\1\15\1\33\2\15"+
+    "\4\34\1\31\2\15\2\16\1\17\1\36\1\37\1\43"+
+    "\1\23\1\24\1\25\1\26\1\16\7\15\1\27\10\15"+
+    "\1\30\1\31\1\32\1\15\1\33\2\15\4\34\1\35"+
+    "\2\15\2\16\1\17\1\20\1\21\1\44\1\23\1\24"+
+    "\1\25\1\45\1\16\7\15\1\27\10\15\1\30\1\31"+
+    "\1\32\1\15\1\33\2\15\4\34\1\46\2\15\2\16"+
+    "\1\17\1\20\1\21\1\44\1\23\1\24\1\25\1\26"+
+    "\1\16\7\15\1\27\10\15\1\30\1\31\1\32\1\15"+
+    "\1\33\2\15\4\34\1\41\2\15\2\16\1\17\1\20"+
+    "\1\21\1\44\1\23\1\24\1\25\1\45\1\16\7\15"+
+    "\1\27\10\15\1\30\1\31\1\32\1\15\1\33\2\15"+
+    "\4\34\1\47\2\15\2\16\1\17\1\20\1\21\1\44"+
+    "\1\23\1\24\1\25\1\26\1\16\7\15\1\27\10\15"+
+    "\1\30\1\31\1\32\1\15\1\33\2\15\1\50\1\51"+
+    "\1\52\1\53\1\31\1\15\1\54\2\27\10\54\1\27"+
+    "\7\54\1\27\17\54\1\55\6\54\2\27\10\54\1\27"+
+    "\7\54\1\27\20\54\1\55\5\54\2\27\10\54\1\27"+
+    "\7\54\1\27\21\54\1\55\4\54\2\27\10\54\1\27"+
+    "\7\54\1\27\22\54\1\55\2\54\1\56\13\0\7\56"+
+    "\1\0\10\56\3\0\4\56\5\0\1\57\1\0\3\16"+
+    "\7\0\1\16\36\0\3\16\7\0\1\16\34\0\1\60"+
+    "\50\0\1\60\2\61\1\62\1\61\1\63\2\61\1\64"+
+    "\3\61\1\0\1\65\1\66\5\67\1\0\1\70\7\67"+
+    "\3\61\1\71\1\61\1\72\1\67\5\61\1\73\51\0"+
+    "\1\74\2\0\45\74\1\75\2\61\1\62\1\61\1\63"+
+    "\6\61\1\0\1\65\1\66\5\67\1\0\1\70\2\67"+
+    "\1\76\4\67\3\61\1\71\1\61\1\72\1\67\5\61"+
+    "\1\73\2\61\1\62\1\61\1\63\3\61\1\77\2\61"+
+    "\1\0\1\65\1\66\5\67\1\0\1\70\7\67\3\61"+
+    "\1\71\1\61\1\72\1\67\5\61\1\73\2\61\1\62"+
+    "\1\61\1\63\1\100\1\61\1\64\3\61\1\0\1\65"+
+    "\1\66\5\67\1\0\1\70\7\67\3\61\1\71\1\61"+
+    "\1\72\1\67\5\61\1\73\2\61\1\62\1\61\1\63"+
+    "\6\61\1\0\1\65\1\66\5\67\1\0\1\70\7\67"+
+    "\3\61\1\71\1\61\1\72\1\67\5\61\1\73\1\56"+
+    "\13\0\7\56\1\0\10\56\3\0\4\56\5\0\2\56"+
+    "\10\0\1\101\2\0\7\56\1\0\10\56\3\0\4\56"+
+    "\5\0\1\56\11\0\1\101\53\0\1\67\1\102\5\67"+
+    "\1\0\10\67\3\0\1\67\1\0\2\67\22\0\4\67"+
+    "\1\103\2\67\1\0\10\67\3\0\1\67\1\0\2\67"+
+    "\22\0\7\67\1\0\10\67\3\0\1\67\1\0\2\67"+
+    "\22\0\3\67\1\104\3\67\1\0\10\67\3\0\1\67"+
+    "\1\0\2\67\22\0\1\67\1\105\5\67\1\0\10\67"+
+    "\3\0\1\67\1\0\2\67\22\0\7\67\1\0\10\67"+
+    "\3\0\1\67\1\0\1\67\1\106\6\0\1\74\2\0"+
+    "\47\74\2\0\6\74\1\107\37\74\14\0\1\67\1\110"+
+    "\5\67\1\0\10\67\3\0\1\67\1\0\2\67\22\0"+
+    "\2\67\1\111\4\67\1\0\10\67\3\0\1\67\1\0"+
+    "\2\67\22\0\5\67\1\112\1\67\1\0\10\67\3\0"+
+    "\1\67\1\0\2\67\22\0\7\67\1\0\1\67\1\113"+
+    "\6\67\3\0\1\67\1\0\2\67\22\0\7\67\1\0"+
+    "\7\67\1\114\3\0\1\67\1\0\2\67\22\0\7\67"+
+    "\1\0\3\67\1\115\4\67\3\0\1\67\1\0\2\67"+
+    "\22\0\7\67\1\0\2\67\1\116\5\67\3\0\1\67"+
+    "\1\0\2\67\22\0\3\67\1\117\3\67\1\0\10\67"+
+    "\3\0\1\67\1\0\2\67\22\0\4\67\1\120\2\67"+
+    "\1\0\10\67\3\0\1\67\1\0\2\67\22\0\1\121"+
+    "\6\67\1\0\10\67\3\0\1\67\1\0\2\67\22\0"+
+    "\3\67\1\122\3\67\1\0\10\67\3\0\1\67\1\0"+
+    "\2\67\22\0\7\67\1\0\3\67\1\123\4\67\3\0"+
+    "\1\67\1\0\2\67\22\0\4\67\1\124\2\67\1\0"+
+    "\10\67\3\0\1\67\1\0\2\67\22\0\1\67\1\125"+
+    "\5\67\1\0\10\67\3\0\1\67\1\0\2\67\22\0"+
+    "\7\67\1\0\10\67\3\0\1\67\1\126\2\67\22\0"+
+    "\4\67\1\127\2\67\1\0\10\67\3\0\1\67\1\0"+
+    "\2\67\22\0\7\67\1\0\2\67\1\130\5\67\3\0"+
+    "\1\67\1\0\2\67\22\0\7\67\1\0\10\67\3\0"+
+    "\1\67\1\0\1\131\1\67\22\0\7\67\1\0\3\67"+
+    "\1\132\4\67\3\0\1\67\1\0\2\67\22\0\3\67"+
+    "\1\133\3\67\1\0\10\67\3\0\1\67\1\0\2\67"+
+    "\22\0\7\67\1\0\4\67\1\134\3\67\3\0\1\67"+
+    "\1\0\2\67\22\0\4\67\1\135\2\67\1\0\10\67"+
+    "\3\0\1\67\1\0\2\67\22\0\7\67\1\0\5\67"+
+    "\1\136\2\67\3\0\1\67\1\0\2\67\22\0\1\67"+
+    "\1\137\5\67\1\0\10\67\3\0\1\67\1\0\2\67"+
+    "\22\0\7\67\1\0\6\67\1\140\1\67\3\0\1\67"+
+    "\1\0\2\67\22\0\7\67\1\0\7\67\1\141\3\0"+
+    "\1\67\1\0\2\67\6\0\1\142\2\0\10\142\1\0"+
+    "\7\67\1\0\10\67\3\142\1\67\1\142\2\67\6\142";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[1452];
+    int [] result = new int[2501];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -229,11 +279,11 @@ public class LatexLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\7\0\12\1\1\11\21\1\1\0\3\11\10\1\3\11"+
-    "\24\1\1\11";
+    "\14\0\12\1\1\11\24\1\2\11\2\1\1\0\4\11"+
+    "\12\1\3\11\24\1\1\11\13\1\1\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[71];
+    int [] result = new int[98];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -554,137 +604,172 @@ public class LatexLexer implements FlexLexer {
             { return NORMAL_TEXT_WORD;
             } 
             // fall through
-          case 28: break;
+          case 35: break;
           case 2: 
             { return com.intellij.psi.TokenType.WHITE_SPACE;
             } 
             // fall through
-          case 29: break;
+          case 36: break;
           case 3: 
             { return OPEN_BRACKET;
             } 
             // fall through
-          case 30: break;
+          case 37: break;
           case 4: 
             { return CLOSE_BRACKET;
             } 
             // fall through
-          case 31: break;
+          case 38: break;
           case 5: 
             { return com.intellij.psi.TokenType.BAD_CHARACTER;
             } 
             // fall through
-          case 32: break;
+          case 39: break;
           case 6: 
             { return OPEN_PAREN;
             } 
             // fall through
-          case 33: break;
+          case 40: break;
           case 7: 
             { return CLOSE_PAREN;
             } 
             // fall through
-          case 34: break;
+          case 41: break;
           case 8: 
             { return OPEN_BRACE;
             } 
             // fall through
-          case 35: break;
+          case 42: break;
           case 9: 
             { return CLOSE_BRACE;
             } 
             // fall through
-          case 36: break;
+          case 43: break;
           case 10: 
             { return COMMENT_TOKEN;
             } 
             // fall through
-          case 37: break;
+          case 44: break;
           case 11: 
-            { yypushState(INLINE_MATH); return INLINE_MATH_START;
+            { return AMPERSAND;
             } 
             // fall through
-          case 38: break;
+          case 45: break;
           case 12: 
             { return STAR;
             } 
             // fall through
-          case 39: break;
-          case 13: 
-            { return AMPERSAND;
-            } 
-            // fall through
-          case 40: break;
-          case 14: 
-            { return M_OPEN_BRACKET;
-            } 
-            // fall through
-          case 41: break;
-          case 15: 
-            { return M_CLOSE_BRACKET;
-            } 
-            // fall through
-          case 42: break;
-          case 16: 
-            { yypopState(); return INLINE_MATH_END;
-            } 
-            // fall through
-          case 43: break;
-          case 17: 
-            { yypopState(); return CLOSE_BRACE;
-            } 
-            // fall through
-          case 44: break;
-          case 18: 
-            { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START;
-            } 
-            // fall through
-          case 45: break;
-          case 19: 
-            { return COMMAND_TOKEN;
-            } 
-            // fall through
           case 46: break;
-          case 20: 
-            { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START;
+          case 13: 
+            { return NORMAL_TEXT_CHAR;
             } 
             // fall through
           case 47: break;
-          case 21: 
-            { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START;
+          case 14: 
+            { yypushState(INLINE_MATH); return INLINE_MATH_START;
             } 
             // fall through
           case 48: break;
-          case 22: 
-            { yypopState(); return DISPLAY_MATH_END;
+          case 15: 
+            { return M_OPEN_BRACKET;
             } 
             // fall through
           case 49: break;
-          case 23: 
-            { yypushState(PREAMBLE_OPTION); return OPEN_BRACE;
+          case 16: 
+            { return M_CLOSE_BRACKET;
             } 
             // fall through
           case 50: break;
-          case 24: 
-            { return END_TOKEN;
+          case 17: 
+            { yypopState(); return INLINE_MATH_END;
             } 
             // fall through
           case 51: break;
-          case 25: 
-            { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN;
+          case 18: 
+            { yypopState(); return CLOSE_BRACE;
             } 
             // fall through
           case 52: break;
-          case 26: 
-            { return BEGIN_TOKEN;
+          case 19: 
+            { yypushState(NESTED_INLINE_MATH); return INLINE_MATH_START;
             } 
             // fall through
           case 53: break;
-          case 27: 
-            { return COMMAND_IFNEXTCHAR;
+          case 20: 
+            { yypopState(); yypushState(INLINE_VERBATIM_PIPE); return OPEN_BRACE;
             } 
             // fall through
           case 54: break;
+          case 21: 
+            { yypopState(); yypushState(INLINE_VERBATIM_EXCL_MARK); return OPEN_BRACE;
+            } 
+            // fall through
+          case 55: break;
+          case 22: 
+            { yypopState(); yypushState(INLINE_VERBATIM_QUOTES); return OPEN_BRACE;
+            } 
+            // fall through
+          case 56: break;
+          case 23: 
+            { yypopState(); yypushState(INLINE_VERBATIM_EQUALS); return OPEN_BRACE;
+            } 
+            // fall through
+          case 57: break;
+          case 24: 
+            { return RAW_TEXT_TOKEN;
+            } 
+            // fall through
+          case 58: break;
+          case 25: 
+            { return COMMAND_TOKEN;
+            } 
+            // fall through
+          case 59: break;
+          case 26: 
+            { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START;
+            } 
+            // fall through
+          case 60: break;
+          case 27: 
+            { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START;
+            } 
+            // fall through
+          case 61: break;
+          case 28: 
+            { yypopState(); return DISPLAY_MATH_END;
+            } 
+            // fall through
+          case 62: break;
+          case 29: 
+            { yypushState(PREAMBLE_OPTION); return OPEN_BRACE;
+            } 
+            // fall through
+          case 63: break;
+          case 30: 
+            { return END_TOKEN;
+            } 
+            // fall through
+          case 64: break;
+          case 31: 
+            { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN;
+            } 
+            // fall through
+          case 65: break;
+          case 32: 
+            { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN;
+            } 
+            // fall through
+          case 66: break;
+          case 33: 
+            { return BEGIN_TOKEN;
+            } 
+            // fall through
+          case 67: break;
+          case 34: 
+            { return COMMAND_IFNEXTCHAR;
+            } 
+            // fall through
+          case 68: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

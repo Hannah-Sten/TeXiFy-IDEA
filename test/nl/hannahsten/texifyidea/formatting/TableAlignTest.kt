@@ -228,6 +228,20 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testNoSpaces() {
+        """
+            \begin{tabular}{ll}
+                aa&b\\
+                c&d\\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ll}
+                aa & b \\
+                c  & d \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
         writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
