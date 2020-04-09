@@ -25,7 +25,9 @@ class RunBibtexListener(
         }
 
         // Run bibtex compiler (blocking execution)
-        RunConfigurationBeforeRunProvider.doExecuteTask(environment, bibtexSettings, null)
+        if (!RunConfigurationBeforeRunProvider.doExecuteTask(environment, bibtexSettings, null)) {
+            return
+        }
 
         if (runLatexAfterwards) {
             // Mark the next latex runs to exclude bibtex compilation

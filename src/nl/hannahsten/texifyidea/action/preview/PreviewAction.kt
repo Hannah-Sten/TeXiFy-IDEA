@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -43,11 +42,8 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
     ) {
         val toolWindowId = name
         val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindowIcon = icon
 
-        val toolWindow = toolWindowManager.getToolWindow(toolWindowId)
-            ?: toolWindowManager.registerToolWindow(toolWindowId, true, ToolWindowAnchor.BOTTOM)
-                .apply { icon = toolWindowIcon }
+        val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: throw IllegalStateException("ToolWindow not found")
 
         val containingFile = element.containingFile
         val psiDocumentManager = PsiDocumentManager.getInstance(project)
@@ -75,9 +71,9 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         if (!replaced) {
             val previewToolWindow = EquationPreviewToolWindow()
             val newContent = contentFactory.createContent(
-                previewToolWindow.content,
-                displayName,
-                true
+                    previewToolWindow.content,
+                    displayName,
+                    true
             )
             toolWindow.contentManager.addContent(newContent)
             val updater = PreviewFormUpdater(previewToolWindow.form)
@@ -89,5 +85,6 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         }
         // Show but not focus the window
         toolWindow.activate(null, false)
+
     }
 }

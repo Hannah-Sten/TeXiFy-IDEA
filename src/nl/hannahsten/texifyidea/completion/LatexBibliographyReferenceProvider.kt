@@ -33,6 +33,7 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
                                     .withIcon(TexifyIcons.DOT_BIB)
                         }
                         is LatexCommands -> {
+                            if (bibtexEntry.requiredParameters.size == 0) return@map null
                             LookupElementBuilder.create(bibtexEntry.requiredParameters[0])
                                     .bold()
                                     .withInsertHandler(LatexReferenceInsertHandler())

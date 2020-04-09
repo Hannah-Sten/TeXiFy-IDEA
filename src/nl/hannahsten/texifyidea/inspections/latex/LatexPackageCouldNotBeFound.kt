@@ -17,7 +17,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
             "PackageCouldNotBeFound"
 
     override fun getDisplayName(): String {
-        return "Package may not exist"
+        return "Package could not be found locally or on CTAN"
     }
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
@@ -36,7 +36,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
             if (!packages.contains(`package`)) {
                 descriptors.add(manager.createProblemDescriptor(
                         command,
-                        "Package could not be found",
+                        displayName,
                         Magic.General.noQuickFix,
                         ProblemHighlightType.WARNING,
                         isOntheFly
