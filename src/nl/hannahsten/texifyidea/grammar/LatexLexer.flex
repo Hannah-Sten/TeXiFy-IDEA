@@ -79,7 +79,6 @@ ANY_CHAR=.
 \\lstinline    { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
 
 <INLINE_VERBATIM_START> {
-    // todo return verbatim delimiter
     "|"     { yypopState(); yypushState(INLINE_VERBATIM_PIPE); return OPEN_BRACE; }
     "!"     { yypopState(); yypushState(INLINE_VERBATIM_EXCL_MARK); return OPEN_BRACE; }
     "\""    { yypopState(); yypushState(INLINE_VERBATIM_QUOTES); return OPEN_BRACE; }
