@@ -63,7 +63,8 @@ ANY_CHAR=.
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
-%xstates INLINE_VERBATIM_START INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
+%states INLINE_VERBATIM_START
+%xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
 
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -103,6 +104,8 @@ ANY_CHAR=.
 
 <INLINE_VERBATIM_PIPE, INLINE_VERBATIM_EXCL_MARK, INLINE_VERBATIM_QUOTES, INLINE_VERBATIM_EQUALS> {
     {ANY_CHAR}              { return RAW_TEXT_TOKEN; }
+    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
+    [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 
 "\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
