@@ -24,15 +24,6 @@ If needed, use method injection or mixin classes.
 For some documentation, see https://jflex.de/manual.html
 When you edit a `.flex` file, regenerate the lexer with Run JFlex Generator from the context menu, as described at https://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support/lexer_and_parser_definition.html#generate-a-lexer-class
 
-If you then get the error
-
-----
-e: Supertypes of the following classes cannot be resolved. Please make sure you have the required dependencies in the classpath:
-    class nl.hannahsten.texifyidea.grammar.LatexLexer, unresolved supertypes: FlexLexer
-----
-
-then open LatexLexer.java, wait until IntelliJ finished its inspections, then run again.
-
 === Editing a parser
 
 When you edit a `.bnf` file, regenerate the parser with Grammar-Kit from the context menu or using kbd:[Ctrl + Shift + G].
