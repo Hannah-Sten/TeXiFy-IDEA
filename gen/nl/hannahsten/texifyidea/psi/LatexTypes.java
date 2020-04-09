@@ -27,6 +27,7 @@ public interface LatexTypes {
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
   IElementType OPTIONAL_PARAM_CONTENT = new LatexElementType("OPTIONAL_PARAM_CONTENT");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
+  IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
   IElementType AMPERSAND = new LatexTokenType("&");
@@ -44,10 +45,12 @@ public interface LatexTypes {
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
   IElementType M_CLOSE_BRACKET = new LatexTokenType("M_CLOSE_BRACKET");
   IElementType M_OPEN_BRACKET = new LatexTokenType("M_OPEN_BRACKET");
+  IElementType NORMAL_TEXT_CHAR = new LatexTokenType("NORMAL_TEXT_CHAR");
   IElementType NORMAL_TEXT_WORD = new LatexTokenType("NORMAL_TEXT_WORD");
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
   IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");
   IElementType OPEN_PAREN = new LatexTokenType("OPEN_PAREN");
+  IElementType RAW_TEXT_TOKEN = new LatexTokenType("RAW_TEXT");
   IElementType STAR = new LatexTokenType("*");
 
   class Factory {
@@ -103,6 +106,9 @@ public interface LatexTypes {
       }
       else if (type == PARAMETER) {
         return new LatexParameterImpl(node);
+      }
+      else if (type == RAW_TEXT) {
+        return new LatexRawTextImpl(node);
       }
       else if (type == REQUIRED_PARAM) {
         return new LatexRequiredParamImpl(node);

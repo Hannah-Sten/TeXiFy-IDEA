@@ -30,9 +30,6 @@ open class TexifyCompletionContributor : CompletionContributor() {
         registerBibtexCompletion()
     }
 
-    override fun invokeAutoPopup(position: PsiElement, typeChar: Char): Boolean {
-        return super.invokeAutoPopup(position, typeChar)
-    }
     private fun registerLatexCompletion() {
         // Math mode
         extend(

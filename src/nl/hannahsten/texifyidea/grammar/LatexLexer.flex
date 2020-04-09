@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.grammar;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
@@ -52,14 +53,59 @@ CLOSE_PAREN=")"
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z@]+|.|\n|\r)
+COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
-NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
+NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=]+
+NORMAL_TEXT_CHAR=[|!\"=] // Separate because they can be \verb delimiters
+ANY_CHAR=.
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
+// Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
+// States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
+%states INLINE_VERBATIM_START
+%xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
+
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
+
+/*
+ * Inline verbatim
+ */
+
+// Use a separate state to start verbatim, to be able to return a command token for \verb
+\\verb         |
+\\verb\*       |
+\\lstinline    { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
+
+<INLINE_VERBATIM_START> {
+    "|"     { yypopState(); yypushState(INLINE_VERBATIM_PIPE); return OPEN_BRACE; }
+    "!"     { yypopState(); yypushState(INLINE_VERBATIM_EXCL_MARK); return OPEN_BRACE; }
+    "\""    { yypopState(); yypushState(INLINE_VERBATIM_QUOTES); return OPEN_BRACE; }
+    "="     { yypopState(); yypushState(INLINE_VERBATIM_EQUALS); return OPEN_BRACE; }
+}
+
+<INLINE_VERBATIM_PIPE> {
+    "|"                     { yypopState(); return CLOSE_BRACE; }
+}
+
+<INLINE_VERBATIM_EXCL_MARK> {
+    "!"                     { yypopState(); return CLOSE_BRACE; }
+}
+
+<INLINE_VERBATIM_QUOTES> {
+    "\""                    { yypopState(); return CLOSE_BRACE; }
+}
+
+<INLINE_VERBATIM_EQUALS> {
+    "="                     { yypopState(); return CLOSE_BRACE; }
+}
+
+<INLINE_VERBATIM_PIPE, INLINE_VERBATIM_EXCL_MARK, INLINE_VERBATIM_QUOTES, INLINE_VERBATIM_EQUALS> {
+    {ANY_CHAR}              { return RAW_TEXT_TOKEN; }
+    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
+    [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+}
 
 "\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
@@ -111,6 +157,10 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 .\<\{                 { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 .>\{                  { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 
+// In case a line ends with a backslash, then we do not want to lex the following newline as a command token,
+// because that will confuse the formatter because it will see the next line as being on this line
+\\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
+
 "*"                  { return STAR; }
 // A separate token, used for example for aligning & in tables
 "&"                  { return AMPERSAND; }
@@ -128,5 +178,6 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)]+
 {COMMAND_IFNEXTCHAR} { return COMMAND_IFNEXTCHAR; }
 {COMMENT_TOKEN}      { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}   { return NORMAL_TEXT_WORD; }
+{NORMAL_TEXT_CHAR}   { return NORMAL_TEXT_CHAR; }
 
 [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }
