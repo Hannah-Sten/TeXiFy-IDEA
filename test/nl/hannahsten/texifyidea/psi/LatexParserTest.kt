@@ -33,6 +33,8 @@ class LatexParserTest : BasePlatformTestCase() {
     fun testNewEnvironmentDefinition() {
         myFixture.configureByText(LatexFileType, """
             \newenvironment{test}{\begin{center}}{\end{center}}
+            \newenvironment{test2}{ \[ }{ \] }
+            \newenvironment{test2}{ $ x$ and $ }{ $ }
         """.trimIndent())
         myFixture.checkHighlighting()
     }
