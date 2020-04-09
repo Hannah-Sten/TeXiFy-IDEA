@@ -30,16 +30,16 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
-    fun testInlineVerbatimWithSpaces() {
+    fun testInlineVerbatim() {
         myFixture.configureByText(LatexFileType, """
             \verb| aaa $ { bbb | text $\xi$ not verb: |a|
-        """.trimIndent())
-        myFixture.checkHighlighting()
-    }
-
-    fun testInlineVerbatimWithoutSpaces() {
-        myFixture.configureByText(LatexFileType, """
-            \verb|aaa $ { bbb| text $\xi$ \verb!$|! \verb=}{= \verb"}$"
+            \verb|aaa $ {" bbb| text $\xi$ 
+            \verb!$|! 
+            \verb=}{= 
+            \verb"}$"
+            \verb|%md|
+            \verb*|$|
+            \lstinline|$|
         """.trimIndent())
         myFixture.checkHighlighting()
     }
