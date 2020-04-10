@@ -79,6 +79,9 @@ fun tableLineSeparatorSpaceAlign(parent: ASTBlock, right: ASTBlock): Int? {
     return maxIndex - relativeOffset + 1
 }
 
+/**
+ * Align spaces to the left of &
+ */
 fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     // Check if parent is in environment content of a table environment
     val contentElement = parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
@@ -88,9 +91,9 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     if (right.node?.text != "&" && right.node?.text != tableLineSeparator) return null
 
     val content = contentElement?.text ?: return null
-    val contentLines = content.split(tableLineSeparator).toMutableList()
+    val contentLines = content.split(tableLineSeparator).mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }.toMutableList()
     if (contentLines.size < 2) return null
-    val indent = contentLines[1].getIndent()
+    val indent = content.split("\n").map { "\n" + it }[1].getIndent()
 
     // Fix environment content not starting with indent
     contentLines[0] = indent + contentLines.first()
@@ -118,11 +121,12 @@ fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: Mu
 
     return contentLines.map { line ->
         val indices = mutableListOf<Int>()
-        line.forEach {
+        line.withIndex().forEach { (i, it) ->
             if (it == '&') indices.add(currentOffset)
+            if (it == '\\' && if (i < line.length - 1) line[i+1] == '\\' else false) indices.add(currentOffset)
             currentOffset++
         }
-        currentOffset += tableLineSeparator.length
+//        currentOffset += tableLineSeparator.length
         indices.toList()
     }
 }
@@ -146,7 +150,7 @@ fun removeRules(content: String, tableLineSeparator: String): String {
 
 fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, indent: String): Int? {
 
-    val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator).map { it + tableLineSeparator }.toMutableList()
+    val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator).mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }.toMutableList()
     contentLinesWithoutRules[0] = indent + contentLinesWithoutRules.first()
 
     val newLinesAndRelativeIndices = removeExtraSpaces(contentLinesWithoutRules)
@@ -171,12 +175,16 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
         var newLine = ""
         var removedSpaces = 0
         line.withIndex().forEach { (i, value) ->
-            when (value) {
-                '&' -> {
+            when {
+                value == '&' -> {
                     indices += i - removedSpaces
                     newLine += value
                 }
-                in setOf(' ', '\n') -> {
+                value == '\\' && if (i < line.length - 1) line[i+1] == '\\' else false -> {
+                    indices += i - removedSpaces
+                    newLine += value
+                }
+                value in setOf(' ', '\n') -> {
                     if (i > 0 && i < line.length - 1) {
                         if (line[i - 1] !in setOf(' ', '&', '\n') && line[i + 1] !in setOf(' ', '&', '\n')) newLine += value
                         else removedSpaces++
@@ -199,7 +207,8 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  */
 private fun getLevelIndices(newContentLines: List<String>, relativeIndices: List<List<Int>>): MutableList<Int> {
     val levelIndices = mutableListOf<Int>()
-    val numberOfAmpersands = newContentLines.first().count { it == '&' }
+    // Add 1 for the line separator \\
+    val numberOfAmpersands = newContentLines.first().count { it == '&' } + 1
     for (level in (0 until numberOfAmpersands)) {
         for ((i, it) in relativeIndices.withIndex()) {
             if (it.isEmpty()) continue

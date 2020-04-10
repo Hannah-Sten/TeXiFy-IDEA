@@ -29,6 +29,24 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testThisIsCorrect() {
+        """
+            \begin{tabular}{l c r}
+                Date     & In tree: & Raining? \\ \hline
+                April 26 & Yes      & Yes      \\
+                June 7   & Yes      & No       \\
+                Juli 20  & Yes      & No       \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{l c r}
+                Date     & In tree: & Raining? \\ \hline
+                April 26 & Yes      & Yes      \\
+                June 7   & Yes      & No       \\
+                Juli 20  & Yes      & No       \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
     fun testTooMuchSpaces() {
         """
         \begin{tabular}{ccc}
@@ -218,12 +236,12 @@ class TableAlignTest : BasePlatformTestCase() {
         """
             \begin{tabular}{ll}
                 aaaa & b \\
-                c & d    \\
+                c    & d \\
             \end{tabular}
         """.trimIndent() `should be reformatted to` """
             \begin{tabular}{ll}
                 aaaa & b \\
-                c & d    \\
+                c    & d \\
             \end{tabular}
         """.trimIndent()
     }
