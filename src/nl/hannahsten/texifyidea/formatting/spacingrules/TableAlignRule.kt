@@ -213,7 +213,7 @@ private fun getLevelIndices(newContentLines: List<String>, relativeIndices: List
         for ((i, it) in relativeIndices.withIndex()) {
             if (it.isEmpty()) continue
             if (i >= relativeIndices.size) continue
-            if (level >= relativeIndices.size) continue
+            if (level >= relativeIndices.first().size) continue
 
             // Get new index of this level based on movements of lower levels of this line
 
