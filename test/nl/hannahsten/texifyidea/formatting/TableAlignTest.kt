@@ -154,8 +154,8 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent() `should be reformatted to` """
             \begin{tabular}{cccc}
                 aaa & b &
-                a     & d \\
-                c   & d &
+                a & d \\
+                c & d &
                 aaaaa & d \\
             \end{tabular}
         """.trimIndent()
@@ -172,10 +172,10 @@ class TableAlignTest : BasePlatformTestCase() {
             \end{tabular}
         """.trimIndent() `should be reformatted to` """
             \begin{tabular}{cccc}
-                a   & b & ccccc & d \\
+                a & b & ccccc & d \\
                 aaa & b &
-                a     & d \\
-                c   & d &
+                a & d \\
+                c & d &
                 aaaaa & d \\
             \end{tabular}
         """.trimIndent()

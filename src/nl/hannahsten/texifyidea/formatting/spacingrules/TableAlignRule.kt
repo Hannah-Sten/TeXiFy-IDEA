@@ -98,11 +98,12 @@ fun removeRules(content: String, tableLineSeparator: String): String {
 fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, indent: String): Int? {
 
     val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator).mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }.toMutableList()
+    if (contentLinesWithoutRules.isEmpty()) return null
     contentLinesWithoutRules[0] = indent + contentLinesWithoutRules.first()
 
     val relativeIndices = removeExtraSpaces(contentLinesWithoutRules)
 
-    val spacesPerCell = getSpacesPerCell(relativeIndices)
+    val spacesPerCell = getSpacesPerCell(relativeIndices, contentLinesWithoutRules)
 
     return getSpacesForRightBlock(right, absoluteAmpersandIndicesPerLine, spacesPerCell)
 }
@@ -141,13 +142,21 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  * Get the desired index of the first &, second &, etc, relative to the line start.
  *
  * Get the number of spaces that has to be added in each cell.
+ * 1 when we should do nothing, except the single required space.
  * Indexed by line, then by level.
  */
-private fun getSpacesPerCell(relativeIndices: List<List<Int>>): List<List<Int>> {
+private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
+    // If we are on a on a table line that is split over multiple `physical' lines,
+    // ignore this line in all computations.
+    fun String.ignore(): Boolean =
+            split("\n").filter { it.isNotBlank() }.size > 1
+
     // In each line, compute the width of each cell.
-    val cellWidthsPerLine = relativeIndices.map { line ->
-        listOf(line.first()) + line.zipWithNext { a, b -> b - a }
+    val cellWidthsPerLine = relativeIndices.mapIndexed { i, line ->
+        if (contentLinesWithoutRules[i].ignore()) line.map { 0 }
+        else listOf(line.first()) + line.zipWithNext { a, b -> b - a }
     }
+
     // Take the maximum width of each i-th cell over all lines.
     val cellWidths = cellWidthsPerLine.first().indices.map { level ->
         cellWidthsPerLine.map { it[level] }.max() ?: return mutableListOf()
@@ -156,10 +165,11 @@ private fun getSpacesPerCell(relativeIndices: List<List<Int>>): List<List<Int>> 
     // The number of spaces that has to be added to this cell is the
     // difference with the largest cell in this column, plus one additional
     // space that has to be added to every cell.
-    return cellWidthsPerLine.map { line ->
+    return cellWidthsPerLine.mapIndexed { i, line ->
         line.mapIndexed { level, cellWidth ->
+            if (contentLinesWithoutRules[i].ignore()) 1
             // Add 1 for the space that always has to be there.
-            cellWidths[level] - cellWidth + 1
+            else cellWidths[level] - cellWidth + 1
         }
     }
 }
