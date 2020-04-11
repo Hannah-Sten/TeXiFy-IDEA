@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
@@ -32,12 +33,16 @@ object Magic {
     object General {
 
         const val pathPackageRoot = "/nl/hannahsten/texifyidea"
+
         @JvmField
         val emptyStringArray = arrayOfNulls<String>(0)
+
         @JvmField
         val emptyPsiElementArray = arrayOfNulls<PsiElement>(0)
+
         @JvmField
         val noQuickFix: LocalQuickFix? = null
+
         @Language("Latex")
         @JvmField
         val latexDemoText = """
@@ -757,6 +762,24 @@ object Magic {
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
                 "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
                 "tikz" to TexifyIcons.TIKZ_FILE
+        )
+    }
+
+    object Colors {
+        /**
+         * All commands that have a color as an argument.
+         */
+        @JvmField
+        val takeColorCommands = LatexRegularCommand.values()
+                .filter {
+                    it.arguments.map { it.name }.contains("color")
+                }
+                .map { it.command }
+
+
+        @JvmField
+        val defaultXcolors = hashSetOf(
+                "red", "green", "blue", "cyan", "magenta", "yellow", "black", "gray", "white", "darkgray", "lightgray", "brown", "lime", "olive", "orange", "pink", "purple", "teal", "violet"
         )
     }
 }
