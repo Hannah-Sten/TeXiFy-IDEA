@@ -15,7 +15,8 @@ import nl.hannahsten.texifyidea.util.getIndent
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
 
-    if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
+    if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
+                    ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
 
     if (left.node?.text != "&") return null
 
@@ -39,7 +40,9 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     if (right.node?.text != "&" && right.node?.text != tableLineSeparator) return null
 
     val content = contentElement?.text ?: return null
-    val contentLines = content.split(tableLineSeparator).mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }.toMutableList()
+    val contentLines = content.split(tableLineSeparator)
+            .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
+            .toMutableList()
     if (contentLines.size < 2) return null
     val indent = content.split("\n").map { "\n" + it }[1].getIndent()
 
@@ -50,7 +53,8 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
 
     val contentWithoutRules = removeRules(content, tableLineSeparator)
 
-    val spaces = getNumberOfSpaces(contentWithoutRules, tableLineSeparator, right, absoluteAmpersandIndicesPerLine, indent) ?: return null
+    val spaces = getNumberOfSpaces(contentWithoutRules, tableLineSeparator, right, absoluteAmpersandIndicesPerLine, indent)
+            ?: return null
 
     return createSpacing(
             minSpaces = spaces,
@@ -71,7 +75,7 @@ fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: Mu
         val indices = mutableListOf<Int>()
         line.withIndex().forEach { (i, it) ->
             if (it == '&') indices.add(currentOffset)
-            if (it == '\\' && if (i < line.length - 1) line[i+1] == '\\' else false) indices.add(currentOffset)
+            if (it == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false) indices.add(currentOffset)
             currentOffset++
         }
         indices.toList()
@@ -97,7 +101,9 @@ fun removeRules(content: String, tableLineSeparator: String): String {
 
 fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, indent: String): Int? {
 
-    val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator).mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }.toMutableList()
+    val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator)
+            .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
+            .toMutableList()
     if (contentLinesWithoutRules.isEmpty()) return null
     contentLinesWithoutRules[0] = indent + contentLinesWithoutRules.first()
 
@@ -123,7 +129,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
                 value == '&' -> {
                     indices += i - removedSpaces
                 }
-                value == '\\' && if (i < line.length - 1) line[i+1] == '\\' else false -> {
+                value == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false -> {
                     indices += i - removedSpaces
                 }
                 value in setOf(' ', '\n') -> {
@@ -131,7 +137,8 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
                         if (!(line[i - 1] !in setOf(' ', '&', '\n') && line[i + 1] !in setOf(' ', '&', '\n', '\\'))) removedSpaces++
                     }
                 }
-                else -> {}
+                else -> {
+                }
             }
         }
         indices.toList()
@@ -146,14 +153,18 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  * Indexed by line, then by level.
  */
 private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
+    val nrLevels = relativeIndices.map { it.size }.max() ?: 0
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.
-    fun String.ignore(): Boolean =
-            split("\n").filter { it.isNotBlank() }.size > 1
+    fun String.ignore(): Boolean {
+        val containsNewLines = split("\n").filter { it.isNotBlank() }.size > 1
+        val lessCells = count { it == '&' } + 1 < nrLevels
+        return containsNewLines || lessCells
+    }
 
     // In each line, compute the width of each cell.
     val cellWidthsPerLine = relativeIndices.mapIndexed { i, line ->
-        if (contentLinesWithoutRules[i].ignore()) line.map { 0 }
+        if (contentLinesWithoutRules[i].ignore()) List(nrLevels) {0}
         else listOf(line.first()) + line.zipWithNext { a, b -> b - a }
     }
 

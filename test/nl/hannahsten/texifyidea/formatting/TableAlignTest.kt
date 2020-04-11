@@ -260,6 +260,26 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testMultiColumn() {
+        """
+            \begin{tabular}{lcr}
+                Storyline & Number of Books & User rating \\ \hline
+                City Watch & 10 & 80 \\
+                Witches & 6 & 75 \\
+                Rincewind & \multicolumn{2}{c}{n.a.} \\
+                Death & 5 & 70 \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{lcr}
+                Storyline  & Number of Books & User rating \\ \hline
+                City Watch & 10              & 80          \\
+                Witches    & 6               & 75          \\
+                Rincewind & \multicolumn{2}{c}{n.a.} \\
+                Death      & 5               & 70          \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
         writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
