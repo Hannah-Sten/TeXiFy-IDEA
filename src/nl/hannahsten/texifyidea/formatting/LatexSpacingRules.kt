@@ -5,7 +5,6 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
-import nl.hannahsten.texifyidea.formatting.spacingrules.tableLineSeparatorSpaceAlign
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.Magic
