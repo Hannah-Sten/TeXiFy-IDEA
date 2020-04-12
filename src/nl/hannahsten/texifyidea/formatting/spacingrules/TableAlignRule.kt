@@ -49,7 +49,7 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     // Fix environment content not starting with indent
     contentLines[0] = indent + contentLines.first()
 
-    val absoluteAmpersandIndicesPerLine = getAmpersandOffsets(contentElement.textOffset, indent, contentLines, tableLineSeparator)
+    val absoluteAmpersandIndicesPerLine = getAmpersandOffsets(contentElement.textOffset, indent, contentLines)
 
     val contentWithoutRules = removeRules(content, tableLineSeparator)
 
@@ -67,7 +67,7 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
 /**
  * Find the current absolute offset of all the ampersands
  */
-fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: MutableList<String>, tableLineSeparator: String): List<List<Int>> {
+fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: MutableList<String>): List<List<Int>> {
     // We added fake content, but it doesn't count for the text offset
     var currentOffset = contentTextOffset - indent.length
 

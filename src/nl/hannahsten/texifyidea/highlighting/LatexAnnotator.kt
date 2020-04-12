@@ -183,7 +183,7 @@ open class LatexAnnotator : Annotator {
 
             if (element.name == "\\text" || element.name == "\\intertext") {
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                        .range(element.requiredParameters().first())
+                        .range(element.requiredParameters().firstOrNull() ?: continue)
                         .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
                         .create()
             }

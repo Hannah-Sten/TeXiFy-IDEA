@@ -34,8 +34,8 @@
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
         AMPERSAND='&'
-        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=]+'
-        NORMAL_TEXT_CHAR='regexp:[|!"=]'
+        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=&]+'
+        NORMAL_TEXT_CHAR='regexp:[|!"=&]'
         // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
         COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
         RAW_TEXT_TOKEN='RAW_TEXT'
