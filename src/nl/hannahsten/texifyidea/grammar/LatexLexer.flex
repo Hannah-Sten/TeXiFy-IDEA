@@ -118,6 +118,10 @@ ANY_CHAR=.
  * \newenvironment definitions
  */
 
+// For new environment definitions, we need to switch to new states because the \begin..\end will interleave with groups
+\\newenvironment     { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+\\renewenvironment   { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
+
 // A separate state is used to track when we start with the second parameter of \newenvironment, this state denotes the first one
 <NEW_ENVIRONMENT_DEFINITION_NAME> {
     "}"     { yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION); return CLOSE_BRACE; }
@@ -145,23 +149,27 @@ ANY_CHAR=.
 
 // Skip the next open brace of the third parameter, just as we skipped the close brace of the second
 <NEW_ENVIRONMENT_SKIP_BRACE> {
-    "{"     { yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION_END); return CLOSE_BRACE; }
+    "{"     { yypopState(); newEnvironmentBracesNesting = 1; yypushState(NEW_ENVIRONMENT_DEFINITION_END); return CLOSE_BRACE; }
 }
 
 // In the third parameter, still skip the state-changing characters
 <NEW_ENVIRONMENT_DEFINITION_END> {
+    "{"     { newEnvironmentBracesNesting++; return OPEN_BRACE; }
+    "}"     { newEnvironmentBracesNesting--;
+          if(newEnvironmentBracesNesting == 0) {
+              yypopState();
+          }
+          return CLOSE_BRACE;
+      }
     "\\["                { return DISPLAY_MATH_START; }
     "\\]"                { return DISPLAY_MATH_END; }
     "$"                  { return NORMAL_TEXT_WORD; }
 }
 
-// For new environment definitions, we need to switch to new states because the \begin..\end will interleave with groups
-\\newenvironment     { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
-\\renewenvironment   { yypushState(NEW_ENVIRONMENT_DEFINITION_NAME); return COMMAND_TOKEN; }
-
 /*
  * Inline math, display math and nested inline math
  */
+
 "\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
 <YYINITIAL,DISPLAY_MATH> {

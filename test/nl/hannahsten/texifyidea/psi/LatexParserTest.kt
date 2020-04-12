@@ -35,6 +35,8 @@ class LatexParserTest : BasePlatformTestCase() {
             \newenvironment{test}{\begin{center}}{\end{center}}
             \newenvironment{test2}{ \[ }{ \] }
             \newenvironment{test2}{ $ x$ and $ }{ $ }
+            
+            $\xi$
         """.trimIndent())
         myFixture.checkHighlighting()
     }
