@@ -48,6 +48,7 @@ internal object LatexWrapWithTextPostfixTemplate : ConstantStringBasedPostfixTem
 internal object LatexWrapWithBoldFacePostfixTemplate : LatexWrapWithCommandPostfixTemplate("textbf", name = "bf", textOnly = true)
 internal object LatexWrapWithItalicFacePostfixTemplate : LatexWrapWithCommandPostfixTemplate("textit", name = "it", textOnly = true)
 internal object LatexWrapWithEmphPostfixTemplate : LatexWrapWithCommandPostfixTemplate("emph", textOnly = true)
+internal object LatexWrapWithTypewriterPostfixTemplate : LatexWrapWithCommandPostfixTemplate("texttt", name = "tt", textOnly = true)
 
 
 /* Wrap with math command postfix templates. */
