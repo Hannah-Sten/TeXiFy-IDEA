@@ -119,7 +119,7 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
                 it.arguments.filterIsInstance<RequiredArgument>()
                         .indexOfFirst { arg -> arg.name == argument }
             }
-    return if (requiredArgIndices.isNullOrEmpty()) null
+    return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
     else requiredParameters[requiredArgIndices.first()]
 }
 
