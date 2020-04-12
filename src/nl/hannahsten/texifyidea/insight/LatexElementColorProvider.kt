@@ -16,7 +16,7 @@ class LatexElementColorProvider : ElementColorProvider {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
             if (command.usesColor()) {
-                if (element.text in Magic.Colors.defaultXcolors) return Color.RED
+                return Color(Magic.Colors.defaultXcolors[element.text] ?: return null)
             }
         }
         return null

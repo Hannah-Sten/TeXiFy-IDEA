@@ -25,7 +25,7 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
     private fun addDefaultColors(result: CompletionResultSet) {
         result.addAllElements(
                 Magic.Colors.defaultXcolors.map {
-                    LookupElementBuilder.create(it)
+                    LookupElementBuilder.create(it.key)
                 }
         )
     }
