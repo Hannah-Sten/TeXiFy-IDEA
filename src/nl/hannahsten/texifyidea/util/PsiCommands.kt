@@ -29,6 +29,8 @@ fun LatexCommands?.isDefinition() = this != null && this.name in Magic.Command.d
  */
 fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in Magic.Colors.colorDefinitions.map { it.command }
 
+fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Magic.Colors.colorCommands
+
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.
  *

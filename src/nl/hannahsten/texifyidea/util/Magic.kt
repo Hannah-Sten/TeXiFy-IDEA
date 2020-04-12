@@ -786,6 +786,9 @@ object Magic {
                 .filter { it.arguments.map { it.name }.contains("name") }
 
         @JvmField
+        val colorCommands = takeColorCommands + colorDefinitions.map { it.command }
+
+        @JvmField
         val defaultXcolors = hashSetOf(
                 "red", "green", "blue", "cyan", "magenta", "yellow", "black", "gray", "white", "darkgray", "lightgray", "brown", "lime", "olive", "orange", "pink", "purple", "teal", "violet"
         )
