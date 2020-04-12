@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
 import org.intellij.lang.annotations.Language
 import java.awt.Color
 import java.util.regex.Pattern
@@ -776,6 +777,13 @@ object Magic {
                 }
                 .map { it.command }
 
+        /**
+         * All commands that define a new color.
+         */
+        @JvmField
+        val colorDefinitions = LatexRegularCommand.values()
+                .filter { it.dependency == XCOLOR }
+                .filter { it.arguments.map { it.name }.contains("name") }
 
         @JvmField
         val defaultXcolors = hashSetOf(

@@ -149,7 +149,7 @@ enum class LatexRegularCommand(
     LATEX("LaTeX", display = "LaTeX"),
     LATEXE("LaTeXe", display = "LaTeX2ε"),
     LBRACK("lbrack", display = "["),
-    LPAREN("lparen", display="(", dependency = MATHTOOLS),
+    LPAREN("lparen", display = "(", dependency = MATHTOOLS),
     LDOTS("ldots", display = "…"),
     LEFTEQN("lefteqn"),
     LET("let"),

@@ -6,6 +6,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
@@ -19,6 +20,14 @@ import nl.hannahsten.texifyidea.util.files.document
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in Magic.Command.definitions
+
+/**
+ * Checks whether the given LaTeX commands is a color definition or not.
+ *
+ * @return `true` if the command defines a color, `false` when the command command
+ *          is `null` or otherwise.
+ */
+fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in Magic.Colors.colorDefinitions.map { it.command }
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.
@@ -94,6 +103,22 @@ fun LatexCommands.previousCommand(): LatexCommands? {
 fun LatexCommands.definedCommandName() = when (name) {
     in Magic.Command.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
     else -> definitionCommand()?.name
+}
+
+/**
+ * Get the value of the named [argument] given in `this` command.
+ */
+fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
+    // Find all pre-defined commands that define `this` command.
+    val requiredArgIndices = LatexRegularCommand.get(name?.substring(1)
+            ?: return null)
+            // Find the index of their required parameter named [argument].
+            ?.map {
+                it.arguments.filterIsInstance<RequiredArgument>()
+                        .indexOfFirst { arg -> arg.name == argument }
+            }
+    return if (requiredArgIndices.isNullOrEmpty()) null
+    else requiredParameters[requiredArgIndices.first()]
 }
 
 /**
