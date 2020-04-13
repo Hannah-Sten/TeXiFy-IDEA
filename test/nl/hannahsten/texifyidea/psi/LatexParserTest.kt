@@ -43,4 +43,15 @@ class LatexParserTest : BasePlatformTestCase() {
         """.trimIndent())
         myFixture.checkHighlighting()
     }
+
+    fun testVerbatim() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{verbatim}
+                $
+            \end{verbatim}
+            
+            $ math$
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
 }

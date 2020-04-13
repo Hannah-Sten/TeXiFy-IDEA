@@ -66,7 +66,7 @@ ANY_CHAR=.|\n
 %states INLINE_VERBATIM_START
 %xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
 
-%states POSSIBLE_VERBATIM_START POSSIBLE_VERBATIM_END
+%states POSSIBLE_VERBATIM_START VERBATIM_START POSSIBLE_VERBATIM_END
 %xstates VERBATIM
 
 %%
@@ -172,10 +172,15 @@ ANY_CHAR=.|\n
   {NORMAL_TEXT_WORD} {
           yypopState();
           if (yytext().equals("verbatim")) { // todo add more envs
-                yypushState(VERBATIM);
+                yypushState(VERBATIM_START);
           }
           return NORMAL_TEXT_WORD;
       }
+}
+
+// Jump over the closing } of the \begin{verbatim} before starting verbatim state
+<VERBATIM_START> {
+    "}" { yypopState(); yypushState(VERBATIM); return CLOSE_BRACE; }
 }
 
 <VERBATIM> {
@@ -187,11 +192,10 @@ ANY_CHAR=.|\n
 }
 
 <POSSIBLE_VERBATIM_END> {
-    "}"                { yypopState(); return CLOSE_BRACE; }
     {NORMAL_TEXT_WORD} {
               if (yytext().equals("verbatim")) { // todo add more envs
-                  // Pop current state, close brace will pop verbatim state
-                  yypopState();
+                  // Pop current state and verbatim state
+                  yypopState(); yypopState();
               }
               return NORMAL_TEXT_WORD;
           }
