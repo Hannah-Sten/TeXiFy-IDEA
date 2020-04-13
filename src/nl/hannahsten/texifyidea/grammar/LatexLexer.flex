@@ -58,13 +58,16 @@ COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=]+
 NORMAL_TEXT_CHAR=[|!\"=] // Separate because they can be \verb delimiters
-ANY_CHAR=.
+ANY_CHAR=.|\n
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %states INLINE_VERBATIM_START
 %xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
+
+%states POSSIBLE_VERBATIM_START POSSIBLE_VERBATIM_END
+%xstates VERBATIM
 
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -161,6 +164,39 @@ ANY_CHAR=.
 // because that will confuse the formatter because it will see the next line as being on this line
 \\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
+
+// todo move up
+<POSSIBLE_VERBATIM_START> {
+    // Assumes the close brace is the last one of the \begin{...}, and that if a verbatim environment was detected, that this state has been left
+    "}"              { yypopState(); return CLOSE_BRACE; }
+  {NORMAL_TEXT_WORD} {
+          yypopState();
+          if (yytext().equals("verbatim")) { // todo add more envs
+                yypushState(VERBATIM);
+          }
+          return NORMAL_TEXT_WORD;
+      }
+}
+
+<VERBATIM> {
+    {ANY_CHAR}              { return RAW_TEXT_TOKEN; }
+    {END_TOKEN}          { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
+    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
+    [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+
+}
+
+<POSSIBLE_VERBATIM_END> {
+    "}"                { yypopState(); return CLOSE_BRACE; }
+    {NORMAL_TEXT_WORD} {
+              if (yytext().equals("verbatim")) { // todo add more envs
+                  // Pop current state, close brace will pop verbatim state
+                  yypopState();
+              }
+              return NORMAL_TEXT_WORD;
+          }
+}
+
 "*"                  { return STAR; }
 "["                  { return OPEN_BRACKET; }
 "]"                  { return CLOSE_BRACKET; }
@@ -170,7 +206,7 @@ ANY_CHAR=.
 {CLOSE_PAREN}        { return CLOSE_PAREN; }
 
 {WHITE_SPACE}        { return WHITE_SPACE; }
-{BEGIN_TOKEN}        { return BEGIN_TOKEN; }
+{BEGIN_TOKEN}        { yypushState(POSSIBLE_VERBATIM_START); return BEGIN_TOKEN; }
 {END_TOKEN}          { return END_TOKEN; }
 {COMMAND_TOKEN}      { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR} { return COMMAND_IFNEXTCHAR; }
