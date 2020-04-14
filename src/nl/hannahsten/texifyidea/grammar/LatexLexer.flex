@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.grammar;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
@@ -11,6 +10,8 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
 %{
   private Deque<Integer> stack = new ArrayDeque<>();
+
+  private final Set<String> verbatimEnvironments = new HashSet<>(Arrays.asList("verbatim", "lstlisting"));
 
   public void yypushState(int newState) {
     stack.push(yystate());
@@ -164,14 +165,16 @@ ANY_CHAR=.|\n
 // because that will confuse the formatter because it will see the next line as being on this line
 \\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
-
+// todo formatter inserting newline before \end{verbatim}
+// todo remove formatter inspections?
 // todo move up
 <POSSIBLE_VERBATIM_START> {
     // Assumes the close brace is the last one of the \begin{...}, and that if a verbatim environment was detected, that this state has been left
     "}"              { yypopState(); return CLOSE_BRACE; }
   {NORMAL_TEXT_WORD} {
           yypopState();
-          if (yytext().equals("verbatim")) { // todo add more envs
+          // toString to fix comparisons of charsequence subsequences with string
+          if (verbatimEnvironments.contains(yytext().toString())) { // todo add more envs
                 yypushState(VERBATIM_START);
           }
           return NORMAL_TEXT_WORD;
@@ -193,7 +196,7 @@ ANY_CHAR=.|\n
 
 <POSSIBLE_VERBATIM_END> {
     {NORMAL_TEXT_WORD} {
-              if (yytext().equals("verbatim")) { // todo add more envs
+              if (verbatimEnvironments.contains(yytext().toString())) { // todo add more envs
                   // Pop current state and verbatim state
                   yypopState(); yypopState();
               }

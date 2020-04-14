@@ -18,7 +18,6 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey?> {
-        // Braces
         return if (tokenType == LatexTypes.OPEN_BRACE || tokenType == LatexTypes.CLOSE_BRACE) {
             BRACES_KEYS
         }
@@ -47,8 +46,8 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
 
     companion object {
         /*
-     * TextAttributesKeys
-     */
+         * TextAttributesKeys
+         */
         val BRACES = createKey("LATEX_BRACES", DefaultLanguageHighlighterColors.BRACES)
         val BRACKETS = createKey("LATEX_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS)
         val OPTIONAL_PARAM = createKey("LATEX_OPTIONAL_PARAM", DefaultLanguageHighlighterColors.PARAMETER)
@@ -82,8 +81,8 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         )
 
         /*
-     * TextAttributeKey[]s
-     */
+         * TextAttributeKey[]s
+         */
         private val BRACES_KEYS = keys(BRACES)
         private val BRACKET_KEYS = keys(BRACKETS)
         private val COMMAND_KEYS = keys(COMMAND)

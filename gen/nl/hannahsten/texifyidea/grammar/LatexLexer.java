@@ -2,11 +2,10 @@
 
 package nl.hannahsten.texifyidea.grammar;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
+
+import java.util.*;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
@@ -365,6 +364,8 @@ public class LatexLexer implements FlexLexer {
 
   /* user code: */
   private Deque<Integer> stack = new ArrayDeque<>();
+
+  private final Set<String> verbatimEnvironments = new HashSet<>(Arrays.asList("verbatim", "lstlisting"));
 
   public void yypushState(int newState) {
     stack.push(yystate());
@@ -742,7 +743,8 @@ public class LatexLexer implements FlexLexer {
           case 60: break;
           case 24: 
             { yypopState();
-          if (yytext().equals("verbatim")) { // todo add more envs
+          // toString to fix comparisons of charsequence subsequences with string
+          if (verbatimEnvironments.contains(yytext().toString())) { // todo add more envs
                 yypushState(VERBATIM_START);
           }
           return NORMAL_TEXT_WORD;
@@ -755,7 +757,7 @@ public class LatexLexer implements FlexLexer {
             // fall through
           case 62: break;
           case 26: 
-            { if (yytext().equals("verbatim")) { // todo add more envs
+            { if (verbatimEnvironments.contains(yytext().toString())) { // todo add more envs
                   // Pop current state and verbatim state
                   yypopState(); yypopState();
               }
