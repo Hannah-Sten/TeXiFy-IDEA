@@ -214,6 +214,7 @@ ANY_CHAR=.|\n
 // because that will confuse the formatter because it will see the next line as being on this line
 \\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
+// todo syntax highlighting on \end
 // todo formatter inserting newline before \end{verbatim}
 // todo remove formatter inspections?
 // todo insert label quickfix broken

@@ -4,7 +4,7 @@ package nl.hannahsten.texifyidea.parser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
@@ -202,18 +202,29 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // content+
+  // <<injection_env_content raw_text>> | content+
   public static boolean environment_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "environment_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENVIRONMENT_CONTENT, "<environment content>");
+    r = injection_env_content(b, l + 1, raw_text_parser_);
+    if (!r) r = environment_content_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // content+
+  private static boolean environment_content_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "environment_content_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
     r = content(b, l + 1);
     while (r) {
       int c = current_position_(b);
       if (!content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "environment_content", c)) break;
+      if (!empty_element_parsed_guard_(b, "environment_content_1", c)) break;
     }
-    exit_section_(b, l, m, r, false, null);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -441,4 +452,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  static final Parser raw_text_parser_ = new Parser() {
+    public boolean parse(PsiBuilder b, int l) {
+      return raw_text(b, l + 1);
+    }
+  };
 }
