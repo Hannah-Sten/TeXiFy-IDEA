@@ -2,12 +2,11 @@
 
 package nl.hannahsten.texifyidea.grammar;
 
+import java.util.*;
+
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.util.Magic;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 

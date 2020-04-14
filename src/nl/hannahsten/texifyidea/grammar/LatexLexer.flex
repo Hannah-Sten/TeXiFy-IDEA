@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import nl.hannahsten.texifyidea.util.Magic.Environment.*;
+import nl.hannahsten.texifyidea.util.Magic;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
@@ -134,7 +134,7 @@ ANY_CHAR=.|\n
 }
 
 <VERBATIM> {
-    // Also catch whitespace, to avoid including newlines in the environment content and thus triggering the formatter incorrectly
+    // Also catch whitespac, see LatexParserUtil for more info
     {WHITE_SPACE}      { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}         { return RAW_TEXT_TOKEN; }
     {END_TOKEN}        { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
@@ -215,7 +215,6 @@ ANY_CHAR=.|\n
 \\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
 // todo syntax highlighting on \end
-// todo formatter inserting newline before \end{verbatim}
 // todo remove formatter inspections?
 // todo insert label quickfix broken
 

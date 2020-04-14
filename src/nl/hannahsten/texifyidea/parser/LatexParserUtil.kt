@@ -8,8 +8,11 @@ import nl.hannahsten.texifyidea.util.Magic
 class LatexParserUtil : GeneratedParserUtilBase() {
     companion object {
 
+        /**
+         * Remap tokens inside verbatim environments to raw text.
+         * Requires the lexer to be in a proper state before and after the environment.
+         */
         @JvmStatic fun injection_env_content(builder: PsiBuilder, level: Int, rawText: Parser): Boolean {
-            // TODO: this must be checked for performance.
             // This might be optimized by handling the tokens incrementally
             val beginText = builder.originalText.subSequence(
                     builder.latestDoneMarker!!.startOffset,
@@ -24,7 +27,10 @@ class LatexParserUtil : GeneratedParserUtilBase() {
             if (env !in Magic.Environment.verbatim) return false
 
             val startIndex = builder.currentOffset
-            val endIndex = builder.originalText.indexOf("\\end{$env}", startIndex)
+            // Exclude the last newline, so it will stay a whitespace,
+            // otherwise the formatter (LatexSpacingRules) will insert a
+            // newline too much between environment content and \end
+            val endIndex = builder.originalText.indexOf("\\end{$env}", startIndex) - 1
 
 
             builder.setTokenTypeRemapper { token, start, end, _ -> if (startIndex <= start && end <= endIndex) LatexTypes.RAW_TEXT_TOKEN else token }
