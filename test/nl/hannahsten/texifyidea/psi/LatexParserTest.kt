@@ -48,6 +48,8 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(LatexFileType, """
             \begin{verbatim}
                 $
+                \end{no verbatim} }
+                \begin{alsonoverbatim}
             \end{verbatim}
             
             $ math$

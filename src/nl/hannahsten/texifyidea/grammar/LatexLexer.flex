@@ -4,14 +4,14 @@ import java.util.*;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
+import nl.hannahsten.texifyidea.util.Magic.Environment.*;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+
 %%
 
 %{
   private Deque<Integer> stack = new ArrayDeque<>();
-
-  private final Set<String> verbatimEnvironments = new HashSet<>(Arrays.asList("verbatim", "lstlisting"));
 
   public void yypushState(int newState) {
     stack.push(yystate());
@@ -67,7 +67,7 @@ ANY_CHAR=.|\n
 %states INLINE_VERBATIM_START
 %xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
 
-%states POSSIBLE_VERBATIM_START VERBATIM_START POSSIBLE_VERBATIM_END
+%states POSSIBLE_VERBATIM_START VERBATIM_START POSSIBLE_VERBATIM_END VERBATIM_END
 %xstates VERBATIM
 
 %%
@@ -110,6 +110,55 @@ ANY_CHAR=.|\n
     // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
     [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
+
+/*
+ * Verbatim environments
+ */
+
+<POSSIBLE_VERBATIM_START> {
+    // Assumes the close brace is the last one of the \begin{...}, and that if a verbatim environment was detected, that this state has been left
+    "}"                { yypopState(); return CLOSE_BRACE; }
+    {NORMAL_TEXT_WORD} {
+        yypopState();
+        // toString to fix comparisons of charsequence subsequences with string
+        if (Magic.Environment.verbatim.contains(yytext().toString())) {
+            yypushState(VERBATIM_START);
+        }
+        return NORMAL_TEXT_WORD;
+    }
+}
+
+// Jump over the closing } of the \begin{verbatim} before starting verbatim state
+<VERBATIM_START> {
+    "}"                { yypopState(); yypushState(VERBATIM); return CLOSE_BRACE; }
+}
+
+<VERBATIM> {
+    // Also catch whitespace, to avoid including newlines in the environment content and thus triggering the formatter incorrectly
+    {WHITE_SPACE}      { return com.intellij.psi.TokenType.WHITE_SPACE; }
+    {ANY_CHAR}         { return RAW_TEXT_TOKEN; }
+    {END_TOKEN}        { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
+    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
+    [^]                { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+
+}
+
+<POSSIBLE_VERBATIM_END> {
+    {NORMAL_TEXT_WORD} {
+        // Pop current state
+        yypopState();
+        if (Magic.Environment.verbatim.contains(yytext().toString())) {
+            // Pop verbatim state
+            yypopState();
+            return NORMAL_TEXT_WORD;
+        }
+        return RAW_TEXT_TOKEN;
+    }
+}
+
+/*
+ * Inline and display math
+ */
 
 "\\["                { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
@@ -167,42 +216,7 @@ ANY_CHAR=.|\n
 
 // todo formatter inserting newline before \end{verbatim}
 // todo remove formatter inspections?
-// todo move up
-<POSSIBLE_VERBATIM_START> {
-    // Assumes the close brace is the last one of the \begin{...}, and that if a verbatim environment was detected, that this state has been left
-    "}"              { yypopState(); return CLOSE_BRACE; }
-  {NORMAL_TEXT_WORD} {
-          yypopState();
-          // toString to fix comparisons of charsequence subsequences with string
-          if (verbatimEnvironments.contains(yytext().toString())) { // todo add more envs
-                yypushState(VERBATIM_START);
-          }
-          return NORMAL_TEXT_WORD;
-      }
-}
-
-// Jump over the closing } of the \begin{verbatim} before starting verbatim state
-<VERBATIM_START> {
-    "}" { yypopState(); yypushState(VERBATIM); return CLOSE_BRACE; }
-}
-
-<VERBATIM> {
-    {ANY_CHAR}              { return RAW_TEXT_TOKEN; }
-    {END_TOKEN}          { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
-    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
-    [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }
-
-}
-
-<POSSIBLE_VERBATIM_END> {
-    {NORMAL_TEXT_WORD} {
-              if (verbatimEnvironments.contains(yytext().toString())) { // todo add more envs
-                  // Pop current state and verbatim state
-                  yypopState(); yypopState();
-              }
-              return NORMAL_TEXT_WORD;
-          }
-}
+// todo insert label quickfix broken
 
 "*"                  { return STAR; }
 "["                  { return OPEN_BRACKET; }
