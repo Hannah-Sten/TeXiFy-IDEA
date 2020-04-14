@@ -91,6 +91,7 @@ class LatexElementColorProvider : ElementColorProvider {
                 "cmy" -> fromCmyString(specText)
                 "cmyk" -> fromCmykString(specText)
                 "gray" -> fromGrayString(specText)
+                "html" -> fromHtmlString(specText)
                 else -> null
             }
         }
@@ -154,6 +155,10 @@ class LatexElementColorProvider : ElementColorProvider {
             fun Float.toRgb() = (this * 255).toInt()
             val gray = grayText.toFloat()
             return Color(gray.toRgb(), gray.toRgb(), gray.toRgb())
+        }
+
+        private fun fromHtmlString(htmlText: String): Color {
+            return Color.decode("#$htmlText")
         }
     }
 }
