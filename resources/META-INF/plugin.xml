@@ -428,6 +428,8 @@
         <lang.braceMatcher language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
         <lang.braceMatcher language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
 
+        <languageInjector implementation="nl.hannahsten.texifyidea.psi.LatexLanguageInjector" />
+
         <!-- Structure view -->
         <lang.psiStructureViewFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.structure.latex.LatexStructureViewFactory"/>
         <lang.psiStructureViewFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewFactory"/>
@@ -765,6 +767,12 @@
             <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLanguageInjectionIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLanguageInjection</descriptionDirectoryName> <!-- todo description -->
         </intentionAction>
     </extensions>
 </idea-plugin>
