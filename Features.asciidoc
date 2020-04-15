@@ -310,14 +310,17 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 ==== Writing organisation recommendations
 * Might break TeXiFy functionality
-* link:Writing-organisation-recommendations#verbatim[Verbatim environments might break TeXiFy]
 * link:Writing-organisation-recommendations#too-large-section[Too large section]
 
 == Intentions
 
 === LaTeX
+
+See link:Intentions[Intentions].
+
 * Add label defining command to list
-* Change equation*/displaymath environment to `\[..\]`
+* Toggle inline/display math mode
+* Insert comments to disable the formatter
 * Change to `\left..\right`
 * Convert to other math environment
 * Move section contents to separate file
