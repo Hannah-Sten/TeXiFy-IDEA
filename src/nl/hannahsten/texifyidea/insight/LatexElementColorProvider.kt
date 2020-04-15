@@ -13,14 +13,14 @@ import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.usesColor
 import java.awt.Color
 
-class LatexElementColorProvider : ElementColorProvider {
+object LatexElementColorProvider : ElementColorProvider {
     override fun setColorTo(element: PsiElement, color: Color) {}
 
     override fun getColorFrom(element: PsiElement): Color? {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
             if (command.usesColor()) {
-                val colorArgument = when(command?.name?.substring(1)) {
+                val colorArgument = when (command?.name?.substring(1)) {
                     // Show the defined color.
                     in Magic.Colors.colorDefinitions.map { it.command } -> {
                         command?.getRequiredArgumentValueByName("name")
@@ -40,12 +40,13 @@ class LatexElementColorProvider : ElementColorProvider {
         return null
     }
 
-    private fun findColor(colorName: String, file: PsiFile): Color? {
+    fun findColor(colorName: String, file: PsiFile): Color? {
         val defaultHex = Magic.Colors.defaultXcolors[colorName]
 
         return if (defaultHex != null) Color(defaultHex)
         else {
-            val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(file, *Magic.Colors.colorDefinitions.map { "\\${it.command}" }.toTypedArray())
+            val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(file, *Magic.Colors.colorDefinitions.map { "\\${it.command}" }
+                    .toTypedArray())
             val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
             when (colorDefinitionCommand?.name?.substring(1)) {
                 LatexRegularCommand.COLORLET.command -> {
@@ -68,11 +69,15 @@ class LatexElementColorProvider : ElementColorProvider {
     private fun getColorFromColorParameter(file: PsiFile, definitionText: String?): Color? {
         definitionText ?: return null
         val colorParts = definitionText.split("!").filter { it.isNotBlank() }
-        val colors = colorParts.filter { it.all { c -> c.isLetter() } }.map { findColor(it, file) ?: return null }
-        val numbers = colorParts.filter { it.all { c -> c.isDigit() } }.map { it.toInt() }
-        var currentColor = colors.first() ?: return null
+        val colors = colorParts.filter { it.all { c -> c.isLetter() } }
+                .map { findColor(it, file) ?: return null }
+        if (colors.isEmpty()) return null
+        val numbers = colorParts.filter { it.all { c -> c.isDigit() } }
+                .map { it.toInt() }
+        var currentColor = colors.first()
         for ((i, color) in colors.withIndex()) {
-            if (i > 0 && i - 1 in numbers.indices) currentColor = mix(currentColor, color, numbers[i - 1]) ?: return null
+            if (i > 0 && i - 1 in numbers.indices) currentColor = mix(currentColor, color, numbers[i - 1])
+                    ?: return null
         }
         return currentColor
     }
@@ -107,58 +112,57 @@ class LatexElementColorProvider : ElementColorProvider {
         }
     }
 
-    /**
+    /*
      * Methods to parse the argument strings that define colors. Formula's taken
      * from the xcolor documentation.
      */
-    companion object {
-        /**
-         * Mix two colors, used to support red!50!yellow color definitions.
-         */
-        private fun mix(a: Color, b: Color, percent: Int): Color? {
-            return (percent/100.0).let {
-                Color((a.red * it + b.red * (1.0 - it)).toInt(),
-                        (a.green * it + b.green * (1.0 - it)).toInt(),
-                        (a.blue * it + b.blue * (1.0 - it)).toInt())
-            }
-        }
 
-        private fun fromRgbString(rgbText: String): Color {
-            val rgb = rgbText.split(",").map { it.trim() }
-            return try {
-                rgb.map { it.toInt() }.let { Color(it[0], it[1], it[2]) }
-            } catch (e: NumberFormatException) {
-                rgb.map { it.toFloat() }.let { Color(it[0], it[1], it[2]) }
-            }
+    /**
+     * Mix two colors, used to support red!50!yellow color definitions.
+     */
+    private fun mix(a: Color, b: Color, percent: Int): Color? {
+        return (percent / 100.0).let {
+            Color((a.red * it + b.red * (1.0 - it)).toInt(),
+                    (a.green * it + b.green * (1.0 - it)).toInt(),
+                    (a.blue * it + b.blue * (1.0 - it)).toInt())
         }
+    }
 
-        private fun fromHsbString(hsbText: String): Color {
-            val hsb = hsbText.split(",").map { it.trim() }
-            return hsb.map { it.toFloat() }
-                    .let { Color.getHSBColor(it[0], it[1], it[2]) }
+    private fun fromRgbString(rgbText: String): Color {
+        val rgb = rgbText.split(",").map { it.trim() }
+        return try {
+            rgb.map { it.toInt() }.let { Color(it[0], it[1], it[2]) }
+        } catch (e: NumberFormatException) {
+            rgb.map { it.toFloat() }.let { Color(it[0], it[1], it[2]) }
         }
+    }
 
-        private fun fromCmykString(cmykText: String): Color {
-            val cmyk = cmykText.split(",").map { it.trim() }
-                    .map { it.toFloat() }
-            return cmyk.take(3)
-                    .map { (255 * (1 - cmyk.last()) * (1 - it)).toInt() }
-                    .let { Color(it[0], it[1], it[2]) }
-        }
+    private fun fromHsbString(hsbText: String): Color {
+        val hsb = hsbText.split(",").map { it.trim() }
+        return hsb.map { it.toFloat() }
+                .let { Color.getHSBColor(it[0], it[1], it[2]) }
+    }
 
-        private fun fromCmyString(cmyText: String): Color {
-            val cmy = cmyText.split(",").map { it.trim() }.map { it.toFloat() }
-            return Color(1 - cmy[0], 1 - cmy[1], 1 - cmy[2])
-        }
+    private fun fromCmykString(cmykText: String): Color {
+        val cmyk = cmykText.split(",").map { it.trim() }
+                .map { it.toFloat() }
+        return cmyk.take(3)
+                .map { (255 * (1 - cmyk.last()) * (1 - it)).toInt() }
+                .let { Color(it[0], it[1], it[2]) }
+    }
 
-        private fun fromGrayString(grayText: String): Color {
-            fun Float.toRgb() = (this * 255).toInt()
-            val gray = grayText.toFloat()
-            return Color(gray.toRgb(), gray.toRgb(), gray.toRgb())
-        }
+    private fun fromCmyString(cmyText: String): Color {
+        val cmy = cmyText.split(",").map { it.trim() }.map { it.toFloat() }
+        return Color(1 - cmy[0], 1 - cmy[1], 1 - cmy[2])
+    }
 
-        private fun fromHtmlString(htmlText: String): Color {
-            return Color.decode("#$htmlText")
-        }
+    private fun fromGrayString(grayText: String): Color {
+        fun Float.toRgb() = (this * 255).toInt()
+        val gray = grayText.toFloat()
+        return Color(gray.toRgb(), gray.toRgb(), gray.toRgb())
+    }
+
+    private fun fromHtmlString(htmlText: String): Color {
+        return Color.decode("#$htmlText")
     }
 }
