@@ -232,9 +232,6 @@ ANY_CHAR=.|\n
 // because that will confuse the formatter because it will see the next line as being on this line
 \\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
-// todo syntax highlighting on \end. Will have to be fixed in syntax highlighter as lexer cannot distinguish \ends
-// todo never used macros
-
 "*"                  { return STAR; }
 "["                  { return OPEN_BRACKET; }
 "]"                  { return CLOSE_BRACKET; }
