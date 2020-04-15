@@ -30,6 +30,17 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.checkHighlighting()
     }
 
+    fun testNewEnvironmentDefinition() {
+        myFixture.configureByText(LatexFileType, """
+            \newenvironment{test}{\begin{center}}{\end{center}}
+            \newenvironment{test2}{ \[ }{ \] }
+            \newenvironment{test2}{ $ x$ and $ }{ $ }
+            
+            $\xi$
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
     fun testInlineVerbatim() {
         myFixture.configureByText(LatexFileType, """
             \verb| aaa $ { bbb | text $\xi$ not verb: |a|
