@@ -16,7 +16,8 @@ object LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContrib
     private val wrapWithTextCommandTemplates = mutableSetOf<PostfixTemplate>(
             LatexWrapWithBoldFacePostfixTemplate,
             LatexWrapWithItalicFacePostfixTemplate,
-            LatexWrapWithEmphPostfixTemplate
+            LatexWrapWithEmphPostfixTemplate,
+            LatexWrapWithTypewriterPostfixTemplate
     )
 
     private val wrapWithMathCommandTemplates = mutableSetOf<PostfixTemplate>(
