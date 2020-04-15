@@ -1,7 +1,25 @@
 == Add label defining command to list
-== Change `equation*/displaymath` environment to `\[..\]`
+
+Add a command to the label defining commands list in the settings.
+
+== Toggle inline/display math mode
+
+Switch between inline and display math. A shortcut for an action also present in the link:Intentions#convert-to-other-math-environment[Convert to other math environment] intention.
+
+== Insert comments to disable the formatter
+
+Insert `% @formatter:off` and `% @formatter:on` comments around the environment.
+See link:Code-formatting[Code formatting].
+Currently only enabled on verbatim-like environments.
+
 == Change to `\left..\right`
+
+Add `\left` and `\right` to brackets, e.g. changing `$(\frac 1 2)$` into `\left(\frac 1 2 \right)`.
+
 == Convert to other math environment
+
+Switch between math environments, e.g. `align*` and inline math.
+
 == [[move-section-to-file]]Move section contents to separate file
 Similar to link:Intentions#selection-to-file[move selection contents to separate file], except that it is triggered on
 a section heading. Any `\section{...}` command will trigger this. It turns
@@ -71,5 +89,11 @@ This is a selected sentence.
 
 == Split into multiple `\usepackage` commands
 
+Split `\usepackage{amsmath,amsthm}` into
 
+[source,latex]
+----
+\usepackage{amsmath}
+\usepackage{amsthm}
+----
 
