@@ -13,6 +13,8 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 %{
   private Deque<Integer> stack = new ArrayDeque<>();
 
+  private int verbatimOptionalArgumentBracketsCount = 0;
+
   public void yypushState(int newState) {
     stack.push(yystate());
     yybegin(newState);
@@ -67,8 +69,8 @@ ANY_CHAR=.|\n
 %states INLINE_VERBATIM_START
 %xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
 
-%states POSSIBLE_VERBATIM_START VERBATIM_START POSSIBLE_VERBATIM_END VERBATIM_END
-%xstates VERBATIM
+%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START POSSIBLE_VERBATIM_END VERBATIM_END
+%xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG
 
 %%
 {WHITE_SPACE}        { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -115,7 +117,7 @@ ANY_CHAR=.|\n
  * Verbatim environments
  */
 
-<POSSIBLE_VERBATIM_START> {
+<POSSIBLE_VERBATIM_BEGIN> {
     // Assumes the close brace is the last one of the \begin{...}, and that if a verbatim environment was detected, that this state has been left
     "}"                { yypopState(); return CLOSE_BRACE; }
     {NORMAL_TEXT_WORD} {
@@ -130,7 +132,23 @@ ANY_CHAR=.|\n
 
 // Jump over the closing } of the \begin{verbatim} before starting verbatim state
 <VERBATIM_START> {
-    "}"                { yypopState(); yypushState(VERBATIM); return CLOSE_BRACE; }
+    "}"                { yypopState(); yypushState(POSSIBLE_VERBATIM_OPTIONAL_ARG); return CLOSE_BRACE; }
+}
+
+// Check if an optional argument is coming up
+// If you start a verbatim with an open bracket and don't close it, this won't work
+<POSSIBLE_VERBATIM_OPTIONAL_ARG> {
+    "["                { verbatimOptionalArgumentBracketsCount++; yypopState(); yypushState(VERBATIM_OPTIONAL_ARG); return OPEN_BRACKET; }
+    {ANY_CHAR}         { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN; }
+}
+
+// Handle optional parameters
+<VERBATIM_OPTIONAL_ARG> {
+    // Count brackets to know when we exited the optional argument
+    "["                { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET; }
+    "]"                { verbatimOptionalArgumentBracketsCount--;
+      if (verbatimOptionalArgumentBracketsCount == 0) yypopState(); yypushState(VERBATIM);
+      return CLOSE_BRACKET; }
 }
 
 <VERBATIM> {
@@ -215,7 +233,7 @@ ANY_CHAR=.|\n
 \\\n                 { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
 // todo syntax highlighting on \end. Will have to be fixed in syntax highlighter as lexer cannot distinguish \ends
-// todo insert label quickfix broken
+// todo never used macros
 
 "*"                  { return STAR; }
 "["                  { return OPEN_BRACKET; }
@@ -226,7 +244,7 @@ ANY_CHAR=.|\n
 {CLOSE_PAREN}        { return CLOSE_PAREN; }
 
 {WHITE_SPACE}        { return WHITE_SPACE; }
-{BEGIN_TOKEN}        { yypushState(POSSIBLE_VERBATIM_START); return BEGIN_TOKEN; }
+{BEGIN_TOKEN}        { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}          { return END_TOKEN; }
 {COMMAND_TOKEN}      { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR} { return COMMAND_IFNEXTCHAR; }

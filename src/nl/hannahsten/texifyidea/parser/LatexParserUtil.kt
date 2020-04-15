@@ -32,8 +32,18 @@ class LatexParserUtil : GeneratedParserUtilBase() {
             // newline too much between environment content and \end
             val endIndex = builder.originalText.indexOf("\\end{$env}", startIndex) - 1
 
-
-            builder.setTokenTypeRemapper { token, start, end, _ -> if (startIndex <= start && end <= endIndex) LatexTypes.RAW_TEXT_TOKEN else token }
+            // Only remap \end and whitespace tokens, other ones are already raw text by the lexer
+            // This makes sure the the optional argument of a verbatim environment is not by mistake also remapped to raw text
+            // \end is remapped because the lexer only knows afterwards whether it ended the environment or not, and whitespace is remapped because this allows keeping the last whitespace for the formatter
+            builder.setTokenTypeRemapper { token, start, end, _ ->
+                if (startIndex <= start && end <= endIndex
+                        && (token == LatexTypes.END_TOKEN || token == com.intellij.psi.TokenType.WHITE_SPACE)) {
+                    LatexTypes.RAW_TEXT_TOKEN
+                }
+                else {
+                    token
+                }
+            }
 
             rawText.parse(builder, level)
 
