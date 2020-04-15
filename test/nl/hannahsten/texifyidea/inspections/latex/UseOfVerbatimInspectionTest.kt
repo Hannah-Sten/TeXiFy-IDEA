@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.intentions.LatexInsertFormatterCommentsIntention
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
@@ -11,7 +12,7 @@ class UseOfVerbatimInspectionTest : BasePlatformTestCase() {
 
     override fun setUp() {
         super.setUp()
-        myFixture.enableInspections(LatexVerbatimInspection())
+        myFixture.enableInspections(LatexInsertFormatterCommentsIntention())
     }
 
     @Test
