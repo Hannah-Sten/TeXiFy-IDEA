@@ -52,7 +52,7 @@ object LatexElementColorProvider : ElementColorProvider {
                 LatexRegularCommand.COLORLET.command -> {
                     getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"))
                 }
-                LatexRegularCommand.DEFINECOLOR.command -> {
+                LatexRegularCommand.DEFINECOLOR.command, LatexRegularCommand.PROVIDECOLOR.command -> {
                     getColorFromDefineColor(
                             colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
                             colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
