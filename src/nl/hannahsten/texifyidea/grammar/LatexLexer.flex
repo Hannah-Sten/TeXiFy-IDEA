@@ -13,7 +13,6 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 %{
   private Deque<Integer> stack = new ArrayDeque<>();
 
-  private int verbatimOptionalArgumentBracketsCount = 0;
 
   public void yypushState(int newState) {
     stack.push(yystate());
@@ -34,6 +33,11 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
    * parameters, so as to know when the parameters are exited.
    */
   private int newEnvironmentBracesNesting = 0;
+
+  /**
+   * Also keep track of brackets of verbatim environment optional arguments.
+   */
+  private int verbatimOptionalArgumentBracketsCount = 0;
 %}
 
 %public
