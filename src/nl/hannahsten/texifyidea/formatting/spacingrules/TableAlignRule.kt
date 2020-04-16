@@ -37,7 +37,7 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     if (contentElement?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
 
     val tableLineSeparator = "\\\\"
-    if (right.node?.text != "&" && right.node?.text != tableLineSeparator) return null
+    if (right.node?.text?.startsWith("&") == false && right.node?.text != tableLineSeparator) return null
 
     val content = contentElement?.text ?: return null
     val contentLines = content.split(tableLineSeparator)
@@ -134,7 +134,10 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
                 }
                 value in setOf(' ', '\n') -> {
                     if (i > 0 && i < line.length - 1) {
-                        if (!(line[i - 1] !in setOf(' ', '&', '\n') && line[i + 1] !in setOf(' ', '&', '\n', '\\'))) removedSpaces++
+                        val isAfterSpaceOrSeparator = line[i - 1] in setOf(' ', '&', '\n')
+                        val isBeforeSpaceOrSeparator = line[i + 1] in setOf(' ', '&', '\n')
+                        val isBeforeDoubleBackslash = i < line.length - 2 && line[i+1] == '\\' && line[i+2] == '\\'
+                        if (isAfterSpaceOrSeparator || isBeforeSpaceOrSeparator || isBeforeDoubleBackslash) removedSpaces++
                     }
                 }
                 else -> {
