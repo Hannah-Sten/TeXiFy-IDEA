@@ -1,0 +1,10 @@
+:experimental:
+
+_Since b0.6.10_
+
+A color preview will be shown in the gutter when using an xcolor command like `\color` or `\textcolor`, and when defining a color with xcolor.
+This also supports the xcolor syntax to mix colors, like `red!50!yellow`.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/color-gutter.png[]
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/color-picker-gutter.png[]
