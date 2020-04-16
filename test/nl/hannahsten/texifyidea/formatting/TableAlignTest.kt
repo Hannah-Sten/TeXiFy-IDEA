@@ -308,9 +308,27 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testHalfEmptyCells() {
+        """
+            \begin{tabular}{ccc}
+                aaaa & aaa & aa \\
+                b b & & b \\
+                c & c & \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{ccc}
+                aaaa & aaa & aa \\
+                b b  &     & b  \\
+                c    & c   &    \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
-        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+        writeCommand(project) {
+            CodeStyleManager.getInstance(project).reformat(myFixture.file)
+        }
         myFixture.checkResult(expected)
     }
 }
