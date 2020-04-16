@@ -75,8 +75,8 @@ ANY_CHAR=[^]
 %states INLINE_VERBATIM_START
 %xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
 
-%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START POSSIBLE_VERBATIM_END VERBATIM_END
-%xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG
+%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
+%xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
 
 %%
 {WHITE_SPACE}           { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -169,7 +169,10 @@ ANY_CHAR=[^]
 
 }
 
+// Open brace will be remapped to raw text by token remapper, if needed
+// Anything else will tell us that this is not an \end{verbatim}
 <POSSIBLE_VERBATIM_END> {
+    {OPEN_BRACE}        { return OPEN_BRACE; }
     {NORMAL_TEXT_WORD}  {
         // Pop current state
         yypopState();
@@ -180,6 +183,7 @@ ANY_CHAR=[^]
         }
         return RAW_TEXT_TOKEN;
     }
+    {ANY_CHAR}          { yypopState(); return RAW_TEXT_TOKEN; }
 }
 
 

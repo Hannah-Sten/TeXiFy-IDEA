@@ -61,6 +61,9 @@ class LatexParserTest : BasePlatformTestCase() {
                 $
                 \end{no verbatim} }
                 \begin{alsonoverbatim}
+                \end}
+                \end{}
+                \end\asdf
             \end{verbatim}
             
             $ math$
