@@ -89,11 +89,11 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         // Align & in tables
         // Unfortunately we have to do this manually because Alignment only aligns characters if they are the first non-whitespace in a line of code
         custom {
-            customRule { parent, left, _ ->
-                return@customRule rightTableSpaceAlign(latexCommonSettings, parent, left)
-            }
             customRule { parent, _, right ->
                 return@customRule leftTableSpaceAlign(latexCommonSettings, parent, right)
+            }
+            customRule { parent, left, _ ->
+                return@customRule rightTableSpaceAlign(latexCommonSettings, parent, left)
             }
         }
     }

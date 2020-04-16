@@ -117,7 +117,7 @@ fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, r
 /**
  * Remove all extra spaces and remember how many we removed
  *
- * @return List of pairs, each pair consists of a line and a list of indices (the offset in the line for this ampersand)
+ * @return List of lists, each list is a list of indices (the offset in the line for this ampersand)
  */
 private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
     return contentLinesWithoutRules.map { line ->
@@ -136,7 +136,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
                     if (i > 0 && i < line.length - 1) {
                         val isAfterSpaceOrSeparator = line[i - 1] in setOf(' ', '&', '\n')
                         val isBeforeSpaceOrSeparator = line[i + 1] in setOf(' ', '&', '\n')
-                        val isBeforeDoubleBackslash = i < line.length - 2 && line[i+1] == '\\' && line[i+2] == '\\'
+                        val isBeforeDoubleBackslash = i < line.length - 2 && line[i + 1] == '\\' && line[i + 2] == '\\'
                         if (isAfterSpaceOrSeparator || isBeforeSpaceOrSeparator || isBeforeDoubleBackslash) removedSpaces++
                     }
                 }
@@ -157,6 +157,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  */
 private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
     val nrLevels = relativeIndices.map { it.size }.max() ?: 0
+
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.
     fun String.ignore(): Boolean {
@@ -167,8 +168,13 @@ private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWitho
 
     // In each line, compute the width of each cell.
     val cellWidthsPerLine = relativeIndices.mapIndexed { i, line ->
-        if (contentLinesWithoutRules[i].ignore()) List(nrLevels) {0}
-        else listOf(line.first()) + line.zipWithNext { a, b -> b - a }
+        if (contentLinesWithoutRules[i].ignore()) List(nrLevels) { 0 }
+        else listOf(line.first()) + line.zipWithNext { a, b ->
+            // Empty cells should have width 0.
+            (b - a).let {
+                if (it == 1) 0 else it
+            }
+        }
     }
 
     // Take the maximum width of each i-th cell over all lines.
