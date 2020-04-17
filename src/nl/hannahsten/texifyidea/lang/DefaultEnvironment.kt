@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Environment.Context
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.name
 import java.util.*
@@ -86,7 +87,11 @@ enum class DefaultEnvironment(
     LUACODE(environmentName = "luacode", dependency = Package.LUACODE),
 
     // listings
-    LISTINGS(environmentName = "lstlisting", dependency = Package.LISTINGS);
+    LISTINGS(environmentName = "lstlisting", dependency = Package.LISTINGS),
+
+    // xcolor
+    TESTCOLORS(environmentName = "testcolors", arguments = *arrayOf(OptionalArgument("num models")), dependency = XCOLOR);
+
 
     companion object {
 

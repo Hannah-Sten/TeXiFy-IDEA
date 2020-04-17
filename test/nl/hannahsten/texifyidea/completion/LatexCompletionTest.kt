@@ -38,4 +38,15 @@ class LatexCompletionTest : BasePlatformTestCase() {
         // then
         assertTrue("LaTeX autocompletion of custom commands should be available", result.any { it.lookupString == "hi"})
     }
+
+    fun testCompleteCustomColorDefinitions() {
+        myFixture.configureByText(LatexFileType, """
+            \colorlet{fadedred}{red!70!}
+            \color{r<caret>}
+        """.trimIndent())
+
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        assertTrue("fadedred should be available", result.any { it.lookupString == "fadedred" })
+    }
 }
