@@ -49,4 +49,15 @@ class LatexCompletionTest : BasePlatformTestCase() {
 
         assertTrue("fadedred should be available", result.any { it.lookupString == "fadedred" })
     }
+
+    fun testCompletionInCustomArgument() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\hello}[1]{hello #1}
+            \hello{\te<caret>}
+        """.trimIndent())
+
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        assertTrue(result.any { it.lookupString == "textbf" })
+    }
 }
