@@ -1,6 +1,8 @@
 # Beta 0.6.10
 
 # Additions
+* Add support for the xcolor package. (#1348)
+* Align & and \\ in simple tables. (#1341)
 * Add commands defined using the xparse package to the autocompletion. (#1312)
 * Add support for Dockerized MiKTeX. (#1310)
 * Add support for entering relative paths in the run configuration. (#1311)
@@ -15,6 +17,7 @@
 * Fix parse error when inline math inside \text inside inline math is used. (#1322)
 * Fix parse error when dollar signs are used in table preamble. (#1324)
 * Fix parse error for \verb|...|, \verb=...=, \verb"..." and \verb!...!. (#1344)
+* Fix parse error on \newenvironment definitions. (#1340)
 * Avoid formatter confusion when ending a line with a backslash. (#1342)
 * Fixed crashes. (#1332, #1337)
 
