@@ -65,8 +65,9 @@ END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
-NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=]+
-NORMAL_TEXT_CHAR=[|!\"=] // Separate because they can be \verb delimiters
+NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&]+
+// Separate from normal text, e.g. because they can be \verb delimiters
+NORMAL_TEXT_CHAR=[|!\"=&]
 ANY_CHAR=[^]
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
@@ -304,6 +305,8 @@ ANY_CHAR=[^]
 \\\n                    { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
 "*"                     { return STAR; }
+// A separate token, used for example for aligning & in tables
+"&"                     { return AMPERSAND; }
 {OPEN_BRACKET}          { return OPEN_BRACKET; }
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }
 {OPEN_BRACE}            { return OPEN_BRACE; }

@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
@@ -12,6 +13,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
 import org.intellij.lang.annotations.Language
 import java.awt.Color
 import java.util.regex.Pattern
@@ -32,12 +34,16 @@ object Magic {
     object General {
 
         const val pathPackageRoot = "/nl/hannahsten/texifyidea"
+
         @JvmField
         val emptyStringArray = arrayOfNulls<String>(0)
+
         @JvmField
         val emptyPsiElementArray = arrayOfNulls<PsiElement>(0)
+
         @JvmField
         val noQuickFix: LocalQuickFix? = null
+
         @Language("Latex")
         @JvmField
         val latexDemoText = """
@@ -183,6 +189,8 @@ object Magic {
         @JvmField
         val listingEnvironments = hashSetOf("itemize", "enumerate", "description")
 
+        val tableEnvironments = hashSetOf("tabular", "tabular*", "tabularx", "array", "longtable")
+
         /**
          * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
          *
@@ -319,6 +327,11 @@ object Magic {
         @JvmField
         val regularCommandDefinitions = hashSetOf(
                 "\\newcommand",
+                "\\newcommand*",
+                "\\renewcommand",
+                "\\renewcommand*",
+                "\\providecommand",
+                "\\providecommand*",
                 "\\let",
                 "\\def",
                 "\\newif",
@@ -758,6 +771,52 @@ object Magic {
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
                 "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
                 "tikz" to TexifyIcons.TIKZ_FILE
+        )
+    }
+
+    object Colors {
+        /**
+         * All commands that have a color as an argument.
+         */
+        @JvmField
+        val takeColorCommands = LatexRegularCommand.values()
+                .filter {
+                    it.arguments.map { it.name }.contains("color")
+                }
+                .map { it.command }
+
+        /**
+         * All commands that define a new color.
+         */
+        @JvmField
+        val colorDefinitions = LatexRegularCommand.values()
+                .filter { it.dependency == XCOLOR }
+                .filter { it.arguments.map { it.name }.contains("name") }
+
+        @JvmField
+        val colorCommands = takeColorCommands + colorDefinitions.map { it.command }
+
+        @JvmField
+        val defaultXcolors = mapOf(
+                "red" to 0xff0000,
+                "green" to 0x00ff00,
+                "blue" to 0x0000ff,
+                "cyan" to 0x00ffff,
+                "magenta" to 0xff00ff,
+                "yellow" to 0xffff00,
+                "black" to 0x000000,
+                "gray" to 0x808080,
+                "white" to 0xffffff,
+                "darkgray" to 0x404040,
+                "lightgray" to 0xbfbfbf,
+                "brown" to 0xfb8040,
+                "lime" to 0xbfff00,
+                "olive" to 0x808000,
+                "orange" to 0xff8000,
+                "pink" to 0xffbfbf,
+                "purple" to 0xbf0040,
+                "teal" to 0x008080,
+                "violet" to 0x800080
         )
     }
 }

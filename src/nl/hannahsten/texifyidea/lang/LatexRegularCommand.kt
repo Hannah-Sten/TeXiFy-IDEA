@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
+import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
 
 /**
  * @author Sten Wessel
@@ -42,17 +43,27 @@ enum class LatexRegularCommand(
     BIBLIOGRAPHYSTYLE("bibliographystyle", "style".asRequired()),
     BIBLIOGRAPHY("bibliography", RequiredFileArgument("bibliographyfile", "bib")),
     BIGSKIP("bigskip"),
+    BLENDCOLORS("blendcolors", "mix expr".asRequired(), dependency = XCOLOR),
+    BLENDCOLORS_STAR("blendcolors*", "mix expr".asRequired(), dependency = XCOLOR),
     BOLDMATH("boldmath"),
+    BOXFRAME("boxframe", "width".asRequired(), "height".asRequired(), "depth".asRequired(), dependency = XCOLOR),
     CAPTION("caption", "shorttext".asOptional(), "text".asRequired(Type.TEXT)),
     CHAPTER("chapter", "shorttitle".asOptional(), "title".asRequired(Type.TEXT)),
     CHAPTER_STAR("chapter*", "title".asRequired(Type.TEXT)),
     CITE("cite", "extratext".asOptional(), "keys".asRequired()),
     CLEARDOUBLEPAGE("cleardoublepage"),
     CLEARPAGE("clearpage"),
+    COLOR("color", "color".asRequired(), dependency = XCOLOR),
+    COLOR2("color", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
+    COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    COLORBOX2("colorbox", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    COLORMASK("colormask", dependency = XCOLOR),
+    COLORSERIESCYCLE("colorseriescycle", dependency = XCOLOR),
     COLUMNSEP("columnsep "),
     COLUMNWIDTH("columnwidth"),
     CONTENTSLINE("contentsline", "type".asRequired(), "text".asRequired(Type.TEXT), "page".asRequired()),
     CONTENTSNAME("contentsname", "name".asRequired()),
+    CONVERTCOLORSPEC("convertcolorspec", "model".asRequired(), "spec".asRequired(), "target model".asRequired(), "cmd".asRequired(), dependency = XCOLOR),
     CREF("cref", "label".asRequired(), dependency = CLEVEREF),
     CREF_CAPITAL("Cref", "label".asRequired(), dependency = CLEVEREF),
     DATE("date", "text".asRequired(Type.TEXT)),
@@ -69,8 +80,14 @@ enum class LatexRegularCommand(
     ENQUOTE_STAR("enquote*", dependency = CSQUOTES),
     EQREF("eqref", "eqLabel".asRequired(Type.TEXT), dependency = AMSMATH),
     EVENSIDEMARGIN("evensidemargin"),
+    EXTRACTCOLORSPEC("extractcolorspec", "color".asRequired(), "cmd".asRequired(), dependency = XCOLOR),
+    EXTRACTCOLORSPECS("extractcolorspecs", "color".asRequired(), "model-cmd".asRequired(), "color-cmd".asRequired(), dependency = XCOLOR),
     FAMILY("family"),
     FBOX("fbox", "text".asRequired(Type.TEXT)),
+    FCOLORBOX("fcolorbox", "frame color".asRequired(), "background color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    FCOLORBOX2("fcolorbox", "model-list".asOptional(), "frame spec-list".asRequired(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    FCOLORBOX3("fcolorbox", "frame model-list".asOptional(), "frame spec-list".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    FCOLORBOX4("fcolorbox", "frame color".asRequired(), "background model-list".asOptional(), "background spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     FIGURENAME("figurename", "name".asRequired(Type.TEXT)),
     FLQ("flq", display = "‹"),
     FLQQ("flqq", display = "«"),
@@ -101,6 +118,7 @@ enum class LatexRegularCommand(
     GUILLEMOTLEFT("guillemotleft", dependency = FONTENC.with("T1"), display = "«"),
     GUILLEMOTRIGHT("guillemotright", dependency = FONTENC.with("T1"), display = "»"),
     HFILL("hfill"),
+    HIDEROWCOLORS("hiderowcolors", dependency = XCOLOR),
     HREF("href", "url".asRequired(), "text".asRequired(), dependency = Package.HYPERREF),
     HRULE("hrule"),
     HRULEFILL("hrulefill"),
@@ -131,7 +149,7 @@ enum class LatexRegularCommand(
     LATEX("LaTeX", display = "LaTeX"),
     LATEXE("LaTeXe", display = "LaTeX2ε"),
     LBRACK("lbrack", display = "["),
-    LPAREN("lparen", display="(", dependency = MATHTOOLS),
+    LPAREN("lparen", display = "(", dependency = MATHTOOLS),
     LDOTS("ldots", display = "…"),
     LEFTEQN("lefteqn"),
     LET("let"),
@@ -153,6 +171,7 @@ enum class LatexRegularCommand(
     MAKELABEL("makelabel"),
     MAKELABELS("makelabels", "number".asRequired()),
     MAKETITLE("maketitle"),
+    MASKCOLORS("maskcolors", "num model".asOptional(), "color".asRequired(), dependency = XCOLOR),
     MBOX("mbox", "text".asRequired()),
     MDSERIES("mdseries"),
     MEDSKIP("medskip"),
@@ -169,6 +188,7 @@ enum class LatexRegularCommand(
     NOLINEBREAK("nolinebreak", "number".asOptional()),
     NONUMBER("nonumber"),
     NOPAGEBREAK("nopagebreak", "number".asOptional()),
+    NOPAGECOLOR("nopagecolor", dependency = XCOLOR),
     NORMALCOLOR("normalcolor"),
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
@@ -177,6 +197,8 @@ enum class LatexRegularCommand(
     ODDSIDEMARGIN("oddsidemargin"),
     ONECOLUMN("onecolumn"),
     PAGEBREAK("pagebreak", "number".asOptional()),
+    PAGECOLOR("pagecolor", "color".asRequired(), dependency = XCOLOR),
+    PAGECOLOR2("pagecolor", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     PAGENAME("pagename"),
     PAGENUMBERING("pagenumbering", "numstyle".asRequired()),
     PAGEREF("pageref", "label".asRequired()),
@@ -203,12 +225,16 @@ enum class LatexRegularCommand(
     REF("ref", "label".asRequired()),
     REFNAME("refname", "name".asRequired(Type.TEXT)),
     REQUIREPACKAGE("RequirePackage", "options".asOptional(), RequiredFileArgument("package", "sty")),
+    RESETCOLORSERIES("resetcolorseries", "div".asOptional(), "name".asRequired(), dependency = XCOLOR),
     RIGHTHYPHENMIN("righthyphenmin"),
     RIGHTMARGIN("rightmargin"),
     RIGHTMARK("rightmark"),
     RMFAMILY("rmfamily"),
     ROMAN("roman", "counter".asRequired()),
     ROTATEBOX("rotatebox", "key-val-list".asOptional(), "degrees".asRequired(), "text".asRequired(Type.TEXT), dependency = GRAPHICX),
+    ROWCOLORS("rowcolors", "commands".asOptional(), "row".asRequired(), "odd-row color".asRequired(), "even-row color".asRequired(), dependency = XCOLOR),
+    ROWCOLORS_STAR("rowcolors*", "commands".asOptional(), "row".asRequired(), "odd-row color".asRequired(), "even-row color".asRequired(), dependency = XCOLOR),
+    ROWNUM("rownum", dependency = XCOLOR),
     CAPITAL_ROMAN("Roman", "counter".asRequired()),
     RULE("rule", "line".asOptional(), "width".asRequired(), "thickness".asRequired()),
     RQ("rq", display = "’"),
@@ -223,6 +249,7 @@ enum class LatexRegularCommand(
     SETLENGTH("setlength", "cmd".asRequired(), "length".asRequired()),
     SFFAMILY("sffamily"),
     SHORTSTACK("shortstack", "pos".asOptional(), "text".asRequired(Type.TEXT)),
+    SHOWROWCOLORS("showrowcolors", dependency = XCOLOR),
     SLSHAPE("slshape"),
     SMALL("small"),
     SMALLSKIP("smallskip"),
@@ -251,6 +278,8 @@ enum class LatexRegularCommand(
     TABCOLSEP("tabcolsep"),
     TABLENAME("tablename", "name".asRequired(Type.TEXT)),
     TABLEOFCONTENTS("tableofcontents"),
+    TESTCOLOR("testcolor", "color".asRequired(), dependency = XCOLOR),
+    TESTCOLOR2("testcolor", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     TEXTASCIICIRCUM("textasciicircum", display = "^"),
     TEXTASCIITILDE("textasciitilde", display = "~"),
     TEXTASTERISKCENTERED("textasciicentered", display = "⁎"),
@@ -261,6 +290,8 @@ enum class LatexRegularCommand(
     TEXTBRACERIGHT("textbraceright", display = "}"),
     TEXTBULLET("textbullet", display = "•"),
     TEXTCIRCLED("textcircled", "text".asRequired()),
+    TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
+    TEXTCOLOR2("textcolor", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     TEXTCOPYRIGHT("textcopyright", display = "©"),
     TEXTDAGGER("textdagger", display = "†"),
     TEXTDAGGERDBL("textdaggerdbl", display = "‡"),
@@ -321,6 +352,7 @@ enum class LatexRegularCommand(
     VSPACE("vspace", "length".asRequired()),
     VSPACE_STAR("vspace*", "length".asRequired()),
     WIDTH("width"),
+    XGLOBAL("xglobal", dependency = XCOLOR),
 
     /**
      * New definitions
@@ -341,9 +373,23 @@ enum class LatexRegularCommand(
     DECLARE_PAIRED_DELIMITER_X("DeclarePairedDelimiterX", "cmd".asRequired(), "num args".asOptional(), "left delimiter".asRequired(), "right delimiter".asRequired(), "body".asRequired(Type.TEXT), dependency = MATHTOOLS),
     DECLARE_PAIRED_DELIMITER_XPP("DeclarePairedDelimiterXPP", "cmd".asRequired(), "num args".asOptional(), "pre code".asRequired(), "left delimiter".asRequired(), "right delimiter".asRequired(), "post code".asRequired(), "body".asRequired(Type.TEXT), dependency = MATHTOOLS),
 
+    /**
+     * xcolor definitions
+     */
+    DEFINECOLOR("definecolor", "type".asOptional(), "name".asRequired(), "model-list".asRequired(), "spec-list".asRequired(), dependency = XCOLOR),
+    PROVIDECOLOR("providecolor", "type".asOptional(), "name".asRequired(), "model-list".asRequired(), "spec-list".asRequired(), dependency = XCOLOR),
+    COLORLET("colorlet", "type".asOptional(), "name".asRequired(), "num model".asOptional(), "color".asRequired(), dependency = XCOLOR),
+    DEFINECOLORSET("definecolorset", "type".asOptional(), "model-list".asRequired(), "head".asRequired(), "tail".asRequired(), "set spec".asRequired(), dependency = XCOLOR),
+    PROVIDECOLORSET("providecolorset", "type".asOptional(), "model-list".asRequired(), "head".asRequired(), "tail".asRequired(), "set spec".asRequired(), dependency = XCOLOR),
+    PREPARECOLOR("preparecolor", "type".asOptional(), "name".asRequired(), "model-list".asRequired(), "spec-list".asRequired(), dependency = XCOLOR),
+    PREPARECOLORSET("preparecolorset", "type".asOptional(), "model-list".asRequired(), "head".asRequired(), "tail".asRequired(), "set spec".asRequired(), dependency = XCOLOR),
+    DEFINE_NAMED_COLOR("DefineNamedColor", "type".asRequired(), "name".asRequired(), "model-list".asRequired(), "spec-list".asRequired(), dependency = XCOLOR),
+    DEFINECOLORS("definecolors", "id-list".asRequired(), dependency = XCOLOR),
+    PROVIDECOLORS("providecolors", "id-list".asRequired(), dependency = XCOLOR),
+    DEFINECOLORSERIES("definecolorseries", "name".asRequired(), "core model".asRequired(), "method".asRequired(), "b-model".asOptional(), "b-spec".asRequired(), "s-model".asRequired(), "s-spec".asRequired(), dependency = XCOLOR),
 
     /**
-     * Xparse definitions.
+     * Xparse definitions
      */
     NEWDOCUMENTCOMMAND("NewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
     RENEWDOCUMENTCOMMAND("RenewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
