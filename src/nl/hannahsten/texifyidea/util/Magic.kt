@@ -324,6 +324,11 @@ object Magic {
         @JvmField
         val regularCommandDefinitions = hashSetOf(
                 "\\newcommand",
+                "\\newcommand*",
+                "\\renewcommand",
+                "\\renewcommand*",
+                "\\providecommand",
+                "\\providecommand*",
                 "\\let",
                 "\\def",
                 "\\newif",
