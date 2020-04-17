@@ -18,7 +18,7 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
                     ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
 
-    if (left.node?.text != "&") return null
+    if (left.node?.text?.endsWith("&") == false) return null
 
     return createSpacing(
             minSpaces = 1,
@@ -44,7 +44,7 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
             .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
             .toMutableList()
     if (contentLines.size < 2) return null
-    val indent = content.split("\n").map { "\n" + it }[1].getIndent()
+    val indent = content.split("\n").map { "\n" + it }.getOrNull(1)?.getIndent() ?: return null
 
     // Fix environment content not starting with indent
     contentLines[0] = indent + contentLines.first()

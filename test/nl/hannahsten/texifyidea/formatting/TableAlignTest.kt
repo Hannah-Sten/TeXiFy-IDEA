@@ -298,12 +298,14 @@ class TableAlignTest : BasePlatformTestCase() {
         """
             \begin{tabular}{ll}
                 aaaa & b \\
-                a b \hi & \bye de \\
+                a b \hi &\bye de \\
+                a &\h \\
             \end{tabular}
         """.trimIndent() `should be reformatted to` """
             \begin{tabular}{ll}
                 aaaa    & b       \\
                 a b \hi & \bye de \\
+                a       & \h      \\
             \end{tabular}
         """.trimIndent()
     }
