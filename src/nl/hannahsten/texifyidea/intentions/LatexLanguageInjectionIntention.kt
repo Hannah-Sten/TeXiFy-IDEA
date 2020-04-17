@@ -23,7 +23,7 @@ import javax.swing.JList
 import javax.swing.SwingConstants
 
 /**
- *
+ * todo avoid default intention popping up? Or make difference clear (also show this one at the same places then)
  * @author Sten Wessel
  */
 class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language in environment") {
