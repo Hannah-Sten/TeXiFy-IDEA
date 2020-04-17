@@ -58,6 +58,7 @@ CLOSE_BRACE="}"
 OPEN_PAREN="("
 CLOSE_PAREN=")"
 
+SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
@@ -145,6 +146,7 @@ ANY_CHAR=[^]
 // If you start a verbatim with an open bracket and don't close it, this won't work
 <POSSIBLE_VERBATIM_OPTIONAL_ARG> {
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; yypopState(); yypushState(VERBATIM_OPTIONAL_ARG); return OPEN_BRACKET; }
+    {WHITE_SPACE}       { yypopState(); yypushState(VERBATIM); return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN; }
 }
 
@@ -160,13 +162,10 @@ ANY_CHAR=[^]
 }
 
 <VERBATIM> {
-    // Also catch whitespac, see LatexParserUtil for more info
+    // Also catch whitespace, see LatexParserUtil for more info
     {WHITE_SPACE}       { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
     {END_TOKEN}         { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
-    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
-    [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
-
 }
 
 // Open brace will be remapped to raw text by token remapper, if needed
