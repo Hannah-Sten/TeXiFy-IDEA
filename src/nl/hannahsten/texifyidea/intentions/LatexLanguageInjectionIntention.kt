@@ -7,23 +7,25 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.PopupChooserBuilder
 import com.intellij.psi.PsiFile
 import com.intellij.psi.injection.Injectable
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.components.JBList
 import com.intellij.util.ui.EmptyIcon
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.lang.LatexAnnotation
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
+import nl.hannahsten.texifyidea.lang.magic.addMagicComment
+import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.annotations
+import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.runWriteAction
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.SwingConstants
 
 /**
- * todo avoid default intention popping up? Or make difference clear (also show this one at the same places then)
  * @author Sten Wessel
  */
 class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language in environment") {
@@ -31,6 +33,8 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language in 
     override fun getFamilyName() = "Inject language"
 
     override fun getText() = "Inject language in environment"
+
+    override fun startInWriteAction() = true
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (file !is LatexFile || editor == null) {
@@ -43,7 +47,7 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language in 
 
         val env = beginCommand.parentOfType(LatexEnvironment::class) ?: return false
 
-        return env.annotations().none { it.key == LatexAnnotation.KEY_INJECT_LANGUAGE }
+        return !env.magicComment().containsKey(DefaultMagicKeys.INJECT_LANGUAGE)
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
@@ -52,11 +56,11 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language in 
         }
 
         val element = file.findElementAt(editor.caretModel.offset) ?: return
-        val beginCommand = PsiTreeUtil.getParentOfType(element, LatexBeginCommand::class.java) ?: return
 
         chooseLanguage(editor) { language ->
+            val comment = MutableMagicComment<String, String>().apply { addValue(DefaultMagicKeys.INJECT_LANGUAGE, language.id) }
             WriteCommandAction.runWriteCommandAction(project) {
-                editor.document.insertString(beginCommand.textOffset, LatexAnnotation(LatexAnnotation.KEY_INJECT_LANGUAGE, language.id).toString() + "\n")
+                element.firstParentOfType(LatexEnvironment::class)?.addMagicComment(comment)
             }
         }
 

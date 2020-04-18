@@ -772,7 +772,7 @@
         <intentionAction>
             <className>nl.hannahsten.texifyidea.intentions.LatexLanguageInjectionIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLanguageInjection</descriptionDirectoryName> <!-- todo description -->
+            <descriptionDirectoryName>LatexLanguageInjection</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>

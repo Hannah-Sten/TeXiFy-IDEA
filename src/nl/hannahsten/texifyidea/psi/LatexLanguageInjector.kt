@@ -5,17 +5,20 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
 import com.intellij.psi.PsiLanguageInjectionHost
-import nl.hannahsten.texifyidea.lang.LatexAnnotation
-import nl.hannahsten.texifyidea.util.annotations
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.magicComment
 
 /**
+ * Inject language based on magic comments.
  *
  * @author Sten Wessel
  */
 class LatexLanguageInjector : LanguageInjector {
     override fun getLanguagesToInject(host: PsiLanguageInjectionHost, registrar: InjectedLanguagePlaces) {
         if (host is LatexEnvironment) {
-            val languageId = host.annotations().lastOrNull { it.key == LatexAnnotation.KEY_INJECT_LANGUAGE }?.value ?: return
+            val magicComment = host.magicComment()
+            if (!magicComment.containsKey(DefaultMagicKeys.INJECT_LANGUAGE)) return
+            val languageId = magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
             val language = Language.findLanguageByID(languageId) ?: return
 
             val range = host.environmentContent?.textRange?.shiftRight(-host.textOffset) ?: TextRange.EMPTY_RANGE

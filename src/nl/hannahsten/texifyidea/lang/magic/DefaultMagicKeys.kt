@@ -29,6 +29,10 @@ enum class DefaultMagicKeys(
         You can suppress multiple inspections by separating the name of inspections by a comma.
     """.trimIndent().trim()),
 
+    INJECT_LANGUAGE("language", """
+        Indicates that a language should be injected in the following environment.
+    """.trimIndent().trim(), MagicCommentScope.ENVIRONMENT.singleScope()),
+
     // TeXdoc.
     INFO("Info", """
         A documentation description for a definition.
