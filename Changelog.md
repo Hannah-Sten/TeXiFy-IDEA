@@ -19,13 +19,14 @@
 * Fix parse error when inline math inside \text inside inline math is used. (#1322)
 * Fix parse error when dollar signs are used in table preamble. (#1324)
 * Fix parse error for \verb|...|, \verb=...=, \verb"..." and \verb!...!. (#1344)
+* Fix parse errors in verbatim-like environments. (#1353)
 * Fix parse error on \newenvironment definitions. (#1340)
 * Fix parse error on non-ascii characters in bibtex identifiers. (#1367)
 * Avoid formatter confusion when ending a line with a backslash. (#1342)
 * Fix autocompletion in custom command parameters. (#1360)
 * Fixed crashes. (#1332, #1337)
 
-Thanks to Boris Dudelsack ([@bdudelsack](https://github.com/bdudelsack)) for contributing to this release.
+Thanks to Boris Dudelsack ([@bdudelsack](https://github.com/bdudelsack)) and Nhan Thai ([@dandoh](https://github.com/dandoh)) for contributing to this release.
 
 A detailed overview of the changes can be found on the [milestone page](https://github.com/Hannah-Sten/TeXiFy-IDEA/milestone/19?closed=1).
 
