@@ -120,6 +120,10 @@ For some common commands TeXiFy knows which package is needed to use them.
 A quickfix is available to add the missing `\usepackage` or `\RequirePackage` command.
 For more information, see link:Automatic-package-importing[Automagically import packages of common commands].
 
+== Unescaped `#` symbol
+_Since b0.6.10_
+
+When using a `#` symbol outside of a command definition, it should be escaped with a backslash, like `\#`.
 == Unresolved references
 == Non matching environment commands
 == Open if-then-else control sequence
