@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(LatexEscapeAmpersandInspection()) {
 
-    fun `test unescaped special character warning`() {
+    fun `test unescaped & character warning`() {
         myFixture.configureByText(LatexFileType, """
             \begin{document}
                 some text <warning descr="Escape character \ expected">&</warning> with unescaped special character
@@ -25,7 +25,7 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.checkHighlighting(false, false, false, false)
     }
 
-    fun `test unescaped special character quick fix for &`() {
+    fun `test unescaped & character quick fix`() {
         testQuickFix("""
             \begin{document}
                 H&M
