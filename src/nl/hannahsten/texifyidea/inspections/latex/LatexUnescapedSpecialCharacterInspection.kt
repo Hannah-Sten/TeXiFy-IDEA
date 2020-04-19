@@ -16,7 +16,7 @@ import java.util.regex.Pattern
  */
 open class LatexUnescapedSpecialCharacterInspection : TexifyRegexInspection(
         inspectionDisplayName = "Special characters need to be escaped",
-        inspectionId = "UnescapedIllegalCharacter",
+        inspectionId = "LatexUnescapedSpecialCharacter",
         errorMessage = { "Escape character \\ expected" },
         highlight = ProblemHighlightType.WARNING,
         pattern = Pattern.compile("""(?<!\\)[&_]"""),
