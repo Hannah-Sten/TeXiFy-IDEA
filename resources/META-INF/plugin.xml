@@ -700,8 +700,11 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
                          groupName="LaTeX" displayName="Package is not installed"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnescapedSpecialCharacterInspection"
-                         groupName="LaTeX" displayName="Special characters need to be escaped"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeUnderscoreInspection"
+                         groupName="LaTeX" displayName="Unescaped _ character"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeAmpersandInspection"
+                         groupName="LaTeX" displayName="Unescaped &amp; character"
                          enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->

@@ -14,14 +14,14 @@ import java.util.regex.Pattern
 /**
  * @author Johannes Berger
  */
-open class LatexUnescapedSpecialCharacterInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Special characters need to be escaped",
-        inspectionId = "LatexUnescapedSpecialCharacter",
+class LatexEscapeAmpersandInspection : TexifyRegexInspection(
+        inspectionDisplayName = "Unescaped & character",
+        inspectionId = "LatexEscapeAmpersand",
         errorMessage = { "Escape character \\ expected" },
         highlight = ProblemHighlightType.WARNING,
-        pattern = Pattern.compile("""(?<!\\)[&_]"""),
-        replacement = { matcher, _ -> "\\${matcher.group()}" },
-        quickFixName = { "Change to \\${it.group()}" }
+        pattern = Pattern.compile("""(?<!\\)&"""),
+        replacement = { _, _ -> """\&""" },
+        quickFixName = { """Change to \&""" }
 ) {
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         if (element.isComment() || element.inMathContext() || element.isInTableEnvironment()) {
