@@ -10,7 +10,10 @@ class PackageNameDoesNotMatchFileNameTest : BasePlatformTestCase() {
 
     override fun setUp() {
         super.setUp()
-        myFixture.enableInspections(LatexPackageNameDoesNotMatchFileNameInspection())
+        myFixture.enableInspections(
+                LatexPackageNameDoesNotMatchFileNameInspection(),
+                LatexPackageSubdirectoryInspection()
+        )
     }
 
     fun testWarnings() {
@@ -35,5 +38,15 @@ class PackageNameDoesNotMatchFileNameTest : BasePlatformTestCase() {
             \NeedsTeXFormat{LaTeX2e}
             \ProvidesPackage{mypackage}[My Package]
         """.trimIndent())
+    }
+
+    fun testNoWarnings() {
+        myFixture.configureByFiles("pkg/secondpackage.sty", "main.tex")
+        myFixture.checkHighlighting()
+    }
+
+    fun testSubdirWarnings() {
+        myFixture.configureByFiles("pkg/mypackage.sty", "main.tex")
+        myFixture.checkHighlighting()
     }
 }
