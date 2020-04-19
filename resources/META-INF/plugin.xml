@@ -688,7 +688,11 @@
                          groupName="LaTeX" displayName="Package could not be found"
                          enabledByDefault="false"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
-                         groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
+                         groupName="LaTeX" displayName="Package is not installed"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnescapedIllegalCharacterInspection"
+                         groupName="LaTeX" displayName="Special characters need to be escaped"
+                         enabledByDefault="true"/>
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
