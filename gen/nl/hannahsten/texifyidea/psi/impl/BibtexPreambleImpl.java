@@ -32,4 +32,10 @@ public class BibtexPreambleImpl extends ASTWrapperPsiElement implements BibtexPr
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexQuotedString.class);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getIdentifier() {
+    return findChildByType(IDENTIFIER);
+  }
+
 }
