@@ -622,7 +622,11 @@
                          groupName="LaTeX" displayName="Package name does not have the correct directory"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
-                         groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
+                         groupName="LaTeX" displayName="Package is not installed"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnescapedIllegalCharacterInspection"
+                         groupName="LaTeX" displayName="Special characters need to be escaped"
+                         enabledByDefault="true"/>
 
         <!-- Element manipulator -->
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
