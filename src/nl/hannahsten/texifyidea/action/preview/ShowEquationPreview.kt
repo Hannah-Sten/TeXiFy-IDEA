@@ -32,6 +32,8 @@ class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATI
 
         displayPreview(project, outerMathEnvironment, FORM_KEY) {
             preamble += MATH_PREAMBLE
+            val psiFile = element.containingFile
+            preamble += findPreamblesFromMagicComments(psiFile, "math")
         }
     }
 }

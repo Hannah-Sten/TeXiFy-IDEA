@@ -89,6 +89,9 @@ enum class DefaultEnvironment(
     // listings
     LISTINGS(environmentName = "lstlisting", dependency = Package.LISTINGS),
 
+    // tikz
+    TIKZPICTURE(environmentName = "tikzpicture", dependency = Package.TIKZ),
+
     // xcolor
     TESTCOLORS(environmentName = "testcolors", arguments = *arrayOf(OptionalArgument("num models")), dependency = XCOLOR);
 

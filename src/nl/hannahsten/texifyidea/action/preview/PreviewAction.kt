@@ -5,10 +5,12 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.ui.content.ContentFactory
 import nl.hannahsten.texifyidea.action.EditorAction
 import nl.hannahsten.texifyidea.ui.EquationPreviewToolWindow
 import nl.hannahsten.texifyidea.ui.PreviewFormUpdater
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import javax.swing.Icon
 
 /**
@@ -85,6 +87,22 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         }
         // Show but not focus the window
         toolWindow.activate(null, false)
+    }
 
+    fun findPreamblesFromMagicComments(psiFile: PsiFile, name: String): String {
+        val fileset = psiFile.referencedFileSet()
+        val preambleRegex = """
+                %! begin = $name preamble(?<content>(\n.*)*\n)%! end = $name preamble
+            """.trimIndent().toRegex()
+
+        var preamble = ""
+
+        for (f in fileset) {
+            preambleRegex.findAll(f.text).forEach {
+                preamble += it.groups["content"]?.value?.trim() ?: return@forEach
+            }
+        }
+
+        return preamble
     }
 }
