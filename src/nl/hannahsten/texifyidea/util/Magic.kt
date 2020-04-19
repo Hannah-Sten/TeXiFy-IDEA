@@ -651,7 +651,6 @@ object Magic {
                 "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
                 "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
                 "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))")
-
     }
 
     /**
