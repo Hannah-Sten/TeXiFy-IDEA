@@ -35,7 +35,8 @@ QUOTES="\""
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 TYPE_TOKEN=@[a-zA-Z]+
 COMMENT_TOKEN=%[^\r\n]*
-IDENTIFIER=[.a-zA-Z0-9:/+_-]+
+// Characters disallowed by bibtex or biber (non-ascii or not depends on LaTeX compiler)
+IDENTIFIER=[^,{}\(\)\"#%'=~\\ \n]+
 NUMBER=[0-9-]+
 NORMAL_TEXT_WORD=([^\"]|\\\" )+
 NORMAL_TEXT_BRACED_STRING=[^{} ]+

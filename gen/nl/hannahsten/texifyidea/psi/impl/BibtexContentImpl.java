@@ -32,4 +32,10 @@ public class BibtexContentImpl extends ASTWrapperPsiElement implements BibtexCon
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexString.class);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getIdentifier() {
+    return findChildByType(IDENTIFIER);
+  }
+
 }

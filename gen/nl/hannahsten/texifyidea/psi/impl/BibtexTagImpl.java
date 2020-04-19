@@ -1,16 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.psi.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
+import org.jetbrains.annotations.*;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.BibtexTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.hannahsten.texifyidea.psi.*;
+import com.intellij.psi.PsiReference;
 
 public class BibtexTagImpl extends ASTWrapperPsiElement implements BibtexTag {
 
