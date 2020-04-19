@@ -59,7 +59,7 @@ internal object LatexWrapWithSquareRootPostfixTemplate : LatexWrapWithCommandPos
 internal object LatexWrapWithOverlinePostfixTemplate : LatexWrapWithCommandPostfixTemplate("overline", mathOnly = true)
 internal object LatexWrapWithUnderlinePostfixTemplate : LatexWrapWithCommandPostfixTemplate("underline", mathOnly = true)
 internal object LatexWrapWithMathbbPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathbb", name = "bb", mathOnly = true, pack = Package.AMSFONTS)
-internal object LatexWrapWithBmPostfixTemplate : LatexWrapWithCommandPostfixTemplate("bm", mathOnly = true, pack = Package.BM)  // TODO change to \bm
+internal object LatexWrapWithBmPostfixTemplate : LatexWrapWithCommandPostfixTemplate("bm", mathOnly = true, pack = Package.BM)
 internal object LatexWrapWithMathcalPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathcal", name = "cal", mathOnly = true)
 
 internal open class LatexWrapWithCommandPostfixTemplate(commandName: String, name: String = commandName, mathOnly: Boolean = false, textOnly: Boolean = false, pack: Package? = null) : ConstantStringBasedPostfixTemplate(

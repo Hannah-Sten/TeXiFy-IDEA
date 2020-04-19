@@ -164,17 +164,17 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                     Magic.Environment.labeled[command.environmentName], command.containingFile)
 
 
-            val moveCaretAfter: PsiElement;
-            if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
+            val moveCaretAfter: PsiElement
+            moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
                 val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
-                moveCaretAfter = insertedElements.last()
+                insertedElements.last()
             }
             else {
                 // in a float environment the label must be inserted after a caption
                 val labelCommand = helper.addToContent(command, helper.createLabelCommand(createdLabel),
                         command.environmentContent?.childrenOfType<LatexCommands>()
                                 ?.findLast { c -> c.name == "\\caption" })
-                moveCaretAfter = labelCommand
+                labelCommand
             }
 
             // Adjust caret offset
