@@ -3,27 +3,15 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
-internal class LatexUnescapedIllegalCharacterInspectionTest : TexifyInspectionTestBase(LatexUnescapedIllegalCharacterInspection()) {
+internal class LatexUnescapedSpecialCharacterInspectionTest : TexifyInspectionTestBase(LatexUnescapedSpecialCharacterInspection()) {
 
     fun `test unescaped special character warning`() {
         myFixture.configureByText(LatexFileType, """
             \begin{document}
-                some text <warning descr="Special characters need to be escaped">#</warning> with unescaped special character
+                some text <warning descr="Escape character \ expected">_</warning> with unescaped special character
             \end{document}
         """.trimIndent())
         myFixture.checkHighlighting(true, false, false, false)
-    }
-
-    fun `test unescaped special character quick fix for #`() {
-        testQuickFix("""
-            \begin{document}
-                #hashtag
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \#hashtag
-            \end{document}
-        """.trimIndent())
     }
 
     fun `test unescaped special character quick fix for &`() {
@@ -41,13 +29,12 @@ internal class LatexUnescapedIllegalCharacterInspectionTest : TexifyInspectionTe
     fun `test unescaped special character quick fix for _`() {
         testQuickFix("""
             \begin{document}
-                some text _ with unescaped special character
+                _ some text with unescaped special character
             \end{document}
         """.trimIndent(), """
             \begin{document}
-                some text \_ with unescaped special character
+                \_ some text with unescaped special character
             \end{document}
         """.trimIndent())
     }
-
 }
