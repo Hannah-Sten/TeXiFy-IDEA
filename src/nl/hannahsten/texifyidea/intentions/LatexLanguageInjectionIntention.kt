@@ -28,11 +28,11 @@ import javax.swing.SwingConstants
 /**
  * @author Sten Wessel
  */
-class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language in environment") {
+class LatexLanguageInjectionIntention : TexifyIntentionBase("Permanently inject language in environment") {
 
     override fun getFamilyName() = "Inject language"
 
-    override fun getText() = "Inject language in environment"
+    override fun getText() = "Permanently inject language in environment using a magic comment."
 
     override fun startInWriteAction() = true
 
