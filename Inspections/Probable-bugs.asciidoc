@@ -124,6 +124,7 @@ For more information, see link:Automatic-package-importing[Automagically import 
 _Since b0.6.10_
 
 When using a # symbol outside of a command definition, it should be escaped with a backslash, like `\#`.
+
 == Unresolved references
 == Non matching environment commands
 == Open if-then-else control sequence
