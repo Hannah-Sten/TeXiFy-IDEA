@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import kotlin.math.max
@@ -19,7 +20,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
     override val inspectionId: String = "PackageSubdirectoryInspection"
 
     override fun getShortName(): String {
-        return "LatexPackageSubdirectoryInspection"
+        return "LatexPackageSubdirectory"
     }
 
     override fun getDisplayName(): String =
@@ -41,7 +42,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
                 descriptors.add(manager.createProblemDescriptor(
                         command,
                         displayName,
-                        FixSubdirectoryQuickFix,
+                        FixSubdirectoryQuickFix(providedDir, if (providedDir.isEmpty()) "$subDir/" else subDir),
                         ProblemHighlightType.WARNING,
                         isOntheFly
                 ))
@@ -50,13 +51,19 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    object FixSubdirectoryQuickFix : LocalQuickFix {
+    inner class FixSubdirectoryQuickFix(private val oldDir: String, private val newDir: String) : LocalQuickFix {
         override fun getFamilyName(): String =
                 "Package name does not have the correct directory"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            // Do nothing.
-        }
+            val providesCommand = descriptor.psiElement as LatexCommands
+            val newCommandText = providesCommand.text.replace(
+                    "{$oldDir", "{$newDir"
+            )
+            val newCommand = LatexPsiHelper(project).createFromText(newCommandText).firstChild
 
+            val parent = providesCommand.parent
+            parent.node.replaceChild(providesCommand.node, newCommand.node)
+        }
     }
 }
