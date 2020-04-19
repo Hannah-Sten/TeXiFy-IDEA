@@ -10,4 +10,7 @@ public interface BibtexContent extends PsiElement {
   @NotNull
   List<BibtexString> getStringList();
 
+  @Nullable
+  PsiElement getIdentifier();
+
 }

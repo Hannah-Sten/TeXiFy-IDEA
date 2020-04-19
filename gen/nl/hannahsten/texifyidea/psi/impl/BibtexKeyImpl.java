@@ -26,4 +26,10 @@ public class BibtexKeyImpl extends ASTWrapperPsiElement implements BibtexKey {
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public PsiElement getIdentifier() {
+    return notNullChild(findChildByType(IDENTIFIER));
+  }
+
 }
