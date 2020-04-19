@@ -101,6 +101,19 @@ When using `\usepackage` or `\RequirePackage`, we check if the package exists.
 To do this, we check the project for use defined packages, and we check a list of all available CTAN packages.
 This list of CTAN packages is manually updated by us, and might be out of date.
 
+== Package name does not match file name
+_Since b0.6.10_
+
+The package name given in a `\ProvidesPackage` command does not match the name of the `sty` file the command is in.
+This inspection provides a quick fix to fix the package name.
+
+== Package name does not contain the correct path
+_Since b0.6.10_
+
+The package name given in a `\ProvidesPackage` command does not contain the correct path of the `sty` file.
+This package name should include the path relative to the main file where the package is used.
+This inspection provides a quick fix to fix the path in the package name.
+
 == Missing imports
 
 For some common commands TeXiFy knows which package is needed to use them.
