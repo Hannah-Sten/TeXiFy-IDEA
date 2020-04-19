@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
-internal class LatexUnescapedSpecialCharacterInspectionTest : TexifyInspectionTestBase(LatexUnescapedSpecialCharacterInspection()) {
+internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(LatexEscapeUnderscoreInspection()) {
 
     fun `test unescaped special character warning`() {
         myFixture.configureByText(LatexFileType, """
@@ -14,26 +14,14 @@ internal class LatexUnescapedSpecialCharacterInspectionTest : TexifyInspectionTe
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-    fun `test unescaped special character quick fix for &`() {
-        testQuickFix("""
-            \begin{document}
-                H&M
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                H\&M
-            \end{document}
-        """.trimIndent())
-    }
-
     fun `test unescaped special character quick fix for _`() {
         testQuickFix("""
             \begin{document}
-                _ some text with unescaped special character
+                some _ text
             \end{document}
         """.trimIndent(), """
             \begin{document}
-                \_ some text with unescaped special character
+                some \_ text
             \end{document}
         """.trimIndent())
     }
