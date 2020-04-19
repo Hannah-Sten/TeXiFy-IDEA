@@ -217,6 +217,7 @@ object Magic {
          */
         val figures = hashSetOf("figure")
 
+        @JvmField
         val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
     }
 

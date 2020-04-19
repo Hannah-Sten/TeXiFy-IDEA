@@ -57,6 +57,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                     .withInsertHandler(LatexNoMathInsertHandler())
                     .withIcon(TexifyIcons.DOT_COMMAND)
         })
+        result.addElement(LookupElementBuilder.create("abcdefghijklmnopqrstuvwxyz"))
         result.addLookupAdvertisement(getKindWords())
     }
 

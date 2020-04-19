@@ -38,7 +38,7 @@
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.java</depends>
+<!--    <depends>com.intellij.modules.java</depends>--> <!-- breaks non-intellij support -->
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
 
     <description><![CDATA[
@@ -450,6 +450,7 @@
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
@@ -678,10 +679,6 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
                          groupName="LaTeX" displayName="Figure not referenced"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerbatimInspection"
-                         groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser"
-                         shortName="LatexUseOfVerbatimEnvironment"
-                         enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
                          groupName="LaTeX" displayName="Multiple definition of graphicspath"
                          enabledByDefault="true"/>
@@ -722,6 +719,36 @@
         </intentionAction>
 
         <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexInsertFormatterCommentsIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexInsertFormatterComments</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
             <className>nl.hannahsten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMoveSectionToFile</descriptionDirectoryName>
@@ -734,39 +761,15 @@
         </intentionAction>
 
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggle</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggle</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
             <className>nl.hannahsten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexToggleSmartQuotes</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
+            <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>

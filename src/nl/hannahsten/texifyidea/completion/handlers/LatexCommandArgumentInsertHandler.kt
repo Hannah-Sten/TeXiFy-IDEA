@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -34,17 +33,17 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
     }
 
     private fun insertCommands(commands: LatexCommands, context: InsertionContext) {
-        val required: List<String> = LinkedList(commands.requiredParameters)
-        if (required.isEmpty()) return
+        val optional: List<String> = commands.optionalParameters.keys.toList()
+        if (optional.isEmpty()) return
 
         var cmdParameterCount = 0
         try {
-            cmdParameterCount = required[0].toInt()
+            cmdParameterCount = optional[0].toInt()
         } catch (ignore: NumberFormatException) {
         }
 
         if (cmdParameterCount > 0) {
-            insert(context, required.size)
+            insert(context, optional.size)
         }
     }
 

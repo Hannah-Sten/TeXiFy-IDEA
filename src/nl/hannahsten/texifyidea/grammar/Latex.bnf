@@ -1,5 +1,6 @@
 {
     parserClass="nl.hannahsten.texifyidea.parser.LatexParser"
+    parserUtilClass="nl.hannahsten.texifyidea.parser.LatexParserUtil"
 
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -61,7 +62,7 @@ environment ::= begin_command environment_content? end_command {
     methods=[getEnvironmentName getLabel]
  }
 
-environment_content ::= content+
+environment_content ::= <<injection_env_content raw_text>> | content+
 
 commands ::= COMMAND_TOKEN STAR? parameter* {
     pin=1
