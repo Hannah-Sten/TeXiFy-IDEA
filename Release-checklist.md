@@ -2,6 +2,7 @@
 - [ ] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
 - [ ] Forward/backward search
 - [ ] Autocomplete (bibtex, latex)
+- [ ] Does it work in PyCharm?
 - [ ] Run ctan.py
 
 - [ ] Copy changelog to plugin.xml
