@@ -288,6 +288,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * Inclusion loops
 * Nested includes
 * link:Probable-bugs#label-is-before-caption[Label is before caption]
+* link:Probable-bugs#unescaped-hash[Unescaped `#` symbol]
 
 ==== Redundant LaTeX
 * Redundant escape when Unicode is enabled
