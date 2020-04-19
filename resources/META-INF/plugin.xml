@@ -700,7 +700,7 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
                          groupName="LaTeX" displayName="Package is not installed"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnescapedIllegalCharacterInspection"
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexUnescapedSpecialCharacterInspection"
                          groupName="LaTeX" displayName="Special characters need to be escaped"
                          enabledByDefault="true"/>
 
