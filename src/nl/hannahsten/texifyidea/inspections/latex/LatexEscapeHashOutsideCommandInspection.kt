@@ -8,10 +8,10 @@ import nl.hannahsten.texifyidea.util.isCommandDefinition
 import java.util.regex.Pattern
 
 class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Escape hash symbol outside of command definition",
+        inspectionDisplayName = "Unescaped # outside of command definition",
         inspectionId = "EscapeHashOutsideCommand",
         pattern = Pattern.compile("""(?<!\\)#"""),
-        errorMessage = { "# should be escaped" },
+        errorMessage = { "unescaped #" },
         quickFixName = { "escape #" },
         replacement = { _, _ -> """\#""" }
 ) {
