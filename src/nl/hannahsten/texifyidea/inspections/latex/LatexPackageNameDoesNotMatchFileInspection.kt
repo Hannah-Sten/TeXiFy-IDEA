@@ -53,8 +53,8 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val providesCommand = descriptor.psiElement as LatexCommands
             val newCommandText = providesCommand.let { it.text.replace(
-                    "{${it.requiredParameters.first().split("/").last()}}",
-                    "{${it.containingFile.name.removeSuffix(".sty")}}"
+                    it.requiredParameters.first().split("/").last() + "}",
+                    it.containingFile.name.removeSuffix(".sty") + "}"
             ) }
             val newCommand = LatexPsiHelper(project).createFromText(newCommandText).firstChild
 

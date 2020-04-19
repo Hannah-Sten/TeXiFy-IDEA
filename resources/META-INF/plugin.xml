@@ -694,6 +694,9 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNameDoesNotMatchFileNameInspection"
                          groupName="LaTeX" displayName="Package name does not match file name"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageSubdirectoryInspection"
+                         groupName="LaTeX" displayName="Package name does not have the correct directory"
+                         enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
                          groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
 
