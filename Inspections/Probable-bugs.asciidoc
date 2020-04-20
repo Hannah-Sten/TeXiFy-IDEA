@@ -123,7 +123,7 @@ For more information, see link:Automatic-package-importing[Automagically import 
 == Unescaped `#`, `&` and `_` symbol
 _Since b0.6.10_
 
-When using a `#` symbol outside of a command definition, an `&` outside a tabular environment or a `_` anywhere, it should be escaped with a backslash, like `\#`.
+When using a `#` symbol outside of a command definition, an `&` outside a tabular environment or a `_` anywhere, it should be escaped with a backslash, like `\&`.
 
 == Unresolved references
 == Non matching environment commands
