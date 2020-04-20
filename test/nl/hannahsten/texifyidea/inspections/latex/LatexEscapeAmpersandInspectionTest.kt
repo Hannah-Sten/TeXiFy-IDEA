@@ -25,6 +25,27 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.checkHighlighting(false, false, false, false)
     }
 
+    fun `test that ampersand in math environment does trigger a warning`() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{document}
+                $<warning descr="Escape character \ expected">&</warning>$
+            \end{document}
+        """.trimIndent())
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
+    fun `test that ampersand in split env in math environment does not trigger a warning`() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{document}
+                $\begin{split}
+                    a& =b\\
+                    c& =d
+                \end{split}$
+            \end{document}
+        """.trimIndent())
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
     fun `test unescaped & character quick fix`() {
         testQuickFix("""
             \begin{document}

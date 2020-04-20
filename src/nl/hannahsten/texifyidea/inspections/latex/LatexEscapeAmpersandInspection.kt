@@ -6,7 +6,6 @@ import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -24,14 +23,28 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         quickFixName = { """Change to \&""" }
 ) {
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-        if (element.isComment() || element.inMathContext() || element.isInTableEnvironment()) {
-            return false
-        }
-
+        if (element.isAmpersandAllowed()) return false
         return checkContext(element)
     }
 
-    private fun PsiElement.isInTableEnvironment(): Boolean {
-        return this.firstParentOfType(LatexEnvironment::class)?.environmentName in Magic.Environment.tableEnvironments
+    private fun PsiElement.isAmpersandAllowed(): Boolean {
+        if (this.isComment()) return true
+        if (this.firstParentOfType(LatexEnvironment::class)?.environmentName in Magic.Environment.tableEnvironments) return true
+        if (this.firstParentOfType(LatexEnvironment::class)?.environmentName in alignableEnvironments) return true
+        return false
+    }
+
+    companion object {
+        val alignableEnvironments = setOf(
+                "eqnarray", "eqnarray*",
+                "split",
+                "align", "align*",
+                "alignat", "alignat*",
+                "flalign", "flalign*",
+                "aligned", "alignedat",
+                "cases", "dcases",
+                "smallmatrix", "smallmatrix*",
+                "matrix", "matrix*",
+                "pmatrix", "pmatrix*")
     }
 }
