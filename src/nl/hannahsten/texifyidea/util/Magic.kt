@@ -647,12 +647,6 @@ object Magic {
                 "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
                 "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
                 "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))")
-
-        /**
-         * Matches special characters #,&,_ either not escaped or at the beginning of a line
-         */
-        @JvmField
-        val unescapedSpecialCharacters = RegexPattern.compile("[^\\\\][#&\\_]|^[#&\\_]")!!
     }
 
     /**
