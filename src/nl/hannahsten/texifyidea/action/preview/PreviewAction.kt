@@ -61,6 +61,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             val content = toolWindow.contentManager.getContent(i) ?: continue
             if (!content.isPinned) {
                 val form = content.getUserData(key) ?: continue
+                form.config()
                 form.compilePreview(element.text)
                 content.displayName = displayName
                 replaced = true

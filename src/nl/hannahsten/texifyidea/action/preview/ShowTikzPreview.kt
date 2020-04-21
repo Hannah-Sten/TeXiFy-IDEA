@@ -35,6 +35,7 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         val tikzEnvironment = findTikzEnvironment(element) ?: return
 
         displayPreview(project, tikzEnvironment, FORM_KEY) {
+            resetPreamble()
             val psiFile = getPsiFile(file, project) ?: return@displayPreview
 
             preamble += "\\usepackage{tikz, pgfplots, amsmath}\n"
