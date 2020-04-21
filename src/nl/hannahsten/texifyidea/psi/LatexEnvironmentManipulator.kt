@@ -13,9 +13,11 @@ class LatexEnvironmentManipulator : AbstractElementManipulator<LatexEnvironmentI
                                    range: TextRange,
                                    newContent: String): LatexEnvironmentImpl? {
     val oldText = element.text
+    // For some reason the endoffset of the given range is incorrect: sometimes it excludes the last line, so we calculate it ourselves
+    val endOffset = oldText.indexOf("\\end{${element.environmentName}}") - 1 // -1 to exclude \n
     val newText = oldText.substring(0, range.startOffset) +
         newContent +
-        oldText.substring(range.endOffset)
+        oldText.substring(endOffset)
     val file = PsiFileFactory.getInstance(element.project)
         .createFileFromText("temp.tex", LatexLanguage.INSTANCE, newText)
     val res =

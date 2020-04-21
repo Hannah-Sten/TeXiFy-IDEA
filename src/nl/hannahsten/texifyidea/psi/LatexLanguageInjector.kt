@@ -16,10 +16,23 @@ import nl.hannahsten.texifyidea.lang.magic.magicComment
 class LatexLanguageInjector : LanguageInjector {
     override fun getLanguagesToInject(host: PsiLanguageInjectionHost, registrar: InjectedLanguagePlaces) {
         if (host is LatexEnvironment) {
+
             val magicComment = host.magicComment()
-            if (!magicComment.containsKey(DefaultMagicKeys.INJECT_LANGUAGE)) return
-            val languageId = magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
-            val language = Language.findLanguageByID(languageId) ?: return
+            val hasMagicCommentKey = magicComment.containsKey(DefaultMagicKeys.INJECT_LANGUAGE)
+
+            // Allow lstlisting language to be overridden with magic comment
+            val languageId = if (!hasMagicCommentKey && host.environmentName == "lstlisting") {
+                host.beginCommand.optionalParameters.getOrDefault("language", null)
+            }
+            else if (hasMagicCommentKey) {
+                magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
+            }
+            else {
+                return
+            }
+
+            val language = Language.findLanguageByID(languageId)
+                    ?: Language.findLanguageByID(languageId?.toLowerCase()) ?: return
 
             val range = host.environmentContent?.textRange?.shiftRight(-host.textOffset) ?: TextRange.EMPTY_RANGE
 

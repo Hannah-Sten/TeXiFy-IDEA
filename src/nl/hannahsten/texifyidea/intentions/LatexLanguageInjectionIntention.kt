@@ -16,11 +16,8 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
 import nl.hannahsten.texifyidea.lang.magic.addMagicComment
 import nl.hannahsten.texifyidea.lang.magic.magicComment
-import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.parentOfType
-import nl.hannahsten.texifyidea.util.runWriteAction
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.SwingConstants
@@ -28,11 +25,11 @@ import javax.swing.SwingConstants
 /**
  * @author Sten Wessel
  */
-class LatexLanguageInjectionIntention : TexifyIntentionBase("Permanently inject language in environment") {
+class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
 
     override fun getFamilyName() = "Inject language"
 
-    override fun getText() = "Permanently inject language in environment using a magic comment."
+    override fun getText() = "Permanently inject language in environment"
 
     override fun startInWriteAction() = true
 
@@ -43,9 +40,7 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Permanently inject 
 
         val element = file.findElementAt(editor.caretModel.offset) ?: return false
 
-        val beginCommand = element.parentOfType(LatexBeginCommand::class) ?: return false
-
-        val env = beginCommand.parentOfType(LatexEnvironment::class) ?: return false
+        val env = element.firstParentOfType(LatexEnvironment::class) ?: return false
 
         return !env.magicComment().containsKey(DefaultMagicKeys.INJECT_LANGUAGE)
     }
