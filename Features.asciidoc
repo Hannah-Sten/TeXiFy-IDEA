@@ -64,6 +64,7 @@ toc::[]
 * link:Code-formatting[Code formatting]
 * link:Line-markers[Line markers for sections]
 * link:Color-preview[Color preview for the xcolor package]
+* link:Language-injection[Language injection]
 * Special highlighting and marker for `todo` comments, customizable
 * Links in comments and in commands which provide links (e.g. \url and \href) are clickable
 * link:LaTeX-documentation[Easy links to LaTeX package documentation]

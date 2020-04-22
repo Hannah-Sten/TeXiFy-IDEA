@@ -24,7 +24,7 @@
 * Fix parse error on non-ascii characters in bibtex identifiers. (#1367)
 * Avoid formatter confusion when ending a line with a backslash. (#1342)
 * Fix autocompletion in custom command parameters. (#1360)
-* Fixed crashes. (#1332, #1337)
+* Fixed crashes. (#1332, #1337, #1372)
 
 Thanks to Boris Dudelsack ([@bdudelsack](https://github.com/bdudelsack)) and Nhan Thai ([@dandoh](https://github.com/dandoh)) for contributing to this release.
 
