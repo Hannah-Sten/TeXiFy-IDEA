@@ -31,8 +31,9 @@ class LatexLanguageInjector : LanguageInjector {
                 return
             }
 
+            if (languageId.isNullOrBlank()) return
             val language = Language.findLanguageByID(languageId)
-                    ?: Language.findLanguageByID(languageId?.toLowerCase()) ?: return
+                    ?: Language.findLanguageByID(languageId.toLowerCase()) ?: return
 
             val range = host.environmentContent?.textRange?.shiftRight(-host.textOffset) ?: TextRange.EMPTY_RANGE
 
