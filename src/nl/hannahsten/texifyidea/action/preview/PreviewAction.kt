@@ -93,15 +93,22 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
 
     fun findPreamblesFromMagicComments(psiFile: PsiFile, name: String): String {
         val fileset = psiFile.referencedFileSet()
-        val preambleRegex = """
+        val preambleRegex = """%! preview preamble\s*=\s*$name""".toRegex(EnumSet.of(RegexOption.IGNORE_CASE))
+        val preambleRegexBeginEnd = """
                 %! begin preamble\s*=\s*$name(?<content>(\n.*)*\n)%! end preamble\s*=\s*$name
             """.trimIndent().toRegex(EnumSet.of(RegexOption.IGNORE_CASE))
 
         var preamble = ""
 
         for (f in fileset) {
-            preambleRegex.findAll(f.text).forEach {
-                preamble += it.groups["content"]?.value?.trim() ?: return@forEach
+            if (preambleRegex.containsMatchIn(f.text)) {
+                preamble += f.text
+            }
+            else {
+                preambleRegexBeginEnd.findAll(f.text).forEach {
+                    preamble += it.groups["content"]?.value?.trim()
+                            ?: return@forEach
+                }
             }
         }
 
