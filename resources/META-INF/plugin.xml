@@ -38,7 +38,7 @@
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.java</depends>
+<!--    <depends>com.intellij.modules.java</depends>--> <!-- breaks non-intellij support -->
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
 
     <description><![CDATA[
@@ -374,6 +374,7 @@
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
@@ -415,6 +416,9 @@
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexNavigationGutter"/>
         <runLineMarkerContributor language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>
+
+        <!-- Colors -->
+        <colorProvider implementation="nl.hannahsten.texifyidea.insight.LatexElementColorProvider"/>
 
         <!-- Run configurations -->
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
@@ -469,6 +473,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
                          groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeHashOutsideCommandInspection"
+                         groupName="LaTeX" displayName="Unescaped # outside of command definition"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
                          groupName="LaTeX" displayName="Missing documentclass"
@@ -608,6 +615,12 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageCouldNotBeFound"
                          groupName="LaTeX" displayName="Package could not be found"
                          enabledByDefault="false"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNameDoesNotMatchFileNameInspection"
+                         groupName="LaTeX" displayName="Package name does not match file name"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageSubdirectoryInspection"
+                         groupName="LaTeX" displayName="Package name does not have the correct directory"
+                         enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
                          groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
 

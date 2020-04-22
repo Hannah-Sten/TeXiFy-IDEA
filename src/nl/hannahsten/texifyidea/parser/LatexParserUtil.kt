@@ -5,6 +5,7 @@ import com.intellij.lang.parser.GeneratedParserUtilBase
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.Magic
 
+@Suppress("FunctionName")
 class LatexParserUtil : GeneratedParserUtilBase() {
     companion object {
 
@@ -15,8 +16,8 @@ class LatexParserUtil : GeneratedParserUtilBase() {
         @JvmStatic fun injection_env_content(builder: PsiBuilder, level: Int, rawText: Parser): Boolean {
             // This might be optimized by handling the tokens incrementally
             val beginText = builder.originalText.subSequence(
-                    builder.latestDoneMarker!!.startOffset,
-                    builder.latestDoneMarker!!.endOffset
+                    builder.latestDoneMarker?.startOffset ?: return true,
+                    builder.latestDoneMarker?.endOffset ?: return true
             )
             val nameStart = beginText.indexOf('{') + 1
             val nameEnd = beginText.indexOf('}')
@@ -31,6 +32,9 @@ class LatexParserUtil : GeneratedParserUtilBase() {
             // otherwise the formatter (LatexSpacingRules) will insert a
             // newline too much between environment content and \end
             val endIndex = builder.originalText.indexOf("\\end{$env}", startIndex) - 1
+
+            // If there is nothing to remap, for example because there are only newlines, return false
+            if (endIndex < startIndex) return false
 
             // Only remap \end and whitespace tokens, other ones are already raw text by the lexer
             // This makes sure the the optional argument of a verbatim environment is not by mistake also remapped to raw text

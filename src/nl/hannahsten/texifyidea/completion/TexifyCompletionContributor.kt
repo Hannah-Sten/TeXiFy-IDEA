@@ -147,6 +147,22 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 LatexGraphicsPathProvider()
         )
 
+        // Colors from xcolor
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>("xcolor color completion patter") {
+                            override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                                        ?: return false
+
+                                val name = command.commandToken.text
+                                return name.substring(1) in Magic.Colors.takeColorCommands
+                            }
+                        }),
+                LatexXColorProvider
+        )
+
         // Magic comments keys.
         extend(
                 CompletionType.BASIC,

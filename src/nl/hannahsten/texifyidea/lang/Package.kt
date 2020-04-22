@@ -35,6 +35,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val NATBIB = Package("natbib")
         @JvmField val SUBFILES = Package("subfiles")
         @JvmField val ULEM = Package("ulem")
+        @JvmField val XCOLOR = Package("xcolor")
         @JvmField val XPARSE = Package("xparse")
     }
 

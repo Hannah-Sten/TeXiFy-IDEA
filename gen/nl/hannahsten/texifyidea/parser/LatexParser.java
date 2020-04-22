@@ -342,7 +342,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (NORMAL_TEXT_WORD | STAR | NORMAL_TEXT_CHAR)+
+  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+
   public static boolean normal_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text")) return false;
     boolean r;
@@ -357,12 +357,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT_WORD | STAR | NORMAL_TEXT_CHAR
+  // NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR
   private static boolean normal_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text_0")) return false;
     boolean r;
     r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
+    if (!r) r = consumeToken(b, AMPERSAND);
     if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
     return r;
   }

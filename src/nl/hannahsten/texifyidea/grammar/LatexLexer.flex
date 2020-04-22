@@ -58,14 +58,16 @@ CLOSE_BRACE="}"
 OPEN_PAREN="("
 CLOSE_PAREN=")"
 
+SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
-NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=]+
-NORMAL_TEXT_CHAR=[|!\"=] // Separate because they can be \verb delimiters
+NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&]+
+// Separate from normal text, e.g. because they can be \verb delimiters
+NORMAL_TEXT_CHAR=[|!\"=&]
 ANY_CHAR=[^]
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
@@ -75,8 +77,8 @@ ANY_CHAR=[^]
 %states INLINE_VERBATIM_START
 %xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
 
-%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START POSSIBLE_VERBATIM_END VERBATIM_END
-%xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG
+%states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
+%xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
 
 %%
 {WHITE_SPACE}           { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -145,6 +147,7 @@ ANY_CHAR=[^]
 // If you start a verbatim with an open bracket and don't close it, this won't work
 <POSSIBLE_VERBATIM_OPTIONAL_ARG> {
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; yypopState(); yypushState(VERBATIM_OPTIONAL_ARG); return OPEN_BRACKET; }
+    {WHITE_SPACE}       { yypopState(); yypushState(VERBATIM); return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN; }
 }
 
@@ -160,16 +163,16 @@ ANY_CHAR=[^]
 }
 
 <VERBATIM> {
-    // Also catch whitespac, see LatexParserUtil for more info
+    // Also catch whitespace, see LatexParserUtil for more info
     {WHITE_SPACE}       { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
     {END_TOKEN}         { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
-    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
-    [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
-
 }
 
+// Open brace will be remapped to raw text by token remapper, if needed
+// Anything else will tell us that this is not an \end{verbatim}
 <POSSIBLE_VERBATIM_END> {
+    {OPEN_BRACE}        { return OPEN_BRACE; }
     {NORMAL_TEXT_WORD}  {
         // Pop current state
         yypopState();
@@ -180,6 +183,7 @@ ANY_CHAR=[^]
         }
         return RAW_TEXT_TOKEN;
     }
+    {ANY_CHAR}          { yypopState(); return RAW_TEXT_TOKEN; }
 }
 
 
@@ -301,6 +305,8 @@ ANY_CHAR=[^]
 \\\n                    { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
 "*"                     { return STAR; }
+// A separate token, used for example for aligning & in tables
+"&"                     { return AMPERSAND; }
 {OPEN_BRACKET}          { return OPEN_BRACKET; }
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }
 {OPEN_BRACE}            { return OPEN_BRACE; }
