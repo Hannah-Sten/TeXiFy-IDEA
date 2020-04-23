@@ -46,7 +46,7 @@ fun Document.replaceString(range: TextRange, string: String) = replaceString(ran
 /**
  * Get the text in the document at range `offset..1`.
  */
-operator fun Document.get(offset: Int) = getText(TextRange.from(offset, 1))
+operator fun Document.get(offset: Int) = if (offset < textLength) getText(TextRange.from(offset, 1)) else ""
 
 /**
  * Get the text in the given range.

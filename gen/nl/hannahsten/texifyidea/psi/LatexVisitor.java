@@ -5,6 +5,7 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiLanguageInjectionHost;
 
 public class LatexVisitor extends PsiElementVisitor {
 
@@ -33,7 +34,7 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitEnvironment(@NotNull LatexEnvironment o) {
-    visitPsiElement(o);
+    visitPsiLanguageInjectionHost(o);
   }
 
   public void visitEnvironmentContent(@NotNull LatexEnvironmentContent o) {
@@ -82,6 +83,10 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitRequiredParam(@NotNull LatexRequiredParam o) {
     visitPsiElement(o);
+  }
+
+  public void visitPsiLanguageInjectionHost(@NotNull PsiLanguageInjectionHost o) {
+    visitElement(o);
   }
 
   public void visitPsiNameIdentifierOwner(@NotNull PsiNameIdentifierOwner o) {

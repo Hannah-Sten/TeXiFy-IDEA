@@ -11,6 +11,8 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub;
 import nl.hannahsten.texifyidea.psi.*;
+import com.intellij.psi.LiteralTextEscaper;
+import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 
@@ -63,6 +65,22 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
   @Override
   public String getLabel() {
     return LatexPsiImplUtil.getLabel(this);
+  }
+
+  @Override
+  public boolean isValidHost() {
+    return LatexPsiImplUtil.isValidHost(this);
+  }
+
+  @Override
+  public PsiLanguageInjectionHost updateText(@NotNull String text) {
+    return LatexPsiImplUtil.updateText(this, text);
+  }
+
+  @Override
+  @NotNull
+  public LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
+    return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 
 }

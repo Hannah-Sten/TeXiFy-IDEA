@@ -5,11 +5,12 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.get
 
 class InlineMathBackspaceHandler : BackspaceHandlerDelegate() {
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {
-        if (c == '$') {
+        if (c == '$' && file.isLatexFile()) {
             val offset = editor.caretOffset()
             if (file.document()?.get(offset) == "$") {
                 file.document()?.deleteString(offset, offset + 1)
