@@ -9,6 +9,8 @@ When you use the `lstlisting` environment with the `language` option, if the val
 It can still be overridden using a magic comment.
 For more information about this option, see the listings documentation at http://mirrors.ctan.org/macros/latex/contrib/listings/listings.pdf
 
+When you want to edit the code in the listing, it is recommended to use kbd:[Alt + Enter] to open it in a separate window, and edit there.
+
 For more information, see https://www.jetbrains.com/help/idea/using-language-injections.html
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/reading/language-injection.png[]
