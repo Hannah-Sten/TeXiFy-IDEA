@@ -32,7 +32,7 @@ public class LatexParserDefinition implements ParserDefinition {
     ) {
         @Override
         public int getStubVersion() {
-            return 5;
+            return 6;
         }
     };
 
