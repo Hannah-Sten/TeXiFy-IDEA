@@ -16,9 +16,21 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
 
     fun `test unescaped _ character triggers no warning in new command`() {
         myFixture.configureByText(LatexFileType, """
+            \usepackage{xparse}
             \begin{document}
                 \newcommand{\test}{a_2}
                 $\test$
+                \NewDocumentCommand{\test}{}{a_b}
+            \end{document}
+        """.trimIndent())
+        myFixture.checkHighlighting(true, false, false, false)
+    }
+
+    fun `test unescaped _ character triggers no warning in math`() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{document}
+                \[ a_b \]
+                $ a_b $
             \end{document}
         """.trimIndent())
         myFixture.checkHighlighting(true, false, false, false)
@@ -33,19 +45,14 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-    fun `test unescaped _ character triggers no warning in csname environment`() {
-        myFixture.configureByText(LatexFileType, """
-            \begin{document}
-                \csname one_two \endcsname
-            \end{document}
-        """.trimIndent())
-        myFixture.checkHighlighting(true, false, false, false)
-    }
-
-    fun `test unescaped _ character triggers no warning in input environment`() {
+    fun `test unescaped _ character triggers no warning in input-like commands`() {
         myFixture.configureByText(LatexFileType, """
             \begin{document}
                 \input{chapter_1}
+                \ProvidesPackage{my_package}
+                \ProvidesClass{my_class}
+                \documentclass[my_option]{my_class}
+                \usepackage[my_option]{my_package}
             \end{document}
         """.trimIndent())
         myFixture.checkHighlighting(true, false, false, false)
