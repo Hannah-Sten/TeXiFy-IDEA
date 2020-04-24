@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         inspectionDisplayName = "Unescaped & character",
         inspectionId = "LatexEscapeAmpersand",
-        errorMessage = { "Escape character \\ expected" },
+        errorMessage = { """Escape character \ expected""" },
         highlight = ProblemHighlightType.WARNING,
         pattern = Pattern.compile("""(?<!\\)&"""),
         replacement = { _, _ -> """\&""" },
