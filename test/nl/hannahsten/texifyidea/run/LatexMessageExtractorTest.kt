@@ -76,6 +76,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
+    fun testLooseHbox() {
+        val text = """Loose \hbox (badness 0) in paragraph at lines 9--12
+        \OT1/cmr/m/n/10 The badness of this line is 1000.""".trimIndent()
+        val expected = LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12 \\OT1/cmr/m/n/10 The badness of this line is 1000.", currentFile, null, WARNING)
+        testMessageExtractor(text, expected)
+    }
+
     fun testFileAlreadyExists() {
         val text = "LaTeX Warning: File `included.tex' already exists on the system. Not generating it from this source."
         val expected = LatexLogMessage("File `included.tex' already exists on the system. Not generating it from this source.", currentFile, null, WARNING)

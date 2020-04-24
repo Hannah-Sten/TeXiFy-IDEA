@@ -30,7 +30,7 @@ object LatexLogMessageExtractor {
             if(it.regex.any { it.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
         }
 
-        // Handles all other file line errors. Only check the in the first line,
+        // Handles all other file line errors. Only check the first line,
         // because other errors might need the two lines, and would be
         // (partly) duplicated in the log if we allow the fallback to inspect
         // the two lines (or just the first).
@@ -45,7 +45,7 @@ object LatexLogMessageExtractor {
 
         // Check if we have found a warning
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
-            return LatexLogMessage(text.removeAll("LaTeX Warning:").trim(), fileName = currentFile, type = LatexLogMessageType.WARNING)
+            return LatexLogMessage(text.removeAll("LaTeX Warning:").trim().replace("""\s{2,}""".toRegex(), " "), fileName = currentFile, type = LatexLogMessageType.WARNING)
         }
 
         return null
