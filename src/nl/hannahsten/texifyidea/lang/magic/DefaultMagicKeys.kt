@@ -33,6 +33,18 @@ enum class DefaultMagicKeys(
         Indicates that a language should be injected in the following environment.
     """.trimIndent().trim(), MagicCommentScope.ENVIRONMENT.singleScope()),
 
+    BEGIN_PREAMBLE("Begin preamble", """
+        Indicates the start of a (part of) preamble to be included in the preview.
+    """.trimIndent().trim(), MagicCommentScope.FILE.singleScope()),
+
+    END_PREAMBLE("End preamble", """
+        Indicates the end of a (part of) preamble to be included in the preview.
+    """.trimIndent().trim(), MagicCommentScope.FILE.singleScope()),
+
+    PREVIEW_PREAMBLE("Preview preamble", """
+        Indicates that this file has to be included in the preamble of the preview.
+    """.trimIndent().trim(), MagicCommentScope.FILE.singleScope()),
+
     // TeXdoc.
     INFO("Info", """
         A documentation description for a definition.

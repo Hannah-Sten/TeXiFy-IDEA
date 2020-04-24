@@ -192,6 +192,20 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 LatexInspectionIdProvider
         )
 
+        // List containing tikz/math to autocomplete the begin/end/preamble values in magic comments.
+        val beginEndRegex = Regex("""(begin|end|preview) preamble\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(PsiComment::class.java)
+                        .with(object : PatternCondition<PsiElement>("Magic comment preamble pattern") {
+                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
+                                return comment.isMagicComment() && comment.text.contains(beginEndRegex)
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexMagicCommentValueProvider(Magic.Comment.preambleValues)
+        )
+
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
 

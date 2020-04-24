@@ -221,6 +221,10 @@ object Magic {
         val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
     }
 
+    object Comment {
+        val preambleValues = hashSetOf("tikz", "math")
+    }
+
     /**
      * @author Hannah Schellekens
      */

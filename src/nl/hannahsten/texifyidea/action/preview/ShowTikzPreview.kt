@@ -28,22 +28,27 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
     }
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        val element: PsiElement = getElement(file, project, textEditor) ?: return
+        val element: PsiElement = getElement(file, project, textEditor)
+                ?: return
 
         // Make sure we're currently in a tikz environment.
         val tikzEnvironment = findTikzEnvironment(element) ?: return
 
         displayPreview(project, tikzEnvironment, FORM_KEY) {
+            resetPreamble()
+            val psiFile = getPsiFile(file, project) ?: return@displayPreview
+
             preamble += "\\usepackage{tikz, pgfplots, amsmath}\n"
 
             // Add all of the tikz libs included in related packages (via \usetikzlibrary{}) to the produced document.
-            val tikzLibs = PackageUtils.getIncludedTikzLibraries(getPsiFile(file, project) ?: return@displayPreview)
+            val tikzLibs = PackageUtils.getIncludedTikzLibraries(psiFile)
             preamble += "\\usetikzlibrary{${tikzLibs.joinToString()}}\n"
 
             // Add all of the pgfplots libs included in related packages (via \usepgfplotslibrary{}) to the produced document.
-            val pgfLibs = PackageUtils.getIncludedPgfLibraries(getPsiFile(file, project) ?: return@displayPreview)
+            val pgfLibs = PackageUtils.getIncludedPgfLibraries(psiFile)
             preamble += "\\usepgfplotslibrary{${pgfLibs.joinToString()}}\n"
 
+            preamble += findPreamblesFromMagicComments(psiFile, "tikz")
             waitTime = 5L
         }
     }
@@ -53,7 +58,8 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         if (innerElement is LatexEnvironment && innerElement.isTikz()) return innerElement
 
         // Find the first LatexEnvironment parent. If there are none, we aren't in tikz.
-        var currElement = innerElement.parentOfType(LatexEnvironment::class) ?: return null
+        var currElement = innerElement.parentOfType(LatexEnvironment::class)
+                ?: return null
 
         // Continue this process until we find a tikz environment or run out of parent environments.
         while (!currElement.isTikz() && currElement.hasParent(LatexEnvironment::class)) {
@@ -64,5 +70,6 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         return if (currElement.isTikz()) currElement else null
     }
 
-    private fun LatexEnvironment.isTikz() = beginCommand.environmentName()?.toLowerCase() == "tikzpicture"
+    private fun LatexEnvironment.isTikz() = beginCommand.environmentName()
+            ?.toLowerCase() == "tikzpicture"
 }
