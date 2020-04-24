@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
- * Finds all environemnt definition commands within the project.
+ * Finds all environment definition commands within the project.
  *
  * @return The found definition commands.
  */

@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.lang.Described
 interface MagicKey<Key> : Described {
 
     /**
-     * The key used in [MagicComment].
+     * The key used in [MagicComment]. Should not contain spaces.
      */
     val key: Key
 

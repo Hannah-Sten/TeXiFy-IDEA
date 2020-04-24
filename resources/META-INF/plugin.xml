@@ -83,90 +83,12 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.6.9</strong></p>
+        <p><strong>Alpha releases</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.6.9, containing many new features. This update adds go to definition, find usages and refactoring support for labels and citations, refactoring support for environments and files and much more!
+            This is an alpha release, which contains the very latest features of TeXiFy IDEA.
         <p>
         <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
-        </p>
-        <br>
-        <p>
-            <em>Additions</em>
-        </p>
-        <ul>
-            <li> Add go to definition for labels, citations and new commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1191">#1191</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2">#2</a>)</li>
-            <li> Add find usages action for labels, citations and new commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1237">#1237</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1252">#1252</a>)</li>
-            <li> Add support for refactor (rename) of labels, citations, environments and files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1255">#1255</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1264">#1264</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1266">#1266</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1275">#1275</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1284">#1284</a>)</li>
-            <li> Add support for opening source files of installed LaTeX packages and classes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1191">#1191</a>)</li>
-            <li> Add support for opening files from include commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1191">#1191</a>)</li>
-            <li> Many more improvements to file reference resolving. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1281">#1281</a>)</li>
-            <li> Add support for a custom output or auxiliary directory. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1201">#1201</a>)</li>
-            <li> Add support for environment variables in the LaTeX run configuration. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1289">#1289</a>)</li>
-            <li> Add biblatex commands to the autocomplete. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1195">#1195</a>)</li>
-            <li> Add support for labels defined with Verbatim or lstlisting environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1232">#1232</a>)</li>
-            <li> Add support for \graphicspath from the graphicx package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1224">#1224</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1295">#1295</a>)</li>
-            <li> Add support for using \input with absolute paths. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1244">#1244</a>)</li>
-            <li> Add a warning to update Evince when the version is too old for backwards/forward search. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1226">#1226</a>)</li>
-            <li> Add more user configurable live templates. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1203">#1203</a>)</li>
-            <li> Surround text with $..$ or [..] using a shortcut or by typing $ or [. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1207">#1207</a>)</li>
-            <li> Surround text with quotes depending on your Smart quotes setting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1207">#1207</a>)</li>
-            <li> Add inspection which checks that floating environments have a label. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1216">#1216</a>)</li>
-            <li> Add support for the import package to include files. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1281">#1281</a>)</li>
-            <li> Add inspection to check if an included package could not be found in the CTAN list. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1230">#1230</a>)</li>
-            <li> Add inspection to check if a TeX Live package is installed locally, with a quickfix to install it. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1276">#1276</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1291">#1291</a>)</li>
-            <li> Use live templates for inserting braces for all required parameters of commands and environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1258">#1258</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1261">#1261</a>)</li>
-            <li> Make links in \url and \href commands clickable. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1238">#1238</a>)</li>
-            <li> Remove second $ of an empty inline math environment when deleting the first one. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1227">#1227</a>)</li>
-            <li> Add chapterbib support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1223">#1223</a>)</li>
-            <li> Add biblatex entry types to the autocomplete. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1270">#1270</a>)</li>
-            <li> Add support for referencing local pdf files in a 'file' bibtex field. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1300">#1300</a>)</li>
-            <li> Use Ctrl+Enter to split lines in an itemize. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1228">#1228</a>)</li>
-            <li> Disable the formatter on files that only contain a verbatim-like environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1225">#1225</a>)</li>
-            <li> Add inspection plus quickfix to insert formatter magic comments or move verbatim-like environments to a separate file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1225">#1225</a>)</li>
-            <li> Add support for commands with the same name from different packages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1262">#1262</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1285">#1285</a>)</li>
-            <li> Add inspection to check that the label comes after the caption. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1235">#1235</a>)</li>
-            <li> Other performance improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1277">#1277</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li> If a file has a run configuration associated, treat it as a root file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1198">#1198</a>
-            , <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1298">#1298</a>
-            )</li>
-            <li> Improve performance of line markers. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1200">#1200</a>
-            )</li>
-            <li> Ignore \ifoot for \if-like commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1220">#1220</a>
-            )</li>
-            <li> Also execute Grazie grammar checking at the beginning of sentences. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1196">#1196</a>
-            )</li>
-            <li> Always show LaTeX Tools menu to avoid performance problems. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1257">#1257</a>
-            )</li>
-            <li> Improve insertion of missing usepackage command. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1286">#1286</a>
-            )</li>
-        </ul>
-        <br>
-        <p>
-            <em>Bug fixes</em>
-        </p>
-        <ul>
-            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1211">#1211</a>
-, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1269">#1269</a>
-, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1292">#1292</a>
-, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1306">#1306</a>
-, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1307">#1307</a>
-)</li>
-        </ul>
-        <br>
-        <p>
-            Thanks to <a href="https://github.com/niknetniko">Niko Strijbol</a>, <a href="https://github.com/fberlakovich">Felix Berlakovich</a> and <a href="https://github.com/Lukas-Heiligenbrunner">@Lukas-Heiligenbrunner</a> for contributing to this release.
-        </p>
-        <br>
-        <p>
-            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with merged PRs.
         </p>
     ]]></change-notes>
 
@@ -427,6 +349,8 @@
         <lang.commenter language="Bibtex" implementationClass="nl.hannahsten.texifyidea.editor.LatexCommenter"/>
         <lang.braceMatcher language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
         <lang.braceMatcher language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
+
+        <languageInjector implementation="nl.hannahsten.texifyidea.psi.LatexLanguageInjector" />
 
         <!-- Structure view -->
         <lang.psiStructureViewFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.structure.latex.LatexStructureViewFactory"/>
@@ -707,6 +631,11 @@
                          groupName="LaTeX" displayName="Unescaped &amp; character"
                          enabledByDefault="true"/>
 
+        <!-- Element manipulator -->
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
+                                 implementationClass="nl.hannahsten.texifyidea.psi.LatexEnvironmentManipulator"/>
+
+
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
@@ -780,6 +709,12 @@
             <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLanguageInjectionIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLanguageInjection</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>
