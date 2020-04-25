@@ -174,7 +174,11 @@ ANY_CHAR=[^]
     // Also catch whitespace, see LatexParserUtil for more info
     {WHITE_SPACE}       { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
+    // We have to return an END_TOKEN, in case this really is the verbatim end command (we cannot backtrack)
+    // The token remapper will remap to raw text
+    // Unfortunately, the brace matcher uses lexer tokens, so we will assume (regarding brace matching) that whenever there is an \end in a verbatim environment, there also is a \begin, but for that to work we also need to return \begin tokens
     {END_TOKEN}         { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
+    {BEGIN_TOKEN}       { return BEGIN_TOKEN; }
 }
 
 // Open brace will be remapped to raw text by token remapper, if needed
