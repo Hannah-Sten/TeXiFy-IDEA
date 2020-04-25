@@ -65,6 +65,9 @@ END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 COMMENT_TOKEN=%[^\r\n]*
+MAGIC_COMMENT_LEXER_SWITCH="%" {WHITE_SPACE}? "!" {WHITE_SPACE}? (TeX)? {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
+LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off"
+LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on"
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&]+
 // Separate from normal text, e.g. because they can be \verb delimiters
 NORMAL_TEXT_CHAR=[|!\"=&]
@@ -79,6 +82,8 @@ ANY_CHAR=[^]
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
+
+%xstates OFF
 
 %%
 {WHITE_SPACE}           { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -186,6 +191,11 @@ ANY_CHAR=[^]
     {ANY_CHAR}          { yypopState(); return RAW_TEXT_TOKEN; }
 }
 
+// Switched off by a magic comment %! parser = off
+<OFF> {
+    {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
+    {LEXER_ON_TOKEN}    { yypopState(); return COMMENT_TOKEN; }
+}
 
 /*
  * \newenvironment definitions
@@ -319,6 +329,7 @@ ANY_CHAR=[^]
 {END_TOKEN}             { return END_TOKEN; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
+{LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
 {NORMAL_TEXT_CHAR}      { return NORMAL_TEXT_CHAR; }
