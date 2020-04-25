@@ -64,10 +64,13 @@ BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
+
+// Comments
 COMMENT_TOKEN=%[^\r\n]*
 MAGIC_COMMENT_LEXER_SWITCH="%" {WHITE_SPACE}? "!" {WHITE_SPACE}? (TeX)? {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
-LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off"
-LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on"
+LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
+LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
+
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&]+
 // Separate from normal text, e.g. because they can be \verb delimiters
 NORMAL_TEXT_CHAR=[|!\"=&]
