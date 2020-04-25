@@ -131,7 +131,7 @@ class LatexOutputListener(
      * next line.
      */
     private fun collectMessageLine(newText: String) {
-        currentMessageText += newText
+        if (currentMessageText?.endsWith(newText) == false) currentMessageText += newText
 
         if (newText.length < lineWidth) {
             isCollectingMessage = false
