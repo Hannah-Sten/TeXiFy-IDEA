@@ -1,0 +1,14 @@
+_Since b0.6.10_
+
+== Language injection
+
+See link:Language-injection[Language injection].
+
+== Custom preamble for math and tikz preview
+
+See link:Preview[Preview].
+
+== Switching parser off and on
+
+If you want to temporarily switch off the parser for a part of your LaTeX, for example because there is a parse error which is causing other problems in your files, you can use the magic comments `%! parser = off` and `%! parser = on` to avoid parsing the text between these two comments.
+The syntax `% !TeX parser = off` is also supported.
