@@ -17,7 +17,7 @@ class LatexFileStack(vararg val file: String, var nonFileParCount: Int = 0) : Ar
      * (It works for rubber: https://github.com/tsgates/die/blob/master/bin/parse-latex-log.py)
      */
     fun update(line: String): LatexFileStack {
-        val fileRegex = Regex("""\((?<file>"?\.*(([/\\])*[\w-\d. :])+\.(\w{3})"?)|\)""")
+        val fileRegex = Regex("""\((?<file>"?\.*(([/\\])*[\w-\d. :])+\.(\w{2,10})"?)|\)""")
 
         var result = fileRegex.find(line)
         var linePart = line

@@ -75,4 +75,11 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         val newStack = stack.update(line)
         assertEquals("./main.tex", newStack.peek())
     }
+
+    fun testFileExtensions() {
+        val line ="""(./src/_minted-thesis/F21236103977357A063E148CA83348D21F2D8067E0A256B6FCF34360A44AFD35.pygtex"""
+        val stack = LatexFileStack("./lipsum.tex", "./main.tex")
+        val newStack = stack.update(line)
+        Assert.assertEquals("""./src/_minted-thesis/F21236103977357A063E148CA83348D21F2D8067E0A256B6FCF34360A44AFD35.pygtex""", newStack.peek())
+    }
 }
