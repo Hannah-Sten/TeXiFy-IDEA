@@ -70,6 +70,10 @@ NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&]+
 NORMAL_TEXT_CHAR=[|!\"=&]
 ANY_CHAR=[^]
 
+// Algorithmicx
+BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | "\\Loop" | "\\Function" | "\\Procedure"
+END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
+
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
@@ -313,6 +317,9 @@ ANY_CHAR=[^]
 {CLOSE_BRACE}           { return CLOSE_BRACE; }
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
+
+{BEGIN_PSEUDOCODE_BLOCK} { return BEGIN_PSEUDOCODE_BLOCK; }
+{END_PSEUDOCODE_BLOCK}  { return END_PSEUDOCODE_BLOCK; }
 
 {WHITE_SPACE}           { return WHITE_SPACE; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }

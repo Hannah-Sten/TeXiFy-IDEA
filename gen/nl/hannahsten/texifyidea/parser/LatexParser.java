@@ -318,7 +318,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
+  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
@@ -326,6 +326,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     r = raw_text(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
+    if (!r) r = pseudocode_block(b, l + 1);
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
     if (!r) r = commands(b, l + 1);
@@ -422,6 +423,52 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = required_param(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  /* ********************************************************** */
+  // BEGIN_PSEUDOCODE_BLOCK parameter* environment_content? END_PSEUDOCODE_BLOCK parameter*
+  public static boolean pseudocode_block(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pseudocode_block")) return false;
+    if (!nextTokenIs(b, BEGIN_PSEUDOCODE_BLOCK)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, PSEUDOCODE_BLOCK, null);
+    r = consumeToken(b, BEGIN_PSEUDOCODE_BLOCK);
+    r = r && pseudocode_block_1(b, l + 1);
+    r = r && pseudocode_block_2(b, l + 1);
+    r = r && consumeToken(b, END_PSEUDOCODE_BLOCK);
+    p = r; // pin = 4
+    r = r && pseudocode_block_4(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // parameter*
+  private static boolean pseudocode_block_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pseudocode_block_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!parameter(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "pseudocode_block_1", c)) break;
+    }
+    return true;
+  }
+
+  // environment_content?
+  private static boolean pseudocode_block_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pseudocode_block_2")) return false;
+    environment_content(b, l + 1);
+    return true;
+  }
+
+  // parameter*
+  private static boolean pseudocode_block_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pseudocode_block_4")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!parameter(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "pseudocode_block_4", c)) break;
+    }
+    return true;
   }
 
   /* ********************************************************** */

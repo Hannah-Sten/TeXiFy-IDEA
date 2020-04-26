@@ -27,10 +27,12 @@ public interface LatexTypes {
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
   IElementType OPTIONAL_PARAM_CONTENT = new LatexElementType("OPTIONAL_PARAM_CONTENT");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
+  IElementType PSEUDOCODE_BLOCK = new LatexElementType("PSEUDOCODE_BLOCK");
   IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
   IElementType AMPERSAND = new LatexTokenType("&");
+  IElementType BEGIN_PSEUDOCODE_BLOCK = new LatexTokenType("BEGIN_PSEUDOCODE_BLOCK");
   IElementType BEGIN_TOKEN = new LatexTokenType("\\begin");
   IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
   IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");
@@ -40,6 +42,7 @@ public interface LatexTypes {
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
   IElementType DISPLAY_MATH_END = new LatexTokenType("\\]");
   IElementType DISPLAY_MATH_START = new LatexTokenType("\\[");
+  IElementType END_PSEUDOCODE_BLOCK = new LatexTokenType("END_PSEUDOCODE_BLOCK");
   IElementType END_TOKEN = new LatexTokenType("\\end");
   IElementType INLINE_MATH_END = new LatexTokenType("INLINE_MATH_END");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
@@ -106,6 +109,9 @@ public interface LatexTypes {
       }
       else if (type == PARAMETER) {
         return new LatexParameterImpl(node);
+      }
+      else if (type == PSEUDOCODE_BLOCK) {
+        return new LatexPseudocodeBlockImpl(node);
       }
       else if (type == RAW_TEXT) {
         return new LatexRawTextImpl(node);

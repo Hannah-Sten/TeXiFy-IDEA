@@ -41,6 +41,8 @@
         // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
         COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
         RAW_TEXT_TOKEN='RAW_TEXT'
+        BEGIN_PSEUDOCODE_BLOCK='BEGIN_PSEUDOCODE_BLOCK'
+        END_PSEUDOCODE_BLOCK='END_PSEUDOCODE_BLOCK'
     ]
 }
 
@@ -50,7 +52,7 @@ latexFile ::= content*
 
 content ::= no_math_content
 
-no_math_content ::= raw_text | comment | environment | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
+no_math_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
 normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
     methods=[getReferences getReference getNameIdentifier getName setName]
@@ -65,6 +67,8 @@ environment ::= begin_command environment_content? end_command {
 
 environment_content ::= <<injection_env_content raw_text>> | content+
 
+pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* environment_content? END_PSEUDOCODE_BLOCK parameter* { pin=4 }
+
 commands ::= COMMAND_TOKEN STAR? parameter* {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
@@ -72,6 +76,7 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
     methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName]
 }
+
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
