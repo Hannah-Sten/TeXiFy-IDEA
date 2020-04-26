@@ -112,7 +112,7 @@ class LatexOutputListener(
                 // Keep on collecting output for this message
                 currentMessageText = message
                 isCollectingMessage = true
-                collectMessageLine(newText)
+                collectMessageLine(newText, logMessage)
             }
             else {
                 val file = findProjectFileRelativeToMain(fileName)
@@ -130,12 +130,15 @@ class LatexOutputListener(
      * Add the current/new message to the log if it does not continue on the
      * next line.
      */
-    private fun collectMessageLine(newText: String) {
+    private fun collectMessageLine(newText: String, logMessage: LatexLogMessage? = null) {
         if (currentMessageText?.endsWith(newText) == false) currentMessageText += newText
 
         if (newText.length < lineWidth) {
             isCollectingMessage = false
-            addMessageToLog(currentMessageText!!)
+            if (logMessage != null) {
+                addMessageToLog(currentMessageText!!, line = logMessage.line ?: 0, type = logMessage.type)
+            }
+            else addMessageToLog(currentMessageText!!)
         }
     }
 
