@@ -27,9 +27,9 @@ public class LatexPseudocodeBlockImpl extends ASTWrapperPsiElement implements La
   }
 
   @Override
-  @Nullable
-  public LatexEnvironmentContent getEnvironmentContent() {
-    return PsiTreeUtil.getChildOfType(this, LatexEnvironmentContent.class);
+  @NotNull
+  public List<LatexEnvironmentContent> getEnvironmentContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexEnvironmentContent.class);
   }
 
   @Override

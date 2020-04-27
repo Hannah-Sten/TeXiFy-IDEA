@@ -47,6 +47,18 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             before(ENVIRONMENT_CONTENT).lineBreakInCode()
         }
 
+        // Newline before certain algorithm pseudocode commands
+        custom {
+            customRule { parent, _, right ->
+                // Lowercase to also catch \STATE from algorithmic
+                if (right.node?.psi?.text?.toLowerCase() in setOf("\\state", "\\statex") && parent.node?.psi?.inDirectEnvironment(Magic.Environment.algorithmEnvironments) == true) {
+                    return@customRule Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+                }
+
+                return@customRule null
+            }
+        }
+
         custom {
             // Insert a new line between the end of environment content and the end command.
             inPosition(parent = ENVIRONMENT, left = ENVIRONMENT_CONTENT, right = END_COMMAND).spacing(

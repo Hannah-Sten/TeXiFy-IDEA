@@ -36,6 +36,29 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testAlgorithmicx() {
+        """
+            \begin{algorithm} \begin{algorithmic} \State begin 
+            \If {$ i\geq maxval${'$'}} \State $ i\gets 0${'$'} 
+            \Else \If {$ i+k\leq maxval${'$'}} \State $ i\gets i+k${'$'} 
+            \EndIf 
+            \EndIf \end{algorithmic} \caption{Insertion sort}\label{alg:algorithm2} \end{algorithm}
+        """.trimIndent() `should be reformatted to` """
+            \begin{algorithm}
+                \begin{algorithmic}
+                    \State begin
+                    \If {$ i\geq maxval$}
+                        \State $ i\gets 0$
+                    \Else
+                        \If {$ i+k\leq maxval$}
+                            \State $ i\gets i+k$
+                        \EndIf
+                    \EndIf
+                \end{algorithmic} \caption{Insertion sort}\label{alg:algorithm2}
+            \end{algorithm}
+        """.trimIndent()
+    }
+
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
         writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }

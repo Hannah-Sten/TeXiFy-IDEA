@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement;
 
 public interface LatexPseudocodeBlock extends PsiElement {
 
-  @Nullable
-  LatexEnvironmentContent getEnvironmentContent();
+  @NotNull
+  List<LatexEnvironmentContent> getEnvironmentContentList();
 
   @NotNull
   List<LatexParameter> getParameterList();

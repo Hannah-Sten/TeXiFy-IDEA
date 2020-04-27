@@ -219,6 +219,8 @@ object Magic {
 
         @JvmField
         val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
+
+        val algorithmEnvironments = setOf("algorithmic")
     }
 
     object Comment {

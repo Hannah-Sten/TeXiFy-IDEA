@@ -71,7 +71,9 @@ NORMAL_TEXT_CHAR=[|!\"=&]
 ANY_CHAR=[^]
 
 // Algorithmicx
+// Currently we just use the begin..end structure for formatting, so there is no need to disinguish between separate constructs
 BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | "\\Loop" | "\\Function" | "\\Procedure"
+MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
@@ -319,6 +321,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
 
 {BEGIN_PSEUDOCODE_BLOCK} { return BEGIN_PSEUDOCODE_BLOCK; }
+{MIDDLE_PSEUDOCODE_BLOCK} { return MIDDLE_PSEUDOCODE_BLOCK; }
 {END_PSEUDOCODE_BLOCK}  { return END_PSEUDOCODE_BLOCK; }
 
 {WHITE_SPACE}           { return WHITE_SPACE; }
