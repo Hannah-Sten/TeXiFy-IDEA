@@ -12,6 +12,7 @@ open class Package @JvmOverloads constructor(
 
         // Predefined packages.
         @JvmField val DEFAULT = Package("")
+        @JvmField val ALGPSEUDOCODE = Package("algpseudocode")
         @JvmField val AMSFONTS = Package("amsfonts")
         @JvmField val AMSMATH = Package("amsmath")
         @JvmField val AMSSYMB = Package("amssymb")

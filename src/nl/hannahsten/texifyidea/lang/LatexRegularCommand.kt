@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Argument.Type
+import nl.hannahsten.texifyidea.lang.Package.Companion.ALGPSEUDOCODE
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.Package.Companion.CLEVEREF
@@ -480,7 +481,28 @@ enum class LatexRegularCommand(
     PNOTECITE_CAPITALIZED("Pnotecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     FNOTECITE("fnotecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     PARENTTEXT("parenttext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
-    BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX);
+    BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
+
+    /**
+     * Algorithmicx
+     */
+
+    FOR("For", "condition".asRequired(), dependency= ALGPSEUDOCODE),
+    FORALL("ForAll", "condition".asRequired(), dependency= ALGPSEUDOCODE),
+    ENDFOR("EndFor", dependency= ALGPSEUDOCODE),
+    IF("If", "condition".asRequired(), dependency= ALGPSEUDOCODE),
+    ELSIF("ElsIf", "condition".asRequired(), dependency= ALGPSEUDOCODE),
+    ENDIF("EndIf", dependency= ALGPSEUDOCODE),
+    WHILE("While", "condition".asRequired(), dependency= ALGPSEUDOCODE),
+    ENDWHILE("EndWhile", dependency= ALGPSEUDOCODE),
+    REPEAT("Repeat", dependency= ALGPSEUDOCODE),
+    UNTIL("Until", "condition".asRequired(), dependency= ALGPSEUDOCODE),
+    LOOP("Loop", dependency= ALGPSEUDOCODE),
+    ENDLOOP("EndLoop", dependency= ALGPSEUDOCODE),
+    FUNCTION("Function", "name".asRequired(), "params".asRequired(), dependency= ALGPSEUDOCODE),
+    ENDFUNCTION("EndFunction", dependency= ALGPSEUDOCODE),
+    PROCEDURE("Procedure", "name".asRequired(), "params".asRequired(), dependency= ALGPSEUDOCODE),
+    ENDPROCEDURE("EndProcedure", dependency= ALGPSEUDOCODE);
 
     companion object {
 
