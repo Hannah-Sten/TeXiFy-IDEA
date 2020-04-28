@@ -42,6 +42,7 @@ class LatexBlock(
 
     override fun getIndent(): Indent? {
         if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT
+                || myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT
                 // Fix for leading comments inside an environment, because
                 // somehow they are not placed inside environments.
                 || myNode.elementType === LatexTypes.COMMENT_TOKEN

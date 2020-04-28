@@ -171,10 +171,10 @@ fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
             .map {
                 it.contentList.map { c: LatexContent ->
                     val content = c.noMathContent
-                    if (content.commands != null && content.normalText == null) {
+                    if (content?.commands != null && content.normalText == null) {
                         content.commands!!.commandToken.text
                     }
-                    else if (content.normalText != null) {
+                    else if (content?.normalText != null) {
                         content.normalText!!.text
                     }
                     else {

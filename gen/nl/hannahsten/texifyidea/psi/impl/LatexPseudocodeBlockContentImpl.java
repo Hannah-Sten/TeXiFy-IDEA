@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexContentImpl extends ASTWrapperPsiElement implements LatexContent {
+public class LatexPseudocodeBlockContentImpl extends ASTWrapperPsiElement implements LatexPseudocodeBlockContent {
 
-  public LatexContentImpl(@NotNull ASTNode node) {
+  public LatexPseudocodeBlockContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitContent(this);
+    visitor.visitPseudocodeBlockContent(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,9 +27,9 @@ public class LatexContentImpl extends ASTWrapperPsiElement implements LatexConte
   }
 
   @Override
-  @Nullable
-  public LatexNoMathContent getNoMathContent() {
-    return PsiTreeUtil.getChildOfType(this, LatexNoMathContent.class);
+  @NotNull
+  public List<LatexNoMathContent> getNoMathContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexNoMathContent.class);
   }
 
 }

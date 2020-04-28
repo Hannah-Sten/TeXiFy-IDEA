@@ -79,4 +79,13 @@ class LatexParserTest : BasePlatformTestCase() {
         """.trimIndent())
         myFixture.checkHighlighting()
     }
+
+    fun testBeginEndPseudoCodeBlock() {
+        // A single begin or end pseudocode block should not be a parse error
+        // because it might not be a pseudocode command at all (but the lexer doesn't know)
+        myFixture.configureByText(LatexFileType, """
+            I write \State \Until I \Repeat \EndProcedure.
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
 }

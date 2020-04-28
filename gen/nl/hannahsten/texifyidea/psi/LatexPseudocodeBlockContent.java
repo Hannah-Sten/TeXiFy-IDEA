@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexPseudocodeBlock extends PsiElement {
+public interface LatexPseudocodeBlockContent extends PsiElement {
 
   @NotNull
-  List<LatexParameter> getParameterList();
-
-  @NotNull
-  List<LatexPseudocodeBlockContent> getPseudocodeBlockContentList();
+  List<LatexNoMathContent> getNoMathContentList();
 
 }

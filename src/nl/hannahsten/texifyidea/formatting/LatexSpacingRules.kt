@@ -45,6 +45,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         simple {
             between(NORMAL_TEXT_WORD, NORMAL_TEXT_WORD).spaces(1)
             before(ENVIRONMENT_CONTENT).lineBreakInCode()
+            around(PSEUDOCODE_BLOCK_CONTENT).lineBreakInCode()
         }
 
         // Newline before certain algorithm pseudocode commands

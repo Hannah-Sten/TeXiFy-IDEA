@@ -81,6 +81,10 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitPseudocodeBlockContent(@NotNull LatexPseudocodeBlockContent o) {
+    visitPsiElement(o);
+  }
+
   public void visitRawText(@NotNull LatexRawText o) {
     visitPsiElement(o);
   }

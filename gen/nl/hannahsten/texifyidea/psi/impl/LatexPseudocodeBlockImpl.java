@@ -28,14 +28,14 @@ public class LatexPseudocodeBlockImpl extends ASTWrapperPsiElement implements La
 
   @Override
   @NotNull
-  public List<LatexEnvironmentContent> getEnvironmentContentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexEnvironmentContent.class);
+  public List<LatexParameter> getParameterList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexParameter.class);
   }
 
   @Override
   @NotNull
-  public List<LatexParameter> getParameterList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexParameter.class);
+  public List<LatexPseudocodeBlockContent> getPseudocodeBlockContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexPseudocodeBlockContent.class);
   }
 
 }

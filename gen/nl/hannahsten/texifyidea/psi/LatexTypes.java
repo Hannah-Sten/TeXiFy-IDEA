@@ -28,6 +28,7 @@ public interface LatexTypes {
   IElementType OPTIONAL_PARAM_CONTENT = new LatexElementType("OPTIONAL_PARAM_CONTENT");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
   IElementType PSEUDOCODE_BLOCK = new LatexElementType("PSEUDOCODE_BLOCK");
+  IElementType PSEUDOCODE_BLOCK_CONTENT = new LatexElementType("PSEUDOCODE_BLOCK_CONTENT");
   IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
@@ -113,6 +114,9 @@ public interface LatexTypes {
       }
       else if (type == PSEUDOCODE_BLOCK) {
         return new LatexPseudocodeBlockImpl(node);
+      }
+      else if (type == PSEUDOCODE_BLOCK_CONTENT) {
+        return new LatexPseudocodeBlockContentImpl(node);
       }
       else if (type == RAW_TEXT) {
         return new LatexRawTextImpl(node);
