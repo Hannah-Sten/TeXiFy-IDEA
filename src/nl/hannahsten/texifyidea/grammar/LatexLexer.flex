@@ -64,7 +64,13 @@ BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
+
+// Comments
 COMMENT_TOKEN=%[^\r\n]*
+MAGIC_COMMENT_LEXER_SWITCH="%" {WHITE_SPACE}? "!" {WHITE_SPACE}? (TeX)? {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
+LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
+LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
+
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&]+
 // Separate from normal text, e.g. because they can be \verb delimiters
 NORMAL_TEXT_CHAR=[|!\"=&]
@@ -85,6 +91,8 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
+
+%xstates OFF
 
 %%
 {WHITE_SPACE}           { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -172,7 +180,11 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     // Also catch whitespace, see LatexParserUtil for more info
     {WHITE_SPACE}       { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
+    // We have to return an END_TOKEN, in case this really is the verbatim end command (we cannot backtrack)
+    // The token remapper will remap to raw text
+    // Unfortunately, the brace matcher uses lexer tokens, so we will assume (regarding brace matching) that whenever there is an \end in a verbatim environment, there also is a \begin, but for that to work we also need to return \begin tokens
     {END_TOKEN}         { yypushState(POSSIBLE_VERBATIM_END); return END_TOKEN; }
+    {BEGIN_TOKEN}       { return BEGIN_TOKEN; }
 }
 
 // Open brace will be remapped to raw text by token remapper, if needed
@@ -192,6 +204,11 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {ANY_CHAR}          { yypopState(); return RAW_TEXT_TOKEN; }
 }
 
+// Switched off by a magic comment %! parser = off
+<OFF> {
+    {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
+    {LEXER_ON_TOKEN}    { yypopState(); return COMMENT_TOKEN; }
+}
 
 /*
  * \newenvironment definitions
@@ -329,6 +346,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {END_TOKEN}             { return END_TOKEN; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
+{LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
 {NORMAL_TEXT_CHAR}      { return NORMAL_TEXT_CHAR; }

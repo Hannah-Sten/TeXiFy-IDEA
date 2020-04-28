@@ -70,4 +70,13 @@ class LatexParserTest : BasePlatformTestCase() {
         """.trimIndent())
         myFixture.checkHighlighting()
     }
+
+    fun testLexerOffOn() {
+        myFixture.configureByText(LatexFileType, """
+            %! parser = off bla
+                \end{verbatim} \verb| 
+            % !TeX parser = on comment
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
 }
