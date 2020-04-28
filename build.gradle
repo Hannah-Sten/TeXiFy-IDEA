@@ -19,7 +19,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.69'
+version '0.7-alpha.70'
 
 repositories {
     mavenCentral()
