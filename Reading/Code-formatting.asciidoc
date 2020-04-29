@@ -102,6 +102,7 @@ will be reformatted to
 ----
 
 The following commands are supported.
+
 * `\If{<condition>} <text> (\ElsIf{<condition>} <text>)* (\Else <text>)? \EndIf`
 * `\For{<condition>} <text> \EndFor`
 * `\ForAll{<condition>} <text> \EndFor`
