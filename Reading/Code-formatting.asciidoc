@@ -56,3 +56,57 @@ When formatting the contents of a table, it ignores all table lines that
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Reading/figures/table-formatter-multiline.gif[table-formatter-multiline]
 
+== Algorithm pseudocode
+
+When writing pseudocode using the `algorithmicx` environment and the `algpseudocode` set of commands, they will be formatted properly.
+
+For example,
+[source,latex]
+----
+\begin{algorithm}
+\begin{algorithmic}
+\State begin
+\If {$i\geq maxval$}
+\State $i\gets 0$
+\Else
+\If {$i+k\leq maxval$}
+\State $i\gets i+k$
+\EndIf
+\EndIf
+\end{algorithmic}
+\caption{Insertion sort}
+\label{alg:insertion-sort}
+\end{algorithm}
+----
+
+will be reformatted to
+
+[source,latex]
+----
+\begin{algorithm}
+    \begin{algorithmic}
+        \State begin
+        \If {$i\geq maxval$}
+            \State $i\gets 0$
+        \Else
+            \If {$i+k\leq maxval$}
+                \State $i\gets i+k$
+            \EndIf
+        \EndIf
+    \end{algorithmic}
+    \caption{Insertion sort}
+    \label{alg:insertion-sort}
+\end{algorithm}
+----
+
+The following commands are supported.
+* `\If{<condition>} <text> (\ElsIf{<condition>} <text>)* (\Else <text>)? \EndIf`
+* `\For{<condition>} <text> \EndFor`
+* `\ForAll{<condition>} <text> \EndFor`
+* `\While{<condition>} <text> \EndWhile`
+* `\Repeat <text> \Until{<condition>}`
+* `\Loop <text> \EndLoop`
+* `\Function{<name>}{<params>} <body> \EndFunction`
+* `\Procedure{<name>}{<params>} <body> \EndProcedure`
+
+Commands defined using `\algblock` or `\algloop` are currently not recognized by the formatter.
