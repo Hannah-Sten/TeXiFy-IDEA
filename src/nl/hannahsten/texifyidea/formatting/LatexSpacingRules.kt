@@ -45,7 +45,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         simple {
             between(NORMAL_TEXT_WORD, NORMAL_TEXT_WORD).spaces(1)
             before(ENVIRONMENT_CONTENT).lineBreakInCode()
-            around(PSEUDOCODE_BLOCK_CONTENT).lineBreakInCode()
+            before(PSEUDOCODE_BLOCK_CONTENT).lineBreakInCode()
         }
 
         // Newline before certain algorithm pseudocode commands
@@ -63,6 +63,9 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             // Insert a new line between the end of environment content and the end command.
             inPosition(parent = ENVIRONMENT, left = ENVIRONMENT_CONTENT, right = END_COMMAND).spacing(
+                    Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+            )
+            inPosition(parent = PSEUDOCODE_BLOCK, left = PSEUDOCODE_BLOCK_CONTENT, right = END_PSEUDOCODE_BLOCK).spacing(
                     Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
             )
         }
