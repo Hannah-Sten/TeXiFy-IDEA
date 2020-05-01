@@ -62,7 +62,8 @@ SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
+BACKSLASH="\\"
+COMMAND_TOKEN=([a-zA-Z@]+|.|\r)
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 
 // Comments
@@ -86,7 +87,7 @@ ANY_CHAR=[^]
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
 
-%xstates OFF
+%xstates OFF POSSIBLE_COMMAND_TOKEN
 
 %%
 {WHITE_SPACE}           { return com.intellij.psi.TokenType.WHITE_SPACE; }
@@ -311,6 +312,22 @@ ANY_CHAR=[^]
  * Other elements
  */
 
+// This is the story why we don't lex \command as one token, but as two.
+// The story begins with the desire to not stop at the backslash when using NextPrevWordHandler,
+// for example when using ctrl + del in <caret>\command, it should delete the complete command.
+// Fortunately, there is a WordBoundaryFilter extension point, which allows us to not stop between
+// tokens of a certain type.
+// Unfortunately, the implementation in EditorActionUtil#isWordBoundary will actually stop after any
+// punctuation character, so when going to the right from <caret>\command, it would encounter a \ and
+// thus stop immediately in the middle of a token, without a possibility to override this behaviour.
+// Therefore, the only way to avoid stopping there, is to make sure that \<carent>command is between two
+// tokens, so the WordBoundaryFilter will be called.
+<POSSIBLE_COMMAND_TOKEN> {
+    {COMMAND_TOKEN}         { yypopState(); return COMMAND_TOKEN; }
+    // If no command token comes after a backslash, probably something went wrong
+    {ANY_CHAR}              { yypopState(); return NORMAL_TEXT_CHAR; }
+}
+
 // The array package provides <{...} and >{...} preamble options for tables
 // which are often used with $, in which case the $ is not an inline_math_start (because there's only one $ in the group, which would be a parse errror)
 // It has to be prefixed by . because any other letter before the < or > may be seen as a normal text word together with the < or >, so we need to catch them together
@@ -330,11 +347,11 @@ ANY_CHAR=[^]
 {CLOSE_BRACE}           { return CLOSE_BRACE; }
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
+{BACKSLASH}             { yypushState(POSSIBLE_COMMAND_TOKEN); return BACKSLASH; }
 
 {WHITE_SPACE}           { return WHITE_SPACE; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
-{COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
 {LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }

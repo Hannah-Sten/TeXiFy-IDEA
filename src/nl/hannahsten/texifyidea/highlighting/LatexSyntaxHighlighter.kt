@@ -74,6 +74,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val MATH_NESTED_TEXT = createKey("LATEX_MATH_NESTED_TEXT", DefaultLanguageHighlighterColors.IDENTIFIER)
 
         private val COMMAND_TOKENS = TokenSet.create(
+                LatexTypes.BACKSLASH,
                 LatexTypes.COMMAND_TOKEN,
                 LatexTypes.COMMAND_IFNEXTCHAR,
                 LatexTypes.BEGIN_TOKEN,

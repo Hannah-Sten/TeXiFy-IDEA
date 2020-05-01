@@ -69,34 +69,34 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COMMAND_TOKEN STAR? parameter*
+  // BACKSLASH COMMAND_TOKEN STAR? parameter*
   public static boolean commands(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "commands")) return false;
-    if (!nextTokenIs(b, COMMAND_TOKEN)) return false;
+    if (!nextTokenIs(b, BACKSLASH)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, COMMANDS, null);
-    r = consumeToken(b, COMMAND_TOKEN);
-    p = r; // pin = 1
-    r = r && report_error_(b, commands_1(b, l + 1));
-    r = p && commands_2(b, l + 1) && r;
+    r = consumeTokens(b, 2, BACKSLASH, COMMAND_TOKEN);
+    p = r; // pin = 2
+    r = r && report_error_(b, commands_2(b, l + 1));
+    r = p && commands_3(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
   // STAR?
-  private static boolean commands_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "commands_1")) return false;
+  private static boolean commands_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "commands_2")) return false;
     consumeToken(b, STAR);
     return true;
   }
 
   // parameter*
-  private static boolean commands_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "commands_2")) return false;
+  private static boolean commands_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "commands_3")) return false;
     while (true) {
       int c = current_position_(b);
       if (!parameter(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "commands_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "commands_3", c)) break;
     }
     return true;
   }

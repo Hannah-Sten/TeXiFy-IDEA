@@ -32,7 +32,8 @@
         INLINE_MATH_END='regexp:($|\\\))'
         BEGIN_TOKEN='\begin'
         END_TOKEN='\end'
-        COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\r)'
+        BACKSLASH='\\'
+        COMMAND_TOKEN='regexp:([a-zA-Z@]+|.|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
         AMPERSAND='&'
@@ -65,8 +66,8 @@ environment ::= begin_command environment_content? end_command {
 
 environment_content ::= <<injection_env_content raw_text>> | content+
 
-commands ::= COMMAND_TOKEN STAR? parameter* {
-    pin=1
+commands ::= BACKSLASH COMMAND_TOKEN STAR? parameter* {
+    pin=2
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
