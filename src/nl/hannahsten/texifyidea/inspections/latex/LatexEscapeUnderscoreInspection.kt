@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.isComment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -15,7 +16,7 @@ import java.util.regex.Pattern
  */
 class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
         inspectionDisplayName = "Unescaped _ character",
-        inspectionId = "LatexEscapeUnderscore",
+        inspectionId = "EscapeUnderscore",
         errorMessage = { """Escape character \ expected""" },
         highlight = ProblemHighlightType.WARNING,
         pattern = Pattern.compile("""(?<!\\)_"""),
@@ -29,6 +30,7 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
 
     private fun PsiElement.isUnderscoreAllowed(): Boolean {
         if (this.isComment()) return true
+        if (this.inMathContext()) return true
         if (this.firstParentOfType(LatexCommands::class)?.name in commandsAllowingUnderscore) return true
         return false
     }
@@ -39,6 +41,8 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
                 Magic.Command.reference +
                 Magic.Command.absoluteImportCommands +
                 Magic.Command.relativeImportCommands +
-                setOf("\\input", "\\newcommand", "\\bibliography")
+                Magic.Command.classDefinitions +
+                Magic.Command.packageDefinitions +
+                setOf("\\input", "\\newcommand", "\\bibliography", "\\documentclass", "\\usepackage")
     }
 }
