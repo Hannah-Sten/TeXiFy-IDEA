@@ -43,6 +43,7 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
                 Magic.Command.relativeImportCommands +
                 Magic.Command.classDefinitions +
                 Magic.Command.packageDefinitions +
-                setOf("\\input", "\\newcommand", "\\bibliography", "\\documentclass", "\\usepackage")
+                Magic.Command.regularCommandDefinitions +
+                setOf("\\input", "\\bibliography", "\\documentclass", "\\usepackage")
     }
 }

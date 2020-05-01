@@ -16,11 +16,9 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
 
     fun `test unescaped _ character triggers no warning in new command`() {
         myFixture.configureByText(LatexFileType, """
-            \usepackage{xparse}
             \begin{document}
                 \newcommand{\test}{a_2}
                 $\test$
-                \NewDocumentCommand{\test}{}{a_b}
             \end{document}
         """.trimIndent())
         myFixture.checkHighlighting(true, false, false, false)

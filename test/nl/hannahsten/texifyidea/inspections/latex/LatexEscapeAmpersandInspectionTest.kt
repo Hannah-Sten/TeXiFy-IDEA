@@ -48,7 +48,6 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
 
     fun `test that ampersand in url command does not trigger a warning`() {
         myFixture.configureByText(LatexFileType, """
-            \usepackage{hyperref}
             \url{a&b}
         """.trimIndent())
         myFixture.checkHighlighting(true, false, false, false)
