@@ -47,19 +47,27 @@ object LatexElementColorProvider : ElementColorProvider {
         else {
             val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(file, *Magic.Colors.colorDefinitions.map { "\\${it.command}" }
                     .toTypedArray())
-            val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
-            when (colorDefinitionCommand?.name?.substring(1)) {
-                LatexRegularCommand.COLORLET.command -> {
-                    getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"))
+            // If this color is a single color (not a mix, and thus does not contain a !)
+            // and we did not find it in the default colors (above), it should be in the
+            // first parameter of a color definition command. If not, we can not find the
+            // color (and return null in the end).
+            if (colorName.contains('!') || colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }.contains(colorName)) {
+
+                val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
+                when (colorDefinitionCommand?.name?.substring(1)) {
+                    LatexRegularCommand.COLORLET.command -> {
+                        getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"))
+                    }
+                    LatexRegularCommand.DEFINECOLOR.command, LatexRegularCommand.PROVIDECOLOR.command -> {
+                        getColorFromDefineColor(
+                                colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
+                                colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
+                        )
+                    }
+                    else -> getColorFromColorParameter(file, colorName)
                 }
-                LatexRegularCommand.DEFINECOLOR.command, LatexRegularCommand.PROVIDECOLOR.command -> {
-                    getColorFromDefineColor(
-                            colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
-                            colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
-                    )
-                }
-                else -> getColorFromColorParameter(file, colorName)
             }
+            else return null
         }
     }
 

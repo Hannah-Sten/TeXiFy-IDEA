@@ -16,7 +16,7 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
     protected fun testQuickFix(before: String, after: String) {
         myFixture.configureByText(LatexFileType, before)
         val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
+        assertEquals("Expected number of quick fixes:", 1, quickFixes.size)
         writeCommand(myFixture.project) {
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }

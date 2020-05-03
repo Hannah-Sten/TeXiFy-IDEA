@@ -192,9 +192,9 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
 
             "\\DeclarePairedDelimiter" -> "{param}"
             "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> {
-                val optional = commands.optionalParameters.keys.firstOrNull()
+                val optional = commands.optionalParameters.keys.first()
                 val nrParams = try {
-                    optional?.toInt() ?: 0
+                    optional.toInt()
                 } catch (ignore: java.lang.NumberFormatException) { 0 }
                 (1..nrParams).joinToString("") { "{param}" }
             }
