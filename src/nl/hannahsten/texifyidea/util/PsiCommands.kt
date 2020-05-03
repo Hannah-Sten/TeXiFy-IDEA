@@ -47,13 +47,8 @@ fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
  *
  * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
  */
-fun LatexCommands?.isCommandDefinition(): Boolean {
-    return this != null && ("\\newcommand" == name ||
-            "\\let" == name ||
-            "\\def" == name ||
-            name in Magic.Command.mathCommandDefinitions ||
-            "\\renewcommand" == name)
-}
+fun LatexCommands?.isCommandDefinition(): Boolean =
+        this != null && (name in Magic.Command.regularCommandDefinitions || name in Magic.Command.mathCommandDefinitions)
 
 /**
  * Checks whether the given LaTeX commands is an environment definition or not.
@@ -84,7 +79,8 @@ fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
  */
 fun LatexCommands.nextCommand(): LatexCommands? {
     val content = parentOfType(LatexContent::class) ?: return null
-    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent ?: return null
+    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent
+            ?: return null
     return next.firstChildOfType(LatexCommands::class)
 }
 
@@ -95,7 +91,8 @@ fun LatexCommands.nextCommand(): LatexCommands? {
  */
 fun LatexCommands.previousCommand(): LatexCommands? {
     val content = parentOfType(LatexContent::class) ?: return null
-    val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent ?: return null
+    val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent
+            ?: return null
     return previous.firstChildOfType(LatexCommands::class)
 }
 
@@ -165,7 +162,8 @@ fun LatexCommands.findIndentation(): String {
  * @param includeInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
  */
 fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
-    return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve(includeInstalledPackages) }
+    return references.filterIsInstance<InputFileReference>()
+            .mapNotNull { it.resolve(includeInstalledPackages) }
 }
 
 /**

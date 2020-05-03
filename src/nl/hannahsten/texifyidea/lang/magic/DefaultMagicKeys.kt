@@ -45,6 +45,10 @@ enum class DefaultMagicKeys(
         Indicates that this file has to be included in the preamble of the preview.
     """.trimIndent().trim(), MagicCommentScope.FILE.singleScope()),
 
+    PARSER("Parser", """
+        Allows for switching parsing off and on.
+    """.trimIndent().trim(), MagicCommentScope.FILE.singleScope()),
+
     // TeXdoc.
     INFO("Info", """
         A documentation description for a definition.
