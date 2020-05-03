@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
  */
 abstract class TexifyRegexInspectionTestBase(regexInspection: TexifyRegexInspection) {
 
-    private val pattern = regexInspection.pattern
+    val pattern = regexInspection.pattern
 
     /**
      * All strings that must match the [pattern].
