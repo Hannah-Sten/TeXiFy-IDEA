@@ -40,9 +40,6 @@ object LatexElementColorProvider : ElementColorProvider {
         return null
     }
 
-    /**
-     *
-     */
     fun findColor(colorName: String, file: PsiFile): Color? {
         val defaultHex = Magic.Colors.defaultXcolors[colorName]
 
