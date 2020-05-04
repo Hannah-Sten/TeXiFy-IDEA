@@ -12,10 +12,12 @@ open class Package @JvmOverloads constructor(
 
         // Predefined packages.
         @JvmField val DEFAULT = Package("")
+        @JvmField val ALGPSEUDOCODE = Package("algpseudocode")
         @JvmField val AMSFONTS = Package("amsfonts")
         @JvmField val AMSMATH = Package("amsmath")
         @JvmField val AMSSYMB = Package("amssymb")
         @JvmField val BIBLATEX = Package("biblatex")
+        @JvmField val BM = Package("bm")
         @JvmField val BOOKTABS = Package("booktabs")
         @JvmField val COMMENT = Package("comment")
         @JvmField val CLEVEREF = Package("cleveref")
@@ -33,7 +35,9 @@ open class Package @JvmOverloads constructor(
         @JvmField val MATHTOOLS = Package("mathtools")
         @JvmField val NATBIB = Package("natbib")
         @JvmField val SUBFILES = Package("subfiles")
+        @JvmField val TIKZ = Package("tikz")
         @JvmField val ULEM = Package("ulem")
+        @JvmField val XCOLOR = Package("xcolor")
         @JvmField val XPARSE = Package("xparse")
     }
 

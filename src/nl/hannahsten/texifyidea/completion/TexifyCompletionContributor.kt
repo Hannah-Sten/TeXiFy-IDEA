@@ -147,6 +147,22 @@ open class TexifyCompletionContributor : CompletionContributor() {
                 LatexGraphicsPathProvider()
         )
 
+        // Colors from xcolor
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(LatexRequiredParam::class.java)
+                        .with(object : PatternCondition<PsiElement>("xcolor color completion patter") {
+                            override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
+                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                                        ?: return false
+
+                                val name = command.commandToken.text
+                                return name.substring(1) in Magic.Colors.takeColorCommands
+                            }
+                        }),
+                LatexXColorProvider
+        )
+
         // Magic comments keys.
         extend(
                 CompletionType.BASIC,
@@ -174,6 +190,20 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 LatexInspectionIdProvider
+        )
+
+        // List containing tikz/math to autocomplete the begin/end/preamble values in magic comments.
+        val beginEndRegex = Regex("""(begin|end|preview) preamble\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(PsiComment::class.java)
+                        .with(object : PatternCondition<PsiElement>("Magic comment preamble pattern") {
+                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
+                                return comment.isMagicComment() && comment.text.contains(beginEndRegex)
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                LatexMagicCommentValueProvider(Magic.Comment.preambleValues)
         )
 
         // Package names

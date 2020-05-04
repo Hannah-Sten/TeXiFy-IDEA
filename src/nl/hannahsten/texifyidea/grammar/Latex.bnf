@@ -1,5 +1,6 @@
 {
     parserClass="nl.hannahsten.texifyidea.parser.LatexParser"
+    parserUtilClass="nl.hannahsten.texifyidea.parser.LatexParserUtil"
 
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -17,10 +18,12 @@
     implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
+    implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
 
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
     implements("normal_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
+    // See the lexer
     tokens=[
         WHITE_SPACE='regexp:\s+'
         DISPLAY_MATH_START='\['
@@ -29,10 +32,18 @@
         INLINE_MATH_END='regexp:($|\\\))'
         BEGIN_TOKEN='\begin'
         END_TOKEN='\end'
-        COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\n|\r)'
+        COMMAND_TOKEN='regexp:\\([a-zA-Z@]+|.|\r)'
         COMMENT_TOKEN='regexp:%[^\r\n]*'
         STAR='*'
-        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$\(\)]+'
+        AMPERSAND='&'
+        NORMAL_TEXT_WORD='regexp:[^\s\\{}%\[\]$()|!"=&]+'
+        NORMAL_TEXT_CHAR='regexp:[|!"=&]'
+        // Because any character can follow an \@ifnextchar, which can break the parsing in many ways, together with the first argument it is one token
+        COMMAND_IFNEXTCHAR='regexp:\\@ifnextchar.'
+        RAW_TEXT_TOKEN='RAW_TEXT'
+        BEGIN_PSEUDOCODE_BLOCK='BEGIN_PSEUDOCODE_BLOCK'
+        MIDDLE_PSEUDOCODE_BLOCK='MIDDLE_PSEUDOCODE_BLOCK'
+        END_PSEUDOCODE_BLOCK='END_PSEUDOCODE_BLOCK'
     ]
 }
 
@@ -40,11 +51,14 @@
 
 latexFile ::= content*
 
-content ::= no_math_content
+// Together with using pseudocode_block_content, this makes sure to exclude the end_pseudocode_block in pseudocode_block_content,
+// thus ensuring a single end_pseudocode_block token is not a parse error (if it should have been a commands token)
+content ::= no_math_content | END_PSEUDOCODE_BLOCK
 
-no_math_content ::= comment | environment | math_environment | commands | group | open_group | OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | normal_text
+no_math_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
+    OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR)+ {
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
     methods=[getReferences getReference getNameIdentifier getName setName]
 }
 
@@ -52,10 +66,16 @@ environment ::= begin_command environment_content? end_command {
     pin=1
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub"
-    methods=[getEnvironmentName getLabel]
+    methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
  }
 
-environment_content ::= content+
+environment_content ::= <<injection_env_content raw_text>> | content+
+
+// In order to avoid a parse error on a single begin_pseudocode_block token in no_math_content (so, if the token should have been a commands token)
+// we make the end_pseudocode_block optional. This problem arises because the lexer is not aware whether we are in a algorithmic environment or not
+pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)? (END_PSEUDOCODE_BLOCK parameter*)? { pin=5 }
+
+pseudocode_block_content ::= no_math_content*
 
 commands ::= COMMAND_TOKEN STAR? parameter* {
     pin=1
@@ -64,6 +84,7 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
     methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName]
 }
+
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
@@ -74,13 +95,19 @@ end_command ::= END_TOKEN STAR? parameter* { pin=1 }
 
 parameter ::= optional_param | required_param
 
-optional_param ::= open_group
+// pin=3 makes sure that an optional parameter is only matched successfully when
+// it also encounters a close bracket. So '[' at the beginning of a (math) environment
+// will be seen as simply an open bracket, but '[x]' at the same location will
+// be parsed as optional parameter.
+// https://stackoverflow.com/a/48709143/6629569
+optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=3 }
+
+// content, but no brackets
+optional_param_content ::= comment | environment | math_environment | commands | group | OPEN_PAREN | CLOSE_PAREN | normal_text
 
 required_param ::= group
 
 group ::= OPEN_BRACE content* CLOSE_BRACE { pin=1 }
-
-open_group ::= OPEN_BRACKET content* CLOSE_BRACKET { pin=1 }
 
 comment ::= COMMENT_TOKEN
 
@@ -91,3 +118,5 @@ inline_math ::= INLINE_MATH_START math_content? INLINE_MATH_END { pin=1 }
 display_math ::= DISPLAY_MATH_START math_content? DISPLAY_MATH_END { pin=1 }
 
 math_content ::= no_math_content+
+
+raw_text ::= RAW_TEXT_TOKEN+

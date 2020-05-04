@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.options.ConfigurationException
@@ -34,6 +35,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var enableCompilerPath: JBCheckBox
     private lateinit var compilerPath: TextFieldWithBrowseButton
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
+    private lateinit var environmentVariables: EnvironmentVariablesComponent
     private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
     private lateinit var outputPath: LabeledComponent<ComponentWithBrowseButton<*>>
     // Not shown on non-MiKTeX systems
@@ -80,6 +82,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
         compilerArguments.component.text = args ?: ""
+
+        // Reset environment variables
+        environmentVariables.envData = runConfiguration.environmentVariables
 
         // Reset the main file to compile.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
@@ -129,7 +134,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         project = runConfiguration.project
 
         // Reset bibliography
-        bibliographyPanel.configurations = runConfiguration.bibRunConfigs.filterNotNull().toMutableSet()
+        bibliographyPanel.configurations = runConfiguration.bibRunConfigs.toMutableSet()
 
         // Reset makeindex
         makeindexPanel.configurations = if (runConfiguration.makeindexRunConfig != null) mutableSetOf(runConfiguration.makeindexRunConfig!!) else mutableSetOf()
@@ -179,6 +184,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Apply custom compiler arguments
         runConfiguration.compilerArguments = compilerArguments.component.text
+
+        // Apply environment variables
+        runConfiguration.environmentVariables = environmentVariables.envData
 
         // Apply main file.
         val txtFile = mainFile.component as TextFieldWithBrowseButton
@@ -243,6 +251,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
         panel.add(compilerArguments)
 
+        environmentVariables = EnvironmentVariablesComponent()
+        panel.add(environmentVariables)
+
         panel.add(SeparatorComponent())
 
         // Main file selection
@@ -264,7 +275,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Output format.
         val selectedCompiler = compiler.component.selectedItem as LatexCompiler
         val cboxFormat = ComboBox(selectedCompiler.outputFormats)
-        outputFormat = LabeledComponent.create<ComboBox<Format>>(cboxFormat, "Output format")
+        outputFormat = LabeledComponent.create(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
 
@@ -314,7 +325,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private fun addCompilerPathField(panel: JPanel) {
         // Compiler
         val compilerField = ComboBox(LatexCompiler.values())
-        compiler = LabeledComponent.create<ComboBox<LatexCompiler>>(compilerField, "Compiler")
+        compiler = LabeledComponent.create(compilerField, "Compiler")
         panel.add(compiler)
 
         enableCompilerPath = JBCheckBox("Select custom compiler executable path (required on Mac OS X)")

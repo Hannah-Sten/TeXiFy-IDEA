@@ -39,11 +39,12 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
             for (i in command.requiredParameters.indices) {
 
                 // Find the corresponding requiredArgument
-                val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.last { it is RequiredFileArgument }
+                val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull() ?: continue
 
                 // Check if the actual argument is a file argument or continue with the next argument
                 val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
                 val offset = command.text.indexOf(command.requiredParameters[i])
+                if (offset == -1) continue
                 val range = TextRange(0, command.requiredParameters[i].length).shiftRight(offset)
 
                 if (File(range.substring(command.text)).isAbsolute && !fileArgument.isAbsolutePathSupported) {

@@ -1,0 +1,7 @@
+\begin{lstlisting}[language=Kotlin]
+fun Int?.ifPositiveAddTwo(): Int =
+        this?.let {
+            if (this >= 0) this + 2
+            else this
+        } ?: 0
+\end{lstlisting}

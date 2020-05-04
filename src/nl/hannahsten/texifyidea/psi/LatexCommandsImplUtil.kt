@@ -76,7 +76,7 @@ private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference>
         for (subParamRange in subParamRanges) {
 
             // Find the corresponding requiredArgument
-            val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull() { it is RequiredFileArgument } ?: continue
+            val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull { it is RequiredFileArgument } ?: continue
 
             // Check if the actual argument is a file argument or continue with the next argument
             val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
@@ -145,9 +145,9 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
     val parameterString = parameters.mapNotNull { it.optionalParam }
             // extract the content of each parameter element
             .flatMap { param ->
-                param.openGroup.contentList.map { it.noMathContent }
+                param.optionalParamContentList
             }
-            .mapNotNull { content: LatexNoMathContent ->
+            .mapNotNull { content: LatexOptionalParamContent ->
                 // the content is either simple text
                 val text = content.normalText
                 if (text != null) return@mapNotNull text.text
@@ -171,10 +171,10 @@ fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
             .map {
                 it.contentList.map { c: LatexContent ->
                     val content = c.noMathContent
-                    if (content.commands != null && content.normalText == null) {
+                    if (content?.commands != null && content.normalText == null) {
                         content.commands!!.commandToken.text
                     }
-                    else if (content.normalText != null) {
+                    else if (content?.normalText != null) {
                         content.normalText!!.text
                     }
                     else {

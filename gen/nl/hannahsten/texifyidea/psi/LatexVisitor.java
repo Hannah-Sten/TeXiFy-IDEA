@@ -5,6 +5,7 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiLanguageInjectionHost;
 
 public class LatexVisitor extends PsiElementVisitor {
 
@@ -33,7 +34,7 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitEnvironment(@NotNull LatexEnvironment o) {
-    visitPsiElement(o);
+    visitPsiLanguageInjectionHost(o);
   }
 
   public void visitEnvironmentContent(@NotNull LatexEnvironmentContent o) {
@@ -64,11 +65,11 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiNameIdentifierOwner(o);
   }
 
-  public void visitOpenGroup(@NotNull LatexOpenGroup o) {
+  public void visitOptionalParam(@NotNull LatexOptionalParam o) {
     visitPsiElement(o);
   }
 
-  public void visitOptionalParam(@NotNull LatexOptionalParam o) {
+  public void visitOptionalParamContent(@NotNull LatexOptionalParamContent o) {
     visitPsiElement(o);
   }
 
@@ -76,8 +77,24 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitPseudocodeBlock(@NotNull LatexPseudocodeBlock o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPseudocodeBlockContent(@NotNull LatexPseudocodeBlockContent o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRawText(@NotNull LatexRawText o) {
+    visitPsiElement(o);
+  }
+
   public void visitRequiredParam(@NotNull LatexRequiredParam o) {
     visitPsiElement(o);
+  }
+
+  public void visitPsiLanguageInjectionHost(@NotNull PsiLanguageInjectionHost o) {
+    visitElement(o);
   }
 
   public void visitPsiNameIdentifierOwner(@NotNull PsiNameIdentifierOwner o) {

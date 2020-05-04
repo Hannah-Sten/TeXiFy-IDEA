@@ -23,15 +23,37 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         val command = item.`object` as LatexCommand
 
-        if (command.command == "begin") {
-            insertBegin(context)
-        }
-        else {
-            LatexCommandArgumentInsertHandler().handleInsert(context, item)
+        when (command.command) {
+            "begin" -> {
+                insertBegin(context)
+            }
+            in Magic.Typography.pseudoCodeBeginEndOpposites -> {
+                insertPseudocodeEnd(command.command, context)
+            }
+            else -> {
+                LatexCommandArgumentInsertHandler().handleInsert(context, item)
+            }
         }
 
         RightInsertHandler().handleInsert(context, item)
         LatexCommandPackageIncludeHandler().handleInsert(context, item)
+    }
+
+    private fun insertPseudocodeEnd(name: String, context: InsertionContext) {
+        val numberRequiredArguments = LatexCommand.lookup(name)
+                ?.firstOrNull()?.arguments
+                ?.count { it is RequiredArgument } ?: 0
+
+        val templateText = List(numberRequiredArguments) {
+            "{\$__Variable${it}\$}"
+        }.joinToString("") + "\n\$END\$\n\\${Magic.Typography.pseudoCodeBeginEndOpposites[name]}"
+        val parameterTemplate = object : TemplateImpl("", templateText, "") {
+            override fun isToReformat(): Boolean = false
+        }
+        repeat(numberRequiredArguments) { parameterTemplate.addVariable(TextExpression(""), true) }
+
+        TemplateManager.getInstance(context.project)
+                .startTemplate(context.editor, parameterTemplate)
     }
 
     /**

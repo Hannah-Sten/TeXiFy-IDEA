@@ -26,18 +26,19 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.8</version>
+    <version>0.6.9</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="193.4099.13" until-build="193.*"/>
+    <idea-version since-build="201.3119"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
+<!--    <depends>com.intellij.modules.java</depends>--> <!-- breaks non-intellij support -->
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
 
     <description><![CDATA[
@@ -87,7 +88,7 @@
             This is an alpha release, which contains the very latest features of TeXiFy IDEA.
         <p>
         <p>
-            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date.
+            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with merged PRs.
         </p>
     ]]></change-notes>
 
@@ -307,8 +308,20 @@
         <fileTemplateGroup implementation="nl.hannahsten.texifyidea.templates.LatexTemplatesFactory"/>
 
         <!-- Live templates -->
-        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext"/>
+        <defaultLiveTemplates file="liveTemplates/LaTeX" hidden="false"/>
+        <defaultLiveTemplates file="liveTemplates/Surround" hidden="false"/>
+
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$Generic"/>
+        <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.LatexContext$LatexMathContext"/>
         <liveTemplateContext implementation="nl.hannahsten.texifyidea.templates.BibtexContext"/>
+
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostFixTemplateProvider"/>
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostfixTemplateFromAmsMathProvider"/>
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostfixTemplateFromAmsFontsProvider"/>
+        <codeInsight.template.postfixTemplateProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.postfix.LatexPostfixTemplateFromBmProvider"/>
+
+        <!-- Surrounders -->
+        <lang.surroundDescriptor language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.surroundwith.LatexSurroundDescriptor"/>
 
         <!-- Application settings -->
         <applicationService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifySettings"/>
@@ -337,6 +350,8 @@
         <lang.braceMatcher language="Latex" implementationClass="nl.hannahsten.texifyidea.highlighting.LatexPairedBraceMatcher"/>
         <lang.braceMatcher language="Bibtex" implementationClass="nl.hannahsten.texifyidea.highlighting.BibtexPairedBraceMatcher"/>
 
+        <languageInjector implementation="nl.hannahsten.texifyidea.psi.LatexLanguageInjector" />
+
         <!-- Structure view -->
         <lang.psiStructureViewFactory language="Latex" implementationClass="nl.hannahsten.texifyidea.structure.latex.LatexStructureViewFactory"/>
         <lang.psiStructureViewFactory language="Bibtex" implementationClass="nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewFactory"/>
@@ -359,6 +374,7 @@
         <lang.formatter.restriction implementation="nl.hannahsten.texifyidea.formatting.LatexLanguageFormattingRestriction"/>
         <completion.contributor language="Latex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
@@ -375,6 +391,8 @@
         <typedHandler implementation="nl.hannahsten.texifyidea.editor.autocompile.AutocompileHandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.autocompile.AutoCompileBackspacehandler"/>
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
+        <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
+        <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
 
         <!-- References and refactoring -->
         <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
@@ -383,6 +401,10 @@
 
         <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
         <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
+
+        <!-- Tool windows -->
+        <toolWindow id="Equation Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/equation-preview.svg" canCloseContents="true" />
+        <toolWindow id="Tikz Picture Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/tikz-preview.svg" canCloseContents="true" />
 
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
@@ -394,6 +416,9 @@
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexNavigationGutter"/>
         <runLineMarkerContributor language="Latex" implementationClass="nl.hannahsten.texifyidea.gutter.LatexCompileGutter"/>
+
+        <!-- Colors -->
+        <colorProvider implementation="nl.hannahsten.texifyidea.insight.LatexElementColorProvider"/>
 
         <!-- Run configurations -->
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
@@ -448,6 +473,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexRedundantEscapeInspection"
                          groupName="LaTeX" displayName="Redundant escape when Unicode is enabled"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeHashOutsideCommandInspection"
+                         groupName="LaTeX" displayName="Unescaped # outside of command definition"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingDocumentclassInspection"
                          groupName="LaTeX" displayName="Missing documentclass"
@@ -578,10 +606,6 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexFigureNotReferencedInspection"
                          groupName="LaTeX" displayName="Figure not referenced"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerbatimInspection"
-                         groupName="LaTeX" displayName="Verbatim environments might break formatter and/or parser"
-                         shortName="LatexUseOfVerbatimEnvironment"
-                         enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMultipleGraphicsPathInspection"
                          groupName="LaTeX" displayName="Multiple definition of graphicspath"
                          enabledByDefault="true"/>
@@ -590,9 +614,27 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageCouldNotBeFound"
                          groupName="LaTeX" displayName="Package could not be found"
+                         enabledByDefault="false"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNameDoesNotMatchFileNameInspection"
+                         groupName="LaTeX" displayName="Package name does not match file name"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageSubdirectoryInspection"
+                         groupName="LaTeX" displayName="Package name does not have the correct directory"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexPackageNotInstalledInspection"
-                         groupName="LaTeX" displayName="Package is not installed" enabledByDefault="true"/>
+                         groupName="LaTeX" displayName="Package is not installed"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeUnderscoreInspection"
+                         groupName="LaTeX" displayName="Unescaped _ character"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeAmpersandInspection"
+                         groupName="LaTeX" displayName="Unescaped &amp; character"
+                         enabledByDefault="true"/>
+
+        <!-- Element manipulator -->
+        <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
+                                 implementationClass="nl.hannahsten.texifyidea.psi.LatexEnvironmentManipulator"/>
+
 
         <!-- Bibtex inspections -->
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
@@ -616,6 +658,36 @@
         </intentionAction>
 
         <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexInsertFormatterCommentsIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexInsertFormatterComments</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggle</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
             <className>nl.hannahsten.texifyidea.intentions.LatexMoveSectionToFileIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexMoveSectionToFile</descriptionDirectoryName>
@@ -628,39 +700,21 @@
         </intentionAction>
 
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexInlineDisplayToggle</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexInlineDisplayToggle</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexMathToggle</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexMathToggle</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
             <className>nl.hannahsten.texifyidea.intentions.LatexToggleSmartQuotesIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexToggleSmartQuotes</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexUnpackUsepackageIntention</className>
             <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
+            <descriptionDirectoryName>LatexUnpackUsepackage</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexLanguageInjectionIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexLanguageInjection</descriptionDirectoryName>
         </intentionAction>
     </extensions>
 </idea-plugin>

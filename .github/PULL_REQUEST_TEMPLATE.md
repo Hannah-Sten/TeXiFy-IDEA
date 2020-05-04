@@ -7,7 +7,9 @@ Fixes #
 
 #### How to test this pull request
 
-* 
+```latex
+
+```
 
 #### Wiki
 

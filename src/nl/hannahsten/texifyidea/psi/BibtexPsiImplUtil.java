@@ -97,4 +97,12 @@ public class BibtexPsiImplUtil {
     public static String getName(@NotNull BibtexId element) {
         return BibtexIdUtilKt.getName(element);
     }
+
+    /*
+     * BibtexTag
+     */
+
+    public static PsiReference[] getReferences(@NotNull BibtexTag element) {
+        return BibtexTagUtilKt.getReferences(element);
+    }
 }

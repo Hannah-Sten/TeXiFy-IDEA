@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface BibtexKey extends PsiElement {
 
+  @NotNull
+  PsiElement getIdentifier();
+
 }

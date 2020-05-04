@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
+import com.intellij.psi.*;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +17,10 @@ public class LatexPsiImplUtil {
      * LatexCommands
      */
 
+    /**
+     * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexNormalText)}.
+     * For more info and an example, see {@link nl.hannahsten.texifyidea.reference.LatexLabelParameterReference}.
+     */
     @NotNull
     public static PsiReference[] getReferences(@NotNull LatexCommands element) {
         return LatexCommandsImplUtilKt.getReferences(element);
@@ -111,5 +114,21 @@ public class LatexPsiImplUtil {
 
     public static String getName(@NotNull LatexNormalText element) {
         return LatexNormalTextUtilKt.getName(element);
+    }
+
+    /*
+     * LatexEnvironment
+     */
+    public static boolean isValidHost(@NotNull LatexEnvironment element) {
+        return true;
+    }
+
+    public static PsiLanguageInjectionHost updateText(@NotNull LatexEnvironment element, @NotNull String text) {
+        return ElementManipulators.handleContentChange(element, text);
+    }
+
+    @NotNull
+    public static LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper(@NotNull LatexEnvironment element) {
+        return LiteralTextEscaper.createSimple(element);
     }
 }

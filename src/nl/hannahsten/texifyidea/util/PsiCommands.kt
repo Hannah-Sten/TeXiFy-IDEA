@@ -6,6 +6,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
@@ -19,6 +20,16 @@ import nl.hannahsten.texifyidea.util.files.document
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in Magic.Command.definitions
+
+/**
+ * Checks whether the given LaTeX commands is a color definition or not.
+ *
+ * @return `true` if the command defines a color, `false` when the command command
+ *          is `null` or otherwise.
+ */
+fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in Magic.Colors.colorDefinitions.map { it.command }
+
+fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Magic.Colors.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.
@@ -36,13 +47,8 @@ fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
  *
  * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
  */
-fun LatexCommands?.isCommandDefinition(): Boolean {
-    return this != null && ("\\newcommand" == name ||
-            "\\let" == name ||
-            "\\def" == name ||
-            "\\DeclareMathOperator" == name ||
-            "\\renewcommand" == name)
-}
+fun LatexCommands?.isCommandDefinition(): Boolean =
+        this != null && (name in Magic.Command.regularCommandDefinitions || name in Magic.Command.mathCommandDefinitions)
 
 /**
  * Checks whether the given LaTeX commands is an environment definition or not.
@@ -73,7 +79,8 @@ fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
  */
 fun LatexCommands.nextCommand(): LatexCommands? {
     val content = parentOfType(LatexContent::class) ?: return null
-    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent ?: return null
+    val next = content.nextSiblingIgnoreWhitespace() as? LatexContent
+            ?: return null
     return next.firstChildOfType(LatexCommands::class)
 }
 
@@ -84,7 +91,8 @@ fun LatexCommands.nextCommand(): LatexCommands? {
  */
 fun LatexCommands.previousCommand(): LatexCommands? {
     val content = parentOfType(LatexContent::class) ?: return null
-    val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent ?: return null
+    val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent
+            ?: return null
     return previous.firstChildOfType(LatexCommands::class)
 }
 
@@ -92,8 +100,24 @@ fun LatexCommands.previousCommand(): LatexCommands? {
  * Get the name of the command that is defined by `this` command.
  */
 fun LatexCommands.definedCommandName() = when (name) {
-    "\\DeclareMathOperator", "\\newcommand" -> forcedFirstRequiredParameterAsCommand()?.name
+    in Magic.Command.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
     else -> definitionCommand()?.name
+}
+
+/**
+ * Get the value of the named [argument] given in `this` command.
+ */
+fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
+    // Find all pre-defined commands that define `this` command.
+    val requiredArgIndices = LatexRegularCommand.get(name?.substring(1)
+            ?: return null)
+            // Find the index of their required parameter named [argument].
+            ?.map {
+                it.arguments.filterIsInstance<RequiredArgument>()
+                        .indexOfFirst { arg -> arg.name == argument }
+            }
+    return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
+    else requiredParameters[requiredArgIndices.first()]
 }
 
 /**
@@ -138,7 +162,8 @@ fun LatexCommands.findIndentation(): String {
  * @param includeInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
  */
 fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
-    return references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve(includeInstalledPackages) }
+    return references.filterIsInstance<InputFileReference>()
+            .mapNotNull { it.resolve(includeInstalledPackages) }
 }
 
 /**

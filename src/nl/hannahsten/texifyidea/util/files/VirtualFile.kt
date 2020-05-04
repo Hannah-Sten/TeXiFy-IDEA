@@ -66,6 +66,21 @@ fun VirtualFile.findFile(filePath: String, extensions: Set<String> = emptySet())
     return null
 }
 
+fun VirtualFile.allChildDirectories(): Set<VirtualFile> {
+    val set = mutableSetOf<VirtualFile>()
+    allChildDirectories(set)
+    return set
+}
+
+private fun VirtualFile.allChildDirectories(dirs: MutableSet<VirtualFile>) {
+    if (isDirectory) {
+        dirs.add(this)
+        children.forEach {
+            it.allChildDirectories(dirs)
+        }
+    }
+}
+
 /**
  * Recursively finds all files in a directory (thus, also the files in sub-directories etc.)
  */

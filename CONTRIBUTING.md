@@ -35,10 +35,12 @@ As an alternative, you can always [submit an issue with the label 'support'](htt
 Unsure where to start?
 Look for issues that are labeled [_good-first-issue_](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues?q=is%3Aopen+is%3Aissue+label%3Agood-first-issue).
 These issues should only require a small amount of work and are a good starting point.
+Please comment on an issue when you are going to work on it, so we can assign you and avoid duplicate work.
 
 If you have another issue or idea in mind, that's great too!
 Be sure to run your idea by us (see [here](#i-just-have-a-question) how to do this).
 This prevents your changes to be rejected in a later stage.
+
 
 Have a look at the [README](README.md) to see how you can setup local development and build from source and the [helpful resources](#helpful-resources).
 

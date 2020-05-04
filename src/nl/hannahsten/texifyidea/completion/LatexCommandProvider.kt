@@ -57,6 +57,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                     .withInsertHandler(LatexNoMathInsertHandler())
                     .withIcon(TexifyIcons.DOT_COMMAND)
         })
+        result.addElement(LookupElementBuilder.create("abcdefghijklmnopqrstuvwxyz"))
         result.addLookupAdvertisement(getKindWords())
     }
 
@@ -133,7 +134,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
             if (!cmd.isDefinition() && !cmd.isEnvironmentDefinition()) {
                 continue
             }
-            if (mode !== LatexMode.MATH && "\\DeclareMathOperator" == cmd.name) {
+            if (mode !== LatexMode.MATH && cmd.name in Magic.Command.mathCommandDefinitions) {
                 continue
             }
             val cmdName = getCommandName(cmd) ?: continue
@@ -161,7 +162,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     }
 
     private fun getTypeText(commands: LatexCommands): String {
-        if ("\\newcommand" == commands.commandToken.text) {
+        if (commands.commandToken.text in Magic.Command.commandDefinitions) {
             return ""
         }
         val firstNext = commands.nextCommand() ?: return ""
@@ -171,28 +172,48 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     }
 
     private fun getTailText(commands: LatexCommands): String {
-        if ("\\newcommand" != commands.commandToken.text) {
-            return ""
-        }
-        val optional: List<String> = LinkedList(commands.optionalParameters.keys)
-        var cmdParameterCount = 0
-        if (optional.isNotEmpty()) {
-            try {
-                cmdParameterCount = optional[0].toInt()
+        return when (commands.commandToken.text) {
+            "\\newcommand" -> {
+                val optional
+                        : List<String> = LinkedList(commands.optionalParameters.keys)
+                var cmdParameterCount = 0
+                if (optional.isNotEmpty()) {
+                    try {
+                        cmdParameterCount = optional[0].toInt()
+                    } catch (ignore: NumberFormatException) {
+                    }
+                }
+                var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
+                if (cmdParameterCount > 4) {
+                    tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)"
+                }
+                tailText
             }
-            catch (ignore: NumberFormatException) {
+
+            "\\DeclarePairedDelimiter" -> "{param}"
+            "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> {
+                val optional = commands.optionalParameters.keys.firstOrNull()
+                val nrParams = try {
+                    optional?.toInt() ?: 0
+                } catch (ignore: java.lang.NumberFormatException) { 0 }
+                (1..nrParams).joinToString("") { "{param}" }
             }
+
+            "\\NewDocumentCommand" -> {
+                val paramSpecification = commands.requiredParameters[1].removeAll("null", " ")
+                paramSpecification.map { c ->
+                    if (Magic.Package.xparseParamSpecifiers[c] ?: return "") "{param}"
+                    else "[]"
+                }.joinToString("")
+            }
+
+            else -> ""
         }
-        var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
-        if (cmdParameterCount > 4) {
-            tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)"
-        }
-        return tailText
     }
 
     private fun getCommandName(commands: LatexCommands): String? {
         return when (commands.name) {
-            "\\DeclareMathOperator", "\\newcommand", "\\newif" -> getNewCommandName(commands)
+            in Magic.Command.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
             else -> getDefinitionName(commands)
         }
     }

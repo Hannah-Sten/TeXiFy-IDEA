@@ -41,16 +41,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
-        val command: List<String> = compiler.getCommand(runConfig, environment.project)
-                ?: throw ExecutionException("Compile command could not be created.")
-
-        createOutDirs(mainFile)
-
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
-        val handler = KillableProcessHandler(commandLine)
-
-        // Reports exit code to run output window when command is terminated
-        ProcessTerminatedListener.attach(handler, environment.project)
 
         // Some initial setup
         if (!runConfig.hasBeenRun) {
@@ -70,6 +60,20 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 }
             }
         }
+
+        // Make sure to create the command after generating the bib run config (which might change the output path)
+        val command: List<String> = compiler.getCommand(runConfig, environment.project)
+                ?: throw ExecutionException("Compile command could not be created.")
+
+        createOutDirs(mainFile)
+
+        val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
+                .withEnvironment(runConfig.environmentVariables.envs)
+        val handler = KillableProcessHandler(commandLine)
+
+        // Reports exit code to run output window when command is terminated
+        ProcessTerminatedListener.attach(handler, environment.project)
+
 
         var isMakeindexNeeded = false
 

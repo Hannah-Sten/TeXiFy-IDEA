@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -13,6 +14,10 @@ class LatexDistribution {
 
         private val pdflatexVersionText: String by lazy {
             getDistribution()
+        }
+
+        private val dockerImagesText: String by lazy {
+            runCommand("docker", "image", "ls")
         }
 
         /**
@@ -32,6 +37,11 @@ class LatexDistribution {
         }
 
         /**
+         * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
+         */
+        fun isDockerMiktex() = TexifySettings.getInstance().dockerizedMiktex || (!isMiktex && !isTexlive && dockerImagesText.contains("miktex"))
+
+        /**
          * Returns year of texlive installation, 0 if it is not texlive.
          * Assumes the pdflatex version output contains something like (TeX Live 2019).
          */
@@ -43,7 +53,8 @@ class LatexDistribution {
                 val startIndex = pdflatexVersionText.indexOf("TeX Live")
                 try {
                     pdflatexVersionText.substring(startIndex + "TeX Live ".length, startIndex + "TeX Live ".length + "2019".length).toInt()
-                } catch (e: NumberFormatException) {
+                }
+                catch (e: NumberFormatException) {
                     0
                 }
             }
@@ -53,8 +64,12 @@ class LatexDistribution {
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
         private fun getDistribution(): String {
+            return parsePdflatexOutput(runCommand("pdflatex", "--version"))
+        }
+
+        private fun runCommand(vararg commands: String): String {
             try {
-                val command = arrayListOf("pdflatex", "--version")
+                val command = arrayListOf(*commands)
                 val proc = ProcessBuilder(command)
                         .redirectOutput(ProcessBuilder.Redirect.PIPE)
                         .redirectError(ProcessBuilder.Redirect.PIPE)
@@ -62,9 +77,9 @@ class LatexDistribution {
 
                 // Timeout value
                 proc.waitFor(10, TimeUnit.SECONDS)
-                val output = proc.inputStream.bufferedReader().readText()
-                return parsePdflatexOutput(output)
-            } catch (e: IOException) {
+                return proc.inputStream.bufferedReader().readText()
+            }
+            catch (e: IOException) {
                 e.printStackTrace()
             }
             return ""
@@ -79,7 +94,12 @@ class LatexDistribution {
             val splitLine = firstLine.split("(", ")")
 
             // Get one-to-last entry, as the last one will be empty after the closing )
-            return splitLine[splitLine.size - 2]
+            return if (splitLine.size >= 2) {
+                splitLine[splitLine.size - 2]
+            }
+            else {
+                ""
+            }
         }
     }
 }

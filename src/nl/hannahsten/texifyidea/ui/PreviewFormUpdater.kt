@@ -15,24 +15,32 @@ import javax.swing.SwingUtilities.invokeLater
  * @author Sergei Izmailov
  */
 class PreviewFormUpdater(private val previewForm: PreviewForm) {
-
     /**
-     * Modify this variable to include more packages.
+     * The default preamble.
      *
      * Unless you are going to set your own \pagestyle{}, simply append to this variable.
      */
-    var preamble = """
+    private val defaultPreamble = """
         \pagestyle{empty}
-
-        \usepackage{color}
-
     """.trimIndent()
+
+    /**
+     * Modify this variable to include more packages.
+     */
+    var preamble = defaultPreamble
 
     /**
      * Controls how long (in seconds) we will wait for the document compilation. If the time taken exceeds this,
      * we will return an error and not output a preview.
      */
     var waitTime = 3L
+
+    /**
+     * Reset the preamble to the default preamble.
+     */
+    fun resetPreamble() {
+        preamble = defaultPreamble
+    }
 
     /**
      * Sets the code that will be previewed, whether that be an equation, a tikz picture, or whatever else
@@ -106,11 +114,16 @@ $previewCode
             try {
                 // Create the default temp directory.
                 setPreviewCodeInTemp(createTempDir())
-            } catch (exception: AccessDeniedException) {
+            }
+            catch (exception: AccessDeniedException) {
                 // If pdf2svg or inkscape does not have access to the temp directory, try again with temp folder in the
                 // home directory.
                 setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
-            } catch (exception: IOException) {
+            }
+            catch (exception: IOException) {
+                previewForm.setLatexErrorMessage("${exception.message}")
+            }
+            catch (exception: AccessDeniedException) {
                 previewForm.setLatexErrorMessage("${exception.message}")
             }
         }

@@ -64,8 +64,20 @@ public class LatexNoMathContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @Nullable
-  public LatexOpenGroup getOpenGroup() {
-    return PsiTreeUtil.getChildOfType(this, LatexOpenGroup.class);
+  public LatexPseudocodeBlock getPseudocodeBlock() {
+    return PsiTreeUtil.getChildOfType(this, LatexPseudocodeBlock.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexRawText getRawText() {
+    return PsiTreeUtil.getChildOfType(this, LatexRawText.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCommandIfnextchar() {
+    return findChildByType(COMMAND_IFNEXTCHAR);
   }
 
 }
