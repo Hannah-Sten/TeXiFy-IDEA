@@ -10,8 +10,11 @@ class SystemEnvironment {
 
     companion object {
 
-        val inkscapeVersion: String by lazy {
-            runCommand("inkscape", "--version").split(" ").getOrNull(1) ?: ""
+        val inkscapeMajorVersion: Int by lazy {
+            runCommand("inkscape", "--version")
+                    .split(" ").getOrNull(1)
+                    ?.split(".")?.firstOrNull()
+                    ?.toInt() ?: 0
         }
 
         val isInkscapeInstalledAsSnap: Boolean by lazy {

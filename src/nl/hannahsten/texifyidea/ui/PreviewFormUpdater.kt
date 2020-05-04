@@ -117,8 +117,7 @@ $previewCode
      */
     private fun runInkscape(tempBasename: String, tempDirectory: File) {
         // If 1.0 or higher
-        if (SystemEnvironment.inkscapeVersion.split(".").firstOrNull() == "1") {
-
+        if (SystemEnvironment.inkscapeMajorVersion >= 1) {
             runCommand(
                     inkscapeExecutable(),
                     arrayOf("$tempBasename.pdf",
@@ -130,7 +129,6 @@ $previewCode
                     ),
                     tempDirectory
             ) ?: throw AccessDeniedException(tempDirectory)
-
         }
         else {
             runCommand(
