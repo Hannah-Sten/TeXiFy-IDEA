@@ -5,6 +5,7 @@
 * Align & and \\ in simple tables. (#1341)
 * Add support for language injection. (#1363)
 * Add support for custom preamble for math and tikz preview. (#1373)
+* Add basic algorithmicx pseudocode formatting. (#1393)
 * Add commands defined using the xparse package to the autocompletion. (#1312)
 * Add support for Dockerized MiKTeX. (#1310)
 * Add support for entering relative paths in the run configuration. (#1311)
