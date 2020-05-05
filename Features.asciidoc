@@ -293,9 +293,9 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * link:Probable-bugs#unescaped--symbol#[Unescaped `#` symbol]
 
 ==== Redundant LaTeX
-* Redundant escape when Unicode is enabled
-* Redundant use of `\par`
-* Unnecessary whitespace in section commands
+* link:Redundant-LaTeX#redundant-escape-when-unicode-is-enabled[Redundant escape when Unicode is enabled]
+* link:Redundant-LaTeX#redundant-use-of-par[Redundant use of `\par`]
+* link:Redundant-LaTeX#unnecessary-whitespace-in-section-commands[Unnecessary whitespace in section commands]
 
 ==== Conventions
 * link:Conventions#Missing-labels[Missing labels]

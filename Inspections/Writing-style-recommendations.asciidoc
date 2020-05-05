@@ -4,6 +4,9 @@
 == Non-breaking spaces before references
 == Ellipsis with `...` instead of `\ldots` or `\dots`
 == Normal space after abbreviation
+
+After an abbreviation like `e.g.` you should use a normal space instead of an end-of-sentence space, so use `e.g.\ this` instead of `e.g. this` (arguably you need to type `e.g., this` anyway). If you don't do this, LaTeX will interpret `e.g.` as the end of a sentence and thus insert a larger space.
+
 == En dash in number ranges
 == End-of-sentence space after sentences ending with capitals
 == Use of `.` instead of `\cdot`
