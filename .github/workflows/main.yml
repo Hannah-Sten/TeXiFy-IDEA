@@ -16,4 +16,4 @@ jobs:
         ./gradlew check jacocoTestReport
     - name: Upload coverage report
       if: success()
-      run: bash <(curl -s https://codecov.io/bash) | true
+      run: bash <(curl -s https://codecov.io/bash)
