@@ -1,39 +1,32 @@
-package nl.hannahsten.texifyidea.completion;
+package nl.hannahsten.texifyidea.completion
 
-import com.intellij.codeInsight.lookup.CharFilter;
-import com.intellij.codeInsight.lookup.Lookup;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import nl.hannahsten.texifyidea.file.LatexFile;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.codeInsight.lookup.CharFilter
+import com.intellij.codeInsight.lookup.Lookup
+import nl.hannahsten.texifyidea.file.LatexFile
 
 /**
  * @author Sten Wessel
  */
-public class LatexCharFilter extends CharFilter {
-
-    @Nullable
-    @Override
-    public Result acceptChar(char c, int prefixLength, Lookup lookup) {
-        if (!isInLatexContext(lookup)) {
-            return null;
+class LatexCharFilter : CharFilter() {
+    override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup): Result? {
+        return if (!isInLatexContext(lookup)) {
+            null
         }
-
-        switch (c) {
-            case '$': return Result.HIDE_LOOKUP;
-            case ':': return Result.ADD_TO_PREFIX;
-            default: return null;
+        else when (c) {
+            '$' -> Result.HIDE_LOOKUP
+            ':' -> Result.ADD_TO_PREFIX
+            else -> null
         }
     }
 
-    private static boolean isInLatexContext(Lookup lookup) {
-        if (!lookup.isCompletion()) {
-            return false;
+    companion object {
+        private fun isInLatexContext(lookup: Lookup): Boolean {
+            if (!lookup.isCompletion) {
+                return false
+            }
+            val element = lookup.psiElement
+            val file = lookup.psiFile
+            return file is LatexFile && element != null
         }
-
-        PsiElement element = lookup.getPsiElement();
-        PsiFile file = lookup.getPsiFile();
-
-        return file instanceof LatexFile && element != null;
     }
 }
