@@ -43,7 +43,7 @@
 
     <description><![CDATA[
         <p>
-            Plugin for LaTeX and BibTeX support in IntelliJ, featuring:
+            Plugin for LaTeX and BibTeX support in IntelliJ.
         </p>
         <ul>
             <li>Syntax highlighting</li>
