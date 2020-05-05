@@ -43,7 +43,7 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         }
 
         if (cmdParameterCount > 0) {
-            insert(context, optional.size)
+            insert(context, cmdParameterCount)
         }
     }
 
@@ -61,7 +61,7 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         }
     }
 
-    private fun insert(context: InsertionContext, nBrackets: Int) {
+    private fun insert(context: InsertionContext, numberOfBracesPairs: Int) {
         val editor = context.editor
         val document = editor.document
         val caret = editor.caretModel
@@ -70,7 +70,7 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         // When not followed by {}, insert {}.
         if (offset >= document.textLength - 1 ||
                 document.getText(TextRange.from(offset, 1)) != "{") {
-            insertSquigglyBracketPair(editor, nBrackets)
+            insertSquigglyBracketPair(editor, numberOfBracesPairs)
         }
         else {
             skipSquigglyBrackets(editor, caret)
@@ -94,9 +94,9 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         }
     }
 
-    private fun insertSquigglyBracketPair(editor: Editor, nBrackets: Int) {
-        val template = TemplateImpl("", (0 until nBrackets).joinToString("") { "{\$__Variable$it\$}" }, "")
-        repeat(nBrackets) { template.addVariable(TextExpression(""), true) }
+    private fun insertSquigglyBracketPair(editor: Editor, numberOfBracesPairs: Int) {
+        val template = TemplateImpl("", (0 until numberOfBracesPairs).joinToString("") { "{\$__Variable$it\$}" }, "")
+        repeat(numberOfBracesPairs) { template.addVariable(TextExpression(""), true) }
         TemplateManager.getInstance(editor.project).startTemplate(editor, template)
     }
 }
