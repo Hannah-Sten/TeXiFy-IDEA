@@ -232,7 +232,7 @@ object Magic {
         val figures = hashSetOf("figure")
 
         @JvmField
-        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*")
 
         val algorithmEnvironments = setOf("algorithmic")
     }
