@@ -17,6 +17,7 @@ import java.util.List;
  *
  * Note that it has to be written in Java.
  */
+@SuppressWarnings("TypeMayBeWeakened")
 public class BibtexPsiImplUtil {
 
     /**
