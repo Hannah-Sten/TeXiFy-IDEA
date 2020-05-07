@@ -81,7 +81,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // File names
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("File name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
@@ -104,7 +104,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // Folder names
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement()
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
@@ -127,7 +127,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // Graphics paths
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
@@ -279,7 +279,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
     private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, commandNamesWithSlash: Set<String>) {
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {

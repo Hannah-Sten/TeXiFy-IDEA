@@ -5,6 +5,7 @@ import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
@@ -12,7 +13,7 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
  * Reference to a bibtex id.
  * The LatexNormalText, for example the `knuth1990` in `\cite{knuth1990}` will resolve to the bibtex id, so the `knuth1990,` in `@Book{knuth1990,`
  */
-class BibtexIdReference(element: LatexNormalText) : PsiReferenceBase<LatexNormalText>(element), PsiPolyVariantReference {
+class BibtexIdReference(element: LatexParameterText) : PsiReferenceBase<LatexParameterText>(element), PsiPolyVariantReference {
 
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)

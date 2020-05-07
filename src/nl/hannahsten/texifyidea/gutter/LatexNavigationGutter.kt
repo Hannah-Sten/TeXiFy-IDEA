@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.parentOfType
@@ -26,7 +26,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         // Gutters should only be used with leaf elements.
         // Filter for text nodes and then lookup their LatexCommands parent
-        if (element.firstChild != null || element.parent !is LatexNormalText) return
+        if (element.firstChild != null || element.parent !is LatexParameterText) return
 
         // Only make markers when dealing with commands.
         val command = element.parentOfType(LatexCommands::class) ?: return

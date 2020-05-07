@@ -4,8 +4,8 @@ package nl.hannahsten.texifyidea.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.PsiLanguageInjectionHost;
+import com.intellij.psi.PsiNameIdentifierOwner;
 
 public class LatexVisitor extends PsiElementVisitor {
 
@@ -62,19 +62,23 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitNormalText(@NotNull LatexNormalText o) {
-    visitPsiNameIdentifierOwner(o);
+    visitPsiElement(o);
   }
 
   public void visitOptionalParam(@NotNull LatexOptionalParam o) {
     visitPsiElement(o);
   }
 
-  public void visitOptionalParamContent(@NotNull LatexOptionalParamContent o) {
+  public void visitParamContent(@NotNull LatexParamContent o) {
     visitPsiElement(o);
   }
 
   public void visitParameter(@NotNull LatexParameter o) {
     visitPsiElement(o);
+  }
+
+  public void visitParameterText(@NotNull LatexParameterText o) {
+    visitPsiNameIdentifierOwner(o);
   }
 
   public void visitPseudocodeBlock(@NotNull LatexPseudocodeBlock o) {

@@ -10,15 +10,16 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
+import com.intellij.psi.PsiReference;
 
-public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements LatexRequiredParam {
+public class LatexParameterTextImpl extends ASTWrapperPsiElement implements LatexParameterText {
 
-  public LatexRequiredParamImpl(@NotNull ASTNode node) {
+  public LatexParameterTextImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitRequiredParam(this);
+    visitor.visitParameterText(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,9 +28,28 @@ public class LatexRequiredParamImpl extends ASTWrapperPsiElement implements Late
   }
 
   @Override
-  @NotNull
-  public List<LatexParamContent> getParamContentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexParamContent.class);
+  public PsiReference[] getReferences() {
+    return LatexPsiImplUtil.getReferences(this);
+  }
+
+  @Override
+  public PsiReference getReference() {
+    return LatexPsiImplUtil.getReference(this);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return LatexPsiImplUtil.getNameIdentifier(this);
+  }
+
+  @Override
+  public String getName() {
+    return LatexPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String name) {
+    return LatexPsiImplUtil.setName(this, name);
   }
 
 }

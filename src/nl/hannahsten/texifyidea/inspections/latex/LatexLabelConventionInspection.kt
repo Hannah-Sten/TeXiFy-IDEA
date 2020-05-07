@@ -169,7 +169,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
                 // Find all the parameters with the given labelName
                 for (ref in commands) {
-                    val parameters = ref.requiredParameters().filter { p -> p.firstChildOfType(LatexNormalText::class)?.text == labelName }
+                    val parameters = ref.requiredParameters().filter { p -> p.firstChildOfType(LatexParameterText::class)?.text == labelName }
                     requiredParams.addAll(parameters)
                 }
 

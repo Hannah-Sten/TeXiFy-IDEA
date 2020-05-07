@@ -362,8 +362,8 @@ fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.par
 /**
  * Looks up the name of the environment in the required parameter.
  */
-fun LatexEnvironment.name(): LatexNormalText? {
-    return firstChildOfType(LatexNormalText::class)
+fun LatexEnvironment.name(): LatexParameterText? {
+    return firstChildOfType(LatexParameterText::class)
 }
 
 /**
@@ -420,7 +420,7 @@ fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
  * @param element
  *              Either a [LatexBeginCommand] or a [LatexEndCommand]
  */
-private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexNormalText::class)?.text
+private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexParameterText::class)?.text
 
 /**
  * Finds the [LatexBeginCommand] that matches the end command.
@@ -456,17 +456,17 @@ fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibl
 /**
  * Splits the first normal text child element of [element] on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
  */
-fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter) ?: emptyList()
+fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexParameterText::class)?.text?.split(delimiter) ?: emptyList()
 
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
@@ -476,7 +476,7 @@ fun LatexRequiredParam.splitContent(delimiter: String = ",") = splitContent(this
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
@@ -486,7 +486,7 @@ fun LatexOptionalParam.splitContent(delimiter: String = ",") = splitContent(this
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.

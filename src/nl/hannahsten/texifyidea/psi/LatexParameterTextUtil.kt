@@ -12,41 +12,31 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
  */
 @Suppress("RemoveExplicitTypeArguments") // Somehow they are needed
-fun getReferences(element: LatexNormalText): Array<PsiReference> {
-    val command = element.firstParentOfType(LatexCommands::class)
+fun getReferences(element: LatexParameterText): Array<PsiReference> {
+    val command = element.firstParentOfType(LatexCommands::class) ?: return emptyArray<PsiReference>()
     // If the command is a label reference
-    return if (Magic.Command.labelReference.contains(command?.name)) {
-        val reference = LatexLabelParameterReference(element)
-        if (reference.multiResolve(false).isNotEmpty()) {
-            arrayOf<PsiReference>(reference)
+    return when {
+        Magic.Command.labelReference.contains(command.name) -> {
+            arrayOf<PsiReference>(LatexLabelParameterReference(element))
         }
-        else {
+        // If the command is a bibliography reference
+        Magic.Command.bibliographyReference.contains(command.name) -> {
+            arrayOf<PsiReference>(BibtexIdReference(element))
+        }
+        // If the command is an \end command (references to \begin)
+        element.firstParentOfType(LatexEndCommand::class) != null -> {
+            arrayOf<PsiReference>(LatexEnvironmentReference(element))
+        }
+        else -> {
             emptyArray<PsiReference>()
         }
-    }
-    // If the command is a bibliography reference
-    else if (Magic.Command.bibliographyReference.contains(command?.name)) {
-        val reference = BibtexIdReference(element)
-        if (reference.multiResolve(false).isNotEmpty()) {
-            arrayOf<PsiReference>(reference)
-        }
-        else {
-            emptyArray<PsiReference>()
-        }
-    }
-    // If the command is an \end command (references to \begin)
-    else if (element.firstParentOfType(LatexEndCommand::class) != null) {
-        arrayOf<PsiReference>(LatexEnvironmentReference(element))
-    }
-    else {
-        emptyArray<PsiReference>()
     }
 }
 
 /**
  * If [getReferences] returns one reference return that one, null otherwise.
  */
-fun getReference(element: LatexNormalText): PsiReference? {
+fun getReference(element: LatexParameterText): PsiReference? {
     val references = getReferences(element)
     return if (references.size != 1) {
         null
@@ -56,11 +46,11 @@ fun getReference(element: LatexNormalText): PsiReference? {
     }
 }
 
-fun getNameIdentifier(element: LatexNormalText): PsiElement {
+fun getNameIdentifier(element: LatexParameterText): PsiElement {
     return element
 }
 
-fun setName(element: LatexNormalText, name: String): PsiElement {
+fun setName(element: LatexParameterText, name: String): PsiElement {
     val command = element.firstParentOfType(LatexCommands::class)
     // If we want to rename a label
     if (Magic.Command.reference.contains(command?.name) || Magic.Command.labelDefinition.contains(command?.name)) {
@@ -95,6 +85,6 @@ fun setName(element: LatexNormalText, name: String): PsiElement {
     return element
 }
 
-fun getName(element: LatexNormalText): String {
+fun getName(element: LatexParameterText): String {
     return element.text ?: ""
 }

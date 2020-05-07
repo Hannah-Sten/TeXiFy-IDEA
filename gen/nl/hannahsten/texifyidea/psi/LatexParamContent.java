@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexOptionalParamContent extends PsiElement {
+public interface LatexParamContent extends PsiElement {
 
   @Nullable
   LatexCommands getCommands();
@@ -23,6 +23,15 @@ public interface LatexOptionalParamContent extends PsiElement {
   LatexMathEnvironment getMathEnvironment();
 
   @Nullable
-  LatexNormalText getNormalText();
+  LatexParameterText getParameterText();
+
+  @Nullable
+  LatexPseudocodeBlock getPseudocodeBlock();
+
+  @Nullable
+  LatexRawText getRawText();
+
+  @Nullable
+  PsiElement getCommandIfnextchar();
 
 }

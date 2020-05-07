@@ -21,7 +21,7 @@
     implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
 
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
-    implements("normal_text")="com.intellij.psi.PsiNameIdentifierOwner"
+    implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
     // See the lexer
     tokens=[
@@ -58,9 +58,7 @@ content ::= no_math_content | END_PSEUDOCODE_BLOCK
 no_math_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | M_OPEN_BRACKET | M_CLOSE_BRACKET | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
-    methods=[getReferences getReference getNameIdentifier getName setName]
-}
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+
 
 environment ::= begin_command environment_content? end_command {
     pin=1
@@ -100,12 +98,21 @@ parameter ::= optional_param | required_param
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET param_content* CLOSE_BRACKET { pin=3 }
 
-// content, but no brackets
-optional_param_content ::= comment | environment | math_environment | commands | group | OPEN_PAREN | CLOSE_PAREN | normal_text
+required_param ::= OPEN_BRACE param_content* CLOSE_BRACE { pin=1 }
 
-required_param ::= group
+// Like content, but no brackets and with parameter_text instead of normal_text
+param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
+ OPEN_PAREN | CLOSE_PAREN | parameter_text
+
+// The lowest level of a parameter must have the getReferences etc. implemented
+// We don't do this on normal_text because then every normal_text in the document would be a reference
+// So, the following is like normal_text
+// This assumes that parameter text which is a reference, appears directly under param_content
+parameter_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
+   methods=[getReferences getReference getNameIdentifier getName setName]
+}
 
 group ::= OPEN_BRACE content* CLOSE_BRACE { pin=1 }
 

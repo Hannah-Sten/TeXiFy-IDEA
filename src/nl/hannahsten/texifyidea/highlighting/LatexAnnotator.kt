@@ -195,12 +195,12 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateOptionalParameters(optionalParamElement: LatexOptionalParam,
                                            annotationHolder: AnnotationHolder) {
-        for (element in optionalParamElement.optionalParamContentList) {
-            if (element !is LatexOptionalParamContent) {
+        for (element in optionalParamElement.paramContentList) {
+            if (element !is LatexParamContent) {
                 continue
             }
 
-            val toStyle = element.normalText ?: continue
+            val toStyle = element.parameterText ?: continue
 
             annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                     .range(toStyle)
