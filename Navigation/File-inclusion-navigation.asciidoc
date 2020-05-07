@@ -8,6 +8,8 @@ image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation
 
 == Import package
 
+_Since b0.6.9_
+
 TeXiFy supports the `import` package with which you can include other LaTeX files.
 Its main feature is the ability to set import path prefixes when you included a file.
 For example, if you have `main.tex` which contains `\subimport{chapters/}{chapter-one.tex}`, and two files `chapters/chapter-one.tex` and `chapters/included.tex`, then in `chapter-one.tex` you can do `\input{included.tex}` and it will resolve correctly.
