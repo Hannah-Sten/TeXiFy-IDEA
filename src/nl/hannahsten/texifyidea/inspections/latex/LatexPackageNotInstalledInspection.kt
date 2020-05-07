@@ -12,8 +12,8 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
-import com.intellij.psi.util.createSmartPointer
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -56,7 +56,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed",
-                                InstallPackage(file.createSmartPointer(file.project), `package`),
+                                InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
                         ))
