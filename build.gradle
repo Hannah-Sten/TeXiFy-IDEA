@@ -121,7 +121,7 @@ task zip(type: Zip) {
 
 }
 
-def pycharmVersion = '2019.2'
+def pycharmVersion = '2020.1'
 
 // This task is used to debug the plugin in a different IDE, in this case Pycharm
 // Source: https://gist.github.com/thomas15v/716ea57261855bf61d8b6131be419c26
