@@ -16,6 +16,6 @@ class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
         replacement = { _, _ -> """\#""" }
 ) {
     override fun checkContext(element: PsiElement): Boolean {
-        return element.parentsOfType<LatexCommands>().all { !it.isCommandDefinition() }
+        return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isCommandDefinition() }
     }
 }

@@ -11,6 +11,7 @@ import org.freedesktop.dbus.interfaces.DBusInterface
 interface Daemon : DBusInterface {
     /**
      * Find a certain document.
+     * This seems to be unable to handle spaces in a path: the pdf will open but the process owner will not be returned.
      *
      * @param uri Path to a pdf file, prepended with file://
      * @param spawn Whether to spawn Evince or not.

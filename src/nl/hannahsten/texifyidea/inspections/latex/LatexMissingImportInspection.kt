@@ -111,7 +111,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
             // In case there are multiple commands with this name, we don't know which one the user wants.
             // So we don't know which of the dependencies the user needs: we assume that if at least one of them is present it will be the right one.
-            val dependencies = latexCommands.map { it.dependency }
+            val dependencies = latexCommands.map { it.dependency }.toSet()
 
             if (dependencies.isEmpty() || dependencies.any { it.isDefault }) {
                 continue
@@ -119,7 +119,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
             // Packages included in other packages
             for (packageInclusion in Magic.Package.packagesLoadingOtherPackages) {
-                if (packageInclusion.value.intersect(dependencies.toSet()).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
+                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key.name)) {
                     continue@commandLoop
                 }
             }

@@ -232,7 +232,7 @@ object Magic {
         val figures = hashSetOf("figure")
 
         @JvmField
-        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml")
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*")
 
         val algorithmEnvironments = setOf("algorithmic")
     }
@@ -584,8 +584,8 @@ object Magic {
         /**
          * Finds all abbreviations that have at least two letters separated by comma's.
          *
-         * It might be more parts, like `b.v.b.d.` is a valid abbreviation. Likewise are `sajdflkj.asdkfj.asdf` and
-         * `i.e.`. Single period abbreviations are not being detected as they can easily be confused with two letter words
+         * It might be more parts, like `b.v.b.d. ` is a valid abbreviation. Likewise are `sajdflkj.asdkfj.asdf ` and
+         * `i.e. `. Single period abbreviations are not being detected as they can easily be confused with two letter words
          * at the end of the sentence (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
         @JvmField
