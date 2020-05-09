@@ -144,19 +144,19 @@ object LatexPsiUtil {
                 //            result.add(noMathContent.getOpenGroup());
                 result.add(element.normalText)
             }
-            is LatexOptionalParamContent -> {
+            is LatexParamContent -> {
                 result.add(element.group)
-                result.add(element.normalText)
+                result.add(element.parameterText)
             }
             is LatexOptionalParam -> {
-                result.addAll(element.optionalParamContentList)
+                result.addAll(element.paramContentList)
             }
             is LatexParameter -> {
                 result.add(element.optionalParam)
                 result.add(element.requiredParam)
             }
             is LatexRequiredParam -> {
-                result.add(element.group)
+                result.addAll(element.paramContentList)
             }
             is LatexMathContent -> {
                 result.addAll(element.noMathContentList)
