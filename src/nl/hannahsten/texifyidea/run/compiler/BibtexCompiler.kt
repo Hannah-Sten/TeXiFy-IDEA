@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.compiler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 
 /**
  * @author Sten Wessel

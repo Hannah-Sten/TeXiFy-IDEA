@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.run.latex
 
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.io.IOException
@@ -18,6 +18,18 @@ class LatexDistribution {
 
         private val dockerImagesText: String by lazy {
             runCommand("docker", "image", "ls")
+        }
+
+        /**
+         * Guess the LaTeX distribution that the user probably is using / wants to use.
+         */
+        val defaultLatexDistribution: LatexDistributionType by lazy {
+            when {
+                isMiktex -> LatexDistributionType.MIKTEX
+                isTexlive -> LatexDistributionType.TEXLIVE
+                isDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
+                else -> LatexDistributionType.TEXLIVE
+            }
         }
 
         /**
