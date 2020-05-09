@@ -11,14 +11,14 @@ class SystemEnvironment {
     companion object {
 
         val inkscapeMajorVersion: Int by lazy {
-            runCommand("inkscape", "--version")
-                    .split(" ").getOrNull(1)
+            "inkscape --version".runCommand()
+                    ?.split(" ")?.getOrNull(1)
                     ?.split(".")?.firstOrNull()
                     ?.toInt() ?: 0
         }
 
         val isInkscapeInstalledAsSnap: Boolean by lazy {
-            runCommand("snap", "list").contains("inkscape")
+            "snap list".runCommand()?.contains("inkscape") == true
         }
     }
 
@@ -34,7 +34,7 @@ internal fun runCommand(vararg commands: String): String {
                 .start()
 
         // Timeout value
-        proc.waitFor(10, TimeUnit.SECONDS)
+        proc.waitFor(3, TimeUnit.SECONDS)
         return proc.inputStream.bufferedReader().readText()
     }
     catch (e: IOException) {

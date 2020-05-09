@@ -61,7 +61,7 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
                 val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
                 val writer = PrintWriter("$tempBasename.tex", "UTF-8")
 
-                val tmpContent = """\documentclass{article}
+                val tmpContent = """\documentclass[border=1mm]{standalone}
 $preamble
 
 \begin{document}
@@ -121,7 +121,6 @@ $previewCode
             runCommand(
                     inkscapeExecutable(),
                     arrayOf("$tempBasename.pdf",
-                            "--export-area-drawing",
                             "--export-dpi", "1000",
                             "--export-background", "#FFFFFF",
                             "--export-background-opacity", "1.0",
@@ -143,7 +142,6 @@ $previewCode
             runCommand(
                     inkscapeExecutable(),
                     arrayOf("$tempBasename.svg",
-                            "--export-area-drawing",
                             "--export-dpi", "1000",
                             "--export-background", "#FFFFFF",
                             "--export-png", "$tempBasename.png"
