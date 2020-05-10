@@ -9,6 +9,10 @@ enum class LatexDistributionType(val displayName: String) {
     WSL_TEXLIVE("TeX Live using WSL"),
     DOCKER_MIKTEX("Dockerized MiKTeX");
 
+    fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
+
+    fun isTexlive() = this == TEXLIVE || this == WSL_TEXLIVE
+
     override fun toString() = displayName
 
     companion object {

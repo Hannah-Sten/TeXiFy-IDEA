@@ -36,6 +36,7 @@ class LatexDistribution {
          * Whether the user is using MikTeX or not.
          * This value is lazy, so only computed when first accessed, because it is unlikely that the user will change LaTeX distribution while using IntelliJ.
          */
+        // todo check usage
         val isMiktex: Boolean by lazy {
             pdflatexVersionText.contains("MiKTeX")
         }

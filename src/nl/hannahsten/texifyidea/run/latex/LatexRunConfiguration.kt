@@ -96,6 +96,7 @@ class LatexRunConfiguration constructor(project: Project,
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
+    // todo set sensible default
     var latexDistribution: LatexDistributionType = LatexDistributionType.TEXLIVE
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
