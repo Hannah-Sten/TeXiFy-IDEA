@@ -259,6 +259,18 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     override fun toString() = this.displayName
 
+    companion object {
+        fun byExecutableName(exe: String): LatexCompiler {
+            for (compiler in values()) {
+                if (compiler.executableName.equals(exe, ignoreCase = true)) {
+                    return compiler
+                }
+            }
+
+            return PDFLATEX
+        }
+    }
+
     /**
      * @author Hannah Schellekens
      */

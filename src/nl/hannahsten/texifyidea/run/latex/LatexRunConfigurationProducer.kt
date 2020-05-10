@@ -9,6 +9,9 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 
 /**
  * @author Hannah Schellekens
@@ -39,7 +42,12 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.setDefaultOutputPath()
         runConfiguration.setDefaultAuxilPath()
         runConfiguration.setSuggestedName()
-
+        val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
+        if (runCommand != null) {
+            val compiler = runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
+            runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
+            runConfiguration.compilerArguments = runCommand.removePrefix(compiler).trim()
+        }
         return true
     }
 
