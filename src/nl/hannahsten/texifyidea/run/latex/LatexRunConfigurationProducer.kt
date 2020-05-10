@@ -42,9 +42,12 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.setDefaultOutputPath()
         runConfiguration.setDefaultAuxilPath()
         runConfiguration.setSuggestedName()
+
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
         if (runCommand != null) {
-            val compiler = runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
+            val compiler = if (runCommand.contains(' ')) {
+                runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
+            } else runCommand
             runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
             runConfiguration.compilerArguments = runCommand.removePrefix(compiler).trim()
         }
