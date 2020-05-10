@@ -96,7 +96,6 @@ class LatexRunConfiguration constructor(project: Project,
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
-    // todo set sensible default
     var latexDistribution: LatexDistributionType = LatexDistributionType.TEXLIVE
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
@@ -332,7 +331,7 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
         // On non-MiKTeX systems, override outputPath to disable the out/ directory by default for bibtex to work
-        if (!LatexDistribution.isMiktex) {
+        if (!latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (isDefaultOutputPath() && mainFile != null) {
                 outputPath = mainFile!!.parent
@@ -426,6 +425,10 @@ class LatexRunConfiguration constructor(project: Project,
         outputFormat = Format.PDF
     }
 
+    fun setDefaultDistribution() {
+        latexDistribution = LatexDistribution.defaultLatexDistribution
+    }
+
     /**
      * Find the directory where auxiliary files will be placed, depending on the run config settings.
      *
@@ -433,7 +436,7 @@ class LatexRunConfiguration constructor(project: Project,
      */
     fun getAuxilDirectory(): VirtualFile? {
         val auxilDir = when {
-            auxilPath != null && LatexDistribution.isMiktex -> auxilPath
+            auxilPath != null && latexDistribution.isMiktex() -> auxilPath
             outputPath != null -> outputPath
             mainFile != null -> mainFile?.parent
             else -> null
@@ -508,7 +511,7 @@ class LatexRunConfiguration constructor(project: Project,
      */
     fun setDefaultAuxilPath() {
         // -aux-directory pdflatex flag only exists on MiKTeX, so disable auxil otherwise
-        if (auxilPath != null || mainFile == null || !LatexDistribution.isMiktex) return
+        if (auxilPath != null || mainFile == null || !latexDistribution.isMiktex()) return
         val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         this.auxilPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/auxil")
     }

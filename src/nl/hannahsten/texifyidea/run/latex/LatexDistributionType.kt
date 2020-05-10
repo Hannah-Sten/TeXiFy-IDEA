@@ -13,11 +13,13 @@ enum class LatexDistributionType(val displayName: String) {
 
     fun isTexlive() = this == TEXLIVE || this == WSL_TEXLIVE
 
+    fun isInstalled() = LatexDistribution.isInstalled(this)
+
     override fun toString() = displayName
 
     companion object {
         fun valueOfIgnoreCase(value: String?): LatexDistributionType {
-            return values().firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
+            return values().firstOrNull { it.name.equals(value, true) } ?: LatexDistribution.defaultLatexDistribution
         }
     }
 }

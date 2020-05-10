@@ -111,7 +111,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         val stream: InputStream
         try {
             // -M to avoid texdoc asking to choose from the list
-            val command = if (LatexDistribution.isTexlive) {
+            val command = if (LatexDistribution.isTexliveAvailable) {
                 "texdoc -l -M $name"
             }
             else {
@@ -130,7 +130,7 @@ class LatexDocumentationProvider : DocumentationProvider {
              emptyList()
         }
         else {
-            if (LatexDistribution.isTexlive) {
+            if (LatexDistribution.isTexliveAvailable) {
                 lines.map {
                     // Line consists of: name version path optional file description
                     it.split("\t")[2]

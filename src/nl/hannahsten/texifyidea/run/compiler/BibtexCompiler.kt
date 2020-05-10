@@ -24,7 +24,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 
             // Include files from auxiliary directory on Windows
-            if (LatexDistribution.isMiktex) {
+            if (LatexDistribution.isMiktexAvailable) {
                 add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }

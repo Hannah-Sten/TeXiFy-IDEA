@@ -91,7 +91,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         }
 
         // Try content roots
-        if (targetFile == null && LatexDistribution.isMiktex) {
+        if (targetFile == null && LatexDistribution.isMiktexAvailable) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
                 targetFile = moduleRoot.findFile(key, extensions)
                 if (targetFile != null) break

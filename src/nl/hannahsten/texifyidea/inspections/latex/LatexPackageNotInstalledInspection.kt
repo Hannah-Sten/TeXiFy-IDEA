@@ -32,12 +32,12 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     }
 
     override fun isEnabledByDefault(): Boolean {
-        return LatexDistribution.isTexlive
+        return LatexDistribution.isTexliveAvailable
     }
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        if (LatexDistribution.isTexlive) {
+        if (LatexDistribution.isTexliveAvailable) {
             val installedPackages = TexLivePackages.packageList
             val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project
                             .projectSearchScope)

@@ -18,10 +18,10 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -287,7 +287,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(outputFormat)
 
         // LaTeX distribution
-        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values()), "LaTeX Distribution")
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isInstalled() }.toTypedArray()), "LaTeX Distribution")
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
@@ -302,7 +302,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
     private fun addOutputPathField(panel: JPanel) {
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
-        if (LatexDistribution.isMiktex) {
+        if (LatexDistribution.isMiktexAvailable) {
 
             val auxilPathField = TextFieldWithBrowseButton()
             auxilPathField.addBrowseFolderListener(
