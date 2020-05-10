@@ -7,6 +7,33 @@ Make sure you have it installed correctly.
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Running/figures/change-compiler.gif[]
 
+[compiler-magic]
+=== Using magic comments to specify the compiler for new run configurations
+To set the compiler of a document, put the magic comment
+
+[source]
+----
+%! Compiler = [compiler executable] [compiler arguments]
+----
+
+at the top of the root file.To set the BibTeX compiler, put the magic comment
+
+[source]
+----
+%! BibTeX Compiler = [compiler executable] [compiler arguments]
+----
+
+at the top of the **LaTeX root** file.
+An example for compiling with lualatex that needs `--shell-escape` and biber:
+
+[source]
+----
+%! Compiler = lualatex --shell-escape
+%! BibTeX Compiler = biber
+----
+
+**Note:** These magic comments only take affect when creating a new run configuration (using kbd:[Ctrl] + kbd:[Shift] + kbd:[F10] or using the gutter icon).
+They have no effect on already existing run configurations, which can be edited using Edit Configurations dialog.
 
 == LaTeX compilers
 

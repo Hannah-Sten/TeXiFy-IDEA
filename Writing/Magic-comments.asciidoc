@@ -1,5 +1,8 @@
 _Since b0.6.10_
 
+== Compilers
+See link:Compilers#compiler-magic[Using magic comments to specify the compiler for new run configurations].
+
 == Language injection
 
 See link:Language-injection[Language injection].
