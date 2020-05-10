@@ -222,9 +222,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         input.forEach { listener.processNewText(it) }
 
         val expectedMessages = setOf(
+                LatexLogMessage("Label `mylabel' multiply defined.", "main.tex", 0, WARNING),
                 LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "main.tex", 0, ERROR),
                 LatexLogMessage("fontenc: Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "main.tex", 0, ERROR),
-                LatexLogMessage("Label `mylabel' multiply defined.", "main.tex", 0, WARNING),
                 LatexLogMessage("Encoding scheme `15' unknown.", "main.tex", 5, ERROR),
                 LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "main.tex", 5, WARNING),
                 LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "main.tex", 6, ERROR),
