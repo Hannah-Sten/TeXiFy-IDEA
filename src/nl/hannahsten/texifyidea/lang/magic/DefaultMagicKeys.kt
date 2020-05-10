@@ -38,7 +38,7 @@ enum class DefaultMagicKeys(
     """.trimIndent().trim(), MagicCommentScope.FILE.singleScope()),
 
     // TeXiFy functionality.
-    SUPPRESS("surpress",
+    SUPPRESS("suppress",
             "Suppress", """
         Denotes that an inspection in the following scope must be suppressed.
         A value of 'All' means that all inspections will be suppressed.
