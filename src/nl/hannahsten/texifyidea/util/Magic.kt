@@ -498,6 +498,16 @@ object Magic {
         )
 
         /**
+         * Set of text styling commands
+         */
+        @JvmField
+        val textStyles = setOf(
+                "\\textrm", "\\textsf", "\\texttt", "\\textit",
+                "\\textsl", "\\textsc", "\\textbf", "\\emph",
+                "\\textup", "\\textmd"
+        )
+
+        /**
          * All commands that mark some kind of section.
          */
         @JvmField
