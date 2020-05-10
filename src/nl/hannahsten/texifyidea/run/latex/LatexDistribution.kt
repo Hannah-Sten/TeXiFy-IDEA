@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex
 
-import nl.hannahsten.texifyidea.settings.TexifySettings
+import com.intellij.openapi.util.SystemInfo
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -53,14 +53,14 @@ class LatexDistribution {
         }
 
         private val isWslTexliveAvailable: Boolean by lazy {
-            runCommand("bash", "-ic", "pdflatex --version").contains("pdfTeX")
+            SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version").contains("pdfTeX")
         }
 
         /**
          * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
          * In this case we assume the user wants to use Dockerized MiKTeX.
          */
-        private fun defaultIsDockerMiktex() = TexifySettings.getInstance().dockerizedMiktex || (!isMiktexAvailable && !isTexliveAvailable && dockerImagesText.contains("miktex"))
+        private fun defaultIsDockerMiktex() = (!isMiktexAvailable && !isTexliveAvailable && dockerImagesText.contains("miktex"))
 
         fun isInstalled(type: LatexDistributionType): Boolean {
             if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
