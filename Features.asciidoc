@@ -12,7 +12,7 @@
 
 This is a work in progress. More features should be added, and each should link to its own page with documentation. Link to IJ docs where possible and useful
 
-toc::[]
+toc::[]m
 
 
 // todo: each features which has a menu entry/shortcut should mention it (at the top of the description page?)
