@@ -16,6 +16,9 @@ plugins {
 
     // Test coverage
     id 'jacoco'
+
+    // Linting
+    id 'org.jlleitschuh.gradle.ktlint' version '9.2.1'
 }
 
 group 'nl.hannahsten'

@@ -10,10 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Run tests
+    - name: Run linting
       run: |
         chmod +x gradlew
-        ./gradlew check jacocoTestReport
+        ./gradlew ktlintCheck
+    - name: Run tests
+      run: ./gradlew check jacocoTestReport
     - name: Upload coverage report
       if: success()
       run: bash <(curl -s https://codecov.io/bash)
