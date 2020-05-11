@@ -93,7 +93,11 @@ class LatexDocumentationProvider : DocumentationProvider {
         return sb.toString()
     }
 
-    override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, obj: Any?, psiElement: PsiElement?): PsiElement? {
+    override fun getDocumentationElementForLookupItem(
+        psiManager: PsiManager?,
+        obj: Any?,
+        psiElement: PsiElement?
+    ): PsiElement? {
         if (obj == null || obj !is Described) {
             lookup = null
             return null
@@ -103,7 +107,11 @@ class LatexDocumentationProvider : DocumentationProvider {
         return psiElement
     }
 
-    override fun getDocumentationElementForLink(psiManager: PsiManager?, s: String?, psiElement: PsiElement?): PsiElement? = null
+    override fun getDocumentationElementForLink(
+        psiManager: PsiManager?,
+        s: String?,
+        psiElement: PsiElement?
+    ): PsiElement? = null
 
     private fun runTexdoc(pkg: Package): List<String> {
         val name = if (pkg == DEFAULT) "source2e" else pkg.name
@@ -127,7 +135,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         val lines = stream.bufferedReader().use { it.readLines() }
 
         return if (lines.getOrNull(0)?.endsWith("could not be found.") == true) {
-             emptyList()
+            emptyList()
         }
         else {
             if (LatexDistribution.isTexlive) {
