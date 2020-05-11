@@ -1,3 +1,6 @@
 [*.{kt,kts}]
 disabled_rules = final-newline
 insert_final_newline = false
+ij_kotlin_else_on_new_line = true
+ij_kotlin_catch_on_new_line = true
+ij_kotlin_finally_on_new_line = true
