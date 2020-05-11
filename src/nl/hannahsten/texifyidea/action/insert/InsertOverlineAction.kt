@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Hannah Schellekens
  */
-class InsertOverlineAction : InsertEditorAction("Overline", TexifyIcons.FONT_OVERLINE, "\\overline{", "}") 
+class InsertOverlineAction : InsertEditorAction("Overline", TexifyIcons.FONT_OVERLINE, "\\overline{", "}")

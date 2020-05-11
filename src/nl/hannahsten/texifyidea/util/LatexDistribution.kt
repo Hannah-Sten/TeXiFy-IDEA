@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.util
 
 import nl.hannahsten.texifyidea.settings.TexifySettings
 
-
 /**
  * Represents the LaTeX Distribution of the user, e.g. MikTeX or TeX Live.
  */
@@ -64,8 +63,6 @@ class LatexDistribution {
         private fun getDistribution(): String {
             return parsePdflatexOutput(runCommand("pdflatex", "--version"))
         }
-
-
 
         /**
          * Parse the output of pdflatex --version and return the distribution.

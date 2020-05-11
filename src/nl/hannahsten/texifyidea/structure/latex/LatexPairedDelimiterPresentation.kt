@@ -4,7 +4,7 @@ import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
-class LatexPairedDelimiterPresentation(newCommand: LatexCommands): ItemPresentation {
+class LatexPairedDelimiterPresentation(newCommand: LatexCommands) : ItemPresentation {
     private val newCommandName: String
     private val locationString: String
 

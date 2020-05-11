@@ -17,8 +17,8 @@ class OpenViewerListener(
         private val sourceFilePath: String,
         val line: Int,
         val project: Project,
-        val focusAllowed: Boolean = true)
-    : ProcessListener {
+        val focusAllowed: Boolean = true) :
+    ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {

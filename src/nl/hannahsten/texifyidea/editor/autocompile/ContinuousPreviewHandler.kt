@@ -25,7 +25,7 @@ class ContinuousPreviewHandler : TypedHandlerDelegate() {
                 return@run
             }
 
-            val element= file.findElementAt(editor.caretModel.offset) ?: return@run
+            val element = file.findElementAt(editor.caretModel.offset) ?: return@run
 
             val textEditor = if (editor is TextEditor) {
                 editor }

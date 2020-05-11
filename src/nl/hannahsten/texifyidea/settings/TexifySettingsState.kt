@@ -2,9 +2,9 @@ package nl.hannahsten.texifyidea.settings
 
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
-data class TexifySettingsState (
-        var automaticSecondInlineMathSymbol : Boolean = true,
-        var automaticUpDownBracket : Boolean = true,
+data class TexifySettingsState(
+        var automaticSecondInlineMathSymbol: Boolean = true,
+        var automaticUpDownBracket: Boolean = true,
         var automaticItemInItemize: Boolean = true,
         var automaticDependencyCheck: Boolean = true,
         var autoCompile: Boolean = false,

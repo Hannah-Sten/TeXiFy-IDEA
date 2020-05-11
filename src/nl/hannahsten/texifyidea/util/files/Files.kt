@@ -66,7 +66,6 @@ object FileUtil {
     }
 }
 
-
 /**
  * Removes the extension from a given file name.
  */

@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Hannah Schellekens
  */
-class InsertPartAction : InsertEditorAction("Part", TexifyIcons.DOT_PART, "\\part{", "}") 
+class InsertPartAction : InsertEditorAction("Part", TexifyIcons.DOT_PART, "\\part{", "}")

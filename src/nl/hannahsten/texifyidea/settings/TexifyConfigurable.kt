@@ -59,7 +59,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
      */
     private fun JPanel.addSmartQuotesOptions(vararg values: String): ComboBox<String> {
         val list = ComboBox(values)
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply{
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(JBLabel("Smart quote substitution: "))
             add(list)
         })
@@ -85,17 +85,17 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun isModified(): Boolean {
-        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
-                || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
-                || automaticItemInItemize.isSelected != settings.automaticItemInItemize
-                || automaticDependencyCheck.isSelected != settings.automaticDependencyCheck
-                || autoCompile.isSelected != settings.autoCompile
-                || continuousPreview.isSelected != settings.continuousPreview
-                || dockerizedMiktex.isSelected != settings.dockerizedMiktex
-                || includeBackslashInSelection.isSelected != settings.includeBackslashInSelection
-                || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
-                || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
-                || labelDefiningCommands.isModified()
+        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol ||
+                automaticUpDownBracket.isSelected != settings.automaticUpDownBracket ||
+                automaticItemInItemize.isSelected != settings.automaticItemInItemize ||
+                automaticDependencyCheck.isSelected != settings.automaticDependencyCheck ||
+                autoCompile.isSelected != settings.autoCompile ||
+                continuousPreview.isSelected != settings.continuousPreview ||
+                dockerizedMiktex.isSelected != settings.dockerizedMiktex ||
+                includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
+                automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+                pdfViewer.selectedIndex != settings.pdfViewer.ordinal ||
+                labelDefiningCommands.isModified()
     }
 
     override fun apply() {

@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Hannah Schellekens
  */
-class InsertSubSectionAction : InsertEditorAction("Subsection", TexifyIcons.DOT_SUBSECTION, "\\subsection{", "}") 
+class InsertSubSectionAction : InsertEditorAction("Subsection", TexifyIcons.DOT_SUBSECTION, "\\subsection{", "}")

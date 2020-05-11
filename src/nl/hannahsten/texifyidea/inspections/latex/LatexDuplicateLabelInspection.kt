@@ -63,7 +63,6 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
 
         val result = mutableListOf<ProblemDescriptor>()
 
-
         // Treat LaTeX and BibTeX separately because only the first parameter of \bibitem commands counts
         // First find all duplicate labels
         commands.forEach { command ->
@@ -93,7 +92,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     /**
      * calculates the offset between commandToken and the parameter defining the label
      */
-    private fun skippedParametersLength(parameters : List<LatexParameter>, searched : String) : Int {
+    private fun skippedParametersLength(parameters: List<LatexParameter>, searched: String): Int {
         val parameterStrings = parameters.map { latexParameter ->
             latexParameter.text
         }
@@ -105,8 +104,8 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     /**
      * make the mapping from command etc. to ProblemDescriptor
      */
-    private fun createProblemDescriptor(cmd : LatexCommands, label : String, isOntheFly: Boolean, manager: InspectionManager)
-            : ProblemDescriptor {
+    private fun createProblemDescriptor(cmd: LatexCommands, label: String, isOntheFly: Boolean, manager: InspectionManager):
+            ProblemDescriptor {
         val offset = cmd.commandToken.textLength + skippedParametersLength(cmd.parameterList, label) + 1
         return manager.createProblemDescriptor(
                 cmd,

@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.grammar.LatexLexer
 /**
  * @author Sten Wessel
  */
-class LatexLexerAdapter : FlexAdapter(LatexLexer(null)) 
+class LatexLexerAdapter : FlexAdapter(LatexLexer(null))

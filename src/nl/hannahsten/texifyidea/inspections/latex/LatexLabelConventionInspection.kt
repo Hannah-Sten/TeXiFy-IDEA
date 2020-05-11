@@ -82,7 +82,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     private fun checkLabels(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
                             descriptors: MutableList<ProblemDescriptor>) {
-        file.findLatexLabelPsiElementsInFileAsSequence().forEach{ label ->
+        file.findLatexLabelPsiElementsInFileAsSequence().forEach { label ->
             val labeledCommand = getLabeledCommand(label) ?: return@forEach
             val expectedPrefix = getLabelPrefix(labeledCommand)
             val labelName = label.extractLabelName()
@@ -150,7 +150,6 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                     reference.replace(latexPsiHelper.createRequiredParameter(createdLabel))
                 }
             }
-
         }
 
         /**

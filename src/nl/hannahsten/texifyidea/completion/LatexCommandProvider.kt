@@ -174,8 +174,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional
-                        : List<String> = LinkedList(commands.optionalParameters.keys)
+                val optional:
+                        List<String> = LinkedList(commands.optionalParameters.keys)
                 var cmdParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {

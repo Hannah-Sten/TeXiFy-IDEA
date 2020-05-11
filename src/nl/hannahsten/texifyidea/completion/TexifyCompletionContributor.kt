@@ -194,7 +194,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
         extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(BibliographyCompiler.values().map { it.executableName }.toHashSet()))
-        
+
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
 

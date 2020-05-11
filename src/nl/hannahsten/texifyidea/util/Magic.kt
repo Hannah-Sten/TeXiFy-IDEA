@@ -135,7 +135,6 @@ object Magic {
                 |\end{document}
         """.trimMargin()
 
-
         @Language("Bibtex")
         @JvmField
         val bibtexDemoText = """
@@ -160,7 +159,6 @@ object Magic {
                 }
         """.trimIndent()
     }
-
 
     /**
      * @author Hannah Schellekens
@@ -583,7 +581,6 @@ object Magic {
          */
         @JvmField
         val sentenceSeparatorAtLineEnd = RegexPattern.compile("$sentenceSeparator\\s*$")!!
-
 
         /**
          * Matches when a string ends with a non breaking space.

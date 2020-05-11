@@ -34,7 +34,6 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-
         file.commandsInFile().asSequence()
                 .filter { it.name in Magic.Command.requiredExtensions }
                 .filter { command ->
@@ -42,7 +41,7 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
                         extension -> command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == false }
                     }
                 }
-                .forEach {command ->
+                .forEach { command ->
                     val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
                     var offset = 0
                     for (parameter in parameterList) {
@@ -60,7 +59,6 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
                         // Assume all parameter are comma separated
                         offset += parameter.length + ",".length
                     }
-
                 }
 
         return descriptors

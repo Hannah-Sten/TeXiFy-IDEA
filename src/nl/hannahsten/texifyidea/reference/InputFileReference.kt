@@ -15,7 +15,12 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.allChildDirectories
+import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.getExternalFile
+import nl.hannahsten.texifyidea.util.files.getGraphicsPaths
+import nl.hannahsten.texifyidea.util.files.searchFileByImportPaths
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -55,7 +60,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         else {
             emptyList()
         }.toMutableList()
-
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
@@ -150,7 +154,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         private fun runKpsewhich(arg: String): String? = try {
             BufferedReader(InputStreamReader(Runtime.getRuntime().exec(
                     "kpsewhich $arg"
-            ).inputStream)).readLine()  // Returns null if no line read.
+            ).inputStream)).readLine() // Returns null if no line read.
         }
         catch (e: IOException) {
             null

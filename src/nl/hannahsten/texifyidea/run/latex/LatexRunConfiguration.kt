@@ -407,7 +407,6 @@ class LatexRunConfiguration constructor(project: Project,
             }
         }
 
-
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
         val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
 
@@ -464,7 +463,6 @@ class LatexRunConfiguration constructor(project: Project,
 
         this.mainFile = null
     }
-
 
     /**
      * Try to find the virtual file, as absolute path or relative to a content root.

@@ -45,7 +45,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         return ""
     }
 
-    private inner class LatexFileCreator (private val project: Project, private val directory: PsiDirectory) : FileCreator<PsiElement?> {
+    private inner class LatexFileCreator(private val project: Project, private val directory: PsiDirectory) : FileCreator<PsiElement?> {
         private fun openFile(virtualFile: VirtualFile) {
             val fileEditorManager = FileEditorManager.getInstance(project)
             fileEditorManager.openFile(virtualFile, true)
@@ -104,7 +104,6 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         override fun startInWriteAction(): Boolean {
             return false
         }
-
     }
 
     companion object {

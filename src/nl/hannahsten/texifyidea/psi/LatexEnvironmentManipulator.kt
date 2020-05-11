@@ -25,8 +25,4 @@ class LatexEnvironmentManipulator : AbstractElementManipulator<LatexEnvironmentI
     element.replace(res)
     return element
   }
-
 }
-
-
-

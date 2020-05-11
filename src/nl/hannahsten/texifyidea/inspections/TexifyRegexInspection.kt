@@ -191,7 +191,6 @@ abstract class TexifyRegexInspection(
         else {
             return mutableListOf()
         }
-
     }
 
     /**

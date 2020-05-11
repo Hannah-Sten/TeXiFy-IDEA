@@ -69,7 +69,6 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
             catch (e: IOException) {
                 throw TeXception("Could not load template $templateName", e)
             }
-
         }
     }
 

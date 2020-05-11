@@ -21,8 +21,6 @@ class SystemEnvironment {
             "snap list".runCommand()?.contains("inkscape") == true
         }
     }
-
-
 }
 
 internal fun runCommand(vararg commands: String): String {

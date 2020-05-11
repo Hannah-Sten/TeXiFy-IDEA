@@ -92,7 +92,7 @@ class EvinceInverseSearchListener {
     /**
      * Sync the IDE on the given source file and line number.
      *
-     * @param filePath   Full to a file.
+     * @param filePath Full to a file.
      * @param lineNumber Line number in the file.
      */
     private fun syncSource(filePath: String, lineNumber: Int) {

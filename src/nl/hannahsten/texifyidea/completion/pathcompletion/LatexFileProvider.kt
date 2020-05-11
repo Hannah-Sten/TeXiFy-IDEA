@@ -21,5 +21,4 @@ class LatexFileProvider : LatexPathProviderBase() {
     override fun searchFolders(): Boolean = true
 
     override fun searchFiles(): Boolean = true
-
 }

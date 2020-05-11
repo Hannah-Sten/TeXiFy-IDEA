@@ -98,5 +98,4 @@ object EvinceConversation : ViewerConversation() {
             processOwner = daemon.FindDocument("file://$pdfFilePath", true)
         } catch (ignored: NoReply) {}
     }
-
 }

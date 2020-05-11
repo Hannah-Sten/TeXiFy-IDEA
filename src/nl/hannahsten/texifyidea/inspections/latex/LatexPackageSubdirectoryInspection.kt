@@ -29,7 +29,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val commands = file.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\ProvidesPackage"  }
+                .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
             val parameter = command.requiredParameters.first()

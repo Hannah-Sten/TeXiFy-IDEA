@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.settings.labeldefiningcommands
 import javax.swing.text.AttributeSet
 import javax.swing.text.DocumentFilter
 
-class InputCommandFilter: DocumentFilter() {
+class InputCommandFilter : DocumentFilter() {
 
     override fun insertString(fb: FilterBypass?, offset: Int, string: String?, attr: AttributeSet?) {
         val stringWithOutSpaces = string?.replace(" ", "")
@@ -15,7 +15,7 @@ class InputCommandFilter: DocumentFilter() {
 
         val offsetWithoutSlash = if (offset != 0) offset else 1
         val lengthWithoutSlash = if (offset != 0) length else length - 1
-        
+
         super.replace(fb, offsetWithoutSlash, lengthWithoutSlash, stringWithOutSpaces, attrs)
     }
 
