@@ -172,7 +172,8 @@ class LatexRunConfiguration constructor(project: Project,
         val compilerName = parent.getChildText(COMPILER)
         try {
             this.compiler = LatexCompiler.valueOf(compilerName)
-        } catch (e: IllegalArgumentException) {
+        }
+        catch (e: IllegalArgumentException) {
             this.compiler = null
         }
 
@@ -227,16 +228,14 @@ class LatexRunConfiguration constructor(project: Project,
                 val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
                 val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
                 val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else this.mainFile!!.parent.path
-                this.auxilPath = LocalFileSystem.getInstance()
-                        .findFileByPath(path)
+                this.auxilPath = LocalFileSystem.getInstance().findFileByPath(path)
             }
             val outDirBoolean = parent.getChildText(OUT_DIR)
             if (outDirBoolean != null && this.outputPath == null && this.mainFile != null) {
                 val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
                 val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
                 val path = if (usesOutDir) moduleRoot?.path + "/out" else this.mainFile!!.parent.path
-                this.outputPath = LocalFileSystem.getInstance()
-                        .findFileByPath(path)
+                this.outputPath = LocalFileSystem.getInstance().findFileByPath(path)
             }
         }
 
@@ -250,8 +249,7 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
         // Read output format.
-        val format = Format
-                .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
+        val format = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
         this.outputFormat = format
 
         // Read whether the run config has been run
@@ -261,8 +259,7 @@ class LatexRunConfiguration constructor(project: Project,
         // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
         // Assume the list is of the form [id 1,id 2]
-        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ")
-                .toMutableSet()
+        this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
 
         // Read makeindex run configuration
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
@@ -412,17 +409,13 @@ class LatexRunConfiguration constructor(project: Project,
 
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile?.includedPackages()
-                ?.contains("chapterbib") == true
-
-
+        val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
         }
         else if (psiFile != null) {
-            val allBibliographyCommands = psiFile!!.commandsInFileSet()
-                    .filter { it.name == "\\bibliography" }
+            val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == "\\bibliography" }
 
             // We know that there can only be one bibliography per top-level \include,
             // however not all of them may contain a bibliography, and the ones
@@ -567,8 +560,7 @@ class LatexRunConfiguration constructor(project: Project,
         var defaultOutputPath: VirtualFile? = null
         runReadAction {
             val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-            defaultOutputPath = LocalFileSystem.getInstance()
-                    .findFileByPath(moduleRoot?.path + "/out")
+            defaultOutputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/out")
         }
         return defaultOutputPath
     }
@@ -586,8 +578,7 @@ class LatexRunConfiguration constructor(project: Project,
         // -aux-directory pdflatex flag only exists on MiKTeX, so disable auxil otherwise
         if (auxilPath != null || mainFile == null || !LatexDistribution.isMiktex) return
         val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-        this.auxilPath = LocalFileSystem.getInstance()
-                .findFileByPath(moduleRoot?.path + "/auxil")
+        this.auxilPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/auxil")
     }
 
     /**

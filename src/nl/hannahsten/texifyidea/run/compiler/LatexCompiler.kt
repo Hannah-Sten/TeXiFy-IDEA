@@ -261,13 +261,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     companion object {
         fun byExecutableName(exe: String): LatexCompiler {
-            for (compiler in values()) {
-                if (compiler.executableName.equals(exe, ignoreCase = true)) {
-                    return compiler
-                }
-            }
-
-            return PDFLATEX
+            return values().firstOrNull {
+                it.executableName.equals(exe, true)
+            } ?: PDFLATEX
         }
     }
 
@@ -285,15 +281,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         companion object {
 
             fun byNameIgnoreCase(name: String?): Format {
-                if (name == null) return PDF
-
-                for (format in values()) {
-                    if (format.name.equals(name, ignoreCase = true)) {
-                        return format
-                    }
-                }
-
-                return PDF
+                return values().firstOrNull {
+                    it.name.equals(name, ignoreCase = true)
+                } ?: PDF
             }
         }
     }
