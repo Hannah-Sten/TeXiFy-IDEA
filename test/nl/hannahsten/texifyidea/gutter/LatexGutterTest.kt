@@ -32,7 +32,6 @@ class LatexGutterTest : BasePlatformTestCase() {
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 1 })
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 4 })
         }
-
     }
 
     @Test

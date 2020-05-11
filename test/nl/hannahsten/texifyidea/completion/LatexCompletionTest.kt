@@ -13,7 +13,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testCompleteLatexReferences(){
+    fun testCompleteLatexReferences() {
         // given
         myFixture.configureByText(LatexFileType, """\ap<caret>""")
 
@@ -21,11 +21,11 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         // then
-        assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString == "appendix"})
+        assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString == "appendix" })
     }
 
     @Test
-    fun testCompleteCustomCommandReferences(){
+    fun testCompleteCustomCommandReferences() {
         // given
         myFixture.configureByText(LatexFileType, """
             \newcommand{\hi}{hi}
@@ -36,7 +36,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         // then
-        assertTrue("LaTeX autocompletion of custom commands should be available", result.any { it.lookupString == "hi"})
+        assertTrue("LaTeX autocompletion of custom commands should be available", result.any { it.lookupString == "hi" })
     }
 
     fun testCompleteCustomColorDefinitions() {
