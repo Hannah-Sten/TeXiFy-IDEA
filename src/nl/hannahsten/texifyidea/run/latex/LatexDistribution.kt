@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.openapi.util.SystemInfo
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import nl.hannahsten.texifyidea.settings.TexifySettings
 
 
 /**
@@ -96,23 +97,7 @@ class LatexDistribution {
             return parsePdflatexOutput(runCommand("pdflatex", "--version"))
         }
 
-        private fun runCommand(vararg commands: String): String {
-            try {
-                val command = arrayListOf(*commands)
-                val proc = ProcessBuilder(command)
-                        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                        .redirectError(ProcessBuilder.Redirect.PIPE)
-                        .start()
 
-                // Timeout value
-                proc.waitFor(10, TimeUnit.SECONDS)
-                return proc.inputStream.bufferedReader().readText()
-            }
-            catch (e: IOException) {
-                e.printStackTrace()
-            }
-            return ""
-        }
 
         /**
          * Parse the output of pdflatex --version and return the distribution.

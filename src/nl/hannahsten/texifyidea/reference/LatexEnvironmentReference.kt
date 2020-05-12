@@ -1,12 +1,11 @@
 package nl.hannahsten.texifyidea.reference
 
-import com.intellij.psi.*
-import com.intellij.util.containers.toArray
+import com.intellij.psi.ElementManipulators
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.findLatexLabelPsiElementsInFileSetAsSequence
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.firstParentOfType
 
@@ -15,7 +14,7 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
  *
  * @author Thomas
  */
-class LatexEnvironmentReference(element: LatexNormalText) : PsiReferenceBase<LatexNormalText>(element) {
+class LatexEnvironmentReference(element: LatexParameterText) : PsiReferenceBase<LatexParameterText>(element) {
 
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
@@ -29,7 +28,7 @@ class LatexEnvironmentReference(element: LatexNormalText) : PsiReferenceBase<Lat
         // Navigate from the current text in \end, to the text in \begin
         return element.firstParentOfType(LatexEnvironment::class)
                 ?.firstChildOfType(LatexBeginCommand::class)
-                ?.firstChildOfType(LatexNormalText::class)
+                ?.firstChildOfType(LatexParameterText::class)
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {

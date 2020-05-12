@@ -139,17 +139,16 @@ fun stripGroup(text: String): String {
  * Generates a map of parameter names and values for all optional parameters
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
-
 fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
     val parameterMap = LinkedHashMap<String, String>()
     val parameterString = parameters.mapNotNull { it.optionalParam }
             // extract the content of each parameter element
             .flatMap { param ->
-                param.optionalParamContentList
+                param.paramContentList
             }
-            .mapNotNull { content: LatexOptionalParamContent ->
+            .mapNotNull { content: LatexParamContent ->
                 // the content is either simple text
-                val text = content.normalText
+                val text = content.parameterText
                 if (text != null) return@mapNotNull text.text
                 // or a group like in param={some value}
                 if (content.group == null) return@mapNotNull null
@@ -167,15 +166,14 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
 }
 
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
-    return parameters.mapNotNull { it.requiredParam?.group }
+    return parameters.mapNotNull { it.requiredParam }
             .map {
-                it.contentList.map { c: LatexContent ->
-                    val content = c.noMathContent
-                    if (content?.commands != null && content.normalText == null) {
+                it.paramContentList.map { content: LatexParamContent ->
+                    if (content.commands != null && content.parameterText == null) {
                         content.commands!!.commandToken.text
                     }
-                    else if (content?.normalText != null) {
-                        content.normalText!!.text
+                    else if (content.parameterText != null) {
+                        content.parameterText!!.text
                     }
                     else {
                         null

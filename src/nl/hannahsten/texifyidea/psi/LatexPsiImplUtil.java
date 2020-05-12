@@ -18,7 +18,7 @@ public class LatexPsiImplUtil {
      */
 
     /**
-     * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexNormalText)}.
+     * References which do not need a find usages to work on lower level psi elements (normal text) can be implemented on the command, otherwise they are in {@link LatexPsiImplUtil#getReference(LatexParameterText)}.
      * For more info and an example, see {@link nl.hannahsten.texifyidea.reference.LatexLabelParameterReference}.
      */
     @NotNull
@@ -93,27 +93,27 @@ public class LatexPsiImplUtil {
     }
 
     /*
-     * LatexNormalText
+     * LatexParameterText
      */
 
-    public static PsiReference[] getReferences(@NotNull LatexNormalText element) {
-        return LatexNormalTextUtilKt.getReferences(element);
+    public static PsiReference[] getReferences(@NotNull LatexParameterText element) {
+        return LatexParameterTextUtilKt.getReferences(element);
     }
 
-    public static PsiReference getReference(@NotNull LatexNormalText element) {
-        return LatexNormalTextUtilKt.getReference(element);
+    public static PsiReference getReference(@NotNull LatexParameterText element) {
+        return LatexParameterTextUtilKt.getReference(element);
     }
 
-    public static PsiElement getNameIdentifier(@NotNull LatexNormalText element) {
-        return LatexNormalTextUtilKt.getNameIdentifier(element);
+    public static PsiElement getNameIdentifier(@NotNull LatexParameterText element) {
+        return LatexParameterTextUtilKt.getNameIdentifier(element);
     }
 
-    public static PsiElement setName(@NotNull LatexNormalText element, String name) {
-        return LatexNormalTextUtilKt.setName(element, name);
+    public static PsiElement setName(@NotNull LatexParameterText element, String name) {
+        return LatexParameterTextUtilKt.setName(element, name);
     }
 
-    public static String getName(@NotNull LatexNormalText element) {
-        return LatexNormalTextUtilKt.getName(element);
+    public static String getName(@NotNull LatexParameterText element) {
+        return LatexParameterTextUtilKt.getName(element);
     }
 
     /*

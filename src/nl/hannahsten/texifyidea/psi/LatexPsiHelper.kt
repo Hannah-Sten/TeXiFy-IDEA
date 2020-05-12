@@ -31,11 +31,11 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createOptionalParameterContent(parameter: String): List<LatexOptionalParamContent> {
+    private fun createOptionalParameterContent(parameter: String): List<LatexParamContent> {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.optionalParamContentList
+        return optionalParam.paramContentList
     }
 
     fun createFromText(text: String): PsiElement =
@@ -84,16 +84,16 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val labelRegex = "label\\s*=\\s*[^,]*".toRegex()
-        val elementsToReplace = mutableListOf<LatexOptionalParamContent>()
-        val elementIterator = optionalParam.optionalParamContentList.iterator()
+        val elementsToReplace = mutableListOf<LatexParamContent>()
+        val elementIterator = optionalParam.paramContentList.iterator()
         while (elementIterator.hasNext()) {
             val latexContent = elementIterator.next()
-            val elementIsLabel = latexContent.normalText?.text?.contains(labelRegex) ?: false
+            val elementIsLabel = latexContent.parameterText?.text?.contains(labelRegex) ?: false
             if (elementIsLabel) {
                 elementsToReplace.add(latexContent)
 
                 // check if the label name is part of the text or in a separate group
-                if (latexContent.normalText!!.text.split("=")[1].trim().isEmpty()) {
+                if (latexContent.parameterText!!.text.split("=")[1].trim().isEmpty()) {
                     val group = elementIterator.next()
                     elementsToReplace.add(group)
                 }

@@ -2,20 +2,20 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.findLatexLabelPsiElementsInFileSetAsSequence
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
 /**
- * The difference with [LatexLabelReference] is that this reference works on normal text, i.e. the actual label parameters.
+ * The difference with [LatexLabelReference] is that this reference works on parameter text, i.e. the actual label parameters.
  * This means that the parameter of a \ref command will resolve to the parameter of the \label command.
  *
  * This allows us to implement find usages as well.
  *
  * @author Thomas
  */
-class LatexLabelParameterReference(element: LatexNormalText) : PsiReferenceBase<LatexNormalText>(element), PsiPolyVariantReference {
+class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBase<LatexParameterText>(element), PsiPolyVariantReference {
 
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
@@ -39,7 +39,7 @@ class LatexLabelParameterReference(element: LatexNormalText) : PsiReferenceBase<
                     // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
                     // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
                     // but only the label text itself will have the correct name for that.
-                    val labelText = it.firstChildOfType(LatexNormalText::class) ?: return@mapNotNull null
+                    val labelText = it.firstChildOfType(LatexParameterText::class) ?: return@mapNotNull null
                     PsiElementResolveResult(labelText)
                 }
                 .toList()

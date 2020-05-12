@@ -26,7 +26,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
         /**
          * Matches against a key assignment.
          */
-        private val KEY_ASSIGNMENT = Regex("""^([a-zA-Z]+)\s*=""")
+        private val KEY_ASSIGNMENT = Regex("""^([a-zA-Z\s]+)\s*=""")
     }
 
     override fun parse(): MagicComment<String, String> = MutableMagicComment<String, String>().apply {
@@ -39,7 +39,7 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
         /** Adds the current key with converts to the magic comment. Also resets the key and content. */
         fun pushKeyValuePair() {
             if (key == null) return
-            addValue(key!!.asKey(), contentBuffer.toString().trim())
+            addValue(key!!.trim().asKey(), contentBuffer.toString().trim())
             contentBuffer = StringBuilder()
             key = null
         }

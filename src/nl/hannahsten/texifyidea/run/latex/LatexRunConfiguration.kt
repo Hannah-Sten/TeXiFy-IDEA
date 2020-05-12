@@ -17,6 +17,8 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
@@ -53,6 +55,7 @@ class LatexRunConfiguration constructor(project: Project,
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
+
         // For backwards compatibility
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
@@ -74,23 +77,25 @@ class LatexRunConfiguration constructor(project: Project,
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
+
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
 
     /** Path to the directory containing the output files. */
     var outputPath: VirtualFile? = null
-    get() {
-        // When the user modifies the run configuration template, then this variable will magically be replaced with the
-        // path to the /bin folder of IntelliJ, without the setter being called.
-        return if (field?.path?.endsWith("/bin") == true) {
-            field = null
-            field
+        get() {
+            // When the user modifies the run configuration template, then this variable will magically be replaced with the
+            // path to the /bin folder of IntelliJ, without the setter being called.
+            return if (field?.path?.endsWith("/bin") == true) {
+                field = null
+                field
+            }
+            else {
+                field
+            }
         }
-        else {
-            field
-        }
-    }
+
     /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null
 
@@ -300,7 +305,7 @@ class LatexRunConfiguration constructor(project: Project,
     /**
      * Create a new bib run config and add it to the set.
      */
-    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?) {
+    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?, compilerArguments: String? = null) {
         val runManager = RunManagerImpl.getInstanceImpl(project)
 
         val bibSettings = runManager.createConfiguration(
@@ -311,6 +316,7 @@ class LatexRunConfiguration constructor(project: Project,
         val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
 
         bibtexRunConfiguration.compiler = defaultCompiler
+        if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
         bibtexRunConfiguration.mainFile = mainFile
         bibtexRunConfiguration.setSuggestedName()
 
@@ -323,8 +329,23 @@ class LatexRunConfiguration constructor(project: Project,
      * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
      */
     internal fun generateBibRunConfig() {
+        // Get a pair of Bib compiler and compiler arguments.
+        val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
+            val runCommand = psiFile?.allParentMagicComments()
+                    ?.value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
+            val compilerString = if (runCommand.contains(' ')) {
+                runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim()
+                        .toString()
+            }
+            else runCommand
+            val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
+            val compilerArguments = runCommand.removePrefix(compilerString)
+                    .trim()
+            Pair(compiler, compilerArguments)
+        }
 
         val defaultCompiler = when {
+            compilerFromMagicComment != null -> compilerFromMagicComment!!.first
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
@@ -342,10 +363,8 @@ class LatexRunConfiguration constructor(project: Project,
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
         val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
 
-
-
         if (!usesChapterbib) {
-            addBibRunConfig(defaultCompiler, mainFile)
+            addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
         }
         else if (psiFile != null) {
             val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == "\\bibliography" }
@@ -354,20 +373,22 @@ class LatexRunConfiguration constructor(project: Project,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
             psiFile!!.allCommands()
-                .filter { it.name == "\\include" }
-                .flatMap { command -> command.requiredParameters }
-                .forEach {filename ->
-                    // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile!!.findFile(filename) ?: return@forEach
+                    .filter { it.name == "\\include" }
+                    .flatMap { command -> command.requiredParameters }
+                    .forEach { filename ->
+                        // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
+                        val chapterMainFile = psiFile!!.findFile(filename)
+                                ?: return@forEach
 
-                    val chapterFiles = chapterMainFile.referencedFileSet().toMutableSet().apply { add(chapterMainFile) }
+                        val chapterFiles = chapterMainFile.referencedFileSet()
+                                .toMutableSet().apply { add(chapterMainFile) }
 
-                    val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
+                        val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
 
-                    if (chapterHasBibliography) {
-                        addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile)
+                        if (chapterHasBibliography) {
+                            addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second)
+                        }
                     }
-                }
         }
     }
 

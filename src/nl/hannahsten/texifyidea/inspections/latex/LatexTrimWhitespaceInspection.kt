@@ -12,9 +12,12 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.trimRange
 import java.util.*
 
 /**
@@ -39,7 +42,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val sectionName = command.firstChildOfType(LatexRequiredParam::class)?.group?.text?.trimRange(1, 1) ?: continue
+            val sectionName = command.firstChildOfType(LatexRequiredParam::class)?.text?.trimRange(1, 1) ?: continue
             if (!Magic.Pattern.excessWhitespace.matcher(sectionName).matches()) {
                 continue
             }
