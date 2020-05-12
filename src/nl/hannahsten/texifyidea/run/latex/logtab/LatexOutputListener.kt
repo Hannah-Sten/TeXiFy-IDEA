@@ -47,7 +47,7 @@ class LatexOutputListener(
         // on the next line. This may not be accurate, but there is no way of distinguishing this.
 
         val newText = event.text.trimEnd('\n', '\r')
-        processNewText(newText)
+        newText.chunked(79).forEach { processNewText(it) }
     }
 
     fun processNewText(newText: String) {

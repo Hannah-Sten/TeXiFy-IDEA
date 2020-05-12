@@ -17,8 +17,7 @@ class LatexQuickRunLogParserTest : BasePlatformTestCase() {
 
     fun testFileStack() {
         val text = """
-Process finished with exit code 0
-
+        ()
     """.trimIndent()
 
         val messages = runLogParser(text)

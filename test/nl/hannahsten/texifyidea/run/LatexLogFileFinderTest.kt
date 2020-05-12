@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import junit.framework.Assert
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexFileStack
 
 class LatexLogFileFinderTest : BasePlatformTestCase() {
@@ -24,7 +23,7 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         val line = """("C:\Users\thomas\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmisc.sty""""
         val stack = LatexFileStack("./main.tex")
         val newStack = stack.update(line)
-        Assert.assertEquals(""""C:\Users\thomas\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmisc.sty"""", newStack.peek())
+        assertEquals(""""C:\Users\thomas\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmisc.sty"""", newStack.peek())
     }
 
     fun testNewFile() {
@@ -80,6 +79,6 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         val line ="""(./src/_minted-thesis/F21236103977357A063E148CA83348D21F2D8067E0A256B6FCF34360A44AFD35.pygtex"""
         val stack = LatexFileStack("./lipsum.tex", "./main.tex")
         val newStack = stack.update(line)
-        Assert.assertEquals("""./src/_minted-thesis/F21236103977357A063E148CA83348D21F2D8067E0A256B6FCF34360A44AFD35.pygtex""", newStack.peek())
+        assertEquals("""./src/_minted-thesis/F21236103977357A063E148CA83348D21F2D8067E0A256B6FCF34360A44AFD35.pygtex""", newStack.peek())
     }
 }
