@@ -22,6 +22,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
             setDefaultCompiler()
             setDefaultOutputFormat()
             setSuggestedName()
+            setDefaultDistribution()
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")

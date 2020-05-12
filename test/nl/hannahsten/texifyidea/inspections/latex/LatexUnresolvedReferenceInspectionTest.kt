@@ -26,7 +26,12 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     }
 
     fun testBibtexReference() {
-        myFixture.configureByFiles(getTestName(false) + ".tex", "references.bib")
+        myFixture.configureByFile("references.bib")
+        // Force indexing
+        myFixture.checkHighlighting()
+        val name = getTestName(false) + ".tex"
+        // For some reason we need to copy the .bib again
+        myFixture.configureByFiles(name, "references.bib")
         myFixture.checkHighlighting()
     }
 }

@@ -13,7 +13,7 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.*
 import java.io.BufferedReader
@@ -91,7 +91,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         }
 
         // Try content roots
-        if (targetFile == null && LatexDistribution.isMiktex) {
+        if (targetFile == null && LatexDistribution.isMiktexAvailable) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
                 targetFile = moduleRoot.findFile(key, extensions)
                 if (targetFile != null) break

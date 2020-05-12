@@ -199,7 +199,7 @@ fun String.runCommand(): String? {
 
         // Timeout value
         proc.waitFor(10, TimeUnit.SECONDS)
-        proc.inputStream.bufferedReader().readText() + proc.errorStream.bufferedReader().readText()
+        proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
     } catch (e: IOException) {
         e.printStackTrace()
         null
