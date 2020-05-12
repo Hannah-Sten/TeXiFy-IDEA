@@ -1,5 +1,5 @@
 When you have no TeX Live or MiKTeX installed directly on your system, but you do have a miktex docker image downloaded (it checks for 'miktex' in the output of `docker image ls`, TeXiFy assumes you want to use Dockerized MiKTeX.
-You can also turn it on in settings to always use Dockerized MiKTeX even if you have other LaTeX distributions installed.
+You can also turn it on in the run configuration settings or template to always use Dockerized MiKTeX even if you have other LaTeX distributions installed.
 
 
 Since the official Dockerized MiKTeX image at https://hub.docker.com/r/miktex/miktex is a bit old, which can cause problems downloading new packages, we provide our own Dockerized MiKTeX via GitHub.

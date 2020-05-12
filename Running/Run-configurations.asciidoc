@@ -4,6 +4,7 @@
 
 See https://www.jetbrains.com/help/idea/creating-and-editing-run-debug-configurations.html
 
+[#template]
 == Template run configurations
 
 For the LaTeX run configuration you can change the default template.
@@ -87,6 +88,12 @@ Can be useful to make sure your references are always updated.
 === Choose output format
 
 Some compilers support different output formats than just pdf, for example dvi.
+
+[#_choose_latex_distribution]
+=== Choose LaTeX distribution
+
+When a different LaTeX distribution is detected, like Dockerized MiKTeX or TeX Live from WSL, you can choose it here.
+Note that you can also change this in the link:Run-configurations#template[run configuration template] to always use a different LaTeX distribution.
 
 === Choose BibTeX run configuration
 
