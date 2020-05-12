@@ -1,10 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.openapi.util.SystemInfo
-import java.io.IOException
-import java.util.concurrent.TimeUnit
-import nl.hannahsten.texifyidea.settings.TexifySettings
-
+import nl.hannahsten.texifyidea.util.runCommand
 
 /**
  * Represents the LaTeX Distribution of the user, e.g. MikTeX or TeX Live.
