@@ -1,6 +1,6 @@
 _Since b0.6.10_
 
-In the link:Run-configurations.asciidoc#_choose_latex_distribution[Run configuration settings] you can choose to use TeX Live from WSL.
+In the link:Run-configurations#_choose_latex_distribution[Run configuration settings] you can choose to use TeX Live from WSL.
 
 == Setup
 
