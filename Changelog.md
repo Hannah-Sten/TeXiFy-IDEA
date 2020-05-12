@@ -10,13 +10,15 @@
 * Add support for Dockerized MiKTeX. (#1310)
 * Add support for entering relative paths in the run configuration. (#1311)
 * Add magic comments to disable and enable the parser. (#1388)
+* Add magic comments to choose LaTeX and BibTeX compiler. (#1409)
+* Add support for inkscape 1.0 (#1398)
 * Add option to include backslash in word selection. (#1316)
 * Do not auto-insert a second $ when the first $ closes an inline math environment. (#1323)
 * Improve performance of the inclusion loop inspection. (#1327)
 * Add postfix templates. (#1326, #1350)
 * Add inspection to check for correct filename/filepath in ProvidesPackage commands. (#1365)
 * Add inspection to check if # is escaped. (#1366)
-* Add inspections to check if & and _ are escaped. (#1368)
+* Add inspections to check if & and _ are escaped. (#1368, #1411)
 
 # Bug fixes
 * Fix parse error on unmatched brackets in math environments. (#1319)

@@ -1,4 +1,33 @@
+:experimental:
+
 == [[texlive]]TeX Live
+
+=== Installing TeX Live
+
+It is recommended to install TeX Live directly and not via your package manager, to ensure you have the latest version.
+You should install TeX Live in your home directory, so it doesn't need elevated permissions for everything.
+
+In this example we will install the `basic` scheme instead of the `full` scheme, which will only install a basic set of packages to save space.
+The full installation may be 3.5GB or more.
+
+* In your Downloads folder, run the follwoing.
+
+[source,shell]
+----
+wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+tar -xvf ./install-tl-unx.tar.gz
+cd install-tl-*
+./install-tl --scheme=basic
+----
+
+In the installer, press kbd:[D] and kbd:[Enter] to change the home directory from `/user/local/texlive/yyyy` to `/home/username/texlive/yyyy` or whatever you want.
+
+Add `/home/username/texlive/yyyy/bin/x86_64-linux` or wherever you installed it to your `PATH`, for example by putting in some configuration file like `~/.bashrc` or `~/.profile` the line `export PATH="/home/username/texlive/2018/bin/x86_64-linux:$PATH`.
+Don't forget to log out and back in.
+You can test the installation by running `latex small2e`.
+
+=== Installing packages for not-full installations
+
 When not doing a full TeX Live install (e.g., to save space) not all tex engines are installed. To install one later on, use `tlmgr` to install the needed packages.
 Note that when using `tlmgr` to search for the necessary packages, e.g., `tlmgr search xetex`, they might not show up.
 // TODO why the hell not?
