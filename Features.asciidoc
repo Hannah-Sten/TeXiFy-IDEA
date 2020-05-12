@@ -181,6 +181,7 @@ See link:Run-configurations#Run-configuration-settings[Run configurations settin
 * Set a custom path for output files
 * Option to always compile documents twice
 * Choose output format
+* Choose LaTeX distribution
 * Choose BibTeX run configuration
 * Choose Makeindex run configuration
 * Other tasks to run before the run configuration, including other run configurations or external tools
