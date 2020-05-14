@@ -84,7 +84,8 @@ class EvinceInverseSearchListener {
 
                 line = bufferedReader.readLine()
             }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
         }
     }
@@ -103,7 +104,8 @@ class EvinceInverseSearchListener {
 
         try {
             Runtime.getRuntime().exec(command)
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
         }
     }

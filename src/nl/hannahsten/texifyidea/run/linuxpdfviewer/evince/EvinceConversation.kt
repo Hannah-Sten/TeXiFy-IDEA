@@ -96,6 +96,7 @@ object EvinceConversation : ViewerConversation() {
         // Catch a NoReply, because it is unknown why Evince cannot start so we don't try to fix that
         try {
             processOwner = daemon.FindDocument("file://$pdfFilePath", true)
-        } catch (ignored: NoReply) {}
+        }
+        catch (ignored: NoReply) {}
     }
 }

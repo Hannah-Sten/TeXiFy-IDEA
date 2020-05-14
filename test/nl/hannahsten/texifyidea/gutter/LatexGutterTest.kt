@@ -53,7 +53,8 @@ class LatexGutterTest : BasePlatformTestCase() {
         DaemonCodeAnalyzerSettings.getInstance().SHOW_METHOD_SEPARATORS = true
         try {
             action()
-        } finally {
+        }
+        finally {
             DaemonCodeAnalyzerSettings.getInstance().SHOW_METHOD_SEPARATORS = before
         }
     }

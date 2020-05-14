@@ -52,7 +52,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val files = referencesList.mapNotNull { it.resolve() }
 
         val defaultIcon = TexifyIcons.getIconFromExtension(referencesList.first().defaultExtension)
-        val extension = if (files.isNotEmpty()) { files.first().name.getFileExtension() } else ""
+        val extension = if (files.isNotEmpty()) files.first().name.getFileExtension() else ""
         val icon = if (!files.isNullOrEmpty() && TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE) {
             defaultIcon
         }

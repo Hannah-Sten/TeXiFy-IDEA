@@ -180,7 +180,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                 if (optional.isNotEmpty()) {
                     try {
                         cmdParameterCount = optional[0].toInt()
-                    } catch (ignore: NumberFormatException) {
+                    }
+                    catch (ignore: NumberFormatException) {
                     }
                 }
                 var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
@@ -195,7 +196,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                 val optional = commands.optionalParameters.keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
-                } catch (ignore: java.lang.NumberFormatException) { 0 }
+                }
+                catch (ignore: java.lang.NumberFormatException) { 0 }
                 (1..nrParams).joinToString("") { "{param}" }
             }
 

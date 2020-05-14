@@ -25,7 +25,8 @@ class OpenViewerListener(
             runAsync {
                 try {
                     viewer.conversation!!.forwardSearch(pdfPath = runConfig.outputFilePath, sourceFilePath = sourceFilePath, line = line, project = project, focusAllowed = focusAllowed)
-                } catch (ignored: TeXception) {
+                }
+                catch (ignored: TeXception) {
                 }
             }
         }

@@ -13,14 +13,16 @@ class LatexPairedDelimiterPresentation(newCommand: LatexCommands) : ItemPresenta
         val required = newCommand.requiredParameters
         newCommandName = if (required.size > 0) {
             required.first()
-        } else ""
+        }
+        else ""
 
         locationString = if (required.size >= 3) {
             when (newCommand.name) {
                 "\\DeclarePairedDelimiterXPP" -> (1..4).joinToString(" ") { required[it] }
                 else -> "${required[1]} ${required[2]}"
             }
-        } else ""
+        }
+        else ""
     }
 
     override fun getPresentableText() = newCommandName

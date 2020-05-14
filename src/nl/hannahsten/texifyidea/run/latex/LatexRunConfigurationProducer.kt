@@ -47,7 +47,8 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         if (runCommand != null) {
             val compiler = if (runCommand.contains(' ')) {
                 runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
-            } else runCommand
+            }
+            else runCommand
             runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
             runConfiguration.compilerArguments = runCommand.removePrefix(compiler).trim()
         }
