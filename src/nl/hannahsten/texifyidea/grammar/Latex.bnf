@@ -104,7 +104,7 @@ required_param ::= OPEN_BRACE param_content* CLOSE_BRACE { pin=1 }
 
 // Like content, but no brackets and with parameter_text instead of normal_text
 param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
- OPEN_PAREN | CLOSE_PAREN | parameter_text
+ OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | parameter_text
 
 // The lowest level of a parameter must have the getReferences etc. implemented
 // We don't do this on normal_text because then every normal_text in the document would be a reference

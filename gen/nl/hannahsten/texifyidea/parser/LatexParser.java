@@ -398,7 +398,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
-  //  OPEN_PAREN | CLOSE_PAREN | parameter_text
+  //  OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | parameter_text
   public static boolean param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "param_content")) return false;
     boolean r;
@@ -413,6 +413,8 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
+    if (!r) r = consumeToken(b, OPEN_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_BRACKET);
     if (!r) r = parameter_text(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
