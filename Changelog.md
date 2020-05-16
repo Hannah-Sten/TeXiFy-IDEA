@@ -8,6 +8,7 @@
 * Add basic algorithmicx pseudocode formatting. (#1393)
 * Add commands defined using the xparse package to the autocompletion. (#1312)
 * Add support for Dockerized MiKTeX. (#1310)
+* Add support for TeX Live from WSL. (#1410)
 * Add support for entering relative paths in the run configuration. (#1311)
 * Add magic comments to disable and enable the parser. (#1388)
 * Add magic comments to choose LaTeX and BibTeX compiler. (#1409)
@@ -19,6 +20,7 @@
 * Add inspection to check for correct filename/filepath in ProvidesPackage commands. (#1365)
 * Add inspection to check if # is escaped. (#1366)
 * Add inspections to check if & and _ are escaped. (#1368, #1411)
+* Make bibtex working directory configurable via UI. (#1413)
 
 # Bug fixes
 * Fix parse error on unmatched brackets in math environments. (#1319)

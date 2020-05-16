@@ -1,3 +1,4 @@
+- [ ] Run 'Usage of IntelliJ API not avaiable in older IDEs' inspection (ctrl+alt+shift+i)
 - [ ] Document compiles and pdf viewer is opened
 - [ ] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
 - [ ] Forward/backward search
