@@ -103,7 +103,7 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-test-junit"
     implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.3.72"
 
-    // Add a custom ruleset
+    // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.1.jar"))
 }
 
