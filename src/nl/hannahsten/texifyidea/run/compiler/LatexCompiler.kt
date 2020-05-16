@@ -200,7 +200,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             // Avoid mounting the mainfile parent also to /miktex/work/out,
             // because there may be a good reason to make the output directory the same as the source directory
-            if(runConfig.outputPath != mainFile.parent) {
+            if (runConfig.outputPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${runConfig.outputPath?.path}:/miktex/work/out"))
                 command.add("-output-directory=/miktex/work/out")
             }

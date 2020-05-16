@@ -32,7 +32,7 @@ object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
     }
 
     private fun packageName(entry: BibtexDefaultEntry): String {
-        return when(val dependency = entry.dependency) {
+        return when (val dependency = entry.dependency) {
             Package.DEFAULT -> ""
             else -> " (${dependency.name})"
         }
