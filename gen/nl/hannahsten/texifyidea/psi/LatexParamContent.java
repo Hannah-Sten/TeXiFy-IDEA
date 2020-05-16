@@ -17,10 +17,13 @@ public interface LatexParamContent extends PsiElement {
   LatexEnvironment getEnvironment();
 
   @Nullable
-  LatexGroup getGroup();
+  LatexMathEnvironment getMathEnvironment();
 
   @Nullable
-  LatexMathEnvironment getMathEnvironment();
+  LatexOptionalParam getOptionalParam();
+
+  @Nullable
+  LatexParamGroup getParamGroup();
 
   @Nullable
   LatexParameterText getParameterText();

@@ -397,8 +397,10 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
-  //  OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | parameter_text
+  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | param_group |
+  // // Technically this is not an optional param, but since we also use this param_content for optional parameters
+  // // we do need to match brackets
+  //  OPEN_PAREN | CLOSE_PAREN | optional_param | parameter_text
   public static boolean param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "param_content")) return false;
     boolean r;
@@ -410,14 +412,39 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
     if (!r) r = commands(b, l + 1);
-    if (!r) r = group(b, l + 1);
+    if (!r) r = param_group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
-    if (!r) r = consumeToken(b, OPEN_BRACKET);
-    if (!r) r = consumeToken(b, CLOSE_BRACKET);
+    if (!r) r = optional_param(b, l + 1);
     if (!r) r = parameter_text(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  /* ********************************************************** */
+  // OPEN_BRACE param_content* CLOSE_BRACE
+  public static boolean param_group(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "param_group")) return false;
+    if (!nextTokenIs(b, OPEN_BRACE)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, PARAM_GROUP, null);
+    r = consumeToken(b, OPEN_BRACE);
+    p = r; // pin = 1
+    r = r && report_error_(b, param_group_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // param_content*
+  private static boolean param_group_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "param_group_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!param_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "param_group_1", c)) break;
+    }
+    return true;
   }
 
   /* ********************************************************** */

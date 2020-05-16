@@ -46,14 +46,20 @@ public class LatexParamContentImpl extends ASTWrapperPsiElement implements Latex
 
   @Override
   @Nullable
-  public LatexGroup getGroup() {
-    return PsiTreeUtil.getChildOfType(this, LatexGroup.class);
+  public LatexMathEnvironment getMathEnvironment() {
+    return PsiTreeUtil.getChildOfType(this, LatexMathEnvironment.class);
   }
 
   @Override
   @Nullable
-  public LatexMathEnvironment getMathEnvironment() {
-    return PsiTreeUtil.getChildOfType(this, LatexMathEnvironment.class);
+  public LatexOptionalParam getOptionalParam() {
+    return PsiTreeUtil.getChildOfType(this, LatexOptionalParam.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexParamGroup getParamGroup() {
+    return PsiTreeUtil.getChildOfType(this, LatexParamGroup.class);
   }
 
   @Override

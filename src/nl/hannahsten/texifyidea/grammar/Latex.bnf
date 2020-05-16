@@ -103,8 +103,13 @@ optional_param ::= OPEN_BRACKET param_content* CLOSE_BRACKET { pin=3 }
 required_param ::= OPEN_BRACE param_content* CLOSE_BRACE { pin=1 }
 
 // Like content, but no brackets and with parameter_text instead of normal_text
-param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
- OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | parameter_text
+param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | param_group |
+// Technically this is not an optional param, but since we also use this param_content for optional parameters
+// we do need to match brackets
+ OPEN_PAREN | CLOSE_PAREN | optional_param | parameter_text
+
+// group but for parameters
+param_group ::= OPEN_BRACE param_content* CLOSE_BRACE { pin=1 }
 
 // The lowest level of a parameter must have the getReferences etc. implemented
 // We don't do this on normal_text because then every normal_text in the document would be a reference

@@ -73,6 +73,10 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitParamGroup(@NotNull LatexParamGroup o) {
+    visitPsiElement(o);
+  }
+
   public void visitParameter(@NotNull LatexParameter o) {
     visitPsiElement(o);
   }

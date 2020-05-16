@@ -16,7 +16,8 @@ import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameters
-import java.util.*
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import java.util.regex.Pattern
 
 /**
@@ -151,8 +152,8 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
                 val text = content.parameterText
                 if (text != null) return@mapNotNull text.text
                 // or a group like in param={some value}
-                if (content.group == null) return@mapNotNull null
-                content.group!!.contentList.joinToString { it.text }
+                if (content.paramGroup == null) return@mapNotNull null
+                content.paramGroup!!.paramContentList.joinToString { it.text }
             }
             .joinToString(separator = "")
 
