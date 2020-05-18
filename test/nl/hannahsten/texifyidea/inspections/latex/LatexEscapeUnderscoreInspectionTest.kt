@@ -99,6 +99,12 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
         myFixture.configureByText(LatexFileType, """
             \begin{document}
                 % this is a comment _
+                
+                \begin{center}
+                    text
+                    % this is a comment with a _
+                    text
+                \end{center}
             \end{document}
         """.trimIndent())
         myFixture.checkHighlighting(true, false, false, false)
