@@ -25,7 +25,8 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
 ) {
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         if (element.isAmpersandAllowed()) return false
-        return super.checkContext(matcher, element)
+        if (element.isComment()) return false
+        return checkContext(element)
     }
 
     private fun PsiElement.isAmpersandAllowed(): Boolean {
