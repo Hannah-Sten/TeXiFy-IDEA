@@ -23,6 +23,7 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
         replacement = { _, _ -> """\_""" },
         quickFixName = { """Change to \_""" }
 ) {
+
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         if (element.isUnderscoreAllowed()) return false
         return checkContext(element)
@@ -36,6 +37,7 @@ class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
     }
 
     companion object {
+
         private val commandsDisallowingUnderscore = Magic.Command.sectionMarkers + Magic.Command.textStyles + setOf("""\caption""")
     }
 }
