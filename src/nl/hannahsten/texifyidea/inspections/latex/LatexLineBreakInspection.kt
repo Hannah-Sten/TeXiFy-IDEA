@@ -7,6 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
@@ -47,7 +48,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 val endOffset = matcher.end() + (endLine - offset)
 
                 // Do not trigger the inspection when in a comment.
-                if (file.findElementAt(startOffset)?.isComment() == true) {
+                if (file.findElementAt(startOffset + text.startOffset)?.isComment() == true) {
                     continue
                 }
 
