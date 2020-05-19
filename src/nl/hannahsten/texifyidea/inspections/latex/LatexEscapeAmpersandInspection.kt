@@ -33,8 +33,8 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         if (this.isComment()) return true
 
         // Do not trigger in environments that use the ampersand as special character.
-        val invalidEnvironments = Magic.Environment.tableEnvironments + Magic.Environment.alignableEnvironments
-        if (this.inDirectEnvironment(invalidEnvironments)) return true
+        if (this.inDirectEnvironment(Magic.Environment.tableEnvironments)) return true
+        if (this.inDirectEnvironment(Magic.Environment.alignableEnvironments)) return true
 
         // Do not trigger in URLs.
         if (this.firstParentOfType(LatexCommands::class)?.name in Magic.Command.urls) return true
