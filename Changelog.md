@@ -36,7 +36,8 @@
 * Fixed autocompletion in custom command parameters. (#1360)
 * Fixed some inspections being triggered incorrectly in comments. (#1426)
 * Fixed EscapeAmpersand inspection triggering in some matrices. (#1427, #1431)
-* Fixed crashes. (#1332, #1337, #1372)
+* Fixed not being able to type '\"'. (#1425)
+* Fixed crashes. (#1332, #1337, #1372, #1425)
 
 Thanks to Boris Dudelsack ([@bdudelsack](https://github.com/bdudelsack)), Nhan Thai ([@dandoh](https://github.com/dandoh)) and Johannes Berger ([@Xaaris](https://github.com/xaaris)) for contributing to this release.
 
