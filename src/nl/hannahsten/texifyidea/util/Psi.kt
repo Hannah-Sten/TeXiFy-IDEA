@@ -274,7 +274,7 @@ fun PsiElement.inDirectEnvironment(environmentName: String): Boolean = inDirectE
 fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     val nameText = environment.name() ?: return false
-    return validNames.contains(nameText.text)
+    return nameText.text in validNames
 }
 
 /**

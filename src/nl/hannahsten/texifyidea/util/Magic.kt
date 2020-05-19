@@ -44,7 +44,6 @@ object Magic {
         @JvmField
         val noQuickFix: LocalQuickFix? = null
 
-        @Language("Latex")
         @JvmField
         val latexDemoText = """
                 |%
@@ -203,6 +202,7 @@ object Magic {
         @JvmField
         val listingEnvironments = hashSetOf("itemize", "enumerate", "description")
 
+        @JvmField
         val tableEnvironments = hashSetOf("tabular", "tabular*", "tabularx", "array", "longtable")
 
         /**
@@ -229,22 +229,42 @@ object Magic {
         /**
          * Environments that introduce figures
          */
+        @JvmField
         val figures = hashSetOf("figure")
 
         @JvmField
         val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*")
 
+        @JvmField
         val algorithmEnvironments = setOf("algorithmic")
 
         /**
          * All environments that define a matrix.
          */
+        @JvmField
         val matrixEnvironments = setOf(
                 "matrix", "smallmatrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix"
         )
+
+        @JvmField
+        val alignableEnvironments = setOf(
+                "eqnarray", "eqnarray*",
+                "split",
+                "align", "align*",
+                "alignat", "alignat*",
+                "flalign", "flalign*",
+                "aligned", "alignedat",
+                "cases", "dcases",
+                "smallmatrix", "smallmatrix*"
+        ) + matrixEnvironments
     }
 
+    /**
+     * @author Abby Berkers
+     */
     object Comment {
+
+        @JvmField
         val preambleValues = hashSetOf("tikz", "math")
     }
 
