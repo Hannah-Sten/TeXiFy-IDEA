@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.ide.util.gotoByName.GotoFileCellRenderer
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexCommand
@@ -49,7 +50,14 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         val referencesList = command.references.filterIsInstance<InputFileReference>()
         if (referencesList.isEmpty()) return
-        val files = referencesList.mapNotNull { it.resolve() }
+
+        // Since kpsewhich is too slow on Windows, we only enable file resolving on non-Windows systems (for the gutter icon targets)
+        val files = if (!SystemInfo.isWindows) {
+            referencesList.mapNotNull { it.resolve() }
+        }
+        else {
+            emptyList()
+        }
 
         val defaultIcon = TexifyIcons.getIconFromExtension(referencesList.first().defaultExtension)
         val extension = if (files.isNotEmpty()) { files.first().name.getFileExtension() } else ""
