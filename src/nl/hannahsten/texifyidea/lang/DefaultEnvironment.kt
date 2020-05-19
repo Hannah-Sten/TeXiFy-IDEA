@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Environment.Context
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.Package.Companion.GAUSS
+import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.name
@@ -94,6 +96,28 @@ enum class DefaultEnvironment(
     XALIGNAT(environmentName = "xalignat", context = Context.MATH, dependency = AMSMATH),
     XALIGNAT_STAR(environmentName = "xalignat*", context = Context.MATH, dependency = AMSMATH),
     XXALIGNAT(environmentName = "xxalignat", context = Context.MATH, dependency = AMSMATH),
+
+    // mathtools
+    MATRIX_STAR(environmentName = "matrix*", context = Context.MATH, dependency = MATHTOOLS),
+    PMATRIX_STAR(environmentName = "pmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    BMATRIX_STAR(environmentName = "bmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    BMATRIX_CAPITAL_STAR(environmentName = "Bmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    VMATRIX_STAR(environmentName = "vmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    VMATRIX_CAPITAL_STAR(environmentName = "Vmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    SMALLMATRIX_STAR(environmentName = "smallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    PSMALLMATRIX(environmentName = "psmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
+    PSMALLMATRIX_STAR(environmentName = "psmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    BSMALLMATRIX(environmentName = "bsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
+    BSMALLMATRIX_STAR(environmentName = "bsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    BSMALLMATRIX_CAPITAL(environmentName = "Bsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
+    BSMALLMATRIX_CAPITAL_STAR(environmentName = "Bsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    VSMALLMATRIX(environmentName = "vsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
+    VSMALLMATRIX_STAR(environmentName = "vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+    VSMALLMATRIX_CAPITAL(environmentName = "Vsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
+    VSMALLMATRIX_CAPITAL_STAR(environmentName = "Vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
+
+    // gauss
+    GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
 
     // comment
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT),

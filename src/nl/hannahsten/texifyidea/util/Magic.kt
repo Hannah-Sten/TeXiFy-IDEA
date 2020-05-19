@@ -243,7 +243,11 @@ object Magic {
          */
         @JvmField
         val matrixEnvironments = setOf(
-                "matrix", "smallmatrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix"
+                "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
+                "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
+                "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
+                "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
+                "gmatrix"
         )
 
         @JvmField
@@ -254,8 +258,7 @@ object Magic {
                 "alignat", "alignat*",
                 "flalign", "flalign*",
                 "aligned", "alignedat",
-                "cases", "dcases",
-                "smallmatrix", "smallmatrix*"
+                "cases", "dcases"
         ) + matrixEnvironments
     }
 
