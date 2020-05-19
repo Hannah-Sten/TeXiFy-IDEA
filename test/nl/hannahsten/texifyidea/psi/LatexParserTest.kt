@@ -8,6 +8,7 @@ class LatexParserTest : BasePlatformTestCase() {
     fun testSomeGeneralConstructs() {
         myFixture.configureByText(LatexFileType, """
             \mycommand{[test]}
+            \c{[}
         """.trimIndent())
         myFixture.checkHighlighting()
     }

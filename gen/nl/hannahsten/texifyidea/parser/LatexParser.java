@@ -372,7 +372,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACKET param_content* CLOSE_BRACKET
+  // OPEN_BRACKET optional_param_content* CLOSE_BRACKET
   public static boolean optional_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
@@ -385,26 +385,23 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // param_content*
+  // optional_param_content*
   private static boolean optional_param_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!param_content(b, l + 1)) break;
+      if (!optional_param_content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "optional_param_1", c)) break;
     }
     return true;
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
-  // // Technically this is not an optional param, but since we also use this param_content for optional parameters
-  // // we do need to match brackets
-  //  OPEN_PAREN | CLOSE_PAREN | optional_param | parameter_text
-  public static boolean param_content(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "param_content")) return false;
+  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
+  public static boolean optional_param_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_content")) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, PARAM_CONTENT, "<param content>");
+    Marker m = enter_section_(b, l, _NONE_, OPTIONAL_PARAM_CONTENT, "<optional param content>");
     r = raw_text(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
@@ -415,7 +412,6 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
-    if (!r) r = optional_param(b, l + 1);
     if (!r) r = parameter_text(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -581,7 +577,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACE param_content* CLOSE_BRACE
+  // OPEN_BRACE required_param_content* CLOSE_BRACE
   public static boolean required_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
@@ -595,15 +591,38 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // param_content*
+  // required_param_content*
   private static boolean required_param_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!param_content(b, l + 1)) break;
+      if (!required_param_content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "required_param_1", c)) break;
     }
     return true;
+  }
+
+  /* ********************************************************** */
+  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+  public static boolean required_param_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "required_param_content")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, REQUIRED_PARAM_CONTENT, "<required param content>");
+    r = raw_text(b, l + 1);
+    if (!r) r = comment(b, l + 1);
+    if (!r) r = environment(b, l + 1);
+    if (!r) r = pseudocode_block(b, l + 1);
+    if (!r) r = math_environment(b, l + 1);
+    if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
+    if (!r) r = commands(b, l + 1);
+    if (!r) r = group(b, l + 1);
+    if (!r) r = consumeToken(b, OPEN_PAREN);
+    if (!r) r = consumeToken(b, CLOSE_PAREN);
+    if (!r) r = parameter_text(b, l + 1);
+    if (!r) r = consumeToken(b, OPEN_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_BRACKET);
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   static final Parser raw_text_parser_ = new Parser() {

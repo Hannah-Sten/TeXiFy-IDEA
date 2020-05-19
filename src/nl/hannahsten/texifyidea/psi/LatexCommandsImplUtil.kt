@@ -145,9 +145,9 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
     val parameterString = parameters.mapNotNull { it.optionalParam }
             // extract the content of each parameter element
             .flatMap { param ->
-                param.paramContentList
+                param.optionalParamContentList
             }
-            .mapNotNull { content: LatexParamContent ->
+            .mapNotNull { content: LatexOptionalParamContent ->
                 // the content is either simple text
                 val text = content.parameterText
                 if (text != null) return@mapNotNull text.text
@@ -169,7 +169,7 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
     return parameters.mapNotNull { it.requiredParam }
             .map {
-                it.paramContentList.map { content: LatexParamContent ->
+                it.requiredParamContentList.map { content: LatexRequiredParamContent ->
                     if (content.commands != null && content.parameterText == null) {
                         content.commands!!.commandToken.text
                     }
