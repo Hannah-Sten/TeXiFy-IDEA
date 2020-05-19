@@ -235,6 +235,13 @@ object Magic {
         val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*")
 
         val algorithmEnvironments = setOf("algorithmic")
+
+        /**
+         * All environments that define a matrix.
+         */
+        val matrixEnvironments = setOf(
+                "matrix", "smallmatrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix"
+        )
     }
 
     object Comment {
