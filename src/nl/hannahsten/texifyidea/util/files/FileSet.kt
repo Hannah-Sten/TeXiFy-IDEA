@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.isDefinition
 
@@ -114,7 +114,8 @@ fun getGraphicsPaths(project: Project): List<String> {
     if (graphicsPathCommands.isNotEmpty()) {
         // Only last defined one counts
         val args = graphicsPathCommands.last().parameterList.filter { it.requiredParam != null }
-        val subArgs = args.first().childrenOfType(LatexParameterText::class)
+        // These arguments have to be in a group in a parameter, and a group contains LatexNormalText instead of LatexParameterText
+        val subArgs = args.first().childrenOfType(LatexNormalText::class)
         subArgs.forEach { graphicsPaths.add(it.text) }
     }
 

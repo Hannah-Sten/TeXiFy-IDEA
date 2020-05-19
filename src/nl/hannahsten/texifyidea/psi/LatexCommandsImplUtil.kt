@@ -152,8 +152,8 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
                 val text = content.parameterText
                 if (text != null) return@mapNotNull text.text
                 // or a group like in param={some value}
-                if (content.paramGroup == null) return@mapNotNull null
-                content.paramGroup!!.paramContentList.joinToString { it.text }
+                if (content.group == null) return@mapNotNull null
+                content.group!!.contentList.joinToString { it.text }
             }
             .joinToString(separator = "")
 

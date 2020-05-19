@@ -145,7 +145,7 @@ object LatexPsiUtil {
                 result.add(element.normalText)
             }
             is LatexParamContent -> {
-                result.add(element.paramGroup)
+                result.add(element.group)
                 result.add(element.parameterText)
             }
             is LatexOptionalParam -> {

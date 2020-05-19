@@ -28,7 +28,6 @@ public interface LatexTypes {
   IElementType PARAMETER = new LatexElementType("PARAMETER");
   IElementType PARAMETER_TEXT = new LatexElementType("PARAMETER_TEXT");
   IElementType PARAM_CONTENT = new LatexElementType("PARAM_CONTENT");
-  IElementType PARAM_GROUP = new LatexElementType("PARAM_GROUP");
   IElementType PSEUDOCODE_BLOCK = new LatexElementType("PSEUDOCODE_BLOCK");
   IElementType PSEUDOCODE_BLOCK_CONTENT = new LatexElementType("PSEUDOCODE_BLOCK_CONTENT");
   IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
@@ -116,9 +115,6 @@ public interface LatexTypes {
       }
       else if (type == PARAM_CONTENT) {
         return new LatexParamContentImpl(node);
-      }
-      else if (type == PARAM_GROUP) {
-        return new LatexParamGroupImpl(node);
       }
       else if (type == PSEUDOCODE_BLOCK) {
         return new LatexPseudocodeBlockImpl(node);
