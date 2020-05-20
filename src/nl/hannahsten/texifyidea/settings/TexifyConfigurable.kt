@@ -84,16 +84,16 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun isModified(): Boolean {
-        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
-                || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
-                || automaticItemInItemize.isSelected != settings.automaticItemInItemize
-                || automaticDependencyCheck.isSelected != settings.automaticDependencyCheck
-                || autoCompile.isSelected != settings.autoCompile
-                || continuousPreview.isSelected != settings.continuousPreview
-                || includeBackslashInSelection.isSelected != settings.includeBackslashInSelection
-                || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
-                || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
-                || labelDefiningCommands.isModified()
+        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol ||
+                automaticUpDownBracket.isSelected != settings.automaticUpDownBracket ||
+                automaticItemInItemize.isSelected != settings.automaticItemInItemize ||
+                automaticDependencyCheck.isSelected != settings.automaticDependencyCheck ||
+                autoCompile.isSelected != settings.autoCompile ||
+                continuousPreview.isSelected != settings.continuousPreview ||
+                includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
+                automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+                pdfViewer.selectedIndex != settings.pdfViewer.ordinal ||
+                labelDefiningCommands.isModified()
     }
 
     override fun apply() {

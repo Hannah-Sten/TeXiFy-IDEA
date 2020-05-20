@@ -85,8 +85,8 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             }
 
             // If we are not closing the quotes, assume we are opening it (instead of doing nothing)
-            if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES
-                && document.getText(TextRange.from(min(offset, document.textLength - 1), 1)) != "}") {
+            if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES &&
+                document.getText(TextRange.from(min(offset, document.textLength - 1), 1)) != "}") {
                 isOpeningQuotes = true
             }
         }

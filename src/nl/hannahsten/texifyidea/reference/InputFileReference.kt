@@ -16,9 +16,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.*
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -144,5 +141,4 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         val extension: HashSet<String>? = Magic.Command.includeOnlyExtensions[this.commandToken.text]
         return extension?.map { "$fileName.$it" }?.toHashSet()
     }
-
 }

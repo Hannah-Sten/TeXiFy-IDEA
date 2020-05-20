@@ -4,9 +4,8 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
 
@@ -18,7 +17,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     PDFLATEX("pdfLaTeX", "pdflatex") {
 
-        override fun createCommand(runConfig: LatexRunConfiguration, auxilPath: String?, outputPath: String?, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "pdflatex")
 
             command.add("-file-line-error")
@@ -49,7 +54,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     LUALATEX("LuaLaTeX", "lualatex") {
 
-        override fun createCommand(runConfig: LatexRunConfiguration, auxilPath: String?, outputPath: String?, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "lualatex")
 
             // Some commands are the same as for pdflatex
@@ -76,7 +87,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val handlesNumberOfCompiles = true
 
-        override fun createCommand(runConfig: LatexRunConfiguration, auxilPath: String?, outputPath: String?, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
             // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
@@ -104,7 +121,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val outputFormats = arrayOf(Format.PDF, Format.XDV)
 
-        override fun createCommand(runConfig: LatexRunConfiguration, auxilPath: String?, outputPath: String?, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "xelatex")
 
             // As usual, available command line options can be viewed with xelatex --help
@@ -141,7 +164,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val outputFormats = arrayOf(Format.PDF)
 
-        override fun createCommand(runConfig: LatexRunConfiguration, auxilPath: String?, outputPath: String?, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")
 
             // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
@@ -164,7 +193,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val outputFormats = arrayOf(Format.PDF, Format.HTML, Format.XDV, Format.AUX)
 
-        override fun createCommand(runConfig: LatexRunConfiguration, auxilPath: String?, outputPath: String?, moduleRoot: VirtualFile?, moduleRoots: Array<VirtualFile>): MutableList<String> {
+        override fun createCommand(
+            runConfig: LatexRunConfiguration,
+            auxilPath: String?,
+            outputPath: String?,
+            moduleRoot: VirtualFile?,
+            moduleRoots: Array<VirtualFile>
+        ): MutableList<String> {
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
             val command = mutableListOf(runConfig.compilerPath ?: "tectonic")
@@ -184,7 +219,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     /**
      * Convert Windows paths to WSL paths.
      */
-    private fun String.toPath(runConfig: LatexRunConfiguration): String = if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) { "wsl wslpath -a '$this'".runCommand() ?: this } else this
+    private fun String.toPath(runConfig: LatexRunConfiguration): String =
+        if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
+            "wsl wslpath -a '$this'".runCommand() ?: this
+        }
+        else this
 
     /**
      * Get the execution command for the latex compiler.
@@ -201,7 +240,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
         val moduleRoots = rootManager.contentSourceRoots
 
-        var command = createCommand(runConfig, runConfig.auxilPath?.path?.toPath(runConfig), runConfig.outputPath?.path?.toPath(runConfig), moduleRoot, moduleRoots)
+        var command = createCommand(
+            runConfig,
+            runConfig.auxilPath?.path?.toPath(runConfig),
+            runConfig.outputPath?.path?.toPath(runConfig),
+            moduleRoot,
+            moduleRoots
+        )
 
         if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
             command = mutableListOf("bash", "-ic", GeneralCommandLine(command).commandLineString)
@@ -211,7 +256,15 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // See https://hub.docker.com/r/miktex/miktex
             "docker volume create --name miktex".runCommand()
 
-            val parameterList = mutableListOf("docker", "run", "--rm", "-v", "miktex:/miktex/.miktex", "-v", "${mainFile.parent.path}:/miktex/work")
+            val parameterList = mutableListOf(
+                "docker",
+                "run",
+                "--rm",
+                "-v",
+                "miktex:/miktex/.miktex",
+                "-v",
+                "${mainFile.parent.path}:/miktex/work"
+            )
 
             // Avoid mounting the mainfile parent also to /miktex/work/out,
             // because there may be a good reason to make the output directory the same as the source directory
@@ -228,8 +281,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         // Custom compiler arguments specified by the user
         runConfig.compilerArguments?.let { arguments ->
             arguments.splitWhitespace()
-                    .dropLastWhile { it.isEmpty() }
-                    .forEach { command.add(it) }
+                .dropLastWhile { it.isEmpty() }
+                .forEach { command.add(it) }
         }
 
         if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
@@ -252,11 +305,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      * @return The command to be executed.
      */
     protected open fun createCommand(
-            runConfig: LatexRunConfiguration,
-            auxilPath: String?,
-            outputPath: String?,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
+        runConfig: LatexRunConfiguration,
+        auxilPath: String?,
+        outputPath: String?,
+        moduleRoot: VirtualFile?,
+        moduleRoots: Array<VirtualFile>
     ): MutableList<String> = error("Not implemented for $this")
 
     /**

@@ -37,7 +37,7 @@ object LatexPackageLocationCache {
         }
         BufferedReader(
             InputStreamReader(Runtime.getRuntime().exec(command).inputStream)
-        ).readLine()  // Returns null if no line read.
+        ).readLine() // Returns null if no line read.
     }
     catch (e: IOException) {
         null
