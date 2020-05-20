@@ -2,13 +2,19 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.isClassFile
+import nl.hannahsten.texifyidea.util.files.isStyleFile
 
 /**
  * @author Hannah Schellekens
@@ -101,8 +107,12 @@ object PackageUtils {
 
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
 
+        // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
         // Avoid 'Write access is allowed inside write-action only" exception
         runWriteAction {
+            // Avoid "Attempt to modify PSI for non-committed Document"
+            PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
+            PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
             if (anchorAfter != null) {
                 val anchorBefore = anchorAfter.node.treeNext
                 if (prependNewLine) {

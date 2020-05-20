@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.util.Magic
 
 internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(LatexEscapeAmpersandInspection()) {
 
@@ -44,6 +45,20 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
             \end{document}
         """.trimIndent())
         myFixture.checkHighlighting(true, false, false, false)
+    }
+
+    fun `test that ampersand in in matrix environments does not trigger a warning`() {
+        Magic.Environment.matrixEnvironments.forEach { environment ->
+            myFixture.configureByText(LatexFileType, """
+                \begin{document}
+                    $\begin{$environment}
+                        a& =b\\
+                        c& =d
+                    \end{$environment}$
+                \end{document}
+            """.trimIndent())
+            myFixture.checkHighlighting(true, false, false, false)
+        }
     }
 
     fun `test that ampersand in url command does not trigger a warning`() {
