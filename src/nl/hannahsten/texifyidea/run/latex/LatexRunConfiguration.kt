@@ -51,6 +51,7 @@ class LatexRunConfiguration constructor(project: Project,
         private const val AUXIL_PATH = "auxil-path"
         private const val COMPILE_TWICE = "compile-twice"
         private const val OUTPUT_FORMAT = "output-format"
+        private const val LATEX_DISTRIBUTION = "latex-distribution"
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
@@ -100,6 +101,7 @@ class LatexRunConfiguration constructor(project: Project,
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
+    var latexDistribution: LatexDistributionType = LatexDistributionType.TEXLIVE
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -249,12 +251,13 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
         // Read output format.
-        val format = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format
+        this.outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
+
+        // Read LatexDistribution
+        this.latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
 
         // Read whether the run config has been run
-        val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
-        this.hasBeenRun = hasBeenRunString?.toBoolean() ?: false
+        this.hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
 
         // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
@@ -282,72 +285,21 @@ class LatexRunConfiguration constructor(project: Project,
             parent.removeContent()
         }
 
-        // Write compiler.
-        val compilerElt = Element(COMPILER)
-        compilerElt.text = compiler?.name ?: ""
-        parent.addContent(compilerElt)
-
-        // Write compiler path.
-        val compilerPathElt = Element(COMPILER_PATH)
-        compilerPathElt.text = compilerPath ?: ""
-        parent.addContent(compilerPathElt)
-
-        // Write SumatraPDF path
-        val sumatraPathElt = Element(SUMATRA_PATH)
-        sumatraPathElt.text = sumatraPath ?: ""
-        parent.addContent(sumatraPathElt)
-
-        // Write pdf viewer command
-        val viewerCommandElt = Element(VIEWER_COMMAND)
-        viewerCommandElt.text = viewerCommand ?: ""
-        parent.addContent(viewerCommandElt)
-
-        // Write compiler arguments
-        val compilerArgsElt = Element(COMPILER_ARGUMENTS)
-        compilerArgsElt.text = this.compilerArguments ?: ""
-        parent.addContent(compilerArgsElt)
-
+        parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
+        parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
+        parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
+        parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
+        parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
-
-        // Write main file.
-        val mainFileElt = Element(MAIN_FILE)
-        mainFileElt.text = mainFile?.path ?: ""
-        parent.addContent(mainFileElt)
-
-        // Write output path
-        val outputPathElt = Element(OUTPUT_PATH)
-        outputPathElt.text = outputPath?.path ?: ""
-        parent.addContent(outputPathElt)
-
-        // Write auxiliary path
-        val auxilPathElt = Element(AUXIL_PATH)
-        auxilPathElt.text = auxilPath?.path ?: ""
-        parent.addContent(auxilPathElt)
-
-        // Write whether to compile twice
-        val compileTwiceElt = Element(COMPILE_TWICE)
-        compileTwiceElt.text = compileTwice.toString()
-        parent.addContent(compileTwiceElt)
-
-        // Write output format.
-        val outputFormatElt = Element(OUTPUT_FORMAT)
-        outputFormatElt.text = outputFormat.name
-        parent.addContent(outputFormatElt)
-
-        // Write whether the run config has been run
-        val hasBeenRunElt = Element(HAS_BEEN_RUN)
-        hasBeenRunElt.text = hasBeenRun.toString()
-        parent.addContent(hasBeenRunElt)
-
-        // Write bibliography run configuration
-        val bibRunConfigElt = Element(BIB_RUN_CONFIG)
-        bibRunConfigElt.text = bibRunConfigIds.toString()
-        parent.addContent(bibRunConfigElt)
-
-        // Write makeindex run configuration
-        val makeindexRunConfigElt = Element(MAKEINDEX_RUN_CONFIG)
-        makeindexRunConfigElt.text = makeindexRunConfigId
-        parent.addContent(makeindexRunConfigElt)
+        parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
+        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath?.path ?: "" })
+        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath?.path ?: "" })
+        parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
+        parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
+        parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
+        parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
+        parent.addContent(Element(BIB_RUN_CONFIG).also { it.text = bibRunConfigIds.toString() })
+        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).also { it.text = makeindexRunConfigId })
     }
 
     /**
@@ -400,7 +352,7 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
         // On non-MiKTeX systems, override outputPath to disable the out/ directory by default for bibtex to work
-        if (!LatexDistribution.isMiktex) {
+        if (!latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (isDefaultOutputPath() && mainFile != null) {
                 outputPath = mainFile!!.parent
@@ -492,6 +444,10 @@ class LatexRunConfiguration constructor(project: Project,
         outputFormat = Format.PDF
     }
 
+    fun setDefaultDistribution() {
+        latexDistribution = LatexDistribution.defaultLatexDistribution
+    }
+
     /**
      * Find the directory where auxiliary files will be placed, depending on the run config settings.
      *
@@ -499,7 +455,7 @@ class LatexRunConfiguration constructor(project: Project,
      */
     fun getAuxilDirectory(): VirtualFile? {
         val auxilDir = when {
-            auxilPath != null && LatexDistribution.isMiktex -> auxilPath
+            auxilPath != null && latexDistribution.isMiktex() -> auxilPath
             outputPath != null -> outputPath
             mainFile != null -> mainFile?.parent
             else -> null
@@ -574,7 +530,7 @@ class LatexRunConfiguration constructor(project: Project,
      */
     fun setDefaultAuxilPath() {
         // -aux-directory pdflatex flag only exists on MiKTeX, so disable auxil otherwise
-        if (auxilPath != null || mainFile == null || !LatexDistribution.isMiktex) return
+        if (auxilPath != null || mainFile == null || !latexDistribution.isMiktex()) return
         val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         this.auxilPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/auxil")
     }

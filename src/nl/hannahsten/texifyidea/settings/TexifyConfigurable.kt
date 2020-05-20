@@ -14,6 +14,7 @@ import javax.swing.JPanel
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
+@Suppress("SameParameterValue")
 class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
 
     private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
@@ -22,7 +23,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var automaticDependencyCheck: JBCheckBox
     private lateinit var autoCompile: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
-    private lateinit var dockerizedMiktex: JBCheckBox
     private lateinit var includeBackslashInSelection: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var pdfViewer: ComboBox<String>
@@ -45,7 +45,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
                 autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
-                dockerizedMiktex = addCheckbox("Always use Dockerized MiKTeX")
                 includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
@@ -85,17 +84,16 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun isModified(): Boolean {
-        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol ||
-                automaticUpDownBracket.isSelected != settings.automaticUpDownBracket ||
-                automaticItemInItemize.isSelected != settings.automaticItemInItemize ||
-                automaticDependencyCheck.isSelected != settings.automaticDependencyCheck ||
-                autoCompile.isSelected != settings.autoCompile ||
-                continuousPreview.isSelected != settings.continuousPreview ||
-                dockerizedMiktex.isSelected != settings.dockerizedMiktex ||
-                includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
-                automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-                pdfViewer.selectedIndex != settings.pdfViewer.ordinal ||
-                labelDefiningCommands.isModified()
+        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
+                || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
+                || automaticItemInItemize.isSelected != settings.automaticItemInItemize
+                || automaticDependencyCheck.isSelected != settings.automaticDependencyCheck
+                || autoCompile.isSelected != settings.autoCompile
+                || continuousPreview.isSelected != settings.continuousPreview
+                || includeBackslashInSelection.isSelected != settings.includeBackslashInSelection
+                || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
+                || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
+                || labelDefiningCommands.isModified()
     }
 
     override fun apply() {
@@ -105,7 +103,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.automaticDependencyCheck = automaticDependencyCheck.isSelected
         settings.autoCompile = autoCompile.isSelected
         settings.continuousPreview = continuousPreview.isSelected
-        settings.dockerizedMiktex = dockerizedMiktex.isSelected
         settings.includeBackslashInSelection = includeBackslashInSelection.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
@@ -119,7 +116,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         automaticDependencyCheck.isSelected = settings.automaticDependencyCheck
         autoCompile.isSelected = settings.autoCompile
         continuousPreview.isSelected = settings.continuousPreview
-        dockerizedMiktex.isSelected = settings.dockerizedMiktex
         includeBackslashInSelection.isSelected = settings.includeBackslashInSelection
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
         pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)

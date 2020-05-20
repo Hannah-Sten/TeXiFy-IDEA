@@ -23,7 +23,7 @@ class SystemEnvironment {
     }
 }
 
-internal fun runCommand(vararg commands: String): String {
+fun runCommand(vararg commands: String): String {
     try {
         val command = arrayListOf(*commands)
         val proc = ProcessBuilder(command)

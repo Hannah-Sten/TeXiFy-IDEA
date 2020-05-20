@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.getOpenAndCloseQuotes
 import nl.hannahsten.texifyidea.util.insertUsepackage
+import kotlin.math.min
 
 /**
  * This class performs smart quote substitution. When this is enabled, it will replace double quotes " and single quotes ' with the appropriate LaTeX symbols.
@@ -37,7 +38,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         }
 
         // Check if we are not out of the document range
-        if (offset - 1 < 0 || offset + 1 >= document.textLength) {
+        if (offset - 1 < 0 || offset - 1 >= document.textLength) {
             return super.charTyped(char, project, editor, file)
         }
 
@@ -68,6 +69,11 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             // Character before the cursor
             val previousChar = document.getText(TextRange.from(offset - 2, 1))
 
+            // Don't replace when trying to type an escaped quote \"
+            if (previousChar == "\\") {
+                return
+            }
+
             // Assume that if the previous char is a space, we are not closing anything
             if (previousChar == " ") {
                 isOpeningQuotes = true
@@ -75,6 +81,12 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
             // After opening brackets, also use opening quotes
             if (previousChar == "{" || previousChar == "[" || previousChar == "(") {
+                isOpeningQuotes = true
+            }
+
+            // If we are not closing the quotes, assume we are opening it (instead of doing nothing)
+            if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES
+                && document.getText(TextRange.from(min(offset, document.textLength - 1), 1)) != "}") {
                 isOpeningQuotes = true
             }
         }
@@ -86,7 +98,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
         document.insertString(offset - 1, replacement)
 
         // Move the cursor behind the replacement which replaced the typed char
-        caret.moveToOffset(offset + replacement.length - 1)
+        caret.moveToOffset(min(offset + replacement.length - 1, document.textLength))
 
         handleCsquotesInsertion(document, file, isOpeningQuotes, caret, char)
     }

@@ -23,6 +23,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val CLEVEREF = Package("cleveref")
         @JvmField val CSQUOTES = Package("csquotes")
         @JvmField val FONTENC = Package("fontenc")
+        @JvmField val GAUSS = Package("gauss")
         @JvmField val GRAPHICX = Package("graphicx")
         @JvmField val HYPERREF = Package("hyperref")
         @JvmField val IMAKEIDX = Package("imakeidx")

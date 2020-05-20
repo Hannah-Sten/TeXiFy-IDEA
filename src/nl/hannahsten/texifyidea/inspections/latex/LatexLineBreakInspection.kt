@@ -7,9 +7,9 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.psi.LatexComment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -30,9 +30,11 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
         val document = file.document() ?: return descriptors
 
+        // Target all regular text for this inspection.
         val texts = file.childrenOfType(LatexNormalText::class)
-        for (text: LatexNormalText in texts) {
-            if (text.inMathContext() || text.hasParent(LatexComment::class)) {
+        for (text in texts) {
+            // Do not trigger the inspection in math mode.
+            if (text.inMathContext()) {
                 continue
             }
 
@@ -42,9 +44,17 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 val lineNumber = document.getLineNumber(offset)
                 val endLine = document.getLineEndOffset(lineNumber)
 
+                val startOffset = matcher.start()
+                val endOffset = matcher.end() + (endLine - offset)
+
+                // Do not trigger the inspection when in a comment.
+                if (file.findElementAt(startOffset + text.startOffset)?.isComment() == true) {
+                    continue
+                }
+
                 descriptors.add(manager.createProblemDescriptor(
                         text,
-                        TextRange(matcher.start(), min(text.textLength, matcher.end() + (endLine - offset))),
+                        TextRange(startOffset, min(text.textLength, endOffset)),
                         "Sentence does not start on a new line",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
@@ -66,17 +76,13 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val textElement = descriptor.psiElement
             val document = textElement.containingFile.document() ?: return
-            val matcher = Magic.Pattern.sentenceEnd.matcher(textElement.text)
             val range = descriptor.textRangeInElement
             val textOffset = textElement.textOffset
             val textInElement = document.getText(TextRange(textOffset + range.startOffset, textOffset + range.endOffset))
 
-            if (!matcher.find()) {
-                return
-            }
-
+            // Do not apply the fix when there is no break point.
             val signMarker = Magic.Pattern.sentenceSeparator.matcher(textInElement)
-            if (!signMarker.find()) {
+            if (signMarker.find().not()) {
                 return
             }
 

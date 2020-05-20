@@ -5,7 +5,11 @@ import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.ui.*
+import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.ui.LabeledComponent
+import com.intellij.openapi.ui.TextBrowseFolderListener
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
@@ -27,8 +31,8 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
     private lateinit var compilerArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var mainFile: LabeledComponent<TextFieldWithBrowseButton>
     /** Keep track of the the working directory for bibtex, i.e., where bibtex should find the files it needs.
-     * User sets this in latex run configuration. */
-    private lateinit var bibWorkingDir: String
+     * Is automatically set based on the LaTeX run config when created. */
+    private lateinit var bibWorkingDir: LabeledComponent<TextFieldWithBrowseButton>
 
     override fun createEditor(): JComponent {
         createUIComponents()
@@ -41,7 +45,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         compilerArguments.component.text = runConfig.compilerArguments ?: ""
         enableCompilerPath.isSelected = runConfig.compilerPath != null
         mainFile.component.text = runConfig.mainFile?.path ?: ""
-        bibWorkingDir = runConfig.bibWorkingDir?.path ?: ""
+        bibWorkingDir.component.text = runConfig.bibWorkingDir?.path ?: ""
     }
 
     override fun applyEditorTo(runConfig: BibtexRunConfiguration) {
@@ -49,7 +53,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
         runConfig.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
         runConfig.compilerArguments = compilerArguments.component.text
         runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
-        runConfig.bibWorkingDir = LocalFileSystem.getInstance().findFileByPath(bibWorkingDir)
+        runConfig.bibWorkingDir = LocalFileSystem.getInstance().findFileByPath(bibWorkingDir.component.text)
     }
 
     private fun createUIComponents() {
@@ -57,7 +61,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
             // Compiler
-            val compilerField = ComboBox<BibliographyCompiler>(BibliographyCompiler.values())
+            val compilerField = ComboBox(BibliographyCompiler.values())
             compiler = LabeledComponent.create(compilerField, "Compiler")
             add(compiler)
 
@@ -105,6 +109,19 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             ) }
             mainFile = LabeledComponent.create(mainFileField, "Main file that includes bibliography")
             add(mainFile)
+
+            // Working directory
+            val workingDirField = TextFieldWithBrowseButton()
+            workingDirField.addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileChooserDescriptor(false, true, false, false, false, false)
+                        .withTitle("Choose the BibTeX working directory")
+                        .withRoots(*ProjectRootManager.getInstance(project)
+                            .contentRootsFromAllModules)
+                )
+            )
+            bibWorkingDir = LabeledComponent.create(workingDirField, "Working directory for bibtex")
+            add(bibWorkingDir)
         }
     }
 }

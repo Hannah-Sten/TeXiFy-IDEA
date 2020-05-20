@@ -1,6 +1,7 @@
-package nl.hannahsten.texifyidea.util
+package nl.hannahsten.texifyidea.run.latex
 
-import nl.hannahsten.texifyidea.settings.TexifySettings
+import com.intellij.openapi.util.SystemInfo
+import nl.hannahsten.texifyidea.util.runCommand
 
 /**
  * Represents the LaTeX Distribution of the user, e.g. MikTeX or TeX Live.
@@ -18,10 +19,22 @@ class LatexDistribution {
         }
 
         /**
+         * Guess the LaTeX distribution that the user probably is using / wants to use.
+         */
+        val defaultLatexDistribution: LatexDistributionType by lazy {
+            when {
+                isMiktexAvailable -> LatexDistributionType.MIKTEX
+                isTexliveAvailable -> LatexDistributionType.TEXLIVE
+                defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
+                else -> LatexDistributionType.TEXLIVE
+            }
+        }
+
+        /**
          * Whether the user is using MikTeX or not.
          * This value is lazy, so only computed when first accessed, because it is unlikely that the user will change LaTeX distribution while using IntelliJ.
          */
-        val isMiktex: Boolean by lazy {
+        val isMiktexAvailable: Boolean by lazy {
             pdflatexVersionText.contains("MiKTeX")
         }
 
@@ -29,21 +42,38 @@ class LatexDistribution {
          * Whether the user is using TeX Live or not.
          * This value is only computed once.
          */
-        val isTexlive: Boolean by lazy {
+        val isTexliveAvailable: Boolean by lazy {
             pdflatexVersionText.contains("TeX Live")
+        }
+
+        private val isDockerMiktexAvailable: Boolean by lazy {
+            dockerImagesText.contains("miktex")
+        }
+
+        private val isWslTexliveAvailable: Boolean by lazy {
+            SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version").contains("pdfTeX")
         }
 
         /**
          * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
+         * In this case we assume the user wants to use Dockerized MiKTeX.
          */
-        fun isDockerMiktex() = TexifySettings.getInstance().dockerizedMiktex || (!isMiktex && !isTexlive && dockerImagesText.contains("miktex"))
+        private fun defaultIsDockerMiktex() = (!isMiktexAvailable && !isTexliveAvailable && dockerImagesText.contains("miktex"))
+
+        fun isInstalled(type: LatexDistributionType): Boolean {
+            if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
+            if (type == LatexDistributionType.TEXLIVE && isTexliveAvailable) return true
+            if (type == LatexDistributionType.DOCKER_MIKTEX && isDockerMiktexAvailable) return true
+            if (type == LatexDistributionType.WSL_TEXLIVE && isWslTexliveAvailable) return true
+            return false
+        }
 
         /**
          * Returns year of texlive installation, 0 if it is not texlive.
          * Assumes the pdflatex version output contains something like (TeX Live 2019).
          */
         val texliveVersion: Int by lazy {
-            if (!isTexlive) {
+            if (!isTexliveAvailable) {
                 0
             }
             else {

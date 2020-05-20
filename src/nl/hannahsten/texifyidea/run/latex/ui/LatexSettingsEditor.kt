@@ -18,9 +18,10 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
-import nl.hannahsten.texifyidea.util.LatexDistribution
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -41,9 +42,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     // Not shown on non-MiKTeX systems
     private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
 
-    // The following options may or may not exist.
     private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
+    private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionType>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: RunConfigurationPanel<BibtexRunConfigurationType>
     private lateinit var makeindexPanel: RunConfigurationPanel<MakeindexRunConfigurationType>
@@ -129,6 +130,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                 outputFormat.component.selectedItem = Format.PDF
             }
         }
+
+        // Reset LaTeX distribution
+        latexDistribution.component.selectedItem = runConfiguration.latexDistribution
 
         // Reset project.
         project = runConfiguration.project
@@ -226,6 +230,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply output format.
         val format = outputFormat.component.selectedItem as Format?
         runConfiguration.outputFormat = format ?: Format.PDF
+
+        // Apply LaTeX distribution
+        runConfiguration.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
     }
 
     override fun createEditor(): JComponent {
@@ -268,7 +275,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         addOutputPathField(panel)
 
-        compileTwice = JBCheckBox("Always compile twice")
+        compileTwice = JBCheckBox("Always compile at least twice")
         compileTwice!!.isSelected = false
         panel.add(compileTwice)
 
@@ -278,6 +285,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         outputFormat = LabeledComponent.create(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
+
+        // LaTeX distribution
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isInstalled() }.toTypedArray()), "LaTeX Distribution")
+        panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
 
@@ -291,7 +302,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
     private fun addOutputPathField(panel: JPanel) {
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
-        if (LatexDistribution.isMiktex) {
+        if (LatexDistribution.isMiktexAvailable) {
 
             val auxilPathField = TextFieldWithBrowseButton()
             auxilPathField.addBrowseFolderListener(
