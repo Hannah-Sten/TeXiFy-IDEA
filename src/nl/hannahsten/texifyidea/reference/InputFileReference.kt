@@ -12,13 +12,10 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.*
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -55,7 +52,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         else {
             emptyList()
         }.toMutableList()
-
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
@@ -111,7 +107,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         @Suppress("RemoveExplicitTypeArguments")
         if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
             targetFile = element.getFileNameWithExtensions(key)
-                    ?.map { runKpsewhich(it) }
+                    ?.map { LatexPackageLocationCache.getPackageLocation(it) }
                     ?.map { getExternalFile(it ?: return null) }
                     ?.firstOrNull { it != null }
         }
@@ -144,16 +140,5 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     private fun LatexCommands.getFileNameWithExtensions(fileName: String): HashSet<String>? {
         val extension: HashSet<String>? = Magic.Command.includeOnlyExtensions[this.commandToken.text]
         return extension?.map { "$fileName.$it" }?.toHashSet()
-    }
-
-    companion object {
-        private fun runKpsewhich(arg: String): String? = try {
-            BufferedReader(InputStreamReader(Runtime.getRuntime().exec(
-                    "kpsewhich $arg"
-            ).inputStream)).readLine()  // Returns null if no line read.
-        }
-        catch (e: IOException) {
-            null
-        }
     }
 }

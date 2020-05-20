@@ -62,7 +62,6 @@ fun PsiFile.findBibtexLabelsInFileSetAsSequence(): Sequence<String> = findBibtex
             }
         }
 
-
 /**
  * Finds all the labeling commands within the collection of commands.
  *

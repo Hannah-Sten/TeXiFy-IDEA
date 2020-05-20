@@ -55,7 +55,6 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
     }
 }
 
-
 /**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
  *
@@ -135,7 +134,6 @@ fun stripGroup(text: String): String {
     return text.substring(1, text.length - 1)
 }
 
-
 /**
  * Generates a map of parameter names and values for all optional parameters
  */
@@ -183,12 +181,10 @@ fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
             }
 }
 
-
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
         extractSubParameterRanges(firstParam)
                 .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
                 .toArray(emptyArray())
-
 
 /**
  * Checks if the command is followed by a label.

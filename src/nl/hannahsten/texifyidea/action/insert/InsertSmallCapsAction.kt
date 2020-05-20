@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Hannah Schellekens
  */
-class InsertSmallCapsAction : InsertEditorAction("Small capitals", TexifyIcons.FONT_SMALLCAPS, "\\textsc{", "}") 
+class InsertSmallCapsAction : InsertEditorAction("Small capitals", TexifyIcons.FONT_SMALLCAPS, "\\textsc{", "}")

@@ -58,7 +58,6 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
                     .associateBy(LatexCommands::labelName)
                     .toMutableMap()
 
-
     private fun isFigureLabel(label: LatexCommands): Boolean =
             label.inDirectEnvironment(Magic.Environment.figures)
 }

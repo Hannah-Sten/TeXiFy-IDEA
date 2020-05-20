@@ -24,5 +24,4 @@ class SimpleFileReference(fileReference: PsiElement, val filePath: String, val t
                 .findVirtualFileByAbsoluteOrRelativePath(filePath)
                 ?.psiFile(element.project)
     }
-
 }

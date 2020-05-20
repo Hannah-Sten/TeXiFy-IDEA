@@ -59,8 +59,8 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                                 .create(labelingCommand.extractLabelName())
                                 .bold()
                                 .withInsertHandler(LatexReferenceInsertHandler())
-                                .withTypeText(labelingCommand.containingFile.name + ":"
-                                        + (1 + StringUtil.offsetToLineNumber(
+                                .withTypeText(labelingCommand.containingFile.name + ":" +
+                                        (1 + StringUtil.offsetToLineNumber(
                                         labelingCommand.containingFile.text,
                                         labelingCommand.textOffset)), true)
                                 .withIcon(TexifyIcons.DOT_LABEL)

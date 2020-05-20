@@ -26,7 +26,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\ProvidesPackage"  }
+                .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
             val providesName = command.requiredParameters.first().split("/").last()
@@ -60,7 +60,6 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
 
             val parent = providesCommand.parent
             parent.node.replaceChild(providesCommand.node, newCommand.node)
-
         }
     }
 }

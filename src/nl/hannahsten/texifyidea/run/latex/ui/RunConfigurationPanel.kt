@@ -73,7 +73,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     }
 
     private fun askRunConfigurations(): List<RunnerAndConfigurationSettings> {
-        val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type.javaClass == runConfigurationType  }
+        val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type.javaClass == runConfigurationType }
 
         val dialog = RunConfigurationSelectionDialog(project, configurations)
 
@@ -88,7 +88,7 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
 
     private fun configurationChanged() {
         if (configurations.isNotEmpty()) {
-            list.setListData(configurations.map { it }.toTypedArray() )
+            list.setListData(configurations.map { it }.toTypedArray())
             // Set cell height based on the size of the content
             list.visibleRowCount = configurations.size
 

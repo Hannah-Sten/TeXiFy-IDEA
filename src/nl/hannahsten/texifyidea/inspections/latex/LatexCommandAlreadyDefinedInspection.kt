@@ -38,7 +38,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands =file.commandsInFile()
+        val commands = file.commandsInFile()
 
         for (command in commands) {
             // Error when \newcommand is used on existing command
@@ -69,7 +69,6 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                     ))
                 }
             }
-
         }
 
         return descriptors

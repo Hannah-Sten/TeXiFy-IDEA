@@ -152,11 +152,11 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getChildren(): Array<PsiElement> = emptyArray()
 
-    override fun acceptChildren(visitor: PsiElementVisitor) =  elements().forEach {
+    override fun acceptChildren(visitor: PsiElementVisitor) = elements().forEach {
         it.accept(visitor)
     }
 
-    override fun isWritable() =  elements().all { it.isWritable }
+    override fun isWritable() = elements().all { it.isWritable }
 
     override fun <T : Any?> getUserData(key: Key<T>): T? = start.getUserData(key)
 

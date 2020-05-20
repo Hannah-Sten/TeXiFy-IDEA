@@ -45,7 +45,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         return ""
     }
 
-    private inner class LatexFileCreator (private val project: Project, private val directory: PsiDirectory) : FileCreator<PsiElement?> {
+    private inner class LatexFileCreator(private val project: Project, private val directory: PsiDirectory) : FileCreator<PsiElement?> {
         private fun openFile(virtualFile: VirtualFile) {
             val fileEditorManager = FileEditorManager.getInstance(project)
             fileEditorManager.openFile(virtualFile, true)
@@ -77,14 +77,16 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
             }
             return if (smallFileName.endsWith(".$OPTION_TIKZ_FILE")) {
                 TikzFileType
-            } else fileTypeByExtension(option)
+            }
+            else fileTypeByExtension(option)
         }
 
         private fun getNewFileName(fileName: String, fileType: FileType): String {
             val smallFileName = fileName.toLowerCase()
             return if (smallFileName.endsWith("." + fileType.defaultExtension)) {
                 smallFileName
-            } else fileName.appendExtension(fileType.defaultExtension)
+            }
+            else fileName.appendExtension(fileType.defaultExtension)
         }
 
         override fun createFile(fileName: String, option: String): PsiElement? {
@@ -104,7 +106,6 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         override fun startInWriteAction(): Boolean {
             return false
         }
-
     }
 
     companion object {

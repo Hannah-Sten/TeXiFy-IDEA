@@ -7,7 +7,6 @@ import javax.swing.JList
 import javax.swing.ListCellRenderer
 import javax.swing.border.EmptyBorder
 
-
 /**
  * Custom cell renderer to be used for popup choosers.
  * Adds some indentation to the list cell.

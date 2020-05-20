@@ -89,7 +89,7 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
                        right: IElementType? = null,
                        parentSet: TokenSet? = null,
                        leftSet: TokenSet? = null,
-                       rightSet: TokenSet? = null) : CustomSpacingBuilder {
+                       rightSet: TokenSet? = null): CustomSpacingBuilder {
             conditions.add(Condition(parent, left, right, parentSet, leftSet, rightSet))
             return this
         }

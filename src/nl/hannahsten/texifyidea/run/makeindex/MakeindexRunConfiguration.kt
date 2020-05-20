@@ -97,9 +97,9 @@ class MakeindexRunConfiguration(
         val parent = element.getChild(PARENT_ELEMENT) ?: Element(PARENT_ELEMENT).apply { element.addContent(this) }
         parent.removeContent()
 
-        parent.addContent(Element(PROGRAM).apply{ text = makeindexProgram?.name ?: "" })
-        parent.addContent(Element(MAIN_FILE).apply{ text = mainFile?.path ?: "" })
-        parent.addContent(Element(WORK_DIR).apply{ text = workingDirectory?.path ?: "" })
+        parent.addContent(Element(PROGRAM).apply { text = makeindexProgram?.name ?: "" })
+        parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
+        parent.addContent(Element(WORK_DIR).apply { text = workingDirectory?.path ?: "" })
     }
 
     override fun isGeneratedName() = name == suggestedName()

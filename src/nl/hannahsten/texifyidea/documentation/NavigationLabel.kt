@@ -17,5 +17,5 @@ abstract class NavigationLabel<out Psi : PsiElement>(val element: Psi) {
     fun lineNumber(): Int = 1 + StringUtil.offsetToLineNumber(
             file().text,
             element.textOffset
-    )  // Because line numbers do start at 1
+    ) // Because line numbers do start at 1
 }

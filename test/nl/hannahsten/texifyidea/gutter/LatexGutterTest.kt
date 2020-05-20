@@ -32,7 +32,6 @@ class LatexGutterTest : BasePlatformTestCase() {
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 1 })
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 4 })
         }
-
     }
 
     @Test
@@ -54,7 +53,8 @@ class LatexGutterTest : BasePlatformTestCase() {
         DaemonCodeAnalyzerSettings.getInstance().SHOW_METHOD_SEPARATORS = true
         try {
             action()
-        } finally {
+        }
+        finally {
             DaemonCodeAnalyzerSettings.getInstance().SHOW_METHOD_SEPARATORS = before
         }
     }

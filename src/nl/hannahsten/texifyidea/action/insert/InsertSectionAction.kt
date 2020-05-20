@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Hannah Schellekens
  */
-class InsertSectionAction : InsertEditorAction("Section", TexifyIcons.DOT_SECTION, "\\section{", "}") 
+class InsertSectionAction : InsertEditorAction("Section", TexifyIcons.DOT_SECTION, "\\section{", "}")

@@ -25,5 +25,4 @@ class LatexCommandsStubImpl(
     override fun getOptionalParams() = optionalParams
 
     override fun toString() = "LatexCommandsStubImpl{commandToken='$commandToken', requiredParams=$requiredParams, optionalParams=$optionalParams}"
-
 }

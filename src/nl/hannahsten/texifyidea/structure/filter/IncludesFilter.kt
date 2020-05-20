@@ -17,7 +17,6 @@ class IncludesFilter : Filter {
             true
         }
         else treeElement.commandName !in getIncludeCommands()
-
     }
 
     override fun isReverted() = true

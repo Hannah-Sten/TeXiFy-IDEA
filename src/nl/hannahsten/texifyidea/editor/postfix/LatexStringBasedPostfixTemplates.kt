@@ -50,7 +50,6 @@ internal object LatexWrapWithItalicFacePostfixTemplate : LatexWrapWithCommandPos
 internal object LatexWrapWithEmphPostfixTemplate : LatexWrapWithCommandPostfixTemplate("emph", textOnly = true)
 internal object LatexWrapWithTypewriterPostfixTemplate : LatexWrapWithCommandPostfixTemplate("texttt", name = "tt", textOnly = true)
 
-
 /* Wrap with math command postfix templates. */
 internal object LatexWrapWithBarPostfixTemplate : LatexWrapWithCommandPostfixTemplate("bar", mathOnly = true)
 internal object LatexWrapWithHatPostfixTemplate : LatexWrapWithCommandPostfixTemplate("hat", mathOnly = true)

@@ -195,7 +195,6 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
-
     fun testMultiLine() {
         """
             \begin{tabular}{ccc}

@@ -18,7 +18,7 @@ class LatexCommandSelectioner : ExtendWordSelectionHandlerBase() {
         val ranges = super.select(e, editorText, cursorOffset, editor) ?: return null
         val commandRange = e.textRange
 
-        SelectWordUtil.addWordOrLexemeSelection(false, editor, cursorOffset, mutableListOf(commandRange)) { c: Char -> c.isLetterOrDigit() || c == '\\'}
+        SelectWordUtil.addWordOrLexemeSelection(false, editor, cursorOffset, mutableListOf(commandRange)) { c: Char -> c.isLetterOrDigit() || c == '\\' }
         ranges += commandRange
         return ranges
     }

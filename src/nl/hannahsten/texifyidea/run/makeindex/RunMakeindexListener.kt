@@ -57,7 +57,8 @@ class RunMakeindexListener(
                 latexRunConfig.isLastRunConfig = true
                 RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             }
-        } finally {
+        }
+        finally {
             latexRunConfig.isLastRunConfig = false
             latexRunConfig.isFirstRunConfig = true
         }
@@ -96,7 +97,8 @@ class RunMakeindexListener(
         val indexFileDestination = File(mainFile.path).parent + '/' + indexFileName
         try {
             FileUtil.copy(File(indexFileSource), File(indexFileDestination))
-        } catch (e: FileNotFoundException) {
+        }
+        catch (e: FileNotFoundException) {
             Notifications.Bus.notify(Notification("nl.hannahsten.texifyidea", "Error when copying the index file", e.message ?: "", NotificationType.ERROR), environment.project)
         }
         return true

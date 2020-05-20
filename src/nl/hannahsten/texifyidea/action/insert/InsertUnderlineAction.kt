@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Hannah Schellekens
  */
-class InsertUnderlineAction : InsertEditorAction("Underline", TexifyIcons.FONT_UNDERLINE, "\\underline{", "}") 
+class InsertUnderlineAction : InsertEditorAction("Underline", TexifyIcons.FONT_UNDERLINE, "\\underline{", "}")

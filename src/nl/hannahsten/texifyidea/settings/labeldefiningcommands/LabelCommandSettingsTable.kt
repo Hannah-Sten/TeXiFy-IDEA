@@ -15,7 +15,7 @@ class LabelCommandSettingsTable(model: TableModel, private var listener: ActionL
      * Create empty text and define a clickable link to add a new command.
      */
     override fun getEmptyText(): StatusText {
-        val test = object: StatusText(this) {
+        val test = object : StatusText(this) {
             override fun isStatusVisible(): Boolean {
                 return isEmpty
             }

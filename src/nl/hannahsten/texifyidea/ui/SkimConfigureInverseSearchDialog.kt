@@ -5,7 +5,6 @@ import java.awt.BorderLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-
 /**
  * A dialog that contains a brief explanation about configuring inverse search with Skim.
  *

@@ -22,7 +22,7 @@ object NavigationItemUtil {
         return when (psiElement) {
             is LatexCommands -> {
                 val text = psiElement.extractLabelName()
-                if (text == "")  {
+                if (text == "") {
                     return null
                 }
                 return GoToSymbolProvider.BaseNavigationItem(psiElement,

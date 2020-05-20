@@ -41,8 +41,8 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
         // Components that have to be validated when clicking the OK button.
                                  private val table: JTable = JBTable(tableModel),
                                  private val caption: JBTextField = JBTextField(),
-                                 private val reference: JBTextField = JBTextField("tab:"))
-    : DialogWrapper(true) {
+                                 private val reference: JBTextField = JBTextField("tab:")) :
+    DialogWrapper(true) {
 
     init {
         // Initialise the dialog, otherwise it shows as a line (i.e., infinitely small) and without any of the elements.
@@ -136,7 +136,6 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
                 .addExtraAction(getAddRowActionButton())
                 .addExtraAction(getRemoveRowActionButton().apply { shortcut = ShortcutSet { arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null)) } })
                 .createPanel()
-
 
         table.addTabCreatesNewRowAction()
         table.addEnterCreatesNewRowAction()
@@ -247,8 +246,8 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
             override fun actionPerformed(e: ActionEvent?) {
                 val table = this@addTabCreatesNewRowAction
                 // When we're in the last column of the last row, add a new row before calling the usual action.
-                if (table.selectionModel.leadSelectionIndex == table.rowCount - 1
-                        && table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1) {
+                if (table.selectionModel.leadSelectionIndex == table.rowCount - 1 &&
+                        table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1) {
                     tableModel.addEmptyRow()
                 }
                 // Perform the usual action.

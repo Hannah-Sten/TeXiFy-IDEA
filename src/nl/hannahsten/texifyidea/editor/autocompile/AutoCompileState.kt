@@ -88,7 +88,6 @@ object AutoCompileState {
                     ExecutionTargetManager.getInstance(project!!).activeTarget,
                     runConfigSettings,
                     null)
-
         }
     }
 }

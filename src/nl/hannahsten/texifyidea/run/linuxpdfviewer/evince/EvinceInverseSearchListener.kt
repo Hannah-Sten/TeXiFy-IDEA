@@ -84,7 +84,8 @@ class EvinceInverseSearchListener {
 
                 line = bufferedReader.readLine()
             }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
         }
     }
@@ -92,7 +93,7 @@ class EvinceInverseSearchListener {
     /**
      * Sync the IDE on the given source file and line number.
      *
-     * @param filePath   Full to a file.
+     * @param filePath Full to a file.
      * @param lineNumber Line number in the file.
      */
     private fun syncSource(filePath: String, lineNumber: Int) {
@@ -103,7 +104,8 @@ class EvinceInverseSearchListener {
 
         try {
             Runtime.getRuntime().exec(command)
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             e.printStackTrace()
         }
     }

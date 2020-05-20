@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
-
 /**
  * Sets up inverse search integration with SumatraPDF.
  *

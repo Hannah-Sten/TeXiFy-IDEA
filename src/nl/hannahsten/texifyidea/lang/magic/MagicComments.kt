@@ -266,7 +266,7 @@ fun LatexCommands.allMagicComments(): MagicComment<String, String> {
     // Direct comments.
     result += magicComment()
 
-    /// Parents.
+    // / Parents.
     addParentMagicComments(result)
 
     return result

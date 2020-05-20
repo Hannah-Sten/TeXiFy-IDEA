@@ -120,7 +120,6 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
                 \end{lstlisting}
             \end{document}
         """.trimIndent())
-
     }
 
     @Test
@@ -138,7 +137,6 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
                 \end{lstlisting}
             \end{document}
         """.trimIndent())
-
     }
 
     @Test

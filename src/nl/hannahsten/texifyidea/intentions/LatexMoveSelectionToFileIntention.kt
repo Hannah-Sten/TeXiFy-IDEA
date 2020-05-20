@@ -81,5 +81,4 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         return editor.caretModel.allCarets
                 .map { Pair(it.selectionStart, it.selectionEnd) }
     }
-
 }

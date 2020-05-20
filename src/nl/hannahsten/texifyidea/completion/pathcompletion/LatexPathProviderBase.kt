@@ -34,7 +34,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         private val TRIM_SLASH = Pattern.compile("/[^/]*$")
     }
 
-
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         this.parameters = parameters
 
@@ -69,7 +68,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * enable file search?
      */
     abstract fun searchFiles(): Boolean
-
 
     /**
      * scan directory for completions
@@ -175,7 +173,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         )
     }
 
-
     /**
      * Get project roots
      * @return all Project Root directories as VirtualFile
@@ -203,7 +200,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
 
         return resultList
     }
-
 
     /**
      * @param autoCompleteText full path (relative or absolute) including the completion offset

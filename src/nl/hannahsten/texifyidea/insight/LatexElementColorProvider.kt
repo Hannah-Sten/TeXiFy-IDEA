@@ -140,7 +140,8 @@ object LatexElementColorProvider : ElementColorProvider {
         val rgb = rgbText.split(",").map { it.trim() }
         return try {
             rgb.map { it.toInt() }.let { Color(it[0], it[1], it[2]) }
-        } catch (e: NumberFormatException) {
+        }
+        catch (e: NumberFormatException) {
             rgb.map { it.toFloat() }.let { Color(it[0], it[1], it[2]) }
         }
     }

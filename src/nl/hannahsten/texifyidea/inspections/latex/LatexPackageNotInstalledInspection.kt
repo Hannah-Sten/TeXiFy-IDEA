@@ -102,9 +102,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                                     .restart(filePointer.containingFile
                                             ?: return)
                         }
-
                     })
         }
-
     }
 }
