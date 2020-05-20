@@ -40,6 +40,8 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         // given
         myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
 
+        Thread.sleep(50)
+
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
