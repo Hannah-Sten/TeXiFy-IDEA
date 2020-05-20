@@ -1,18 +1,20 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
+import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import org.junit.Test
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.test.assertFails
 
 class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFoundInspection()) {
-    var absoluteWorkingPath: String
+    private var absoluteWorkingPath: String
 
     init {
         val currentRelativePath: Path = Paths.get("")
-        absoluteWorkingPath = currentRelativePath.toAbsolutePath().toString()
+        absoluteWorkingPath = currentRelativePath.toAbsolutePath().toString().replace(File.separatorChar, '/')
     }
 
     override fun getTestDataPath(): String {
