@@ -85,7 +85,7 @@ See link:Automatic-compilation[Support for automatic compilation].
 
 Instead of writing opening and closing quotes like `+`quote'+` and ```quote''` yourself, you can also let TeXiFy choose for you whether to insert opening or closing quotes, and of what type.
 
-There are three options.
+Typing `\"` will still always work. In other cases, there are three options.
 
 === Ligatures
 
@@ -111,6 +111,7 @@ Typing `'quote'` will result in `\enquote*{quote}` and typing `"quote"` will res
 This also works for nested quotes, typing `"nested "quotes""` results in `\enquote{nested \enquote{quotes}}`.
 
 Note that instead of typing the closing `'` or `"` you could also type the closing `}` and IntelliJ will skip over it like usual.
+Whenever the next character is not a closing brace, we assume you want opening quotes and insert the `\enquote` command.
 
 For more advantages, see https://tex.stackexchange.com/questions/39285/whats-the-advantage-of-using-csquotes-over-using-an-editors-auto-replacement-f
 

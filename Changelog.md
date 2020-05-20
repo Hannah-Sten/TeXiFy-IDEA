@@ -27,7 +27,7 @@
 * bibtex working directory is now configurable via UI. (#1413)
 
 # Bug fixes
-* Fixed parse error on unmatched brackets in math environments. (#1319)
+* Fixed parse error on unmatched brackets in math environments. (#1319, #1421)
 * Fixed parse error for \@ifnextchar. (#1320)
 * Fixed parse error when inline math inside \text inside inline math is used. (#1322)
 * Fixed parse error when dollar signs are used in table preamble. (#1324)
@@ -39,7 +39,7 @@
 * Fixed autocompletion in custom command parameters. (#1360)
 * Fixed some inspections being triggered incorrectly in comments. (#1426)
 * Fixed EscapeAmpersand inspection triggering in some matrices. (#1427, #1431)
-* Fixed not being able to type '\"'. (#1425)
+* Fixed not being able to type '\"' when using smart quotes. (#1425)
 * Fixed User Access Control screen popping up on Windows. (#1424, #1430)
 * Fixed crashes. (#1332, #1337, #1372, #1425)
 
