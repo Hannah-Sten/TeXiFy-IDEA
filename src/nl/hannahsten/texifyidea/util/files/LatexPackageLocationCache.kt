@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -27,10 +28,15 @@ object LatexPackageLocationCache {
     }
 
     private fun runKpsewhich(arg: String): String? = try {
-        BufferedReader(
-            InputStreamReader(Runtime.getRuntime().exec(
+        val command = if (LatexDistribution.isMiktexAvailable) {
+            // Don't install the package if not present
+            "miktex-kpsewhich --miktex-disable-installer $arg"
+        }
+        else {
             "kpsewhich $arg"
-        ).inputStream)
+        }
+        BufferedReader(
+            InputStreamReader(Runtime.getRuntime().exec(command).inputStream)
         ).readLine()  // Returns null if no line read.
     }
     catch (e: IOException) {
