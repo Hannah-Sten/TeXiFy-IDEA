@@ -1,111 +1,102 @@
-package nl.hannahsten.texifyidea.index.stub;
+package nl.hannahsten.texifyidea.index.stub
 
-import com.intellij.psi.stubs.*;
-import nl.hannahsten.texifyidea.LatexLanguage;
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex;
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex;
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex;
-import nl.hannahsten.texifyidea.psi.LatexCommands;
-import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl;
-import nl.hannahsten.texifyidea.util.CommandsKt;
-import nl.hannahsten.texifyidea.util.Magic;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import com.intellij.psi.stubs.*
+import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.getIncludeCommands
+import java.io.IOException
+import java.util.LinkedList
+import java.util.regex.Pattern
+import java.util.stream.Collectors
 
 /**
  * @author Hannah Schellekens
  */
-public class LatexCommandsStubElementType extends IStubElementType<LatexCommandsStub, LatexCommands> {
-
-    private static final Pattern SEPERATOR = Pattern.compile("\u1923\u9123\u2d20 hello\u0012");
-
-    public LatexCommandsStubElementType(@NotNull String debugName) {
-        super("latex-commands", LatexLanguage.INSTANCE);
-    }
-
-    @Override
-    public LatexCommands createPsi(@NotNull LatexCommandsStub latexCommandsStub) {
-        return new LatexCommandsImpl(latexCommandsStub, this) {{
-            setName(latexCommandsStub.getName());
-        }};
-    }
-
-    @NotNull
-    @Override
-    public LatexCommandsStub createStub(@NotNull LatexCommands latexCommands, StubElement parent) {
-        String commandToken = latexCommands.getCommandToken().getText();
-        latexCommands.setName(commandToken);
-
-        List<String> requiredParameters = latexCommands.getRequiredParameters();
-        List<String> optionalParameters = new LinkedList<>(latexCommands.getOptionalParameters().keySet());
-
-        return new LatexCommandsStubImpl(
-                parent, this,
-                commandToken,
-                requiredParameters,
-                optionalParameters
-        );
-    }
-
-    @NotNull
-    @Override
-    public String getExternalId() {
-        return "texify.latex.commands";
-    }
-
-    @Override
-    public void serialize(@NotNull LatexCommandsStub latexCommandsStub, @NotNull StubOutputStream stubOutputStream) throws IOException {
-        stubOutputStream.writeName(latexCommandsStub.getName());
-        stubOutputStream.writeName(serialiseRequired(latexCommandsStub));
-        stubOutputStream.writeName(serialiseOptional(latexCommandsStub));
-    }
-
-    @NotNull
-    @Override
-    public LatexCommandsStub deserialize(@NotNull StubInputStream stubInputStream, StubElement parent) throws IOException {
-        final String name = stubInputStream.readName().toString();
-        final List<String> required = deserialiseList(stubInputStream.readName().toString());
-        final List<String> optional = deserialiseList(stubInputStream.readName().toString());
-
-        return new LatexCommandsStubImpl(
-                parent, this,
-                name,
-                required,
-                optional
-        );
-    }
-
-    @Override
-    public void indexStub(@NotNull LatexCommandsStub latexCommandsStub, @NotNull IndexSink indexSink) {
-        indexSink.occurrence(LatexCommandsIndex.Companion.key(), latexCommandsStub.getCommandToken());
-
-        String token = latexCommandsStub.getCommandToken();
-        if (CommandsKt.getIncludeCommands().contains(token)) {
-            indexSink.occurrence(LatexIncludesIndex.Companion.key(), token);
+class LatexCommandsStubElementType :
+    IStubElementType<LatexCommandsStub, LatexCommands>("latex-commands", LatexLanguage.INSTANCE) {
+    override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
+        return object : LatexCommandsImpl(latexCommandsStub, this) {
+            init {
+                setName(latexCommandsStub.name!!)
+            }
         }
+    }
 
+    override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
+        val commandToken = latexCommands.commandToken.text
+        latexCommands.setName(commandToken)
+        val requiredParameters = latexCommands.requiredParameters
+        val optionalParameters: List<String> =
+            LinkedList(latexCommands.optionalParameters.keys)
+        return LatexCommandsStubImpl(
+            parent!!, this,
+            commandToken,
+            requiredParameters,
+            optionalParameters
+        )
+    }
+
+    override fun getExternalId(): String {
+        return "texify.latex.commands"
+    }
+
+    @Throws(IOException::class)
+    override fun serialize(
+        latexCommandsStub: LatexCommandsStub,
+        stubOutputStream: StubOutputStream
+    ) {
+        stubOutputStream.writeName(latexCommandsStub.name)
+        stubOutputStream.writeName(serialiseRequired(latexCommandsStub))
+        stubOutputStream.writeName(serialiseOptional(latexCommandsStub))
+    }
+
+    @Throws(IOException::class)
+    override fun deserialize(stubInputStream: StubInputStream, parent: StubElement<*>): LatexCommandsStub {
+        val name = stubInputStream.readName().toString()
+        val required = deserialiseList(stubInputStream.readName().toString())
+        val optional = deserialiseList(stubInputStream.readName().toString())
+        return LatexCommandsStubImpl(
+            parent, this,
+            name,
+            required,
+            optional
+        )
+    }
+
+    override fun indexStub(latexCommandsStub: LatexCommandsStub, indexSink: IndexSink) {
+        indexSink.occurrence(
+            LatexCommandsIndex.key(),
+            latexCommandsStub.commandToken
+        )
+        val token = latexCommandsStub.commandToken
+        if (getIncludeCommands().contains(token)) {
+            indexSink.occurrence(LatexIncludesIndex.key(), token)
+        }
         if (Magic.Command.definitions.contains(token) || Magic.Command.redefinitions.contains(token)) {
-            indexSink.occurrence(LatexDefinitionIndex.Companion.key(), token);
+            indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
     }
 
-    @NotNull
-    private List<String> deserialiseList(@NotNull String string) {
-        return SEPERATOR.splitAsStream(string).collect(Collectors.toList());
+    private fun deserialiseList(string: String): List<String> {
+        return SEPERATOR.splitAsStream(string)
+            .collect(Collectors.toList())
     }
 
-    @NotNull
-    private String serialiseRequired(@NotNull LatexCommandsStub stub) {
-        return String.join(SEPERATOR.pattern(), stub.getRequiredParams());
+    private fun serialiseRequired(stub: LatexCommandsStub): String {
+        return java.lang.String.join(SEPERATOR.pattern(), stub.requiredParams)
     }
 
-    @NotNull
-    private String serialiseOptional(@NotNull LatexCommandsStub stub) {
-        return String.join(SEPERATOR.pattern(), stub.getOptionalParams());
+    private fun serialiseOptional(stub: LatexCommandsStub): String {
+        return java.lang.String.join(SEPERATOR.pattern(), stub.optionalParams)
+    }
+
+    companion object {
+        private val SEPERATOR =
+            Pattern.compile("\u1923\u9123\u2d20 hello\u0012")
     }
 }
