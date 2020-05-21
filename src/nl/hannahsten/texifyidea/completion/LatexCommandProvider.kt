@@ -28,9 +28,14 @@ import kotlin.math.min
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexCommandProvider internal constructor(private val mode: LatexMode) : CompletionProvider<CompletionParameters>() {
-    override fun addCompletions(parameters: CompletionParameters,
-                                context: ProcessingContext, result: CompletionResultSet) {
+class LatexCommandProvider internal constructor(private val mode: LatexMode) :
+    CompletionProvider<CompletionParameters>() {
+
+    override fun addCompletions(
+        parameters: CompletionParameters,
+        context: ProcessingContext,
+        result: CompletionResultSet
+    ) {
         when (mode) {
             LatexMode.NORMAL -> {
                 addNormalCommands(result)
@@ -46,19 +51,29 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     }
 
     private fun addNormalCommands(result: CompletionResultSet) {
-        result.addAllElements(ContainerUtil.map2List(
-                LatexRegularCommand.values()
-        ) { cmd: LatexRegularCommand ->
-            LookupElementBuilder.create(cmd, cmd.command)
+        fun Set<Argument>.optionalPowerSet(): Set<Set<Argument>> = setOf(this) +
+                mapNotNull {
+                    if (it is OptionalArgument) filter { e -> e != it }.toSet().optionalPowerSet()
+                    else null
+                }.flatten().toSet()
+
+        fun LatexRegularCommand.variationsForCompletion(): List<String> {
+            return arguments.toSet().optionalPowerSet().map { it.joinToString("") }
+        }
+
+        result.addAllElements(LatexRegularCommand.values().flatMap { cmd ->
+            cmd.variationsForCompletion().mapIndexed { index: Int, tailText: String ->
+                LookupElementBuilder.create(cmd, cmd.command + List(index) {" "}.joinToString(""))
                     .withPresentableText(cmd.commandDisplay)
                     .bold()
-                    .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
+                    .withTailText(tailText + " " + packageName(cmd), true)
                     .withTypeText(cmd.display)
                     .withInsertHandler(LatexNoMathInsertHandler())
                     .withIcon(TexifyIcons.DOT_COMMAND)
+            }
         })
-        result.addElement(LookupElementBuilder.create("abcdefghijklmnopqrstuvwxyz"))
         result.addLookupAdvertisement(getKindWords())
+
     }
 
     private fun addMathCommands(result: CompletionResultSet) {
@@ -69,16 +84,16 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
 
         // Create autocomplete elements.
         result.addAllElements(ContainerUtil.map2List(
-                commands
+            commands
         ) { cmd: LatexCommand ->
             val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler() else LatexMathInsertHandler()
             LookupElementBuilder.create(cmd, cmd.command)
-                    .withPresentableText(cmd.commandDisplay)
-                    .bold()
-                    .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
-                    .withTypeText(cmd.display)
-                    .withInsertHandler(handler)
-                    .withIcon(TexifyIcons.DOT_COMMAND)
+                .withPresentableText(cmd.commandDisplay)
+                .bold()
+                .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
+                .withTypeText(cmd.display)
+                .withInsertHandler(handler)
+                .withIcon(TexifyIcons.DOT_COMMAND)
         })
     }
 
@@ -96,10 +111,10 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
         // Create autocomplete elements.
         result.addAllElements(ContainerUtil.map2List(environments) { env: Environment ->
             LookupElementBuilder.create(env, env.environmentName)
-                    .withPresentableText(env.environmentName)
-                    .bold()
-                    .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
-                    .withIcon(TexifyIcons.DOT_ENVIRONMENT)
+                .withPresentableText(env.environmentName)
+                .bold()
+                .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
+                .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         })
         result.addLookupAdvertisement(getKindWords())
     }
@@ -108,12 +123,13 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
         val name = dependend.dependency.name
         return if ("" == name) {
             ""
-        }
-        else " ($name)"
+        } else " ($name)"
     }
 
-    private fun addCustomCommands(parameters: CompletionParameters, result: CompletionResultSet,
-                                  mode: LatexMode? = null) {
+    private fun addCustomCommands(
+        parameters: CompletionParameters, result: CompletionResultSet,
+        mode: LatexMode? = null
+    ) {
         val project = parameters.editor.project ?: return
         val file = parameters.originalFile
         val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
@@ -123,8 +139,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
             files.add(documentClass)
         }
         val searchFiles = files.stream()
-                .map { obj: PsiFile -> obj.virtualFile }
-                .collect(Collectors.toSet())
+            .map { obj: PsiFile -> obj.virtualFile }
+            .collect(Collectors.toSet())
         searchFiles.add(file.virtualFile)
         val scope = GlobalSearchScope.filesScope(project, searchFiles)
         val cmds = LatexCommandsIndex.getItems(project, scope)
@@ -147,7 +163,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
             var typeText = getTypeText(cmd)
             val line = 1 + StringUtil.offsetToLineNumber(cmd.containingFile.text, cmd.textOffset)
             typeText = typeText + " " + cmd.containingFile.name + ":" + line
-            result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))
+            result.addElement(
+                LookupElementBuilder.create(cmd, cmdName.substring(1))
                     .withPresentableText(cmdName)
                     .bold()
                     .withTailText(tailText, true)
@@ -193,7 +210,9 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                 val optional = commands.optionalParameters.keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
-                } catch (ignore: java.lang.NumberFormatException) { 0 }
+                } catch (ignore: java.lang.NumberFormatException) {
+                    0
+                }
                 (1..nrParams).joinToString("") { "{param}" }
             }
 
