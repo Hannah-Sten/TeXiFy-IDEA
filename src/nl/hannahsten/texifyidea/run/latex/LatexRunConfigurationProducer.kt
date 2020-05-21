@@ -44,13 +44,13 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.setSuggestedName()
 
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
-        if (runCommand != null) {
-            val compiler = if (runCommand.contains(' ')) {
-                runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
-            } else runCommand
-            runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
-            runConfiguration.compilerArguments = runCommand.removePrefix(compiler).trim()
-        }
+        val runProgram = container.allParentMagicComments().value(DefaultMagicKeys.PROGRAM)
+        val command = runCommand ?: runProgram ?: return true
+        val compiler = if (command.contains(' ')) {
+            command.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
+        } else command
+        runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
+        runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
         return true
     }
 
