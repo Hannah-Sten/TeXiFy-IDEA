@@ -114,5 +114,4 @@ open class LatexLabelDefiningNewCommand : TexifyIntentionBase("Add label definin
                     newCommandPopUp.getCommandPosition(), newCommandPopUp.getLabelAnyPrevCommand()))
         }
     }
-
 }

@@ -98,13 +98,15 @@ parameter ::= optional_param | required_param
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET param_content* CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=3 }
 
-required_param ::= OPEN_BRACE param_content* CLOSE_BRACE { pin=1 }
+required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 
-// Like content, but no brackets and with parameter_text instead of normal_text
-param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
- OPEN_PAREN | CLOSE_PAREN | parameter_text
+// These are like content, but no brackets and with parameter_text instead of normal_text
+// We have to separate optional and required parameter content, because required parameter content
+// can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
+optional_param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
+required_param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
 
 // The lowest level of a parameter must have the getReferences etc. implemented
 // We don't do this on normal_text because then every normal_text in the document would be a reference

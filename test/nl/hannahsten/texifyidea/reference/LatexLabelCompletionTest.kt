@@ -16,7 +16,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testCompleteLatexReferences(){
+    fun testCompleteLatexReferences() {
         // given
         val testName = getTestName(false)
         myFixture.configureByFiles("$testName.tex", "bibtex.bib")
@@ -88,6 +88,5 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { l -> l.lookupString == "fig:figure" })
         assertTrue(result.any { l -> l.lookupString == "lst:listing" })
         assertTrue(result.any { l -> l.lookupString == "sec:some-section" })
-
     }
 }

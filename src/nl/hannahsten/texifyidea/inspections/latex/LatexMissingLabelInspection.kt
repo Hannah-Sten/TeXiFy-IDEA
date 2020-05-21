@@ -163,7 +163,6 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val createdLabel = getUniqueLabelName(command.environmentName.formatAsLabel(),
                     Magic.Environment.labeled[command.environmentName], command.containingFile)
 
-
             val moveCaretAfter: PsiElement
             moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
                 val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
@@ -182,6 +181,5 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val caretModel = openedEditor.caretModel
             caretModel.moveToOffset(moveCaretAfter.endOffset())
         }
-
     }
 }

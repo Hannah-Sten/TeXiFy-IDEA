@@ -342,7 +342,7 @@ enum class LatexMathCommand(
     UNDERBRACE("underbrace", "text".asRequired()),
     UNDERLINE("underline", "text".asRequired()),
     VEC("vec", "a".asRequired()),
-    VEE("vee",  display = "⋁", collapse = true),
+    VEE("vee", display = "⋁", collapse = true),
     WEDGE("wedge", display = "⋀", collapse = true),
     WIDEHAT("widehat", "text".asRequired()),
     WIDETILDE("widetilde", "text".asRequired());

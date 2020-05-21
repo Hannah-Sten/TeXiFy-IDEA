@@ -74,7 +74,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
 
-
         var isMakeindexNeeded = false
 
         // Run makeindex when applicable

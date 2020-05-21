@@ -4,10 +4,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.isComment
+import nl.hannahsten.texifyidea.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -23,30 +20,24 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         replacement = { _, _ -> """\&""" },
         quickFixName = { """Change to \&""" }
 ) {
+
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
         if (element.isAmpersandAllowed()) return false
+        if (element.isComment()) return false
         return checkContext(element)
     }
 
     private fun PsiElement.isAmpersandAllowed(): Boolean {
+        // Do not trigger inside comments.
         if (this.isComment()) return true
-        if (this.firstParentOfType(LatexEnvironment::class)?.environmentName in Magic.Environment.tableEnvironments) return true
-        if (this.firstParentOfType(LatexEnvironment::class)?.environmentName in alignableEnvironments) return true
-        if (this.firstParentOfType(LatexCommands::class)?.name in Magic.Command.urls) return true
-        return false
-    }
 
-    companion object {
-        val alignableEnvironments = setOf(
-                "eqnarray", "eqnarray*",
-                "split",
-                "align", "align*",
-                "alignat", "alignat*",
-                "flalign", "flalign*",
-                "aligned", "alignedat",
-                "cases", "dcases",
-                "smallmatrix", "smallmatrix*",
-                "matrix", "matrix*",
-                "pmatrix", "pmatrix*")
+        // Do not trigger in environments that use the ampersand as special character.
+        if (this.inDirectEnvironment(Magic.Environment.tableEnvironments)) return true
+        if (this.inDirectEnvironment(Magic.Environment.alignableEnvironments)) return true
+
+        // Do not trigger in URLs.
+        if (this.firstParentOfType(LatexCommands::class)?.name in Magic.Command.urls) return true
+
+        return false
     }
 }

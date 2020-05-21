@@ -4,7 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.tree.TokenSet
-import java.util.*
+import java.util.ArrayList
 
 /**
  * @author Hannah Schellekens
@@ -144,19 +144,23 @@ object LatexPsiUtil {
                 //            result.add(noMathContent.getOpenGroup());
                 result.add(element.normalText)
             }
-            is LatexParamContent -> {
+            is LatexOptionalParamContent -> {
+                result.add(element.group)
+                result.add(element.parameterText)
+            }
+            is LatexRequiredParamContent -> {
                 result.add(element.group)
                 result.add(element.parameterText)
             }
             is LatexOptionalParam -> {
-                result.addAll(element.paramContentList)
+                result.addAll(element.optionalParamContentList)
             }
             is LatexParameter -> {
                 result.add(element.optionalParam)
                 result.add(element.requiredParam)
             }
             is LatexRequiredParam -> {
-                result.addAll(element.paramContentList)
+                result.addAll(element.requiredParamContentList)
             }
             is LatexMathContent -> {
                 result.addAll(element.noMathContentList)

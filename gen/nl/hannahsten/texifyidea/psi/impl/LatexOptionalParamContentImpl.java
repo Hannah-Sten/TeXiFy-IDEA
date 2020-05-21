@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexParamContentImpl extends ASTWrapperPsiElement implements LatexParamContent {
+public class LatexOptionalParamContentImpl extends ASTWrapperPsiElement implements LatexOptionalParamContent {
 
-  public LatexParamContentImpl(@NotNull ASTNode node) {
+  public LatexOptionalParamContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitParamContent(this);
+    visitor.visitOptionalParamContent(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

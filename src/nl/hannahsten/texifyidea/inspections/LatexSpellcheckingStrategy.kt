@@ -68,7 +68,6 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
             null
         }
         else arguments[parameterIndex]
-
     }
 
     private fun getArguments(commandName: String): Array<out Argument>? {

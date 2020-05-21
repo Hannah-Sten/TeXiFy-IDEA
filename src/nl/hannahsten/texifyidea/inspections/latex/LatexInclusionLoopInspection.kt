@@ -64,10 +64,8 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                                 isOntheFly
                         ))
                     }
-
                 }
             }
-
         }
 
         return descriptors

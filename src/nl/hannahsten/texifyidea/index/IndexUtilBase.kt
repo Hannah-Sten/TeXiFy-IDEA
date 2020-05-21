@@ -12,8 +12,6 @@ import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.util.files.documentClassFileInProject
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 
 /**
  * @author Hannah Schellekens

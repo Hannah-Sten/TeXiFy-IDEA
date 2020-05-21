@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexParamContent extends PsiElement {
+public interface LatexRequiredParamContent extends PsiElement {
 
   @Nullable
   LatexCommands getCommands();

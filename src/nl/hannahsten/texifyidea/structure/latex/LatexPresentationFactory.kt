@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.getIncludeCommands
 object LatexPresentationFactory {
 
     @JvmStatic
-    fun getPresentation(commands: LatexCommands) : ItemPresentation {
+    fun getPresentation(commands: LatexCommands): ItemPresentation {
         val labelingCommands = TexifySettings.getInstance().labelCommands
         if (labelingCommands.containsKey(commands.name)) {
             return LatexLabelPresentation(commands)

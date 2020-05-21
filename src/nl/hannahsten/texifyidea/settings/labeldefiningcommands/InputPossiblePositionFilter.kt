@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.labeldefiningcommands
 
-import java.lang.StringBuilder
 import javax.swing.text.AttributeSet
 import javax.swing.text.DocumentFilter
 
@@ -38,7 +37,7 @@ class InputPossiblePositionFilter : DocumentFilter() {
             super.remove(fb, offset, length)
         }
     }
-    
+
     private fun String.isNumericOrEmpty(): Boolean {
         if (this.trim() == "") return true
         if (this.toIntOrNull() == null) return false

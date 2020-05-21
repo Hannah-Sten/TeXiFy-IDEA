@@ -16,7 +16,8 @@ import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameters
-import java.util.*
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import java.util.regex.Pattern
 
 /**
@@ -53,7 +54,6 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
         arrayOf(reference)
     }
 }
-
 
 /**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
@@ -134,7 +134,6 @@ fun stripGroup(text: String): String {
     return text.substring(1, text.length - 1)
 }
 
-
 /**
  * Generates a map of parameter names and values for all optional parameters
  */
@@ -144,9 +143,9 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
     val parameterString = parameters.mapNotNull { it.optionalParam }
             // extract the content of each parameter element
             .flatMap { param ->
-                param.paramContentList
+                param.optionalParamContentList
             }
-            .mapNotNull { content: LatexParamContent ->
+            .mapNotNull { content: LatexOptionalParamContent ->
                 // the content is either simple text
                 val text = content.parameterText
                 if (text != null) return@mapNotNull text.text
@@ -168,7 +167,7 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
     return parameters.mapNotNull { it.requiredParam }
             .map {
-                it.paramContentList.map { content: LatexParamContent ->
+                it.requiredParamContentList.map { content: LatexRequiredParamContent ->
                     if (content.commands != null && content.parameterText == null) {
                         content.commands!!.commandToken.text
                     }
@@ -182,12 +181,10 @@ fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
             }
 }
 
-
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
         extractSubParameterRanges(firstParam)
                 .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
                 .toArray(emptyArray())
-
 
 /**
  * Checks if the command is followed by a label.

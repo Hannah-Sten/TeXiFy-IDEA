@@ -51,7 +51,6 @@ class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                     }
                 }
             }
-
         }
     }
 }

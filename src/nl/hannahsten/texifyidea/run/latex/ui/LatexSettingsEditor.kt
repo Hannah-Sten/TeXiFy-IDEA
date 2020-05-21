@@ -293,7 +293,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(extensionSeparator)
 
         // Extension panels
-        bibliographyPanel = RunConfigurationPanel(project!!,"Bibliography: ", BibtexRunConfigurationType::class.java)
+        bibliographyPanel = RunConfigurationPanel(project!!, "Bibliography: ", BibtexRunConfigurationType::class.java)
         panel.add(bibliographyPanel)
 
         makeindexPanel = RunConfigurationPanel(project!!, "Makeindex: ", MakeindexRunConfigurationType::class.java)
@@ -369,7 +369,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
             panel.add(enableSumatraPath)
 
-
             sumatraPath = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                         TextBrowseFolderListener(
@@ -412,6 +411,5 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         enableViewerCommand.addItemListener { e -> viewerCommand.isEnabled = e.stateChange == ItemEvent.SELECTED }
 
         panel.add(viewerCommand)
-
     }
 }

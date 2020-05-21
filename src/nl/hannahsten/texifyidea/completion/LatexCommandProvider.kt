@@ -87,16 +87,14 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
         LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
-                .filter { cmd: LatexCommands -> Magic.Command.environmentDefinitions.contains(cmd.name) }
-                .map { cmd: LatexCommands -> cmd.requiredParameter(0) }
-                .filter { obj: String? -> Objects.nonNull(obj) }
-                .map { environmentName: String? -> SimpleEnvironment(environmentName!!) }
+                .filter { cmd -> Magic.Command.environmentDefinitions.contains(cmd.name) }
+                .map { cmd -> cmd.requiredParameter(0) }
+                .filter { obj -> Objects.nonNull(obj) }
+                .map { environmentName -> SimpleEnvironment(environmentName!!) }
                 .forEach { e: SimpleEnvironment -> environments.add(e) }
 
         // Create autocomplete elements.
-        result.addAllElements(ContainerUtil.map2List(
-                environments
-        ) { env: Environment ->
+        result.addAllElements(ContainerUtil.map2List(environments) { env: Environment ->
             LookupElementBuilder.create(env, env.environmentName)
                     .withPresentableText(env.environmentName)
                     .bold()
@@ -174,13 +172,14 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional
-                        : List<String> = LinkedList(commands.optionalParameters.keys)
+                val optional:
+                        List<String> = LinkedList(commands.optionalParameters.keys)
                 var cmdParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {
                         cmdParameterCount = optional[0].toInt()
-                    } catch (ignore: NumberFormatException) {
+                    }
+                    catch (ignore: NumberFormatException) {
                     }
                 }
                 var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
@@ -195,7 +194,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                 val optional = commands.optionalParameters.keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
-                } catch (ignore: java.lang.NumberFormatException) { 0 }
+                }
+                catch (ignore: java.lang.NumberFormatException) { 0 }
                 (1..nrParams).joinToString("") { "{param}" }
             }
 

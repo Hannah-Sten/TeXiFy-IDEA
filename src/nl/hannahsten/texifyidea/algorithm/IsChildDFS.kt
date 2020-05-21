@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.algorithm
 
-import java.util.*
+import java.util.ArrayDeque
+import java.util.Deque
 
 /**
  * Depth first search that checks if a goal node is a child of the given start node.
@@ -46,7 +47,7 @@ open class IsChildDFS<Node>(
             }
 
             // Don't visit nodes twice to avoid loops
-            children(child).filter { it !in visited}.forEach(stack::push)
+            children(child).filter { it !in visited }.forEach(stack::push)
         }
 
         return false

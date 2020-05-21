@@ -9,9 +9,26 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexContent
+import nl.hannahsten.texifyidea.psi.LatexDisplayMath
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexInlineMath
+import nl.hannahsten.texifyidea.psi.LatexOptionalParam
+import nl.hannahsten.texifyidea.psi.LatexOptionalParamContent
+import nl.hannahsten.texifyidea.psi.LatexPsiUtil
+import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.inDirectEnvironmentContext
+import nl.hannahsten.texifyidea.util.isContext
+import nl.hannahsten.texifyidea.util.isEnvironmentDefinition
+import nl.hannahsten.texifyidea.util.isMagicComment
+import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.requiredParameters
 
 /**
  * @author Hannah Schellekens
@@ -195,8 +212,9 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateOptionalParameters(optionalParamElement: LatexOptionalParam,
                                            annotationHolder: AnnotationHolder) {
-        for (element in optionalParamElement.paramContentList) {
-            if (element !is LatexParamContent) {
+        for (element in optionalParamElement.optionalParamContentList
+        ) {
+            if (element !is LatexOptionalParamContent) {
                 continue
             }
 

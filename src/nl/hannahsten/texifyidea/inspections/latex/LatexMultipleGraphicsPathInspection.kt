@@ -40,7 +40,6 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
                         RemoveFix()
                 ))
             }
-
         }
 
         return descriptors
@@ -57,6 +56,5 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             descriptor.psiElement.delete()
         }
-
     }
 }

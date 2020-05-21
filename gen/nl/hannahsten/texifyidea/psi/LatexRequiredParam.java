@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface LatexRequiredParam extends PsiElement {
 
   @NotNull
-  List<LatexParamContent> getParamContentList();
+  List<LatexRequiredParamContent> getRequiredParamContentList();
 
 }

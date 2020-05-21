@@ -5,6 +5,14 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 
 class LatexParserTest : BasePlatformTestCase() {
 
+    fun testSomeGeneralConstructs() {
+        myFixture.configureByText(LatexFileType, """
+            \mycommand{[test]}
+            \c{[}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
     fun testNestedInlineMath() {
         myFixture.configureByText(LatexFileType, """
             $ math \text{ text $\xi$ text } math$

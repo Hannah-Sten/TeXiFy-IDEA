@@ -58,7 +58,6 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
                 element.firstParentOfType(LatexEnvironment::class)?.addMagicComment(comment)
             }
         }
-
     }
 
     private fun chooseLanguage(editor: Editor, onChosen: (language: Injectable) -> Unit) {
@@ -71,7 +70,6 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
                 override fun customizeCellRenderer(list: JList<out Injectable>, language: Injectable, index: Int, selected: Boolean, hasFixed: Boolean) {
                     icon = language.icon
                     append(language.displayName)
-
                 }
             }
 

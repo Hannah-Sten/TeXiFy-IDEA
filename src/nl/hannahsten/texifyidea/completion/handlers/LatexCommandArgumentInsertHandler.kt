@@ -39,7 +39,8 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         var cmdParameterCount = 0
         try {
             cmdParameterCount = optional[0].toInt()
-        } catch (ignore: NumberFormatException) {
+        }
+        catch (ignore: NumberFormatException) {
         }
 
         if (cmdParameterCount > 0) {

@@ -46,7 +46,7 @@ fun getEnvironmentName(element: LatexEnvironment): String? {
     if (parameters.isEmpty()) return ""
     val environmentNameParam = parameters[0]
     val requiredParam = environmentNameParam.requiredParam ?: return ""
-    val contentList = requiredParam.paramContentList
+    val contentList = requiredParam.requiredParamContentList
     if (contentList.isEmpty()) return ""
     val paramText = contentList[0].parameterText ?: return ""
     return paramText.text

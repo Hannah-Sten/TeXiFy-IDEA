@@ -114,7 +114,7 @@ enum class BibtexDefaultEntryType(
     VENUE("venue", "The location of a conference, a symposium, or some other event in @proceedings and @inproceedings entries.", BIBLATEX),
     VERSION("version", "The revision number of a piece of software, a manual, etc.", BIBLATEX),
     VOLUMES("volumes", "The total number of volumes of a multi-volume work.", BIBLATEX),
-    
+
     // Special BibLaTeX fields
     ENTRYSET("entryset", "This field is specific to entry sets.", BIBLATEX),
     EXECUTE("execute", "A special field which holds arbitrary TeX code to be executed whenever the data of the respective entry is accessed.", BIBLATEX),
@@ -137,5 +137,4 @@ enum class BibtexDefaultEntryType(
     SORTYEAR("sortyear", "A field used to modify the sorting order of the bibliography.", BIBLATEX),
     XDATA("xdata", "This field inherits data from one or more @xdata entries.", BIBLATEX),
     XREF("xref", "This field is an alternative cross-referencing mechanism.", BIBLATEX);
-
 }

@@ -22,7 +22,7 @@ class TexifyRegexInspectionTest {
          * For the tests, replacement ranges and replacements could also be done manually but this is slightly easier,
          * because the tests in this file do not aim to test [inspectFile] anyway.
          */
-        fun mockInspectFile(replacementContent: String = "replacement") : RegexFixes {
+        fun mockInspectFile(replacementContent: String = "replacement"): RegexFixes {
             val replacementRanges = arrayListOf<IntRange>()
             val replacements = arrayListOf<String>()
             val groups = arrayListOf<List<String>>()
