@@ -40,6 +40,9 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         // given
         myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
 
+        // Seems like this also helps making sure the file is indexed before using autocompletion
+        assertTrue(myFixture.findAllGutters().size > 0)
+
         // when
         myFixture.complete(CompletionType.BASIC)
         val result = myFixture.lookupElementStrings
