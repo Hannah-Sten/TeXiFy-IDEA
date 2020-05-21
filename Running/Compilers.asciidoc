@@ -16,7 +16,10 @@ To set the compiler of a document, put the magic comment
 %! Compiler = [compiler executable] [compiler arguments]
 ----
 
-at the top of the root file.To set the BibTeX compiler, put the magic comment
+at the top of the root file.
+The syntax `%! Program =` is also supported.
+
+To set the BibTeX compiler, put the magic comment
 
 [source]
 ----
