@@ -1,87 +1,78 @@
-package nl.hannahsten.texifyidea;
+package nl.hannahsten.texifyidea
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.Language;
-import com.intellij.lang.ParserDefinition;
-import com.intellij.lang.PsiParser;
-import com.intellij.lexer.Lexer;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.TokenType;
-import com.intellij.psi.tree.IStubFileElementType;
-import com.intellij.psi.tree.TokenSet;
-import nl.hannahsten.texifyidea.file.BibtexFile;
-import nl.hannahsten.texifyidea.parser.BibtexParser;
-import nl.hannahsten.texifyidea.psi.BibtexTypes;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.lang.ASTNode
+import com.intellij.lang.Language
+import com.intellij.lang.ParserDefinition
+import com.intellij.lang.ParserDefinition.SpaceRequirements
+import com.intellij.lang.PsiParser
+import com.intellij.lexer.Lexer
+import com.intellij.openapi.project.Project
+import com.intellij.psi.FileViewProvider
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.TokenType
+import com.intellij.psi.stubs.PsiFileStubImpl
+import com.intellij.psi.tree.IStubFileElementType
+import com.intellij.psi.tree.TokenSet
+import nl.hannahsten.texifyidea.file.BibtexFile
+import nl.hannahsten.texifyidea.parser.BibtexParser
+import nl.hannahsten.texifyidea.psi.BibtexTypes
 
 /**
  * @author Hannah Schellekens
  */
-public class BibtexParserDefinition implements ParserDefinition {
+class BibtexParserDefinition : ParserDefinition {
+    override fun createLexer(project: Project): Lexer {
+        return BibtexLexerAdapter()
+    }
 
-    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(BibtexTypes.COMMENT);
-    public static final TokenSet NORMAL_TEXT = TokenSet.create(BibtexTypes.NORMAL_TEXT);
+    override fun createParser(project: Project): PsiParser {
+        return BibtexParser()
+    }
 
-    public static final IStubFileElementType FILE = new IStubFileElementType(
-            Language.findInstance(BibtexLanguage.class)
-    ) {
-        @Override
-        public int getStubVersion() {
-            return 5;
+    override fun getFileNodeType(): IStubFileElementType<*> {
+        return FILE
+    }
+
+    override fun getWhitespaceTokens(): TokenSet {
+        return WHITE_SPACES
+    }
+
+    override fun getCommentTokens(): TokenSet {
+        return COMMENTS
+    }
+
+    override fun getStringLiteralElements(): TokenSet {
+        return NORMAL_TEXT
+    }
+
+    override fun createElement(astNode: ASTNode): PsiElement {
+        return BibtexTypes.Factory.createElement(astNode)
+    }
+
+    override fun createFile(fileViewProvider: FileViewProvider): PsiFile {
+        return BibtexFile(fileViewProvider)
+    }
+
+    override fun spaceExistenceTypeBetweenTokens(
+        astNode: ASTNode,
+        astNode1: ASTNode
+    ): SpaceRequirements {
+        return SpaceRequirements.MAY
+    }
+
+    companion object {
+        val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
+        val COMMENTS = TokenSet.create(BibtexTypes.COMMENT)
+        val NORMAL_TEXT = TokenSet.create(BibtexTypes.NORMAL_TEXT)
+        val FILE = object : IStubFileElementType<BibtexFileStub>(
+            Language.findInstance(BibtexLanguage::class.java)
+        ) {
+            override fun getStubVersion(): Int {
+                return 5
+            }
         }
-    };
-
-    @NotNull
-    @Override
-    public Lexer createLexer(Project project) {
-        return new BibtexLexerAdapter();
     }
 
-    @Override
-    public PsiParser createParser(Project project) {
-        return new BibtexParser();
-    }
-
-    @Override
-    public IStubFileElementType getFileNodeType() {
-        return FILE;
-    }
-
-    @NotNull
-    @Override
-    public TokenSet getWhitespaceTokens() {
-        return WHITE_SPACES;
-    }
-
-    @NotNull
-    @Override
-    public TokenSet getCommentTokens() {
-        return COMMENTS;
-    }
-
-    @NotNull
-    @Override
-    public TokenSet getStringLiteralElements() {
-        return NORMAL_TEXT;
-    }
-
-    @NotNull
-    @Override
-    public PsiElement createElement(ASTNode astNode) {
-        return BibtexTypes.Factory.createElement(astNode);
-    }
-
-    @Override
-    public PsiFile createFile(FileViewProvider fileViewProvider) {
-        return new BibtexFile(fileViewProvider);
-    }
-
-    @Override
-    public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode astNode, ASTNode astNode1) {
-        return SpaceRequirements.MAY;
-    }
+    class BibtexFileStub(file: BibtexFile) : PsiFileStubImpl<BibtexFile>(file)
 }
