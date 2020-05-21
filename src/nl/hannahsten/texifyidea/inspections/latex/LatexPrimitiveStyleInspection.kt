@@ -1,123 +1,100 @@
-package nl.hannahsten.texifyidea.inspections.latex;
+package nl.hannahsten.texifyidea.inspections.latex
 
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import kotlin.reflect.jvm.internal.impl.utils.SmartList;
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex;
-import nl.hannahsten.texifyidea.insight.InsightGroup;
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase;
-import nl.hannahsten.texifyidea.psi.LatexCommands;
-import nl.hannahsten.texifyidea.psi.LatexMathContent;
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil;
-import nl.hannahsten.texifyidea.util.DocumentsKt;
-import nl.hannahsten.texifyidea.util.Magic;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.List;
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexMathContent
+import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getNextSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.deleteElement
+import org.jetbrains.annotations.Nls
+import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
  * @author Hannah Schellekens
  */
-public class LatexPrimitiveStyleInspection extends TexifyInspectionBase {
-
-    @NotNull
-    @Override
-    public InsightGroup getInspectionGroup() {
-        return InsightGroup.LATEX;
-    }
+class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
+    override val inspectionGroup: InsightGroup
+        get() = InsightGroup.LATEX
 
     @Nls
-    @NotNull
-    @Override
-    public String getDisplayName() {
-        return "Discouraged use of TeX styling primitives";
+    override fun getDisplayName(): String {
+        return "Discouraged use of TeX styling primitives"
     }
 
-    @NotNull
-    @Override
-    public String getInspectionId() {
-        return "PrimitiveStyle";
-    }
+    override val inspectionId: String
+        get() = "PrimitiveStyle"
 
-    @NotNull
-    @Override
-    public List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager
-            manager, boolean isOntheFly) {
-        List<ProblemDescriptor> descriptors = new SmartList<>();
-
-        Collection<LatexCommands> commands = LatexCommandsIndex.Companion.getItems(file);
-        for (LatexCommands command : commands) {
-            int index = Magic.Command.stylePrimitives.indexOf(command.getName());
+    override fun inspectFile(
+        file: PsiFile,
+        manager: InspectionManager,
+        isOntheFly: Boolean
+    ): List<ProblemDescriptor> {
+        val descriptors: MutableList<ProblemDescriptor> =
+            SmartList()
+        val commands = LatexCommandsIndex.getItems(file)
+        for (command in commands) {
+            val index = Magic.Command.stylePrimitives.indexOf(command.name)
             if (index < 0) {
-                continue;
+                continue
             }
-
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     command,
-                    "Use of TeX primitive " + Magic.Command.stylePrimitives.get(index) + " is discouraged",
-                    new InspectionFix(),
+                    "Use of TeX primitive " + Magic.Command.stylePrimitives[index] + " is discouraged",
+                    InspectionFix(),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
-            ));
+                )
+            )
         }
-
-        return descriptors;
+        return descriptors
     }
 
-    private class InspectionFix implements LocalQuickFix {
-
+    private inner class InspectionFix : LocalQuickFix {
         @Nls
-        @NotNull
-        @Override
-        public String getFamilyName() {
-            return "Convert to LaTeX alternative";
+        override fun getFamilyName(): String {
+            return "Convert to LaTeX alternative"
         }
 
-        @Override
-        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-            PsiElement element = descriptor.getPsiElement();
-            if (!(element instanceof LatexCommands)) {
-                return;
-            }
+        override fun applyFix(
+            project: Project,
+            descriptor: ProblemDescriptor
+        ) {
+            val element = descriptor.psiElement as? LatexCommands ?: return
 
             // Find elements that go after the primitive.
-            LatexCommands cmd = (LatexCommands)element;
-            int cmdIndex = Magic.Command.stylePrimitives.indexOf(cmd.getName());
+            val cmdIndex = Magic.Command.stylePrimitives.indexOf(element.name)
             if (cmdIndex < 0) {
-                return;
+                return
             }
-
-            PsiElement content = cmd.getParent().getParent();
-            if (content instanceof LatexMathContent) {
-                content = cmd.getParent();
+            var content = element.parent.parent
+            if (content is LatexMathContent) {
+                content = element.parent
             }
-            PsiElement next = LatexPsiUtil.getNextSiblingIgnoreWhitespace(content);
-
-            String after = (next == null ? "" : next.getText());
-            String replacement = String.format(Magic.Command.stylePrimitveReplacements.get(cmdIndex), after);
-
-            Document document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
+            val next = getNextSiblingIgnoreWhitespace(content!!)
+            val after = if (next == null) "" else next.text
+            val replacement =
+                String.format(Magic.Command.stylePrimitveReplacements[cmdIndex], after)
+            val document =
+                PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
 
             // Delete the ending part..
             if (next != null) {
-                DocumentsKt.deleteElement(document, next);
+                document!!.deleteElement(next)
             }
 
             // Replace command.
-            TextRange range = ((LatexCommands)element).getCommandToken().getTextRange();
-            if (document != null) {
-                document.replaceString(range.getStartOffset(), range.getEndOffset(), replacement);
-            }
+            val range = element.commandToken.textRange
+            document?.replaceString(range.startOffset, range.endOffset, replacement)
         }
     }
 }

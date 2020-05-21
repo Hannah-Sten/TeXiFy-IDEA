@@ -34,6 +34,6 @@ class IncludesFilter : Filter {
 
         override fun getDescription() = "Show Includes"
 
-        override fun getIcon() = TexifyIcons.DOT_INCLUDE!!
+        override fun getIcon() = TexifyIcons.DOT_INCLUDE
     }
 }

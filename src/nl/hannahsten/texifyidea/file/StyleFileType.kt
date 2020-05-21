@@ -15,5 +15,5 @@ object StyleFileType : LanguageFileType(LatexLanguage.INSTANCE) {
 
     override fun getDefaultExtension() = "sty"
 
-    override fun getIcon() = TexifyIcons.STYLE_FILE!!
+    override fun getIcon() = TexifyIcons.STYLE_FILE
 }

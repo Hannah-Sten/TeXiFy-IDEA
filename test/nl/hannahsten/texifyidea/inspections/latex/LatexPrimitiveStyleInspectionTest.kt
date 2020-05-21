@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiveStyleInspection()) {
     fun testWarning() {
         myFixture.configureByText(LatexFileType, """
-            {\bf is bold}
+            {<warning descr="Use of TeX primitive \bf is discouraged">\bf</warning> is bold}
         """.trimIndent())
         myFixture.checkHighlighting()
     }
@@ -25,7 +25,7 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
         }
 
         myFixture.checkResult("""
-            {\it is italic}
+            {\textit{is italic} }
         """.trimIndent())
     }
 }

@@ -1,20 +1,17 @@
-package nl.hannahsten.texifyidea;
+package nl.hannahsten.texifyidea
 
-import com.intellij.lang.Language;
+import com.intellij.lang.Language
 
 /**
  * @author Sten Wessel
  */
-public class LatexLanguage extends Language {
-
-    public static final LatexLanguage INSTANCE = new LatexLanguage();
-
-    private LatexLanguage() {
-        super("Latex");
+class LatexLanguage private constructor() : Language("Latex") {
+    override fun getDisplayName(): String {
+        return "LaTeX"
     }
 
-    @Override
-    public String getDisplayName() {
-        return "LaTeX";
+    companion object {
+        @JvmField
+        val INSTANCE = LatexLanguage()
     }
 }
