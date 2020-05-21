@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import org.junit.Test
