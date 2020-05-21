@@ -1,68 +1,54 @@
-package nl.hannahsten.texifyidea.structure.filter;
+package nl.hannahsten.texifyidea.structure.filter
 
-import com.intellij.ide.util.treeView.smartTree.ActionPresentation;
-import com.intellij.ide.util.treeView.smartTree.Filter;
-import com.intellij.ide.util.treeView.smartTree.TreeElement;
-import nl.hannahsten.texifyidea.TexifyIcons;
-import nl.hannahsten.texifyidea.settings.TexifySettings;
-import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
+import com.intellij.ide.util.treeView.smartTree.ActionPresentation
+import com.intellij.ide.util.treeView.smartTree.Filter
+import com.intellij.ide.util.treeView.smartTree.TreeElement
+import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
+import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
+import javax.swing.Icon
 
 /**
  * @author Hannah Schellekens
  */
-public class LabelFilter implements Filter {
-
-    @Override
-    public boolean isVisible(TreeElement treeElement) {
-        if (!(treeElement instanceof LatexStructureViewCommandElement)) {
-            return true;
+class LabelFilter : Filter {
+    override fun isVisible(treeElement: TreeElement): Boolean {
+        if (treeElement !is LatexStructureViewCommandElement) {
+            return true
         }
-
-        LatexStructureViewCommandElement element = (LatexStructureViewCommandElement)treeElement;
-        return !TexifySettings.getInstance().getLabelCommands().containsKey(element.getCommandName());
+        return !getInstance().labelCommands.containsKey(treeElement.commandName)
     }
 
-    @Override
-    public boolean isReverted() {
-        return true;
+    override fun isReverted(): Boolean {
+        return true
     }
 
-    @NotNull
-    @Override
-    public ActionPresentation getPresentation() {
-        return LatexLabelFilterPresentation.INSTANCE;
+    override fun getPresentation(): ActionPresentation {
+        return LatexLabelFilterPresentation.INSTANCE
     }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return "latex.texify.filter.label";
+    override fun getName(): String {
+        return "latex.texify.filter.label"
     }
 
     /**
      * @author Hannah Schellekens
      */
-    private static class LatexLabelFilterPresentation implements ActionPresentation {
-
-        private static final LatexLabelFilterPresentation INSTANCE = new LatexLabelFilterPresentation();
-
-        @NotNull
-        @Override
-        public String getText() {
-            return "Show Labels";
+    private class LatexLabelFilterPresentation : ActionPresentation {
+        override fun getText(): String {
+            return "Show Labels"
         }
 
-        @Override
-        public String getDescription() {
-            return "Show Labels";
+        override fun getDescription(): String {
+            return "Show Labels"
         }
 
-        @Override
-        public Icon getIcon() {
-            return TexifyIcons.DOT_LABEL;
+        override fun getIcon(): Icon {
+            return TexifyIcons.DOT_LABEL
+        }
+
+        companion object {
+            val INSTANCE = LatexLabelFilterPresentation()
         }
     }
 }
