@@ -261,6 +261,7 @@ enum class LatexRegularCommand(
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
     SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
+    SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
     SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBITEM("subitem"),
