@@ -48,5 +48,4 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
             Reference~\ref{fig}
         """.trimIndent())
     }
-
 }
