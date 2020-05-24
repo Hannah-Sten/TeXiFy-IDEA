@@ -290,16 +290,12 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                 // todo move to separate function:
 
                                 // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
-                                // todo check if #indexed newcommands has changed and update commandmanager if needed
-                                // todo all files in fileset
-                                // todo parameter positions
                                 // Uses projectScope now, may be improved to filesetscope
                                 val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(Magic.Command.commandDefinitions, psiElement.project, GlobalSearchScope.projectScope(psiElement.project))
                                 if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.count()) {
                                     // Get definitions which define one of the commands in the given command names set
                                     // These will be aliases of the given set (which is assumed to be an alias set itself)
-                                    // todo multi-level definitions?
-                                    val aliases = indexedCommandDefinitions.filter {
+                                    indexedCommandDefinitions.filter {
                                         // Assume the parameter definition has the command being defined in the first required parameter,
                                         // and the command definition itself in the second
                                         it.requiredParameter(1)?.containsAny(CommandManager.getAliases(firstCommand)) == true

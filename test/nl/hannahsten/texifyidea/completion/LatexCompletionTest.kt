@@ -60,4 +60,48 @@ class LatexCompletionTest : BasePlatformTestCase() {
 
         assertTrue(result.any { it.lookupString == "textbf" })
     }
+
+    fun testCustomCommandAliasCompletion() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{thebibliography}{9}
+                \bibitem{testkey}
+                Reference.
+            \end{thebibliography}
+            
+            \newcommand{\mycite}[1]{\cite{#1}}
+            
+            \mycite{<caret>}
+        """.trimIndent())
+
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        assertTrue(result.any { it.lookupString == "testkey" })
+
+    }
+
+    // Test doesn't work
+    // fun testTwoLevelCustomCommandAliasCompletion() {
+    //     myFixture.configureByText(LatexFileType, """
+    //         \begin{thebibliography}{9}
+    //             \bibitem{testkey}
+    //             Reference.
+    //         \end{thebibliography}
+    //
+    //         \newcommand{\mycite}[1]{\cite{#1}}
+    //         <caret>
+    //     """.trimIndent())
+    //
+    //     // For n-level autocompletion, the autocompletion needs to run n times (but only runs when the number of indexed
+    //     // newcommands changes)
+    //
+    //     myFixture.complete(CompletionType.BASIC)
+    //     myFixture.type("""\newcommand{\myothercite}[1]{\mycite{#1}}""")
+    //     myFixture.type("""\myother""")
+    //     myFixture.complete(CompletionType.BASIC)
+    //     val result = myFixture.complete(CompletionType.BASIC, 2)
+    //
+    //     assertTrue(result.any { it.lookupString == "testkey" })
+    // }
+
+
 }

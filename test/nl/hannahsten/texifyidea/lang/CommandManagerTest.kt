@@ -17,7 +17,7 @@ class CommandManagerTest {
 
     @Before
     fun setup() {
-        manager = CommandManager()
+        manager = CommandManager
     }
 
     private fun resetup(aliasGroups: Array<Array<String>>?) {
@@ -504,12 +504,6 @@ class CommandManagerTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testExceptionGetAliases() {
-        resetup(defaultAliasGroups)
-        manager!!.getAliases("\\hihihahaheejheej")
-    }
-
-    @Test(expected = IllegalArgumentException::class)
     fun testExceptionGetAliasesOriginal() {
         resetup(defaultAliasGroups)
         manager!!.getAliasesFromOriginal("\\hihihahaheejheej")
@@ -566,11 +560,5 @@ class CommandManagerTest {
                 add("\\varepsilon")
             }
         }, b)
-    }
-
-    @Test
-    fun testEmptyOnCreation() {
-        manager = CommandManager()
-        Assert.assertEquals("Empty on creation", 0, manager!!.size().toLong())
     }
 }

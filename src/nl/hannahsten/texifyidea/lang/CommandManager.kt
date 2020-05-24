@@ -188,13 +188,10 @@ object CommandManager : Iterable<String?>, Serializable {
      * @param command
      * An existing command to get all aliases of starting with a backslash. *E.g. `\begin`*
      * @return An unmodifiable set of all aliases including the command itself. All aliases include
-     * a command backslash.
-     * @throws IllegalArgumentException
-     * When the given command is not registered.
+     * a command backslash. Returns the empty set if the command is not registered.
      */
-    @Throws(IllegalArgumentException::class)
     fun getAliases(command: String): Set<String> {
-        require(isRegistered(command)) { "command '$command' has not been registered" }
+        if (!isRegistered(command)) return emptySet()
         return aliases[command]?.toSet() ?: emptySet()
     }
 
