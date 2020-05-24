@@ -202,7 +202,6 @@ fun String.runCommand(): String? {
         proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
     }
     catch (e: IOException) {
-        e.printStackTrace()
         null
     }
 }
