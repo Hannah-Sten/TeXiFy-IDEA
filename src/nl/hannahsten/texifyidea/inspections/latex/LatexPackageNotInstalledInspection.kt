@@ -56,7 +56,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                                     ?.isEmpty() != false) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
-                                "Package is not installed",
+                                "Package is not installed or \\ProvidesPackage is missing",
                                 InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
