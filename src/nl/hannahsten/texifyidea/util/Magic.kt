@@ -317,6 +317,8 @@ object Magic {
          * Commands listed here should also be listed in [nl.hannahsten.texifyidea.lang.LatexRegularCommand].
          */
         @JvmField
+        // todo by modifying this set, the completion contribution might actually pick changes up correctly, as the set reference is used in accepts()
+        // todo parameter positions
         val bibliographyReference = hashSetOf(
                 "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
                 "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",

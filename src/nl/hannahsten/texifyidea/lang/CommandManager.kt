@@ -27,7 +27,8 @@ import java.util.stream.StreamSupport
  *
  * @author Hannah Schellekens
  */
-class CommandManager : Iterable<String?>, Serializable {
+// Currently it is a singleton, in the future this may be one instance per fileset
+object CommandManager : Iterable<String?>, Serializable {
     /**
      * Maps a command to a set of aliases including the command itself.
      *
@@ -418,7 +419,7 @@ class CommandManager : Iterable<String?>, Serializable {
      * A command is original when it gets registered to the command manager instead of being set
      * as alias.
      */
-    fun spliteratorOriginal(): Spliterator<String> {
+    private fun spliteratorOriginal(): Spliterator<String> {
         return original.keys.spliterator()
     }
 
@@ -426,10 +427,6 @@ class CommandManager : Iterable<String?>, Serializable {
         return "CommandManager{" + "aliases=" + aliases +
                 ", original=" + original +
                 '}'
-    }
-
-    companion object {
-        private const val serialVersionUID = 192873489129843L
     }
 
     /**

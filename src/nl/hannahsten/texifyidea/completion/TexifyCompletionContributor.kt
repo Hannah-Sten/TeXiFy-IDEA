@@ -8,19 +8,21 @@ import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.BibtexLanguage
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.*
-import java.util.*
+import java.util.EnumSet
 
 /**
  * @author Sten Wessel, Hannah Schellekens
@@ -262,10 +264,18 @@ open class TexifyCompletionContributor : CompletionContributor() {
         extendLatexCommands(provider, setOf(*commandNamesWithSlash))
     }
 
+    // todo move state somewhere else
+    var numberOfIndexedCommandDefinitions = 0
+
     /**
      * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
      */
     private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, commandNamesWithSlash: Set<String>) {
+        // Register commands to the class maintaining the aliases (\newcommand etc.)
+        val firstCommand = commandNamesWithSlash.firstOrNull() ?: return
+        CommandManager.registerCommand(firstCommand)
+        commandNamesWithSlash.forEach { CommandManager.registerAlias(firstCommand, it) }
+
         extend(
                 CompletionType.BASIC,
                 PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
@@ -273,7 +283,33 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
                                 val command = psiElement.parentOfType(LatexCommands::class) ?: return false
-                                return command.commandToken.text in commandNamesWithSlash
+                                if (command.commandToken.text in commandNamesWithSlash) {
+                                    return true
+                                }
+
+                                // todo move to separate function:
+
+                                // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
+                                // todo check if #indexed newcommands has changed and update commandmanager if needed
+                                // todo all files in fileset
+                                // todo parameter positions
+                                // Uses projectScope now, may be improved to filesetscope
+                                val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(Magic.Command.commandDefinitions, psiElement.project, GlobalSearchScope.projectScope(psiElement.project))
+                                if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.count()) {
+                                    // Get definitions which define one of the commands in the given command names set
+                                    // These will be aliases of the given set (which is assumed to be an alias set itself)
+                                    // todo multi-level definitions?
+                                    val aliases = indexedCommandDefinitions.filter {
+                                        // Assume the parameter definition has the command being defined in the first required parameter,
+                                        // and the command definition itself in the second
+                                        it.requiredParameter(1)?.containsAny(CommandManager.getAliases(firstCommand)) == true
+                                    }
+                                        .mapNotNull { it.requiredParameter(0) }
+                                        .forEach { CommandManager.registerAlias(firstCommand, it) }
+
+                                    numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
+                                }
+                                return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
