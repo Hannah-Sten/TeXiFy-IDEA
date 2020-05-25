@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -91,8 +92,10 @@ fun PsiFile.findLabelsInFileSetAsCollection(): Collection<PsiElement> = sequence
  * optional parameter.
  */
 fun PsiFile.findLabelingCommandsInFileSetAsSequence(): Sequence<LatexCommands> {
-    // todo get aliases
-    val commandNames = Magic.Command.labelDefinition
+    // todo for all label getting functions
+    // Also take user-defined aliases into account
+    CommandManager.updateAliases(Magic.Command.labelDefinition, project)
+    val commandNames = CommandManager.getAliases(Magic.Command.labelDefinition.first())
 
     return this.commandsInFileSet().asSequence()
             .filter { commandNames.contains(it.name) }
@@ -154,12 +157,13 @@ fun PsiElement.extractLabelName(): String {
     return when (this) {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
-            val position =
-                    TexifySettings
-                            .getInstance()
-                            .labelPreviousCommands
-                            .getOrDefault(name, null)
-                            ?.position ?: return ""
+            // val position =
+            //         TexifySettings
+            //                 .getInstance()
+            //                 .labelPreviousCommands // todo aliases are not in here
+            //                 .getOrDefault(name, null)
+            //                 ?.position ?: return ""
+            val position = 1 // todo
             this.requiredParameter(position - 1) ?: ""
         }
         is LatexEnvironment -> this.label ?: ""

@@ -103,5 +103,37 @@ class LatexCompletionTest : BasePlatformTestCase() {
     //     assertTrue(result.any { it.lookupString == "testkey" })
     // }
 
+    // fun testCustomLabelAliasCompletion() {
+    //     myFixture.configureByText(LatexFileType, """
+    //         \newcommand{\mylabel}[1]{\label{#1}}
+    //
+    //         \mylabel{label1}
+    //         \label{label2}
+    //
+    //         ~\ref{la}
+    //     """.trimIndent())
+    //
+    //     val result = myFixture.complete(CompletionType.BASIC)
+    //
+    //     assertTrue(result.any { it.lookupString == "label1" })
+    // }
+
+    fun testCustomLabelPositionAliasCompletion() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}}
+            
+            \mylabel{section1}{label1}
+            \label{label2}
+            
+            ~\ref{la}
+        """.trimIndent())
+
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        assertTrue(result.any { it.lookupString == "label1" })
+        assertFalse(result.any { it.lookupString == "section1" })
+
+    }
+
 
 }

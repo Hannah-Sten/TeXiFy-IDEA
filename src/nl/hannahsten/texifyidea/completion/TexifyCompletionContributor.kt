@@ -271,11 +271,6 @@ open class TexifyCompletionContributor : CompletionContributor() {
      * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
      */
     private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, commandNamesWithSlash: Set<String>) {
-        // Register commands to the class maintaining the aliases (\newcommand etc.)
-        val firstCommand = commandNamesWithSlash.firstOrNull() ?: return
-        CommandManager.registerCommand(firstCommand)
-        commandNamesWithSlash.forEach { CommandManager.registerAlias(firstCommand, it) }
-
         extend(
                 CompletionType.BASIC,
                 PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
@@ -287,7 +282,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                     return true
                                 }
 
-                                CommandManager.updateAliases(firstCommand, psiElement.project)
+                                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
                                 return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
                             }
                         })

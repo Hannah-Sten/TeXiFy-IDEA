@@ -1,6 +1,11 @@
 package nl.hannahsten.texifyidea.lang
 
 import com.intellij.openapi.project.Project
+import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.containsAny
+import nl.hannahsten.texifyidea.util.requiredParameter
 import java.io.Serializable
 import java.util.Collections
 import java.util.HashMap
@@ -99,7 +104,7 @@ object CommandManager : Iterable<String?>, Serializable {
      * We do this by keeping a count of the number of \newcommand-like commands in the index,
      * and when this changes we go gather new aliases.
      */
-    var numberOfIndexedCommandDefinitions = 0
+    private var numberOfIndexedCommandDefinitions = 0
 
 
     /**
@@ -205,22 +210,31 @@ object CommandManager : Iterable<String?>, Serializable {
     }
 
     /**
-     * If needed (based on the number of indexed \newcommand-like commands) check for new aliases of the given alias. This alias can be any alias of its alias set.
+     * If needed (based on the number of indexed \newcommand-like commands) check for new aliases of the given alias set. This alias can be any alias of its alias set.
+     * If the alias set is not yet registered, it will be registered as a new alias set.
      */
-    fun updateAliases(alias: String, project: Project) {
+    fun updateAliases(aliasSet: Set<String>, project: Project) {
+        // Register if needed
+        if (aliasSet.isEmpty()) return
+        val firstAlias = aliasSet.first()
+        if (!isRegistered(firstAlias)) {
+            registerCommand(firstAlias)
+            aliasSet.forEach { registerAlias(firstAlias, it) }
+        }
+
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
         val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(Magic.Command.commandDefinitions, project, GlobalSearchScope.projectScope(project))
-        if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.count()) {
+        if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size) {
             // Get definitions which define one of the commands in the given command names set
             // These will be aliases of the given set (which is assumed to be an alias set itself)
             indexedCommandDefinitions.filter {
                 // Assume the parameter definition has the command being defined in the first required parameter,
                 // and the command definition itself in the second
-                it.requiredParameter(1).containsAny(getAliases(alias)) == true
+                it.requiredParameter(1)?.containsAny(getAliases(firstAlias)) == true
             }
                 .mapNotNull { it.requiredParameter(0) }
-                .forEach { registerAlias(alias, it) }
+                .forEach { registerAlias(firstAlias, it) }
 
             numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
         }
