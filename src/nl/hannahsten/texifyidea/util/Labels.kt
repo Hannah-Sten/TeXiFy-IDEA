@@ -91,10 +91,11 @@ fun PsiFile.findLabelsInFileSetAsCollection(): Collection<PsiElement> = sequence
  * optional parameter.
  */
 fun PsiFile.findLabelingCommandsInFileSetAsSequence(): Sequence<LatexCommands> {
-    val commandNames = TexifySettings.getInstance().labelCommands
+    // todo get aliases
+    val commandNames = Magic.Command.labelDefinition
 
     return this.commandsInFileSet().asSequence()
-            .filter { commandNames.containsKey(it.name) }
+            .filter { commandNames.contains(it.name) }
 }
 
 /**

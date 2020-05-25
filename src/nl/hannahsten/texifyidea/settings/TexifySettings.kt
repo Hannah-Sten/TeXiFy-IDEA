@@ -36,7 +36,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
     /**
-     * internal list which stores the commands data
+     * internal list which stores the commands data todo remove
      */
     val labelCommands: HashMap<String, LabelingCommandInformation> =
             hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true))

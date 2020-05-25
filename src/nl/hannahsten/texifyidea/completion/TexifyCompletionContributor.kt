@@ -8,14 +8,12 @@ import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.BibtexLanguage
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
@@ -25,6 +23,11 @@ import nl.hannahsten.texifyidea.util.*
 import java.util.EnumSet
 
 /**
+ * This class registers some completion contributors. For labels we currently use reference completion instead of
+ * contributor-based completion, in [nl.hannahsten.texifyidea.reference.LatexLabelReference],
+ * though at the moment I don't see a reason why this is the case.
+ * Also see https://www.jetbrains.org/intellij/sdk/docs/reference_guide/custom_language_support/code_completion.html
+ *
  * @author Sten Wessel, Hannah Schellekens
  */
 open class TexifyCompletionContributor : CompletionContributor() {
@@ -264,9 +267,6 @@ open class TexifyCompletionContributor : CompletionContributor() {
         extendLatexCommands(provider, setOf(*commandNamesWithSlash))
     }
 
-    // todo move state somewhere else
-    var numberOfIndexedCommandDefinitions = 0
-
     /**
      * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
      */
@@ -287,24 +287,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                                     return true
                                 }
 
-                                // todo move to separate function:
-
-                                // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
-                                // Uses projectScope now, may be improved to filesetscope
-                                val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(Magic.Command.commandDefinitions, psiElement.project, GlobalSearchScope.projectScope(psiElement.project))
-                                if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.count()) {
-                                    // Get definitions which define one of the commands in the given command names set
-                                    // These will be aliases of the given set (which is assumed to be an alias set itself)
-                                    indexedCommandDefinitions.filter {
-                                        // Assume the parameter definition has the command being defined in the first required parameter,
-                                        // and the command definition itself in the second
-                                        it.requiredParameter(1)?.containsAny(CommandManager.getAliases(firstCommand)) == true
-                                    }
-                                        .mapNotNull { it.requiredParameter(0) }
-                                        .forEach { CommandManager.registerAlias(firstCommand, it) }
-
-                                    numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
-                                }
+                                CommandManager.updateAliases(firstCommand, psiElement.project)
                                 return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
                             }
                         })
