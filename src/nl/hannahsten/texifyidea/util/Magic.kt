@@ -470,6 +470,7 @@ object Magic {
         @JvmField
         val illegalExtensions = mapOf(
                 "\\include" to listOf(".tex"),
+                "\\subfileinclude" to listOf(".tex"),
                 "\\bibliography" to listOf(".bib")
         )
 
@@ -489,6 +490,7 @@ object Magic {
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
                 "\\subfile" to hashSetOf("tex"),
+                "\\subfileinclude" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
