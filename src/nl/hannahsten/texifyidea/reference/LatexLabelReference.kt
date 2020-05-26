@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.findBibtexItems
 import nl.hannahsten.texifyidea.util.findLabelsInFileSetAsCollection
-import java.util.*
+import java.util.Objects
 
 /**
  * A reference to a label, used only for autocompletion. For the real referencing, see [LatexLabelParameterReference].
@@ -54,6 +54,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
         else if (Magic.Command.labelReference.contains(command)) {
             return file.findLabelsInFileSetAsCollection()
                     .stream()
+                    .filter { it.extractLabelName().isNotBlank() }
                     .map { labelingCommand: PsiElement ->
                         LookupElementBuilder
                                 .create(labelingCommand.extractLabelName())

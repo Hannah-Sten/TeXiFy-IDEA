@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.requiredParameters
 import java.io.Serializable
 import java.util.Collections
 import java.util.HashMap
@@ -106,6 +107,13 @@ object CommandManager : Iterable<String?>, Serializable {
      */
     private var numberOfIndexedCommandDefinitions = 0
 
+    /**
+     * Map commands that define labels to the positions of the label parameter.
+     * For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2} the label parameter is second, so \mylabel maps to [2].
+     * It is not so nice to have to maintain this separately, but maintaining
+     * parameter position mappings between general alias sets is too much overhead for now.
+     */
+    val labelAliasesParameterPositions = Magic.Command.labelDefinition.associateWith { listOf(1) }.toMutableMap()
 
     /**
      * Registers a brand new command to the command manager.
@@ -224,17 +232,48 @@ object CommandManager : Iterable<String?>, Serializable {
 
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(Magic.Command.commandDefinitions, project, GlobalSearchScope.projectScope(project))
+        val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(
+            Magic.Command.commandDefinitions,
+            project,
+            GlobalSearchScope.projectScope(project)
+        )
         if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size) {
+            val aliases = getAliases(firstAlias)
+
             // Get definitions which define one of the commands in the given command names set
             // These will be aliases of the given set (which is assumed to be an alias set itself)
             indexedCommandDefinitions.filter {
                 // Assume the parameter definition has the command being defined in the first required parameter,
                 // and the command definition itself in the second
-                it.requiredParameter(1)?.containsAny(getAliases(firstAlias)) == true
+                it.requiredParameter(1)?.containsAny(aliases) == true
             }
                 .mapNotNull { it.requiredParameter(0) }
                 .forEach { registerAlias(firstAlias, it) }
+
+            // Extract label parameter positions
+            // Assumes the predefined label definitions all have the label parameter in the same position
+            // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
+            if (aliases.intersect(Magic.Command.labelDefinition).isNotEmpty()) {
+                indexedCommandDefinitions.forEach {commandDefinition ->
+                    val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
+                    val positions = commandDefinition.requiredParameters().getOrNull(1)
+                        ?.requiredParamContentList
+                        ?.asSequence()
+                        ?.filter { it.commands?.name in Magic.Command.labelDefinition }
+                        ?.mapNotNull { it.commands?.requiredParameter(0) }
+                        ?.mapNotNull {
+                            if(it.indexOf('#') != -1) {
+                                it.getOrNull(it.indexOf('#') + 1)
+                            }
+                            else null
+                        }
+                        ?.map(Character::getNumericValue)
+                        ?.filter { it >= 0 }
+                        ?.toList() ?: return@forEach
+                    if (positions.isEmpty()) return@forEach
+                    labelAliasesParameterPositions[definedCommand] = positions
+                }
+            }
 
             numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
         }
