@@ -254,7 +254,7 @@ object CommandManager : Iterable<String?>, Serializable {
             // Assumes the predefined label definitions all have the label parameter in the same position
             // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
             if (aliases.intersect(Magic.Command.labelDefinition).isNotEmpty()) {
-                indexedCommandDefinitions.forEach {commandDefinition ->
+                indexedCommandDefinitions.forEach { commandDefinition ->
                     val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
                     val positions = commandDefinition.requiredParameters().getOrNull(1)
                         ?.requiredParamContentList
@@ -262,7 +262,7 @@ object CommandManager : Iterable<String?>, Serializable {
                         ?.filter { it.commands?.name in Magic.Command.labelDefinition }
                         ?.mapNotNull { it.commands?.requiredParameter(0) }
                         ?.mapNotNull {
-                            if(it.indexOf('#') != -1) {
+                            if (it.indexOf('#') != -1) {
                                 it.getOrNull(it.indexOf('#') + 1)
                             }
                             else null

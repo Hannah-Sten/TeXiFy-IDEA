@@ -76,7 +76,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         assertTrue(result.any { it.lookupString == "testkey" })
-
     }
 
     // Test doesn't work
