@@ -10,73 +10,19 @@ import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+
+/*
+ * Collections
+ */
 
 /**
  * Finds all the defined labels in the fileset of the file.
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexAndBibtexLabelsInFileSet(): Set<String> = (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
-
-/**
- * Find all defined labels in the fileset.
- */
-fun PsiFile.findLatexAndBibtexLabelsInFileSetAsSequence(): Sequence<LatexCommands> = findLabelingCommandsInFileSetAsSequence() + findBibitemCommands()
-
-/**
- * Finds all the defined latex labels in the fileset of the file.
- *
- * @return A set containing all labels that are defined in the fileset of the given file.
- */
-fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
-    return sequenceOf(
-            LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence().map { it.extractLabelName() },
-            findLabelingCommandsInFileSetAsSequence()
-                    .map {
-                        it.extractLabelName()
-                    }.filterNot { it == "" }).flatten()
-}
-
-/**
- * @see [findLabelsInFileSetAsCollection]
- */
-fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileAsSequence(),
-        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
-
-fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileSetAsSequence(),
-        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
-
-/**
- * Finds all the defined bibtex labels in the fileset of the file.
- *
- * @return A set containing all labels that are defined in the fileset of the given file.
- */
-fun PsiFile.findBibtexLabelsInFileSetAsSequence(): Sequence<String> = findBibtexItems().asSequence()
-        .mapNotNull {
-            when (it) {
-                is BibtexEntry -> it.name
-                is LatexCommands -> it.requiredParameter(0)
-                else -> null
-            }
-        }
-
-/**
- * Finds all the labeling commands within the collection of commands.
- *
- * @return A collection of all label commands.
- */
-fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
-    val commandNames = TexifySettings.getInstance().labelCommands
-    return filter {
-        if (it is LatexCommands) {
-            commandNames.containsKey(it.name)
-        }
-        else true
-    }
-}
+fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
 
 /**
  * Finds all defined labels within a given file.
@@ -84,47 +30,66 @@ fun Collection<PsiElement>.findLabels(): Collection<PsiElement> {
  * @receiver The file to analyse the file set of.
  * @return The found label commands.
  */
-fun PsiFile.findLabelsInFileSetAsCollection(): Collection<PsiElement> = sequenceOf(findLabelingCommandsInFileSetAsSequence(),
-        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten().toList()
+fun PsiFile.findLabelsInFileSetAsCollection(): List<PsiElement> = sequenceOf(findLabelingCommandsInFileSetAsSequence(),
+    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten().toList()
+
+/*
+ * Sequences
+ */
+
+/**
+ * Finds all the defined latex labels in the fileset of the file.
+ *
+ * @return A set containing all labels that are defined in the fileset of the given file.
+ */
+fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
+    return findLatexLabelPsiElementsInFileSetAsSequence().map { it.extractLabelName() }
+}
+
+/**
+ * All labels in this file.
+ */
+fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileAsSequence(),
+        LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence()).flatten()
+
+/**
+ * All labels in the fileset.
+ */
+fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileSetAsSequence(),
+        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
 
 /**
  * Make a sequence of all commands in the file set that specify a label. This does not include commands which define a label via an
  * optional parameter.
  */
 fun PsiFile.findLabelingCommandsInFileSetAsSequence(): Sequence<LatexCommands> {
-    // todo for all label getting functions
-    // Also take user-defined aliases into account
-    CommandManager.updateAliases(Magic.Command.labelDefinition, project)
-    val commandNames = CommandManager.getAliases(Magic.Command.labelDefinition.first())
-
-    return this.commandsInFileSet().asSequence()
-            .filter { commandNames.contains(it.name) }
+    return this.commandsInFileSet().asSequence().findLatexCommandsLabels(this.project)
 }
 
 /**
  * @see [findLabelingCommandsInFileSetAsSequence] but then only for commands in this file.
  */
 fun PsiFile.findLabelingCommandsInFileAsSequence(): Sequence<LatexCommands> {
-    val commandNames = TexifySettings.getInstance().labelCommands
-
-    return this.commandsInFile().asSequence()
-            .filter { commandNames.containsKey(it.name) }
+    return this.commandsInFile().asSequence().findLatexCommandsLabels(this.project)
 }
+
+/*
+ * Bibtex
+ */
 
 /**
- * Finds all defined labels within the project, including bibtex entries.
+ * Finds all the defined bibtex labels in the fileset of the file.
  *
- * @return The found label commands.
+ * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun Project.findLabels(): Collection<PsiElement> {
-    val commands = LatexCommandsIndex.getItems(this).findLabels()
-    val bibtexIds = BibtexEntryIndex.getIndexedEntries(this)
-    val environments = LatexParameterLabeledEnvironmentsIndex.getItems(this)
-    val result = ArrayList(commands)
-    result.addAll(bibtexIds)
-    result.addAll(environments)
-    return result
-}
+private fun PsiFile.findBibtexLabelsInFileSetAsSequence(): Sequence<String> = findBibtexItems().asSequence()
+    .mapNotNull {
+        when (it) {
+            is BibtexEntry -> it.name
+            is LatexCommands -> it.requiredParameter(0)
+            else -> null
+        }
+    }
 
 /**
  * Finds all specified bibtex entries
@@ -139,16 +104,60 @@ fun PsiFile.findBibtexItems(): Collection<PsiElement> {
  * Finds all \\bibitem-commands in the document
  */
 fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = this.commandsInFileSet().asSequence()
-        .filter { it.name == "\\bibitem" }
+    .filter { it.name == "\\bibitem" }
+
+/*
+ * Filtering sequence or collection
+ */
 
 /**
- * Finds all defined labels within the project matching the label key/id.
+ * Finds all the labeling commands within the collection of PsiElements.
  *
- * @param key
- *         Key to match the label with.
- * @return A list of matched label commands.
+ * @return A collection of all label commands.
  */
-fun Project.findLabels(key: String?): Collection<PsiElement> = findLabels().filter { it.extractLabelName() == key }
+fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection<LatexCommands> {
+    // Also take user-defined aliases into account
+    CommandManager.updateAliases(Magic.Command.labelDefinition, project)
+    val commandNames = CommandManager.getAliases(Magic.Command.labelDefinition.first())
+
+    return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
+}
+
+/**
+ * Finds all the labeling commands within the sequence of PsiElements.
+ *
+ * @return A sequence of all label commands.
+ */
+fun Sequence<PsiElement>.findLatexCommandsLabels(project: Project): Sequence<LatexCommands> {
+    // Also take user-defined aliases into account
+    CommandManager.updateAliases(Magic.Command.labelDefinition, project)
+    val commandNames = CommandManager.getAliases(Magic.Command.labelDefinition.first())
+
+    return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
+}
+
+/*
+ * Project
+ */
+
+/**
+ * Finds all defined labels within the project, including bibtex entries.
+ *
+ * @return The found label commands.
+ */
+fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
+    val commands = LatexCommandsIndex.getItems(this).findLatexCommandsLabels(this)
+    val bibtexIds = BibtexEntryIndex.getIndexedEntries(this)
+    val environments = LatexParameterLabeledEnvironmentsIndex.getItems(this)
+    val result = ArrayList<PsiElement>(commands)
+    result.addAll(bibtexIds)
+    result.addAll(environments)
+    return result
+}
+
+/*
+ * Other utils
+ */
 
 /**
  * Extracts the label name from the PsiElement given that the PsiElement represents a label.

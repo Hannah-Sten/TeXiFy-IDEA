@@ -122,7 +122,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 "$prefix:$labelName"
             }
 
-            val createdLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelsInFileSet())
+            val createdLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelStringsInFileSet())
 
             // Replace in command label definition
             if (command is LatexCommands) {
