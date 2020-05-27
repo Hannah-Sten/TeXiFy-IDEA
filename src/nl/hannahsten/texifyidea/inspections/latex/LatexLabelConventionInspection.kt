@@ -14,13 +14,11 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
-import java.util.*
+import java.util.EnumSet
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
- * Currently only works for Chapters, Sections and Subsections.
- *
- * Planned is to also implement this for other environments.
+ * Check for label conventions, e.g. sec: in \section{A section}\label{sec:a-section}
  *
  * @author Hannah Schellekens
  */
