@@ -4,8 +4,6 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.ParserDefinition.SpaceRequirements
-import com.intellij.lang.PsiParser
-import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
@@ -22,44 +20,26 @@ import nl.hannahsten.texifyidea.psi.BibtexTypes
  * @author Hannah Schellekens
  */
 class BibtexParserDefinition : ParserDefinition {
-    override fun createLexer(project: Project): Lexer {
-        return BibtexLexerAdapter()
-    }
+    override fun createLexer(project: Project) = BibtexLexerAdapter()
 
-    override fun createParser(project: Project): PsiParser {
-        return BibtexParser()
-    }
+    override fun createParser(project: Project) = BibtexParser()
 
-    override fun getFileNodeType(): IStubFileElementType<*> {
-        return FILE
-    }
+    override fun getFileNodeType(): IStubFileElementType<*> = FILE
 
-    override fun getWhitespaceTokens(): TokenSet {
-        return WHITE_SPACES
-    }
+    override fun getWhitespaceTokens(): TokenSet = WHITE_SPACES
 
-    override fun getCommentTokens(): TokenSet {
-        return COMMENTS
-    }
+    override fun getCommentTokens(): TokenSet = COMMENTS
 
-    override fun getStringLiteralElements(): TokenSet {
-        return NORMAL_TEXT
-    }
+    override fun getStringLiteralElements(): TokenSet = NORMAL_TEXT
 
-    override fun createElement(astNode: ASTNode): PsiElement {
-        return BibtexTypes.Factory.createElement(astNode)
-    }
+    override fun createElement(astNode: ASTNode): PsiElement = BibtexTypes.Factory.createElement(astNode)
 
-    override fun createFile(fileViewProvider: FileViewProvider): PsiFile {
-        return BibtexFile(fileViewProvider)
-    }
+    override fun createFile(fileViewProvider: FileViewProvider): PsiFile = BibtexFile(fileViewProvider)
 
     override fun spaceExistenceTypeBetweenTokens(
         astNode: ASTNode,
         astNode1: ASTNode
-    ): SpaceRequirements {
-        return SpaceRequirements.MAY
-    }
+    ): SpaceRequirements = SpaceRequirements.MAY
 
     companion object {
         val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
@@ -68,9 +48,7 @@ class BibtexParserDefinition : ParserDefinition {
         val FILE = object : IStubFileElementType<BibtexFileStub>(
             Language.findInstance(BibtexLanguage::class.java)
         ) {
-            override fun getStubVersion(): Int {
-                return 5
-            }
+            override fun getStubVersion(): Int = 5
         }
     }
 

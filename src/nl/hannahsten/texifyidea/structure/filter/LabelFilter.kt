@@ -19,33 +19,21 @@ class LabelFilter : Filter {
         return !getInstance().labelCommands.containsKey(treeElement.commandName)
     }
 
-    override fun isReverted(): Boolean {
-        return true
-    }
+    override fun isReverted(): Boolean = true
 
-    override fun getPresentation(): ActionPresentation {
-        return LatexLabelFilterPresentation.INSTANCE
-    }
+    override fun getPresentation(): ActionPresentation = LatexLabelFilterPresentation.INSTANCE
 
-    override fun getName(): String {
-        return "latex.texify.filter.label"
-    }
+    override fun getName(): String = "latex.texify.filter.label"
 
     /**
      * @author Hannah Schellekens
      */
     private class LatexLabelFilterPresentation : ActionPresentation {
-        override fun getText(): String {
-            return "Show Labels"
-        }
+        override fun getText(): String = "Show Labels"
 
-        override fun getDescription(): String {
-            return "Show Labels"
-        }
+        override fun getDescription(): String = "Show Labels"
 
-        override fun getIcon(): Icon {
-            return TexifyIcons.DOT_LABEL
-        }
+        override fun getIcon(): Icon = TexifyIcons.DOT_LABEL
 
         companion object {
             val INSTANCE = LatexLabelFilterPresentation()
