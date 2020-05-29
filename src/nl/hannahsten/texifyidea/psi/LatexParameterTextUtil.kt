@@ -53,7 +53,7 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement {
 fun setName(element: LatexParameterText, name: String): PsiElement {
     val command = element.firstParentOfType(LatexCommands::class)
     // If we want to rename a label
-    if (Magic.Command.reference.contains(command?.name) || Magic.Command.labelDefinition.contains(command?.name)) {
+    if (Magic.Command.reference.contains(command?.name) || Magic.Command.getLabelDefinitions(element.project).contains(command?.name)) {
         // Get a new psi element for the complete label command (\label included),
         // because if we replace the complete command instead of just the normal text
         // then the indices will be updated, which is necessary for the reference resolve to work

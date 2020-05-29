@@ -1,10 +1,12 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
@@ -317,8 +319,6 @@ object Magic {
          * Commands listed here should also be listed in [nl.hannahsten.texifyidea.lang.LatexRegularCommand].
          */
         @JvmField
-        // todo by modifying this set, the completion contribution might actually pick changes up correctly, as the set reference is used in accepts()
-        // todo parameter positions
         val bibliographyReference = hashSetOf(
                 "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
                 "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
@@ -350,10 +350,28 @@ object Magic {
         val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
 
         /**
-         * All commands that define labels.
+         * All commands that define labels and that are present by default.
+         * To include user defined commands, use [getLabelDefinitions] (may be significantly slower).
          */
         @JvmField
-        val labelDefinition = setOf("\\label")
+        val labelDefinitionsWithoutCustomCommands = setOf("\\label")
+
+        /**
+         * Get all commands defining labels, including user defined commands.
+         * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesParameterPositions].
+         *
+         * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
+         */
+        fun getLabelDefinitions(project: Project): Set<String> {
+            // Check if updates are needed
+            CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
+            return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
+        }
+
+        /**
+         * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
+         */
+        fun getLabelDefinitions() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
 
         /**
          * All commands that define bibliography items.

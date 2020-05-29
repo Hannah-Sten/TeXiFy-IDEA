@@ -98,6 +98,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
                         override fun onSuccess() {
                             TexLivePackages.packageList.add(packageName)
+                            // Rerun inspections
                             DaemonCodeAnalyzer.getInstance(project)
                                     .restart(filePointer.containingFile
                                             ?: return)

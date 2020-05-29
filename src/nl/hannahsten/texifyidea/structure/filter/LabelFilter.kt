@@ -4,8 +4,8 @@ import com.intellij.ide.util.treeView.smartTree.ActionPresentation
 import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
+import nl.hannahsten.texifyidea.util.Magic
 import javax.swing.Icon
 
 /**
@@ -16,7 +16,7 @@ class LabelFilter : Filter {
         if (treeElement !is LatexStructureViewCommandElement) {
             return true
         }
-        return !getInstance().labelCommands.containsKey(treeElement.commandName)
+        return !Magic.Command.getLabelDefinitions().contains(treeElement.commandName)
     }
 
     override fun isReverted(): Boolean {

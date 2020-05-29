@@ -113,7 +113,7 @@ object CommandManager : Iterable<String?>, Serializable {
      * It is not so nice to have to maintain this separately, but maintaining
      * parameter position mappings between general alias sets is too much overhead for now.
      */
-    val labelAliasesParameterPositions = Magic.Command.labelDefinition.associateWith { listOf(1) }.toMutableMap()
+    val labelAliasesParameterPositions = Magic.Command.labelDefinitionsWithoutCustomCommands.associateWith { listOf(1) }.toMutableMap()
 
     /**
      * Registers a brand new command to the command manager.
@@ -253,13 +253,15 @@ object CommandManager : Iterable<String?>, Serializable {
             // Extract label parameter positions
             // Assumes the predefined label definitions all have the label parameter in the same position
             // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
-            if (aliases.intersect(Magic.Command.labelDefinition).isNotEmpty()) {
+            if (aliases.intersect(Magic.Command.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
                 indexedCommandDefinitions.forEach { commandDefinition ->
                     val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
+                    if (definedCommand.isBlank()) return@forEach
+
                     val positions = commandDefinition.requiredParameters().getOrNull(1)
                         ?.requiredParamContentList
                         ?.asSequence()
-                        ?.filter { it.commands?.name in Magic.Command.labelDefinition }
+                        ?.filter { it.commands?.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
                         ?.mapNotNull { it.commands?.requiredParameter(0) }
                         ?.mapNotNull {
                             if (it.indexOf('#') != -1) {

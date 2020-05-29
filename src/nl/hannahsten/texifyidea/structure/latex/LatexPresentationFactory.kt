@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.structure.latex
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 
 /**
@@ -13,8 +13,8 @@ object LatexPresentationFactory {
 
     @JvmStatic
     fun getPresentation(commands: LatexCommands): ItemPresentation {
-        val labelingCommands = TexifySettings.getInstance().labelCommands
-        if (labelingCommands.containsKey(commands.name)) {
+        val labelingCommands = Magic.Command.getLabelDefinitions(commands.project)
+        if (labelingCommands.contains(commands.name)) {
             return LatexLabelPresentation(commands)
         }
         return when (commands.name) {
