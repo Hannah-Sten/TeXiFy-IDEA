@@ -23,7 +23,7 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
             throw IllegalArgumentException("command '$token' is no \\label-command")
         }
 
-        val position = CommandManager.labelAliasesParameterPositions.getOrDefault(labelCommand.commandToken.text, null)?.firstOrNull() ?: 1
+        val position = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull() ?: 1
         presentableText = labelCommand.requiredParameter(position - 1) ?: "no label found"
 
         // Location string.

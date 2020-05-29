@@ -670,12 +670,6 @@
         </intentionAction>
 
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
             <className>nl.hannahsten.texifyidea.intentions.LatexLeftRightParenthesesIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexLeftRightParentheses</descriptionDirectoryName>

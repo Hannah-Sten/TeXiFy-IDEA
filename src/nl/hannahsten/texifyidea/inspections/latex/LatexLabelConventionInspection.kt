@@ -9,9 +9,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 import java.util.EnumSet
@@ -124,12 +124,9 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // Replace in command label definition
             if (command is LatexCommands) {
-                val position =
-                        TexifySettings
-                                .getInstance()
-                                .labelPreviousCommands
-                                .getOrDefault(command.name, null)
-                                ?.position ?: return
+                val labelInfo = CommandManager.labelAliasesInfo.getOrDefault(command.name, null) ?: return
+                if (!labelInfo.labelsPreviousCommand) return
+                val position = labelInfo.positions.firstOrNull() ?: return
 
                 val labelParameter = command.requiredParameters().getOrNull(position - 1) ?: return
                 labelParameter.replace(latexPsiHelper.createRequiredParameter(createdLabel))

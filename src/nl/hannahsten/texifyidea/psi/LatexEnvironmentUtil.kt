@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.util.Magic
 
 /*
@@ -28,11 +28,13 @@ fun getLabel(element: LatexEnvironment): String? {
         // See if we can find a label command inside the environment
         val children = PsiTreeUtil.findChildrenOfType(content, LatexCommands::class.java)
         if (!children.isEmpty()) {
-            val labelCommands = getInstance().labelPreviousCommands
-            val labelCommand = children.firstOrNull { c: LatexCommands -> labelCommands.containsKey(c.name) } ?: return null
+            val labelCommands = Magic.Command.getLabelDefinitions(element.project)
+            val labelCommand = children.firstOrNull { c: LatexCommands -> labelCommands.contains(c.name) } ?: return null
             val requiredParameters = labelCommand.requiredParameters
             if (requiredParameters.isEmpty()) return null
-            val parameterPosition = labelCommands[labelCommand.name]!!.position - 1
+            val info = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.name, null) ?: return null
+            if (!info.labelsPreviousCommand) return null
+            val parameterPosition = info.positions.firstOrNull() ?: 1 - 1
             return if (parameterPosition > requiredParameters.size - 1 || parameterPosition < 0) null else requiredParameters[parameterPosition]
         }
         null

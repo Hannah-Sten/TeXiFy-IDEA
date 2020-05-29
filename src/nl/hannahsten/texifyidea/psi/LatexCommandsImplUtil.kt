@@ -7,13 +7,13 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.toArray
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
-import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameters
 import java.util.ArrayList
@@ -197,5 +197,5 @@ fun hasLabel(element: LatexCommands): Boolean {
         return false
     }
     val labelMaybe = children.iterator().next()
-    return getInstance().labelPreviousCommands.containsKey(labelMaybe.commandToken.text)
+    return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }

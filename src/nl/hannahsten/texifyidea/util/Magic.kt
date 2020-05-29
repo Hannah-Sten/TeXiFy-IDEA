@@ -358,7 +358,7 @@ object Magic {
 
         /**
          * Get all commands defining labels, including user defined commands.
-         * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesParameterPositions].
+         * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
          *
          * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
          */

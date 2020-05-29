@@ -35,12 +35,6 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
-    /**
-     * internal list which stores the commands data todo remove
-     */
-    val labelCommands: HashMap<String, LabelingCommandInformation> =
-            hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true))
-
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
                 automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
@@ -51,8 +45,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
                 continuousPreview = continuousPreview,
                 includeBackslashInSelection = includeBackslashInSelection,
                 automaticQuoteReplacement = automaticQuoteReplacement,
-                pdfViewer = pdfViewer,
-                labelCommands = labelCommands.mapValues { it.value.toSerializableString() }
+                pdfViewer = pdfViewer
         )
     }
 
@@ -66,20 +59,5 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         includeBackslashInSelection = state.includeBackslashInSelection
         automaticQuoteReplacement = state.automaticQuoteReplacement
         pdfViewer = state.pdfViewer
-        state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }
     }
-
-    fun addCommand(cmd: LabelingCommandInformation) {
-        labelCommands[cmd.commandName] = cmd
-    }
-
-    fun removeCommand(cmdName: String) {
-        labelCommands.remove(cmdName)
-    }
-
-    /**
-     * all commands in this map could be used to label a previous command like 'section'
-     */
-    val labelPreviousCommands: Map<String, LabelingCommandInformation>
-        get() = labelCommands.filter { it.value.labelsPreviousCommand }
 }
