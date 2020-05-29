@@ -128,7 +128,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 if (!labelInfo.labelsPreviousCommand) return
                 val position = labelInfo.positions.firstOrNull() ?: return
 
-                val labelParameter = command.requiredParameters().getOrNull(position - 1) ?: return
+                val labelParameter = command.requiredParameters().getOrNull(position) ?: return
                 labelParameter.replace(latexPsiHelper.createRequiredParameter(createdLabel))
             }
 

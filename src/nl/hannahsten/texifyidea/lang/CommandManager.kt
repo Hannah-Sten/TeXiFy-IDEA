@@ -114,7 +114,7 @@ object CommandManager : Iterable<String?>, Serializable {
      * It is not so nice to have to maintain this separately, but maintaining
      * parameter position mappings between general alias sets is too much overhead for now.
      */
-    val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> = Magic.Command.labelDefinitionsWithoutCustomCommands.associateWith { LabelingCommandInformation(listOf(1), true) }.toMutableMap()
+    val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> = Magic.Command.labelDefinitionsWithoutCustomCommands.associateWith { LabelingCommandInformation(listOf(0), true) }.toMutableMap()
 
     /**
      * Registers a brand new command to the command manager.
@@ -271,6 +271,8 @@ object CommandManager : Iterable<String?>, Serializable {
                             else null
                         }
                         ?.map(Character::getNumericValue)
+                        // LaTeX starts from 1, we from 0 (consistent with how we count required parameters)
+                        ?.map { it - 1 }
                         ?.filter { it >= 0 }
                         ?.toList() ?: return@forEach
                     if (positions.isEmpty()) return@forEach

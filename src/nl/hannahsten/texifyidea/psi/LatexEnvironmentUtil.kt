@@ -28,13 +28,15 @@ fun getLabel(element: LatexEnvironment): String? {
         // See if we can find a label command inside the environment
         val children = PsiTreeUtil.findChildrenOfType(content, LatexCommands::class.java)
         if (!children.isEmpty()) {
-            val labelCommands = Magic.Command.getLabelDefinitions(element.project)
+            // We cannot include user defined labeling commands, because to get them we need the index,
+            // but this code is used to create the index (for environments)
+            val labelCommands = Magic.Command.labelDefinitionsWithoutCustomCommands
             val labelCommand = children.firstOrNull { c: LatexCommands -> labelCommands.contains(c.name) } ?: return null
             val requiredParameters = labelCommand.requiredParameters
             if (requiredParameters.isEmpty()) return null
             val info = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.name, null) ?: return null
             if (!info.labelsPreviousCommand) return null
-            val parameterPosition = info.positions.firstOrNull() ?: 1 - 1
+            val parameterPosition = info.positions.firstOrNull() ?: 0
             return if (parameterPosition > requiredParameters.size - 1 || parameterPosition < 0) null else requiredParameters[parameterPosition]
         }
         null

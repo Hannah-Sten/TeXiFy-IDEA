@@ -13,6 +13,8 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.configureByText(LatexFileType, """
             \ref{<warning descr="Unresolved reference 'alsonot'">alsonot</warning>}
             \cite{<warning descr="Unresolved reference 'nope'">nope</warning>}
+            
+            \newcommand*{\citewithauthor}[1]{\citeauthor{#1}~\cite{#1}}
         """.trimIndent())
         myFixture.checkHighlighting()
     }

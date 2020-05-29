@@ -39,7 +39,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         val duplicateLabels = getProblemDescriptors(file.findLabelingCommandsInFileSetAsSequence(), isOntheFly, manager, file) {
             val name = this.name ?: return@getProblemDescriptors null
             val position = CommandManager.labelAliasesInfo.getOrDefault(name, null)?.positions?.firstOrNull() ?: return@getProblemDescriptors null
-            this.requiredParameter(position - 1) ?: return@getProblemDescriptors null
+            this.requiredParameter(position) ?: return@getProblemDescriptors null
         }
 
         val duplicateBibitems = getProblemDescriptors(file.findBibitemCommands(), isOntheFly, manager, file) {

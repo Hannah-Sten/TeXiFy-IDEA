@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
@@ -40,6 +41,18 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
                 \end{figure}
             \end{document}
         """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    fun testMissingSectionLabelWarnings() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\mylabels}[2]{\section{#1}\label{sec:#2}}
+            \newcommand{\mylabel}[1]{\label{sec:#1}}
+
+            \section{some sec}\mylabel{sec:some-sec}
+        """.trimIndent())
+        CommandManager.updateAliases(setOf("\\label"), project)
+
         myFixture.checkHighlighting(false, false, true, false)
     }
 
