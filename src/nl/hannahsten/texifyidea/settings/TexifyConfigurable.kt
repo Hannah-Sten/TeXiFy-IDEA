@@ -48,7 +48,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
-                add(labelDefiningCommands.getTable())
+                // add(labelDefiningCommands.getTable())
             })
         }
     }
