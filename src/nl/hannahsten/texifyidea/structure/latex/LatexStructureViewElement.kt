@@ -166,7 +166,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        val labelingCommands = Magic.Command.getLabelDefinitions()
+        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
         commands.filter { labelingCommands.contains(it.commandToken.text) }
                 .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
                 .forEach {

@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
@@ -34,14 +33,6 @@ object Magic {
      * @author Hannah Schellekens
      */
     object General {
-
-        const val pathPackageRoot = "/nl/hannahsten/texifyidea"
-
-        @JvmField
-        val emptyStringArray = arrayOfNulls<String>(0)
-
-        @JvmField
-        val emptyPsiElementArray = arrayOfNulls<PsiElement>(0)
 
         @JvmField
         val noQuickFix: LocalQuickFix? = null
@@ -305,14 +296,22 @@ object Magic {
         val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeled.keys
 
         /**
-         * All commands that represent a reference to a label.
+         * All commands that represent a reference to a label, excluding user defined commands.
          */
         @JvmField
-        val labelReference = hashSetOf(
+        val labelReferenceWithoutCustomCommands = hashSetOf(
                 "\\ref", "\\eqref", "\\nameref", "\\autoref",
                 "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
                 "\\labelcref", "\\cpageref"
         )
+
+        /**
+         * All commands that represent a reference to a label, including user defined commands.
+         */
+        fun getLabelReferenceCommands(project: Project): Set<String> {
+            CommandManager.updateAliases(labelReferenceWithoutCustomCommands, project)
+            return CommandManager.getAliases(labelReferenceWithoutCustomCommands.first())
+        }
 
         /**
          * All commands that represent a reference to a bibliography entry/item.
@@ -337,7 +336,7 @@ object Magic {
          * All commands that represent some kind of reference (think \ref and \cite).
          */
         @JvmField
-        val reference = labelReference + bibliographyReference
+        val reference = labelReferenceWithoutCustomCommands + bibliographyReference
 
         /**
          * Commands from the import package which require an absolute path as first parameter.
@@ -351,7 +350,7 @@ object Magic {
 
         /**
          * All commands that define labels and that are present by default.
-         * To include user defined commands, use [getLabelDefinitions] (may be significantly slower).
+         * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
          */
         @JvmField
         val labelDefinitionsWithoutCustomCommands = setOf("\\label")
@@ -362,7 +361,7 @@ object Magic {
          *
          * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
          */
-        fun getLabelDefinitions(project: Project): Set<String> {
+        fun getLabelDefinitionCommands(project: Project): Set<String> {
             // Check if updates are needed
             CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
             return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
@@ -371,7 +370,7 @@ object Magic {
         /**
          * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
          */
-        fun getLabelDefinitions() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
+        fun getLabelDefinitionCommands() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
 
         /**
          * All commands that define bibliography items.

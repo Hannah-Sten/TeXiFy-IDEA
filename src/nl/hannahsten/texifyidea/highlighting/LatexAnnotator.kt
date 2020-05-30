@@ -218,11 +218,11 @@ open class LatexAnnotator : Annotator {
 
         // Label references.
         val style = when (command.name) {
-            in Magic.Command.labelReference -> {
+            in Magic.Command.labelReferenceWithoutCustomCommands -> {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
-            in Magic.Command.getLabelDefinitions() -> {
+            in Magic.Command.getLabelDefinitionCommands() -> {
                 LatexSyntaxHighlighter.LABEL_DEFINITION
             }
             // Bibliography references (citations).

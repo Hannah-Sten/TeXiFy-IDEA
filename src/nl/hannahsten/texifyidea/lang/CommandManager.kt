@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.lang
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.settings.LabelingCommandInformation
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.requiredParameter
@@ -114,7 +113,12 @@ object CommandManager : Iterable<String?>, Serializable {
      * It is not so nice to have to maintain this separately, but maintaining
      * parameter position mappings between general alias sets is too much overhead for now.
      */
-    val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> = Magic.Command.labelDefinitionsWithoutCustomCommands.associateWith { LabelingCommandInformation(listOf(0), true) }.toMutableMap()
+    val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> = Magic.Command.labelDefinitionsWithoutCustomCommands.associateWith {
+        LabelingCommandInformation(
+            listOf(0),
+            true
+        )
+    }.toMutableMap()
 
     /**
      * Registers a brand new command to the command manager.
@@ -278,7 +282,9 @@ object CommandManager : Iterable<String?>, Serializable {
                     if (positions.isEmpty()) return@forEach
 
                     // todo For now we assume the command labels previous commands
-                    labelAliasesInfo[definedCommand] = LabelingCommandInformation(positions, true)
+                    //      use increasesCounter
+                    labelAliasesInfo[definedCommand] =
+                        LabelingCommandInformation(positions, true)
                 }
             }
 

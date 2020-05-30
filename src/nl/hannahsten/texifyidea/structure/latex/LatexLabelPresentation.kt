@@ -17,7 +17,7 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val presentableText: String
 
     init {
-        val labelingCommands = Magic.Command.getLabelDefinitions()
+        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
         if (!labelingCommands.contains(labelCommand.commandToken.text)) {
             val token = labelCommand.commandToken.text
             throw IllegalArgumentException("command '$token' is no \\label-command")

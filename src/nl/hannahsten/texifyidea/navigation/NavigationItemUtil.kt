@@ -26,7 +26,7 @@ object NavigationItemUtil {
                 }
                 return GoToSymbolProvider.BaseNavigationItem(psiElement,
                         text,
-                        if (psiElement.name in Magic.Command.getLabelDefinitions(psiElement.project)) {
+                        if (psiElement.name in Magic.Command.getLabelDefinitionCommands(psiElement.project)) {
                             TexifyIcons.DOT_LABEL
                         }
                         else TexifyIcons.DOT_BIB

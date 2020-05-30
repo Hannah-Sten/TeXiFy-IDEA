@@ -158,7 +158,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             // Loop over every file
             for (pair in commandsAndFiles) {
                 // Only look at commands which refer to something
-                val commands = pair.second.filter { Magic.Command.labelReference.contains(it.name) }.reversed()
+                val commands = pair.second.filter { Magic.Command.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
                 val requiredParams = mutableListOf<LatexRequiredParam>()
 
                 // Find all the parameters with the given labelName

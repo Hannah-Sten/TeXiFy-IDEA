@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnresolvedReferenceInspection()) {
 
@@ -24,6 +25,16 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             \label{alabel}
             \ref{alabel}
         """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningCustomCommand() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\mylabel}[1]{\label{#1}}
+            \section{some sec}\mylabel{some-sec}
+            ~\ref{some-sec}
+        """.trimIndent())
+        CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting()
     }
 

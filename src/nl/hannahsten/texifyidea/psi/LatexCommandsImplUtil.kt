@@ -28,7 +28,7 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
     val firstParam = readFirstParam(element)
 
     // If it is a reference to a label
-    if (Magic.Command.reference.contains(element.commandToken.text) && firstParam != null) {
+    if (Magic.Command.getLabelReferenceCommands(element.project).contains(element.commandToken.text) && firstParam != null) {
         val references = extractLabelReferences(element, firstParam)
         return references.toTypedArray()
     }

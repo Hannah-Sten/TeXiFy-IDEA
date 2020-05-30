@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.settings
+package nl.hannahsten.texifyidea.lang
 
 data class LabelingCommandInformation(
         /** Parameter positions which define a label, starting from 0 (note: LaTeX starts from 1).

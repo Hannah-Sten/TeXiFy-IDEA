@@ -16,7 +16,7 @@ class LabelFilter : Filter {
         if (treeElement !is LatexStructureViewCommandElement) {
             return true
         }
-        return !Magic.Command.getLabelDefinitions().contains(treeElement.commandName)
+        return !Magic.Command.getLabelDefinitionCommands().contains(treeElement.commandName)
     }
 
     override fun isReverted(): Boolean {

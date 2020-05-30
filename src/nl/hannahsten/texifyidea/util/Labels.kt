@@ -116,7 +116,7 @@ fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = this.commandsInFile
  * @return A collection of all label commands.
  */
 fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection<LatexCommands> {
-    val commandNames = Magic.Command.getLabelDefinitions(project)
+    val commandNames = Magic.Command.getLabelDefinitionCommands(project)
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 
@@ -126,7 +126,7 @@ fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection
  * @return A sequence of all label commands.
  */
 fun Sequence<PsiElement>.findLatexCommandsLabels(project: Project): Sequence<LatexCommands> {
-    val commandNames = Magic.Command.getLabelDefinitions(project)
+    val commandNames = Magic.Command.getLabelDefinitionCommands(project)
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 

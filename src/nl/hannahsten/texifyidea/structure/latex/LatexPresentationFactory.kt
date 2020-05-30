@@ -13,7 +13,7 @@ object LatexPresentationFactory {
 
     @JvmStatic
     fun getPresentation(commands: LatexCommands): ItemPresentation {
-        val labelingCommands = Magic.Command.getLabelDefinitions(commands.project)
+        val labelingCommands = Magic.Command.getLabelDefinitionCommands(commands.project)
         if (labelingCommands.contains(commands.name)) {
             return LatexLabelPresentation(commands)
         }
