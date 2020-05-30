@@ -9,15 +9,23 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.parentOfTypes
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
 import java.io.File
 import java.util.regex.Pattern
 
@@ -38,8 +46,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         this.parameters = parameters
 
         // We create a result set with the correct autocomplete text as prefix, which may be different when multiple LaTeX parameters (comma separated) are present
-        val autocompleteText = processAutocompleteText(parameters.position.text)
-        resultSet = result.withPrefixMatcher(autocompleteText)
+        val autocompleteText = processAutocompleteText(parameters.position.parentOfTypes(LatexRequiredParam::class)?.text ?: parameters.position.text)
 
         val parentCommand = context.get("type")
         if (parentCommand is RequiredFileArgument) {
@@ -47,8 +54,19 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             absolutePathSupport = parentCommand.isAbsolutePathSupported
         }
 
+        val commandsInText = LatexPsiHelper(parameters.originalFile.project).createFromText(autocompleteText).childrenOfType(LatexCommands::class)
+        var finalCompleteText = autocompleteText
+        for (command in commandsInText) {
+            val commandExpansion = LatexCommandsIndex.getCommandsByNames(parameters.originalFile, *Magic.Command.definitionsAndRedefinitions.toTypedArray())
+                .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
+                ?.getRequiredArgumentValueByName("def")
+            finalCompleteText = finalCompleteText.replace(command.text, commandExpansion ?: command.text)
+        }
+        // Process the expanded text again
+        finalCompleteText = processAutocompleteText(finalCompleteText)
+        resultSet = result.withPrefixMatcher(finalCompleteText)
         selectScanRoots(parameters.originalFile).forEach {
-            addByDirectory(it, autocompleteText)
+            addByDirectory(it, finalCompleteText)
         }
     }
 
@@ -217,10 +235,11 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * prepare auto-complete text before searching for files
      */
     private fun processAutocompleteText(autocompleteText: String): String {
-        var result = if (autocompleteText.endsWith("}")) {
-            autocompleteText.substring(0, autocompleteText.length - 1)
-        }
-        else autocompleteText
+//        var result = if (autocompleteText.endsWith("}")) {
+//            autocompleteText.substring(0, autocompleteText.length - 1)
+//        }
+//        else autocompleteText
+        var result = autocompleteText.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
 
         // When the last parameter is autocompleted, parameters before that may also be present in
         // autocompleteText so we split on commas and take the last one. If it is not the last
