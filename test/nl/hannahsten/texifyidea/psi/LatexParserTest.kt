@@ -9,6 +9,19 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(LatexFileType, """
             \mycommand{[test]}
             \c{[}
+            
+            ${'$'}\test{\cmd{a}[b]}${'$'}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
+    fun testMismatchedMathBrackets() {
+        myFixture.configureByText(LatexFileType, """
+            ${'$'}[0,1)${'$'}
+            \[ ] \]
+            \begin{equation}
+                ]
+            \end{equation}
         """.trimIndent())
         myFixture.checkHighlighting()
     }

@@ -51,8 +51,6 @@ ROBUST_INLINE_MATH_START="\\("
 ROBUST_INLINE_MATH_END="\\)"
 OPEN_BRACKET="["
 CLOSE_BRACKET="]"
-M_OPEN_BRACKET="["
-M_CLOSE_BRACKET="]"
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
 OPEN_PAREN="("
@@ -276,11 +274,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {ROBUST_INLINE_MATH_START}      { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START; }
 }
 
-<INLINE_MATH,INLINE_MATH_LATEX> {
-    {M_OPEN_BRACKET}    { return M_OPEN_BRACKET; }
-    {M_CLOSE_BRACKET}   { return M_CLOSE_BRACKET; }
-}
-
 <NESTED_INLINE_MATH> {
     "$"                 { yypopState(); return INLINE_MATH_END; }
 }
@@ -308,8 +301,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 }
 
 <DISPLAY_MATH> {
-    {M_OPEN_BRACKET}    { return M_OPEN_BRACKET; }
-    {M_CLOSE_BRACKET}   { return M_CLOSE_BRACKET; }
     "\\]"               { yypopState(); return DISPLAY_MATH_END; }
 }
 
