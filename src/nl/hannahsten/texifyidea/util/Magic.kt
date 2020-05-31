@@ -373,10 +373,10 @@ object Magic {
          * All commands that define regular commands, and that require that the command is not already defined.
          */
         val regularStrictCommandDefinitions = hashSetOf(
-                "\\" + LatexRegularCommand.NEWCOMMAND.command, // todo the rest
-                "\\newcommand*",
-                "\\newif",
-                "\\NewDocumentCommand"
+                "\\" + LatexRegularCommand.NEWCOMMAND.command,
+                "\\" + LatexRegularCommand.NEWCOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.NEWIF.command,
+                "\\" + LatexRegularCommand.NEWDOCUMENTCOMMAND.command
         )
 
         /**
@@ -384,15 +384,15 @@ object Magic {
          */
         @JvmField
         val redefinitions = hashSetOf(
-                "\\renewcommand",
-                "\\renewcommand*",
-                "\\providecommand", // Does nothing if command exists
-                "\\providecommand*",
-                "\\ProvideDocumentCommand", // Does nothing if command exists
-                "\\DeclareDocumentCommand",
-                "\\def",
-                "\\let",
-                "\\renewenvironment"
+                "\\" + LatexRegularCommand.RENEWCOMMAND.command,
+                "\\" + LatexRegularCommand.RENEWCOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.PROVIDECOMMAND.command, // Does nothing if command exists
+                "\\" + LatexRegularCommand.PROVIDECOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.PROVIDEDOCUMENTCOMMAND.command, // Does nothing if command exists
+                "\\" + LatexRegularCommand.DECLAREDOCUMENTCOMMAND.command,
+                "\\" + LatexRegularCommand.DEF.command,
+                "\\" + LatexRegularCommand.LET.command,
+                "\\" + LatexRegularCommand.RENEWENVIRONMENT.command
         )
 
         /**
@@ -406,10 +406,10 @@ object Magic {
          */
         @JvmField
         val mathCommandDefinitions = hashSetOf(
-                "\\DeclareMathOperator",
-                "\\DeclarePairedDelimiter",
-                "\\DeclarePairedDelimiterX",
-                "\\DeclarePairedDelimiterXPP"
+                "\\" + LatexRegularCommand.DECLARE_MATH_OPERATOR.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_X.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_XPP.command
         )
 
         /**
