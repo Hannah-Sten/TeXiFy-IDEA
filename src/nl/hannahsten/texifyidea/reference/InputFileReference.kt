@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
+import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
@@ -21,8 +22,6 @@ import nl.hannahsten.texifyidea.util.files.*
  * Reference to a file, based on the command and the range of the filename within the command text.
  *
  * @param defaultExtension Default extension of the command in which this reference is.
- *
- * @author Abby Berkers
  */
 class InputFileReference(element: LatexCommands, val range: TextRange, val extensions: Set<String>, val defaultExtension: String) : PsiReferenceBase<LatexCommands>(element) {
     init {
@@ -42,7 +41,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
      * Set to false when it would make the operation too expensive, for example when trying to calculate the fileset of many files.
      */
     fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null): PsiFile? {
-
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
@@ -53,7 +51,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
         val rootDirectory = rootFile.parent ?: return null
 
-        var targetFile = searchFileByImportPaths(element)?.virtualFile
+        var targetFile: VirtualFile? = null
 
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
@@ -91,6 +89,8 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
         // Try search paths
         if (targetFile == null) {
+            // Add the graphics paths to the search paths
+            searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
                 targetFile = rootDirectory.findFile(path + key, extensions)
@@ -98,7 +98,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             }
         }
 
-        // Look for packages elsewhere using the kpsewhich command.
         @Suppress("RemoveExplicitTypeArguments")
         if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
             targetFile = element.getFileNameWithExtensions(key)
@@ -107,6 +106,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
                     ?.firstOrNull { it != null }
         }
 
+        if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
         if (targetFile == null) return null
 
         // Return a reference to the target file.

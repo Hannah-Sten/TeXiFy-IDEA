@@ -69,7 +69,7 @@ private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiF
  * @return A map that maps each file to a set of all files that get included by said file. E.g.
  * when `A`↦{`B`,`C`}. Then the files `B` and `C` get included by `A`.
  */
-private fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
+fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
     val allIncludeCommands = LatexIncludesIndex.getItems(this)
 
     // Maps every file to all the files it includes.
