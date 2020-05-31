@@ -370,23 +370,35 @@ object Magic {
         )
 
         /**
-         * All commands that define regular commands.
+         * All commands that define regular commands, and that require that the command is not already defined.
+         */
+        val regularStrictCommandDefinitions = hashSetOf(
+                "\\" + LatexRegularCommand.NEWCOMMAND.command, // todo the rest
+                "\\newcommand*",
+                "\\newif",
+                "\\NewDocumentCommand"
+        )
+
+        /**
+         * All commands that define or redefine other commands, whether it exists or not.
          */
         @JvmField
-        val regularCommandDefinitions = hashSetOf(
-                "\\newcommand",
-                "\\newcommand*",
+        val redefinitions = hashSetOf(
                 "\\renewcommand",
                 "\\renewcommand*",
-                "\\providecommand",
+                "\\providecommand", // Does nothing if command exists
                 "\\providecommand*",
-                "\\let",
+                "\\ProvideDocumentCommand", // Does nothing if command exists
+                "\\DeclareDocumentCommand",
                 "\\def",
-                "\\newif",
-                "\\NewDocumentCommand",
-                "\\ProvideDocumentCommand",
-                "\\DeclareDocumentCommand"
+                "\\let",
+                "\\renewenvironment"
         )
+
+        /**
+         * All commands that define or redefine regular commands.
+         */
+        val regularCommandDefinitions = regularStrictCommandDefinitions + redefinitions
 
         /**
          * All commands that define commands that should be used exclusively
@@ -435,15 +447,6 @@ object Magic {
          */
         @JvmField
         val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
-
-        /**
-         * All commands that are able to redefine other commands.
-         */
-        @JvmField
-        val redefinitions = hashSetOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
-
-        @JvmField
-        val definitionsAndRedefinitions = definitions + redefinitions
 
         /**
          * Commands for which TeXiFy-IDEA has custom behaviour.
