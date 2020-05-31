@@ -24,7 +24,7 @@ class LatexPartPresentation(partCommand: LatexCommands) : EditableHintPresentati
 
     override fun getLocationString() = hint
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_PART!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_PART
 
     override fun setHint(hint: String) {
         this.hint = hint

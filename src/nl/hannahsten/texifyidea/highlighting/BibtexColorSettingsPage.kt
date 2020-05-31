@@ -32,7 +32,7 @@ open class BibtexColorSettingsPage : ColorSettingsPage {
         )
     }
 
-    override fun getIcon() = TexifyIcons.BIBLIOGRAPHY_FILE!!
+    override fun getIcon() = TexifyIcons.BIBLIOGRAPHY_FILE
 
     override fun getHighlighter() = BibtexSyntaxHighlighter()
 

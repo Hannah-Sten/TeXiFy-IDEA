@@ -16,5 +16,5 @@ open class LatexFilePresentation(private val file: PsiFile) : ItemPresentation {
 
     override fun getLocationString() = file.virtualFile.path
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_LATEX!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_LATEX
 }

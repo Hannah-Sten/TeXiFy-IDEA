@@ -36,5 +36,5 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
 
     override fun getLocationString() = locationString
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_LABEL!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_LABEL
 }

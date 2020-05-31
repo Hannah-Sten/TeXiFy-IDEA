@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
-import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -183,7 +182,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         resultSet?.addElement(
                 LookupElementBuilder.create(baseDir + foundFile.name)
                         .withPresentableText(foundFile.presentableName)
-                        .withInsertHandler(CompositeHandler<LookupElement>(
+                        .withInsertHandler(CompositeHandler(
                                 LatexReferenceInsertHandler(),
                                 FileNameInsertionHandler()
                         ))

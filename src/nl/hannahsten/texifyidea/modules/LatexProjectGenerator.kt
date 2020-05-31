@@ -40,7 +40,7 @@ class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
 
     override fun getDescription() = "LaTeX"
 
-    override fun getLogo() = TexifyIcons.LATEX_MODULE!!
+    override fun getLogo() = TexifyIcons.LATEX_MODULE
 
     override fun createPeer(): ProjectGeneratorPeer<TexifySettings> = LatexProjectGeneratorPeer().also { peer = it }
 

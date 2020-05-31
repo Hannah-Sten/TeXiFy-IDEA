@@ -9,5 +9,5 @@ import nl.hannahsten.texifyidea.structure.latex.LatexFilePresentation
  */
 open class BibtexFilePresentation(val file: PsiFile) : LatexFilePresentation(file) {
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_BIB!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_BIB
 }

@@ -23,6 +23,15 @@ enum class DefaultMagicKeys(
             MagicCommentScope.FILE.singleScope()
     ),
 
+    PROGRAM("program",
+            "Program", """
+        The name of the typesetting engine to use for the current file.
+        The following programs are supported:
+        ${LatexCompiler.values().joinToString(", ") { it.executableName }}
+    """.trimIndent().trim(),
+            MagicCommentScope.FILE.singleScope()
+    ),
+
     BIBTEXCOMPILER("bibtex compiler",
             "BibTeX Compiler", """
         The name of the typesetting engine to use for the current file.
