@@ -8,6 +8,9 @@ class LatexDuplicateDefinitionInspectionTest : TexifyInspectionTestBase(LatexDup
         myFixture.configureByText(LatexFileType, """
             <error descr="Command '\cmdtwo' is defined multiple times">\newcommand{\cmdtwo}{a}</error>
             <error descr="Command '\cmdtwo' is defined multiple times">\newcommand{\cmdtwo}{a}</error>
+            
+            \providecommand{\test}{}
+            <error descr="Command '\test' is defined multiple times">\newcommand{\test}{}</error>
         """.trimIndent())
         myFixture.checkHighlighting()
     }

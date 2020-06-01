@@ -28,7 +28,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
 
         // Find all defined commands.
         val defined = HashMultiset.create<String>()
-        val definitions = file.definitionsInFileSet().filter { it.name in Magic.Command.regularStrictCommandDefinitions }
+        val definitions = file.definitionsInFileSet().filter { it.name in Magic.Command.regularCommandDefinitions }
         for (command in definitions) {
             val name = command.definedCommandName() ?: continue
             defined.add(name)
