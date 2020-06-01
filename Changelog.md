@@ -1,3 +1,12 @@
+# ?
+
+# Additions
+
+# Changes
+
+# Bug fixes
+* Other small improvements and bug fixes (#1436, #1448)
+
 # Beta 0.6.10
 
 # Additions
