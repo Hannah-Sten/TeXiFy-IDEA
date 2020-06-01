@@ -267,10 +267,10 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * link:Writing-style-recommendations#Figure-not-referenced[Figure not referenced]
 
 ==== Duplicates
-* Command is already defined
-* Duplicate labels
-* Package has been imported multiple times
-* Duplicate command definitions
+* link:Duplicates[Command is already defined]
+* link:Duplicates[Duplicate labels]
+* link:Duplicates[Package has been imported multiple times]
+* link:Duplicates[Duplicate command definitions]
 
 ==== Probable bugs
 * link:Probable-bugs#Unsupported-Unicode-character[Unsupported Unicode character]
