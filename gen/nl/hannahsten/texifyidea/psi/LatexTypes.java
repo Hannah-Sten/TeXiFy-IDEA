@@ -50,8 +50,6 @@ public interface LatexTypes {
   IElementType INLINE_MATH_END = new LatexTokenType("INLINE_MATH_END");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
   IElementType MIDDLE_PSEUDOCODE_BLOCK = new LatexTokenType("MIDDLE_PSEUDOCODE_BLOCK");
-  IElementType M_CLOSE_BRACKET = new LatexTokenType("M_CLOSE_BRACKET");
-  IElementType M_OPEN_BRACKET = new LatexTokenType("M_OPEN_BRACKET");
   IElementType NORMAL_TEXT_CHAR = new LatexTokenType("NORMAL_TEXT_CHAR");
   IElementType NORMAL_TEXT_WORD = new LatexTokenType("NORMAL_TEXT_WORD");
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
