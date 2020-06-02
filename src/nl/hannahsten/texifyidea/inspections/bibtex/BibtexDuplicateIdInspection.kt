@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
 import nl.hannahsten.texifyidea.util.findLatexCommandsLabels
@@ -32,7 +31,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
 
         // Contains all the \bibitem commands in the file set.
         val bibitems = file.commandsInFileSet().asSequence().findLatexCommandsLabels(file.project)
-                .filter { it is LatexCommands && it.name == "\\bibitem" }
+                .filter { it.name == "\\bibitem" }
                 .mapNotNull { it.requiredParameter(0) }
                 .toSet()
 

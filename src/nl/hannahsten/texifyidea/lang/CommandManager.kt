@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.requiredParameter
@@ -230,8 +231,10 @@ object CommandManager : Iterable<String?>, Serializable {
         // Register if needed
         if (aliasSet.isEmpty()) return
         val firstAlias = aliasSet.first()
+        var wasRegistered = false
         if (!isRegistered(firstAlias)) {
             registerCommand(firstAlias)
+            wasRegistered = true
             aliasSet.forEach { registerAlias(firstAlias, it) }
         }
 
@@ -242,53 +245,76 @@ object CommandManager : Iterable<String?>, Serializable {
             project,
             GlobalSearchScope.projectScope(project)
         )
-        if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size) {
-            val aliases = getAliases(firstAlias)
 
-            // Get definitions which define one of the commands in the given command names set
-            // These will be aliases of the given set (which is assumed to be an alias set itself)
-            indexedCommandDefinitions.filter {
-                // Assume the parameter definition has the command being defined in the first required parameter,
-                // and the command definition itself in the second
-                it.requiredParameter(1)?.containsAny(aliases) == true
-            }
-                .mapNotNull { it.requiredParameter(0) }
-                .forEach { registerAlias(firstAlias, it) }
-
-            // Extract label parameter positions
-            // Assumes the predefined label definitions all have the label parameter in the same position
-            // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
-            if (aliases.intersect(Magic.Command.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
-                indexedCommandDefinitions.forEach { commandDefinition ->
-                    val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
-                    if (definedCommand.isBlank()) return@forEach
-
-                    val positions = commandDefinition.requiredParameters().getOrNull(1)
-                        ?.requiredParamContentList
-                        ?.asSequence()
-                        ?.filter { it.commands?.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
-                        ?.mapNotNull { it.commands?.requiredParameter(0) }
-                        ?.mapNotNull {
-                            if (it.indexOf('#') != -1) {
-                                it.getOrNull(it.indexOf('#') + 1)
-                            }
-                            else null
-                        }
-                        ?.map(Character::getNumericValue)
-                        // LaTeX starts from 1, we from 0 (consistent with how we count required parameters)
-                        ?.map { it - 1 }
-                        ?.filter { it >= 0 }
-                        ?.toList() ?: return@forEach
-                    if (positions.isEmpty()) return@forEach
-
-                    // todo For now we assume the command labels previous commands
-                    //      use increasesCounter
-                    labelAliasesInfo[definedCommand] =
-                        LabelingCommandInformation(positions, true)
-                }
+        // Also do this the first time something is registered, because then we have to update aliases as well
+        if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size || wasRegistered) {
+            // Update everything, since it is difficult to know beforehand what aliases could be added or not
+            // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
+            // requested alias set (otherwise only the first alias set requesting an update will get it)
+            // We have to deepcopy the set of alias sets before iterating over it, because we want to modify aliases
+            val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
+            for (copiedAliasSet in deepCopy) {
+                findAllAliases(copiedAliasSet, indexedCommandDefinitions)
             }
 
             numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
+        }
+    }
+
+    private fun findAllAliases(
+        aliasSet: Set<String>,
+        indexedCommandDefinitions: Collection<LatexCommands>
+    ) {
+        val firstAlias = aliasSet.first()
+
+        // Get definitions which define one of the commands in the given command names set
+        // These will be aliases of the given set (which is assumed to be an alias set itself)
+        indexedCommandDefinitions.filter {
+            // Assume the parameter definition has the command being defined in the first required parameter,
+            // and the command definition itself in the second
+            it.requiredParameter(1)?.containsAny(aliasSet) == true
+        }
+            .mapNotNull { it.requiredParameter(0) }
+            .forEach { registerAlias(firstAlias, it) }
+
+        // Extract label parameter positions
+        // Assumes the predefined label definitions all have the label parameter in the same position
+        // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
+        if (aliasSet.intersect(Magic.Command.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
+            indexedCommandDefinitions.forEach { commandDefinition ->
+                val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
+                if (definedCommand.isBlank()) return@forEach
+
+                val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
+                    ?.requiredParamContentList
+                    ?.asSequence()
+                    ?.mapNotNull { it.commands }
+
+                val positions = parameterCommands
+                    ?.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
+                    ?.mapNotNull { it.requiredParameter(0) }
+                    ?.mapNotNull {
+                        if (it.indexOf('#') != -1) {
+                            it.getOrNull(it.indexOf('#') + 1)
+                        }
+                        else null
+                    }
+                    ?.map(Character::getNumericValue)
+                    // LaTeX starts from 1, we from 0 (consistent with how we count required parameters)
+                    ?.map { it - 1 }
+                    ?.filter { it >= 0 }
+                    ?.toList() ?: return@forEach
+                if (positions.isEmpty()) return@forEach
+
+                // Check if there is a command which increases a counter before the \label
+                // If so, the \label just labels the counter increasing command, and not whatever will appear before usages of the custom labeling command
+                val definitionContainsIncreaseCounterCommand =
+                    parameterCommands.takeWhile { it.name !in Magic.Command.labelDefinitionsWithoutCustomCommands }
+                        .any { it.name in Magic.Command.increasesCounter }
+
+                labelAliasesInfo[definedCommand] =
+                    LabelingCommandInformation(positions, !definitionContainsIncreaseCounterCommand)
+            }
         }
     }
 
