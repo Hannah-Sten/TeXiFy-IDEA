@@ -5,7 +5,8 @@ import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexCommand
@@ -190,12 +191,7 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
  * Checks if the command is followed by a label.
  */
 fun hasLabel(element: LatexCommands): Boolean {
-    val grandparent = element.parent.parent
-    val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return false
-    val children = PsiTreeUtil.findChildrenOfType(sibling, LatexCommands::class.java)
-    if (children.isEmpty()) {
-        return false
-    }
-    val labelMaybe = children.iterator().next()
+    // Next leaf is a command token, parent is LatexCommands
+    val labelMaybe = element.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }

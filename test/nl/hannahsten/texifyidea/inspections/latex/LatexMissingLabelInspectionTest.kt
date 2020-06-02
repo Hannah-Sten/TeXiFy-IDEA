@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
-class LabelMissingInspectionTest : BasePlatformTestCase() {
+class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missinglabel"
     }
