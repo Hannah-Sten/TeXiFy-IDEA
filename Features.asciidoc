@@ -58,6 +58,7 @@ toc::[]
 * link:Math-environment-switcher[Easy switching to other math environments]
 * link:Graphicspath-support[Support for `\graphicspath` from the graphicx package.]
 * link:Magic-comments[Magic comments]
+* link:Custom-commands[Support for `\newcommand`-like custom definitions of cite and label commands]
 
 == Reading
 * Customizable syntax highlighting
