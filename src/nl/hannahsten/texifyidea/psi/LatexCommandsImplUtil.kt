@@ -135,7 +135,8 @@ fun stripGroup(text: String): String {
 }
 
 /**
- * Generates a map of parameter names and values for all optional parameters
+ * Generates a map of parameter names and values (assuming they are in the form name=value) for all optional parameters.
+ * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
 fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
@@ -153,7 +154,7 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
                 if (content.group == null) return@mapNotNull null
                 content.group!!.contentList.joinToString { it.text }
             }
-            .joinToString(separator = "")
+            .joinToString(separator = ",")
 
     if (parameterString.trim { it <= ' ' }.isNotEmpty()) {
         for (parameter in parameterString.split(",")) {
