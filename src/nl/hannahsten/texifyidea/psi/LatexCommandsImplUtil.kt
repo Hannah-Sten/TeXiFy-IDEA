@@ -135,18 +135,21 @@ fun stripGroup(text: String): String {
 }
 
 /**
- * Generates a map of parameter names and values (assuming they are in the form name=value) for all optional parameters.
+ * Generates a map of parameter names and values (assuming they are in the form []name=]value) for all optional parameters, comma-separated and separate optional parameters are treated equally.
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
 fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
     val parameterMap = LinkedHashMap<String, String>()
+    // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
+    // But within a parameter, there can be different content like [name={value in group}]
     val parameterString = parameters.mapNotNull { it.optionalParam }
-            // extract the content of each parameter element
-            .flatMap { param ->
-                param.optionalParamContentList
-            }
-            .mapNotNull { content: LatexOptionalParamContent ->
+        // extract the content of each parameter element
+        .map { param ->
+            param.optionalParamContentList
+        }
+        .map { contentList ->
+            contentList.mapNotNull { content: LatexOptionalParamContent ->
                 // the content is either simple text
                 val text = content.parameterText
                 if (text != null) return@mapNotNull text.text
@@ -154,7 +157,11 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
                 if (content.group == null) return@mapNotNull null
                 content.group!!.contentList.joinToString { it.text }
             }
-            .joinToString(separator = ",")
+            // Join different content types (like name= and {value}) together without separator
+            .joinToString("")
+        }
+        // Join different parameters (like [param1][param2]) together with separator
+        .joinToString(",")
 
     if (parameterString.trim { it <= ' ' }.isNotEmpty()) {
         for (parameter in parameterString.split(",")) {
