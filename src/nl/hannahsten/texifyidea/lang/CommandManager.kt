@@ -181,8 +181,8 @@ object CommandManager : Iterable<String?>, Serializable {
 
         // If the alias is already assigned: unassign it.
         if (isRegistered(alias)) {
-            val previousAliases = aliases[alias]!!
-            previousAliases.remove(alias)
+            val previousAliases = aliases[alias]
+            previousAliases?.remove(alias)
             aliases.remove(alias)
         }
         aliasSet.add(alias)
