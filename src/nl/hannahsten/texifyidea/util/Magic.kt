@@ -389,23 +389,35 @@ object Magic {
         )
 
         /**
-         * All commands that define regular commands.
+         * All commands that define regular commands, and that require that the command is not already defined.
+         */
+        val regularStrictCommandDefinitions = hashSetOf(
+                "\\" + LatexRegularCommand.NEWCOMMAND.command,
+                "\\" + LatexRegularCommand.NEWCOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.NEWIF.command,
+                "\\" + LatexRegularCommand.NEWDOCUMENTCOMMAND.command
+        )
+
+        /**
+         * All commands that define or redefine other commands, whether it exists or not.
          */
         @JvmField
-        val regularCommandDefinitions = hashSetOf(
-                "\\newcommand",
-                "\\newcommand*",
-                "\\renewcommand",
-                "\\renewcommand*",
-                "\\providecommand",
-                "\\providecommand*",
-                "\\let",
-                "\\def",
-                "\\newif",
-                "\\NewDocumentCommand",
-                "\\ProvideDocumentCommand",
-                "\\DeclareDocumentCommand"
+        val redefinitions = hashSetOf(
+                "\\" + LatexRegularCommand.RENEWCOMMAND.command,
+                "\\" + LatexRegularCommand.RENEWCOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.PROVIDECOMMAND.command, // Does nothing if command exists
+                "\\" + LatexRegularCommand.PROVIDECOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.PROVIDEDOCUMENTCOMMAND.command, // Does nothing if command exists
+                "\\" + LatexRegularCommand.DECLAREDOCUMENTCOMMAND.command,
+                "\\" + LatexRegularCommand.DEF.command,
+                "\\" + LatexRegularCommand.LET.command,
+                "\\" + LatexRegularCommand.RENEWENVIRONMENT.command
         )
+
+        /**
+         * All commands that define or redefine regular commands.
+         */
+        val regularCommandDefinitions = regularStrictCommandDefinitions + redefinitions
 
         /**
          * All commands that define commands that should be used exclusively
@@ -413,10 +425,10 @@ object Magic {
          */
         @JvmField
         val mathCommandDefinitions = hashSetOf(
-                "\\DeclareMathOperator",
-                "\\DeclarePairedDelimiter",
-                "\\DeclarePairedDelimiterX",
-                "\\DeclarePairedDelimiterXPP"
+                "\\" + LatexRegularCommand.DECLARE_MATH_OPERATOR.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_X.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_XPP.command
         )
 
         /**
@@ -456,15 +468,6 @@ object Magic {
         val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
         /**
-         * All commands that are able to redefine other commands.
-         */
-        @JvmField
-        val redefinitions = hashSetOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
-
-        @JvmField
-        val definitionsAndRedefinitions = definitions + redefinitions
-
-        /**
          * Commands for which TeXiFy-IDEA has custom behaviour.
          */
         @JvmField
@@ -489,6 +492,7 @@ object Magic {
         @JvmField
         val illegalExtensions = mapOf(
                 "\\include" to listOf(".tex"),
+                "\\subfileinclude" to listOf(".tex"),
                 "\\bibliography" to listOf(".bib")
         )
 
@@ -508,6 +512,7 @@ object Magic {
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
                 "\\subfile" to hashSetOf("tex"),
+                "\\subfileinclude" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),

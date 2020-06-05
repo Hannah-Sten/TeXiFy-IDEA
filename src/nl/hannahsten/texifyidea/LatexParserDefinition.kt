@@ -22,44 +22,26 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
  * @author Sten Wessel
  */
 class LatexParserDefinition : ParserDefinition {
-    override fun createLexer(project: Project): Lexer {
-        return LatexLexerAdapter()
-    }
+    override fun createLexer(project: Project): Lexer = LatexLexerAdapter()
 
-    override fun createParser(project: Project): PsiParser {
-        return LatexParser()
-    }
+    override fun createParser(project: Project): PsiParser = LatexParser()
 
-    override fun getFileNodeType(): IStubFileElementType<*> {
-        return FILE
-    }
+    override fun getFileNodeType(): IStubFileElementType<*> = FILE
 
-    override fun getWhitespaceTokens(): TokenSet {
-        return WHITE_SPACES
-    }
+    override fun getWhitespaceTokens(): TokenSet = WHITE_SPACES
 
-    override fun getCommentTokens(): TokenSet {
-        return COMMENTS
-    }
+    override fun getCommentTokens(): TokenSet = COMMENTS
 
-    override fun getStringLiteralElements(): TokenSet {
-        return NORMAL_TEXT
-    }
+    override fun getStringLiteralElements(): TokenSet = NORMAL_TEXT
 
-    override fun createElement(node: ASTNode): PsiElement {
-        return LatexTypes.Factory.createElement(node)
-    }
+    override fun createElement(node: ASTNode): PsiElement = LatexTypes.Factory.createElement(node)
 
-    override fun createFile(viewProvider: FileViewProvider): PsiFile {
-        return LatexFile(viewProvider)
-    }
+    override fun createFile(viewProvider: FileViewProvider): PsiFile = LatexFile(viewProvider)
 
     override fun spaceExistenceTypeBetweenTokens(
         left: ASTNode,
         right: ASTNode
-    ): SpaceRequirements {
-        return SpaceRequirements.MAY
-    }
+    ): SpaceRequirements = SpaceRequirements.MAY
 
     companion object {
         val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
@@ -68,9 +50,7 @@ class LatexParserDefinition : ParserDefinition {
         val FILE: IStubFileElementType<*> = object : IStubFileElementType<LatexFileStub>(
             Language.findInstance(LatexLanguage::class.java)
         ) {
-            override fun getStubVersion(): Int {
-                return 6
-            }
+            override fun getStubVersion(): Int = 7
         }
     }
 
