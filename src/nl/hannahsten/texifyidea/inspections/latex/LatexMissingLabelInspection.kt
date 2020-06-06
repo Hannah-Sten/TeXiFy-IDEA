@@ -101,7 +101,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     abstract class LabelQuickFix : LocalQuickFix {
         protected fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
             val labelBase = "$prefix:$base"
-            val allLabels = file.findLatexAndBibtexLabelsInFileSet()
+            val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
             return appendCounter(labelBase, allLabels)
         }
 

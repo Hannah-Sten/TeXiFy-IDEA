@@ -205,3 +205,6 @@ fun String.runCommand(): String? {
         null
     }
 }
+
+/** If this contains any of the given set. */
+fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }

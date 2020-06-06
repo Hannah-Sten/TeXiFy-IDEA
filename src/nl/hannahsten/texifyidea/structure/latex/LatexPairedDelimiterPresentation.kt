@@ -29,5 +29,5 @@ class LatexPairedDelimiterPresentation(newCommand: LatexCommands) : ItemPresenta
 
     override fun getLocationString() = locationString
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_COMMAND!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_COMMAND
 }

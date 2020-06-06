@@ -36,5 +36,5 @@ class BibitemPresentation(labelCommand: LatexCommands) : ItemPresentation {
 
     override fun getLocationString() = locationString
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_BIB!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_BIB
 }

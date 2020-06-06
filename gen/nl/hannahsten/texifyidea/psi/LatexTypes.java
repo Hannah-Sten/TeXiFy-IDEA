@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.impl.*;
 public interface LatexTypes {
 
   IElementType BEGIN_COMMAND = new LatexElementType("BEGIN_COMMAND");
-  IElementType COMMANDS = new LatexCommandsStubElementType("COMMANDS");
+  IElementType COMMANDS = new LatexCommandsStubElementType("latex-commands");
   IElementType COMMENT = new LatexElementType("COMMENT");
   IElementType CONTENT = new LatexElementType("CONTENT");
   IElementType DISPLAY_MATH = new LatexElementType("DISPLAY_MATH");

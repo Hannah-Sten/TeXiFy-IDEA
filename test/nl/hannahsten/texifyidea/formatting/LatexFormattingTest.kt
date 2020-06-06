@@ -19,7 +19,7 @@ class LatexFormattingTest : BasePlatformTestCase() {
                 \alpha
             \]
         """.trimIndent() `should be reformatted to` """
-            Text hallo i.e.
+            Text hallo i.e.\
             \[
                 \alpha
             \]

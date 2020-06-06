@@ -314,9 +314,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 .\<\{                   { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 .>\{                    { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 
-// In case a line ends with a backslash, then we do not want to lex the following newline as a command token,
+// In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line
-\\\n                    { return com.intellij.psi.TokenType.WHITE_SPACE; }
+\\                    { return NORMAL_TEXT_CHAR; }
 
 "*"                     { return STAR; }
 // A separate token, used for example for aligning & in tables

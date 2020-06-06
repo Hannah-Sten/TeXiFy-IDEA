@@ -15,15 +15,15 @@ import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.ArrayDeque
+import java.util.Arrays
+import java.util.Deque
 
 /**
  * @author Hannah Schellekens
@@ -166,8 +166,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        val labelingCommands = TexifySettings.getInstance().labelCommands
-        commands.filter { labelingCommands.containsKey(it.commandToken.text) }
+        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
+        commands.filter { labelingCommands.contains(it.commandToken.text) }
                 .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
                 .forEach {
                     treeElements.add(it)

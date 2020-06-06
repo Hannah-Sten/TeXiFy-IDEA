@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnresolvedReferenceInspection()) {
 
@@ -13,6 +14,8 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.configureByText(LatexFileType, """
             \ref{<warning descr="Unresolved reference 'alsonot'">alsonot</warning>}
             \cite{<warning descr="Unresolved reference 'nope'">nope</warning>}
+            
+            \newcommand*{\citewithauthor}[1]{\citeauthor{#1}~\cite{#1}}
         """.trimIndent())
         myFixture.checkHighlighting()
     }
@@ -25,6 +28,17 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarningCustomCommand() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\mylabel}[1]{\label{#1}}
+            \section{some sec}\mylabel{some-sec}
+            ~\ref{some-sec}
+        """.trimIndent())
+        CommandManager.updateAliases(setOf("\\label"), project)
+        myFixture.checkHighlighting()
+    }
+
+    // Test randomly fails
     // fun testBibtexReference() {
     //     myFixture.configureByFile("references.bib")
     //     // Force indexing

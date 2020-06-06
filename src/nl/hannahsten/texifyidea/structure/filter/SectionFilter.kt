@@ -34,6 +34,6 @@ class SectionFilter : Filter {
 
         override fun getDescription() = "Show Sectioning"
 
-        override fun getIcon() = TexifyIcons.DOT_SECTION!!
+        override fun getIcon() = TexifyIcons.DOT_SECTION
     }
 }

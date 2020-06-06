@@ -261,6 +261,7 @@ enum class LatexRegularCommand(
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
     SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
+    SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
     SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBITEM("subitem"),
@@ -360,6 +361,7 @@ enum class LatexRegularCommand(
      */
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWCOMMAND_STAR("newcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
+    NEWIF("newif", "cmd".asRequired()),
     PROVIDECOMMAND("providecommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     PROVIDECOMMAND_STAR("providecommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     RENEWCOMMAND("renewcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),

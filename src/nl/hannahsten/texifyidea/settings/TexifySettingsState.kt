@@ -11,7 +11,5 @@ data class TexifySettingsState(
         var continuousPreview: Boolean = false,
         var includeBackslashInSelection: Boolean = false,
         var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
-        var pdfViewer: PdfViewer = PdfViewer.firstAvailable(),
-        var labelCommands: Map<String, String> =
-                hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true).toSerializableString())
+        var pdfViewer: PdfViewer = PdfViewer.firstAvailable()
 )

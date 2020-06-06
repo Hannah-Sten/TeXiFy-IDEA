@@ -20,7 +20,7 @@ class LatexRunConfigurationType : ConfigurationType {
 
     override fun getConfigurationTypeDescription() = "Build a LaTeX file"
 
-    override fun getIcon() = TexifyIcons.BUILD!!
+    override fun getIcon() = TexifyIcons.BUILD
 
     override fun getId() = "LATEX_RUN_CONFIGURATION"
 

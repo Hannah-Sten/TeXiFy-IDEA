@@ -15,5 +15,5 @@ object LatexFileType : LanguageFileType(LatexLanguage.INSTANCE) {
 
     override fun getDefaultExtension() = "tex"
 
-    override fun getIcon() = TexifyIcons.LATEX_FILE!!
+    override fun getIcon() = TexifyIcons.LATEX_FILE
 }
