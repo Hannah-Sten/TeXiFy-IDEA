@@ -4,8 +4,8 @@ package nl.hannahsten.texifyidea.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiLanguageInjectionHost;
 
 public class LatexVisitor extends PsiElementVisitor {
 
