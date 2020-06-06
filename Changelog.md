@@ -1,6 +1,7 @@
 # ?
 
 # Additions
+* Add support for custom labeling and referencing commands. (#1442)
 
 # Changes
 
