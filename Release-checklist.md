@@ -1,17 +1,19 @@
-- [ ] Run 'Usage of IntelliJ API not avaiable in older IDEs' inspection (ctrl+alt+shift+i)
+- [ ] Run 'Usage of IntelliJ API not available in older IDEs' inspection (ctrl+alt+shift+i)
 - [ ] Increase stub version in LatexParserDefinition
 - [ ] Document compiles and pdf viewer is opened
 - [ ] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
 - [ ] Forward/backward search
 - [ ] Autocomplete (bibtex, latex)
 - [ ] Does it work in PyCharm?
+- [ ] Run Gradle 'check' task
 - [ ] Run ctan.py
 
 - [ ] Copy changelog to plugin.xml
-- [ ] Update version in plugin.xml
+- [ ] runIDE and check the changelog is formatted correctly
+- [ ] Update version in plugin.xml and build.gradle
 - [ ] Update feature list in readme if needed
-- [ ] Release on GitHub
-- [ ] Release on plugin repo: in build.gradle change version number and `channels 'alpha'` to `channels 'stable'` temporarily
+- [ ] buildPlugin and release on GitHub (on the right branch), using the markdown changelog (then remove it from Changelog.md)
+- [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
 
 Regexes to replace markdown by html:
 
