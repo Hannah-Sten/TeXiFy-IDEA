@@ -70,10 +70,10 @@ class ReferencedFileSetCache {
                     }
                 }
             }
-            fileSetCache[file.virtualFile] ?: emptySet()
+            fileSetCache[file.virtualFile] ?: setOf(file)
         }
         else {
-            emptySet()
+            setOf(file)
         }
     }
 
