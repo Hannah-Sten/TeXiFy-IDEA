@@ -70,7 +70,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
         )
     }
 
-    override fun getIcon() = TexifyIcons.LATEX_FILE!!
+    override fun getIcon() = TexifyIcons.LATEX_FILE
 
     override fun getHighlighter() = LatexSyntaxHighlighter()
 

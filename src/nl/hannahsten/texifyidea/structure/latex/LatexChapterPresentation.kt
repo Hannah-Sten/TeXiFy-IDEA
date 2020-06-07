@@ -24,7 +24,7 @@ class LatexChapterPresentation(chapterCommand: LatexCommands) : EditableHintPres
 
     override fun getLocationString() = hint
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_CHAPTER!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_CHAPTER
 
     override fun setHint(hint: String) {
         this.hint = hint

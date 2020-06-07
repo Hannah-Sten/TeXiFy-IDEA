@@ -4,13 +4,9 @@ import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_ADD_SPACE
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_AT_FIRST_COLUMN
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceOption.KEEP_FIRST_COLUMN_COMMENT
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceOption.WRAP_LONG_LINES
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceOption.WRAP_ON_TYPING
+import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.WrappingOrBraceOption.*
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.BLANK_LINES_SETTINGS
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.COMMENTER_SETTINGS
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS
+import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType.*
 import com.intellij.psi.codeStyle.extractor.values.Value.VAR_KIND.RIGHT_MARGIN
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.util.Magic
@@ -26,7 +22,7 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
         private val demoText = Magic.General.latexDemoText.removeHtmlTags()
     }
 
-    override fun getLanguage() = LatexLanguage.INSTANCE!!
+    override fun getLanguage() = LatexLanguage.INSTANCE
 
     override fun getCodeSample(settingsType: SettingsType) = demoText
 

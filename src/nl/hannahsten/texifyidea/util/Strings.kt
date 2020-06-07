@@ -202,7 +202,9 @@ fun String.runCommand(): String? {
         proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
     }
     catch (e: IOException) {
-        e.printStackTrace()
         null
     }
 }
+
+/** If this contains any of the given set. */
+fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }

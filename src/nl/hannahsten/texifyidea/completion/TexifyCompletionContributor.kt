@@ -20,9 +20,14 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.*
-import java.util.*
+import java.util.EnumSet
 
 /**
+ * This class registers some completion contributors. For labels we currently use reference completion instead of
+ * contributor-based completion, in [nl.hannahsten.texifyidea.reference.LatexLabelReference],
+ * though at the moment I don't see a reason why this is the case.
+ * Also see https://www.jetbrains.org/intellij/sdk/docs/reference_guide/custom_language_support/code_completion.html
+ *
  * @author Sten Wessel, Hannah Schellekens
  */
 open class TexifyCompletionContributor : CompletionContributor() {
@@ -273,7 +278,12 @@ open class TexifyCompletionContributor : CompletionContributor() {
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
                                 val command = psiElement.parentOfType(LatexCommands::class) ?: return false
-                                return command.commandToken.text in commandNamesWithSlash
+                                if (command.commandToken.text in commandNamesWithSlash) {
+                                    return true
+                                }
+
+                                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
+                                return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),

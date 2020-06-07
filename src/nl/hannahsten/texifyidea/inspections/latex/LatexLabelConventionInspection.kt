@@ -9,18 +9,16 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
-import java.util.*
+import java.util.EnumSet
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
 /**
- * Currently only works for Chapters, Sections and Subsections.
- *
- * Planned is to also implement this for other environments.
+ * Check for label conventions, e.g. sec: in \section{A section}\label{sec:a-section}
  *
  * @author Hannah Schellekens
  */
@@ -122,18 +120,15 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 "$prefix:$labelName"
             }
 
-            val createdLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelsInFileSet())
+            val createdLabel = appendCounter(createdLabelBase, baseFile.findLatexAndBibtexLabelStringsInFileSet())
 
             // Replace in command label definition
             if (command is LatexCommands) {
-                val position =
-                        TexifySettings
-                                .getInstance()
-                                .labelPreviousCommands
-                                .getOrDefault(command.name, null)
-                                ?.position ?: return
+                val labelInfo = CommandManager.labelAliasesInfo.getOrDefault(command.name, null) ?: return
+                if (!labelInfo.labelsPreviousCommand) return
+                val position = labelInfo.positions.firstOrNull() ?: return
 
-                val labelParameter = command.requiredParameters().getOrNull(position - 1) ?: return
+                val labelParameter = command.requiredParameters().getOrNull(position) ?: return
                 labelParameter.replace(latexPsiHelper.createRequiredParameter(createdLabel))
             }
 
@@ -163,7 +158,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             // Loop over every file
             for (pair in commandsAndFiles) {
                 // Only look at commands which refer to something
-                val commands = pair.second.filter { Magic.Command.labelReference.contains(it.name) }.reversed()
+                val commands = pair.second.filter { Magic.Command.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
                 val requiredParams = mutableListOf<LatexRequiredParam>()
 
                 // Find all the parameters with the given labelName

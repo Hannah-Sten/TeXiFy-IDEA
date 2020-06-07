@@ -25,5 +25,5 @@ class LatexIncludePresentation(labelCommand: LatexCommands) : ItemPresentation {
 
     override fun getLocationString() = ""
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_INCLUDE!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_INCLUDE
 }

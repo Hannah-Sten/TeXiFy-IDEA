@@ -61,7 +61,7 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
                 val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
                 val writer = PrintWriter("$tempBasename.tex", "UTF-8")
 
-                val tmpContent = """\documentclass[border=1mm]{standalone}
+                val tmpContent = """\documentclass{article}
 $preamble
 
 \begin{document}
@@ -72,12 +72,14 @@ $previewCode
                 writer.println(tmpContent)
                 writer.close()
 
-                val latexStdoutText = runCommand("pdflatex",
-                        arrayOf(
-                                "-interaction=nonstopmode",
-                                "-halt-on-error",
-                                "$tempBasename.tex"),
-                        tempDirectory
+                val latexStdoutText = runCommand(
+                    "pdflatex",
+                    arrayOf(
+                        "-interaction=nonstopmode",
+                        "-halt-on-error",
+                        "$tempBasename.tex"
+                    ),
+                    tempDirectory
                 ) ?: return
 
                 runInkscape(tempBasename, tempDirectory)
@@ -119,34 +121,38 @@ $previewCode
         // If 1.0 or higher
         if (SystemEnvironment.inkscapeMajorVersion >= 1) {
             runCommand(
-                    inkscapeExecutable(),
-                    arrayOf("$tempBasename.pdf",
-                            "--export-dpi", "1000",
-                            "--export-background", "#FFFFFF",
-                            "--export-background-opacity", "1.0",
-                            "--export-filename", "$tempBasename.png"
-                    ),
-                    tempDirectory
+                inkscapeExecutable(),
+                arrayOf(
+                    "$tempBasename.pdf",
+                    "--export-area-drawing",
+                    "--export-dpi", "1000",
+                    "--export-background", "#FFFFFF",
+                    "--export-background-opacity", "1.0",
+                    "--export-filename", "$tempBasename.png"
+                ),
+                tempDirectory
             ) ?: throw AccessDeniedException(tempDirectory)
         }
         else {
             runCommand(
-                    pdf2svgExecutable(),
-                    arrayOf(
-                            "$tempBasename.pdf",
-                            "$tempBasename.svg"
-                    ),
-                    tempDirectory
+                pdf2svgExecutable(),
+                arrayOf(
+                    "$tempBasename.pdf",
+                    "$tempBasename.svg"
+                ),
+                tempDirectory
             ) ?: return
 
             runCommand(
-                    inkscapeExecutable(),
-                    arrayOf("$tempBasename.svg",
-                            "--export-dpi", "1000",
-                            "--export-background", "#FFFFFF",
-                            "--export-png", "$tempBasename.png"
-                    ),
-                    tempDirectory
+                inkscapeExecutable(),
+                arrayOf(
+                    "$tempBasename.svg",
+                    "--export-area-drawing",
+                    "--export-dpi", "1000",
+                    "--export-background", "#FFFFFF",
+                    "--export-png", "$tempBasename.png"
+                ),
+                tempDirectory
             ) ?: throw AccessDeniedException(tempDirectory)
         }
     }
@@ -154,9 +160,9 @@ $previewCode
     private fun runCommand(command: String, args: Array<String>, workDirectory: File): String? {
 
         val executable = Runtime.getRuntime().exec(
-                arrayOf(command) + args,
-                null,
-                workDirectory
+            arrayOf(command) + args,
+            null,
+            workDirectory
         )
 
         val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->
