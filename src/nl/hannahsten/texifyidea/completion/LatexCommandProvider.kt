@@ -63,7 +63,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
         result.addAllElements(LatexRegularCommand.values().flatMap { cmd ->
             cmd.variationsForCompletion().mapIndexed { index: Int, tailText: String ->
-                LookupElementBuilder.create(cmd, cmd.command + List(index) {" "}.joinToString(""))
+                LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                     .withPresentableText(cmd.commandDisplay)
                     .bold()
                     .withTailText(tailText + " " + packageName(cmd), true)
@@ -73,7 +73,6 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             }
         })
         result.addLookupAdvertisement(getKindWords())
-
     }
 
     private fun addMathCommands(result: CompletionResultSet) {
@@ -102,11 +101,11 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
         LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
-                .filter { cmd -> Magic.Command.environmentDefinitions.contains(cmd.name) }
-                .map { cmd -> cmd.requiredParameter(0) }
-                .filter { obj -> Objects.nonNull(obj) }
-                .map { environmentName -> SimpleEnvironment(environmentName!!) }
-                .forEach { e: SimpleEnvironment -> environments.add(e) }
+            .filter { cmd -> Magic.Command.environmentDefinitions.contains(cmd.name) }
+            .map { cmd -> cmd.requiredParameter(0) }
+            .filter { obj -> Objects.nonNull(obj) }
+            .map { environmentName -> SimpleEnvironment(environmentName!!) }
+            .forEach { e: SimpleEnvironment -> environments.add(e) }
 
         // Create autocomplete elements.
         result.addAllElements(ContainerUtil.map2List(environments) { env: Environment ->
@@ -123,7 +122,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         val name = dependend.dependency.name
         return if ("" == name) {
             ""
-        } else " ($name)"
+        }
+        else " ($name)"
     }
 
     private fun addCustomCommands(
@@ -212,7 +212,9 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                 val nrParams = try {
                     optional?.toInt() ?: 0
                 }
-                catch (ignore: java.lang.NumberFormatException) { 0 }
+                catch (ignore: java.lang.NumberFormatException) {
+                    0
+                }
                 (1..nrParams).joinToString("") { "{param}" }
             }
 
