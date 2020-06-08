@@ -81,7 +81,6 @@ class MathEnvironmentEditor(
             originalBody
         }
 
-
         val newText = extraWhiteSpace + beginBlock(indent) +
                 body.replace("\n", "\n$indent    ") +
                 endBlock(indent) + extraNewLine

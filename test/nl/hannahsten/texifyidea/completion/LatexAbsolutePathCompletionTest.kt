@@ -4,18 +4,19 @@ import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import org.junit.Test
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 
 class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
-    lateinit var absoluteWorkingPath: String
+    private lateinit var absoluteWorkingPath: String
 
     @Throws(Exception::class)
     override fun setUp() {
         super.setUp()
 
         val currentRelativePath: Path = Paths.get("")
-        absoluteWorkingPath = currentRelativePath.toAbsolutePath().toString()
+        absoluteWorkingPath = currentRelativePath.toAbsolutePath().toString().replace(File.separatorChar, '/')
     }
 
     @Test

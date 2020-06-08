@@ -37,7 +37,8 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
 
                         if (definedCommand == null) {
                             null
-                        } else {
+                        }
+                        else {
                             PsiElementResolveResult(definedCommand as PsiElement)
                         }
                     }

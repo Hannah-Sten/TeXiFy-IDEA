@@ -101,7 +101,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     abstract class LabelQuickFix : LocalQuickFix {
         protected fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
             val labelBase = "$prefix:$base"
-            val allLabels = file.findLatexAndBibtexLabelsInFileSet()
+            val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
             return appendCounter(labelBase, allLabels)
         }
 
@@ -163,7 +163,6 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val createdLabel = getUniqueLabelName(command.environmentName.formatAsLabel(),
                     Magic.Environment.labeled[command.environmentName], command.containingFile)
 
-
             val moveCaretAfter: PsiElement
             moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
                 val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
@@ -182,6 +181,5 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val caretModel = openedEditor.caretModel
             caretModel.moveToOffset(moveCaretAfter.endOffset())
         }
-
     }
 }

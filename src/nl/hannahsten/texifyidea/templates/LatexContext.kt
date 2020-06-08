@@ -21,13 +21,11 @@ open class LatexContext(
     override fun isInContext(file: PsiFile, offset: Int): Boolean =
             file is LatexFile
 
-
     class Generic : LatexContext("LATEX", "LaTeX", EverywhereContextType::class.java)
 
     open class LatexMathContext : LatexContext("LATEX_MATH", "Math", Generic::class.java) {
 
         override fun isInContext(file: PsiFile, offset: Int): Boolean =
                 file is LatexFile && file.findElementAt(offset)?.inMathContext() == true
-
     }
 }

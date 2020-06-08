@@ -94,8 +94,6 @@ class LatexDistribution {
             return parsePdflatexOutput(runCommand("pdflatex", "--version"))
         }
 
-
-
         /**
          * Parse the output of pdflatex --version and return the distribution.
          * Assumes the distribution name is in brackets at the end of the first line.

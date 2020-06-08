@@ -15,13 +15,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocationCache
-import nl.hannahsten.texifyidea.util.files.allChildDirectories
-import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.getExternalFile
-import nl.hannahsten.texifyidea.util.files.getGraphicsPaths
-import nl.hannahsten.texifyidea.util.files.searchFileByImportPaths
+import nl.hannahsten.texifyidea.util.files.*
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -58,7 +52,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         else {
             emptyList()
         }.toMutableList()
-
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
@@ -148,5 +141,4 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         val extension: HashSet<String>? = Magic.Command.includeOnlyExtensions[this.commandToken.text]
         return extension?.map { "$fileName.$it" }?.toHashSet()
     }
-
 }

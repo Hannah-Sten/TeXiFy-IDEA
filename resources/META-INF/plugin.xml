@@ -26,19 +26,18 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.9</version>
+    <version>0.6.10</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="201.3119"/>
+    <idea-version since-build="201.5616.10"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
-<!--    <depends>com.intellij.modules.java</depends>--> <!-- breaks non-intellij support -->
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
 
     <description><![CDATA[
@@ -83,12 +82,76 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Alpha releases</strong></p>
+        <p><strong>Beta 0.6.10</strong></p>
         <p>
-            This is an alpha release, which contains the very latest features of TeXiFy IDEA.
+            Welcome to TeXiFy IDEA 0.6.10! This release contains many fixes to the parser, especially for verbatim environments and commands, as well as many new features like language injection and gutter icons for colors from the xcolor package.
         <p>
         <p>
-            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with merged PRs.
+            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+            Your input is valuable and well appreciated.
+        </p>
+        <br>
+        <p>
+            <em>Additions</em>
+        </p>
+        <ul>
+            <li> Added support for the xcolor package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1348">#1348</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1396">#1396</a>)</li>
+            <li> Added support for language injection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1363">#1363</a>)</li>
+            <li> Added support for custom preamble for math and tikz preview. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1373">#1373</a>)</li>
+            <li> Added basic algorithmicx pseudocode formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1393">#1393</a>)</li>
+            <li> Added commands defined using the xparse package to the autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1312">#1312</a>)</li>
+            <li> Added support for Dockerized MiKTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1310">#1310</a>)</li>
+            <li> Added support for TeX Live from WSL. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1410">#1410</a>)</li>
+            <li> Added support for entering relative paths in the run configuration. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1311">#1311</a>)</li>
+            <li> Added magic comments to disable and enable the parser. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1388">#1388</a>)</li>
+            <li> Added magic comments to choose LaTeX and BibTeX compiler. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1409">#1409</a>)</li>
+            <li> Added support for inkscape 1.0 (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1398">#1398</a>)</li>
+            <li> Added option to include backslash in word selection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1316">#1316</a>)</li>
+            <li> Added postfix templates. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1326">#1326</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1350">#1350</a>)</li>
+            <li> Added an inspection to check for correct filename/filepath in ProvidesPackage commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1365">#1365</a>)</li>
+            <li> Added an inspection to check if # is escaped. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1366">#1366</a>)</li>
+            <li> Added inspections to check if & and _ are escaped. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1368">#1368</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1411">#1411</a>)</li>
+            <li> Added many matrix environments to the autocomplete. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1431">#1431</a>)</li>
+        </ul>
+        <br>
+        <p>
+            <em>Changes</em>
+        </p>
+        <ul>
+            <li> Major performance increase on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1424">#1424</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1430">#1430</a>)</li>
+            <li> Improved performance of the inclusion loop inspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1327">#1327</a>)</li>
+            <li> & and \\ get aligned in simple tables. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1341">#1341</a>)</li>
+            <li> A second $ does no longer get auto-inserted when the first $ closes an inline math environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1323">#1323</a>)</li>
+            <li> bibtex working directory is now configurable via UI. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1413">#1413</a>)</li>
+        </ul>
+        <br>
+        <p>
+            <em>Bug fixes</em>
+        </p>
+        <ul>
+            <li> Fixed parse error on unmatched brackets in math environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1319">#1319</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1421">#1421</a>)</li>
+            <li> Fixed parse error for \@ifnextchar. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1320">#1320</a>)</li>
+            <li> Fixed parse error when inline math inside \text inside inline math is used. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1322">#1322</a>)</li>
+            <li> Fixed parse error when dollar signs are used in table preamble. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1324">#1324</a>)</li>
+            <li> Fixed parse error for \verb|...|, \verb=...=, \verb"..." and \verb!...!. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1344">#1344</a>)</li>
+            <li> Fixed parse errors in verbatim-like environments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1353">#1353</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1382">#1382</a>)</li>
+            <li> Fixed parse error on \newenvironment definitions. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1340">#1340</a>)</li>
+            <li> Fixed parse error on non-ascii characters in bibtex identifiers. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1367">#1367</a>)</li>
+            <li> Avoid formatter confusion when ending a line with a backslash. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1342">#1342</a>)</li>
+            <li> Fixed autocompletion in custom command parameters. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1360">#1360</a>)</li>
+            <li> Fixed some inspections being triggered incorrectly in comments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1426">#1426</a>)</li>
+            <li> Fixed EscapeAmpersand inspection triggering in some matrices. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1427">#1427</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1431">#1431</a>)</li>
+            <li> Fixed not being able to type '\"' when using smart quotes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1425">#1425</a>)</li>
+            <li> Fixed User Access Control screen popping up on Windows. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1424">#1424</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1430">#1430</a>)</li>
+            <li> Fixed crashes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1332">#1332</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1337">#1337</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1372">#1372</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1425">#1425</a>)</li>
+        </ul>
+        <br>
+        <p>
+            Thanks to <a href="https://github.com/bdudelsack">Boris Dudelsack</a>,  <a href="https://github.com/dandoh">Nhan Thai</a> and <a href="https://github.com/xaaris">Johannes Berger</a> for contributing to this release.
+        </p>
+        <br>
+        <p>
+            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
         </p>
     ]]></change-notes>
 
@@ -667,12 +730,6 @@
             <className>nl.hannahsten.texifyidea.intentions.LatexInsertFormatterCommentsIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexInsertFormatterComments</descriptionDirectoryName>
-        </intentionAction>
-
-        <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexLabelDefiningNewCommand</className>
-            <category>LaTeX</category>
-            <descriptionDirectoryName>LatexLabelDefiningNewCommand</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>

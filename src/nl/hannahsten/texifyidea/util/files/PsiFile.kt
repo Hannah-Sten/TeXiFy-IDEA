@@ -22,13 +22,11 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.*
 
-
 /**
  * Get the file search scope for this psi file.
  */
 val PsiFile.fileSearchScope: GlobalSearchScope
     get() = GlobalSearchScope.fileScope(this)
-
 
 /**
  * Looks for all file inclusions in a given file, excluding installed LaTeX packages.

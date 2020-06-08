@@ -108,5 +108,4 @@ class LabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConvent
             \end{document}
         """.trimIndent())
     }
-
 }

@@ -16,10 +16,13 @@ plugins {
 
     // Test coverage
     id 'jacoco'
+
+    // Linting
+    id 'org.jlleitschuh.gradle.ktlint' version '9.2.1'
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.70'
+version '0.7-alpha.76'
 
 repositories {
     mavenCentral()
@@ -100,6 +103,8 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-test-junit"
     implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.3.72"
 
+    // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
+    ktlintRuleset(files("lib/ktlint-ruleset-0.1.jar"))
 }
 
 // Special resource dependencies
@@ -196,4 +201,8 @@ publishPlugin {
     // Specify channel as per the tutorial.
     // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
     channels 'alpha'
+}
+
+ktlint {
+    verbose = true
 }

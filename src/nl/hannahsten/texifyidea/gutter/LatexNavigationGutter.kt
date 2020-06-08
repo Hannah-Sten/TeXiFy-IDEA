@@ -51,7 +51,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         if (referencesList.isEmpty()) return
 
         val files = referencesList.mapNotNull { it.resolve() }
-        val extension = if (files.isNotEmpty()) { files.first().name.getFileExtension() } else ""
+        val extension = if (files.isNotEmpty()) files.first().name.getFileExtension() else ""
         val icon = TexifyIcons.getIconFromExtension(extension)
 
         val builder = NavigationGutterIconBuilder

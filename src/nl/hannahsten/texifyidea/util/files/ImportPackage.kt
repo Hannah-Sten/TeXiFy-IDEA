@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.util.Magic.Command.relativeImportCommands
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.requiredParameter
 
-
 /**
  * This method will try to find a file when the 'import' package is used, which means that including files have to be searched for import paths.
  */
@@ -20,7 +19,7 @@ fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
     // Use references to get filenames, take care not to resolve the references because this method is called during resolving them so that would be a loop
     val references = command.references.filterIsInstance<InputFileReference>()
 
-    getParentDirectoryByImportPaths(command).forEach {parentDir ->
+    getParentDirectoryByImportPaths(command).forEach { parentDir ->
         for (reference in references) {
             val fileName = reference.key
             for (extension in reference.extensions) {

@@ -50,7 +50,6 @@ class LatexTableWizardAction : AnAction() {
                     file.psiFile(project)
             )
         }
-
     }
 
     /**
@@ -121,5 +120,4 @@ class LatexTableWizardAction : AnAction() {
             ColumnType.NUMBERS_COLUMN -> "r"
         }
     }
-
 }

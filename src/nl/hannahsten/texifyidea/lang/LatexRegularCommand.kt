@@ -261,6 +261,7 @@ enum class LatexRegularCommand(
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
     SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
+    SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
     SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBITEM("subitem"),
@@ -360,6 +361,7 @@ enum class LatexRegularCommand(
      */
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWCOMMAND_STAR("newcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
+    NEWIF("newif", "cmd".asRequired()),
     PROVIDECOMMAND("providecommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     PROVIDECOMMAND_STAR("providecommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     RENEWCOMMAND("renewcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
@@ -487,22 +489,22 @@ enum class LatexRegularCommand(
      * Algorithmicx
      */
 
-    FOR("For", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    FORALL("ForAll", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDFOR("EndFor", dependency= ALGPSEUDOCODE),
-    IF("If", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ELSIF("ElsIf", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDIF("EndIf", dependency= ALGPSEUDOCODE),
-    WHILE("While", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDWHILE("EndWhile", dependency= ALGPSEUDOCODE),
-    REPEAT("Repeat", dependency= ALGPSEUDOCODE),
-    UNTIL("Until", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    LOOP("Loop", dependency= ALGPSEUDOCODE),
-    ENDLOOP("EndLoop", dependency= ALGPSEUDOCODE),
-    FUNCTION("Function", "name".asRequired(), "params".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDFUNCTION("EndFunction", dependency= ALGPSEUDOCODE),
-    PROCEDURE("Procedure", "name".asRequired(), "params".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDPROCEDURE("EndProcedure", dependency= ALGPSEUDOCODE);
+    FOR("For", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    FORALL("ForAll", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDFOR("EndFor", dependency = ALGPSEUDOCODE),
+    IF("If", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ELSIF("ElsIf", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDIF("EndIf", dependency = ALGPSEUDOCODE),
+    WHILE("While", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDWHILE("EndWhile", dependency = ALGPSEUDOCODE),
+    REPEAT("Repeat", dependency = ALGPSEUDOCODE),
+    UNTIL("Until", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    LOOP("Loop", dependency = ALGPSEUDOCODE),
+    ENDLOOP("EndLoop", dependency = ALGPSEUDOCODE),
+    FUNCTION("Function", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDFUNCTION("EndFunction", dependency = ALGPSEUDOCODE),
+    PROCEDURE("Procedure", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDPROCEDURE("EndProcedure", dependency = ALGPSEUDOCODE);
 
     companion object {
 

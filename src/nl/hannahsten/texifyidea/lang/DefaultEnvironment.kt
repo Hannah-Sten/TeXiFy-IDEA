@@ -134,7 +134,6 @@ enum class DefaultEnvironment(
     // xcolor
     TESTCOLORS(environmentName = "testcolors", arguments = *arrayOf(OptionalArgument("num models")), dependency = XCOLOR);
 
-
     companion object {
 
         /**
@@ -163,5 +162,4 @@ enum class DefaultEnvironment(
         @JvmStatic
         operator fun get(name: String): DefaultEnvironment? = lookup[name]
     }
-
 }

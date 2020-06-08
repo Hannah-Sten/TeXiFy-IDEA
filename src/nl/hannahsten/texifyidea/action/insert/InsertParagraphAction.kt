@@ -6,4 +6,4 @@ import nl.hannahsten.texifyidea.action.InsertEditorAction
 /**
  * @author Hannah Schellekens
  */
-class InsertParagraphAction : InsertEditorAction("Paragraph", TexifyIcons.DOT_PARAGRAPH, "\\paragraph{", "}") 
+class InsertParagraphAction : InsertEditorAction("Paragraph", TexifyIcons.DOT_PARAGRAPH, "\\paragraph{", "}")

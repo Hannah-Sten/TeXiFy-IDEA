@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.psi.PsiElement
+import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
@@ -32,14 +33,6 @@ object Magic {
      * @author Hannah Schellekens
      */
     object General {
-
-        const val pathPackageRoot = "/nl/hannahsten/texifyidea"
-
-        @JvmField
-        val emptyStringArray = arrayOfNulls<String>(0)
-
-        @JvmField
-        val emptyPsiElementArray = arrayOfNulls<PsiElement>(0)
 
         @JvmField
         val noQuickFix: LocalQuickFix? = null
@@ -134,7 +127,6 @@ object Magic {
                 |\end{document}
         """.trimMargin()
 
-
         @Language("Bibtex")
         @JvmField
         val bibtexDemoText = """
@@ -159,7 +151,6 @@ object Magic {
                 }
         """.trimIndent()
     }
-
 
     /**
      * @author Hannah Schellekens
@@ -305,14 +296,22 @@ object Magic {
         val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeled.keys
 
         /**
-         * All commands that represent a reference to a label.
+         * All commands that represent a reference to a label, excluding user defined commands.
          */
         @JvmField
-        val labelReference = hashSetOf(
+        val labelReferenceWithoutCustomCommands = hashSetOf(
                 "\\ref", "\\eqref", "\\nameref", "\\autoref",
                 "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
                 "\\labelcref", "\\cpageref"
         )
+
+        /**
+         * All commands that represent a reference to a label, including user defined commands.
+         */
+        fun getLabelReferenceCommands(project: Project): Set<String> {
+            CommandManager.updateAliases(labelReferenceWithoutCustomCommands, project)
+            return CommandManager.getAliases(labelReferenceWithoutCustomCommands.first())
+        }
 
         /**
          * All commands that represent a reference to a bibliography entry/item.
@@ -337,7 +336,7 @@ object Magic {
          * All commands that represent some kind of reference (think \ref and \cite).
          */
         @JvmField
-        val reference = labelReference + bibliographyReference
+        val reference = labelReferenceWithoutCustomCommands + bibliographyReference
 
         /**
          * Commands from the import package which require an absolute path as first parameter.
@@ -350,10 +349,28 @@ object Magic {
         val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
 
         /**
-         * All commands that define labels.
+         * All commands that define labels and that are present by default.
+         * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
          */
         @JvmField
-        val labelDefinition = setOf("\\label")
+        val labelDefinitionsWithoutCustomCommands = setOf("\\label")
+
+        /**
+         * Get all commands defining labels, including user defined commands.
+         * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
+         *
+         * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
+         */
+        fun getLabelDefinitionCommands(project: Project): Set<String> {
+            // Check if updates are needed
+            CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
+            return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
+        }
+
+        /**
+         * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
+         */
+        fun getLabelDefinitionCommands() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
 
         /**
          * All commands that define bibliography items.
@@ -372,23 +389,35 @@ object Magic {
         )
 
         /**
-         * All commands that define regular commands.
+         * All commands that define regular commands, and that require that the command is not already defined.
+         */
+        val regularStrictCommandDefinitions = hashSetOf(
+                "\\" + LatexRegularCommand.NEWCOMMAND.command,
+                "\\" + LatexRegularCommand.NEWCOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.NEWIF.command,
+                "\\" + LatexRegularCommand.NEWDOCUMENTCOMMAND.command
+        )
+
+        /**
+         * All commands that define or redefine other commands, whether it exists or not.
          */
         @JvmField
-        val regularCommandDefinitions = hashSetOf(
-                "\\newcommand",
-                "\\newcommand*",
-                "\\renewcommand",
-                "\\renewcommand*",
-                "\\providecommand",
-                "\\providecommand*",
-                "\\let",
-                "\\def",
-                "\\newif",
-                "\\NewDocumentCommand",
-                "\\ProvideDocumentCommand",
-                "\\DeclareDocumentCommand"
+        val redefinitions = hashSetOf(
+                "\\" + LatexRegularCommand.RENEWCOMMAND.command,
+                "\\" + LatexRegularCommand.RENEWCOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.PROVIDECOMMAND.command, // Does nothing if command exists
+                "\\" + LatexRegularCommand.PROVIDECOMMAND_STAR.command,
+                "\\" + LatexRegularCommand.PROVIDEDOCUMENTCOMMAND.command, // Does nothing if command exists
+                "\\" + LatexRegularCommand.DECLAREDOCUMENTCOMMAND.command,
+                "\\" + LatexRegularCommand.DEF.command,
+                "\\" + LatexRegularCommand.LET.command,
+                "\\" + LatexRegularCommand.RENEWENVIRONMENT.command
         )
+
+        /**
+         * All commands that define or redefine regular commands.
+         */
+        val regularCommandDefinitions = regularStrictCommandDefinitions + redefinitions
 
         /**
          * All commands that define commands that should be used exclusively
@@ -396,10 +425,10 @@ object Magic {
          */
         @JvmField
         val mathCommandDefinitions = hashSetOf(
-                "\\DeclareMathOperator",
-                "\\DeclarePairedDelimiter",
-                "\\DeclarePairedDelimiterX",
-                "\\DeclarePairedDelimiterXPP"
+                "\\" + LatexRegularCommand.DECLARE_MATH_OPERATOR.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_X.command,
+                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_XPP.command
         )
 
         /**
@@ -439,15 +468,6 @@ object Magic {
         val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
         /**
-         * All commands that are able to redefine other commands.
-         */
-        @JvmField
-        val redefinitions = hashSetOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
-
-        @JvmField
-        val definitionsAndRedefinitions = definitions + redefinitions
-
-        /**
          * Commands for which TeXiFy-IDEA has custom behaviour.
          */
         @JvmField
@@ -472,6 +492,7 @@ object Magic {
         @JvmField
         val illegalExtensions = mapOf(
                 "\\include" to listOf(".tex"),
+                "\\subfileinclude" to listOf(".tex"),
                 "\\bibliography" to listOf(".bib")
         )
 
@@ -491,6 +512,7 @@ object Magic {
                 "\\include" to hashSetOf("tex"),
                 "\\includeonly" to hashSetOf("tex"),
                 "\\subfile" to hashSetOf("tex"),
+                "\\subfileinclude" to hashSetOf("tex"),
                 "\\bibliography" to hashSetOf("bib"),
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
@@ -613,7 +635,6 @@ object Magic {
          */
         @JvmField
         val sentenceSeparatorAtLineEnd = RegexPattern.compile("$sentenceSeparator\\s*$")!!
-
 
         /**
          * Matches when a string ends with a non breaking space.

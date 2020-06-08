@@ -51,8 +51,6 @@ ROBUST_INLINE_MATH_START="\\("
 ROBUST_INLINE_MATH_END="\\)"
 OPEN_BRACKET="["
 CLOSE_BRACKET="]"
-M_OPEN_BRACKET="["
-M_CLOSE_BRACKET="]"
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
 OPEN_PAREN="("
@@ -276,11 +274,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {ROBUST_INLINE_MATH_START}      { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START; }
 }
 
-<INLINE_MATH,INLINE_MATH_LATEX> {
-    {M_OPEN_BRACKET}    { return M_OPEN_BRACKET; }
-    {M_CLOSE_BRACKET}   { return M_CLOSE_BRACKET; }
-}
-
 <NESTED_INLINE_MATH> {
     "$"                 { yypopState(); return INLINE_MATH_END; }
 }
@@ -308,8 +301,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 }
 
 <DISPLAY_MATH> {
-    {M_OPEN_BRACKET}    { return M_OPEN_BRACKET; }
-    {M_CLOSE_BRACKET}   { return M_CLOSE_BRACKET; }
     "\\]"               { yypopState(); return DISPLAY_MATH_END; }
 }
 
@@ -323,9 +314,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 .\<\{                   { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 .>\{                    { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 
-// In case a line ends with a backslash, then we do not want to lex the following newline as a command token,
+// In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line
-\\\n                    { return com.intellij.psi.TokenType.WHITE_SPACE; }
+\\                    { return NORMAL_TEXT_CHAR; }
 
 "*"                     { return STAR; }
 // A separate token, used for example for aligning & in tables

@@ -24,7 +24,7 @@ class LatexSectionPresentation(sectionCommand: LatexCommands) : EditableHintPres
 
     override fun getLocationString() = hint
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_SECTION!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_SECTION
 
     override fun setHint(hint: String) {
         this.hint = hint

@@ -29,7 +29,7 @@ class LatexParagraphPresentation(paragraphCommand: LatexCommands) : EditableHint
 
     override fun getLocationString() = hint
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_PARAGRAPH!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_PARAGRAPH
 
     override fun setHint(hint: String) {
         this.hint = hint

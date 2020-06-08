@@ -5,7 +5,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import java.util.*
+import java.util.ArrayList
 
 /**
  * @author Sten Wessel
@@ -39,18 +39,18 @@ class LatexBlock(
     }
 
     override fun getIndent(): Indent? {
-        if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT
-                || myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT
+        if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT ||
+                myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
                 // Fix for leading comments inside an environment, because
                 // somehow they are not placed inside environments.
-                || myNode.elementType === LatexTypes.COMMENT_TOKEN
-                && myNode.treeParent.elementType === LatexTypes.ENVIRONMENT) {
+                myNode.elementType === LatexTypes.COMMENT_TOKEN &&
+                myNode.treeParent.elementType === LatexTypes.ENVIRONMENT) {
             return Indent.getNormalIndent(true)
         }
 
         // Display math
-        return if ((myNode.elementType === LatexTypes.MATH_CONTENT || myNode.elementType === LatexTypes.COMMENT_TOKEN)
-                && myNode.treeParent.elementType === LatexTypes.DISPLAY_MATH) {
+        return if ((myNode.elementType === LatexTypes.MATH_CONTENT || myNode.elementType === LatexTypes.COMMENT_TOKEN) &&
+                myNode.treeParent.elementType === LatexTypes.DISPLAY_MATH) {
             Indent.getNormalIndent(true)
         }
         else Indent.getNoneIndent()
@@ -75,5 +75,4 @@ class LatexBlock(
 
         return ChildAttributes(Indent.getNoneIndent(), null)
     }
-
 }

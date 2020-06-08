@@ -12,7 +12,6 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         myFixture.enableInspections(*inspections)
     }
 
-
     protected fun testQuickFix(before: String, after: String) {
         myFixture.configureByText(LatexFileType, before)
         val quickFixes = myFixture.getAllQuickFixes()

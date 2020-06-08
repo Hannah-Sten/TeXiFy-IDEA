@@ -31,11 +31,11 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createOptionalParameterContent(parameter: String): List<LatexParamContent> {
+    private fun createOptionalParameterContent(parameter: String): List<LatexOptionalParamContent> {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.paramContentList
+        return optionalParam.optionalParamContentList
     }
 
     fun createFromText(text: String): PsiElement =
@@ -84,8 +84,8 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val labelRegex = "label\\s*=\\s*[^,]*".toRegex()
-        val elementsToReplace = mutableListOf<LatexParamContent>()
-        val elementIterator = optionalParam.paramContentList.iterator()
+        val elementsToReplace = mutableListOf<LatexOptionalParamContent>()
+        val elementIterator = optionalParam.optionalParamContentList.iterator()
         while (elementIterator.hasNext()) {
             val latexContent = elementIterator.next()
             val elementIsLabel = latexContent.parameterText?.text?.contains(labelRegex) ?: false

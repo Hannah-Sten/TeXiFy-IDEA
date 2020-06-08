@@ -49,14 +49,14 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
             for (command in commands) {
-                val `package` = command.requiredParameters.first().toLowerCase()
+                val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
                 if (`package` !in packages) {
                     // Manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
                     if ("tlmgr search --file /$`package`.sty".runCommand()
                                     ?.isEmpty() != false) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
-                                "Package is not installed",
+                                "Package is not installed or \\ProvidesPackage is missing",
                                 InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
@@ -98,13 +98,12 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
                         override fun onSuccess() {
                             TexLivePackages.packageList.add(packageName)
+                            // Rerun inspections
                             DaemonCodeAnalyzer.getInstance(project)
                                     .restart(filePointer.containingFile
                                             ?: return)
                         }
-
                     })
         }
-
     }
 }

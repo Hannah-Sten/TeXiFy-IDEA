@@ -5,7 +5,6 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.labeldefiningcommands.TexifyConfigurableLabelCommands
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JComponent
@@ -26,15 +25,12 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var includeBackslashInSelection: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var pdfViewer: ComboBox<String>
-    private lateinit var labelDefiningCommands: TexifyConfigurableLabelCommands
 
     override fun getId() = "TexifyConfigurable"
 
     override fun getDisplayName() = "TeXiFy"
 
     override fun createComponent(): JComponent? {
-        labelDefiningCommands = TexifyConfigurableLabelCommands(settings)
-
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
@@ -48,7 +44,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
-                add(labelDefiningCommands.getTable())
             })
         }
     }
@@ -58,7 +53,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
      */
     private fun JPanel.addSmartQuotesOptions(vararg values: String): ComboBox<String> {
         val list = ComboBox(values)
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply{
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(JBLabel("Smart quote substitution: "))
             add(list)
         })
@@ -84,16 +79,15 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     }
 
     override fun isModified(): Boolean {
-        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol
-                || automaticUpDownBracket.isSelected != settings.automaticUpDownBracket
-                || automaticItemInItemize.isSelected != settings.automaticItemInItemize
-                || automaticDependencyCheck.isSelected != settings.automaticDependencyCheck
-                || autoCompile.isSelected != settings.autoCompile
-                || continuousPreview.isSelected != settings.continuousPreview
-                || includeBackslashInSelection.isSelected != settings.includeBackslashInSelection
-                || automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal
-                || pdfViewer.selectedIndex != settings.pdfViewer.ordinal
-                || labelDefiningCommands.isModified()
+        return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol ||
+                automaticUpDownBracket.isSelected != settings.automaticUpDownBracket ||
+                automaticItemInItemize.isSelected != settings.automaticItemInItemize ||
+                automaticDependencyCheck.isSelected != settings.automaticDependencyCheck ||
+                autoCompile.isSelected != settings.autoCompile ||
+                continuousPreview.isSelected != settings.continuousPreview ||
+                includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
+                automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+                pdfViewer.selectedIndex != settings.pdfViewer.ordinal
     }
 
     override fun apply() {
@@ -106,7 +100,6 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.includeBackslashInSelection = includeBackslashInSelection.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
-        labelDefiningCommands.apply()
     }
 
     override fun reset() {
@@ -119,6 +112,5 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         includeBackslashInSelection.isSelected = settings.includeBackslashInSelection
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
         pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
-        labelDefiningCommands.reset()
     }
 }

@@ -40,7 +40,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
                         extension -> command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == true }
                     }
                 }
-                .forEach {command ->
+                .forEach { command ->
                     val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
                     var offset = 0
                     for (parameter in parameterList) {
@@ -58,7 +58,6 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
                         // Assume all parameter are comma separated
                         offset += parameter.length + ",".length
                     }
-
                 }
 
         return descriptors

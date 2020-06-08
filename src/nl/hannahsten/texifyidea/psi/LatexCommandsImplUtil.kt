@@ -5,18 +5,20 @@ import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
-import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameters
-import java.util.*
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import java.util.regex.Pattern
 
 /**
@@ -27,7 +29,7 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
     val firstParam = readFirstParam(element)
 
     // If it is a reference to a label
-    if (Magic.Command.reference.contains(element.commandToken.text) && firstParam != null) {
+    if (Magic.Command.getLabelReferenceCommands(element.project).contains(element.commandToken.text) && firstParam != null) {
         val references = extractLabelReferences(element, firstParam)
         return references.toTypedArray()
     }
@@ -53,7 +55,6 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
         arrayOf(reference)
     }
 }
-
 
 /**
  * Check if the command includes other files, and if so return [InputFileReference] instances for them.
@@ -134,19 +135,22 @@ fun stripGroup(text: String): String {
     return text.substring(1, text.length - 1)
 }
 
-
 /**
- * Generates a map of parameter names and values for all optional parameters
+ * Generates a map of parameter names and values (assuming they are in the form []name=]value) for all optional parameters, comma-separated and separate optional parameters are treated equally.
+ * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
 fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
     val parameterMap = LinkedHashMap<String, String>()
+    // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
+    // But within a parameter, there can be different content like [name={value in group}]
     val parameterString = parameters.mapNotNull { it.optionalParam }
-            // extract the content of each parameter element
-            .flatMap { param ->
-                param.paramContentList
-            }
-            .mapNotNull { content: LatexParamContent ->
+        // extract the content of each parameter element
+        .map { param ->
+            param.optionalParamContentList
+        }
+        .map { contentList ->
+            contentList.mapNotNull { content: LatexOptionalParamContent ->
                 // the content is either simple text
                 val text = content.parameterText
                 if (text != null) return@mapNotNull text.text
@@ -154,7 +158,11 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
                 if (content.group == null) return@mapNotNull null
                 content.group!!.contentList.joinToString { it.text }
             }
-            .joinToString(separator = "")
+            // Join different content types (like name= and {value}) together without separator
+            .joinToString("")
+        }
+        // Join different parameters (like [param1][param2]) together with separator
+        .joinToString(",")
 
     if (parameterString.trim { it <= ' ' }.isNotEmpty()) {
         for (parameter in parameterString.split(",")) {
@@ -168,7 +176,7 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
     return parameters.mapNotNull { it.requiredParam }
             .map {
-                it.paramContentList.map { content: LatexParamContent ->
+                it.requiredParamContentList.map { content: LatexRequiredParamContent ->
                     if (content.commands != null && content.parameterText == null) {
                         content.commands!!.commandToken.text
                     }
@@ -182,23 +190,16 @@ fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
             }
 }
 
-
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
         extractSubParameterRanges(firstParam)
                 .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
                 .toArray(emptyArray())
 
-
 /**
  * Checks if the command is followed by a label.
  */
 fun hasLabel(element: LatexCommands): Boolean {
-    val grandparent = element.parent.parent
-    val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return false
-    val children = PsiTreeUtil.findChildrenOfType(sibling, LatexCommands::class.java)
-    if (children.isEmpty()) {
-        return false
-    }
-    val labelMaybe = children.iterator().next()
-    return getInstance().labelPreviousCommands.containsKey(labelMaybe.commandToken.text)
+    // Next leaf is a command token, parent is LatexCommands
+    val labelMaybe = element.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
+    return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }

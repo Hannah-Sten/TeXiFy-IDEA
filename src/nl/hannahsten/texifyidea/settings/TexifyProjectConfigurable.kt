@@ -25,7 +25,6 @@ class TexifyProjectConfigurable(private val projectSettings: TexifyProjectSettin
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
             compilerCompatibility = addCompilerCompatibility()
-
         })
     }
 

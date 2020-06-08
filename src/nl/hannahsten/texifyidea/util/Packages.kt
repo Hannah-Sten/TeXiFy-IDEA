@@ -93,7 +93,6 @@ object PackageUtils {
                 anchorAfter = null
                 prependNewLine = false
             }
-
         }
         // Otherwise, insert below the lowest usepackage.
         else {
@@ -322,7 +321,6 @@ object TexLivePackages {
             task.title = "Updating tlmgr..."
             tlmgrUpdateCommand.runCommand()
         }
-
 
         return extractRealPackageNameFromOutput(searchResult)
     }

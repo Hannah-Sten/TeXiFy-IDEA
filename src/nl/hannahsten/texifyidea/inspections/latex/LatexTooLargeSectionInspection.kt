@@ -193,9 +193,8 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             val startIndex = label?.endOffset() ?: cmd.endOffset()
             val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
-            val endIndex = (nextCmd?.textOffset ?: document.textLength ?: return) - cmdIndent.length
+            val endIndex = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
             val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
-
 
             // Create new file.
             val fileNameBraces = if (cmd.parameterList.size > 0) cmd.parameterList[0].text else return

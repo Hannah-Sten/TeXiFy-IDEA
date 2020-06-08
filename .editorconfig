@@ -1,0 +1,12 @@
+[*.{kt,kts}]
+disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,import-ordering,keyword-spacing
+insert_final_newline = false
+
+ij_kotlin_else_on_new_line = true
+ij_kotlin_catch_on_new_line = true
+ij_kotlin_finally_on_new_line = true
+ij_kotlin_name_count_to_use_star_import = 5
+ij_kotlin_name_count_to_use_star_import_for_members = 3
+
+ij_java_doc_add_blank_line_after_description = true
+ij_java_doc_param_description_on_new_line = true

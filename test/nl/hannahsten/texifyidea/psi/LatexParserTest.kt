@@ -5,6 +5,27 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 
 class LatexParserTest : BasePlatformTestCase() {
 
+    fun testSomeGeneralConstructs() {
+        myFixture.configureByText(LatexFileType, """
+            \mycommand{[test]}
+            \c{[}
+            
+            ${'$'}\test{\cmd{a}[b]}${'$'}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
+    fun testMismatchedMathBrackets() {
+        myFixture.configureByText(LatexFileType, """
+            ${'$'}[0,1)${'$'}
+            \[ ] \]
+            \begin{equation}
+                ]
+            \end{equation}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
     fun testNestedInlineMath() {
         myFixture.configureByText(LatexFileType, """
             $ math \text{ text $\xi$ text } math$

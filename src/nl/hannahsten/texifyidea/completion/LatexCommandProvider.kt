@@ -189,13 +189,14 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional
-                        : List<String> = LinkedList(commands.optionalParameters.keys)
+                val optional:
+                        List<String> = LinkedList(commands.optionalParameters.keys)
                 var cmdParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {
                         cmdParameterCount = optional[0].toInt()
-                    } catch (ignore: NumberFormatException) {
+                    }
+                    catch (ignore: NumberFormatException) {
                     }
                 }
                 var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
@@ -210,9 +211,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                 val optional = commands.optionalParameters.keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
-                } catch (ignore: java.lang.NumberFormatException) {
-                    0
                 }
+                catch (ignore: java.lang.NumberFormatException) { 0 }
                 (1..nrParams).joinToString("") { "{param}" }
             }
 

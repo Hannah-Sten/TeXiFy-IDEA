@@ -35,6 +35,4 @@ open class BibtexEntryStubElementType(private val debugName: String) : IStubElem
     override fun indexStub(stub: BibtexEntryStub, sink: IndexSink) {
         sink.occurrence(BibtexEntryIndex.key, stub.name ?: "")
     }
-
-
 }
