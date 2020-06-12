@@ -151,7 +151,7 @@ intellij {
     }
 
     // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    plugins = ['tanvd.grazi:202.5103.3', 'java']
+    plugins = ['java']
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -161,7 +161,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-//     version '2020.1'
+//     version '202.5428-EAP-CANDIDATE-SNAPSHOT'
 }
 
 test {
