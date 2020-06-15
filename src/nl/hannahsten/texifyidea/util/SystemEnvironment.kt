@@ -20,6 +20,10 @@ class SystemEnvironment {
         val isInkscapeInstalledAsSnap: Boolean by lazy {
             "snap list".runCommand()?.contains("inkscape") == true
         }
+
+        val isTlmgrInstalled: Boolean by lazy {
+            "tlmgr --version".runCommand()?.contains("TeX Live") == true
+        }
     }
 }
 
