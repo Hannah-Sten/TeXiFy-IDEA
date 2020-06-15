@@ -125,7 +125,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Since the parameter content may be a path, but we are just given a filename, just replace the filename
         // We guess the filename is after the last occurrence of /
         val oldNode = myElement?.node
-        val newText = oldNode?.text?.replaceAfterLast(File.separator, "${newElementName}}", "${myElement?.name}{$newElementName}") ?: "${myElement?.name}{$newElementName}"
+        val newText = oldNode?.text?.replaceAfterLast(File.separator, "$newElementName}", "${myElement?.name}{$newElementName}") ?: "${myElement?.name}{$newElementName}"
         val newNode = LatexPsiHelper(element.project).createFromText(newText).firstChild.node ?: return myElement
         if (oldNode == null) {
             myElement?.parent?.node?.addChild(newNode)
