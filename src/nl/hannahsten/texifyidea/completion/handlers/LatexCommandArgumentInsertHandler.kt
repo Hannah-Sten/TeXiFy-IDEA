@@ -9,6 +9,7 @@ import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
+import nl.hannahsten.texifyidea.lang.Argument
 import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
@@ -17,7 +18,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 /**
  * @author Hannah Schellekens
  */
-class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
+class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
     override fun handleInsert(insertionContext: InsertionContext, lookupElement: LookupElement) {
         removeWhiteSpaces(insertionContext)
 
@@ -53,14 +54,14 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
     private fun insertMathCommand(mathCommand: LatexMathCommand, context: InsertionContext) {
         if (mathCommand.autoInsertRequired()) {
             insert(context, mathCommand.arguments
-                    .count { it is RequiredArgument })
+                .count { it is RequiredArgument })
         }
     }
 
     private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext) {
         if (noMathCommand.autoInsertRequired()) {
             insert(context, noMathCommand.arguments
-                    .count { it is RequiredArgument })
+                .count { it is RequiredArgument })
         }
     }
 
@@ -69,15 +70,36 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         val document = editor.document
         val caret = editor.caretModel
         val offset = caret.offset
-
-        // When not followed by {}, insert {}.
-        if (offset >= document.textLength - 1 ||
-                document.getText(TextRange.from(offset, 1)) != "{") {
-            insertSquigglyBracketPair(editor, numberOfBracesPairs)
+        // When not followed by { or [ (whichever the first parameter starts with) insert the parameters.
+        if (arguments == null || offset >= document.textLength - 1 || document.getText(
+                TextRange.from(
+                    offset,
+                    1
+                )
+            ) != "{"
+        ) {
+            insertParametersLiveTemplate(editor)
         }
         else {
-            skipSquigglyBrackets(editor, caret)
+            skipParameters()
         }
+    }
+
+    private fun insertParametersLiveTemplate(editor: Editor) {
+        // arguments is not null, we checked when calling this function.
+        val template = TemplateImpl(
+            "",
+            arguments!!.mapIndexed { index: Int, argument: Argument ->
+                if (argument is RequiredArgument) "{\$__Variable$index\$}" else "[\$__Variable$index\$]"
+            }.joinToString(""),
+            ""
+        )
+        repeat(arguments.size) { template.addVariable(TextExpression(""), true) }
+        TemplateManager.getInstance(editor.project).startTemplate(editor, template)
+    }
+
+    private fun skipParameters() {
+        // TODO implement skipSquigglyBrackets, but for skipping over all parameters.
     }
 
     private fun skipSquigglyBrackets(editor: Editor, caret: CaretModel) {
@@ -97,12 +119,6 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         }
     }
 
-    private fun insertSquigglyBracketPair(editor: Editor, numberOfBracesPairs: Int) {
-        val template = TemplateImpl("", (0 until numberOfBracesPairs).joinToString("") { "{\$__Variable$it\$}" }, "")
-        repeat(numberOfBracesPairs) { template.addVariable(TextExpression(""), true) }
-        TemplateManager.getInstance(editor.project).startTemplate(editor, template)
-    }
-
     /**
      * Remove whitespaces that are inserted by the lookup text...
      */
@@ -112,6 +128,6 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         val offset = editor.caretModel.offset
         val textUntilOffset = document.text.run { dropLast(length - offset) }
         val indexOfLastChar = textUntilOffset.indexOfLast { it != ' ' }
-        document.deleteString(indexOfLastChar, offset)
+        document.deleteString(indexOfLastChar + 1, offset)
     }
 }

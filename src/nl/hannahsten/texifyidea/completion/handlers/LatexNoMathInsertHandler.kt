@@ -9,6 +9,7 @@ import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.codeInsight.template.impl.TextExpression
+import nl.hannahsten.texifyidea.lang.Argument
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
@@ -18,7 +19,7 @@ import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
+class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         val command = item.`object` as LatexCommand
@@ -31,7 +32,7 @@ class LatexNoMathInsertHandler : InsertHandler<LookupElement> {
                 insertPseudocodeEnd(command.command, context)
             }
             else -> {
-                LatexCommandArgumentInsertHandler().handleInsert(context, item)
+                LatexCommandArgumentInsertHandler(arguments).handleInsert(context, item)
             }
         }
 

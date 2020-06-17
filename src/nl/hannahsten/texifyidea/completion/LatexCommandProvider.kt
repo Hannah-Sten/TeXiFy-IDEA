@@ -62,13 +62,14 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         }
 
         result.addAllElements(LatexRegularCommand.values().flatMap { cmd ->
-            cmd.variationsForCompletion().mapIndexed { index: Int, tailText: String ->
+            cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, it ->
+                val tailText = it.joinToString("")
                 LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                     .withPresentableText(cmd.commandDisplay)
                     .bold()
                     .withTailText(tailText + " " + packageName(cmd), true)
                     .withTypeText(cmd.display)
-                    .withInsertHandler(LatexNoMathInsertHandler())
+                    .withInsertHandler(LatexNoMathInsertHandler(it.toList()))
                     .withIcon(TexifyIcons.DOT_COMMAND)
             }
         })
