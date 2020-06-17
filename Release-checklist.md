@@ -14,6 +14,7 @@
 - [ ] Update feature list in readme if needed
 - [ ] buildPlugin and release on GitHub (on the right branch), using the markdown changelog (then remove it from Changelog.md)
 - [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
+- [ ] Close the milestone
 
 Regexes to replace markdown by html:
 
