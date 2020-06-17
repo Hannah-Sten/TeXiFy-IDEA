@@ -56,6 +56,11 @@ For more information, see link:Automatic-package-importing[Automagically import 
 
 If you disable this, consider if TeXiFy should support your use case and please open an issue if so.
 
+[#automatic-compilation]
+== Option to enable automatic compilation
+_Since b0.6.8_
+
+See link:Automatic-compilation[Support for automatic compilation].
 
 [#continuous-preview]
 == Option to enable continuous preview of math and TikZ environments
@@ -74,11 +79,12 @@ _Since b0.6.10_
 
 When enabled, selecting a LaTeX command by for example double-clicking or using kbd:[Ctrl + W] will also include the backslash in the selection.
 
-[#automatic-compilation]
-== Option to enable automatic compilation
-_Since b0.6.8_
+[#package-structure-view]
+== Option to show LaTeX package files in the structure view
+_Since b0.7_
 
-See link:Automatic-compilation[Support for automatic compilation].
+When selected, included LaTeX packages will appear in the structure view.
+Because TeXiFy has to determine the location of every included package in order to show the file, this may take extra time to load the structure view after every reboot of IntelliJ.
 
 [#smart-quotes]
 == Option to enable smart quote substitution
@@ -125,34 +131,3 @@ Selecting a supported viewer as default means that you get forward and inverse s
 
 The supported pdf viewers are link:SumatraPDF-support[Sumatra] for Windows, and link:Evince-support[Evince] and link:Okular-support[Okular] for linux.
 You can use any other pdf viewer by selecting the option Custom PDF Viewer.
-
-
-[#labeldefining-commands]
-== Option to specify custom commands that also define a label
-
-Because TeXiFy does not automatically detect if your custom LaTeX command (defined with `\newcommand`) also includes a `\label` command using one of the parameters, you can enter the names of these commands manually in the settings.
-This will make sure that TeXiFy understands that your custom command specifies a label, and thus other features will work correctly, including the duplicate label inspection, the missing label inspection, structure view and autocomplete.
-//There also is an intention on `\newcommand`
-
-In the table, each entry has the following values.
-
-* Name of command: the LaTeX command
-* Position of label parameter: which (required) parameter of your custom command is input as value to the `\label`, so if you use `\label{#42}` then this number should be 42
-* Label previous command: should be true if your custom command labels the LaTeX command/environment that is right before that, for example using `\captionof` from the `caption` package.
-
-An example:
-
-[source,latex]
-----
-\documentclass{article}
-
-\newcommand{\italiclabel}[2]{
-\section{#1}\label{#2}
-}
-
-\begin{document}
-    \italiclabel{label me}{me:label}
-    If you add the italiclabel command with position 2 to the table in settings, then~\ref{me:label} will be recognized (and autocompleted).
-
-\end{document}
-----
