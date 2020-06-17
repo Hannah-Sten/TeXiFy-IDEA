@@ -19,6 +19,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
     override fun handleInsert(insertionContext: InsertionContext, lookupElement: LookupElement) {
+        removeWhiteSpaces(insertionContext)
+
         when (val `object` = lookupElement.getObject()) {
             is LatexCommands -> {
                 insertCommands(`object`, insertionContext)
@@ -99,5 +101,17 @@ class LatexCommandArgumentInsertHandler : InsertHandler<LookupElement> {
         val template = TemplateImpl("", (0 until numberOfBracesPairs).joinToString("") { "{\$__Variable$it\$}" }, "")
         repeat(numberOfBracesPairs) { template.addVariable(TextExpression(""), true) }
         TemplateManager.getInstance(editor.project).startTemplate(editor, template)
+    }
+
+    /**
+     * Remove whitespaces that are inserted by the lookup text...
+     */
+    private fun removeWhiteSpaces(context: InsertionContext) {
+        val editor = context.editor
+        val document = editor.document
+        val offset = editor.caretModel.offset
+        val textUntilOffset = document.text.run { dropLast(length - offset) }
+        val indexOfLastChar = textUntilOffset.indexOfLast { it != ' ' }
+        document.deleteString(indexOfLastChar, offset)
     }
 }
