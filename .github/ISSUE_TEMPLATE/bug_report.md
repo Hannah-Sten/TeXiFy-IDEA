@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 #### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version
-
+<!-- Write information here -->
 
 #### Operating System 
 <!-- Windows, Ubuntu, Arch Linux, MacOS, etc. -->
@@ -19,6 +19,16 @@ assignees: ''
 
 #### What I did (steps to reproduce)
 
+
+#### Minimal example to reproduce the problem
+<!-- Make sure you have read and understood how to create a minimal example: https://tex.meta.stackexchange.com/questions/228/ive-just-been-asked-to-write-a-minimal-example-what-is-that -->
+
+```latex
+\documentclass{article}
+\begin{document}
+    
+\end{document}
+```
 
 #### Expected behavior
 
