@@ -10,6 +10,7 @@ data class TexifySettingsState(
         var autoCompile: Boolean = false,
         var continuousPreview: Boolean = false,
         var includeBackslashInSelection: Boolean = false,
+        var showPackagesInStructureView: Boolean = false,
         var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
         var pdfViewer: PdfViewer = PdfViewer.firstAvailable()
 )

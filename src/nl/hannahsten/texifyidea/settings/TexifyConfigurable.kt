@@ -23,6 +23,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var autoCompile: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
     private lateinit var includeBackslashInSelection: JBCheckBox
+    private lateinit var showPackagesInStructureView: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var pdfViewer: ComboBox<String>
 
@@ -42,6 +43,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                 includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
+                showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                 pdfViewer = addPdfViewerOptions()
             })
@@ -86,6 +88,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 autoCompile.isSelected != settings.autoCompile ||
                 continuousPreview.isSelected != settings.continuousPreview ||
                 includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
+                showPackagesInStructureView.isSelected != settings.showPackagesInStructureView ||
                 automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
                 pdfViewer.selectedIndex != settings.pdfViewer.ordinal
     }
@@ -98,6 +101,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.autoCompile = autoCompile.isSelected
         settings.continuousPreview = continuousPreview.isSelected
         settings.includeBackslashInSelection = includeBackslashInSelection.isSelected
+        settings.showPackagesInStructureView = showPackagesInStructureView.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
     }
@@ -110,6 +114,7 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         autoCompile.isSelected = settings.autoCompile
         continuousPreview.isSelected = settings.continuousPreview
         includeBackslashInSelection.isSelected = settings.includeBackslashInSelection
+        showPackagesInStructureView.isSelected = settings.showPackagesInStructureView
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
         pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
     }

@@ -32,6 +32,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var autoCompile = false
     var continuousPreview = false
     var includeBackslashInSelection = false
+    var showPackagesInStructureView = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
@@ -44,6 +45,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
                 autoCompile = autoCompile,
                 continuousPreview = continuousPreview,
                 includeBackslashInSelection = includeBackslashInSelection,
+                showPackagesInStructureView = showPackagesInStructureView,
                 automaticQuoteReplacement = automaticQuoteReplacement,
                 pdfViewer = pdfViewer
         )
@@ -57,6 +59,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         autoCompile = state.autoCompile
         continuousPreview = state.continuousPreview
         includeBackslashInSelection = state.includeBackslashInSelection
+        showPackagesInStructureView = state.showPackagesInStructureView
         automaticQuoteReplacement = state.automaticQuoteReplacement
         pdfViewer = state.pdfViewer
     }
