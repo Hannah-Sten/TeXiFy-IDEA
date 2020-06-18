@@ -6,7 +6,6 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TextExpression
-import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.lang.Argument
@@ -14,6 +13,9 @@ import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.endOffset
+import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
  * @author Hannah Schellekens
@@ -24,18 +26,19 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
 
         when (val `object` = lookupElement.getObject()) {
             is LatexCommands -> {
-                insertCommands(`object`, insertionContext)
+                insertCommands(`object`, insertionContext, lookupElement)
             }
             is LatexMathCommand -> {
-                insertMathCommand(`object`, insertionContext)
+                insertMathCommand(`object`, insertionContext, lookupElement)
             }
             is LatexRegularCommand -> {
-                insertNoMathCommand(`object`, insertionContext)
+                insertNoMathCommand(`object`, insertionContext, lookupElement)
             }
         }
     }
 
-    private fun insertCommands(commands: LatexCommands, context: InsertionContext) {
+    private fun insertCommands(commands: LatexCommands, context: InsertionContext, lookupElement: LookupElement
+    ) {
         val optional: List<String> = commands.optionalParameters.keys.toList()
         if (optional.isEmpty()) return
 
@@ -47,41 +50,38 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         }
 
         if (cmdParameterCount > 0) {
-            insert(context, cmdParameterCount)
+            insert(context, lookupElement)
         }
     }
 
-    private fun insertMathCommand(mathCommand: LatexMathCommand, context: InsertionContext) {
+    private fun insertMathCommand(mathCommand: LatexMathCommand, context: InsertionContext, lookupElement: LookupElement
+    ) {
         if (mathCommand.autoInsertRequired()) {
-            insert(context, mathCommand.arguments
-                .count { it is RequiredArgument })
+            insert(context, lookupElement)
         }
     }
 
-    private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext) {
+    private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext, lookupElement: LookupElement
+    ) {
         if (noMathCommand.autoInsertRequired()) {
-            insert(context, noMathCommand.arguments
-                .count { it is RequiredArgument })
+            insert(context, lookupElement)
         }
     }
 
-    private fun insert(context: InsertionContext, numberOfBracesPairs: Int) {
+    private fun insert(context: InsertionContext, lookupElement: LookupElement) {
         val editor = context.editor
         val document = editor.document
         val caret = editor.caretModel
         val offset = caret.offset
         // When not followed by { or [ (whichever the first parameter starts with) insert the parameters.
-        if (arguments == null || offset >= document.textLength - 1 || document.getText(
-                TextRange.from(
-                    offset,
-                    1
-                )
-            ) != "{"
+        if (arguments == null ||
+            offset >= document.textLength - 1 ||
+            document.getText(TextRange.from(offset, 1)) !in setOf("{", "[")
         ) {
             insertParametersLiveTemplate(editor)
         }
         else {
-            skipParameters()
+            skipParameters(editor, lookupElement)
         }
     }
 
@@ -98,24 +98,14 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         TemplateManager.getInstance(editor.project).startTemplate(editor, template)
     }
 
-    private fun skipParameters() {
-        // TODO implement skipSquigglyBrackets, but for skipping over all parameters.
-    }
-
-    private fun skipSquigglyBrackets(editor: Editor, caret: CaretModel) {
+    private fun skipParameters(editor: Editor, lookupElement: LookupElement) {
         val document = editor.document
-        val offset = caret.offset
-        var depth = 0
-        for (i in offset until editor.document.textLength) {
-            when (document.getText(TextRange.from(i, 1))) {
-                "{" -> depth++
-                "}" -> if (--depth == 0) {
-                    caret.moveToOffset(i + 1)
-                    return
-                }
-                else -> {
-                }
-            }
+        val file = document.psiFile(editor.project ?: return)
+        val caret = editor.caretModel
+        val extraSpaces = lookupElement.lookupString.takeLastWhile { it == ' ' }.length
+        val psiElement = file?.findElementAt(caret.offset + extraSpaces) ?: return
+        if (psiElement.text in setOf("{", "[")) {
+            caret.moveToOffset((psiElement.parentOfType(LatexCommands::class)?.endOffset() ?: return) - extraSpaces)
         }
     }
 
