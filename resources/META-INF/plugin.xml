@@ -715,6 +715,12 @@
 
         <!-- Intentions -->
         <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexAddLabel</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
             <className>nl.hannahsten.texifyidea.intentions.LatexDisplayMathIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexDisplayMath</descriptionDirectoryName>

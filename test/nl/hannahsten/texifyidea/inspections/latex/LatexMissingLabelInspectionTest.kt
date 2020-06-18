@@ -167,42 +167,6 @@ class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
         """.trimIndent())
     }
 
-    fun testMissingChapterLabelQuickFix() {
-        testQuickFix("""
-            \begin{document}
-                \chapter{Chapter without label}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \chapter{Chapter without label}\label{ch:chapter-without-label}<caret>
-            \end{document}
-        """.trimIndent())
-    }
-
-    fun testMissingSectionLabelQuickFix() {
-        testQuickFix("""
-            \begin{document}
-                \section{Section without label}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \section{Section without label}\label{sec:section-without-label}<caret>
-            \end{document}
-        """.trimIndent())
-    }
-
-    fun testMissingSubsectionLabelQuickFix() {
-        testQuickFix("""
-            \begin{document}
-                \subsection{Subsection without label}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \subsection{Subsection without label}\label{subsec:subsection-without-label}<caret>
-            \end{document}
-        """.trimIndent())
-    }
-
     private fun testQuickFix(before: String, after: String) {
         myFixture.configureByText(LatexFileType, before)
         val quickFixes = myFixture.getAllQuickFixes()

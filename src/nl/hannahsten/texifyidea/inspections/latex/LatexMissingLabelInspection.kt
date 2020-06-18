@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.environmentsInFile
 import nl.hannahsten.texifyidea.util.files.openedEditor
-import java.util.*
+import java.util.EnumSet
 
 /**
  * Currently only works for Chapters, Sections and Subsections.
@@ -37,23 +37,12 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.commandsInFile()
-        for (command in commands) {
-            if (!Magic.Command.labeled.containsKey(command.name) || command.name == "\\item" || command.hasStar()) {
-                continue
-            }
+        file.commandsInFile().filter {
+            Magic.Command.labeled.containsKey(it.name) && it.name != "\\item" && !it.hasStar()
+        }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
 
-            addCommandDescriptor(command, descriptors, manager, isOntheFly)
-        }
-
-        val environments = file.environmentsInFile()
-        for (environment in environments) {
-            if (!Magic.Environment.labeled.containsKey(environment.environmentName)) {
-                continue
-            }
-
-            addEnvironmentDescriptor(environment, descriptors, manager, isOntheFly)
-        }
+        file.environmentsInFile().filter { Magic.Environment.labeled.containsKey(it.environmentName) }
+            .forEach { addEnvironmentDescriptor(it, descriptors, manager, isOntheFly) }
 
         return descriptors
     }
@@ -69,10 +58,11 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             return false
         }
 
+        // For adding the label, see LatexAddLabelIntention
         descriptors.add(manager.createProblemDescriptor(
                 command,
+                command.textRangeInParent,
                 "Missing label",
-                InsertLabelAfterCommandFix(),
                 ProblemHighlightType.WEAK_WARNING,
                 isOntheFly
         ))
@@ -117,39 +107,6 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             }
 
             return candidate
-        }
-    }
-
-    /**
-     * @author Hannah Schellekens
-     */
-    private class InsertLabelAfterCommandFix : LabelQuickFix() {
-
-        override fun getFamilyName() = "Insert label for this command"
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val command = descriptor.psiElement as LatexCommands
-
-            // Determine label name.
-            val required = command.requiredParameters
-            if (required.isEmpty()) {
-                return
-            }
-
-            val createdLabel = getUniqueLabelName(required[0].formatAsLabel(),
-                    Magic.Command.labeled[command.name!!], command.containingFile)
-
-            val factory = LatexPsiHelper(project)
-
-            // Insert label
-            // command -> NoMathContent -> Content -> Container containing the command
-            val commandContent = command.parent.parent
-            val labelCommand = commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
-
-            // Adjust caret offset.
-            val editor = command.containingFile.openedEditor() ?: return
-            val caret = editor.caretModel
-            caret.moveToOffset(labelCommand.endOffset())
         }
     }
 
