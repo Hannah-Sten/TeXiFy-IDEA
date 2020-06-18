@@ -17,8 +17,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameters
-import java.util.ArrayList
-import java.util.LinkedHashMap
+import java.util.*
 import java.util.regex.Pattern
 
 /**
@@ -175,18 +174,8 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
 
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
     return parameters.mapNotNull { it.requiredParam }
-            .map {
-                it.requiredParamContentList.map { content: LatexRequiredParamContent ->
-                    if (content.commands != null && content.parameterText == null) {
-                        content.commands!!.commandToken.text
-                    }
-                    else if (content.parameterText != null) {
-                        content.parameterText!!.text
-                    }
-                    else {
-                        null
-                    }
-                }.joinToString(separator = "")
+            .map { param ->
+                param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
             }
 }
 

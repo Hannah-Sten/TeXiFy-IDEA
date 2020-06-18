@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.Magic
@@ -144,7 +145,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
 
             val elt = LatexStructureViewCommandElement.newCommand(command) ?: continue
-            for (psiFile in command.getIncludedFiles(true)) {
+            for (psiFile in command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView)) {
                 if (BibtexFileType == psiFile.fileType) {
                     elt.addChild(BibtexStructureViewElement(psiFile))
                 }
