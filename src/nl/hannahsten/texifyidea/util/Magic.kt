@@ -376,7 +376,7 @@ object Magic {
          * All commands that define bibliography items.
          */
         @JvmField
-        val bibliographyItems = setOf("\\bibitem")
+        val bibliographyItems = setOf("\\" + LatexRegularCommand.BIBITEM.command)
 
         /**
          * All math operators without a leading slash.
@@ -441,13 +441,13 @@ object Magic {
          * All commands that define new documentclasses.
          */
         @JvmField
-        val classDefinitions = hashSetOf("\\ProvidesClass")
+        val classDefinitions = hashSetOf("\\" + LatexRegularCommand.PROVIDESCLASS.command)
 
         /**
          * All commands that define new packages.
          */
         @JvmField
-        val packageDefinitions = hashSetOf("\\ProvidesPackage")
+        val packageDefinitions = hashSetOf("\\" + LatexRegularCommand.PROVIDESPACKAGE.command)
 
         /**
          * All commands that define new environments.
