@@ -16,4 +16,6 @@ fun Set<Argument>.optionalPowerSet(): Set<Set<Argument>> = setOf(this) +
         mapNotNull {
             if (it is OptionalArgument) filter { e -> e != it }.toSet().optionalPowerSet()
             else null
-        }.flatten().toSet()
+        }.flatten()
+            .distinctBy { it.joinToString("") }
+            .toSet()

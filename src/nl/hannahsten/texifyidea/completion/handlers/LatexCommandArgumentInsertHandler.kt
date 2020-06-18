@@ -26,7 +26,7 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
 
         when (val `object` = lookupElement.getObject()) {
             is LatexCommands -> {
-                insertCommands(`object`, insertionContext, lookupElement)
+                insertCommands(insertionContext, lookupElement)
             }
             is LatexMathCommand -> {
                 insertMathCommand(`object`, insertionContext, lookupElement)
@@ -37,32 +37,17 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         }
     }
 
-    private fun insertCommands(commands: LatexCommands, context: InsertionContext, lookupElement: LookupElement
-    ) {
-        val optional: List<String> = commands.optionalParameters.keys.toList()
-        if (optional.isEmpty()) return
-
-        var cmdParameterCount = 0
-        try {
-            cmdParameterCount = optional[0].toInt()
-        }
-        catch (ignore: NumberFormatException) {
-        }
-
-        if (cmdParameterCount > 0) {
-            insert(context, lookupElement)
-        }
+    private fun insertCommands(context: InsertionContext, lookupElement: LookupElement) {
+        insert(context, lookupElement)
     }
 
-    private fun insertMathCommand(mathCommand: LatexMathCommand, context: InsertionContext, lookupElement: LookupElement
-    ) {
+    private fun insertMathCommand(mathCommand: LatexMathCommand, context: InsertionContext, lookupElement: LookupElement) {
         if (mathCommand.autoInsertRequired()) {
             insert(context, lookupElement)
         }
     }
 
-    private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext, lookupElement: LookupElement
-    ) {
+    private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext, lookupElement: LookupElement) {
         if (noMathCommand.autoInsertRequired()) {
             insert(context, lookupElement)
         }
@@ -74,9 +59,9 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         val caret = editor.caretModel
         val offset = caret.offset
         // When not followed by { or [ (whichever the first parameter starts with) insert the parameters.
-        if (arguments == null ||
-            offset >= document.textLength - 1 ||
-            document.getText(TextRange.from(offset, 1)) !in setOf("{", "[")
+        if (arguments != null && (
+                    offset >= document.textLength - 1 || document.getText(TextRange.from(offset, 1)) !in setOf("{", "[")
+                    )
         ) {
             insertParametersLiveTemplate(editor)
         }

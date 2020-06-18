@@ -23,7 +23,6 @@ import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.files.*
 import java.util.*
 import java.util.stream.Collectors
-import kotlin.math.min
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -149,21 +148,32 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                     continue
                 }
             }
-            val tailText = getTailText(cmd)
+            val arguments = getArgumentsFromDefinition(cmd)
             var typeText = getTypeText(cmd)
             val line = 1 + StringUtil.offsetToLineNumber(cmd.containingFile.text, cmd.textOffset)
             typeText = typeText + " " + cmd.containingFile.name + ":" + line
-            result.addElement(
-                LookupElementBuilder.create(cmd, cmdName.substring(1))
-                    .withPresentableText(cmdName)
-                    .bold()
-                    .withTailText(tailText, true)
-                    .withTypeText(typeText, true)
-                    .withInsertHandler(LatexCommandArgumentInsertHandler())
-                    .withIcon(TexifyIcons.DOT_COMMAND)
+            result.addAllElements(
+                arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
+                    LookupElementBuilder.create(cmd, cmdName.substring(1) + List(index) { " " }.joinToString(""))
+                        .withPresentableText(cmdName)
+                        .bold()
+                        .withTailText(args.joinToString(""), true)
+                        .withTypeText(typeText, true)
+                        .withInsertHandler(LatexCommandArgumentInsertHandler(args.toList()))
+                        .withIcon(TexifyIcons.DOT_COMMAND)
+                }
             )
         }
         result.addLookupAdvertisement(getKindWords())
+    }
+
+    private fun getArgumentsFromDefinition(commands: LatexCommands): List<Argument> {
+        val argumentString = getTailText(commands)
+        val argumentStrings = """(\[[\w\d]*\])|(\{[\w\d]*\})""".toRegex().findAll(argumentString).map { it.value }.toList()
+        return argumentStrings.map { it ->
+            if (it.startsWith("{")) RequiredArgument(it.drop(1).dropLast(1))
+            else OptionalArgument(it.drop(1).dropLast(1))
+        }
     }
 
     private fun getTypeText(commands: LatexCommands): String {
@@ -179,21 +189,19 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional:
-                        List<String> = LinkedList(commands.optionalParameters.keys)
-                var cmdParameterCount = 0
+                val optional: List<String> = LinkedList(commands.optionalParameters.keys)
+                var requiredParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {
-                        cmdParameterCount = optional[0].toInt()
+                        when (optional.size) {
+                            1 -> requiredParameterCount = optional[0].toInt()
+                            2 -> requiredParameterCount = optional[0].toInt() - 1
+                        }
                     }
                     catch (ignore: NumberFormatException) {
                     }
                 }
-                var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
-                if (cmdParameterCount > 4) {
-                    tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)"
-                }
-                tailText
+                (if (optional.size == 2) "[args]" else "") + Strings.repeat("{param}", requiredParameterCount)
             }
 
             "\\DeclarePairedDelimiter" -> "{param}"
@@ -208,10 +216,10 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                 (1..nrParams).joinToString("") { "{param}" }
             }
 
-            "\\NewDocumentCommand" -> {
+            "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
                 val paramSpecification = commands.requiredParameters[1].removeAll("null", " ")
                 paramSpecification.map { c ->
-                    if (Magic.Package.xparseParamSpecifiers[c] ?: return "") "{param}"
+                    if (Magic.Package.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"
                 }.joinToString("")
             }
