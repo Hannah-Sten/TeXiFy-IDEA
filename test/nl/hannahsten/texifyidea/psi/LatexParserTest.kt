@@ -11,6 +11,8 @@ class LatexParserTest : BasePlatformTestCase() {
             \c{[}
             
             ${'$'}\test{\cmd{a}[b]}${'$'}
+            
+            \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
         """.trimIndent())
         myFixture.checkHighlighting()
     }
