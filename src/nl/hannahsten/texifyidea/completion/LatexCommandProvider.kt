@@ -51,25 +51,14 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     }
 
     private fun addNormalCommands(result: CompletionResultSet) {
-        fun Set<Argument>.optionalPowerSet(): Set<Set<Argument>> = setOf(this) +
-                mapNotNull {
-                    if (it is OptionalArgument) filter { e -> e != it }.toSet().optionalPowerSet()
-                    else null
-                }.flatten().toSet()
-
-        fun LatexRegularCommand.variationsForCompletion(): List<String> {
-            return arguments.toSet().optionalPowerSet().map { it.joinToString("") }
-        }
-
         result.addAllElements(LatexRegularCommand.values().flatMap { cmd ->
-            cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, it ->
-                val tailText = it.joinToString("")
+            cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
                 LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                     .withPresentableText(cmd.commandDisplay)
                     .bold()
-                    .withTailText(tailText + " " + packageName(cmd), true)
+                    .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                     .withTypeText(cmd.display)
-                    .withInsertHandler(LatexNoMathInsertHandler(it.toList()))
+                    .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
                     .withIcon(TexifyIcons.DOT_COMMAND)
             }
         })
@@ -83,17 +72,17 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         commands.add(LatexRegularCommand.BEGIN)
 
         // Create autocomplete elements.
-        result.addAllElements(ContainerUtil.map2List(
-            commands
-        ) { cmd: LatexCommand ->
-            val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler() else LatexMathInsertHandler()
-            LookupElementBuilder.create(cmd, cmd.command)
-                .withPresentableText(cmd.commandDisplay)
-                .bold()
-                .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
-                .withTypeText(cmd.display)
-                .withInsertHandler(handler)
-                .withIcon(TexifyIcons.DOT_COMMAND)
+        result.addAllElements(commands.flatMap { cmd: LatexCommand ->
+            cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
+                val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler(args.toList()) else LatexMathInsertHandler(args.toList())
+                LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
+                    .withPresentableText(cmd.commandDisplay)
+                    .bold()
+                    .withTailText(args.joinToString("") + " " + packageName(cmd), true)
+                    .withTypeText(cmd.display)
+                    .withInsertHandler(handler)
+                    .withIcon(TexifyIcons.DOT_COMMAND)
+            }
         })
     }
 
