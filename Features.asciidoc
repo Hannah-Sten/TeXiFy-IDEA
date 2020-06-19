@@ -159,6 +159,7 @@ These settings can be found in menu:File[Settings > Languages & Frameworks > TeX
 * link:Global-settings#backslash-selection[Option to include the backslash when selecting a LaTeX command]
 * link:Global-settings#package-structure-view[Option to show LaTeX package files in the structure view]
 * link:Global-settings#smart-quotes[Option to enable smart quote substitution]
+* link:Global-settings#missing-label-minimum-level[Option to change the minimum sectioning level for which the missing label inspection is shown]
 * link:Global-settings#pdfviewer[Option to select default PDF viewer]
 
 === Project settings
@@ -326,7 +327,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 See link:Intentions[Intentions].
 
-* Add label defining command to list
+* Add label
 * Toggle inline/display math mode
 * Insert comments to disable the formatter
 * Change to `\left..\right`
