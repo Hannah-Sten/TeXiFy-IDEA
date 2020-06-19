@@ -1,6 +1,6 @@
-== Add label defining command to list
+== Add label
 
-Add a command to the label defining commands list in the settings.
+Add a label to a sectioning command. Also see link:Conventions#Missing-labels[Missing label inspection].
 
 == Toggle inline/display math mode
 
