@@ -20,7 +20,7 @@ open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
 
         val element = file?.findElementAt(editor?.caretModel?.offset ?: return false) ?: return false
         val selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
-        return selected.name in Magic.Command.labeled
+        return selected.name in Magic.Command.labeledPrefixes
     }
 
     override fun startInWriteAction() = true
@@ -40,7 +40,7 @@ open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         }
 
         val createdLabel = getUniqueLabelName(required[0].formatAsLabel(),
-            Magic.Command.labeled[command.name!!], command.containingFile)
+            Magic.Command.labeledPrefixes[command.name!!], command.containingFile)
 
         val factory = LatexPsiHelper(project)
 

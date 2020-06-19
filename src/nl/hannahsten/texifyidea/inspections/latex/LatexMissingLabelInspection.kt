@@ -4,19 +4,24 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.settings.TexifyConfigurable
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.environmentsInFile
 import nl.hannahsten.texifyidea.util.files.openedEditor
+import org.jetbrains.annotations.Nls
 import java.util.EnumSet
 
 /**
@@ -37,8 +42,12 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
+        val minimumLevel = Magic.Command.labeledLevels[TexifySettings.getInstance().missingLabelMinimumLevel] ?: error("No valid minimum level given")
+        val labeledCommands = Magic.Command.labeledLevels.keys.filter { command ->
+            Magic.Command.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
+        }.map { "\\" + it.command }
         file.commandsInFile().filter {
-            Magic.Command.labeled.containsKey(it.name) && it.name != "\\item" && !it.hasStar()
+            labeledCommands.contains(it.name) && it.name != "\\item" && !it.hasStar()
         }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
 
         file.environmentsInFile().filter { Magic.Environment.labeled.containsKey(it.environmentName) }
@@ -61,10 +70,11 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         // For adding the label, see LatexAddLabelIntention
         descriptors.add(manager.createProblemDescriptor(
                 command,
-                command.textRangeInParent,
                 "Missing label",
+                arrayOf(InsertLabelAfterCommandFix(), ChangeMinimumLabelLevelFix()),
                 ProblemHighlightType.WEAK_WARNING,
-                isOntheFly
+                isOntheFly,
+                false
         ))
 
         return true
@@ -86,6 +96,22 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         ))
 
         return true
+    }
+
+    /**
+     * Open the settings page so the user can change the minimum labeled level.
+     */
+    private class ChangeMinimumLabelLevelFix : LocalQuickFix {
+        @Nls
+        override fun getFamilyName(): String {
+            return "Change minimum sectioning level"
+        }
+
+        override fun startInWriteAction() = false
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyConfigurable::class.java)
+        }
     }
 
     abstract class LabelQuickFix : LocalQuickFix {
@@ -110,8 +136,23 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         }
     }
 
+    /**
+     * This is also an intention, but in order to keep the same alt+enter+enter functionality (because we have an other
+     * quickfix as well) we keep it as a quickfix also.
+     */
+    private class InsertLabelAfterCommandFix : LabelQuickFix() {
+
+        // It has to appear in alphabetical order before the other quickfix
+        override fun getFamilyName() = "Add label for this command"
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val command = descriptor.psiElement as LatexCommands
+            LatexAddLabelIntention().invoke(project, command.containingFile.openedEditor(), command.containingFile)
+        }
+    }
+
     private class InsertLabelInEnvironmentFix : LabelQuickFix() {
-        override fun getFamilyName() = "Insert label for this environment"
+        override fun getFamilyName() = "Add label for this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEnvironment
