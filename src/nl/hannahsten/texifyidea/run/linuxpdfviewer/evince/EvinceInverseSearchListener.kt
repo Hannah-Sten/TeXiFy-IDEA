@@ -6,6 +6,8 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.BufferedReader
@@ -19,7 +21,9 @@ import java.io.InputStreamReader
  *
  * @author Thomas Schouten
  */
-class EvinceInverseSearchListener {
+object EvinceInverseSearchListener {
+
+    private var currentCoroutineJob: Job? = null
 
     /**
      * Starts a listener which listens for inverse search actions from Evince.
@@ -46,7 +50,7 @@ class EvinceInverseSearchListener {
 
         // Run in a coroutine so the main thread can continue
         // If the program finishes, the listener will stop as well
-        GlobalScope.launch {
+        currentCoroutineJob = GlobalScope.launch {
             startListening()
         }
     }
@@ -62,7 +66,7 @@ class EvinceInverseSearchListener {
             val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
             var line: String? = bufferedReader.readLine()
 
-            while (line != null) {
+            while (line != null && currentCoroutineJob?.isActive == true) {
                 // Check if a SyncSource signal appeared from Evince and if so, read the contents
                 if (line.contains("interface=org.gnome.evince.Window; member=SyncSource")) {
                     // Get the value between quotes
@@ -82,6 +86,11 @@ class EvinceInverseSearchListener {
                     syncSource(filename, lineNumber)
                 }
 
+                // Check whether we would block before doing a blocking readLine call
+                // This is to ensure we can quickly stop this coroutine on plugin unload
+                while (!bufferedReader.ready()) {
+                    if (currentCoroutineJob?.isActive == false) return
+                }
                 line = bufferedReader.readLine()
             }
         }
@@ -108,5 +117,9 @@ class EvinceInverseSearchListener {
         catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    suspend fun unload() {
+        currentCoroutineJob?.cancelAndJoin()
     }
 }
