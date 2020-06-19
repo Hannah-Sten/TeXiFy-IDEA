@@ -7,20 +7,29 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import kotlin.math.max
 
 /**
  * @author Hannah Schellekens
  */
 open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
 
+    private fun findCommand(editor: Editor?, file: PsiFile?): LatexCommands? {
+        val offset = editor?.caretModel?.offset ?: return null
+        val element = file?.findElementAt(offset) ?: return null
+        // Also check one position back, because we want it to trigger in \section{a}<caret>
+        return element as? LatexCommands ?: element.parentOfType(LatexCommands::class)
+        ?: file.findElementAt(max(0, offset - 1)) as? LatexCommands
+        ?: file.findElementAt(max(0, offset - 1))?.parentOfType(LatexCommands::class)
+        ?: return null
+    }
+
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (file?.isLatexFile() == false) {
             return false
         }
 
-        val element = file?.findElementAt(editor?.caretModel?.offset ?: return false) ?: return false
-        val selected = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return false
-        return selected.name in Magic.Command.labeledPrefixes
+        return findCommand(editor, file)?.name in Magic.Command.labeledPrefixes
     }
 
     override fun startInWriteAction() = true
@@ -30,8 +39,7 @@ open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
             return
         }
 
-        val element = file.findElementAt(editor.caretModel.offset) ?: return
-        val command = element as? LatexCommands ?: element.parentOfType(LatexCommands::class) ?: return
+        val command = findCommand(editor, file) ?: return
 
         // Determine label name.
         val required = command.requiredParameters

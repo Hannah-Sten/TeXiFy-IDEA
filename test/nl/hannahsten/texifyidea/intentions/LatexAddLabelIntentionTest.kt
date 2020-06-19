@@ -22,4 +22,22 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
             \end{document}
         """.trimIndent())
     }
+
+    fun testMissingChapterLabelAtEnd() {
+        myFixture.configureByText(
+            LatexFileType, """
+            \begin{document}
+                \chapter{Chapter without label}<caret>
+            \end{document}
+        """.trimIndent())
+        val intentions = myFixture.availableIntentions
+        writeCommand(myFixture.project) {
+            intentions.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+        }
+        myFixture.checkResult("""
+            \begin{document}
+                \chapter{Chapter without label}\label{ch:chapter-without-label}<caret>
+            \end{document}
+        """.trimIndent())
+    }
 }

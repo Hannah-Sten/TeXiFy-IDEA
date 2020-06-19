@@ -170,7 +170,6 @@ class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
     private fun testQuickFix(before: String, after: String) {
         myFixture.configureByText(LatexFileType, before)
         val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
         writeCommand(myFixture.project) {
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
