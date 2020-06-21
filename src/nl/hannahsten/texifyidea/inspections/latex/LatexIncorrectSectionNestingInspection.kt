@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.openedEditor
 import nl.hannahsten.texifyidea.util.lineIndentation
+import nl.hannahsten.texifyidea.util.replaceString
 
 /**
  * @author Johannes Berger
@@ -31,10 +32,17 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
 
         val sectionCommands = LatexCommandsIndex.getCommandsByNames(file, "\\section", "\\subsection", "\\subsubsection", "\\paragraph", "\\subparagraph").sortedBy { it.textOffset }
         sectionCommands.forEachIndexed { index, command ->
-            if (startsWithSubCommand(command, index)
-                    || subsubsectionAftersection(command, sectionCommands, index)
-                    || subParagraphWithoutParagraph(command, sectionCommands, index)) {
-                descriptors.add(manager.createProblemDescriptor(command, "Incorrect nesting", InsertParentCommandFix(), ProblemHighlightType.WARNING, isOntheFly))
+            if (startsWithSubCommand(command, index) ||
+                    subsubsectionAfterSection(command, sectionCommands, index) ||
+                    subParagraphWithoutParagraph(command, sectionCommands, index)) {
+
+                descriptors.add(manager.createProblemDescriptor(command,
+                        "Incorrect nesting",
+                        arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
+                        ProblemHighlightType.WEAK_WARNING,
+                        isOntheFly,
+                        false)
+                )
             }
         }
         return descriptors
@@ -45,7 +53,7 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
         return ((level == 2 || level == 3 || level == 5) && index == 0)
     }
 
-    private fun subsubsectionAftersection(command: LatexCommands, sectionCommands: List<LatexCommands>, index: Int) =
+    private fun subsubsectionAfterSection(command: LatexCommands, sectionCommands: List<LatexCommands>, index: Int) =
             command.level() == 3 && sectionCommands[index - 1].level() == 1
 
     private fun subParagraphWithoutParagraph(command: LatexCommands, sectionCommands: List<LatexCommands>, index: Int) =
@@ -72,9 +80,20 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             val caret = command.containingFile.openedEditor()?.caretModel
             document.insertString(offset, replacement)
             caret?.moveToOffset(offset + newParentCommand.length + 1)
-
         }
     }
 
+    private class ChangeToParentCommandFix : LocalQuickFix {
+
+        override fun getFamilyName() = "Change to parent command"
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val command = descriptor.psiElement as LatexCommands
+            val document = command.containingFile.document() ?: return
+            val range = command.commandToken.textRange
+            val newParentCommand = command.commandToken.text.replaceFirst("sub", "")
+            document.replaceString(range, newParentCommand)
+        }
+    }
 }
 

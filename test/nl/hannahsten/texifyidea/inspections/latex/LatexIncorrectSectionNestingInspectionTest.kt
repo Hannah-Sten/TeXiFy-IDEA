@@ -14,7 +14,7 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
 
     @Test
     fun `test document missing subsection warning`() {
-        testQuickFix("""
+        testInsertMissingParentCommandQuickFix("""
             \begin{document}
                 \section{}
                 \subsubsection{}
@@ -29,8 +29,23 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
     }
 
     @Test
+    fun `test change subsubsection to subsection quick fix`() {
+        testChangeToParentCommandQuickFix("""
+            \begin{document}
+                \section{}
+                \subsubsection{}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \section{}
+                \subsection{}
+            \end{document}
+        """.trimIndent())
+    }
+
+    @Test
     fun `test document starting with subsection warning`() {
-        testQuickFix("""
+        testInsertMissingParentCommandQuickFix("""
             \begin{document}
                 \subsection{}
             \end{document}
@@ -44,7 +59,7 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
 
     @Test
     fun `test document starting with subparagraph warning`() {
-        testQuickFix("""
+        testInsertMissingParentCommandQuickFix("""
             \begin{document}
                 \subparagraph{}
             \end{document}
@@ -58,7 +73,7 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
 
     @Test
     fun `test subparagraph after section warning`() {
-        testQuickFix("""
+        testInsertMissingParentCommandQuickFix("""
             \begin{document}
                 \section{}
                 \subparagraph{}
@@ -77,10 +92,10 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
         myFixture.configureByText(LatexFileType, """
              \begin{document}
                 \section{}
-                <warning descr="Incorrect nesting">\subsubsection{}</warning>
+                <weak_warning descr="Incorrect nesting">\subsubsection{}</weak_warning>
              \end{document}
          """.trimIndent())
-        myFixture.checkHighlighting(true, false, false, false)
+        myFixture.checkHighlighting(false, false, true, false)
     }
 
     @Test
@@ -99,14 +114,24 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
                 \subparagraph{}
              \end{document}
          """.trimIndent())
-        myFixture.checkHighlighting(true, false, false, false)
+        myFixture.checkHighlighting(false, false, true, false)
     }
 
-    private fun testQuickFix(before: String, after: String) {
+    private fun testInsertMissingParentCommandQuickFix(before: String, after: String) {
         myFixture.configureByText(LatexFileType, before)
         val quickFixes = myFixture.getAllQuickFixes()
         writeCommand(myFixture.project) {
-            quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+            quickFixes.first { it.familyName == "Insert missing parent command" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+        }
+
+        myFixture.checkResult(after)
+    }
+
+    private fun testChangeToParentCommandQuickFix(before: String, after: String) {
+        myFixture.configureByText(LatexFileType, before)
+        val quickFixes = myFixture.getAllQuickFixes()
+        writeCommand(myFixture.project) {
+            quickFixes.first { it.familyName == "Change to parent command" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
         myFixture.checkResult(after)
