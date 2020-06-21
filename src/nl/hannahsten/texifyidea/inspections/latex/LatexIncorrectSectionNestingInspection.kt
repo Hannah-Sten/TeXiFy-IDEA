@@ -96,4 +96,3 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
         }
     }
 }
-
