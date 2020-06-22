@@ -10,9 +10,9 @@ import nl.hannahsten.texifyidea.util.requiredParameter
 import nl.hannahsten.texifyidea.util.requiredParameters
 import java.io.Serializable
 import java.util.Collections
-import java.util.HashMap
 import java.util.HashSet
 import java.util.Spliterator
+import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
@@ -67,7 +67,7 @@ object CommandManager : Iterable<String?>, Serializable {
      * `\three => C`<br></br>
      * `\drie => C`
      */
-    private val aliases: MutableMap<String, MutableSet<String>>
+    private val aliases = ConcurrentHashMap<String, MutableSet<String>>()
 
     /**
      * Maps an original command to the set of current aliases.
@@ -99,7 +99,7 @@ object CommandManager : Iterable<String?>, Serializable {
      * `\epsilon => A`<br></br>
      * `\varepsilon => B`
      */
-    private val original: MutableMap<String, Set<String>>
+    private val original = ConcurrentHashMap<String, Set<String>>()
 
     /**
      * We have to somehow know when we need to look for new aliases.
@@ -171,12 +171,10 @@ object CommandManager : Iterable<String?>, Serializable {
      * @param alias
      * The alias to register for the command starting with a backslash. This could be either
      * a new command, or an existing command *E.g. `\start`*
-     * @throws IllegalArgumentException
-     * When the given command does not exixt.
      */
     @Throws(IllegalArgumentException::class)
     fun registerAlias(command: String, alias: String) {
-        require(isRegistered(command)) { "command '$command' has not been registererd" }
+        if (!isRegistered(command)) return
         val aliasSet = aliases[command]!!
 
         // If the alias is already assigned: unassign it.
@@ -547,13 +545,5 @@ object CommandManager : Iterable<String?>, Serializable {
         return "CommandManager{" + "aliases=" + aliases +
                 ", original=" + original +
                 '}'
-    }
-
-    /**
-     * Create a new command manager without any commands registered.
-     */
-    init {
-        aliases = HashMap()
-        original = HashMap()
     }
 }

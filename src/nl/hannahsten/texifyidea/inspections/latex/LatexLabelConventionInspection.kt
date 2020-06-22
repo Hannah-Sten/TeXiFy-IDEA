@@ -54,7 +54,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun getLabelPrefix(labeledCommand: PsiElement): String? {
             return when (labeledCommand) {
                 is LatexCommands -> {
-                    Magic.Command.labeled.getOrDefault(labeledCommand.name, null)
+                    Magic.Command.labeledPrefixes.getOrDefault(labeledCommand.name, null)
                 }
                 is LatexEnvironment -> {
                     Magic.Environment.labeled.getOrDefault(labeledCommand.environmentName, null)

@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
+import nl.hannahsten.texifyidea.util.files.isLatexFile
 
 /**
  * @author Sten Wessel
@@ -83,7 +84,17 @@ class LatexTypedHandler : TypedHandlerDelegate() {
      * at the end of a line would be impossible (because postfix templates).
      */
     override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        return if (charTyped != '.') super.checkAutoPopup(charTyped, project, editor, file) else Result.STOP
+        return when {
+            charTyped != '.' -> {
+                super.checkAutoPopup(charTyped, project, editor, file)
+            }
+            file.isLatexFile() -> {
+                Result.STOP
+            }
+            else -> {
+                super.checkAutoPopup(charTyped, project, editor, file)
+            }
+        }
     }
 
     /**
