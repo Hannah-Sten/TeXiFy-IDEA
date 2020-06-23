@@ -1,110 +1,93 @@
-package nl.hannahsten.texifyidea.inspections.latex;
+package nl.hannahsten.texifyidea.inspections.latex
 
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.patterns.PlatformPatterns;
-import com.intellij.patterns.PsiElementPattern;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiRecursiveElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.insight.InsightGroup;
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase;
-import nl.hannahsten.texifyidea.psi.LatexMathContent;
-import nl.hannahsten.texifyidea.psi.LatexTypes;
-import nl.hannahsten.texifyidea.util.Magic;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.List;
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.Project
+import com.intellij.patterns.PlatformPatterns
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiRecursiveElementVisitor
+import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.psi.LatexMathContent
+import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.util.Magic
+import org.jetbrains.annotations.Nls
 
 /**
- * Detects non-escaped common math functions like <em>sin</em>, <em>cos</em> and replaces them
- * with {@code \sin}, {@code \cos}.
+ * Detects non-escaped common math functions like *sin*, *cos* and replaces them
+ * with `\sin`, `\cos`.
  *
  * @author Sten Wessel
  */
-public class LatexMathOperatorEscapeInspection extends TexifyInspectionBase {
-
-    @NotNull
-    @Override
-    public InsightGroup getInspectionGroup() {
-        return InsightGroup.LATEX;
-    }
+class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
+    override val inspectionGroup: InsightGroup
+        get() = InsightGroup.LATEX
 
     @Nls
-    @NotNull
-    @Override
-    public String getDisplayName() {
-        return "Non-escaped common math operators";
+    override fun getDisplayName(): String {
+        return "Non-escaped common math operators"
     }
 
-    @NotNull
-    @Override
-    public String getInspectionId() {
-        return "MathOperatorEscape";
-    }
+    override val inspectionId: String
+        get() = "MathOperatorEscape"
 
-    @NotNull
-    @Override
-    public List<ProblemDescriptor> inspectFile(@NotNull PsiFile file, @NotNull InspectionManager manager,
-                                               boolean isOnTheFly) {
-        List<ProblemDescriptor> descriptors = descriptorList();
-
-        PsiElementPattern.Capture<PsiElement> pattern = PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT_WORD);
-        Collection<LatexMathContent> envs = PsiTreeUtil.findChildrenOfType(file, LatexMathContent.class);
-        for (LatexMathContent env : envs) {
-            env.acceptChildren(new PsiRecursiveElementVisitor() {
-                @Override
-                public void visitElement(PsiElement element) {
-                    ProgressManager.checkCanceled();
+    override fun inspectFile(
+        file: PsiFile, manager: InspectionManager,
+        isOntheFly: Boolean
+    ): List<ProblemDescriptor> {
+        val descriptors = descriptorList()
+        val pattern = PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT_WORD)
+        val envs =
+            PsiTreeUtil.findChildrenOfType(file, LatexMathContent::class.java)
+        for (env in envs) {
+            env.acceptChildren(object : PsiRecursiveElementVisitor() {
+                override fun visitElement(element: PsiElement) {
+                    ProgressManager.checkCanceled()
                     if (pattern.accepts(element)) {
-                        if (Magic.Command.slashlessMathOperators.contains(element.getText())) {
-                            descriptors.add(manager.createProblemDescriptor(
+                        if (Magic.Command.slashlessMathOperators.contains(element.text)) {
+                            descriptors.add(
+                                manager.createProblemDescriptor(
                                     element,
                                     "Non-escaped math operator",
-                                    new EscapeMathOperatorFix(),
+                                    EscapeMathOperatorFix(),
                                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                    isOnTheFly
-                            ));
+                                    isOntheFly
+                                )
+                            )
                         }
                     }
                     else {
-                        super.visitElement(element);
+                        super.visitElement(element)
                     }
                 }
-            });
+            })
         }
-
-        return descriptors;
+        return descriptors
     }
 
     /**
      * @author Sten Wessel
      */
-    private static class EscapeMathOperatorFix implements LocalQuickFix {
-
+    private class EscapeMathOperatorFix : LocalQuickFix {
         @Nls
-        @NotNull
-        @Override
-        public String getFamilyName() {
-            return "Escape math operator";
+        override fun getFamilyName(): String {
+            return "Escape math operator"
         }
 
-        @Override
-        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-            PsiElement element = descriptor.getPsiElement();
-            Document document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
-            if (document != null) {
-                document.insertString(element.getTextOffset(), "\\");
-            }
+        override fun applyFix(
+            project: Project,
+            descriptor: ProblemDescriptor
+        ) {
+            val element = descriptor.psiElement
+            val document =
+                PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+            document?.insertString(element.textOffset, "\\")
         }
     }
 }
