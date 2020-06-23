@@ -498,12 +498,6 @@ class CommandManagerTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun testExceptionRegisterAlias() {
-        resetup(defaultAliasGroups)
-        manager!!.registerAlias("\\GoodDaySir", "\\BullShitStuffs")
-    }
-
-    @Test(expected = IllegalArgumentException::class)
     fun testExceptionGetAliasesOriginal() {
         resetup(defaultAliasGroups)
         manager!!.getAliasesFromOriginal("\\hihihahaheejheej")

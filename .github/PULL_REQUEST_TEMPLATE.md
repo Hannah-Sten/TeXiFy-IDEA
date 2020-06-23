@@ -1,5 +1,5 @@
 <!-- The issue that is fixed by this PR, if applicable: -->
-Fixes #
+Fix #
 
 #### Summary of additions and changes
 
