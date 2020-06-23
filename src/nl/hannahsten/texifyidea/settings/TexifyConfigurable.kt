@@ -4,11 +4,12 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.util.Magic
+import java.awt.Component
 import java.awt.FlowLayout
-import javax.swing.BoxLayout
-import javax.swing.JComponent
-import javax.swing.JPanel
+import javax.swing.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -23,7 +24,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
     private lateinit var autoCompile: JBCheckBox
     private lateinit var continuousPreview: JBCheckBox
     private lateinit var includeBackslashInSelection: JBCheckBox
+    private lateinit var showPackagesInStructureView: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
+    private lateinit var missingLabelMinimumLevel: ComboBox<LatexRegularCommand>
     private lateinit var pdfViewer: ComboBox<String>
 
     override fun getId() = "TexifyConfigurable"
@@ -42,7 +45,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
                 continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
                 includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
+                showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                 automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
+                missingLabelMinimumLevel = addMissingLabelMinimumLevel()
                 pdfViewer = addPdfViewerOptions()
             })
         }
@@ -57,6 +62,21 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
             add(JBLabel("Smart quote substitution: "))
             add(list)
         })
+        return list
+    }
+
+    private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexRegularCommand> {
+        val list = ComboBox(Magic.Command.labeledLevels.keys.toTypedArray())
+        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+            add(JBLabel("Minimum sectioning level which should trigger the missing label inspection: "))
+            add(list)
+        })
+        list.renderer = object : DefaultListCellRenderer() {
+            override fun getListCellRendererComponent(list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, celHasFocus: Boolean): Component {
+                val item = (value as? LatexRegularCommand)?.command ?: value
+                return super.getListCellRendererComponent(list, item, index, isSelected, celHasFocus)
+            }
+        }
         return list
     }
 
@@ -86,7 +106,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
                 autoCompile.isSelected != settings.autoCompile ||
                 continuousPreview.isSelected != settings.continuousPreview ||
                 includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
+                showPackagesInStructureView.isSelected != settings.showPackagesInStructureView ||
                 automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+                missingLabelMinimumLevel.selectedItem != settings.missingLabelMinimumLevel ||
                 pdfViewer.selectedIndex != settings.pdfViewer.ordinal
     }
 
@@ -98,7 +120,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         settings.autoCompile = autoCompile.isSelected
         settings.continuousPreview = continuousPreview.isSelected
         settings.includeBackslashInSelection = includeBackslashInSelection.isSelected
+        settings.showPackagesInStructureView = showPackagesInStructureView.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
+        settings.missingLabelMinimumLevel = missingLabelMinimumLevel.selectedItem as LatexRegularCommand
         settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
     }
 
@@ -110,7 +134,9 @@ class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfi
         autoCompile.isSelected = settings.autoCompile
         continuousPreview.isSelected = settings.continuousPreview
         includeBackslashInSelection.isSelected = settings.includeBackslashInSelection
+        showPackagesInStructureView.isSelected = settings.showPackagesInStructureView
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
+        missingLabelMinimumLevel.selectedItem = settings.missingLabelMinimumLevel
         pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
     }
 }

@@ -194,6 +194,7 @@ enum class LatexRegularCommand(
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
     OE("oe", display = "œ"),
+    ONLYIFSTANDALONE("onlyifstandalone", "code".asRequired()), // dependency = standalone, but either class or package
     CAPITAL_OE("OE", display = "Œ"),
     ODDSIDEMARGIN("oddsidemargin"),
     ONECOLUMN("onecolumn"),
@@ -220,6 +221,8 @@ enum class LatexRegularCommand(
     POUNDS("pounds", display = "£"),
     PRINTBIBLIOGRAPHY("printbibliography", dependency = BIBLATEX),
     PRINTINDEX("printindex"),
+    PROVIDESCLASS("providesclass"),
+    PROVIDESPACKAGE("providespackage"),
     R("r", display = "˚ (accent)"),
     RBRACK("rbrack", display = "]"),
     RPAREN("rparen", display = ")", dependency = MATHTOOLS),

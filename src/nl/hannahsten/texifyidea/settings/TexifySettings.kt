@@ -4,6 +4,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
@@ -32,7 +33,9 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var autoCompile = false
     var continuousPreview = false
     var includeBackslashInSelection = false
+    var showPackagesInStructureView = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
+    var missingLabelMinimumLevel = LatexRegularCommand.SUBSECTION
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
     override fun getState(): TexifySettingsState? {
@@ -44,7 +47,9 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
                 autoCompile = autoCompile,
                 continuousPreview = continuousPreview,
                 includeBackslashInSelection = includeBackslashInSelection,
+                showPackagesInStructureView = showPackagesInStructureView,
                 automaticQuoteReplacement = automaticQuoteReplacement,
+                missingLabelMinimumLevel = missingLabelMinimumLevel,
                 pdfViewer = pdfViewer
         )
     }
@@ -57,7 +62,9 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         autoCompile = state.autoCompile
         continuousPreview = state.continuousPreview
         includeBackslashInSelection = state.includeBackslashInSelection
+        showPackagesInStructureView = state.showPackagesInStructureView
         automaticQuoteReplacement = state.automaticQuoteReplacement
+        missingLabelMinimumLevel = state.missingLabelMinimumLevel
         pdfViewer = state.pdfViewer
     }
 }

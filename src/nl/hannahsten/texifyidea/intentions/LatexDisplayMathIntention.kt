@@ -5,8 +5,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.endCommand
+import nl.hannahsten.texifyidea.util.environmentName
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.replaceString
 
 /**
  * @author Hannah Schellekens

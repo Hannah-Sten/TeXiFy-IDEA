@@ -1,0 +1,17 @@
+package nl.hannahsten.texifyidea.reference
+
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.file.LatexFileType
+
+class InputFileReferenceTest : BasePlatformTestCase() {
+    override fun getTestDataPath(): String {
+        return "test/resources/reference"
+    }
+
+    fun testRename() {
+        myFixture.configureByFile("oldname.tex")
+        myFixture.configureByText(LatexFileType, "\\input{oldname<caret>.tex}")
+        myFixture.renameElementAtCaret("newname.tex")
+        myFixture.checkResult("\\input{newname.tex}")
+    }
+}

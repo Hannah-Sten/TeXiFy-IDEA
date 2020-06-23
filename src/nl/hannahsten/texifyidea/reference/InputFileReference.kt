@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.*
+import java.io.File
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -121,9 +122,13 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     override fun handleElementRename(newElementName: String): PsiElement {
         // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
         // It seems to be problematic to find the old filename we want to replace
-        val commandText = "${myElement?.name}{$newElementName}"
+        // Since the parameter content may be a path, but we are just given a filename, just replace the filename
+        // We guess the filename is after the last occurrence of /
         val oldNode = myElement?.node
-        val newNode = LatexPsiHelper(element.project).createFromText(commandText).firstChild.node
+        val default = "${myElement?.name}{$newElementName}"
+        // Recall that \ is a file separator on Windows
+        val newText = oldNode?.text?.trimStart('\\')?.replaceAfterLast(File.separator, "$newElementName}", default)?.apply { "\\" + this } ?: default
+        val newNode = LatexPsiHelper(element.project).createFromText(newText).firstChild.node ?: return myElement
         if (oldNode == null) {
             myElement?.parent?.node?.addChild(newNode)
         }

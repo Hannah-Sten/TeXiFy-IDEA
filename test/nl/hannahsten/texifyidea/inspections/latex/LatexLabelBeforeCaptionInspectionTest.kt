@@ -4,7 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
-class LabelBeforeCaptionInspectionTest : BasePlatformTestCase() {
+class LatexLabelBeforeCaptionInspectionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/labelaftercaption"
     }

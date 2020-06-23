@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
@@ -36,6 +36,13 @@ object Magic {
 
         @JvmField
         val noQuickFix: LocalQuickFix? = null
+
+        /**
+         * Abbreviations not detected by [Pattern.abbreviation].
+         */
+        val unRegexableAbbreviations = listOf(
+            "et al."
+        )
 
         @JvmField
         val latexDemoText = """
@@ -277,23 +284,58 @@ object Magic {
         )
 
         /**
-         * Map that maps all commands that are expected to have a label to the label prefix they have by convention.
-         *
-         * command name `=>` label prefix without colon
+         * Maps commands to their expected label prefix. Which commands are expected to have a label at all is determined in settings.
          */
         @JvmField
-        val labeled = mapOfVarargs(
-                "\\chapter", "ch",
-                "\\section", "sec",
-                "\\subsection", "subsec",
-                "\\item", "itm"
+        val labeledPrefixes = mapOf(
+                "\\" + CHAPTER.command to "ch",
+                "\\" + SECTION.command to "sec",
+                "\\" + SUBSECTION.command to "subsec",
+                "\\" + SUBSUBSECTION.command to "subsubsec",
+                "\\" + ITEM.command to "itm"
+        )
+
+        /**
+         * Level of labeled commands.
+         */
+        val labeledLevels = mapOf(
+            // See page 23 of the LaTeX Companion
+            PART to -1, // actually, it is level 0 in classes that do not define \chapter and -1 in book and report
+            CHAPTER to 0,
+            SECTION to 1,
+            SUBSECTION to 2,
+            SUBSUBSECTION to 3,
+            PARAGRAPH to 4,
+            SUBPARAGRAPH to 5
+        )
+
+        /**
+         * All commands that mark some kind of section.
+         */
+        @JvmField
+        val sectionMarkers = listOf(
+            PART, CHAPTER, SECTION, SUBSECTION, SUBSUBSECTION, PARAGRAPH, SUBPARAGRAPH
+        ).map { "\\" + it.command }
+
+        /**
+         * The colours that each section separator has.
+         */
+        @JvmField
+        val sectionSeparatorColors = mapOf(
+            "\\${PART.command}" to Color(152, 152, 152),
+            "\\${CHAPTER.command}" to Color(172, 172, 172),
+            "\\${SECTION.command}" to Color(182, 182, 182),
+            "\\${SUBSECTION.command}" to Color(202, 202, 202),
+            "\\${SUBSUBSECTION.command}" to Color(212, 212, 212),
+            "\\${PARAGRAPH.command}" to Color(222, 222, 222),
+            "\\${SUBPARAGRAPH.command}" to Color(232, 232, 232)
         )
 
         /**
          * LaTeX commands that increase a counter that can be labeled.
          */
         @JvmField
-        val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeled.keys
+        val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeledPrefixes.keys
 
         /**
          * All commands that represent a reference to a label, excluding user defined commands.
@@ -376,7 +418,7 @@ object Magic {
          * All commands that define bibliography items.
          */
         @JvmField
-        val bibliographyItems = setOf("\\bibitem")
+        val bibliographyItems = setOf("\\" + BIBITEM.command)
 
         /**
          * All math operators without a leading slash.
@@ -392,10 +434,10 @@ object Magic {
          * All commands that define regular commands, and that require that the command is not already defined.
          */
         val regularStrictCommandDefinitions = hashSetOf(
-                "\\" + LatexRegularCommand.NEWCOMMAND.command,
-                "\\" + LatexRegularCommand.NEWCOMMAND_STAR.command,
-                "\\" + LatexRegularCommand.NEWIF.command,
-                "\\" + LatexRegularCommand.NEWDOCUMENTCOMMAND.command
+                "\\" + NEWCOMMAND.command,
+                "\\" + NEWCOMMAND_STAR.command,
+                "\\" + NEWIF.command,
+                "\\" + NEWDOCUMENTCOMMAND.command
         )
 
         /**
@@ -403,15 +445,15 @@ object Magic {
          */
         @JvmField
         val redefinitions = hashSetOf(
-                "\\" + LatexRegularCommand.RENEWCOMMAND.command,
-                "\\" + LatexRegularCommand.RENEWCOMMAND_STAR.command,
-                "\\" + LatexRegularCommand.PROVIDECOMMAND.command, // Does nothing if command exists
-                "\\" + LatexRegularCommand.PROVIDECOMMAND_STAR.command,
-                "\\" + LatexRegularCommand.PROVIDEDOCUMENTCOMMAND.command, // Does nothing if command exists
-                "\\" + LatexRegularCommand.DECLAREDOCUMENTCOMMAND.command,
-                "\\" + LatexRegularCommand.DEF.command,
-                "\\" + LatexRegularCommand.LET.command,
-                "\\" + LatexRegularCommand.RENEWENVIRONMENT.command
+                "\\" + RENEWCOMMAND.command,
+                "\\" + RENEWCOMMAND_STAR.command,
+                "\\" + PROVIDECOMMAND.command, // Does nothing if command exists
+                "\\" + PROVIDECOMMAND_STAR.command,
+                "\\" + PROVIDEDOCUMENTCOMMAND.command, // Does nothing if command exists
+                "\\" + DECLAREDOCUMENTCOMMAND.command,
+                "\\" + DEF.command,
+                "\\" + LET.command,
+                "\\" + RENEWENVIRONMENT.command
         )
 
         /**
@@ -425,10 +467,10 @@ object Magic {
          */
         @JvmField
         val mathCommandDefinitions = hashSetOf(
-                "\\" + LatexRegularCommand.DECLARE_MATH_OPERATOR.command,
-                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER.command,
-                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_X.command,
-                "\\" + LatexRegularCommand.DECLARE_PAIRED_DELIMITER_XPP.command
+                "\\" + DECLARE_MATH_OPERATOR.command,
+                "\\" + DECLARE_PAIRED_DELIMITER.command,
+                "\\" + DECLARE_PAIRED_DELIMITER_X.command,
+                "\\" + DECLARE_PAIRED_DELIMITER_XPP.command
         )
 
         /**
@@ -441,13 +483,13 @@ object Magic {
          * All commands that define new documentclasses.
          */
         @JvmField
-        val classDefinitions = hashSetOf("\\ProvidesClass")
+        val classDefinitions = hashSetOf("\\" + PROVIDESCLASS.command)
 
         /**
          * All commands that define new packages.
          */
         @JvmField
-        val packageDefinitions = hashSetOf("\\ProvidesPackage")
+        val packageDefinitions = hashSetOf("\\" + PROVIDESPACKAGE.command)
 
         /**
          * All commands that define new environments.
@@ -560,30 +602,6 @@ object Magic {
         )
 
         /**
-         * All commands that mark some kind of section.
-         */
-        @JvmField
-        val sectionMarkers = listOf(
-                "\\part", "\\chapter",
-                "\\section", "\\subsection", "\\subsubsection",
-                "\\paragraph", "\\subparagraph"
-        )
-
-        /**
-         * The colours that each section separator has.
-         */
-        @JvmField
-        val sectionSeparatorColors = mapOf(
-                "\\part" to Color(152, 152, 152),
-                "\\chapter" to Color(172, 172, 172),
-                "\\section" to Color(182, 182, 182),
-                "\\subsection" to Color(202, 202, 202),
-                "\\subsubsection" to Color(212, 212, 212),
-                "\\paragraph" to Color(222, 222, 222),
-                "\\subparagraph" to Color(232, 232, 232)
-        )
-
-        /**
          * All LaTeX commands that contain a url (in their first parameter).
          */
         @JvmField
@@ -650,7 +668,7 @@ object Magic {
          * at the end of the sentence (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
         @JvmField
-        val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.\\s)")!!
+        val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s~])")!!
 
         /**
          * Matches all comments, starting with % and ending with a newline.
@@ -860,7 +878,7 @@ object Magic {
          * All commands that have a color as an argument.
          */
         @JvmField
-        val takeColorCommands = LatexRegularCommand.values()
+        val takeColorCommands = values()
                 .filter {
                     it.arguments.map { it.name }.contains("color")
                 }
@@ -870,7 +888,7 @@ object Magic {
          * All commands that define a new color.
          */
         @JvmField
-        val colorDefinitions = LatexRegularCommand.values()
+        val colorDefinitions = values()
                 .filter { it.dependency == XCOLOR }
                 .filter { it.arguments.map { it.name }.contains("name") }
 

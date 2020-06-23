@@ -5,16 +5,12 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.files.isClassFile
-import nl.hannahsten.texifyidea.util.files.isStyleFile
+import nl.hannahsten.texifyidea.util.files.*
 
 /**
  * @author Hannah Schellekens
@@ -252,6 +248,12 @@ object PackageUtils {
     ): T {
         for (cmd in commands) {
             if (cmd.commandToken.text !in packageCommands) {
+                continue
+            }
+
+            // Just skip conditionally included packages, because it is too expensive to determine whether
+            // they are really included or not
+            if (cmd.parent.firstParentOfType(LatexCommands::class)?.name == "\\" + LatexRegularCommand.ONLYIFSTANDALONE.command) {
                 continue
             }
 
