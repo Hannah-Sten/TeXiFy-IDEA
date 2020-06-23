@@ -59,7 +59,6 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
         """.trimIndent())
     }
 
-
     @Test
     fun `test subparagraph after section warning`() {
         testInsertMissingParentCommandQuickFix("""
