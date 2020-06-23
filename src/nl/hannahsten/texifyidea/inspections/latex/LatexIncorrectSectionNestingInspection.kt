@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.openedEditor
 import nl.hannahsten.texifyidea.util.lineIndentation
@@ -28,43 +27,23 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Incorrect nesting"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = descriptorList()
 
-        val sectionCommands = LatexCommandsIndex.getCommandsByNames(file, "\\section", "\\subsection", "\\subsubsection", "\\paragraph", "\\subparagraph").sortedBy { it.textOffset }
-        sectionCommands.forEachIndexed { index, command ->
-            if (startsWithSubCommand(command, index) ||
-                    subsubsectionAfterSection(command, sectionCommands, index) ||
-                    subParagraphWithoutParagraph(command, sectionCommands, index)) {
-
-                descriptors.add(manager.createProblemDescriptor(command,
-                        "Incorrect nesting",
-                        arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
-                        ProblemHighlightType.WEAK_WARNING,
-                        isOntheFly,
-                        false)
-                )
-            }
-        }
-        return descriptors
+        return LatexCommandsIndex.getCommandsByNames(file, *sectioningCommands())
+                .sortedBy { it.textOffset }
+                .zipWithNext()
+                .filter { (first, second) -> first.commandName() in commandToForbiddenPredecessors[second.commandName()] ?: error("Unexpected command") }
+                .map { manager.createProblemDescriptor(it.second,
+                            "Incorrect nesting",
+                            arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
+                            ProblemHighlightType.WEAK_WARNING,
+                            isOntheFly,
+                            false)
+                }
     }
 
-    private fun startsWithSubCommand(command: LatexCommands, index: Int): Boolean {
-        val level = command.level()
-        return ((level == 2 || level == 3 || level == 5) && index == 0)
-    }
+    private fun sectioningCommands() = commandToForbiddenPredecessors.keys.toTypedArray()
 
-    private fun subsubsectionAfterSection(command: LatexCommands, sectionCommands: List<LatexCommands>, index: Int) =
-            command.level() == 3 && sectionCommands[index - 1].level() == 1
-
-    private fun subParagraphWithoutParagraph(command: LatexCommands, sectionCommands: List<LatexCommands>, index: Int) =
-            (command.level() == 5 && sectionCommands[index - 1].level() < 4)
-
-    private fun LatexCommands.level(): Int {
-        return Magic.Command.labeledLevels
-                .filterKeys { it.command == this.commandToken.text.removePrefix("\\") }
-                .map { it.value }
-                .firstOrNull() ?: error("Unexpected command")
-    }
+    private fun LatexCommands.commandName(): String = this.commandToken.text
 
     private class InsertParentCommandFix : LocalQuickFix {
 
@@ -94,5 +73,18 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
             val newParentCommand = command.commandToken.text.replaceFirst("sub", "")
             document.replaceString(range, newParentCommand)
         }
+    }
+
+    companion object {
+
+        val commandToForbiddenPredecessors = mapOf(
+                """\part""" to emptyList(),
+                """\chapter""" to emptyList(),
+                """\section""" to emptyList(),
+                """\subsection""" to listOf("""\part""", """\chapter"""),
+                """\subsubsection""" to listOf("""\part""", """\chapter""", """\section"""),
+                """\paragraph""" to emptyList(),
+                """\subparagraph""" to listOf("""\part""", """\chapter""", """\section""", """\subsection""", """\subsubsection""")
+        )
     }
 }

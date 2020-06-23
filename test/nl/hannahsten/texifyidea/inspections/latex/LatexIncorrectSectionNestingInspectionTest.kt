@@ -29,6 +29,22 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
     }
 
     @Test
+    fun `test subsection after chapter warning`() {
+        testInsertMissingParentCommandQuickFix("""
+            \begin{document}
+                \chapter{}
+                \subsection{}
+            \end{document}
+        """.trimIndent(), """
+            \begin{document}
+                \chapter{}
+                \section{<caret>}
+                \subsection{}
+            \end{document}
+        """.trimIndent())
+    }
+
+    @Test
     fun `test change subsubsection to subsection quick fix`() {
         testChangeToParentCommandQuickFix("""
             \begin{document}
@@ -43,33 +59,6 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
         """.trimIndent())
     }
 
-    @Test
-    fun `test document starting with subsection warning`() {
-        testInsertMissingParentCommandQuickFix("""
-            \begin{document}
-                \subsection{}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \section{<caret>}
-                \subsection{}
-            \end{document}
-        """.trimIndent())
-    }
-
-    @Test
-    fun `test document starting with subparagraph warning`() {
-        testInsertMissingParentCommandQuickFix("""
-            \begin{document}
-                \subparagraph{}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \paragraph{<caret>}
-                \subparagraph{}
-            \end{document}
-        """.trimIndent())
-    }
 
     @Test
     fun `test subparagraph after section warning`() {
@@ -102,6 +91,9 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
     fun `test no warning on correct nesting`() {
         myFixture.configureByText(LatexFileType, """
              \begin{document}
+                \part{}
+                \part{}
+                \chapter{}
                 \section{}
                 \section{}
                 \subsection{}
