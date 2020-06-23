@@ -25,10 +25,13 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.hasBibliography
+import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 
 /**
@@ -145,10 +148,6 @@ class LatexRunConfiguration constructor(project: Project,
         }
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
-        }
-        // It is not possible to create the directory when it doesn't exist, because we do not know when the user is done editing (LatexSettingsEditor.applyEditorTo is called a lot of times)
-        if (outputPath == null) {
-            throw RuntimeConfigurationError("Run configuration is invalid: output path cannot be found")
         }
     }
 

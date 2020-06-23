@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
+import kotlin.math.min
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
@@ -109,15 +110,15 @@ fun LatexCommands.definedCommandName() = when (name) {
  */
 fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
     // Find all pre-defined commands that define `this` command.
-    val requiredArgIndices = LatexRegularCommand.get(name?.substring(1)
-            ?: return null)
+    val requiredArgIndices = LatexRegularCommand[name?.substring(1)
+        ?: return null]
             // Find the index of their required parameter named [argument].
             ?.map {
                 it.arguments.filterIsInstance<RequiredArgument>()
                         .indexOfFirst { arg -> arg.name == argument }
             }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else requiredParameters[requiredArgIndices.first()]
+    else requiredParameters[min(requiredArgIndices.first(), requiredParameters.size - 1)]
 }
 
 /**
