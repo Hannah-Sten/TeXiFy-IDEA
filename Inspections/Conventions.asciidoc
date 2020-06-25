@@ -14,3 +14,8 @@ For sectioning commands you can change the sectioning level at which this inspec
 == Label conventions
 
 Texify defines label conventions to specify how labels should typically look like annd includes an inspection to verify that all labels adhere to the convention. Furthermore, labels inserted as part of a quickfix are also named accordingly. The convention states, that labels should have a prefix depending on the command or environment they label. For example, a label for a figure has the prefix `fig:`.
+
+== Nesting of sectioning commands
+
+It is recommended to use proper nesting of `\section`-like commands, for example you should not follow up a `\section` by a `\subsubsection`, but by a `\subsection`.
+This inspections includes two quickfixes, to change the sectioning command to the right one (change `\subsubsection` to `\subsection` in this example) and to add the missing sectioning command (`\subsection` in this case).
