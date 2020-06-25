@@ -302,7 +302,8 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 
 ==== Conventions
 * link:Conventions#Missing-labels[Missing labels]
-* Label conventions
+* link:Conventions#Label-conventions[Label conventions]
+* link:Conventions#Nesting-of-sectioning-commands[Nesting of sectioning commands]
 
 ==== Discouraged use of TeX or obsolete LaTeX
 * Use of `\over` discouraged
