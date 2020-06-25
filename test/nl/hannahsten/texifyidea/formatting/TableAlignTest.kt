@@ -325,6 +325,26 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testLineWithoutAmpersands() {
+        """
+            \begin{tabular}{cc}
+                a & b \\
+                cc & d \\
+                \hline
+                \\
+                f & g \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cc}
+                a  & b \\
+                cc & d \\
+                \hline
+                \\
+                f  & g \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
         writeCommand(project) {

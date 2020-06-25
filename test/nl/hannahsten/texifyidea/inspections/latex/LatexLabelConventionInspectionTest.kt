@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
-class LabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConventionInspection()) {
+class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConventionInspection()) {
     fun testSectionLabelConventionWarning() {
         myFixture.configureByText(LatexFileType, """
             \begin{document}
