@@ -89,6 +89,7 @@ object EvinceInverseSearchListener {
                 // Check whether we would block before doing a blocking readLine call
                 // This is to ensure we can quickly stop this coroutine on plugin unload
                 while (!bufferedReader.ready()) {
+                    Thread.sleep(1000)
                     if (currentCoroutineJob?.isActive == false) return
                 }
                 line = bufferedReader.readLine()
