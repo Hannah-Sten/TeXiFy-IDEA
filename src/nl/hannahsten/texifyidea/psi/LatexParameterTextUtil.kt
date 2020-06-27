@@ -13,15 +13,14 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
  */
 @Suppress("RemoveExplicitTypeArguments") // Somehow they are needed
 fun getReferences(element: LatexParameterText): Array<PsiReference> {
-    val command = element.firstParentOfType(LatexCommands::class) ?: return emptyArray<PsiReference>()
     // If the command is a label reference
     // NOTE When adding options here, also update getNameIdentifier below
     return when {
-        Magic.Command.labelReferenceWithoutCustomCommands.contains(command.name) -> {
+        Magic.Command.labelReferenceWithoutCustomCommands.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(LatexLabelParameterReference(element))
         }
         // If the command is a bibliography reference
-        Magic.Command.bibliographyReference.contains(command.name) -> {
+        Magic.Command.bibliographyReference.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(BibtexIdReference(element))
         }
         // If the command is an \end command (references to \begin)
