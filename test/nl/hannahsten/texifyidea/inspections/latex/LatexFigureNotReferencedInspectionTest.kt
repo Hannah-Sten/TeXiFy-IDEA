@@ -31,6 +31,24 @@ class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFig
         myFixture.checkHighlighting(false, false, true, false)
     }
 
+    fun testFigureReferencedCustomCommand() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\includenamedimage}[2]{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{#1}
+                \caption{#2}
+                \label{fig:#1}
+            \end{figure}
+            }
+        
+            \includenamedimage{test.png}{fancy caption}
+        
+            some text~\ref{fig:test.png} more text.
+        """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
     fun testFigureReferencedMultipleReferencesNoWarning() {
         myFixture.configureByText(LatexFileType, """
             \documentclass{article}

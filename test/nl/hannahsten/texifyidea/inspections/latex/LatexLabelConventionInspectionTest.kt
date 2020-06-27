@@ -25,6 +25,20 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
         myFixture.checkHighlighting(false, false, true, false)
     }
 
+    fun testFigureLabelConventionWarningInNewcommand() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\includenamedimage}[2]{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{#1}
+                \caption{#2}
+                \label{fig:#1} 
+            \end{figure}
+            }
+        """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
     fun testListingLabelConventionWarning() {
         myFixture.configureByText(LatexFileType, """
             \begin{document}
