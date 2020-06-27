@@ -309,8 +309,18 @@ object CommandManager : Iterable<String?>, Serializable {
                     parameterCommands.takeWhile { it.name !in Magic.Command.labelDefinitionsWithoutCustomCommands }
                         .any { it.name in Magic.Command.increasesCounter }
 
+                val prefix = parameterCommands.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
+                    .mapNotNull { it.requiredParameter(0) }
+                    .map {
+                        if (it.indexOf('#') != -1) {
+                            val prefix = it.substring(0, it.indexOf('#'))
+                            if (prefix.isNotBlank()) prefix else ""
+                        }
+                        else ""
+                    }.firstOrNull() ?: ""
+
                 labelAliasesInfo[definedCommand] =
-                    LabelingCommandInformation(positions, !definitionContainsIncreaseCounterCommand)
+                    LabelingCommandInformation(positions, !definitionContainsIncreaseCounterCommand, prefix)
             }
         }
     }
