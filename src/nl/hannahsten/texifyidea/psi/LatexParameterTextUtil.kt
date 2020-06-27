@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
 fun getReferences(element: LatexParameterText): Array<PsiReference> {
     val command = element.firstParentOfType(LatexCommands::class) ?: return emptyArray<PsiReference>()
     // If the command is a label reference
+    // NOTE When adding options here, also update getNameIdentifier below
     return when {
         Magic.Command.labelReferenceWithoutCustomCommands.contains(command.name) -> {
             arrayOf<PsiReference>(LatexLabelParameterReference(element))
@@ -46,7 +47,16 @@ fun getReference(element: LatexParameterText): PsiReference? {
     }
 }
 
-fun getNameIdentifier(element: LatexParameterText): PsiElement {
+fun getNameIdentifier(element: LatexParameterText): PsiElement? {
+    // Because we do not want to trigger the NonAsciiCharactersInspection when the LatexParameterText is not an identifier
+    // (think non-ASCII characters in a \section command), we return null here when the element is not an identifier
+    val name = element.firstParentOfType(LatexCommands::class)?.name
+    if (!Magic.Command.labelReferenceWithoutCustomCommands.contains(name) &&
+        !Magic.Command.labelDefinitionsWithoutCustomCommands.contains(name) &&
+        !Magic.Command.bibliographyReference.contains(name) &&
+        element.firstParentOfType(LatexEndCommand::class) == null) {
+        return null
+    }
     return element
 }
 
