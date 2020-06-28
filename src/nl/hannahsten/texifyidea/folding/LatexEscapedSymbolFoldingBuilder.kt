@@ -8,7 +8,6 @@ import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 
-
 /**
  * @author Johannes Berger
  */
