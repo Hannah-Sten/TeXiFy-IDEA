@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNotReferencedInspection()) {
 
@@ -46,6 +47,7 @@ class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFig
         
             some text~\ref{fig:test.png} more text.
         """.trimIndent())
+        CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting(false, false, true, false)
     }
 

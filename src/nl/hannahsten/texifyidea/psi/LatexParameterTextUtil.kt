@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.firstParentOfType
 
 /**
@@ -57,7 +58,9 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
         // Get a new psi element for the complete label command (\label included),
         // because if we replace the complete command instead of just the normal text
         // then the indices will be updated, which is necessary for the reference resolve to work
-        val labelText = "${command?.name}{$name}"
+        val oldLabel = element.extractLabelName()
+        // This could go wrong in so many cases
+        val labelText = command?.text?.replaceFirst(oldLabel, name) ?: "${command?.name}{$name}"
         val newElement = LatexPsiHelper(element.project).createFromText(labelText).firstChild
         val oldNode = command?.node
         val newNode = newElement.node
