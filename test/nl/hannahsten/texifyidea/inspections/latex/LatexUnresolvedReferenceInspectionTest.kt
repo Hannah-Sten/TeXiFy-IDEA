@@ -38,6 +38,16 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarningCustomCommandWithPrefix() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\mylabel}[1]{\label{sec:#1}}
+            \section{some sec}\mylabel{some-sec}
+            ~\ref{sec:some-sec}
+        """.trimIndent())
+        CommandManager.updateAliases(setOf("\\label"), project)
+        myFixture.checkHighlighting()
+    }
+
     // Test randomly fails
     // fun testBibtexReference() {
     //     myFixture.configureByFile("references.bib")

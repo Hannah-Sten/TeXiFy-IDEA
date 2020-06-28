@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.SIUNITX
 import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
@@ -489,9 +490,22 @@ enum class LatexRegularCommand(
     BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
 
     /**
+     * SIunitx commands
+     */
+    ANG("ang", "options".asOptional(), "angle".asRequired(), dependency = SIUNITX),
+    NUM("num", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
+    SI("si", "options".asOptional(), "unit".asRequired(), dependency = SIUNITX),
+    SI_NUM("SI", "options".asOptional(), "number".asRequired(), "pre-unit".asOptional(), "unit".asRequired(), dependency = SIUNITX),
+    NUMLIST("numlist", "options".asOptional(), "numbers".asRequired(), dependency = SIUNITX),
+    NUMRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), dependency = SIUNITX),
+    SILIST("SIlist", "options".asOptional(), "numbers".asRequired(), "unit".asRequired(), dependency = SIUNITX),
+    SIRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), "unit".asRequired(), dependency = SIUNITX),
+    SISETUP("sisetup", "options".asRequired(), dependency = SIUNITX),
+    TABLENUM("tablenum", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
+
+    /**
      * Algorithmicx
      */
-
     FOR("For", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     FORALL("ForAll", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ENDFOR("EndFor", dependency = ALGPSEUDOCODE),

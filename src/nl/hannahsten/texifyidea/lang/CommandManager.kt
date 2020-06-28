@@ -4,10 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.containsAny
-import nl.hannahsten.texifyidea.util.requiredParameter
-import nl.hannahsten.texifyidea.util.requiredParameters
+import nl.hannahsten.texifyidea.util.*
 import java.io.Serializable
 import java.util.Collections
 import java.util.HashSet
@@ -284,8 +281,9 @@ object CommandManager : Iterable<String?>, Serializable {
 
                 val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
                     ?.requiredParamContentList
+                    ?.flatMap { it.childrenOfType(LatexCommands::class) }
                     ?.asSequence()
-                    ?.mapNotNull { it.commands }
+                    ?.filterNotNull()
 
                 val positions = parameterCommands
                     ?.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
@@ -309,8 +307,18 @@ object CommandManager : Iterable<String?>, Serializable {
                     parameterCommands.takeWhile { it.name !in Magic.Command.labelDefinitionsWithoutCustomCommands }
                         .any { it.name in Magic.Command.increasesCounter }
 
+                val prefix = parameterCommands.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
+                    .mapNotNull { it.requiredParameter(0) }
+                    .map {
+                        if (it.indexOf('#') != -1) {
+                            val prefix = it.substring(0, it.indexOf('#'))
+                            if (prefix.isNotBlank()) prefix else ""
+                        }
+                        else ""
+                    }.firstOrNull() ?: ""
+
                 labelAliasesInfo[definedCommand] =
-                    LabelingCommandInformation(positions, !definitionContainsIncreaseCounterCommand)
+                    LabelingCommandInformation(positions, !definitionContainsIncreaseCounterCommand, prefix)
             }
         }
     }

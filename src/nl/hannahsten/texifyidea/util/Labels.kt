@@ -160,12 +160,11 @@ fun PsiElement.extractLabelName(): String {
     return when (this) {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
-            // Skip labels in command definitions
-            if (this.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions) return ""
-
             // For now just take the first label name (may be multiple for user defined commands)
-            val position = CommandManager.labelAliasesInfo.getOrDefault(name, null)?.positions?.firstOrNull() ?: 0
-            this.requiredParameter(position) ?: ""
+            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+            val position = info?.positions?.firstOrNull() ?: 0
+            val prefix = info?.prefix ?: ""
+            prefix + this.requiredParameter(position)
         }
         is LatexEnvironment -> this.label ?: ""
         else -> text

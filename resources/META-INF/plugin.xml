@@ -403,10 +403,6 @@
         <lang.findUsagesProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.reference.BibtexUsagesProvider"/>
         <lang.refactoringSupport language="Bibtex" implementationClass="nl.hannahsten.texifyidea.refactoring.BibtexRefactoringSupportProvider" />
 
-        <!-- Tool windows -->
-        <toolWindow id="Equation Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/equation-preview.svg" canCloseContents="true" />
-        <toolWindow id="Tikz Picture Preview" anchor="bottom" factoryClass="nl.hannahsten.texifyidea.action.preview.PreviewToolWindowFactory" icon="/nl/hannahsten/texifyidea/icons/tikz-preview.svg" canCloseContents="true" />
-
         <!-- Navigation -->
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoCommandDefinitionSymbolContributor"/>
@@ -501,6 +497,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMissingLabelInspection"
                          groupName="LaTeX" displayName="Missing labels"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexIncorrectSectionNestingInspection"
+                         groupName="LaTeX" displayName="Incorrect nesting"
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexLabelBeforeCaptionInspection"
                          groupName="LaTeX" displayName="Label before caption"

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.action.preview
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -11,7 +12,7 @@ import nl.hannahsten.texifyidea.action.EditorAction
 import nl.hannahsten.texifyidea.ui.EquationPreviewToolWindow
 import nl.hannahsten.texifyidea.ui.PreviewFormUpdater
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import java.util.*
+import java.util.EnumSet
 import javax.swing.Icon
 
 /**
@@ -46,7 +47,8 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         val toolWindowId = name
         val toolWindowManager = ToolWindowManager.getInstance(project)
 
-        val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: throw IllegalStateException("ToolWindow not found")
+        val task = RegisterToolWindowTask(toolWindowId, contentFactory = PreviewToolWindowFactory(), icon = icon)
+        val toolWindow = toolWindowManager.registerToolWindow(task)
 
         val containingFile = element.containingFile
         val psiDocumentManager = PsiDocumentManager.getInstance(project)
