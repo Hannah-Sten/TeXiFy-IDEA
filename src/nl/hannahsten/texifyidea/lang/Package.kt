@@ -35,6 +35,7 @@ open class Package @JvmOverloads constructor(
         @JvmField val MATHABX = Package("mathabx")
         @JvmField val MATHTOOLS = Package("mathtools")
         @JvmField val NATBIB = Package("natbib")
+        @JvmField val SIUNITX = Package("siunitx")
         @JvmField val SUBFILES = Package("subfiles")
         @JvmField val TIKZ = Package("tikz")
         @JvmField val ULEM = Package("ulem")

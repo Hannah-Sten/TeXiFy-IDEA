@@ -445,16 +445,16 @@ object Magic {
          */
         @JvmField
         val redefinitions = hashSetOf(
-                "\\" + RENEWCOMMAND.command,
-                "\\" + RENEWCOMMAND_STAR.command,
-                "\\" + PROVIDECOMMAND.command, // Does nothing if command exists
-                "\\" + PROVIDECOMMAND_STAR.command,
-                "\\" + PROVIDEDOCUMENTCOMMAND.command, // Does nothing if command exists
-                "\\" + DECLAREDOCUMENTCOMMAND.command,
-                "\\" + DEF.command,
-                "\\" + LET.command,
-                "\\" + RENEWENVIRONMENT.command
-        )
+                RENEWCOMMAND,
+                RENEWCOMMAND_STAR,
+                PROVIDECOMMAND, // Does nothing if command exists
+                PROVIDECOMMAND_STAR,
+                PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
+                DECLAREDOCUMENTCOMMAND,
+                DEF,
+                LET,
+                RENEWENVIRONMENT
+        ).map { "\\" + it.command }
 
         /**
          * All commands that define or redefine regular commands.
@@ -496,12 +496,12 @@ object Magic {
          */
         @JvmField
         val environmentDefinitions = hashSetOf(
-                "\\newenvironment",
-                "\\newtheorem",
-                "\\NewDocumentEnvironment",
-                "\\ProvideDocumentEnvironment",
-                "\\DeclareDocumentEnvironment"
-        )
+            NEWENVIRONMENT,
+            NEWTHEOREM,
+            NEWDOCUMENTENVIRONMENT,
+            PROVIDEDOCUMENTENVIRONMENT,
+            DECLAREDOCUMENTENVIRONMENT
+        ).map { "\\" + it.command }
 
         /**
          * All commands that define stuff like classes, environments, and definitions.
@@ -510,7 +510,7 @@ object Magic {
         val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
         /**
-         * Commands for which TeXiFy-IDEA has custom behaviour.
+         * Commands for which TeXiFy-IDEA has essential custom behaviour and which should not be redefined.
          */
         @JvmField
         val fragile = hashSetOf(
@@ -533,9 +533,9 @@ object Magic {
          */
         @JvmField
         val illegalExtensions = mapOf(
-                "\\include" to listOf(".tex"),
-                "\\subfileinclude" to listOf(".tex"),
-                "\\bibliography" to listOf(".bib")
+                "\\" + INCLUDE.command to listOf(".tex"),
+                "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
+                "\\" + BIBLIOGRAPHY.command to listOf(".bib")
         )
 
         /**
@@ -543,7 +543,7 @@ object Magic {
          */
         @JvmField
         val requiredExtensions = mapOf(
-                "\\addbibresource" to listOf("bib")
+                "\\" + ADDBIBRESOURCE.command to listOf("bib")
         )
 
         /**
