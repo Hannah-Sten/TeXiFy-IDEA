@@ -62,7 +62,7 @@ toc::[]
 
 == Reading
 * Customizable syntax highlighting
-* Code folding for imports, (sub(sub))sections, environments and symbol producing commands like `\%`
+* link:Code-folding[Code folding for imports, (sub(sub))sections, environments, some math symbols and some escaped symbols like `\%`]
 * link:Code-formatting[Code formatting]
 * link:Line-markers[Line markers for sections]
 * link:Color-preview[Color preview for the xcolor package]
