@@ -1,8 +1,11 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.util.TextRange
 import org.intellij.lang.annotations.Language
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Capitalises the first character of the string.
@@ -208,3 +211,6 @@ fun String.runCommand(): String? {
 
 /** If this contains any of the given set. */
 fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
+
+/** Shrink textrange with the given amount at both sides. */
+fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))
