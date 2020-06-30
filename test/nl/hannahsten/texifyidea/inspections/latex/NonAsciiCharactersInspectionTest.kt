@@ -8,7 +8,7 @@ class NonAsciiCharactersInspectionTest : TexifyInspectionTestBase(NonAsciiCharac
     fun testWarning() {
         myFixture.configureByText(LatexFileType, """
             \textbf{erhöhen}
-            \label{<warning descr="Identifier contains symbols from different languages: [LATIN, CYRILLIC]"><warning descr="Non-ASCII characters in an identifier">sec:Название</warning></warning>}
+            \label{<warning descr="Non-ASCII characters in an identifier"><warning descr="Symbols from different languages found: [LATIN, CYRILLIC]">sec:Название</warning></warning>}
         """.trimIndent())
         myFixture.checkHighlighting()
     }
