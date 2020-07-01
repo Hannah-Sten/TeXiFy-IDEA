@@ -3,6 +3,7 @@
 # Additions
 * Add inspection to encourage proper nesting of sectioning commands. (#1492)
 * Add support for custom labeling and referencing commands. (#1442, #1507)
+* Add folding for escaped symbols. (#1511)
 
 # Changes
 * Commands with optional parameters now appear separately in the autocomplete. (#1461)
