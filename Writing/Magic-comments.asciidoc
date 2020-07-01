@@ -3,6 +3,10 @@ _Since b0.6.10_
 == Compilers
 See link:Compilers#using-magic-comments-to-specify-the-compiler-for-new-run-configurations[Using magic comments to specify the compiler for new run configurations].
 
+== Root file
+
+If TeXiFy does not guess your root file correctly, for example you have your `\documentclass` not in the main file, you can override this by specifying a `root` magic comment at the top of a file, for example `%! root = main.tex`.
+
 == Language injection
 
 See link:Language-injection[Language injection].
