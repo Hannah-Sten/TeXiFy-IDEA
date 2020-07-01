@@ -14,4 +14,5 @@ Custom output directories are supported.
 * Make sure to start the `docker` service (and enable if you want to start it on boot)
 * To avoid a permission denied error when running, add yourself to the `docker` group.
 * Reboot (logging out and in may not be enough)
-* You have to login to GitHub to use the Docker image, see https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages for which you need a github token from https://github.com/settings/tokens
+* You have to login to GitHub to use the Docker image: get a github token from https://github.com/settings/tokens, save it somewhere secure and run `echo my_token | docker login https://docker.pkg.github.com -u myusername --password-stdin`
+See https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages for more info.
