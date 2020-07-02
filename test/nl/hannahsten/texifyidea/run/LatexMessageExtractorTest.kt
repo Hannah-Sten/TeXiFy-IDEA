@@ -37,6 +37,12 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
+    fun `test Missing $ inserted`() {
+        val text = """./main.tex:10: Missing ${'$'} inserted.<inserted text>"""
+        val expected = LatexLogMessage("Missing ${'$'} inserted.", "./main.tex", 10, ERROR)
+        testMessageExtractor(text, expected)
+    }
+
     /*
      * WARNINGS
      */

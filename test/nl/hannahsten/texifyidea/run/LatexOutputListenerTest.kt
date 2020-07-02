@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 
 class LatexOutputListenerTest : BasePlatformTestCase() {
-    val logTextLatexmk = """
+    private val logTextLatexmk = """
         latexmk -pdf -file-line-error -interaction=nonstopmode -synctex=1 -output-format=pdf -output-directory=/home/abby/Documents/texify-test/out main.tex
         Latexmk: applying rule 'pdflatex'...
         This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex)
@@ -209,7 +209,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         return "test/resources/run"
     }
 
-    fun testMain() {
+    fun testFullLog() {
         val srcRoot = myFixture.copyDirectoryToProject("./", "./")
         val project = myFixture.project
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
@@ -223,24 +223,24 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
                 LatexLogMessage("Label `mylabel' multiply defined.", "main.tex", 0, WARNING),
-                LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "main.tex", 0, ERROR),
-                LatexLogMessage("fontenc: Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "main.tex", 0, ERROR),
+                LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "main.tex", 104, ERROR),
+                LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "main.tex", 105, ERROR),
                 LatexLogMessage("Encoding scheme `15' unknown.", "main.tex", 5, ERROR),
                 LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "main.tex", 6, ERROR),
-                LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "main.tex", 7, WARNING),
+                LatexLogMessage("Citation 'DBLP.books.daglib.0076726' on page 1 undefined", "main.tex", 7, WARNING),
                 LatexLogMessage("Environment align undefined.", "math.tex", 7, ERROR),
-                LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "main.tex", 5, WARNING),
+                LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "math.tex", 0, WARNING),
                 LatexLogMessage("\\begin{document} ended by \\end{align}.", "math.tex", 9, ERROR),
-                LatexLogMessage("Reference `fig:bla' undefined", "math.tex", 10, WARNING),
+                LatexLogMessage("Reference `fig:bla' on page 1 undefined", "math.tex", 10, WARNING),
                 LatexLogMessage("Environment align undefined.", "main.tex", 9, ERROR),
                 LatexLogMessage("Missing $ inserted.", "main.tex", 10, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{align}.", "main.tex", 11, ERROR),
                 LatexLogMessage("Missing $ inserted.", "main.tex", 11, ERROR),
-                LatexLogMessage("Reference `test' undefined", "lipsum.tex", 4, WARNING),
+                LatexLogMessage("Reference `test' on page 1 undefined", "lipsum.tex", 4, WARNING),
                 LatexLogMessage("Undefined control sequence. \\bloop", "lipsum-one.tex", 9, ERROR),
                 LatexLogMessage("Environment lstlisting undefined.", "lipsum.tex", 11, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "lipsum.tex", 13, ERROR),
-                LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12 \\OT1/cmr/m/n/10 The badness of this line is 1000.", "main.tex", 0, WARNING),
+                LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12\\OT1/cmr/m/n/10 The badness of this line is 1000.", "main.tex", 0, WARNING),
                 LatexLogMessage("There were undefined references.", "main.tex", 0, WARNING),
                 LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", 0, WARNING),
                 LatexLogMessage("biblatex: Please (re)run Biber on the file: main", "main.tex", 0, WARNING)

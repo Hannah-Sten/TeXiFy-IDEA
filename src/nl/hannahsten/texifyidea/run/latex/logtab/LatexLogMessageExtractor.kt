@@ -51,7 +51,8 @@ object LatexLogMessageExtractor {
             return LatexLogMessage(
                 text.removeAll("LaTeX Warning:")
                     .trim()
-                    .trim('(', ')')
+                    // Improves readability, and at the moment we don't have an example where this would be incorrect
+                    .trim('(', ')', '[', ']')
                     .replace("""\s{2,}""".toRegex(), " "),
                 fileName = currentFile,
                 type = LatexLogMessageType.WARNING
