@@ -9,6 +9,7 @@
 * Commands with optional parameters now appear separately in the autocomplete. (#1461)
 * Create and use default output path if no output path is present. (#1460)
 * Delay registering TikZ and Equation Preview tool windows until they are needed. (#1504)
+* Some include-like commands do not allow separating required arguments with commas. (#1515)
 
 # Bug fixes
 * Disable Non-Ascii inspection in non-identifier commands. (#1506)
