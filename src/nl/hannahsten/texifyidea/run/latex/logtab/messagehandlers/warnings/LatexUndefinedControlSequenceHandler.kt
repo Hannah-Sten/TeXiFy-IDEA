@@ -22,7 +22,7 @@ object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
                 }
 
                 val message = "${groups["message"]?.value} ${groups["command"]?.value}"
-                return LatexLogMessage(message, fileName, line, messageType)
+                return LatexLogMessage(message, fileName, line ?: 1, messageType)
             }
         }
         return null

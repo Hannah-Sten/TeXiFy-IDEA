@@ -17,7 +17,7 @@ object LatexReferenceCitationWarningHandler : LatexMessageHandler(
             val label = groups["label"]?.value
             val message = "$ref $label undefined"
             val line = groups["line"]?.value?.toInt()
-            return LatexLogMessage(message, currentFile, line, messageType)
+            return LatexLogMessage(message, currentFile, line ?: 1, messageType)
         }
         return null
     }

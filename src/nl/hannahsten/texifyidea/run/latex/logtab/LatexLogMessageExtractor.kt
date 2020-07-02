@@ -29,8 +29,10 @@ object LatexLogMessageExtractor {
         val specialWarningHandlersList = listOf(LatexLineWarningHandler, LatexPackageWarningHandler, LatexPackageWarningHandler, LatexReferenceCitationWarningHandler)
 
         // Look for errors that need special treatment.
-        specialErrorHandlersList.forEach {
-            if (it.regex.any { it.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
+        specialErrorHandlersList.forEach { handler ->
+            if (handler.regex.any { it.containsMatchIn(text) }) {
+                return handler.findMessage(text, newText, currentFile)
+            }
         }
 
         // Handles all other file line errors. Only check the first line,
@@ -52,7 +54,7 @@ object LatexLogMessageExtractor {
                 text.removeAll("LaTeX Warning:")
                     .trim()
                     // Improves readability, and at the moment we don't have an example where this would be incorrect
-                    .trim('(', ')', '[', ']')
+                    .trim('(', ')', '[', ']', ' ')
                     .replace("""\s{2,}""".toRegex(), " "),
                 fileName = currentFile,
                 type = LatexLogMessageType.WARNING

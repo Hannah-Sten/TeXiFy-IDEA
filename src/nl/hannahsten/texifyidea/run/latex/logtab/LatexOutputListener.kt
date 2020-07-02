@@ -6,7 +6,6 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.buffer.CircularFifoBuffer
@@ -29,9 +28,9 @@ class LatexOutputListener(
     // we don't lose them when resetting on each new (pdfla)tex run.
     var isCollectingBib = false
     var isCollectingMessage = false
-    var currentMessageText: String? = null
+    var currentLogMessage: LatexLogMessage? = null
     // Stack with the filenames, where the first is the current file.
-    var fileStack = LatexFileStack()
+    private var fileStack = LatexFileStack()
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         if (outputType !is ProcessOutputType) return
@@ -110,7 +109,7 @@ class LatexOutputListener(
 
             if (message.length >= lineWidth) {
                 // Keep on collecting output for this message
-                currentMessageText = message
+                currentLogMessage = logMessage
                 isCollectingMessage = true
                 collectMessageLine(newText, logMessage)
             }
@@ -119,8 +118,7 @@ class LatexOutputListener(
 
                 if (messageList.isEmpty() || !messageList.contains(logMessage)) {
                     if (isCollectingBib) addBibMessageToLog(logMessage)
-                    else addMessageToLog(message, file ?: mainFile, line
-                            ?: 0, type)
+                    else addMessageToLog(message, file ?: mainFile, line, type)
                 }
             }
         }
@@ -131,23 +129,31 @@ class LatexOutputListener(
      * next line.
      */
     private fun collectMessageLine(newText: String, logMessage: LatexLogMessage? = null) {
-        if (currentMessageText?.endsWith(newText) == false) currentMessageText += newText
+        if (currentLogMessage?.message?.endsWith(newText) == false) {
+            // Append new text
+            val message = logMessage ?: currentLogMessage!!
+            currentLogMessage = LatexLogMessage(message.message + newText, message.fileName, message.line, message.type)
+        }
 
         if (newText.length < lineWidth) {
             isCollectingMessage = false
-            if (logMessage != null) {
-                addMessageToLog(currentMessageText!!, line = logMessage.line ?: 0, type = logMessage.type)
-            }
-            else addMessageToLog(currentMessageText!!)
+            addMessageToLog(currentLogMessage!!)
+            currentLogMessage = null
         }
     }
 
-    private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int = 1, type: LatexLogMessageType = ERROR) {
-        messageList.add(LatexLogMessage(message, file?.name, line, type))
+    private fun addMessageToLog(logMessage: LatexLogMessage, givenFile: VirtualFile? = null) {
+        val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
+        messageList.add(logMessage)
         // Correct the index because the treeview starts counting at line 0 instead of line 1.
-        treeView.addMessage(type.category, arrayOf(message), file, line - 1, 0, null)
+        treeView.addMessage(logMessage.type.category, arrayOf(logMessage.message), file, logMessage.line - 1, 0, null)
     }
 
+    private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int, type: LatexLogMessageType) {
+        addMessageToLog(LatexLogMessage(message, file?.name, line, type), file)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
     private fun addBibMessageToLog(logMessage: LatexLogMessage) {
     }
 

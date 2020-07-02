@@ -20,7 +20,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testPackageNotInstalledError() {
         val text = "! LaTeX Error: File `paralisy.sty' not found."
-        val expected = LatexLogMessage("File `paralisy.sty' not found.", currentFile, null, ERROR)
+        val expected = LatexLogMessage("File `paralisy.sty' not found.", currentFile, 1, ERROR)
         testMessageExtractor(text, expected)
     }
 
@@ -48,13 +48,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
      */
     fun testPackageWarning() {
         val text = "Package biblatex Warning: Please (re)run Biber on the file:(biblatex) main"
-        val expected = LatexLogMessage("biblatex: Please (re)run Biber on the file: main", currentFile, null, WARNING)
+        val expected = LatexLogMessage("biblatex: Please (re)run Biber on the file: main", currentFile, 0, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testUnresolvedReferencesWarning() {
         val text = "LaTeX Warning: There were undefined references."
-        val expected = LatexLogMessage("There were undefined references.", currentFile, null, WARNING)
+        val expected = LatexLogMessage("There were undefined references.", currentFile, 0, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -72,26 +72,26 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testEndInGroup() {
         val text = "(\\end occurred inside a group at level 1)"
-        val expected = LatexLogMessage("\\end occurred inside a group at level 1", currentFile, null, WARNING)
+        val expected = LatexLogMessage("\\end occurred inside a group at level 1", currentFile, 0, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testEndOccured() {
         val text = "(\\end occurred when \\iftrue on line 4 was incomplete)"
-        val expected = LatexLogMessage("\\end occurred when \\iftrue on line 4 was incomplete", currentFile, null, WARNING)
+        val expected = LatexLogMessage("\\end occurred when \\iftrue on line 4 was incomplete", currentFile, 0, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testLooseHbox() {
         val text = """Loose \hbox (badness 0) in paragraph at lines 9--12
         \OT1/cmr/m/n/10 The badness of this line is 1000.""".trimIndent()
-        val expected = LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12 \\OT1/cmr/m/n/10 The badness of this line is 1000.", currentFile, null, WARNING)
+        val expected = LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12 \\OT1/cmr/m/n/10 The badness of this line is 1000.", currentFile, 0, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testFileAlreadyExists() {
         val text = "LaTeX Warning: File `included.tex' already exists on the system. Not generating it from this source."
-        val expected = LatexLogMessage("File `included.tex' already exists on the system. Not generating it from this source.", currentFile, null, WARNING)
+        val expected = LatexLogMessage("File `included.tex' already exists on the system. Not generating it from this source.", currentFile, 0, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -115,14 +115,21 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testMissingCharacter() {
         val text = "Missing character: There is no in font !"
-        val expected = LatexLogMessage("Missing character: There is no in font !", currentFile, null, WARNING)
+        val expected = LatexLogMessage("Missing character: There is no in font !", currentFile, 0, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun `test label multiply defined`() {
         val text = "LaTeX Warning: Label `mylabel' multiply defined.)"
         val newText = ")"
-        val expected = LatexLogMessage("Label `mylabel' multiply defined.", "test.tex", null, WARNING)
+        val expected = LatexLogMessage("Label `mylabel' multiply defined.", "test.tex", 0, WARNING)
+        testMessageExtractor(text, expected, newText)
+    }
+
+    fun `test overfull hbox in paragraph`() {
+        val text = "Overfull \\hbox (56.93071pt too wide) in paragraph at lines 13--15\\T1/phv/m/n/10 (-20) leases, cur-rently at [][]\$\\T1/cmtt/m/n/10 https : / / dev"
+        val newText = "\\T1/phv/m/n/10 (-20) leases, cur-rently at [][]\$\\T1/cmtt/m/n/10 https : / / dev"
+        val expected = LatexLogMessage("Overfull \\hbox (56.93071pt too wide) in paragraph at lines 13--15\\T1/phv/m/n/10 (-20) leases, cur-rently at [][]\$\\T1/cmtt/m/n/10 https : / / dev", "test.tex", 0, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 

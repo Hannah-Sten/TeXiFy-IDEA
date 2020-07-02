@@ -32,7 +32,7 @@ object LatexErrorHandler : LatexMessageHandler(
                     .firstOrNull() ?: message
                     .replace("<inserted text>", "")
 
-                return LatexLogMessage(processedMessage, fileName, line, messageType)
+                return LatexLogMessage(processedMessage, fileName, line ?: 1, messageType)
             }
         }
         return null
