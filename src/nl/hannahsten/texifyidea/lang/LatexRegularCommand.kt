@@ -135,7 +135,7 @@ enum class LatexRegularCommand(
     IMPORT("import", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
     INCLUDE("include", RequiredFileArgument("sourcefile", false, false, "tex")),
     INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
-    INPUT("input", RequiredFileArgument("sourcefile", false, false, "tex")),
+    INPUT("input", RequiredFileArgument("sourcefile", true, false, "tex")),
     INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
     INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", true, false, "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, false, "tex")),
