@@ -20,6 +20,9 @@ object LatexLogMessageExtractor {
      * Look for a warning or error message in [text], and return a handler that
      * can handle the warning (i.e., process it and output the correct log message).
      * Return null if [text] does not contain such an error or warning.
+     *
+     * @param text Text in which to search for error messages (will be two consecutive lines)
+     * @param newText Second line of 'text',
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         val specialErrorHandlersList = listOf(LatexUndefinedControlSequenceHandler)
@@ -45,7 +48,14 @@ object LatexLogMessageExtractor {
 
         // Check if we have found a warning
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
-            return LatexLogMessage(text.removeAll("LaTeX Warning:").trim().replace("""\s{2,}""".toRegex(), " "), fileName = currentFile, type = LatexLogMessageType.WARNING)
+            return LatexLogMessage(
+                text.removeAll("LaTeX Warning:")
+                    .trim()
+                    .trim('(', ')')
+                    .replace("""\s{2,}""".toRegex(), " "),
+                fileName = currentFile,
+                type = LatexLogMessageType.WARNING
+            )
         }
 
         return null

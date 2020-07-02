@@ -66,13 +66,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testEndInGroup() {
         val text = "(\\end occurred inside a group at level 1)"
-        val expected = LatexLogMessage("(\\end occurred inside a group at level 1)", currentFile, null, WARNING)
+        val expected = LatexLogMessage("\\end occurred inside a group at level 1", currentFile, null, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testEndOccured() {
         val text = "(\\end occurred when \\iftrue on line 4 was incomplete)"
-        val expected = LatexLogMessage("(\\end occurred when \\iftrue on line 4 was incomplete)", currentFile, null, WARNING)
+        val expected = LatexLogMessage("\\end occurred when \\iftrue on line 4 was incomplete", currentFile, null, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -111,6 +111,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         val text = "Missing character: There is no in font !"
         val expected = LatexLogMessage("Missing character: There is no in font !", currentFile, null, WARNING)
         testMessageExtractor(text, expected)
+    }
+
+    fun `test label multiply defined`() {
+        val text = "LaTeX Warning: Label `mylabel' multiply defined.)"
+        val newText = ")"
+        val expected = LatexLogMessage("Label `mylabel' multiply defined.", "test.tex", null, WARNING)
+        testMessageExtractor(text, expected, newText)
     }
 
     private fun testMessageExtractor(text: String, expected: LatexLogMessage?, newText: String = "") {

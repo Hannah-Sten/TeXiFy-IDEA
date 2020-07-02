@@ -2,7 +2,9 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 
 import java.util.ArrayDeque
 
-class LatexFileStack(vararg val file: String, var nonFileParCount: Int = 0) : ArrayDeque<String>() {
+class LatexFileStack(vararg val file: String,
+    /** Number of open parentheses that do not represent file openings and have not yet been closed. */
+    var notClosedNonFileOpenParentheses: Int = 0) : ArrayDeque<String>() {
     init {
         addAll(file)
     }
@@ -17,21 +19,24 @@ class LatexFileStack(vararg val file: String, var nonFileParCount: Int = 0) : Ar
      * (It works for rubber: https://github.com/tsgates/die/blob/master/bin/parse-latex-log.py)
      */
     fun update(line: String): LatexFileStack {
+        // Matches an open par with a filename, or a closing par
         val fileRegex = Regex("""\((?<file>"?\.*(([/\\])*[\w-\d. :])+\.(\w{2,10})"?)|\)""")
 
         var result = fileRegex.find(line)
         var linePart = line
 
         while (result != null) {
+            // If the regex matches an open par (with filename), register file
             if (linePart[result.range.first] == '(') {
                 push(result.groups["file"]?.value ?: break)
             }
+            // Regex has matched a closing par
             else {
                 // Count all open pars that are before the found closing par.
                 if (linePart.indexOfFirst { it == '(' } in 0..result.range.first) {
-                    nonFileParCount += linePart.substring(0, result.range.first).count { it == '(' }
+                    notClosedNonFileOpenParentheses += linePart.substring(0, result.range.first).count { it == '(' }
                 }
-                if (nonFileParCount > 0) nonFileParCount--
+                if (notClosedNonFileOpenParentheses > 0) notClosedNonFileOpenParentheses--
                 else {
                     pop()
                 }
@@ -46,7 +51,7 @@ class LatexFileStack(vararg val file: String, var nonFileParCount: Int = 0) : Ar
         // not close a file.
         // This has to happen after the above while loop, to still catch leftover open brackets at the end of a line
         if (result == null) {
-            nonFileParCount += line.count { it == '(' }
+            notClosedNonFileOpenParentheses += linePart.count { it == '(' }
         }
 
         return this

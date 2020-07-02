@@ -58,7 +58,14 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         val line = """This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex)"""
         val stack = LatexFileStack()
         val newStack = stack.update(line)
-        assertEquals(0, newStack.nonFileParCount)
+        assertEquals(0, newStack.notClosedNonFileOpenParentheses)
+    }
+
+    fun testFakeParsWithExtraOpenPar() {
+        val line = """This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex) plus a ("""
+        val stack = LatexFileStack()
+        val newStack = stack.update(line)
+        assertEquals(1, newStack.notClosedNonFileOpenParentheses)
     }
 
     fun testFileAndNonFileParenthesis() {
