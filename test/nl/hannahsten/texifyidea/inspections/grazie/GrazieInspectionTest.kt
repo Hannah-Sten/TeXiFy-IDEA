@@ -7,6 +7,7 @@ import com.intellij.spellchecker.inspections.SpellCheckingInspection
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import com.intellij.util.messages.Topic
+import nl.hannahsten.texifyidea.file.LatexFileType
 import org.junit.Test
 
 class GrazieInspectionTest : BasePlatformTestCase() {
@@ -24,8 +25,9 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         }
     }
 
-    @Test
     fun testCheckGrammarInConstructs() {
+        myFixture.configureByText(LatexFileType, """Is these an error with a sentence ${'$'}\xi${'$'} end or not.""")
+        myFixture.checkHighlighting()
 //        val testName = getTestName(false)
 //        myFixture.configureByFile("$testName.tex")
 //        myFixture.checkHighlighting(true, false, false, true)
