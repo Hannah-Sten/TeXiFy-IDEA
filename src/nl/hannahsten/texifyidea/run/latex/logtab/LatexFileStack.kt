@@ -22,7 +22,7 @@ class LatexFileStack(vararg val file: String, var nonFileParCount: Int = 0) : Ar
         var result = fileRegex.find(line)
         var linePart = line
 
-        while(result != null) {
+        while (result != null) {
             if (linePart[result.range.first] == '(') {
                 push(result.groups["file"]?.value ?: break)
             }

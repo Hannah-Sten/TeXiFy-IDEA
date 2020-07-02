@@ -18,7 +18,8 @@ object LatexErrorHandler : LatexMessageHandler(
             it.find(text)?.apply {
                 val (line, fileName) = try {
                     Pair(groups["line"]?.value?.toInt(), groups["file"]?.value?.trim() ?: currentFile)
-                } catch (e: IllegalArgumentException) {
+                }
+                catch (e: IllegalArgumentException) {
                     Pair(null, currentFile)
                 }
 

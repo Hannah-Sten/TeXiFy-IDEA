@@ -27,20 +27,20 @@ object LatexLogMessageExtractor {
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach {
-            if(it.regex.any { it.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
+            if (it.regex.any { it.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
         }
 
         // Handles all other file line errors. Only check the first line,
         // because other errors might need the two lines, and would be
         // (partly) duplicated in the log if we allow the fallback to inspect
         // the two lines (or just the first).
-        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText))}) {
+        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText)) }) {
             return LatexErrorHandler.findMessage(text, newText, currentFile)
         }
 
         // Look for errors that need special treatment.
         specialWarningHandlersList.forEach {
-            if(it.regex.any { r -> r.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
+            if (it.regex.any { r -> r.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
         }
 
         // Check if we have found a warning

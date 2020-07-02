@@ -150,9 +150,7 @@ class LatexRunConfiguration constructor(project: Project,
 
         if (manager is LogConsoleManagerBase && startedProcess != null) {
             manager.addAdditionalTabComponent(LatexLogTabComponent(project, mainFile, startedProcess), "LaTeX-Log", AllIcons.Debugger.Console, false)
-
         }
-
     }
 
     @Throws(RuntimeConfigurationException::class)

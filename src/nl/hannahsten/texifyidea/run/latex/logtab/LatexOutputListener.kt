@@ -149,7 +149,6 @@ class LatexOutputListener(
     }
 
     private fun addBibMessageToLog(logMessage: LatexLogMessage) {
-
     }
 
     override fun processTerminated(event: ProcessEvent) {
@@ -162,7 +161,6 @@ class LatexOutputListener(
     }
 
     override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
-
     }
 
     override fun startNotified(event: ProcessEvent) {

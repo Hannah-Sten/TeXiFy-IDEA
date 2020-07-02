@@ -248,5 +248,4 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         assertEquals(expectedMessages, latexMessageList.toSet())
     }
-
 }

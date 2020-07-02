@@ -10,7 +10,6 @@ class LatexQuickRunLogParserTest : BasePlatformTestCase() {
      * Useful regex for matching braces: \(([^(^)]+)\)
      */
 
-
     override fun getTestDataPath(): String {
         return "test/resources/run"
     }
@@ -20,8 +19,7 @@ class LatexQuickRunLogParserTest : BasePlatformTestCase() {
         ()
     """.trimIndent()
 
-        val messages = runLogParser(text)
-
+        runLogParser(text)
     }
 
     private fun runLogParser(inputText: String): List<LatexLogMessage> {

@@ -30,7 +30,6 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
     override fun getTabTitle() = "Log messages"
 
     override fun dispose() {
-
     }
 
     override fun getPreferredFocusableComponent() = component
