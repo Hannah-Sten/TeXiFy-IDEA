@@ -19,8 +19,9 @@ import java.util.HashMap
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
-    if (magicComment().contains(DefaultMagicKeys.ROOT)) {
-        val path = magicComment().value(DefaultMagicKeys.ROOT) ?: ""
+    val magicComment = magicComment()
+    if (magicComment.contains(DefaultMagicKeys.ROOT)) {
+        val path = magicComment.value(DefaultMagicKeys.ROOT) ?: ""
         this.findFile(path)?.let { return it }
     }
 
