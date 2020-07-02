@@ -8,7 +8,6 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import com.intellij.util.messages.Topic
 import nl.hannahsten.texifyidea.file.LatexFileType
-import org.junit.Test
 
 class GrazieInspectionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
