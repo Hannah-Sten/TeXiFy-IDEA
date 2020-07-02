@@ -114,6 +114,7 @@ fun getGraphicsPaths(project: Project): List<String> {
     if (graphicsPathCommands.isNotEmpty()) {
         // Only last defined one counts
         val args = graphicsPathCommands.last().parameterList.filter { it.requiredParam != null }
+        // These arguments have to be in a group in a parameter, and a group contains LatexNormalText instead of LatexParameterText
         val subArgs = args.first().childrenOfType(LatexNormalText::class)
         subArgs.forEach { graphicsPaths.add(it.text) }
     }

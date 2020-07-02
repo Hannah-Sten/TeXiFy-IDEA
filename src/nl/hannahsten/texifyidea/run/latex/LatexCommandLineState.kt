@@ -10,6 +10,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
@@ -42,6 +43,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
+        // If the outdirs do not exist, we assume this is because either something went wrong and an incorrect output path was filled in,
+        // or the user did not create a new project, for example by opening or importing existing resources,
+        // so they still need to be created.
+        if (runConfig.outputPath == null) {
+            createOutDirs(runConfig)
+        }
+
         // Some initial setup
         if (!runConfig.hasBeenRun) {
             // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
@@ -65,7 +73,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")
 
-        createOutDirs(mainFile)
+        updateOutputSubDirs(mainFile, runConfig.outputPath)
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
                 .withEnvironment(runConfig.environmentVariables.envs)
@@ -73,7 +81,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
-
 
         var isMakeindexNeeded = false
 
@@ -189,17 +196,29 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     /**
      * Creates the output directories to place all produced files.
      */
-    @Throws(ExecutionException::class)
-    private fun createOutDirs(mainFile: VirtualFile) {
+    private fun createOutDirs(runConfig: LatexRunConfiguration) {
+        val mainFile = runConfig.mainFile ?: return
+
         val fileIndex = ProjectRootManager.getInstance(environment.project).fileIndex
 
         val includeRoot = mainFile.parent
-        val parentPath = (fileIndex.getContentRootForFile(mainFile, false)?.path ?: includeRoot.path)
+        val parentPath = fileIndex.getContentRootForFile(mainFile, false)?.path ?: includeRoot.path
         val outPath = "$parentPath/out"
 
-        // Create output path for mac
+        // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
         val module = fileIndex.getModuleForFile(mainFile, false)
-        module?.createExcludedDir(outPath) ?: File(outPath).mkdirs()
+        File(outPath).mkdirs()
+        runConfig.outputPath = LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)
+        module?.createExcludedDir(outPath)
+    }
+
+    /**
+     * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems
+     */
+    @Throws(ExecutionException::class)
+    fun updateOutputSubDirs(mainFile: VirtualFile, outputPath: VirtualFile?) {
+        val includeRoot = mainFile.parent
+        val outPath = outputPath?.path ?: return
 
         val files: Set<PsiFile>
         try {
@@ -211,7 +230,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Create output paths for mac (see issue #70 on GitHub)
         files.asSequence()
-                .mapNotNull { FileUtil.pathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
-                .forEach { File(outPath + it).mkdirs() }
+            .mapNotNull { FileUtil.pathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
+            .forEach { File(outPath + it).mkdirs() }
     }
 }

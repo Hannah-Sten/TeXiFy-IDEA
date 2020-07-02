@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.SIUNITX
 import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
@@ -194,6 +195,7 @@ enum class LatexRegularCommand(
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
     OE("oe", display = "œ"),
+    ONLYIFSTANDALONE("onlyifstandalone", "code".asRequired()), // dependency = standalone, but either class or package
     CAPITAL_OE("OE", display = "Œ"),
     ODDSIDEMARGIN("oddsidemargin"),
     ONECOLUMN("onecolumn"),
@@ -220,6 +222,8 @@ enum class LatexRegularCommand(
     POUNDS("pounds", display = "£"),
     PRINTBIBLIOGRAPHY("printbibliography", dependency = BIBLATEX),
     PRINTINDEX("printindex"),
+    PROVIDESCLASS("providesclass"),
+    PROVIDESPACKAGE("providespackage"),
     R("r", display = "˚ (accent)"),
     RBRACK("rbrack", display = "]"),
     RPAREN("rparen", display = ")", dependency = MATHTOOLS),
@@ -261,6 +265,7 @@ enum class LatexRegularCommand(
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
     SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
+    SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
     SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
     SUBITEM("subitem"),
@@ -360,6 +365,7 @@ enum class LatexRegularCommand(
      */
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWCOMMAND_STAR("newcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
+    NEWIF("newif", "cmd".asRequired()),
     PROVIDECOMMAND("providecommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     PROVIDECOMMAND_STAR("providecommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     RENEWCOMMAND("renewcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
@@ -484,25 +490,38 @@ enum class LatexRegularCommand(
     BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
 
     /**
+     * SIunitx commands
+     */
+    ANG("ang", "options".asOptional(), "angle".asRequired(), dependency = SIUNITX),
+    NUM("num", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
+    SI("si", "options".asOptional(), "unit".asRequired(), dependency = SIUNITX),
+    SI_NUM("SI", "options".asOptional(), "number".asRequired(), "pre-unit".asOptional(), "unit".asRequired(), dependency = SIUNITX),
+    NUMLIST("numlist", "options".asOptional(), "numbers".asRequired(), dependency = SIUNITX),
+    NUMRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), dependency = SIUNITX),
+    SILIST("SIlist", "options".asOptional(), "numbers".asRequired(), "unit".asRequired(), dependency = SIUNITX),
+    SIRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), "unit".asRequired(), dependency = SIUNITX),
+    SISETUP("sisetup", "options".asRequired(), dependency = SIUNITX),
+    TABLENUM("tablenum", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
+
+    /**
      * Algorithmicx
      */
-
-    FOR("For", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    FORALL("ForAll", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDFOR("EndFor", dependency= ALGPSEUDOCODE),
-    IF("If", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ELSIF("ElsIf", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDIF("EndIf", dependency= ALGPSEUDOCODE),
-    WHILE("While", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDWHILE("EndWhile", dependency= ALGPSEUDOCODE),
-    REPEAT("Repeat", dependency= ALGPSEUDOCODE),
-    UNTIL("Until", "condition".asRequired(), dependency= ALGPSEUDOCODE),
-    LOOP("Loop", dependency= ALGPSEUDOCODE),
-    ENDLOOP("EndLoop", dependency= ALGPSEUDOCODE),
-    FUNCTION("Function", "name".asRequired(), "params".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDFUNCTION("EndFunction", dependency= ALGPSEUDOCODE),
-    PROCEDURE("Procedure", "name".asRequired(), "params".asRequired(), dependency= ALGPSEUDOCODE),
-    ENDPROCEDURE("EndProcedure", dependency= ALGPSEUDOCODE);
+    FOR("For", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    FORALL("ForAll", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDFOR("EndFor", dependency = ALGPSEUDOCODE),
+    IF("If", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ELSIF("ElsIf", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDIF("EndIf", dependency = ALGPSEUDOCODE),
+    WHILE("While", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDWHILE("EndWhile", dependency = ALGPSEUDOCODE),
+    REPEAT("Repeat", dependency = ALGPSEUDOCODE),
+    UNTIL("Until", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    LOOP("Loop", dependency = ALGPSEUDOCODE),
+    ENDLOOP("EndLoop", dependency = ALGPSEUDOCODE),
+    FUNCTION("Function", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDFUNCTION("EndFunction", dependency = ALGPSEUDOCODE),
+    PROCEDURE("Procedure", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
+    ENDPROCEDURE("EndProcedure", dependency = ALGPSEUDOCODE);
 
     companion object {
 

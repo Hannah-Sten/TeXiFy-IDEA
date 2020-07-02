@@ -34,7 +34,6 @@ class BibtexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                     }
                 }
             }
-
         }
     }
 }

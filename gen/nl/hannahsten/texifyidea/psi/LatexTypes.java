@@ -27,10 +27,12 @@ public interface LatexTypes {
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
   IElementType OPTIONAL_PARAM_CONTENT = new LatexElementType("OPTIONAL_PARAM_CONTENT");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
+  IElementType PARAMETER_TEXT = new LatexElementType("PARAMETER_TEXT");
   IElementType PSEUDOCODE_BLOCK = new LatexElementType("PSEUDOCODE_BLOCK");
   IElementType PSEUDOCODE_BLOCK_CONTENT = new LatexElementType("PSEUDOCODE_BLOCK_CONTENT");
   IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
+  IElementType REQUIRED_PARAM_CONTENT = new LatexElementType("REQUIRED_PARAM_CONTENT");
 
   IElementType AMPERSAND = new LatexTokenType("&");
   IElementType BEGIN_PSEUDOCODE_BLOCK = new LatexTokenType("BEGIN_PSEUDOCODE_BLOCK");
@@ -48,8 +50,6 @@ public interface LatexTypes {
   IElementType INLINE_MATH_END = new LatexTokenType("INLINE_MATH_END");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
   IElementType MIDDLE_PSEUDOCODE_BLOCK = new LatexTokenType("MIDDLE_PSEUDOCODE_BLOCK");
-  IElementType M_CLOSE_BRACKET = new LatexTokenType("M_CLOSE_BRACKET");
-  IElementType M_OPEN_BRACKET = new LatexTokenType("M_OPEN_BRACKET");
   IElementType NORMAL_TEXT_CHAR = new LatexTokenType("NORMAL_TEXT_CHAR");
   IElementType NORMAL_TEXT_WORD = new LatexTokenType("NORMAL_TEXT_WORD");
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
@@ -112,6 +112,9 @@ public interface LatexTypes {
       else if (type == PARAMETER) {
         return new LatexParameterImpl(node);
       }
+      else if (type == PARAMETER_TEXT) {
+        return new LatexParameterTextImpl(node);
+      }
       else if (type == PSEUDOCODE_BLOCK) {
         return new LatexPseudocodeBlockImpl(node);
       }
@@ -123,6 +126,9 @@ public interface LatexTypes {
       }
       else if (type == REQUIRED_PARAM) {
         return new LatexRequiredParamImpl(node);
+      }
+      else if (type == REQUIRED_PARAM_CONTENT) {
+        return new LatexRequiredParamContentImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

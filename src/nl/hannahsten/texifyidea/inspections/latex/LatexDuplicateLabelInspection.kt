@@ -7,19 +7,16 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.findBibitemCommands
 import nl.hannahsten.texifyidea.util.findLabelingCommandsInFileSetAsSequence
 import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.lang.Integer.max
-import java.util.*
-import kotlin.collections.List
-import kotlin.collections.map
-import kotlin.collections.sum
+import java.util.EnumSet
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -40,10 +37,9 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
 
         val duplicateLabels = getProblemDescriptors(file.findLabelingCommandsInFileSetAsSequence(), isOntheFly, manager, file) {
-            val labelCommands = TexifySettings.getInstance().labelCommands
             val name = this.name ?: return@getProblemDescriptors null
-            val position = labelCommands[name]?.position ?: return@getProblemDescriptors null
-            this.requiredParameter(position - 1) ?: return@getProblemDescriptors null
+            val position = CommandManager.labelAliasesInfo.getOrDefault(name, null)?.positions?.firstOrNull() ?: return@getProblemDescriptors null
+            this.requiredParameter(position) ?: return@getProblemDescriptors null
         }
 
         val duplicateBibitems = getProblemDescriptors(file.findBibitemCommands(), isOntheFly, manager, file) {
@@ -62,7 +58,6 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         val allLabels = hashMapOf<String, MutableSet<LatexCommands>>()
 
         val result = mutableListOf<ProblemDescriptor>()
-
 
         // Treat LaTeX and BibTeX separately because only the first parameter of \bibitem commands counts
         // First find all duplicate labels
@@ -93,7 +88,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     /**
      * calculates the offset between commandToken and the parameter defining the label
      */
-    private fun skippedParametersLength(parameters : List<LatexParameter>, searched : String) : Int {
+    private fun skippedParametersLength(parameters: List<LatexParameter>, searched: String): Int {
         val parameterStrings = parameters.map { latexParameter ->
             latexParameter.text
         }
@@ -105,8 +100,8 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     /**
      * make the mapping from command etc. to ProblemDescriptor
      */
-    private fun createProblemDescriptor(cmd : LatexCommands, label : String, isOntheFly: Boolean, manager: InspectionManager)
-            : ProblemDescriptor {
+    private fun createProblemDescriptor(cmd: LatexCommands, label: String, isOntheFly: Boolean, manager: InspectionManager):
+            ProblemDescriptor {
         val offset = cmd.commandToken.textLength + skippedParametersLength(cmd.parameterList, label) + 1
         return manager.createProblemDescriptor(
                 cmd,

@@ -22,7 +22,7 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
         private val demoText = Magic.General.latexDemoText.removeHtmlTags()
     }
 
-    override fun getLanguage() = LatexLanguage.INSTANCE!!
+    override fun getLanguage() = LatexLanguage.INSTANCE
 
     override fun getCodeSample(settingsType: SettingsType) = demoText
 
@@ -31,9 +31,9 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         when (settingsType) {
             WRAPPING_AND_BRACES_SETTINGS -> customizeWrappingAndBracesSettings(consumer)
-            BLANK_LINES_SETTINGS         -> customizeBlankLinesSettings(consumer)
-            COMMENTER_SETTINGS           -> customizeCodeGenerationSettings(consumer)
-            else                         -> return
+            BLANK_LINES_SETTINGS -> customizeBlankLinesSettings(consumer)
+            COMMENTER_SETTINGS -> customizeCodeGenerationSettings(consumer)
+            else -> return
         }
     }
 
@@ -63,5 +63,4 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                 LINE_COMMENT_ADD_SPACE
         ).map { it.toString() }.toTypedArray())
     }
-
 }

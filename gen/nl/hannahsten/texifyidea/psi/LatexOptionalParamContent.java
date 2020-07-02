@@ -23,6 +23,15 @@ public interface LatexOptionalParamContent extends PsiElement {
   LatexMathEnvironment getMathEnvironment();
 
   @Nullable
-  LatexNormalText getNormalText();
+  LatexParameterText getParameterText();
+
+  @Nullable
+  LatexPseudocodeBlock getPseudocodeBlock();
+
+  @Nullable
+  LatexRawText getRawText();
+
+  @Nullable
+  PsiElement getCommandIfnextchar();
 
 }

@@ -13,9 +13,9 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import kotlin.reflect.KClass
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// PSI ELEMENT ///////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // PSI ELEMENT ///////////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Get the offset where the psi element ends.
@@ -26,6 +26,7 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
  * @see [PsiTreeUtil.getChildrenOfType]
  */
 fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
+    if (project.isDisposed) return emptyList()
     return PsiTreeUtil.findChildrenOfType(this, clazz.java)
 }
 
@@ -274,7 +275,7 @@ fun PsiElement.inDirectEnvironment(environmentName: String): Boolean = inDirectE
 fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     val nameText = environment.name() ?: return false
-    return validNames.contains(nameText.text)
+    return nameText.text in validNames
 }
 
 /**
@@ -355,15 +356,15 @@ fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequenc
  */
 fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.parent }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Looks up the name of the environment in the required parameter.
  */
-fun LatexEnvironment.name(): LatexNormalText? {
-    return firstChildOfType(LatexNormalText::class)
+fun LatexEnvironment.name(): LatexParameterText? {
+    return firstChildOfType(LatexParameterText::class)
 }
 
 /**
@@ -420,7 +421,7 @@ fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
  * @param element
  *              Either a [LatexBeginCommand] or a [LatexEndCommand]
  */
-private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexNormalText::class)?.text
+private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexParameterText::class)?.text
 
 /**
  * Finds the [LatexBeginCommand] that matches the end command.
@@ -444,29 +445,29 @@ fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != 
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.hasBibliography() = this.commandsInFileSet().any { it.name == "\\bibliography"}
+fun PsiFile.hasBibliography() = this.commandsInFileSet().any { it.name == "\\bibliography" }
 
 /**
  * Checks if the fileset for this file uses \printbibliography, in which case the user probably wants to use biber.
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibliography"}
+fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibliography" }
 
 /**
  * Splits the first normal text child element of [element] on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
  */
-fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexNormalText::class)?.text?.split(delimiter) ?: emptyList()
+fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexParameterText::class)?.text?.split(delimiter) ?: emptyList()
 
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
@@ -476,7 +477,7 @@ fun LatexRequiredParam.splitContent(delimiter: String = ",") = splitContent(this
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.
@@ -486,7 +487,7 @@ fun LatexOptionalParam.splitContent(delimiter: String = ",") = splitContent(this
 /**
  * Splits the plain text contents on [delimiter].
  *
- * Note that only the first [LatexNormalText] child content is processed.
+ * Note that only the first [LatexParameterText] child content is processed.
  * When other PSI children are present in the parameter, these are ignored.
  *
  * @return The split contents.

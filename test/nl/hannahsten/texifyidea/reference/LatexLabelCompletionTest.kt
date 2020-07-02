@@ -16,7 +16,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun testCompleteLatexReferences(){
+    fun testCompleteLatexReferences() {
         // given
         val testName = getTestName(false)
         myFixture.configureByFiles("$testName.tex", "bibtex.bib")
@@ -40,16 +40,20 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         // given
         myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
 
+        // Seems like this also helps making sure the file is indexed before using autocompletion
+        assertTrue(myFixture.findAllGutters().size > 0)
+
         // when
-        val result = myFixture.complete(CompletionType.BASIC)
+        myFixture.complete(CompletionType.BASIC)
+        val result = myFixture.lookupElementStrings
 
         // then
-        assertEquals(1, result.size)
-        assertTrue(result.any { l -> l.lookupString == "Muchnick1997" })
+        assertEquals(1, result?.size)
+        assertTrue(result?.contains("Muchnick1997") == true)
     }
 
-    @Test
-    fun testCompleteBibtexWithCorrectCase() {
+//    @Test
+//    fun testCompleteBibtexWithCorrectCase() {
         // Using the following failed sometimes
 //        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
 //        val testName = getTestName(false)
@@ -57,7 +61,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
 //        myFixture.complete(CompletionType.BASIC)
 //        myFixture.findAllGutters() // This seems to allow the completion to complete, and to make the test pass
 //        myFixture.checkResultByFile("${testName}_after.tex")
-    }
+//    }
 
     @Test
     fun testLabelReferenceCompletion() {
@@ -84,6 +88,5 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { l -> l.lookupString == "fig:figure" })
         assertTrue(result.any { l -> l.lookupString == "lst:listing" })
         assertTrue(result.any { l -> l.lookupString == "sec:some-section" })
-
     }
 }

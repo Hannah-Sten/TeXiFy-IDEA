@@ -18,4 +18,10 @@
     \begin{figure}
         <weak_warning descr="A label should come after the caption">\label{fig:wrong-label2}\caption{figure}</weak_warning>
     \end{figure}
+
+    \begin{figure}[ht]
+        \centering
+        \subfloat[Subcaption]{\includegraphics{figure}\label{fig:subfigure}}
+        \caption{Caption}\label{fig:figure}
+    \end{figure}
 \end{document}

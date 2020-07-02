@@ -12,12 +12,13 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
-import com.intellij.psi.util.createSmartPointer
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.*
 
 class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
@@ -31,12 +32,13 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     }
 
     override fun isEnabledByDefault(): Boolean {
-        return LatexDistribution.isTexlive
+        return LatexDistribution.isTexliveAvailable
     }
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        if (LatexDistribution.isTexlive) {
+        // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
+        if (LatexDistribution.isTexliveAvailable && SystemEnvironment.isTlmgrInstalled) {
             val installedPackages = TexLivePackages.packageList
             val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project
                             .projectSearchScope)
@@ -48,15 +50,15 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
             for (command in commands) {
-                val `package` = command.requiredParameters.first().toLowerCase()
+                val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
                 if (`package` !in packages) {
                     // Manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
                     if ("tlmgr search --file /$`package`.sty".runCommand()
                                     ?.isEmpty() != false) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
-                                "Package is not installed",
-                                InstallPackage(file.createSmartPointer(file.project), `package`),
+                                "Package is not installed or \\ProvidesPackage is missing",
+                                InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
                         ))
@@ -97,13 +99,12 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
                         override fun onSuccess() {
                             TexLivePackages.packageList.add(packageName)
+                            // Rerun inspections
                             DaemonCodeAnalyzer.getInstance(project)
                                     .restart(filePointer.containingFile
                                             ?: return)
                         }
-
                     })
         }
-
     }
 }

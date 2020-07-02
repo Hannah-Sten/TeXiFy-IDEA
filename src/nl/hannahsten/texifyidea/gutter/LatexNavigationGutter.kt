@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexRequiredParamContent
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.parentOfType
@@ -25,8 +25,8 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
 
         // Gutters should only be used with leaf elements.
-        // Filter for text nodes and then lookup their LatexCommands parent
-        if (element.firstChild != null || element.parent !is LatexNormalText) return
+        // We assume gutter icons only have to be shown for elements in required parameters
+        if (element.firstChild != null || element.parentOfType(LatexRequiredParamContent::class) == null) return
 
         // Only make markers when dealing with commands.
         val command = element.parentOfType(LatexCommands::class) ?: return
@@ -49,16 +49,10 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
         val referencesList = command.references.filterIsInstance<InputFileReference>()
         if (referencesList.isEmpty()) return
-        val files = referencesList.mapNotNull { it.resolve() }
 
-        val defaultIcon = TexifyIcons.getIconFromExtension(referencesList.first().defaultExtension)
-        val extension = if (files.isNotEmpty()) { files.first().name.getFileExtension() } else ""
-        val icon = if (!files.isNullOrEmpty() && TexifyIcons.getIconFromExtension(extension) == TexifyIcons.FILE) {
-            defaultIcon
-        }
-        else {
-            TexifyIcons.getIconFromExtension(extension)
-        }
+        val files = referencesList.mapNotNull { it.resolve() }
+        val extension = if (files.isNotEmpty()) files.first().name.getFileExtension() else ""
+        val icon = TexifyIcons.getIconFromExtension(extension)
 
         val builder = NavigationGutterIconBuilder
                 .create(icon)

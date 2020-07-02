@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.util.*
 
-
 /**
  * Scans all file inclusions and finds the file that is at the base of all inclusions.
  *
@@ -101,7 +100,6 @@ private fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
                 inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
             }
         }
-
     }
 
     return inclusions
@@ -140,5 +138,5 @@ fun PsiFile.isRoot(): Boolean {
 fun LatexCommands.getAllRequiredArguments(): List<String>? {
     val required = requiredParameters
     if (required.isEmpty()) return null
-    return required.flatMap { it.split(',')}
+    return required.flatMap { it.split(',') }
 }

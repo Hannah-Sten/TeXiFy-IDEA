@@ -70,7 +70,7 @@ object EvinceConversation : ViewerConversation() {
         else {
             // If the user used the forward search menu action
             if (pdfPath == null) {
-                Notification("EvinceConversation", "Could not execute forward search", "Please make sure you have compiled the document first.", NotificationType.ERROR).notify(project)
+                Notification("EvinceConversation", "Could not execute forward search", "Please make sure you have compiled the document first, and that your path does not contain spaces.", NotificationType.ERROR).notify(project)
             }
             else {
                 throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $pdfPath")
@@ -96,7 +96,7 @@ object EvinceConversation : ViewerConversation() {
         // Catch a NoReply, because it is unknown why Evince cannot start so we don't try to fix that
         try {
             processOwner = daemon.FindDocument("file://$pdfFilePath", true)
-        } catch (ignored: NoReply) {}
+        }
+        catch (ignored: NoReply) {}
     }
-
 }

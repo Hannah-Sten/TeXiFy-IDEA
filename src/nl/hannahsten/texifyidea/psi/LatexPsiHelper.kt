@@ -88,12 +88,12 @@ class LatexPsiHelper(private val project: Project) {
         val elementIterator = optionalParam.optionalParamContentList.iterator()
         while (elementIterator.hasNext()) {
             val latexContent = elementIterator.next()
-            val elementIsLabel = latexContent.normalText?.text?.contains(labelRegex) ?: false
+            val elementIsLabel = latexContent.parameterText?.text?.contains(labelRegex) ?: false
             if (elementIsLabel) {
                 elementsToReplace.add(latexContent)
 
                 // check if the label name is part of the text or in a separate group
-                if (latexContent.normalText!!.text.split("=")[1].trim().isEmpty()) {
+                if (latexContent.parameterText!!.text.split("=")[1].trim().isEmpty()) {
                     val group = elementIterator.next()
                     elementsToReplace.add(group)
                 }

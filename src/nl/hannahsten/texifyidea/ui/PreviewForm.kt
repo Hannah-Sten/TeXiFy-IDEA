@@ -37,6 +37,4 @@ class PreviewForm {
         equationArea!!.text = ""
         equationPanel!!.clearImage()
     }
-
-
 }

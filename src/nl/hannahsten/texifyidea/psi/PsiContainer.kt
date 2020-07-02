@@ -62,6 +62,7 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getReferences(): Array<PsiReference> = elements().flatMap { it.references.asSequence() }.toList().toTypedArray()
 
+    @Deprecated("Overrides deprecated member.")
     override fun checkAdd(element: PsiElement) = elements().forEach {
         @Suppress("DEPRECATION") // Has to be overridden
         it.checkAdd(element)
@@ -101,6 +102,7 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getOriginalElement(): PsiElement? = start.originalElement
 
+    @Deprecated("Overrides deprecated member.")
     override fun checkDelete() = elements().forEach {
         @Suppress("DEPRECATION") // Has to be overridden
         it.checkDelete()
@@ -150,11 +152,11 @@ open class PsiContainer(val start: PsiElement, val end: PsiElement) : PsiElement
 
     override fun getChildren(): Array<PsiElement> = emptyArray()
 
-    override fun acceptChildren(visitor: PsiElementVisitor) =  elements().forEach {
+    override fun acceptChildren(visitor: PsiElementVisitor) = elements().forEach {
         it.accept(visitor)
     }
 
-    override fun isWritable() =  elements().all { it.isWritable }
+    override fun isWritable() = elements().all { it.isWritable }
 
     override fun <T : Any?> getUserData(key: Key<T>): T? = start.getUserData(key)
 

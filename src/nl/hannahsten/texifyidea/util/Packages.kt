@@ -2,8 +2,10 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -87,7 +89,6 @@ object PackageUtils {
                 anchorAfter = null
                 prependNewLine = false
             }
-
         }
         // Otherwise, insert below the lowest usepackage.
         else {
@@ -101,8 +102,12 @@ object PackageUtils {
 
         val newNode = LatexPsiHelper(file.project).createFromText(command).firstChild.node
 
+        // https://www.jetbrains.org/intellij/sdk/docs/basics/architectural_overview/modifying_psi.html?search=refac#combining-psi-and-document-modifications
         // Avoid 'Write access is allowed inside write-action only" exception
         runWriteAction {
+            // Avoid "Attempt to modify PSI for non-committed Document"
+            PsiDocumentManager.getInstance(file.project).doPostponedOperationsAndUnblockDocument(file.document() ?: return@runWriteAction)
+            PsiDocumentManager.getInstance(file.project).commitDocument(file.document() ?: return@runWriteAction)
             if (anchorAfter != null) {
                 val anchorBefore = anchorAfter.node.treeNext
                 if (prependNewLine) {
@@ -246,6 +251,12 @@ object PackageUtils {
                 continue
             }
 
+            // Just skip conditionally included packages, because it is too expensive to determine whether
+            // they are really included or not
+            if (cmd.parent.firstParentOfType(LatexCommands::class)?.name == "\\" + LatexRegularCommand.ONLYIFSTANDALONE.command) {
+                continue
+            }
+
             // Assume packages can be included in both optional and required parameters
             // Except a class, because a class is not a package
             val packages = if (cmd.commandToken
@@ -312,7 +323,6 @@ object TexLivePackages {
             task.title = "Updating tlmgr..."
             tlmgrUpdateCommand.runCommand()
         }
-
 
         return extractRealPackageNameFromOutput(searchResult)
     }

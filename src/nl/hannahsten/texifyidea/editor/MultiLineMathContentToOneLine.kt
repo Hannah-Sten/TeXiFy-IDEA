@@ -23,9 +23,9 @@ class MultiLineMathContentToOneLine(private val equation: String) {
         fun parse(text: String) {
             val index = splitByBeginEnd.indexOf(text)
             splitByBeginEnd[index] = text
-                    .replace("\n", "")    // Remove new lines.
-                    .replace("\\\\", "")  // Remove end-of-line alignment characters.
-                    .replace("&", "")     // Remove alignment characters.
+                    .replace("\n", "") // Remove new lines.
+                    .replace("\\\\", "") // Remove end-of-line alignment characters.
+                    .replace("&", "") // Remove alignment characters.
                     .replace("\\intertext", "\\text")
         }
 

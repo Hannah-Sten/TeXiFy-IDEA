@@ -24,7 +24,7 @@ class LatexSubParagraphPresentation(subParagraphCommand: LatexCommands) : Editab
 
     override fun getLocationString() = hint
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_SUBPARAGRAPH!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_SUBPARAGRAPH
 
     override fun setHint(hint: String) {
         this.hint = hint

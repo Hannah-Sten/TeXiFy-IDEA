@@ -16,16 +16,8 @@ class LatexUsagesProvider : FindUsagesProvider {
                 TokenSet.create(LatexTypes.COMMAND_TOKEN, LatexTypes.COMMANDS,
                         LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
                         LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
-                        LatexTypes.OPEN_BRACE, LatexTypes.OPEN_BRACKET,
-                        LatexTypes.OPEN_BRACE, LatexTypes.OPEN_PAREN,
-                        LatexTypes.M_OPEN_BRACKET, LatexTypes.CLOSE_BRACE,
-                        LatexTypes.CLOSE_BRACKET, LatexTypes.CLOSE_PAREN,
-                        LatexTypes.M_CLOSE_BRACKET, LatexTypes.PARAMETER,
-                        LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM,
-                        LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END,
-                        LatexTypes.INLINE_MATH_START, LatexTypes.INLINE_MATH_END,
-                        LatexTypes.NORMAL_TEXT_WORD, LatexTypes.NORMAL_TEXT,
-                        LatexTypes.STAR
+                        LatexTypes.PARAMETER_TEXT, LatexTypes.PARAMETER,
+                        LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM
                 ),
                 // Comments.
                 TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),

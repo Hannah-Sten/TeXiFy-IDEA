@@ -33,6 +33,6 @@ class BibitemFilter : Filter {
 
         override fun getDescription() = "Show Bibliography Items"
 
-        override fun getIcon() = TexifyIcons.DOT_BIB!!
+        override fun getIcon() = TexifyIcons.DOT_BIB
     }
 }

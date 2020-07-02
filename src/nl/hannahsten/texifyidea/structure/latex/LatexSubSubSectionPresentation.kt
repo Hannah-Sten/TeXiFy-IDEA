@@ -24,7 +24,7 @@ class LatexSubSubSectionPresentation(sectionCommand: LatexCommands) : EditableHi
 
     override fun getLocationString() = hint
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_SUBSUBSECTION!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_SUBSUBSECTION
 
     override fun setHint(hint: String) {
         this.hint = hint

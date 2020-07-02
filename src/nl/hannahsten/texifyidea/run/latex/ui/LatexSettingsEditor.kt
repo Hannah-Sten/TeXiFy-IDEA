@@ -18,9 +18,11 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
-import nl.hannahsten.texifyidea.util.LatexDistribution
+import java.awt.Color
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -41,9 +43,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     // Not shown on non-MiKTeX systems
     private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
 
-    // The following options may or may not exist.
     private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
+    private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionType>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var bibliographyPanel: RunConfigurationPanel<BibtexRunConfigurationType>
     private lateinit var makeindexPanel: RunConfigurationPanel<MakeindexRunConfigurationType>
@@ -130,6 +132,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             }
         }
 
+        // Reset LaTeX distribution
+        latexDistribution.component.selectedItem = runConfiguration.latexDistribution
+
         // Reset project.
         project = runConfiguration.project
 
@@ -199,6 +204,15 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
         else {
             runConfiguration.setFileOutputPath(outputPathTextField.text)
+            if (runConfiguration.outputPath == null) {
+                // Perhaps not entirely IJ-style, but don't know of a better way at the moment to provide a non-blocking warning
+                outputPathTextField.background = Color.RED
+                outputPathTextField.toolTipText = "Path not found, a default path will be used when executed"
+            }
+            else {
+                outputPathTextField.background = null
+                outputPathTextField.toolTipText = null
+            }
         }
 
         if (auxilPath != null) {
@@ -226,6 +240,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Apply output format.
         val format = outputFormat.component.selectedItem as Format?
         runConfiguration.outputFormat = format ?: Format.PDF
+
+        // Apply LaTeX distribution
+        runConfiguration.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
     }
 
     override fun createEditor(): JComponent {
@@ -268,7 +285,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         addOutputPathField(panel)
 
-        compileTwice = JBCheckBox("Always compile twice")
+        compileTwice = JBCheckBox("Always compile at least twice")
         compileTwice!!.isSelected = false
         panel.add(compileTwice)
 
@@ -279,10 +296,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
 
+        // LaTeX distribution
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isInstalled() }.toTypedArray()), "LaTeX Distribution")
+        panel.add(latexDistribution)
+
         panel.add(extensionSeparator)
 
         // Extension panels
-        bibliographyPanel = RunConfigurationPanel(project!!,"Bibliography: ", BibtexRunConfigurationType::class.java)
+        bibliographyPanel = RunConfigurationPanel(project!!, "Bibliography: ", BibtexRunConfigurationType::class.java)
         panel.add(bibliographyPanel)
 
         makeindexPanel = RunConfigurationPanel(project!!, "Makeindex: ", MakeindexRunConfigurationType::class.java)
@@ -291,7 +312,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
     private fun addOutputPathField(panel: JPanel) {
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
-        if (LatexDistribution.isMiktex) {
+        if (LatexDistribution.isMiktexAvailable) {
 
             val auxilPathField = TextFieldWithBrowseButton()
             auxilPathField.addBrowseFolderListener(
@@ -358,7 +379,6 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             enableSumatraPath = JBCheckBox("Select custom path to SumatraPDF")
             panel.add(enableSumatraPath)
 
-
             sumatraPath = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                         TextBrowseFolderListener(
@@ -401,6 +421,5 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         enableViewerCommand.addItemListener { e -> viewerCommand.isEnabled = e.stateChange == ItemEvent.SELECTED }
 
         panel.add(viewerCommand)
-
     }
 }

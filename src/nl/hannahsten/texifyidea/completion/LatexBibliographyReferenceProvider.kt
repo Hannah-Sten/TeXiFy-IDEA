@@ -44,10 +44,7 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
                             null
                         }
                     }
-
                 }
         result.withPrefixMatcher(CamelHumpMatcher(result.prefixMatcher.prefix, false)).addAllElements(lookupItems)
     }
-
-
 }

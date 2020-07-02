@@ -58,8 +58,26 @@ public class LatexOptionalParamContentImpl extends ASTWrapperPsiElement implemen
 
   @Override
   @Nullable
-  public LatexNormalText getNormalText() {
-    return PsiTreeUtil.getChildOfType(this, LatexNormalText.class);
+  public LatexParameterText getParameterText() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterText.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexPseudocodeBlock getPseudocodeBlock() {
+    return PsiTreeUtil.getChildOfType(this, LatexPseudocodeBlock.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexRawText getRawText() {
+    return PsiTreeUtil.getChildOfType(this, LatexRawText.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCommandIfnextchar() {
+    return findChildByType(COMMAND_IFNEXTCHAR);
   }
 
 }

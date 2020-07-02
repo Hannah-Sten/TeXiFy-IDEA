@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import java.util.regex.Pattern
+import kotlin.math.max
 
 /**
  * @author Hannah Schellekens
@@ -20,7 +21,13 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         replacementRange = { it.groupRange(1) },
         highlightRange = { it.groupRange(2).toTextRange() },
         quickFixName = { "Move interpunction to the back of \\cite" },
-        groupFetcher = { listOf(it.group(1)) }
+        groupFetcher = { listOf(it.group(1)) },
+        cancelIf = { matcher, psiFile ->
+            // Let's assume that an abbreviation before a cite which is not directly before a cite does not appear within n characters before the cite
+            val range = matcher.groupRange(0)
+            val subString = psiFile.text.substring(max(range.first - 6, 0), range.last)
+            Magic.Pattern.abbreviation.toRegex().find(subString)?.groups?.isNotEmpty() == true || Magic.General.unRegexableAbbreviations.any { subString.contains(it) }
+        }
 ) {
 
     override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {

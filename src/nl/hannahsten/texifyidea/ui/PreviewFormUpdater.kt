@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.ui
 import com.intellij.openapi.util.SystemInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -71,33 +72,17 @@ $previewCode
                 writer.println(tmpContent)
                 writer.close()
 
-                val latexStdoutText = runCommand("pdflatex",
-                        arrayOf(
-                                "-interaction=nonstopmode",
-                                "-halt-on-error",
-                                "$tempBasename.tex"),
-                        tempDirectory
+                val latexStdoutText = runCommand(
+                    "pdflatex",
+                    arrayOf(
+                        "-interaction=nonstopmode",
+                        "-halt-on-error",
+                        "$tempBasename.tex"
+                    ),
+                    tempDirectory
                 ) ?: return
 
-                runCommand(
-                        pdf2svgExecutable(),
-                        arrayOf(
-                                "$tempBasename.pdf",
-                                "$tempBasename.svg"
-                        ),
-                        tempDirectory
-                ) ?: return
-
-                runCommand(
-                        inkscapeExecutable(),
-                        arrayOf("$tempBasename.svg",
-                                "--export-area-drawing",
-                                "--export-dpi", "1000",
-                                "--export-background", "#FFFFFF",
-                                "--export-png", "$tempBasename.png"
-                        ),
-                        tempDirectory
-                ) ?: throw AccessDeniedException(tempDirectory)
+                runInkscape(tempBasename, tempDirectory)
 
                 val image = ImageIO.read(File("$tempBasename.png"))
                 invokeLater {
@@ -112,29 +97,72 @@ $previewCode
 
         GlobalScope.launch {
             try {
-                // Create the default temp directory.
-                setPreviewCodeInTemp(createTempDir())
+                // Snap apps are confined to the users home directory
+                if (SystemEnvironment.isInkscapeInstalledAsSnap) {
+                    setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
+                }
+                else {
+                    setPreviewCodeInTemp(createTempDir())
+                }
             }
             catch (exception: AccessDeniedException) {
-                // If pdf2svg or inkscape does not have access to the temp directory, try again with temp folder in the
-                // home directory.
-                setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
+                previewForm.setLatexErrorMessage("${exception.message}")
             }
             catch (exception: IOException) {
                 previewForm.setLatexErrorMessage("${exception.message}")
             }
-            catch (exception: AccessDeniedException) {
-                previewForm.setLatexErrorMessage("${exception.message}")
-            }
+        }
+    }
+
+    /**
+     * Run inkscape command to convert pdf to png, depending on the version of inkscape.
+     */
+    private fun runInkscape(tempBasename: String, tempDirectory: File) {
+        // If 1.0 or higher
+        if (SystemEnvironment.inkscapeMajorVersion >= 1) {
+            runCommand(
+                inkscapeExecutable(),
+                arrayOf(
+                    "$tempBasename.pdf",
+                    "--export-area-drawing",
+                    "--export-dpi", "1000",
+                    "--export-background", "#FFFFFF",
+                    "--export-background-opacity", "1.0",
+                    "--export-filename", "$tempBasename.png"
+                ),
+                tempDirectory
+            ) ?: throw AccessDeniedException(tempDirectory)
+        }
+        else {
+            runCommand(
+                pdf2svgExecutable(),
+                arrayOf(
+                    "$tempBasename.pdf",
+                    "$tempBasename.svg"
+                ),
+                tempDirectory
+            ) ?: return
+
+            runCommand(
+                inkscapeExecutable(),
+                arrayOf(
+                    "$tempBasename.svg",
+                    "--export-area-drawing",
+                    "--export-dpi", "1000",
+                    "--export-background", "#FFFFFF",
+                    "--export-png", "$tempBasename.png"
+                ),
+                tempDirectory
+            ) ?: throw AccessDeniedException(tempDirectory)
         }
     }
 
     private fun runCommand(command: String, args: Array<String>, workDirectory: File): String? {
 
         val executable = Runtime.getRuntime().exec(
-                arrayOf(command) + args,
-                null,
-                workDirectory
+            arrayOf(command) + args,
+            null,
+            workDirectory
         )
 
         val (stdout, stderr) = executable.inputStream.bufferedReader().use { stdout ->

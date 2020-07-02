@@ -40,7 +40,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
         // Get value.
         locationString = if (required.size > 1) {
-            when(newCommand.commandToken.text) {
+            when (newCommand.commandToken.text) {
                 "\\newcommand" -> required[1]
                 "\\NewDocumentCommand" -> required[2]
                 else -> ""
@@ -53,5 +53,5 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
     override fun getLocationString() = locationString
 
-    override fun getIcon(b: Boolean) = TexifyIcons.DOT_COMMAND!!
+    override fun getIcon(b: Boolean) = TexifyIcons.DOT_COMMAND
 }

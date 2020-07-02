@@ -23,14 +23,18 @@ import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.files.*
 import java.util.*
 import java.util.stream.Collectors
-import kotlin.math.min
 
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexCommandProvider internal constructor(private val mode: LatexMode) : CompletionProvider<CompletionParameters>() {
-    override fun addCompletions(parameters: CompletionParameters,
-                                context: ProcessingContext, result: CompletionResultSet) {
+class LatexCommandProvider internal constructor(private val mode: LatexMode) :
+    CompletionProvider<CompletionParameters>() {
+
+    override fun addCompletions(
+        parameters: CompletionParameters,
+        context: ProcessingContext,
+        result: CompletionResultSet
+    ) {
         when (mode) {
             LatexMode.NORMAL -> {
                 addNormalCommands(result)
@@ -46,18 +50,17 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     }
 
     private fun addNormalCommands(result: CompletionResultSet) {
-        result.addAllElements(ContainerUtil.map2List(
-                LatexRegularCommand.values()
-        ) { cmd: LatexRegularCommand ->
-            LookupElementBuilder.create(cmd, cmd.command)
+        result.addAllElements(LatexRegularCommand.values().flatMap { cmd ->
+            cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
+                LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                     .withPresentableText(cmd.commandDisplay)
                     .bold()
-                    .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
+                    .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                     .withTypeText(cmd.display)
-                    .withInsertHandler(LatexNoMathInsertHandler())
+                    .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
                     .withIcon(TexifyIcons.DOT_COMMAND)
+            }
         })
-        result.addElement(LookupElementBuilder.create("abcdefghijklmnopqrstuvwxyz"))
         result.addLookupAdvertisement(getKindWords())
     }
 
@@ -68,17 +71,17 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
         commands.add(LatexRegularCommand.BEGIN)
 
         // Create autocomplete elements.
-        result.addAllElements(ContainerUtil.map2List(
-                commands
-        ) { cmd: LatexCommand ->
-            val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler() else LatexMathInsertHandler()
-            LookupElementBuilder.create(cmd, cmd.command)
+        result.addAllElements(commands.flatMap { cmd: LatexCommand ->
+            cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
+                val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler(args.toList()) else LatexMathInsertHandler(args.toList())
+                LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                     .withPresentableText(cmd.commandDisplay)
                     .bold()
-                    .withTailText(cmd.getArgumentsDisplay() + " " + packageName(cmd), true)
+                    .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                     .withTypeText(cmd.display)
                     .withInsertHandler(handler)
                     .withIcon(TexifyIcons.DOT_COMMAND)
+            }
         })
     }
 
@@ -87,21 +90,19 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
         LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
-                .filter { cmd: LatexCommands -> Magic.Command.environmentDefinitions.contains(cmd.name) }
-                .map { cmd: LatexCommands -> cmd.requiredParameter(0) }
-                .filter { obj: String? -> Objects.nonNull(obj) }
-                .map { environmentName: String? -> SimpleEnvironment(environmentName!!) }
-                .forEach { e: SimpleEnvironment -> environments.add(e) }
+            .filter { cmd -> Magic.Command.environmentDefinitions.contains(cmd.name) }
+            .map { cmd -> cmd.requiredParameter(0) }
+            .filter { obj -> Objects.nonNull(obj) }
+            .map { environmentName -> SimpleEnvironment(environmentName!!) }
+            .forEach { e: SimpleEnvironment -> environments.add(e) }
 
         // Create autocomplete elements.
-        result.addAllElements(ContainerUtil.map2List(
-                environments
-        ) { env: Environment ->
+        result.addAllElements(ContainerUtil.map2List(environments) { env: Environment ->
             LookupElementBuilder.create(env, env.environmentName)
-                    .withPresentableText(env.environmentName)
-                    .bold()
-                    .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
-                    .withIcon(TexifyIcons.DOT_ENVIRONMENT)
+                .withPresentableText(env.environmentName)
+                .bold()
+                .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
+                .withIcon(TexifyIcons.DOT_ENVIRONMENT)
         })
         result.addLookupAdvertisement(getKindWords())
     }
@@ -114,8 +115,10 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
         else " ($name)"
     }
 
-    private fun addCustomCommands(parameters: CompletionParameters, result: CompletionResultSet,
-                                  mode: LatexMode? = null) {
+    private fun addCustomCommands(
+        parameters: CompletionParameters, result: CompletionResultSet,
+        mode: LatexMode? = null
+    ) {
         val project = parameters.editor.project ?: return
         val file = parameters.originalFile
         val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
@@ -125,8 +128,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
             files.add(documentClass)
         }
         val searchFiles = files.stream()
-                .map { obj: PsiFile -> obj.virtualFile }
-                .collect(Collectors.toSet())
+            .map { obj: PsiFile -> obj.virtualFile }
+            .collect(Collectors.toSet())
         searchFiles.add(file.virtualFile)
         val scope = GlobalSearchScope.filesScope(project, searchFiles)
         val cmds = LatexCommandsIndex.getItems(project, scope)
@@ -145,20 +148,32 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                     continue
                 }
             }
-            val tailText = getTailText(cmd)
+            val arguments = getArgumentsFromDefinition(cmd)
             var typeText = getTypeText(cmd)
             val line = 1 + StringUtil.offsetToLineNumber(cmd.containingFile.text, cmd.textOffset)
             typeText = typeText + " " + cmd.containingFile.name + ":" + line
-            result.addElement(LookupElementBuilder.create(cmd, cmdName.substring(1))
-                    .withPresentableText(cmdName)
-                    .bold()
-                    .withTailText(tailText, true)
-                    .withTypeText(typeText, true)
-                    .withInsertHandler(LatexCommandArgumentInsertHandler())
-                    .withIcon(TexifyIcons.DOT_COMMAND)
+            result.addAllElements(
+                arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
+                    LookupElementBuilder.create(cmd, cmdName.substring(1) + List(index) { " " }.joinToString(""))
+                        .withPresentableText(cmdName)
+                        .bold()
+                        .withTailText(args.joinToString(""), true)
+                        .withTypeText(typeText, true)
+                        .withInsertHandler(LatexCommandArgumentInsertHandler(args.toList()))
+                        .withIcon(TexifyIcons.DOT_COMMAND)
+                }
             )
         }
         result.addLookupAdvertisement(getKindWords())
+    }
+
+    private fun getArgumentsFromDefinition(commands: LatexCommands): List<Argument> {
+        val argumentString = getTailText(commands)
+        val argumentStrings = """(\[[\w\d]*\])|(\{[\w\d]*\})""".toRegex().findAll(argumentString).map { it.value }.toList()
+        return argumentStrings.map { it ->
+            if (it.startsWith("{")) RequiredArgument(it.drop(1).dropLast(1))
+            else OptionalArgument(it.drop(1).dropLast(1))
+        }
     }
 
     private fun getTypeText(commands: LatexCommands): String {
@@ -174,20 +189,19 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional
-                        : List<String> = LinkedList(commands.optionalParameters.keys)
-                var cmdParameterCount = 0
+                val optional: List<String> = LinkedList(commands.optionalParameters.keys)
+                var requiredParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {
-                        cmdParameterCount = optional[0].toInt()
-                    } catch (ignore: NumberFormatException) {
+                        when (optional.size) {
+                            1 -> requiredParameterCount = optional[0].toInt()
+                            2 -> requiredParameterCount = optional[0].toInt() - 1
+                        }
+                    }
+                    catch (ignore: NumberFormatException) {
                     }
                 }
-                var tailText = Strings.repeat("{param}", min(4, cmdParameterCount))
-                if (cmdParameterCount > 4) {
-                    tailText = tailText + "... (+" + (cmdParameterCount - 4) + " params)"
-                }
-                tailText
+                (if (optional.size == 2) "[args]" else "") + Strings.repeat("{param}", requiredParameterCount)
             }
 
             "\\DeclarePairedDelimiter" -> "{param}"
@@ -195,14 +209,17 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) : C
                 val optional = commands.optionalParameters.keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
-                } catch (ignore: java.lang.NumberFormatException) { 0 }
+                }
+                catch (ignore: java.lang.NumberFormatException) {
+                    0
+                }
                 (1..nrParams).joinToString("") { "{param}" }
             }
 
-            "\\NewDocumentCommand" -> {
+            "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
                 val paramSpecification = commands.requiredParameters[1].removeAll("null", " ")
                 paramSpecification.map { c ->
-                    if (Magic.Package.xparseParamSpecifiers[c] ?: return "") "{param}"
+                    if (Magic.Package.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"
                 }.joinToString("")
             }

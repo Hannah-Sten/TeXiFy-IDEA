@@ -107,7 +107,6 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
                     base = ""
                     range = TextRange.EMPTY_RANGE
                 }
-
             }
 
             if (base.isEmpty()) {

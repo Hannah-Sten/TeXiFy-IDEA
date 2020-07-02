@@ -9,6 +9,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.psi.LatexRawText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import java.util.regex.Matcher
@@ -104,7 +105,7 @@ abstract class TexifyRegexInspection(
 
     override fun getDisplayName() = inspectionDisplayName
 
-    override fun checkContext(element: PsiElement) = element.isSuppressed().not()
+    override fun checkContext(element: PsiElement) = element.isSuppressed().not() && element.firstParentOfType(LatexRawText::class) == null
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         // Find all patterns.
@@ -190,7 +191,6 @@ abstract class TexifyRegexInspection(
         else {
             return mutableListOf()
         }
-
     }
 
     /**

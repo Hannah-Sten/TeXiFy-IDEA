@@ -19,6 +19,7 @@ import java.util.function.Function;
  *         The node type.
  * @author Hannah Schellekens
  */
+@SuppressWarnings("unchecked")
 public class BFS<N> implements PathAlgorithm<N> {
 
     /**
@@ -268,6 +269,7 @@ public class BFS<N> implements PathAlgorithm<N> {
      *
      * @author Hannah Schellekens, Dylan ter Veen
      */
+    @SuppressWarnings("unchecked")
     private class BFSNode {
 
         /**

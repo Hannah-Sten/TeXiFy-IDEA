@@ -172,8 +172,8 @@ open class WordCountAction : AnAction(
         val set: MutableSet<PsiElement> = HashSet()
 
         for (word in words) {
-            if (isWrongCommand(word) || isOptionalParameter(word) || isEnvironmentMarker(word) || isPunctuation(word)
-                    || isInWrongEnvironment(word) || isInMath(word)) {
+            if (isWrongCommand(word) || isOptionalParameter(word) || isEnvironmentMarker(word) || isPunctuation(word) ||
+                    isInWrongEnvironment(word) || isInMath(word)) {
                 continue
             }
 

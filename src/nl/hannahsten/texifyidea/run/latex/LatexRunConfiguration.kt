@@ -20,6 +20,8 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
@@ -27,10 +29,13 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.hasBibliography
+import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
 
 /**
@@ -53,9 +58,11 @@ class LatexRunConfiguration constructor(project: Project,
         private const val AUXIL_PATH = "auxil-path"
         private const val COMPILE_TWICE = "compile-twice"
         private const val OUTPUT_FORMAT = "output-format"
+        private const val LATEX_DISTRIBUTION = "latex-distribution"
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
+
         // For backwards compatibility
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
@@ -77,28 +84,31 @@ class LatexRunConfiguration constructor(project: Project,
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
+
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
 
     /** Path to the directory containing the output files. */
     var outputPath: VirtualFile? = null
-    get() {
-        // When the user modifies the run configuration template, then this variable will magically be replaced with the
-        // path to the /bin folder of IntelliJ, without the setter being called.
-        return if (field?.path?.endsWith("/bin") == true) {
-            field = null
-            field
+        get() {
+            // When the user modifies the run configuration template, then this variable will magically be replaced with the
+            // path to the /bin folder of IntelliJ, without the setter being called.
+            return if (field?.path?.endsWith("/bin") == true) {
+                field = null
+                field
+            }
+            else {
+                field
+            }
         }
-        else {
-            field
-        }
-    }
+
     /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
+    var latexDistribution: LatexDistributionType = LatexDistributionType.TEXLIVE
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -153,10 +163,6 @@ class LatexRunConfiguration constructor(project: Project,
         }
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
-        }
-        // It is not possible to create the directory when it doesn't exist, because we do not know when the user is done editing (LatexSettingsEditor.applyEditorTo is called a lot of times)
-        if (outputPath == null) {
-            throw RuntimeConfigurationError("Run configuration is invalid: output path cannot be found")
         }
     }
 
@@ -259,13 +265,13 @@ class LatexRunConfiguration constructor(project: Project,
         }
 
         // Read output format.
-        val format = Format
-                .byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.outputFormat = format
+        this.outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
+
+        // Read LatexDistribution
+        this.latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
 
         // Read whether the run config has been run
-        val hasBeenRunString = parent.getChildText(HAS_BEEN_RUN)
-        this.hasBeenRun = hasBeenRunString?.toBoolean() ?: false
+        this.hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
 
         // Read bibliography run configurations, which is a list of ids
         val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
@@ -293,78 +299,27 @@ class LatexRunConfiguration constructor(project: Project,
             parent.removeContent()
         }
 
-        // Write compiler.
-        val compilerElt = Element(COMPILER)
-        compilerElt.text = compiler?.name ?: ""
-        parent.addContent(compilerElt)
-
-        // Write compiler path.
-        val compilerPathElt = Element(COMPILER_PATH)
-        compilerPathElt.text = compilerPath ?: ""
-        parent.addContent(compilerPathElt)
-
-        // Write SumatraPDF path
-        val sumatraPathElt = Element(SUMATRA_PATH)
-        sumatraPathElt.text = sumatraPath ?: ""
-        parent.addContent(sumatraPathElt)
-
-        // Write pdf viewer command
-        val viewerCommandElt = Element(VIEWER_COMMAND)
-        viewerCommandElt.text = viewerCommand ?: ""
-        parent.addContent(viewerCommandElt)
-
-        // Write compiler arguments
-        val compilerArgsElt = Element(COMPILER_ARGUMENTS)
-        compilerArgsElt.text = this.compilerArguments ?: ""
-        parent.addContent(compilerArgsElt)
-
+        parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
+        parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
+        parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
+        parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
+        parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
-
-        // Write main file.
-        val mainFileElt = Element(MAIN_FILE)
-        mainFileElt.text = mainFile?.path ?: ""
-        parent.addContent(mainFileElt)
-
-        // Write output path
-        val outputPathElt = Element(OUTPUT_PATH)
-        outputPathElt.text = outputPath?.path ?: ""
-        parent.addContent(outputPathElt)
-
-        // Write auxiliary path
-        val auxilPathElt = Element(AUXIL_PATH)
-        auxilPathElt.text = auxilPath?.path ?: ""
-        parent.addContent(auxilPathElt)
-
-        // Write whether to compile twice
-        val compileTwiceElt = Element(COMPILE_TWICE)
-        compileTwiceElt.text = compileTwice.toString()
-        parent.addContent(compileTwiceElt)
-
-        // Write output format.
-        val outputFormatElt = Element(OUTPUT_FORMAT)
-        outputFormatElt.text = outputFormat.name
-        parent.addContent(outputFormatElt)
-
-        // Write whether the run config has been run
-        val hasBeenRunElt = Element(HAS_BEEN_RUN)
-        hasBeenRunElt.text = hasBeenRun.toString()
-        parent.addContent(hasBeenRunElt)
-
-        // Write bibliography run configuration
-        val bibRunConfigElt = Element(BIB_RUN_CONFIG)
-        bibRunConfigElt.text = bibRunConfigIds.toString()
-        parent.addContent(bibRunConfigElt)
-
-        // Write makeindex run configuration
-        val makeindexRunConfigElt = Element(MAKEINDEX_RUN_CONFIG)
-        makeindexRunConfigElt.text = makeindexRunConfigId
-        parent.addContent(makeindexRunConfigElt)
+        parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
+        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath?.path ?: "" })
+        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath?.path ?: "" })
+        parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
+        parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
+        parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
+        parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
+        parent.addContent(Element(BIB_RUN_CONFIG).also { it.text = bibRunConfigIds.toString() })
+        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).also { it.text = makeindexRunConfigId })
     }
 
     /**
      * Create a new bib run config and add it to the set.
      */
-    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?) {
+    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?, compilerArguments: String? = null) {
         val runManager = RunManagerImpl.getInstanceImpl(project)
 
         val bibSettings = runManager.createConfiguration(
@@ -375,6 +330,7 @@ class LatexRunConfiguration constructor(project: Project,
         val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
 
         bibtexRunConfiguration.compiler = defaultCompiler
+        if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
         bibtexRunConfiguration.mainFile = mainFile
         bibtexRunConfiguration.setSuggestedName()
 
@@ -387,29 +343,41 @@ class LatexRunConfiguration constructor(project: Project,
      * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
      */
     internal fun generateBibRunConfig() {
+        // Get a pair of Bib compiler and compiler arguments.
+        val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
+            val runCommand = psiFile?.allParentMagicComments()
+                    ?.value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
+            val compilerString = if (runCommand.contains(' ')) {
+                runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim()
+                        .toString()
+            }
+            else runCommand
+            val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
+            val compilerArguments = runCommand.removePrefix(compilerString)
+                    .trim()
+            Pair(compiler, compilerArguments)
+        }
 
         val defaultCompiler = when {
+            compilerFromMagicComment != null -> compilerFromMagicComment!!.first
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
         }
 
         // On non-MiKTeX systems, override outputPath to disable the out/ directory by default for bibtex to work
-        if (!LatexDistribution.isMiktex) {
+        if (!latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (isDefaultOutputPath() && mainFile != null) {
                 outputPath = mainFile!!.parent
             }
         }
 
-
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
         val usesChapterbib = psiFile?.includedPackages()?.contains("chapterbib") == true
 
-
-
         if (!usesChapterbib) {
-            addBibRunConfig(defaultCompiler, mainFile)
+            addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
         }
         else if (psiFile != null) {
             val allBibliographyCommands = psiFile!!.commandsInFileSet().filter { it.name == "\\bibliography" }
@@ -418,20 +386,22 @@ class LatexRunConfiguration constructor(project: Project,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
             psiFile!!.allCommands()
-                .filter { it.name == "\\include" }
-                .flatMap { command -> command.requiredParameters }
-                .forEach {filename ->
-                    // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile!!.findFile(filename) ?: return@forEach
+                    .filter { it.name == "\\include" }
+                    .flatMap { command -> command.requiredParameters }
+                    .forEach { filename ->
+                        // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
+                        val chapterMainFile = psiFile!!.findFile(filename)
+                                ?: return@forEach
 
-                    val chapterFiles = chapterMainFile.referencedFileSet().toMutableSet().apply { add(chapterMainFile) }
+                        val chapterFiles = chapterMainFile.referencedFileSet()
+                                .toMutableSet().apply { add(chapterMainFile) }
 
-                    val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
+                        val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
 
-                    if (chapterHasBibliography) {
-                        addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile)
+                        if (chapterHasBibliography) {
+                            addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second)
+                        }
                     }
-                }
         }
     }
 
@@ -459,7 +429,6 @@ class LatexRunConfiguration constructor(project: Project,
 
         this.mainFile = null
     }
-
 
     /**
      * Try to find the virtual file, as absolute path or relative to a content root.
@@ -489,6 +458,10 @@ class LatexRunConfiguration constructor(project: Project,
         outputFormat = Format.PDF
     }
 
+    fun setDefaultDistribution() {
+        latexDistribution = LatexDistribution.defaultLatexDistribution
+    }
+
     /**
      * Find the directory where auxiliary files will be placed, depending on the run config settings.
      *
@@ -496,7 +469,7 @@ class LatexRunConfiguration constructor(project: Project,
      */
     fun getAuxilDirectory(): VirtualFile? {
         val auxilDir = when {
-            auxilPath != null && LatexDistribution.isMiktex -> auxilPath
+            auxilPath != null && latexDistribution.isMiktex() -> auxilPath
             outputPath != null -> outputPath
             mainFile != null -> mainFile?.parent
             else -> null
@@ -571,7 +544,7 @@ class LatexRunConfiguration constructor(project: Project,
      */
     fun setDefaultAuxilPath() {
         // -aux-directory pdflatex flag only exists on MiKTeX, so disable auxil otherwise
-        if (auxilPath != null || mainFile == null || !LatexDistribution.isMiktex) return
+        if (auxilPath != null || mainFile == null || !latexDistribution.isMiktex()) return
         val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         this.auxilPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/auxil")
     }

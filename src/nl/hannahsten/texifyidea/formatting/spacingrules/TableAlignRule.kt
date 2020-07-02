@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.getIndent
+import kotlin.math.min
 
 /**
  * Align spaces to the right of &
@@ -204,7 +205,7 @@ private fun getSpacesForRightBlock(right: ASTBlock, absoluteAmpersandIndicesPerL
         for (level in absoluteIndices.indices) {
             // Try to find the offset of the right & in the list of all & offsets
             if (absoluteIndices[level] == rightElementOffset) {
-                return spacesPerCell[i][level]
+                return spacesPerCell[min(i, spacesPerCell.size - 1)][level]
             }
         }
     }

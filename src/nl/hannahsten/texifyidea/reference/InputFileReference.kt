@@ -12,13 +12,11 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.LatexDistribution
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.*
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import java.io.File
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -56,7 +54,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             emptyList()
         }.toMutableList()
 
-
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
         val rootFile = givenRootFile ?: element.containingFile.findRootFile().virtualFile
@@ -91,7 +88,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         }
 
         // Try content roots
-        if (targetFile == null && LatexDistribution.isMiktex) {
+        if (targetFile == null && LatexDistribution.isMiktexAvailable) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
                 targetFile = moduleRoot.findFile(key, extensions)
                 if (targetFile != null) break
@@ -111,7 +108,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         @Suppress("RemoveExplicitTypeArguments")
         if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
             targetFile = element.getFileNameWithExtensions(key)
-                    ?.map { runKpsewhich(it) }
+                    ?.map { LatexPackageLocationCache.getPackageLocation(it) }
                     ?.map { getExternalFile(it ?: return null) }
                     ?.firstOrNull { it != null }
         }
@@ -125,9 +122,13 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     override fun handleElementRename(newElementName: String): PsiElement {
         // A file has been renamed and we are given a new filename, to be replaced in the parameter text of the current command
         // It seems to be problematic to find the old filename we want to replace
-        val commandText = "${myElement?.name}{$newElementName}"
+        // Since the parameter content may be a path, but we are just given a filename, just replace the filename
+        // We guess the filename is after the last occurrence of /
         val oldNode = myElement?.node
-        val newNode = LatexPsiHelper(element.project).createFromText(commandText).firstChild.node
+        val default = "${myElement?.name}{$newElementName}"
+        // Recall that \ is a file separator on Windows
+        val newText = oldNode?.text?.trimStart('\\')?.replaceAfterLast(File.separator, "$newElementName}", default)?.apply { "\\" + this } ?: default
+        val newNode = LatexPsiHelper(element.project).createFromText(newText).firstChild.node ?: return myElement
         if (oldNode == null) {
             myElement?.parent?.node?.addChild(newNode)
         }
@@ -144,16 +145,5 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     private fun LatexCommands.getFileNameWithExtensions(fileName: String): HashSet<String>? {
         val extension: HashSet<String>? = Magic.Command.includeOnlyExtensions[this.commandToken.text]
         return extension?.map { "$fileName.$it" }?.toHashSet()
-    }
-
-    companion object {
-        private fun runKpsewhich(arg: String): String? = try {
-            BufferedReader(InputStreamReader(Runtime.getRuntime().exec(
-                    "kpsewhich $arg"
-            ).inputStream)).readLine()  // Returns null if no line read.
-        }
-        catch (e: IOException) {
-            null
-        }
     }
 }

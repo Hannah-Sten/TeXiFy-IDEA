@@ -195,12 +195,13 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateOptionalParameters(optionalParamElement: LatexOptionalParam,
                                            annotationHolder: AnnotationHolder) {
-        for (element in optionalParamElement.optionalParamContentList) {
+        for (element in optionalParamElement.optionalParamContentList
+        ) {
             if (element !is LatexOptionalParamContent) {
                 continue
             }
 
-            val toStyle = element.normalText ?: continue
+            val toStyle = element.parameterText ?: continue
 
             annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
                     .range(toStyle)
@@ -217,11 +218,11 @@ open class LatexAnnotator : Annotator {
 
         // Label references.
         val style = when (command.name) {
-            in Magic.Command.labelReference -> {
+            in Magic.Command.labelReferenceWithoutCustomCommands -> {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
-            in Magic.Command.labelDefinition -> {
+            in Magic.Command.getLabelDefinitionCommands() -> {
                 LatexSyntaxHighlighter.LABEL_DEFINITION
             }
             // Bibliography references (citations).

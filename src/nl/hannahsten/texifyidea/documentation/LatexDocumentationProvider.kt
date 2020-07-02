@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.LatexDistribution
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.parentsOfType
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException
@@ -93,7 +93,11 @@ class LatexDocumentationProvider : DocumentationProvider {
         return sb.toString()
     }
 
-    override fun getDocumentationElementForLookupItem(psiManager: PsiManager?, obj: Any?, psiElement: PsiElement?): PsiElement? {
+    override fun getDocumentationElementForLookupItem(
+        psiManager: PsiManager?,
+        obj: Any?,
+        psiElement: PsiElement?
+    ): PsiElement? {
         if (obj == null || obj !is Described) {
             lookup = null
             return null
@@ -103,7 +107,11 @@ class LatexDocumentationProvider : DocumentationProvider {
         return psiElement
     }
 
-    override fun getDocumentationElementForLink(psiManager: PsiManager?, s: String?, psiElement: PsiElement?): PsiElement? = null
+    override fun getDocumentationElementForLink(
+        psiManager: PsiManager?,
+        s: String?,
+        psiElement: PsiElement?
+    ): PsiElement? = null
 
     private fun runTexdoc(pkg: Package): List<String> {
         val name = if (pkg == DEFAULT) "source2e" else pkg.name
@@ -111,7 +119,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         val stream: InputStream
         try {
             // -M to avoid texdoc asking to choose from the list
-            val command = if (LatexDistribution.isTexlive) {
+            val command = if (LatexDistribution.isTexliveAvailable) {
                 "texdoc -l -M $name"
             }
             else {
@@ -127,10 +135,10 @@ class LatexDocumentationProvider : DocumentationProvider {
         val lines = stream.bufferedReader().use { it.readLines() }
 
         return if (lines.getOrNull(0)?.endsWith("could not be found.") == true) {
-             emptyList()
+            emptyList()
         }
         else {
-            if (LatexDistribution.isTexlive) {
+            if (LatexDistribution.isTexliveAvailable) {
                 lines.map {
                     // Line consists of: name version path optional file description
                     it.split("\t")[2]

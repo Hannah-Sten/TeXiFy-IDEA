@@ -62,7 +62,7 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitNormalText(@NotNull LatexNormalText o) {
-    visitPsiNameIdentifierOwner(o);
+    visitPsiElement(o);
   }
 
   public void visitOptionalParam(@NotNull LatexOptionalParam o) {
@@ -75,6 +75,10 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitParameter(@NotNull LatexParameter o) {
     visitPsiElement(o);
+  }
+
+  public void visitParameterText(@NotNull LatexParameterText o) {
+    visitPsiNameIdentifierOwner(o);
   }
 
   public void visitPseudocodeBlock(@NotNull LatexPseudocodeBlock o) {
@@ -90,6 +94,10 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitRequiredParam(@NotNull LatexRequiredParam o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRequiredParamContent(@NotNull LatexRequiredParamContent o) {
     visitPsiElement(o);
   }
 

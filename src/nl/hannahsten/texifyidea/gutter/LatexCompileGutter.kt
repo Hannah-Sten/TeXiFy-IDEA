@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.Function
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
-import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.isEntryPoint
 import nl.hannahsten.texifyidea.util.parentOfType
 
@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.util.parentOfType
 class LatexCompileGutter : RunLineMarkerContributor() {
 
     override fun getInfo(element: PsiElement): Info? {
-        if (element.firstChild != null || element.parent !is LatexNormalText) return null
+        if (element.firstChild != null || element.parent !is LatexParameterText) return null
 
         val beginCommand = element.parentOfType(LatexBeginCommand::class) ?: return null
 

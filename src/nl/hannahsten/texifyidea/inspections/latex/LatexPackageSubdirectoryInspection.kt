@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.findRootFile
+import java.io.File
 import kotlin.math.max
 
 class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
@@ -29,15 +30,15 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val commands = file.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\ProvidesPackage"  }
+                .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
-            val parameter = command.requiredParameters.first()
+            val parameter = command.requiredParameters.firstOrNull() ?: continue
             val lastSlashIndex = parameter.indexOfLast { it == '/' }
             val providedDir = parameter.removeRange(max(0, lastSlashIndex), parameter.length)
             val rootDir = file.findRootFile().containingDirectory
             val dir = file.containingDirectory
-            val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix("/")
+            val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
             if (subDir != providedDir) {
                 descriptors.add(manager.createProblemDescriptor(
                         command,

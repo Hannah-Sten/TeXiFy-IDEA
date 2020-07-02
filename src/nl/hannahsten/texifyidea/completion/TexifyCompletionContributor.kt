@@ -17,10 +17,17 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvi
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.*
-import java.util.*
+import java.util.EnumSet
 
 /**
+ * This class registers some completion contributors. For labels we currently use reference completion instead of
+ * contributor-based completion, in [nl.hannahsten.texifyidea.reference.LatexLabelReference],
+ * though at the moment I don't see a reason why this is the case.
+ * Also see https://www.jetbrains.org/intellij/sdk/docs/reference_guide/custom_language_support/code_completion.html
+ *
  * @author Sten Wessel, Hannah Schellekens
  */
 open class TexifyCompletionContributor : CompletionContributor() {
@@ -81,7 +88,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // File names
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("File name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
@@ -104,7 +111,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // Folder names
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement()
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
@@ -127,7 +134,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // Graphics paths
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
                             override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
@@ -178,33 +185,20 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         extendLatexCommands(LatexBibliographyReferenceProvider, Magic.Command.bibliographyReference)
 
-        // Inspection list for magic comment suppress.
+        // Inspection list for magic comment suppress
         val suppressRegex = Regex("""suppress\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(PsiComment::class.java)
-                        .with(object : PatternCondition<PsiElement>("Magic comment suppress pattern") {
-                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
-                                return comment.isMagicComment() && comment.text.contains(suppressRegex)
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexInspectionIdProvider
-        )
+        extendMagicCommentValues("suppress", suppressRegex, LatexInspectionIdProvider)
 
-        // List containing tikz/math to autocomplete the begin/end/preamble values in magic comments.
+        // List containing tikz/math to autocomplete the begin/end/preamble values in magic comments
         val beginEndRegex = Regex("""(begin|end|preview) preamble\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(PsiComment::class.java)
-                        .with(object : PatternCondition<PsiElement>("Magic comment preamble pattern") {
-                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
-                                return comment.isMagicComment() && comment.text.contains(beginEndRegex)
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexMagicCommentValueProvider(Magic.Comment.preambleValues)
-        )
+        extendMagicCommentValues("preamble", beginEndRegex, LatexMagicCommentValueProvider(Magic.Comment.preambleValues))
+
+        // List of LaTeX compilers
+        val compilerRegex = Regex("""compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
+        extendMagicCommentValues("compiler", compilerRegex, LatexMagicCommentValueProvider(LatexCompiler.values().map { it.executableName }.toHashSet()))
+
+        val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
+        extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(BibliographyCompiler.values().map { it.executableName }.toHashSet()))
 
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
@@ -279,16 +273,38 @@ open class TexifyCompletionContributor : CompletionContributor() {
     private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, commandNamesWithSlash: Set<String>) {
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexNormalText::class.java)
+                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
                         .inside(LatexRequiredParam::class.java)
                         .with(object : PatternCondition<PsiElement>(null) {
                             override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
                                 val command = psiElement.parentOfType(LatexCommands::class) ?: return false
-                                return command.commandToken.text in commandNamesWithSlash
+                                if (command.commandToken.text in commandNamesWithSlash) {
+                                    return true
+                                }
+
+                                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
+                                return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
                             }
                         })
                         .withLanguage(LatexLanguage.INSTANCE),
                 provider
+        )
+    }
+
+    /**
+     * Adds a completions contributor that gets activated when typing a value for a magic comment.
+     */
+    private fun extendMagicCommentValues(commentName: String, regex: Regex, completionProvider: CompletionProvider<CompletionParameters>) {
+        extend(
+                CompletionType.BASIC,
+                PlatformPatterns.psiElement().inside(PsiComment::class.java)
+                        .with(object : PatternCondition<PsiElement>("Magic comment $commentName pattern") {
+                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
+                                return comment.isMagicComment() && comment.text.contains(regex)
+                            }
+                        })
+                        .withLanguage(LatexLanguage.INSTANCE),
+                completionProvider
         )
     }
 }

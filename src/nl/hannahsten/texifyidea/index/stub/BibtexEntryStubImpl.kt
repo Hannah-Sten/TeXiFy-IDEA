@@ -12,13 +12,13 @@ data class BibtexEntryStubImpl(val parent: StubElement<*>?,
                                val myYear: String,
                                val myTitle: String) : NamedStubBase<BibtexEntry>(parent, elementType, myIdentifier), BibtexEntryStub {
 
-    override fun getIdentifier() = myIdentifier
+    override val identifier = myIdentifier
 
-    override fun getAuthors() = myAuthors
+    override val authors = myAuthors
 
-    override fun getTitle() = myTitle
+    override val title = myTitle
 
-    override fun getYear() = myYear
+    override val year = myYear
 
     override fun getName() = myIdentifier
 

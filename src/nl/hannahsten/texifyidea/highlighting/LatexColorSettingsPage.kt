@@ -34,7 +34,6 @@ class LatexColorSettingsPage : ColorSettingsPage {
                 AttributesDescriptor("Math//Display math", LatexSyntaxHighlighter.DISPLAY_MATH),
                 AttributesDescriptor("Math//Text in math", LatexSyntaxHighlighter.MATH_NESTED_TEXT),
 
-
                 // Styles
                 AttributesDescriptor("Font style//Bold", LatexSyntaxHighlighter.STYLE_BOLD),
                 AttributesDescriptor("Font style//Italics", LatexSyntaxHighlighter.STYLE_ITALIC),
@@ -71,7 +70,7 @@ class LatexColorSettingsPage : ColorSettingsPage {
         )
     }
 
-    override fun getIcon() = TexifyIcons.LATEX_FILE!!
+    override fun getIcon() = TexifyIcons.LATEX_FILE
 
     override fun getHighlighter() = LatexSyntaxHighlighter()
 

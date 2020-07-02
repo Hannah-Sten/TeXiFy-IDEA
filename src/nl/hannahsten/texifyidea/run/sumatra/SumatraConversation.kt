@@ -21,7 +21,7 @@ val isSumatraAvailable: Boolean by lazy {
     }
     catch (e: UnsatisfiedLinkError) {
         Log.logf("Native library DLLs could not be found.")
-        return@lazy false}
+        return@lazy false }
     catch (e: NoClassDefFoundError) {
         Log.logf("Native library DLLs could not be found.")
         return@lazy false
@@ -77,7 +77,6 @@ object SumatraConversation {
         catch (e: NoClassDefFoundError) {
             throw TeXception("Native library DLLs could not be found.", e)
         }
-
     }
 
     /**

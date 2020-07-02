@@ -6,7 +6,6 @@ import com.intellij.util.xml.model.gotosymbol.GoToSymbolProvider
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
@@ -22,13 +21,12 @@ object NavigationItemUtil {
         return when (psiElement) {
             is LatexCommands -> {
                 val text = psiElement.extractLabelName()
-                if (text == "")  {
+                if (text == "") {
                     return null
                 }
                 return GoToSymbolProvider.BaseNavigationItem(psiElement,
                         text,
-                        if (psiElement.name in Magic.Command.labelDefinition ||
-                                TexifySettings.getInstance().labelCommands.containsKey(psiElement.name)) {
+                        if (psiElement.name in Magic.Command.getLabelDefinitionCommands(psiElement.project)) {
                             TexifyIcons.DOT_LABEL
                         }
                         else TexifyIcons.DOT_BIB

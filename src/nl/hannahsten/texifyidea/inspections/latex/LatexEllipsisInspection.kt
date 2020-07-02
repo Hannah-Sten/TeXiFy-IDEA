@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
@@ -33,6 +34,11 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
             ProgressManager.checkCanceled()
 
             for (match in Magic.Pattern.ellipsis.findAll(text.text)) {
+                // Ignore the inspection when the ellipsis is inside a comment.
+                if (file.findElementAt(match.range.first + text.startOffset)?.isComment() == true) {
+                    continue
+                }
+
                 descriptors.add(manager.createProblemDescriptor(
                         text,
                         match.range.toTextRange(),

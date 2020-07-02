@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
@@ -107,7 +107,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     }
 
     private fun LatexContent.isCorrect(): Boolean {
-        val normalText = firstChildOfType(LatexNormalText::class) ?: return false
+        val normalText = firstChildOfType(LatexParameterText::class) ?: return false
         return normalText.text.length == 1
     }
 

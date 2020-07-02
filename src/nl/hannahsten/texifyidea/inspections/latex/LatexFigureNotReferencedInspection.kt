@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import java.util.*
+import java.util.EnumSet
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
 
@@ -36,8 +36,11 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     }
 
     private fun removeReferencedLabels(file: PsiFile, figureLabels: MutableMap<String?, LatexCommands>) {
+        val referenceCommands = Magic.Command.getLabelReferenceCommands(file.project)
         for (command in file.commandsInFileSet()) {
-            if (Magic.Command.labelReference.contains(command.name)) {
+            // Don't resolve references in command definitions
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions ||
+                referenceCommands.contains(command.name)) {
                 command.referencedLabelNames.forEach { figureLabels.remove(it) }
             }
         }
@@ -57,7 +60,6 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
                     .filter(this::isFigureLabel)
                     .associateBy(LatexCommands::labelName)
                     .toMutableMap()
-
 
     private fun isFigureLabel(label: LatexCommands): Boolean =
             label.inDirectEnvironment(Magic.Environment.figures)

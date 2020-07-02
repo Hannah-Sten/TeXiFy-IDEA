@@ -48,7 +48,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
             while (matcher.find()) {
                 val matchRange = matcher.start()..matcher.end()
 
-                if (!isFollowedByWhitespace(text, matchRange) || text.text.length < matcher.end() + 1) {
+                if (text.text.length < matcher.end() + 1) {
                     continue
                 }
 

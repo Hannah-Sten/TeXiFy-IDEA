@@ -199,9 +199,12 @@ fun String.runCommand(): String? {
 
         // Timeout value
         proc.waitFor(10, TimeUnit.SECONDS)
-        proc.inputStream.bufferedReader().readText() + proc.errorStream.bufferedReader().readText()
-    } catch (e: IOException) {
-        e.printStackTrace()
+        proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+    }
+    catch (e: IOException) {
         null
     }
 }
+
+/** If this contains any of the given set. */
+fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }

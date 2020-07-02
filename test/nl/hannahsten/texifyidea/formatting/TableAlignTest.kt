@@ -195,7 +195,6 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
-
     fun testMultiLine() {
         """
             \begin{tabular}{ccc}
@@ -322,6 +321,26 @@ class TableAlignTest : BasePlatformTestCase() {
                 aaaa & aaa & aa \\
                 b b  &     & b  \\
                 c    & c   &    \\
+            \end{tabular}
+        """.trimIndent()
+    }
+
+    fun testLineWithoutAmpersands() {
+        """
+            \begin{tabular}{cc}
+                a & b \\
+                cc & d \\
+                \hline
+                \\
+                f & g \\
+            \end{tabular}
+        """.trimIndent() `should be reformatted to` """
+            \begin{tabular}{cc}
+                a  & b \\
+                cc & d \\
+                \hline
+                \\
+                f  & g \\
             \end{tabular}
         """.trimIndent()
     }
