@@ -66,7 +66,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testReferenceOnLine() {
         val text = "LaTeX Warning: Reference `fig:bla' on page 1 undefined on input line 10."
-        val expected = LatexLogMessage("Reference `fig:bla' on page 1 undefined", currentFile, 10, WARNING)
+        val expected = LatexLogMessage("Reference `fig:bla' undefined", currentFile, 10, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -85,7 +85,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun testLooseHbox() {
         val text = """Loose \hbox (badness 0) in paragraph at lines 9--12
         \OT1/cmr/m/n/10 The badness of this line is 1000.""".trimIndent()
-        val expected = LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12 \\OT1/cmr/m/n/10 The badness of this line is 1000.", currentFile, 0, WARNING)
+        val expected = LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12", currentFile, 9, WARNING)
         testMessageExtractor(text, expected)
     }
 
