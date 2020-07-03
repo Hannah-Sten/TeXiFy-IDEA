@@ -133,6 +133,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected, newText)
     }
 
+    fun `test end occurred inside a group`() {
+        val text = "(\\end occurred inside a group at level 1)### simple group (level 1) entered at line 4 ({)"
+        val newText = "### simple group (level 1) entered at line 4 ({)"
+        val expected = LatexLogMessage("(\\end occurred inside a group at level 1)### simple group (level 1) entered at line 4 ({)", "test.tex", 4, WARNING)
+        testMessageExtractor(text, expected, newText)
+    }
+
     private fun testMessageExtractor(text: String, expected: LatexLogMessage?, newText: String = "") {
         val real = LatexLogMessageExtractor.findMessage(text, newText, currentFile)
         assertEquals(expected, real)

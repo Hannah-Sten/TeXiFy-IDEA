@@ -11,12 +11,12 @@ import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.buffer.CircularFifoBuffer
 
 class LatexOutputListener(
-        val project: Project,
-        val mainFile: VirtualFile?,
-        val messageList: MutableList<LatexLogMessage>,
-        val bibMessageList: MutableList<LatexLogMessage>,
-        val treeView: LatexCompileMessageTreeView,
-        val lineWidth: Int = 79
+    val project: Project,
+    val mainFile: VirtualFile?,
+    val messageList: MutableList<LatexLogMessage>,
+    val bibMessageList: MutableList<LatexLogMessage>,
+    val treeView: LatexCompileMessageTreeView,
+    val lineWidth: Int = 79
 ) : ProcessListener {
 
     /**
@@ -29,6 +29,7 @@ class LatexOutputListener(
     var isCollectingBib = false
     var isCollectingMessage = false
     var currentLogMessage: LatexLogMessage? = null
+
     // Stack with the filenames, where the first is the current file.
     private var fileStack = LatexFileStack()
 
@@ -80,7 +81,7 @@ class LatexOutputListener(
     }
 
     private fun findProjectFileRelativeToMain(fileName: String?): VirtualFile? =
-            mainFile?.parent?.findFile(fileName ?: mainFile.name, setOf("tex"))
+        mainFile?.parent?.findFile(fileName ?: mainFile.name, setOf("tex"))
 
     /**
      * Reset the tree view and the message list when starting a new run. (latexmk)
@@ -100,6 +101,7 @@ class LatexOutputListener(
             }
         }
     }
+
     /**
      * Keep collecting the message if necessary, otherwise add it to the log.
      */
@@ -143,10 +145,20 @@ class LatexOutputListener(
     }
 
     private fun addMessageToLog(logMessage: LatexLogMessage, givenFile: VirtualFile? = null) {
-        val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
-        messageList.add(logMessage)
-        // Correct the index because the treeview starts counting at line 0 instead of line 1.
-        treeView.addMessage(logMessage.type.category, arrayOf(logMessage.message), file, logMessage.line - 1, 0, null)
+        // Don't log the same message twice
+        if (!messageList.contains(logMessage)) {
+            val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
+            messageList.add(logMessage)
+            // Correct the index because the treeview starts counting at line 0 instead of line 1.
+            treeView.addMessage(
+                logMessage.type.category,
+                arrayOf(logMessage.message),
+                file,
+                logMessage.line - 1,
+                0,
+                null
+            )
+        }
     }
 
     private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int, type: LatexLogMessageType) {

@@ -28,6 +28,7 @@ object LatexLogMessageExtractor {
 
         val specialWarningHandlersList = listOf(
             OverfullHboxWarningHandler,
+            EndOccurredInsideGroupWarningHandler,
             LatexPackageWarningHandler,
             LatexReferenceCitationWarningHandler,
             LatexLineWarningHandler // todo what warnings does this catch that are not caught by LatexReferenceCitationWarningHandler?
@@ -48,7 +49,7 @@ object LatexLogMessageExtractor {
             return LatexErrorHandler.findMessage(text, newText, currentFile)
         }
 
-        // Look for errors that need special treatment.
+        // Look for warnings that need special treatment.
         specialWarningHandlersList.forEach {
             if (it.regex.any { r -> r.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
         }

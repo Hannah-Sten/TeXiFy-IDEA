@@ -16,10 +16,11 @@ class LatexQuickRunLogParserTest : BasePlatformTestCase() {
 
     fun testFileStack() {
         val text = """
-        ()
+        ! I can't find file `ecrm1000'.
+        <*> ...ljfour; mag:=1; nonstopmode; input ecrm1000
     """.trimIndent()
 
-        runLogParser(text)
+        println(runLogParser(text))
     }
 
     private fun runLogParser(inputText: String): List<LatexLogMessage> {
