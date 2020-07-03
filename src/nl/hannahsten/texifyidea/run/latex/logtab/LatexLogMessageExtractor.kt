@@ -29,6 +29,7 @@ object LatexLogMessageExtractor {
         val specialWarningHandlersList = listOf(
             OverfullHboxWarningHandler,
             EndOccurredInsideGroupWarningHandler,
+            EndOccurredWhenConditionWasIncompleteWarningHandler,
             LatexPackageWarningHandler,
             LatexReferenceCitationWarningHandler,
             LatexLineWarningHandler // todo what warnings does this catch that are not caught by LatexReferenceCitationWarningHandler?
@@ -58,6 +59,7 @@ object LatexLogMessageExtractor {
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
             return LatexLogMessage(
                 text.removeAll("LaTeX Warning:")
+                    .replace(newText, "")
                     .trim()
                     // Improves readability, and at the moment we don't have an example where this would be incorrect
                     .trim('(', ')', '[', ']', ' ')

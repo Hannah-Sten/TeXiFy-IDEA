@@ -76,12 +76,6 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
-    fun testEndOccured() {
-        val text = "(\\end occurred when \\iftrue on line 4 was incomplete)"
-        val expected = LatexLogMessage("\\end occurred when \\iftrue on line 4 was incomplete", currentFile, 0, WARNING)
-        testMessageExtractor(text, expected)
-    }
-
     fun testLooseHbox() {
         val text = """Loose \hbox (badness 0) in paragraph at lines 9--12
         \OT1/cmr/m/n/10 The badness of this line is 1000.""".trimIndent()
@@ -137,6 +131,20 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         val text = "(\\end occurred inside a group at level 1)### simple group (level 1) entered at line 4 ({)"
         val newText = "### simple group (level 1) entered at line 4 ({)"
         val expected = LatexLogMessage("(\\end occurred inside a group at level 1)### simple group (level 1) entered at line 4 ({)", "test.tex", 4, WARNING)
+        testMessageExtractor(text, expected, newText)
+    }
+
+    fun `test end occurred when condition c on line l was incomplete`() {
+        val text = "(\\end occurred when \\iftrue on line 4 was incomplete)(\\end occurred when \\ifnum on line 4 was incomplete)"
+        val newText = "(\\end occurred when \\ifnum on line 4 was incomplete)"
+        val expected = LatexLogMessage("(\\end occurred when \\iftrue on line 4 was incomplete)(\\end occurred when \\ifnum on line 4 was incomplete)", "test.tex", 4, WARNING)
+        testMessageExtractor(text, expected, newText)
+    }
+
+    fun `test Float specifier changed`() {
+        val text = "LaTeX Warning: `h' float specifier changed to `ht'.[1{/home/thomas/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./e"
+        val newText = "[1{/home/thomas/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./e"
+        val expected = LatexLogMessage("`h' float specifier changed to `ht'.", "test.tex", 0, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 

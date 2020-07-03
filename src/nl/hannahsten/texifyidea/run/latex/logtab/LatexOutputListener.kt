@@ -131,7 +131,7 @@ class LatexOutputListener(
      * next line.
      */
     private fun collectMessageLine(newText: String, logMessage: LatexLogMessage? = null) {
-        if (currentLogMessage?.message?.endsWith(newText) == false) {
+        if (currentLogMessage?.message?.endsWith(newText.trim()) == false) {
             // Append new text
             val message = logMessage ?: currentLogMessage!!
             currentLogMessage = LatexLogMessage(message.message + newText, message.fileName, message.line, message.type)
