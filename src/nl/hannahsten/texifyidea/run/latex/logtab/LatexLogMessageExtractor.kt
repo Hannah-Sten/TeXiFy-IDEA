@@ -2,10 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexLineWarningHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexPackageWarningHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexReferenceCitationWarningHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.LatexUndefinedControlSequenceHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.*
 import nl.hannahsten.texifyidea.util.removeAll
 
 object LatexLogMessageExtractor {
@@ -25,8 +22,16 @@ object LatexLogMessageExtractor {
      * @param newText Second line of 'text',
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
-        val specialErrorHandlersList = listOf(LatexUndefinedControlSequenceHandler)
-        val specialWarningHandlersList = listOf(LatexLineWarningHandler, LatexPackageWarningHandler, LatexPackageWarningHandler, LatexReferenceCitationWarningHandler)
+        val specialErrorHandlersList = listOf(
+            LatexUndefinedControlSequenceHandler
+        )
+
+        val specialWarningHandlersList = listOf(
+            OverfullHboxWarningHandler,
+            LatexPackageWarningHandler,
+            LatexReferenceCitationWarningHandler,
+            LatexLineWarningHandler // todo what warnings does this catch that are not caught by LatexReferenceCitationWarningHandler?
+        )
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach { handler ->

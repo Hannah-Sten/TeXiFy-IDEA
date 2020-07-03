@@ -7,6 +7,9 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LATEX_WARNING_REG
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LINE_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.REFERENCE_REGEX
 
+/**
+ * Reference `<key>' on page <number> undefined (p927 LaTeX Companion).
+ */
 object LatexReferenceCitationWarningHandler : LatexMessageHandler(
         LatexLogMessageType.WARNING,
         """^$LATEX_WARNING_REGEX (?<ref>Reference|Citation) $REFERENCE_REGEX on page \d+ undefined $LINE_REGEX$""".toRegex()
