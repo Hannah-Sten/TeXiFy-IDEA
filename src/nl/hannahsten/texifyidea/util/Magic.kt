@@ -393,6 +393,12 @@ object Magic {
         val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
 
         /**
+         * All commands for which we assume that commas in required parameters do not separate parameters.
+         * By default we assume the comma is a separator.
+         */
+        val commandsWithNoCommaSeparatedParameters = setOf(INCLUDEGRAPHICS).map { "\\" + it.command }
+
+        /**
          * All commands that define labels and that are present by default.
          * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
          */

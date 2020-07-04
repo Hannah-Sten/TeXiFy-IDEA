@@ -17,7 +17,9 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameters
-import java.util.*
+import nl.hannahsten.texifyidea.util.shrink
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import java.util.regex.Pattern
 
 /**
@@ -71,20 +73,27 @@ private fun LatexCommands.getFileArgumentsReferences(): List<InputFileReference>
 
     // Find file references within required parameters and across required parameters (think \referencing{reference1,reference2}{reference3} )
     for (i in requiredParameters().indices) {
-        val subParamRanges = extractSubParameterRanges(requiredParameters()[i])
+
+        // Find the corresponding requiredArgument
+        val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull { it is RequiredFileArgument } ?: continue
+
+        // Check if the actual argument is a file argument or continue with the next argument
+        val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
+        val extensions = fileArgument.supportedExtensions
+
+        // Find text range of parameters, relative to command startoffset
+        val requiredParameter = requiredParameters()[i]
+        val subParamRanges = if (requiredArgument.commaSeparatesArguments) {
+            extractSubParameterRanges(requiredParameter).map {
+                it.shiftRight(requiredParameter.textOffset - this.textOffset)
+            }
+        }
+        else {
+            listOf(requiredParameter.textRange.shrink(1).shiftLeft(this.textOffset))
+        }
 
         for (subParamRange in subParamRanges) {
-
-            // Find the corresponding requiredArgument
-            val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull { it is RequiredFileArgument } ?: continue
-
-            // Check if the actual argument is a file argument or continue with the next argument
-            val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
-            val extensions = fileArgument.supportedExtensions
-
-            val range = subParamRange.shiftRight(requiredParameters()[i].textOffset - this.textOffset)
-
-            inputFileReferences.add(InputFileReference(this, range, extensions, fileArgument.defaultExtension))
+            inputFileReferences.add(InputFileReference(this, subParamRange, extensions, fileArgument.defaultExtension))
         }
     }
 
