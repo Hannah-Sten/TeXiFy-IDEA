@@ -8,6 +8,8 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
+import org.apache.commons.collections.Buffer
+import org.apache.commons.collections.BufferUtils
 import org.apache.commons.collections.buffer.CircularFifoBuffer
 
 class LatexOutputListener(
@@ -16,17 +18,17 @@ class LatexOutputListener(
     val messageList: MutableList<LatexLogMessage>,
     val bibMessageList: MutableList<LatexLogMessage>,
     val treeView: LatexCompileMessageTreeView,
-    val lineWidth: Int = 79
+    private val lineWidth: Int = 79
 ) : ProcessListener {
 
     /**
      * Window of the last two log output messages.
      */
-    val window = CircularFifoBuffer(2)
+    val window: Buffer = BufferUtils.synchronizedBuffer(CircularFifoBuffer(2))
 
     // For latexmk, collect the bibtex/biber messages in a separate list, so
     // we don't lose them when resetting on each new (pdfla)tex run.
-    var isCollectingBib = false
+    private var isCollectingBib = false
     var isCollectingMessage = false
     var currentLogMessage: LatexLogMessage? = null
 
