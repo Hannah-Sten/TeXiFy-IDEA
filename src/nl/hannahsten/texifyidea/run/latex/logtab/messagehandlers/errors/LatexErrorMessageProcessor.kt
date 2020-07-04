@@ -9,7 +9,7 @@ abstract class LatexErrorMessageProcessor(vararg val regex: Regex) {
 /**
  * LaTeX Error: text -> text
  */
-object LatexRemoveErrorTextProcessor : LatexErrorMessageProcessor("""LaTeX Error:""".toRegex()) {
+object LatexRemoveErrorTextProcessor : LatexErrorMessageProcessor("""LaTeX Error:""".toRegex(), """pdfTeX error:""".toRegex()) {
     override fun process(message: String): String? {
         regex.forEach {
             if (it.containsMatchIn(message)) return it.replace(message, "").trim()

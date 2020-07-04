@@ -47,6 +47,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
+    fun `test pdfTeX error cannot open encoding file`() {
+        val text = "!pdfTeX error: pdflatex (file texnansi.enc): cannot open encoding file for reading"
+        val newText = "ing"
+        val expected = LatexLogMessage("pdflatex (file texnansi.enc): cannot open encoding file for reading", "test.tex", 1, ERROR)
+        testMessageExtractor(text, expected, newText)
+    }
+
     /*
      * WARNINGS
      */

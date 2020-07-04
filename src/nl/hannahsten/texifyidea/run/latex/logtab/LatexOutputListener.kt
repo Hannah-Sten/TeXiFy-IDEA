@@ -6,6 +6,7 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
@@ -18,7 +19,7 @@ class LatexOutputListener(
     val messageList: MutableList<LatexLogMessage>,
     val bibMessageList: MutableList<LatexLogMessage>,
     val treeView: LatexCompileMessageTreeView,
-    private val lineWidth: Int = 79
+    private val lineWidth: Int = LINE_WIDTH
 ) : ProcessListener {
 
     /**

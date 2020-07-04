@@ -5,11 +5,13 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.FILE_LINE_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LATEX_ERROR_REGEX
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.PDFTEX_ERROR_REGEX
 
 object LatexErrorHandler : LatexMessageHandler(
         LatexLogMessageType.ERROR,
         """^$FILE_LINE_REGEX (?<message>.+)$""".toRegex(),
-        """^$LATEX_ERROR_REGEX (?<message>.+)${'$'}$""".toRegex()
+        """^$LATEX_ERROR_REGEX (?<message>.+)${'$'}$""".toRegex(),
+        """^$PDFTEX_ERROR_REGEX (?<message>.+)""".toRegex()
 ) {
     private val messageProcessors = listOf(LatexPackageErrorProcessor, LatexRemoveErrorTextProcessor)
 
