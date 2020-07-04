@@ -7,6 +7,10 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexOutputListener
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 
+/**
+ * Tests for log messages spanning multiple lines.
+ * For messages over at most two lines, see [LatexMessageExtractorTest].
+ */
 class LatexOutputListenerTest : BasePlatformTestCase() {
     private val logTextLatexmk = """
         latexmk -pdf -file-line-error -interaction=nonstopmode -synctex=1 -output-format=pdf -output-directory=/home/abby/Documents/texify-test/out main.tex
@@ -209,7 +213,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         return "test/resources/run"
     }
 
-    fun testFullLog() {
+    private fun testLog(log: String, expectedMessages: Set<LatexLogMessage>) {
         val srcRoot = myFixture.copyDirectoryToProject("./", "./")
         val project = myFixture.project
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
@@ -218,15 +222,19 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val treeView = LatexCompileMessageTreeView(project)
         val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
 
-        val input = logTextLatexmk.split('\n')
+        val input = log.split('\n')
         input.forEach { listener.processNewText(it) }
 
+        assertEquals(expectedMessages, latexMessageList.toSet())
+    }
+
+    fun testFullLog() {
         val expectedMessages = setOf(
                 LatexLogMessage("Label `mylabel' multiply defined.", "main.tex", 0, WARNING),
                 LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "main.tex", 104, ERROR),
-                LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
+                LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "main.tex", 105, ERROR),
                 LatexLogMessage("Encoding scheme `15' unknown.", "main.tex", 5, ERROR),
-                LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "./main.tex", 6, ERROR),
+                LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "main.tex", 6, ERROR),
                 LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "main.tex", 7, WARNING),
                 LatexLogMessage("Environment align undefined.", "math.tex", 7, ERROR),
                 LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "math.tex", 5, WARNING),
@@ -246,6 +254,24 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("biblatex: Please (re)run Biber on the file: main", "main.tex", 0, WARNING)
         )
 
-        assertEquals(expectedMessages, latexMessageList.toSet())
+        testLog(logTextLatexmk, expectedMessages)
+    }
+
+    fun `test You have requested, on line n, version d of m`() {
+        val log = """
+            LaTeX Warning: You have requested, on input line 5, version
+                           `9999/99/99' of package test998,
+                           but only version
+                           `2020/04/08'
+                           is available.
+            
+            [1{/home/thomas/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]               
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("You have requested, on input line 5, version `9999/99/99' of package test998, but only version `2020/04/08' is available.", null, 5, WARNING)
+        )
+
+        testLog(log, expectedMessages)
     }
 }

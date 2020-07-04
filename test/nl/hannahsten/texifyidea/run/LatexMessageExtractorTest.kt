@@ -6,6 +6,10 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageExtractor
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
 
+/**
+ * Tests for errors and warnings consisting of a most two lines.
+ * For message spanning multiple lines, see [LatexOutputListenerTest].
+ */
 class LatexMessageExtractorTest : BasePlatformTestCase() {
     private val currentFile = "test.tex"
 
@@ -155,6 +159,10 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected, newText)
     }
 
+    /**
+     * @param text Line 1 joined with line 2 (line 2 can be empty)
+     * @param newText Line 2
+     */
     private fun testMessageExtractor(text: String, expected: LatexLogMessage?, newText: String = "") {
         val real = LatexLogMessageExtractor.findMessage(text, newText, currentFile)
         assertEquals(expected, real)

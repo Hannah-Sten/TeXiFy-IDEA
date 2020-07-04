@@ -26,13 +26,15 @@ object LatexLogMessageExtractor {
             LatexUndefinedControlSequenceHandler
         )
 
+        // Most of these are just to have a special regex to extract the right line number
         val specialWarningHandlersList = listOf(
+            YouHaveRequestedOnInputLineVersionOfPackageWarningHandler,
             OverfullHboxWarningHandler,
             EndOccurredInsideGroupWarningHandler,
             EndOccurredWhenConditionWasIncompleteWarningHandler,
             LatexPackageWarningHandler,
             LatexReferenceCitationWarningHandler,
-            LatexLineWarningHandler // todo what warnings does this catch that are not caught by LatexReferenceCitationWarningHandler?
+            LatexLineWarningHandler
         )
 
         // Look for errors that need special treatment.

@@ -47,7 +47,7 @@ class LatexOutputListener(
         // on the next line. This may not be accurate, but there is no way of distinguishing this.
 
         val newText = event.text.trimEnd('\n', '\r')
-        newText.chunked(79).forEach { processNewText(it) }
+        newText.chunked(lineWidth).forEach { processNewText(it) }
     }
 
     fun processNewText(newText: String) {
@@ -109,7 +109,10 @@ class LatexOutputListener(
         logMessage.apply {
             if (message.isEmpty()) return
 
-            if (message.length >= lineWidth) {
+            if (newText.length >= lineWidth ||
+                // If the message is expected to continue after the next line
+                LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.any { newText.startsWith(it) }
+            ) {
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true
@@ -134,10 +137,18 @@ class LatexOutputListener(
         if (currentLogMessage?.message?.endsWith(newText.trim()) == false) {
             // Append new text
             val message = logMessage ?: currentLogMessage!!
-            currentLogMessage = LatexLogMessage(message.message + newText, message.fileName, message.line, message.type)
+            val newTextTrimmed = if (newText.length < lineWidth) " ${newText.trim()}" else newText.trim()
+            // LaTeX Warning: is replaced here because this method is also run when a message is added,
+            // and the above check needs to return false so we can't replace this in the WarningHandler
+            currentLogMessage =
+                LatexLogMessage((message.message + newTextTrimmed).replace("LaTeX Warning: ", ""), message.fileName, message.line, message.type)
         }
 
-        if (newText.length < lineWidth) {
+        if (newText.length < lineWidth &&
+            // Unless the LaTeX Warning message continues
+            !newText.startsWith("               ") &&
+            LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { newText.startsWith(it) }
+        ) {
             isCollectingMessage = false
             addMessageToLog(currentLogMessage!!)
             currentLogMessage = null
@@ -148,7 +159,7 @@ class LatexOutputListener(
         // Don't log the same message twice
         if (!messageList.contains(logMessage)) {
             val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
-            messageList.add(logMessage)
+            messageList.add(LatexLogMessage(logMessage.message.trim(), logMessage.fileName, logMessage.line, logMessage.type))
             // Correct the index because the treeview starts counting at line 0 instead of line 1.
             treeView.addMessage(
                 logMessage.type.category,

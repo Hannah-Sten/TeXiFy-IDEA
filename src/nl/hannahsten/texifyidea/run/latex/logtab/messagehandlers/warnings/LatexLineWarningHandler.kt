@@ -5,6 +5,9 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex
 
+/**
+ * Warnings of the form LaTeX Warning: ... on input line l
+ */
 object LatexLineWarningHandler : LatexMessageHandler(
         WARNING,
         """${LogMagicRegex.LATEX_WARNING_REGEX}(?<message>.+)${LogMagicRegex.LINE_REGEX}""".toRegex()
