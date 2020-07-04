@@ -23,6 +23,7 @@ object LogMagicRegex {
             "Runaway argument",
             "Runaway text",
             "Missing character: There is no",
+            "No auxiliary output files.",
             "No pages of output.",
             "Underfull \\hbox",
             "Overfull \\hbox",
