@@ -306,6 +306,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             parameterList.addAll(listOf("-v", "${runConfig.outputPath?.path}:$dockerOutputDir"))
         }
 
+        if (runConfig.auxilPath == null) {
+            runConfig.setDefaultAuxilPath()
+        }
+
         if (runConfig.auxilPath != null && runConfig.auxilPath != mainFile.parent) {
             parameterList.addAll(listOf("-v", "${runConfig.auxilPath?.path}:$dockerAuxilDir"))
         }
