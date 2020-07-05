@@ -79,7 +79,7 @@ class LatexOutputListener(
             fileStack.update(newText)
 
             // Finally add the message to the log, or continue collecting this message when necessary.
-            addOrCollectMessage(newText, logMessage ?: return)
+            addOrCollectMessage(text, newText, logMessage ?: return)
         }
     }
 
@@ -108,11 +108,12 @@ class LatexOutputListener(
     /**
      * Keep collecting the message if necessary, otherwise add it to the log.
      */
-    private fun addOrCollectMessage(newText: String, logMessage: LatexLogMessage) {
+    private fun addOrCollectMessage(text: String, newText: String, logMessage: LatexLogMessage) {
         logMessage.apply {
             if (message.isEmpty()) return
 
-            if (newText.length >= lineWidth ||
+            // Check length of the string we would append to the message, if it fills the line then we assume it continues on the next line
+            if (text.length - newText.length >= lineWidth ||
                 // If the message is expected to continue after the next line
                 LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.any { newText.startsWith(it) }
             ) {

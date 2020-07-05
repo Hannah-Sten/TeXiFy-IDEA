@@ -166,6 +166,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected, newText)
     }
 
+    fun `test No pages of output`() {
+        val text = "Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!"
+        val newText = ";!"
+        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", 0, WARNING)
+        testMessageExtractor(text, expected, newText)
+    }
+
     /**
      * @param text Line 1 joined with line 2 (line 2 can be empty)
      * @param newText Line 2
