@@ -14,7 +14,7 @@ If you do not have a favourite profiler yet, you can use VisualVM. Install it us
 * Click CPU to start profiling, you can take a Snapshot to view and save results. Note that you may have to click a few more levels open to see the actual methods.
 * To clear the profiling view, close and reopen the tab.
 
-== Don't edit generated files
+== Don't edit generated files directly
 
 So, the files in `gen`. Do edit the files in `src`.
 If needed, use method injection or mixin classes.
@@ -27,6 +27,9 @@ When you edit a `.flex` file, regenerate the lexer with Run JFlex Generator from
 === Editing a parser
 
 When you edit a `.bnf` file, regenerate the parser with Grammar-Kit from the context menu or using kbd:[Ctrl + Shift + G].
+
+
+Note that we have the generated files committed to git because of https://github.com/JetBrains/gradle-grammar-kit-plugin/issues/3
 
 == LatexCommands.commandToken.text vs LatexCommands.name
 
