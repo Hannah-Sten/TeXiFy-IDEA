@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.removeAll
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils
 import org.apache.commons.collections.buffer.CircularFifoBuffer
@@ -21,6 +22,19 @@ class LatexOutputListener(
     val treeView: LatexCompileMessageTreeView,
     private val lineWidth: Int = LINE_WIDTH
 ) : ProcessListener {
+
+    // This should probably be located somewhere else
+    companion object {
+        /**
+         * Returns true if newText is most likely the last line of the message.
+         */
+        fun shouldStopCollectingMessage(newText: String): Boolean {
+            return newText.length < LINE_WIDTH &&
+                    // Indent of LaTeX Warning/Error messages
+                    !newText.startsWith("               ") &&
+                    LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { newText.startsWith(it) }
+        }
+    }
 
     /**
      * Window of the last two log output messages.
@@ -49,13 +63,14 @@ class LatexOutputListener(
         // We assume that if the first line of the error/warning is exactly the maximum line width, it will continue
         // on the next line. This may not be accurate, but there is no way of distinguishing this.
 
-        val newText = event.text.trimEnd('\n', '\r')
+        // Newlines are important to check when message end. Keep.
+        val newText = event.text
         newText.chunked(lineWidth).forEach { processNewText(it) }
     }
 
     fun processNewText(newText: String) {
         window.add(newText)
-        val text = window.joinToString(separator = "")
+        val text = window.joinToString(separator = "").removeAll("\n", "\r")
 
         // Check if we are currently in the process of collecting the full message of a matched message of interest
         if (isCollectingMessage) {
@@ -63,12 +78,12 @@ class LatexOutputListener(
         }
         else {
             // Skip line if it is irrelevant.
-            if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String)) {
-                // The first line might be irrelevant, but the new text could
-                // contain useful information about the file stack.
-                fileStack.update(newText)
-                return
-            }
+            // if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String)) {
+            //     // The first line might be irrelevant, but the new text could
+            //     // contain useful information about the file stack.
+            //     fileStack.update(newText)
+            //     return
+            // }
 
             resetIfNeeded(newText)
 
@@ -120,7 +135,7 @@ class LatexOutputListener(
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true
-                collectMessageLine(newText, logMessage)
+                checkIfShouldStopCollectingMessage(newText)
             }
             else {
                 val file = findProjectFileRelativeToMain(fileName)
@@ -130,6 +145,14 @@ class LatexOutputListener(
                     else addMessageToLog(message, file ?: mainFile, line, type)
                 }
             }
+        }
+    }
+
+    private fun checkIfShouldStopCollectingMessage(newText: String) {
+        if (shouldStopCollectingMessage(newText)) {
+            isCollectingMessage = false
+            addMessageToLog(currentLogMessage!!)
+            currentLogMessage = null
         }
     }
 
@@ -148,15 +171,7 @@ class LatexOutputListener(
                 LatexLogMessage((message.message + newTextTrimmed).replace("LaTeX Warning: ", ""), message.fileName, message.line, message.type)
         }
 
-        if (newText.length < lineWidth &&
-            // Unless the LaTeX Warning message continues
-            !newText.startsWith("               ") &&
-            LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { newText.startsWith(it) }
-        ) {
-            isCollectingMessage = false
-            addMessageToLog(currentLogMessage!!)
-            currentLogMessage = null
-        }
+        checkIfShouldStopCollectingMessage(newText)
     }
 
     private fun addMessageToLog(logMessage: LatexLogMessage, givenFile: VirtualFile? = null) {

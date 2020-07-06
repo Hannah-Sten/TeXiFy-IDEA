@@ -62,13 +62,16 @@ object LatexLogMessageExtractor {
 
         // Check if we have found a warning
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
+            var messageText = if (LatexOutputListener.shouldStopCollectingMessage(newText)) text.removeAll(newText) else text
+            messageText = messageText.removeAll("LaTeX Warning:")
+                // .replace(newText, "")
+                .trim()
+                // Improves readability, and at the moment we don't have an example where this would be incorrect
+                .trim('(', ')', '[', ']', ' ')
+                .replace("""\s{2,}""".toRegex(), " ")
+
             return LatexLogMessage(
-                text.removeAll("LaTeX Warning:")
-                    .replace(newText, "")
-                    .trim()
-                    // Improves readability, and at the moment we don't have an example where this would be incorrect
-                    .trim('(', ')', '[', ']', ' ')
-                    .replace("""\s{2,}""".toRegex(), " "),
+                messageText,
                 fileName = currentFile,
                 type = LatexLogMessageType.WARNING
             )

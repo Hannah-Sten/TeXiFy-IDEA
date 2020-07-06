@@ -175,8 +175,8 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun `test Float specifier changed`() {
-        val text = "LaTeX Warning: `h' float specifier changed to `ht'.[1{/home/thomas/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./e"
-        val newText = "[1{/home/thomas/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./e"
+        val text = "LaTeX Warning: `h' float specifier changed to `ht'.\n"
+        val newText = "\n"
         val expected = LatexLogMessage("`h' float specifier changed to `ht'.", "test.tex", 0, WARNING)
         testMessageExtractor(text, expected, newText)
     }
