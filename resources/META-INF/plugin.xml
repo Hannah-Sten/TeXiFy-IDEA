@@ -87,6 +87,9 @@
             This is an alpha release, which contains the very latest features of TeXiFy IDEA.
         <p>
         <p>
+            Please help us out with the compile messages feature by submitting examples of log messages that are not parsed correctly at https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose
+        <p>
+        <p>
             If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with merged PRs.
         </p>
     ]]></change-notes>
