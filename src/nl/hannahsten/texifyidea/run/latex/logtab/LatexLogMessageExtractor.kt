@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexSingleLineErrorMessageHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexUndefinedControlSequenceHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.*
 import nl.hannahsten.texifyidea.util.removeAll
 
@@ -23,7 +25,8 @@ object LatexLogMessageExtractor {
      */
     fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         val specialErrorHandlersList = listOf(
-            LatexUndefinedControlSequenceHandler
+            LatexUndefinedControlSequenceHandler,
+            LatexSingleLineErrorMessageHandler
         )
 
         // Most of these are just to have a special regex to extract the right line number

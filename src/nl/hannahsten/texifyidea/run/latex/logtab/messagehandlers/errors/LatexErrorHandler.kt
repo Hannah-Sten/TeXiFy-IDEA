@@ -29,12 +29,15 @@ object LatexErrorHandler : LatexMessageHandler(
 
                 // Process a found error message (e.g. remove "LaTeX Error:")
                 val processedMessage = messageProcessors.mapNotNull { p ->
-                    if (p.regex.any { r -> r.containsMatchIn(message) }) p.process(message) else null
+                    if (p.regex.any { r -> r.containsMatchIn(message) }) p.postProcess(p.process(message)) else null
                 }
                     .firstOrNull() ?: message
                     .replace("<inserted text>", "")
+                    .replace("<to be read again>", "")
 
-                return LatexLogMessage(processedMessage, fileName, line ?: 1, messageType)
+                val trimmedMessage = processedMessage.replace("\\s+".toRegex(), " ")
+
+                return LatexLogMessage(trimmedMessage, fileName, line ?: 1, messageType)
             }
         }
         return null

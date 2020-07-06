@@ -54,6 +54,28 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected, newText)
     }
 
+
+    fun `test The font size command normalsize is not defined`() {
+        val text = "./errors.tex:4: LaTeX Error: The font size command \\normalsize is not defined:               there is probably something wrong with the class file."
+        val newText = "               there is probably something wrong with the class file."
+        val expected = LatexLogMessage("The font size command \\normalsize is not defined: there is probably something wrong with the class file.", "./errors.tex", 4, ERROR)
+        testMessageExtractor(text, expected, newText)
+    }
+
+    fun `test Misplaced alignment tab character`() {
+        val text = "./errors.tex:3: Misplaced alignment tab character &.l.3     &"
+        val newText = "l.3     &"
+        val expected = LatexLogMessage("Misplaced alignment tab character &.", "./errors.tex", 3, ERROR)
+        testMessageExtractor(text, expected, newText)
+    }
+
+    fun `test Missing delimiter inserted`() {
+        val text = "./errors.tex:4: Missing delimiter (. inserted).<to be read again>"
+        val newText = "<to be read again>"
+        val expected = LatexLogMessage("Missing delimiter (. inserted).", "./errors.tex", 4, ERROR)
+        testMessageExtractor(text, expected, newText)
+    }
+
     /*
      * WARNINGS
      */
@@ -170,6 +192,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         val text = "Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!"
         val newText = ";!"
         val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", 0, WARNING)
+        testMessageExtractor(text, expected, newText)
+    }
+
+    fun `test You have requested package`() {
+        val text = "LaTeX Warning: You have requested package `',               but the package provides `mypackage'."
+        val newText = "               but the package provides `mypackage'."
+        val expected = LatexLogMessage("You have requested package `', but the package provides `mypackage'.", "test.tex", 0, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 

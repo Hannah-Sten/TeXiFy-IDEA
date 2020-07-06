@@ -222,7 +222,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val treeView = LatexCompileMessageTreeView(project)
         val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
 
-        val input = log.split('\n')
+        val input = log.split('\n').filter { it.isNotBlank() }
         input.forEach { listener.processNewText(it) }
 
         assertEquals(expectedMessages, latexMessageList.toSet())
@@ -270,6 +270,59 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             LatexLogMessage("You have requested, on input line 5, version `9999/99/99' of package test998, but only version `2020/04/08' is available.", null, 5, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test usepackage before documentclass`() {
+        val log = """
+            LaTeX2e <2019-10-01> patch level 3
+            
+            ./errors.tex:1: LaTeX Error: \usepackage before \documentclass.
+            
+            See the LaTeX manual or LaTeX Companion for explanation.
+            Type  H <return>  for immediate help.
+             ...            
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("\\usepackage before \\documentclass.", "main.tex", 1, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test fontspec errors`() {
+        val log = """
+            ./errors.tex:10: Improper `at' size (0.0pt), replaced by 10pt.
+            <to be read again> 
+            relax 
+            l.10 
+
+
+            luaotfload | resolve : sequence of 3 lookups yielded nothing appropriate.
+            ./errors.tex:10: Font \TU/STIXTwoMath(1)/m/n/10.95=STIXTwoMath:mode=base;langua
+            ge=dflt; at 10pt not loadable: metric data not found or bad.
+            <to be read again> 
+            relax 
+            l.10 
+               
+            ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: attempt to ind
+            ex a nil value (local 'fontdata')
+            stack traceback:
+                ...exmf-dist/tex/luatex/luaotfload/luaotfload-auxiliary.lua:702: in field 'get
+            _math_dimension'
+                .../texlive/2020/texmf-dist/tex/latex/fontspec/fontspec.lua:75: in field 'math
+            fontdimen'
+                [\directlua]:1: in main chunk.
+            lua_now:e #1->__lua_now:n {#1}
+                                          
+            l.10   
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Improper `at' size (0.0pt), replaced by 10pt.", "./errors.tex", 10, ERROR)
         )
 
         testLog(log, expectedMessages)

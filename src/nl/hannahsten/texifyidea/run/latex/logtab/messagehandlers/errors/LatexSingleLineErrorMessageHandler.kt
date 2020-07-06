@@ -1,15 +1,16 @@
-package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings
+package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.FILE_LINE_REGEX
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LATEX_ERROR_REGEX
 
-object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
+/**
+ * Single-line errors, for which the l.<line number> appears in 'text' but should be excluded for the error message.
+ */
+object LatexSingleLineErrorMessageHandler : LatexMessageHandler(
         LatexLogMessageType.ERROR,
-        """^$FILE_LINE_REGEX (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)$""".toRegex(),
-        """^$LATEX_ERROR_REGEX (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)$""".toRegex()
+        """^$FILE_LINE_REGEX (?<message>.+)\s*l.\d+""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
@@ -21,7 +22,7 @@ object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
                     Pair(null, currentFile)
                 }
 
-                val message = "${groups["message"]?.value} ${groups["command"]?.value}"
+                val message = groups["message"]?.value ?: return null
                 return LatexLogMessage(message, fileName, line ?: 1, messageType)
             }
         }

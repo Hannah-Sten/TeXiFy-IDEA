@@ -4,6 +4,9 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex
 
 abstract class LatexErrorMessageProcessor(vararg val regex: Regex) {
     abstract fun process(message: String): String?
+    fun postProcess(message: String?): String? = message
+        ?.replace("See the LaTeX manual or LaTeX Companion for explanation.", "")
+        ?.trim()
 }
 
 /**
