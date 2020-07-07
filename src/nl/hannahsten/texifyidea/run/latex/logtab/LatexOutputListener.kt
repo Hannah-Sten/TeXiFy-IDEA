@@ -6,10 +6,11 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.DUPLICATE_WHITESPACE
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LINE_WIDTH
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.PACKAGE_WARNING_CONTINUATION
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.removeAll
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils
 import org.apache.commons.collections.buffer.CircularFifoBuffer
@@ -32,6 +33,8 @@ class LatexOutputListener(
             return newText.length < LINE_WIDTH &&
                     // Indent of LaTeX Warning/Error messages
                     !newText.startsWith("               ") &&
+                    // Package warning/error continuation.
+                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(newText) &&
                     LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { newText.startsWith(it) }
         }
     }
@@ -70,7 +73,9 @@ class LatexOutputListener(
 
     fun processNewText(newText: String) {
         window.add(newText)
-        val text = window.joinToString(separator = "").removeAll("\n", "\r")
+        //
+        if ((window.first() as? String).isNullOrBlank()) return
+        val text = window.joinToString(separator = "")
 
         // Check if we are currently in the process of collecting the full message of a matched message of interest
         if (isCollectingMessage) {
@@ -128,10 +133,7 @@ class LatexOutputListener(
             if (message.isEmpty()) return
 
             // Check length of the string we would append to the message, if it fills the line then we assume it continues on the next line
-            if (text.length - newText.length >= lineWidth ||
-                // If the message is expected to continue after the next line
-                LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.any { newText.startsWith(it) }
-            ) {
+            if (!shouldStopCollectingMessage(newText)) {
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true
@@ -167,8 +169,10 @@ class LatexOutputListener(
             val newTextTrimmed = if (newText.length < lineWidth) " ${newText.trim()}" else newText.trim()
             // LaTeX Warning: is replaced here because this method is also run when a message is added,
             // and the above check needs to return false so we can't replace this in the WarningHandler
-            currentLogMessage =
-                LatexLogMessage((message.message + newTextTrimmed).replace("LaTeX Warning: ", ""), message.fileName, message.line, message.type)
+            val newMessage = (message.message + newTextTrimmed).replace("LaTeX Warning: ", "")
+                .replace(PACKAGE_WARNING_CONTINUATION.toRegex(), "")
+                .replace(DUPLICATE_WHITESPACE.toRegex(), "")
+            currentLogMessage = LatexLogMessage(newMessage, message.fileName, message.line, message.type)
         }
 
         checkIfShouldStopCollectingMessage(newText)

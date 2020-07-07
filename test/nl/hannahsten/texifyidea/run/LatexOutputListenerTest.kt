@@ -310,6 +310,26 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         testLog(log, expectedMessages)
     }
 
+    fun `test biblatex warning`() {
+        val log = """
+        (./math.tex
+        
+
+        Package biblatex Warning: Please (re)run Biber on the file:
+        (biblatex)                main
+        (biblatex)                and rerun LaTeX afterwards.
+
+         )
+        (see the transcript file for additional information)</home/abby/texlive/2019/te
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./math.tex", 0, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
     fun `test fontspec errors`() {
         val log = """
             ./errors.tex:10: Improper `at' size (0.0pt), replaced by 10pt.

@@ -13,6 +13,8 @@ object LogMagicRegex {
     const val LATEX_WARNING_REGEX: String = "LaTeX( Font)? Warning:" // warning
     const val PACKAGE_REGEX: String = """(?<package>[\d\w]+)""" // package error/warning?
     const val REFERENCE_REGEX: String = """(?<label>(`|').+')""" // reference warning
+    const val PACKAGE_WARNING_CONTINUATION = "\\(\\w+\\) {${"Package warning:".length}}"
+    const val DUPLICATE_WHITESPACE = """\s{2,}"""
 
     val TEX_MISC_WARNINGS = listOf(
             "LaTeX Warning: ",

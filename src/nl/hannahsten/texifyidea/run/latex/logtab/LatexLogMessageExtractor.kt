@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
+import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.DUPLICATE_WHITESPACE
 import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexSingleLineErrorMessageHandler
@@ -68,7 +69,7 @@ object LatexLogMessageExtractor {
                 .trim()
                 // Improves readability, and at the moment we don't have an example where this would be incorrect
                 .trim('(', ')', '[', ']', ' ')
-                .replace("""\s{2,}""".toRegex(), " ")
+                .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
 
             return LatexLogMessage(
                 messageText,
