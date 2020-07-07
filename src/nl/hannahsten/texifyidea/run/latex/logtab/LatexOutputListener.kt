@@ -73,8 +73,6 @@ class LatexOutputListener(
 
     fun processNewText(newText: String) {
         window.add(newText)
-        //
-        if ((window.first() as? String).isNullOrBlank()) return
         val text = window.joinToString(separator = "")
 
         // Check if we are currently in the process of collecting the full message of a matched message of interest
@@ -83,12 +81,12 @@ class LatexOutputListener(
         }
         else {
             // Skip line if it is irrelevant.
-            // if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String)) {
-            //     // The first line might be irrelevant, but the new text could
-            //     // contain useful information about the file stack.
-            //     fileStack.update(newText)
-            //     return
-            // }
+            if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String)) {
+                // The first line might be irrelevant, but the new text could
+                // contain useful information about the file stack.
+                fileStack.update(newText)
+                return
+            }
 
             resetIfNeeded(newText)
 

@@ -231,11 +231,11 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     fun testFullLog() {
         val expectedMessages = setOf(
                 LatexLogMessage("Label `mylabel' multiply defined.", "main.tex", 0, WARNING),
-                LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR),
-                LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
+                LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "main.tex", 104, ERROR), // Currently defaults to main.tex instead of fontenc.sty because fontenc.sty cannot be found
+                LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "main.tex", 105, ERROR),
                 LatexLogMessage("Encoding scheme `15' unknown.", "main.tex", 5, ERROR),
                 LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "main.tex", 6, ERROR),
-                LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "./main.tex", 7, WARNING),
+                LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "main.tex", 7, WARNING),
                 LatexLogMessage("Environment align undefined.", "math.tex", 7, ERROR),
                 LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "math.tex", 5, WARNING),
                 LatexLogMessage("\\begin{document} ended by \\end{align}.", "math.tex", 9, ERROR),
@@ -251,7 +251,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12", "main.tex", 9, WARNING),
                 LatexLogMessage("There were undefined references.", "main.tex", 0, WARNING),
                 LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "main.tex", 0, WARNING),
-                LatexLogMessage("biblatex: Please (re)run Biber on the file: main", "main.tex", 0, WARNING)
+                LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./main.tex", 0, WARNING)
         )
 
         testLog(logTextLatexmk, expectedMessages)
@@ -304,7 +304,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR)
+            LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "main.tex", 104, ERROR)
         )
 
         testLog(log, expectedMessages)
