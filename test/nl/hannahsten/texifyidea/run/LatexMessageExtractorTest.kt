@@ -54,7 +54,6 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected, newText)
     }
 
-
     fun `test The font size command normalsize is not defined`() {
         val text = "./errors.tex:4: LaTeX Error: The font size command \\normalsize is not defined:               there is probably something wrong with the class file."
         val newText = "               there is probably something wrong with the class file."
