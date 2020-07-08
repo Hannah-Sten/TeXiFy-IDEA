@@ -97,7 +97,7 @@ class LatexOutputListener(
             fileStack.update(newText)
 
             // Finally add the message to the log, or continue collecting this message when necessary.
-            addOrCollectMessage(text, newText, logMessage ?: return)
+            addOrCollectMessage(newText, logMessage ?: return)
         }
     }
 
@@ -126,7 +126,10 @@ class LatexOutputListener(
     /**
      * Keep collecting the message if necessary, otherwise add it to the log.
      */
-    private fun addOrCollectMessage(text: String, newText: String, logMessage: LatexLogMessage) {
+    private fun addOrCollectMessage(
+        newText: String,
+        logMessage: LatexLogMessage
+    ) {
         logMessage.apply {
             if (message.isEmpty()) return
 
@@ -142,7 +145,8 @@ class LatexOutputListener(
 
                 if (messageList.isEmpty() || !messageList.contains(logMessage)) {
                     if (isCollectingBib) addBibMessageToLog(logMessage)
-                    else addMessageToLog(message, file ?: mainFile, line, type)
+                    // Use original filename, especially for tests to work (which cannot find the real file)
+                    else addMessageToLog(LatexLogMessage(message, fileName, line, type), file)
                 }
             }
         }
@@ -191,10 +195,6 @@ class LatexOutputListener(
                 null
             )
         }
-    }
-
-    private fun addMessageToLog(message: String, file: VirtualFile? = mainFile, line: Int, type: LatexLogMessageType) {
-        addMessageToLog(LatexLogMessage(message, file?.name, line, type), file)
     }
 
     @Suppress("UNUSED_PARAMETER")

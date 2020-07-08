@@ -6,7 +6,9 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 object LogMagicRegex {
     const val LINE_WIDTH = 79
 
-    const val FILE_LINE_REGEX: String = """(?<file>.+)?:(?<line>\d+):""" // error
+    // Match filename:linenumber: as this probably denotes an error, but not if it appears in a stacktrace
+    // and starts with ...
+    const val FILE_LINE_REGEX: String = """^(?!\s*\.\.\.)(?<file>.+\.\w+):(?<line>\d+):""" // error
     const val LINE_REGEX: String = """on input line (?<line>\d+).""" // meestal warning
     const val LATEX_ERROR_REGEX: String = "!" // error
     const val PDFTEX_ERROR_REGEX: String = "!pdfTeX error:"
@@ -43,6 +45,7 @@ object LogMagicRegex {
 
     /**
      * These warnings span more than two lines, so the [LatexOutputListener] needs to continue collecting it.
+     * todo this one should be detected automatically?
      */
     val TEX_MISC_WARNINGS_MULTIPLE_LINES = listOf(
         "LaTeX Warning: You have requested, on input line"
