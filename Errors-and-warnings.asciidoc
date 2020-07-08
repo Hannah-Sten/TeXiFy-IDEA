@@ -965,6 +965,407 @@ l.4     \limits
 ./main.tex:4: Limit controls must follow a math operator.
 ----
 
+=== \LoadClass in package file
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== Lonely \item--perhaps a missing list environment
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \item
+\end{document}
+----
+
+----
+
+./errors.tex:4: LaTeX Error: Lonely \item--perhaps a missing list environment.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...
+
+l.4 \end
+        {document}
+----
+
+=== Math alphabet identifier <id> is undefined in math version <name>
+
+[source,latex,linenums]
+----
+
+----
+
+----
+./Untitled.tex:50: LaTeX Error: Math alphabet identifier \mathrm is undefined in math version `GFS'.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+----
+
+=== Math version <name> is not defined
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\mathversion{GFS}
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+./errors.tex:2: LaTeX Error: Math version `GFS' is not defined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...
+
+l.2 \mathversion{GFS}
+----
+
+=== Misplaced alignment tab character &
+Alternate forms: Misplaced \cr, \crcr, \noalign, \omit
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    &
+\end{document}
+----
+
+----
+./errors.tex:3: Misplaced alignment tab character &.
+l.3     &
+----
+
+=== Missing \begin{document}
+
+[source,latex,linenums]
+----
+\documentclass{article}
+Text.
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+./errors.tex:2: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...
+
+l.2 T
+   ext.
+----
+
+=== Missing control sequence inserted
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\newcommand t
+
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+./errors.tex:3: Missing control sequence inserted.
+<inserted text>
+\inaccessible
+l.3
+----
+
+=== Missing \cr inserted
+
+[source,latex,linenums]
+----
+
+----
+
+----
+./errors.tex:34: Missing \cr inserted.
+<inserted text>
+\cr
+l.34         \end{tabularx}
+----
+
+=== Missing delimiter (. inserted)
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \left
+\end{document}
+----
+
+----
+./errors.tex:4: Missing delimiter (. inserted).
+<to be read again>
+\let
+l.4 \end{document}
+----
+
+=== Missing \endcsname inserted
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\newenvironment{Bl\"ode}
+\begin{document}
+    Main.
+\end{document}
+----
+
+----
+./main.tex:3: Missing \endcsname inserted.
+----
+
+=== Missing number, treated as zero
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\begin{document}
+    Main.
+    \value{page}
+\end{document}
+----
+
+----
+No file main.aux.
+./main.tex:5: Missing number, treated as zero.
+<to be read again>
+                   \let
+l.5 \end{document}
+----
+
+=== Missing p-arg in array arg
+=== Missing @-exp in array arg
+=== Missing # inserted in alignment preamble.
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\begin{document}
+    \begin{tabular}{p}
+        a
+    \end{tabular}
+\end{document}
+----
+
+----
+./main.tex:3: LaTeX Error: Missing p-arg in array arg.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...
+
+l.3     \begin{tabular}{p}
+./main.tex:3: Missing # inserted in alignment preamble.
+----
+
+=== Missing = inserted for \ifnum
+=== Missing = inserted for \ifdim
+
+[source,latex,linenums]
+----
+./main.tex:4: Missing = inserted for \ifnum.
+<to be read again>
+                   \let
+l.4 \end{document}
+----
+
+----
+./main.tex:4: Missing = inserted for \ifnum.
+<to be read again>
+                   \let
+l.4 \end{document}
+----
+
+=== Missing $ inserted
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\begin{document}
+    _
+\end{document}
+----
+
+----
+./main.tex:3: Missing $ inserted.
+<inserted text>
+                $
+l.3     _
+----
+
+=== Missing \endgroup inserted
+
+[source,latex,linenums]
+----
+
+----
+
+----
+./main.tex:7: Missing \endgroup inserted.
+<inserted text>
+                \endgroup
+----
+
+=== Missing \right. inserted
+=== Missing } inserted
+=== Missing { inserted
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\begin{document}
+    \left(
+\end{document}
+----
+
+----
+./main.tex:4: Missing \right. inserted.
+<inserted text>
+                \right .
+l.4 \end{document}
+----
+
+=== Multiple \label's: label <label> will be lost
+=== Multiple tag
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\begin{document}
+    \begin{align}
+    \label{33}
+        \label{33}
+    \end{align}
+\end{document}
+----
+
+----
+
+./main.tex:7: Package amsmath Error: Multiple \label's: label '33' will be lost
+.
+
+See the amsmath package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...
+
+l.7     \end{align}
+----
+
+=== No counter '<name>' defined
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\begin{document}
+    \setcounter{name}
+\end{document}
+----
+
+----
+./main.tex:4: LaTeX Error: No counter 'name' defined.
+----
+
+=== No Cyrillic encoding definition files were found
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== No declaration for shape <font shape>
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== No driver specified
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== No room for a new <register>
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== No \title given
+
+[source,latex,linenums]
+----
+\documentclass[11pt]{article}
+\begin{document}
+    \maketitle
+\end{document}
+----
+
+----
+./main.tex:3: LaTeX Error: No \title given.
+----
+
+
+== Errors not in the LaTeX Companion?
+
+=== !pdfTeX error: pdflatex (file <file>): cannot open <type> file for reading
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage[urw-garamond]{mathdesign}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+    Text.
+\end{document}
+----
+
+----
+!pdfTeX error: pdflatex (file ugmr8a.pfb): cannot open Type 1 font file for rea
+ding
+ ==> Fatal error occurred, no output PDF file produced!
+----
 
 
 == Warnings
