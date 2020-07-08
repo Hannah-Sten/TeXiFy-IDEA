@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.PDFTEX_ERROR_REGE
 
 object LatexErrorHandler : LatexMessageHandler(
         LatexLogMessageType.ERROR,
-        """^$FILE_LINE_REGEX (?<message>.+)$""".toRegex(),
-        """^$LATEX_ERROR_REGEX (?<message>.+)${'$'}$""".toRegex(),
+        """^$FILE_LINE_REGEX (?<message>.+)""".toRegex(),
+        """^$LATEX_ERROR_REGEX (?<message>.+)""".toRegex(),
         """^$PDFTEX_ERROR_REGEX (?<message>.+)""".toRegex()
 ) {
     private val messageProcessors = listOf(LatexPackageErrorProcessor, LatexRemoveErrorTextProcessor)

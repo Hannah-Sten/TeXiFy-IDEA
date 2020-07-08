@@ -75,6 +75,21 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected, newText)
     }
 
+    fun `test Message with newlines`() {
+        val text = "./main.tex:3: Missing \\endcsname inserted.\n" +
+                "<to be read again> \n"
+        val newText = "<to be read again> \n"
+        val expected = LatexLogMessage("Missing \\endcsname inserted.", "./main.tex", 3, ERROR)
+        testMessageExtractor(text, expected, newText)
+    }
+
+    fun `test begin align ended by end document`() {
+        val newText = "t}.\n"
+        val text = "./main.tex:10: LaTeX Error: \\begin{align} on input line 4 ended by \\end{documen\n$newText"
+        val expected = LatexLogMessage("\\begin{align} on input line 4 ended by \\end{document}.", "./main.tex", 10, ERROR)
+        testMessageExtractor(text, expected, newText)
+    }
+
     /*
      * WARNINGS
      */

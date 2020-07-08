@@ -24,7 +24,9 @@ object LatexLogMessageExtractor {
      * @param text Text in which to search for error messages (will be two consecutive lines)
      * @param newText Second line of 'text',
      */
-    fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
+    fun findMessage(textWithNewlines: String, newText: String, currentFile: String?): LatexLogMessage? {
+        val text = textWithNewlines.removeAll("\n", "\r")
+
         val specialErrorHandlersList = listOf(
             LatexUndefinedControlSequenceHandler,
             LatexSingleLineErrorMessageHandler

@@ -8,7 +8,7 @@ object LogMagicRegex {
 
     // Match filename:linenumber: as this probably denotes an error, but not if it appears in a stacktrace
     // and starts with ...
-    const val FILE_LINE_REGEX: String = """^(?!\s*\.\.\.)(?<file>.+\.\w+):(?<line>\d+):""" // error
+    const val FILE_LINE_REGEX: String = """(?!\s*\.\.\.)(?<file>.+\.\w+):(?<line>\d+):""" // error
     const val LINE_REGEX: String = """on input line (?<line>\d+).""" // meestal warning
     const val LATEX_ERROR_REGEX: String = "!" // error
     const val PDFTEX_ERROR_REGEX: String = "!pdfTeX error:"
