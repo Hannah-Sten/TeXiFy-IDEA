@@ -2244,6 +2244,148 @@ LaTeX Warning: You have requested, on input line 5, version
                is available.
 ----
 
+= BibTeX
+
+`references.bib`
+[source,bibtex,linenums]
+----
+@Book{knuth1990,
+    author    = {Knuth, Donald E.},
+    title     = {The {\TeX}book },
+    year      = {1990},
+    isbn      = {0-201-13447-0},
+    publisher = {Addison\,\textendash\,Wesley},
+}
+----
+
+== Errors
+
+=== I couldn't open database file <file>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \cite{knuth19902}.
+    \bibliography{references34}
+    \bibliographystyle{plain}
+\end{document}
+----
+
+----
+This is BibTeX, Version 0.99d (TeX Live 2020)
+The top-level auxiliary file: bibtex-mwe.aux
+I couldn't open database file references34.bib
+---line 3 of file bibtex-mwe.aux
+ : \bibdata{references34
+ :                      }
+I'm skipping whatever remains of this command
+The style file: plain.bst
+I found no database files---while reading file bibtex-mwe.aux
+Warning--I didn't find a database entry for "knuth19902"
+(There were 2 error messages)
+
+Process finished with exit code 2
+----
+
+
+=== Sorry---you've exceeded BibTeX's <structure>
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+=== This database file appears more than once:
+
+[source,latex,linenums]
+----
+
+----
+
+----
+This database file appears more than once: references34.bib
+---line 3 of file bibtex-mwe.aux
+ : \bibdata{references34
+ :                      }
+I'm skipping whatever remains of this command
+----
+
+=== <reason of confusion>---this can't happen
+
+[source,latex,linenums]
+----
+
+----
+
+----
+
+----
+
+aux_err_print/aux_err_return format:
+
+--- line <line> of file <file>
+ : <input line part 1>
+ : <input line part 2>
+I'm skipping whatever remains of this command
+
+=== Illegal, another \bib data command
+=== Illegal, another \bib style command
+
+=== No '}'
+This one complains when a command is missing its |right_brace|.
+
+=== Stuff after '}'
+This one complains when a command has stuff after its |right_brace|.
+
+=== White space in argument
+And this one complains when a command has |white_space| in its
+argument.
+
+=== I couldn't open style file <file>
+
+=== Case mismatch error between cite keys <key> and <key>
+
+=== <file> has a wrong extension
+
+=== Already encountered file <file>
+
+=== I couldn't open auxiliary file <file>
+
+=== I found no <type> while reading file <file>
+
+=== Illegal end of style file in command:
+
+=== <char> begins identifier, command:
+=== <char> immediately follows identifier, command:
+
+== Warnings
+
+=== I didn't find a database entry for "<reference>"
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \cite{knuth19902}.
+    \bibliography{references}
+    \bibliographystyle{plain}
+\end{document}
+----
+
+----
+Database file #1: references.bib
+Warning--I didn't find a database entry for "knuth19902"
+(There was 1 warning)
+
+Process finished with exit code 0
+----
+
+
 [bibliography]
 == References
 - [[[mittelbach2004, 1]]] Frank Mittelbach, Michel Goossens, Johannes Braams, and Chris Rowley. 2004. _The Latex Companion. 2nd ed._ Boston: Addison-Wesley.
