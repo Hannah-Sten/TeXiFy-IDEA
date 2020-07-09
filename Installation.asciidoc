@@ -235,7 +235,7 @@ command will be listed on the right.
 about, read the http://ctan.cs.uu.nl/info/lshort/english/lshort.pdf[Not
 So Short Introduction To LaTeX2e].
 
-Any suggestions for improvements of the installation instructions, however small? Please let us know at https://gitter.im/TeXiFy-IDEA[gitter]!
+Any suggestions for improvements of the installation instructions, however small? Please feel free to edit this wiki page, or let us know at https://gitter.im/TeXiFy-IDEA[gitter]!
 
 === When you want to work together: install git
 
@@ -249,7 +249,7 @@ school. For those cases, you can use Overleaf, which is a minimalistic but web-b
 click `next` everywhere.
 * Restart your computer.
 * Make sure you have a GitHub account, and create a new repository.
-* Go to IntelliJ and click menu:[File > New > Project from VCS > GitHub] and select the repository you created.
+* Go to IntelliJ and click menu:File[New > Project from VCS > GitHub] and select the repository you created.
 * If you are asked by IntelliJ `Do you want to add this file to git?`,
 just click `no` when you do not recognize the file, and `yes` when you recognise it as a source file (`.tex` for example).
 
