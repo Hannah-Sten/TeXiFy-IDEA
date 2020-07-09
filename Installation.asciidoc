@@ -10,7 +10,7 @@ link:#linux-instructions[Instructions for Linux].
 
 link:#mac-instructions[Instructions for Mac].
 
-=== Installation instructions for Windows
+=== [[windows-instructions]] Installation instructions for Windows
 
 These instructions were tested on Windows 7, 8.1 and 10.
 
@@ -68,7 +68,7 @@ in SumatraPDF in a pdf you just compiled, and it should make your cursor
 go to the correct location in IntelliJ.
 * Have a look at the link:#tips[tips].
 
-=== Installation instructions for linux
+=== [[linux-instructions]] Installation instructions for linux
 
 These instructions were tested on at least Ubuntu 16.04, 18.04, Fedora
 and Arch Linux.
@@ -170,7 +170,7 @@ you just compiled, and it should make your cursor go to the correct
 location in IntelliJ.
 * Also have a look at the link:#tips[tips].
 
-=== Installation instructions for Mac
+=== [[mac-instructions]] Installation instructions for Mac
 
 * If you don’t have the latest version yet, download and install
 https://www.jetbrains.com/idea/download/[IntelliJ IDEA], the Community
