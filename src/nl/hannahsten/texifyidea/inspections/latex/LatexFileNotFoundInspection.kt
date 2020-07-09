@@ -126,7 +126,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
                 }
 
-                reference.handleElementRename(fileNameRelativeToRoot)
+                reference.handleElementRename(fileNameRelativeToRoot, false)
             }
         }
     }
