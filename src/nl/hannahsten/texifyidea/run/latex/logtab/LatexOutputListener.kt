@@ -6,9 +6,9 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.DUPLICATE_WHITESPACE
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.LINE_WIDTH
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.PACKAGE_WARNING_CONTINUATION
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PACKAGE_WARNING_CONTINUATION
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
@@ -35,7 +35,7 @@ class LatexOutputListener(
                     !newText.startsWith("               ") &&
                     // Package warning/error continuation.
                     !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(newText) &&
-                    LogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { newText.startsWith(it) }
+                    LatexLogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { newText.startsWith(it) }
         }
     }
 

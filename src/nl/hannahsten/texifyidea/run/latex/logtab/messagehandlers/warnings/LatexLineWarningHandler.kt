@@ -3,14 +3,14 @@ package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex
 
 /**
  * Warnings of the form LaTeX Warning: ... on input line l
  */
 object LatexLineWarningHandler : LatexMessageHandler(
         WARNING,
-        """${LogMagicRegex.LATEX_WARNING_REGEX}(?<message>.+)${LogMagicRegex.LINE_REGEX}""".toRegex()
+        """${LatexLogMagicRegex.LATEX_WARNING_REGEX}(?<message>.+)${LatexLogMagicRegex.LINE_REGEX}""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         LatexLineWarningHandler.regex.forEach {

@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.DUPLICATE_WHITESPACE
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.TEX_MISC_WARNINGS
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexSingleLineErrorMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexUndefinedControlSequenceHandler

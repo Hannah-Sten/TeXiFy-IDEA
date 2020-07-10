@@ -1,12 +1,16 @@
 package nl.hannahsten.texifyidea.run.bibtex
 
+import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogTabComponent
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import org.jdom.Element
 
@@ -41,6 +45,17 @@ class BibtexRunConfiguration(
     var bibWorkingDir: VirtualFile? = null
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = BibtexSettingsEditor(project)
+
+    override fun createAdditionalTabComponents(
+        manager: AdditionalTabComponentManager?,
+        startedProcess: ProcessHandler?
+    ) {
+        super.createAdditionalTabComponents(manager, startedProcess)
+
+        if (manager is LogConsoleManagerBase && startedProcess != null) {
+            manager.addAdditionalTabComponent(BibtexLogTabComponent(project, mainFile, startedProcess), "BibTeX-Log", AllIcons.Debugger.Console, false)
+        }
+    }
 
     override fun checkConfiguration() {
         if (compiler == null) {

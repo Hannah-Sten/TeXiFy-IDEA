@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 /**
  * Regex (text) every error handler and message processor can use.
  */
-object LogMagicRegex {
+object LatexLogMagicRegex {
     const val LINE_WIDTH = 79
 
     // Match filename:linenumber: as this probably denotes an error, but not if it appears in a stacktrace

@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors
 
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex
 
 abstract class LatexErrorMessageProcessor(vararg val regex: Regex) {
     abstract fun process(message: String): String?
@@ -24,7 +24,7 @@ object LatexRemoveErrorTextProcessor : LatexErrorMessageProcessor("""LaTeX Error
 /**
  * Package amsmath error: text -> amsmath: text
  */
-object LatexPackageErrorProcessor : LatexErrorMessageProcessor("""^Package ${LogMagicRegex.PACKAGE_REGEX} Error:""".toRegex()) {
+object LatexPackageErrorProcessor : LatexErrorMessageProcessor("""^Package ${LatexLogMagicRegex.PACKAGE_REGEX} Error:""".toRegex()) {
     override fun process(message: String): String? {
         regex.forEach {
             val `package` = it.find(message)?.groups?.get("package")?.value ?: return@forEach

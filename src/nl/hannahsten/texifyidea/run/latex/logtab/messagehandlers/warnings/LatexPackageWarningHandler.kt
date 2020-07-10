@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex.PACKAGE_REGEX
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PACKAGE_REGEX
 
 object LatexPackageWarningHandler : LatexMessageHandler(
         WARNING,

@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageWithLineHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.LogMagicRegex
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex
 
 /**
  * Multi-line warning with line number.
@@ -16,5 +16,5 @@ is available.
  */
 object YouHaveRequestedOnInputLineVersionOfPackageWarningHandler : LatexMessageWithLineHandler(
     LatexLogMessageType.WARNING,
-    """${LogMagicRegex.LATEX_WARNING_REGEX} You have requested, on input line (\d+), .+""".toRegex()
+    """${LatexLogMagicRegex.LATEX_WARNING_REGEX} You have requested, on input line (\d+), .+""".toRegex()
 )
