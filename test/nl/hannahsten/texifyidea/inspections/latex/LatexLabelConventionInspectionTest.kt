@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
-class LabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConventionInspection()) {
+class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConventionInspection()) {
     fun testSectionLabelConventionWarning() {
         myFixture.configureByText(LatexFileType, """
             \begin{document}
@@ -21,6 +21,20 @@ class LabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConvent
                     <weak_warning descr="Unconventional label prefix">\label{some-figure}</weak_warning>
                 \end{figure}
             \end{document}
+        """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    fun testFigureLabelConventionWarningInNewcommand() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\includenamedimage}[2]{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{#1}
+                \caption{#2}
+                \label{fig:#1} 
+            \end{figure}
+            }
         """.trimIndent())
         myFixture.checkHighlighting(false, false, true, false)
     }

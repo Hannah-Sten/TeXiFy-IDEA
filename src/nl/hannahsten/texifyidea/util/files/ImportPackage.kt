@@ -77,7 +77,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
     var includingCommands = allIncludeCommands.filter { includeCommand -> includeCommand.requiredParameters.any { it.contains(command.containingFile.name.removeFileExtension()) } }
 
     if (includingCommands.isEmpty() && command.name in relativeImportCommands) {
-        command.containingFile.containingDirectory.virtualFile.findFileByRelativePath(command.requiredParameter(0) ?: "")?.let { return listOf(it) }
+        command.containingFile.containingDirectory?.virtualFile?.findFileByRelativePath(command.requiredParameter(0) ?: "")?.let { return listOf(it) }
     }
 
     // Avoid endless loop (in case of a file inclusion loop)
@@ -113,7 +113,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
                 if (commandsIncludingThisFile.isEmpty()) {
                     // Cool, we supposedly have a root file, now try to find the directory containing the file being included by command
                     for (relativePath in newSearchPaths) {
-                        val searchDir = file.containingDirectory.virtualFile.findFileByRelativePath(relativePath) ?: continue
+                        val searchDir = file.containingDirectory?.virtualFile?.findFileByRelativePath(relativePath) ?: continue
                         absoluteSearchDirs.add(searchDir)
                     }
                 }

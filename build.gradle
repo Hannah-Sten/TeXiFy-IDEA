@@ -22,7 +22,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.7-alpha.73'
+version '0.7-alpha.79'
 
 repositories {
     mavenCentral()
@@ -165,7 +165,12 @@ intellij {
 
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
-     version '2020.1'
+    version '2020.1'
+
+    // Example to use a different, locally installed, IDE
+    // If you get the error 'Cannot find builtin plugin java for IDE', remove the 'java' plugin above
+    // Also disable 'version' above
+//    localPath '/home/thomas/.local/share/JetBrains/Toolbox/apps/Goland/ch-0/201.7846.93/'
 }
 
 test {

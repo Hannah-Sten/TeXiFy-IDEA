@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings
 
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 data class TexifySettingsState(
@@ -10,8 +11,8 @@ data class TexifySettingsState(
         var autoCompile: Boolean = false,
         var continuousPreview: Boolean = false,
         var includeBackslashInSelection: Boolean = false,
+        var showPackagesInStructureView: Boolean = false,
         var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
-        var pdfViewer: PdfViewer = PdfViewer.firstAvailable(),
-        var labelCommands: Map<String, String> =
-                hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true).toSerializableString())
+        var missingLabelMinimumLevel: LatexRegularCommand = LatexRegularCommand.SUBSECTION,
+        var pdfViewer: PdfViewer = PdfViewer.firstAvailable()
 )

@@ -55,7 +55,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
                     inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
 
-                    if (declaredIn == file && (declaredIn.virtualFile.nameWithoutExtension == includedName || inclusions.getOrDefault(referenced, mutableSetOf()).contains(declaredIn))) {
+                    if (declaredIn == file && inclusions.getOrDefault(referenced, mutableSetOf()).contains(declaredIn)) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 TextRange(0, command.textLength - 1),

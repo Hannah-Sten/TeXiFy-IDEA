@@ -2,10 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
-class LabelMissingInspectionTest : BasePlatformTestCase() {
+class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missinglabel"
     }
@@ -40,6 +41,18 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
                 \end{figure}
             \end{document}
         """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    fun testMissingSectionLabelWarnings() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\mylabels}[2]{\section{#1}\label{sec:#2}}
+            \newcommand{\mylabel}[1]{\label{sec:#1}}
+
+            \section{some sec}\mylabel{sec:some-sec}
+        """.trimIndent())
+        CommandManager.updateAliases(setOf("\\label"), project)
+
         myFixture.checkHighlighting(false, false, true, false)
     }
 
@@ -154,46 +167,9 @@ class LabelMissingInspectionTest : BasePlatformTestCase() {
         """.trimIndent())
     }
 
-    fun testMissingChapterLabelQuickFix() {
-        testQuickFix("""
-            \begin{document}
-                \chapter{Chapter without label}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \chapter{Chapter without label}\label{ch:chapter-without-label}<caret>
-            \end{document}
-        """.trimIndent())
-    }
-
-    fun testMissingSectionLabelQuickFix() {
-        testQuickFix("""
-            \begin{document}
-                \section{Section without label}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \section{Section without label}\label{sec:section-without-label}<caret>
-            \end{document}
-        """.trimIndent())
-    }
-
-    fun testMissingSubsectionLabelQuickFix() {
-        testQuickFix("""
-            \begin{document}
-                \subsection{Subsection without label}
-            \end{document}
-        """.trimIndent(), """
-            \begin{document}
-                \subsection{Subsection without label}\label{subsec:subsection-without-label}<caret>
-            \end{document}
-        """.trimIndent())
-    }
-
     private fun testQuickFix(before: String, after: String) {
         myFixture.configureByText(LatexFileType, before)
         val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
         writeCommand(myFixture.project) {
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }

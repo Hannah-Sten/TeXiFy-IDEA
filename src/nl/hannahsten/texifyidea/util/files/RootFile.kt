@@ -7,6 +7,8 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.algorithm.IsChildDFS
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.util.*
@@ -17,6 +19,12 @@ import java.util.*
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFile(): PsiFile {
+    val magicComment = magicComment()
+    if (magicComment.contains(DefaultMagicKeys.ROOT)) {
+        val path = magicComment.value(DefaultMagicKeys.ROOT) ?: ""
+        this.findFile(path)?.let { return it }
+    }
+
     if (this.isRoot()) {
         return this
     }

@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.SIUNITX
 import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
@@ -28,7 +29,7 @@ enum class LatexRegularCommand(
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
     A_RING("aa", display = "å"),
     CAPITAL_A_RING("AA", display = "Å"),
-    ADDBIBRESOURCE("addbibresource", RequiredFileArgument("bibliographyfile", "bib"), dependency = BIBLATEX),
+    ADDBIBRESOURCE("addbibresource", RequiredFileArgument("bibliographyfile", true, false, "bib"), dependency = BIBLATEX),
     AE("ae", display = "æ"),
     CAPITAL_AE("AE", display = "Æ"),
     APPENDIX("appendix"),
@@ -42,7 +43,7 @@ enum class LatexRegularCommand(
     BFSERIES("bfseries"),
     BIBITEM("bibitem", "label".asOptional(), "citekey".asRequired()),
     BIBLIOGRAPHYSTYLE("bibliographystyle", "style".asRequired()),
-    BIBLIOGRAPHY("bibliography", RequiredFileArgument("bibliographyfile", "bib")),
+    BIBLIOGRAPHY("bibliography", RequiredFileArgument("bibliographyfile", true, true, "bib")),
     BIGSKIP("bigskip"),
     BLENDCOLORS("blendcolors", "mix expr".asRequired(), dependency = XCOLOR),
     BLENDCOLORS_STAR("blendcolors*", "mix expr".asRequired(), dependency = XCOLOR),
@@ -71,7 +72,7 @@ enum class LatexRegularCommand(
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT), dependency = AMSMATH),
     DEF("def"),
     DIRECTLUA("directlua", "luacode".asRequired()),
-    DOCUMENTCLASS("documentclass", "options".asOptional(), RequiredFileArgument("class", "cls")),
+    DOCUMENTCLASS("documentclass", "options".asOptional(), RequiredFileArgument("class", true, false, "cls")),
     DOTFILL("dotfill"),
     EM("em"),
     EMPH("emph", "text".asRequired(Type.TEXT)),
@@ -131,13 +132,13 @@ enum class LatexRegularCommand(
     HYPERREF("hyperref", "options".asOptional(), "label".asRequired(Type.TEXT), dependency = Package.HYPERREF),
     HYPHENATION("hyphenation", "words".asRequired(Type.TEXT)),
     I("i", display = "i (dotless)"),
-    IMPORT("import", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
-    INCLUDE("include", RequiredFileArgument("sourcefile", false, "tex")),
-    INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
-    INPUT("input", RequiredFileArgument("sourcefile", "tex")),
-    INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
-    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", true, "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
-    INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, "tex")),
+    IMPORT("import", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    INCLUDE("include", RequiredFileArgument("sourcefile", false, false, "tex")),
+    INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    INPUT("input", RequiredFileArgument("sourcefile", true, false, "tex")),
+    INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", true, false, "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
+    INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, false, "tex")),
     INDEXNAME("indexname", "name".asRequired()),
     INDEXSPACE("indexspace"),
     INDEX("intex", "entry".asRequired()),
@@ -163,8 +164,8 @@ enum class LatexRegularCommand(
     LISTOFFIGURES("listoffigures"),
     LISTOFTABLES("listoftables"),
     LISTTABLENAME("listtablename", "name".asRequired(Type.TEXT)),
-    LOADCLASS("LoadClass", "options".asOptional(), RequiredFileArgument("class", "cls")),
-    LOADCLASSWITHOPTIONS("LoadClassWithOptions", RequiredFileArgument("class", "cls")),
+    LOADCLASS("LoadClass", "options".asOptional(), RequiredFileArgument("class", true, false, "cls")),
+    LOADCLASSWITHOPTIONS("LoadClassWithOptions", RequiredFileArgument("class", true, false, "cls")),
     LOWERCASE("lowercase", "text".asRequired(Type.TEXT)),
     LQ("lq", display = "‘"),
     MAKEGLOSSARY("makeglossary"),
@@ -194,6 +195,7 @@ enum class LatexRegularCommand(
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
     OE("oe", display = "œ"),
+    ONLYIFSTANDALONE("onlyifstandalone", "code".asRequired()), // dependency = standalone, but either class or package
     CAPITAL_OE("OE", display = "Œ"),
     ODDSIDEMARGIN("oddsidemargin"),
     ONECOLUMN("onecolumn"),
@@ -220,12 +222,14 @@ enum class LatexRegularCommand(
     POUNDS("pounds", display = "£"),
     PRINTBIBLIOGRAPHY("printbibliography", dependency = BIBLATEX),
     PRINTINDEX("printindex"),
+    PROVIDESCLASS("providesclass"),
+    PROVIDESPACKAGE("providespackage"),
     R("r", display = "˚ (accent)"),
     RBRACK("rbrack", display = "]"),
     RPAREN("rparen", display = ")", dependency = MATHTOOLS),
     REF("ref", "label".asRequired()),
     REFNAME("refname", "name".asRequired(Type.TEXT)),
-    REQUIREPACKAGE("RequirePackage", "options".asOptional(), RequiredFileArgument("package", "sty")),
+    REQUIREPACKAGE("RequirePackage", "options".asOptional(), RequiredFileArgument("package", true, true, "sty")),
     RESETCOLORSERIES("resetcolorseries", "div".asOptional(), "name".asRequired(), dependency = XCOLOR),
     RIGHTHYPHENMIN("righthyphenmin"),
     RIGHTMARGIN("rightmargin"),
@@ -260,10 +264,10 @@ enum class LatexRegularCommand(
     STEPCOUNTER("stepcounter", "counter".asRequired()),
     STOP("stop"),
     STRETCH("stretch", "factor".asRequired()),
-    SUBFILE("subfile", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
-    SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", "tex"), dependency = SUBFILES),
-    SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
-    SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, "tex"), dependency = Package.IMPORT),
+    SUBFILE("subfile", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = SUBFILES),
+    SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = SUBFILES),
+    SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
     SUBITEM("subitem"),
     SUBPARAGRAPH("subparagraph", "shorttitle".asOptional(Type.TEXT), "title".asRequired(Type.TEXT)),
     SUBPARAGRAPH_STAR("subparagraph*", "title".asRequired(Type.TEXT)),
@@ -348,7 +352,7 @@ enum class LatexRegularCommand(
     UPPERCASE("uppercase", "text".asRequired(Type.TEXT)),
     UPSHAPE("upshape"),
     URL("url", "url".asRequired(), dependency = Package.HYPERREF),
-    USEPACKAGE("usepackage", "options".asOptional(), RequiredFileArgument("package", "sty")),
+    USEPACKAGE("usepackage", "options".asOptional(), RequiredFileArgument("package", true, true, "sty")),
     VDOTS("vdots", display = "⋮"),
     VLINE("vline"),
     VSPACE("vspace", "length".asRequired()),
@@ -361,6 +365,7 @@ enum class LatexRegularCommand(
      */
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     NEWCOMMAND_STAR("newcommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
+    NEWIF("newif", "cmd".asRequired()),
     PROVIDECOMMAND("providecommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     PROVIDECOMMAND_STAR("providecommand*", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
     RENEWCOMMAND("renewcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
@@ -485,9 +490,22 @@ enum class LatexRegularCommand(
     BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
 
     /**
+     * SIunitx commands
+     */
+    ANG("ang", "options".asOptional(), "angle".asRequired(), dependency = SIUNITX),
+    NUM("num", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
+    SI("si", "options".asOptional(), "unit".asRequired(), dependency = SIUNITX),
+    SI_NUM("SI", "options".asOptional(), "number".asRequired(), "pre-unit".asOptional(), "unit".asRequired(), dependency = SIUNITX),
+    NUMLIST("numlist", "options".asOptional(), "numbers".asRequired(), dependency = SIUNITX),
+    NUMRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), dependency = SIUNITX),
+    SILIST("SIlist", "options".asOptional(), "numbers".asRequired(), "unit".asRequired(), dependency = SIUNITX),
+    SIRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), "unit".asRequired(), dependency = SIUNITX),
+    SISETUP("sisetup", "options".asRequired(), dependency = SIUNITX),
+    TABLENUM("tablenum", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
+
+    /**
      * Algorithmicx
      */
-
     FOR("For", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     FORALL("ForAll", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ENDFOR("EndFor", dependency = ALGPSEUDOCODE),

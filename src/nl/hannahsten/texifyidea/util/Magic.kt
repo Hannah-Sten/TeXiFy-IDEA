@@ -1,16 +1,19 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.psi.PsiElement
+import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICS
+import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
@@ -33,16 +36,15 @@ object Magic {
      */
     object General {
 
-        const val pathPackageRoot = "/nl/hannahsten/texifyidea"
-
-        @JvmField
-        val emptyStringArray = arrayOfNulls<String>(0)
-
-        @JvmField
-        val emptyPsiElementArray = arrayOfNulls<PsiElement>(0)
-
         @JvmField
         val noQuickFix: LocalQuickFix? = null
+
+        /**
+         * Abbreviations not detected by [Pattern.abbreviation].
+         */
+        val unRegexableAbbreviations = listOf(
+            "et al."
+        )
 
         @JvmField
         val latexDemoText = """
@@ -284,33 +286,76 @@ object Magic {
         )
 
         /**
-         * Map that maps all commands that are expected to have a label to the label prefix they have by convention.
-         *
-         * command name `=>` label prefix without colon
+         * Maps commands to their expected label prefix. Which commands are expected to have a label at all is determined in settings.
          */
         @JvmField
-        val labeled = mapOfVarargs(
-                "\\chapter", "ch",
-                "\\section", "sec",
-                "\\subsection", "subsec",
-                "\\item", "itm"
+        val labeledPrefixes = mapOf(
+                "\\" + CHAPTER.command to "ch",
+                "\\" + SECTION.command to "sec",
+                "\\" + SUBSECTION.command to "subsec",
+                "\\" + SUBSUBSECTION.command to "subsubsec",
+                "\\" + ITEM.command to "itm"
+        )
+
+        /**
+         * Level of labeled commands.
+         */
+        val labeledLevels = mapOf(
+            // See page 23 of the LaTeX Companion
+            PART to -1, // actually, it is level 0 in classes that do not define \chapter and -1 in book and report
+            CHAPTER to 0,
+            SECTION to 1,
+            SUBSECTION to 2,
+            SUBSUBSECTION to 3,
+            PARAGRAPH to 4,
+            SUBPARAGRAPH to 5
+        )
+
+        /**
+         * All commands that mark some kind of section.
+         */
+        @JvmField
+        val sectionMarkers = listOf(
+            PART, CHAPTER, SECTION, SUBSECTION, SUBSUBSECTION, PARAGRAPH, SUBPARAGRAPH
+        ).map { "\\" + it.command }
+
+        /**
+         * The colours that each section separator has.
+         */
+        @JvmField
+        val sectionSeparatorColors = mapOf(
+            "\\${PART.command}" to Color(152, 152, 152),
+            "\\${CHAPTER.command}" to Color(172, 172, 172),
+            "\\${SECTION.command}" to Color(182, 182, 182),
+            "\\${SUBSECTION.command}" to Color(202, 202, 202),
+            "\\${SUBSUBSECTION.command}" to Color(212, 212, 212),
+            "\\${PARAGRAPH.command}" to Color(222, 222, 222),
+            "\\${SUBPARAGRAPH.command}" to Color(232, 232, 232)
         )
 
         /**
          * LaTeX commands that increase a counter that can be labeled.
          */
         @JvmField
-        val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeled.keys
+        val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeledPrefixes.keys
 
         /**
-         * All commands that represent a reference to a label.
+         * All commands that represent a reference to a label, excluding user defined commands.
          */
         @JvmField
-        val labelReference = hashSetOf(
+        val labelReferenceWithoutCustomCommands = hashSetOf(
                 "\\ref", "\\eqref", "\\nameref", "\\autoref",
                 "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
                 "\\labelcref", "\\cpageref"
         )
+
+        /**
+         * All commands that represent a reference to a label, including user defined commands.
+         */
+        fun getLabelReferenceCommands(project: Project): Set<String> {
+            CommandManager.updateAliases(labelReferenceWithoutCustomCommands, project)
+            return CommandManager.getAliases(labelReferenceWithoutCustomCommands.first())
+        }
 
         /**
          * All commands that represent a reference to a bibliography entry/item.
@@ -335,7 +380,7 @@ object Magic {
          * All commands that represent some kind of reference (think \ref and \cite).
          */
         @JvmField
-        val reference = labelReference + bibliographyReference
+        val reference = labelReferenceWithoutCustomCommands + bibliographyReference
 
         /**
          * Commands from the import package which require an absolute path as first parameter.
@@ -348,16 +393,40 @@ object Magic {
         val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
 
         /**
-         * All commands that define labels.
+         * All commands for which we assume that commas in required parameters do not separate parameters.
+         * By default we assume the comma is a separator.
+         */
+        val commandsWithNoCommaSeparatedParameters = setOf(INCLUDEGRAPHICS).map { "\\" + it.command }
+
+        /**
+         * All commands that define labels and that are present by default.
+         * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
          */
         @JvmField
-        val labelDefinition = setOf("\\label")
+        val labelDefinitionsWithoutCustomCommands = setOf("\\label")
+
+        /**
+         * Get all commands defining labels, including user defined commands.
+         * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
+         *
+         * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
+         */
+        fun getLabelDefinitionCommands(project: Project): Set<String> {
+            // Check if updates are needed
+            CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
+            return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
+        }
+
+        /**
+         * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
+         */
+        fun getLabelDefinitionCommands() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
 
         /**
          * All commands that define bibliography items.
          */
         @JvmField
-        val bibliographyItems = setOf("\\bibitem")
+        val bibliographyItems = setOf("\\" + BIBITEM.command)
 
         /**
          * All math operators without a leading slash.
@@ -370,23 +439,35 @@ object Magic {
         )
 
         /**
-         * All commands that define regular commands.
+         * All commands that define regular commands, and that require that the command is not already defined.
+         */
+        val regularStrictCommandDefinitions = hashSetOf(
+                "\\" + NEWCOMMAND.command,
+                "\\" + NEWCOMMAND_STAR.command,
+                "\\" + NEWIF.command,
+                "\\" + NEWDOCUMENTCOMMAND.command
+        )
+
+        /**
+         * All commands that define or redefine other commands, whether it exists or not.
          */
         @JvmField
-        val regularCommandDefinitions = hashSetOf(
-                "\\newcommand",
-                "\\newcommand*",
-                "\\renewcommand",
-                "\\renewcommand*",
-                "\\providecommand",
-                "\\providecommand*",
-                "\\let",
-                "\\def",
-                "\\newif",
-                "\\NewDocumentCommand",
-                "\\ProvideDocumentCommand",
-                "\\DeclareDocumentCommand"
-        )
+        val redefinitions = hashSetOf(
+                RENEWCOMMAND,
+                RENEWCOMMAND_STAR,
+                PROVIDECOMMAND, // Does nothing if command exists
+                PROVIDECOMMAND_STAR,
+                PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
+                DECLAREDOCUMENTCOMMAND,
+                DEF,
+                LET,
+                RENEWENVIRONMENT
+        ).map { "\\" + it.command }
+
+        /**
+         * All commands that define or redefine regular commands.
+         */
+        val regularCommandDefinitions = regularStrictCommandDefinitions + redefinitions
 
         /**
          * All commands that define commands that should be used exclusively
@@ -394,10 +475,10 @@ object Magic {
          */
         @JvmField
         val mathCommandDefinitions = hashSetOf(
-                "\\DeclareMathOperator",
-                "\\DeclarePairedDelimiter",
-                "\\DeclarePairedDelimiterX",
-                "\\DeclarePairedDelimiterXPP"
+                "\\" + DECLARE_MATH_OPERATOR.command,
+                "\\" + DECLARE_PAIRED_DELIMITER.command,
+                "\\" + DECLARE_PAIRED_DELIMITER_X.command,
+                "\\" + DECLARE_PAIRED_DELIMITER_XPP.command
         )
 
         /**
@@ -410,25 +491,25 @@ object Magic {
          * All commands that define new documentclasses.
          */
         @JvmField
-        val classDefinitions = hashSetOf("\\ProvidesClass")
+        val classDefinitions = hashSetOf("\\" + PROVIDESCLASS.command)
 
         /**
          * All commands that define new packages.
          */
         @JvmField
-        val packageDefinitions = hashSetOf("\\ProvidesPackage")
+        val packageDefinitions = hashSetOf("\\" + PROVIDESPACKAGE.command)
 
         /**
          * All commands that define new environments.
          */
         @JvmField
         val environmentDefinitions = hashSetOf(
-                "\\newenvironment",
-                "\\newtheorem",
-                "\\NewDocumentEnvironment",
-                "\\ProvideDocumentEnvironment",
-                "\\DeclareDocumentEnvironment"
-        )
+            NEWENVIRONMENT,
+            NEWTHEOREM,
+            NEWDOCUMENTENVIRONMENT,
+            PROVIDEDOCUMENTENVIRONMENT,
+            DECLAREDOCUMENTENVIRONMENT
+        ).map { "\\" + it.command }
 
         /**
          * All commands that define stuff like classes, environments, and definitions.
@@ -437,16 +518,7 @@ object Magic {
         val definitions = commandDefinitions + classDefinitions + packageDefinitions + environmentDefinitions
 
         /**
-         * All commands that are able to redefine other commands.
-         */
-        @JvmField
-        val redefinitions = hashSetOf("\\renewcommand", "\\def", "\\let", "\\renewenvironment")
-
-        @JvmField
-        val definitionsAndRedefinitions = definitions + redefinitions
-
-        /**
-         * Commands for which TeXiFy-IDEA has custom behaviour.
+         * Commands for which TeXiFy-IDEA has essential custom behaviour and which should not be redefined.
          */
         @JvmField
         val fragile = hashSetOf(
@@ -469,9 +541,9 @@ object Magic {
          */
         @JvmField
         val illegalExtensions = mapOf(
-                "\\include" to listOf(".tex"),
-                "\\subfileinclude" to listOf(".tex"),
-                "\\bibliography" to listOf(".bib")
+                "\\" + INCLUDE.command to listOf(".tex"),
+                "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
+                "\\" + BIBLIOGRAPHY.command to listOf(".bib")
         )
 
         /**
@@ -479,7 +551,7 @@ object Magic {
          */
         @JvmField
         val requiredExtensions = mapOf(
-                "\\addbibresource" to listOf("bib")
+                "\\" + ADDBIBRESOURCE.command to listOf("bib")
         )
 
         /**
@@ -535,30 +607,6 @@ object Magic {
                 "\\textrm", "\\textsf", "\\texttt", "\\textit",
                 "\\textsl", "\\textsc", "\\textbf", "\\emph",
                 "\\textup", "\\textmd"
-        )
-
-        /**
-         * All commands that mark some kind of section.
-         */
-        @JvmField
-        val sectionMarkers = listOf(
-                "\\part", "\\chapter",
-                "\\section", "\\subsection", "\\subsubsection",
-                "\\paragraph", "\\subparagraph"
-        )
-
-        /**
-         * The colours that each section separator has.
-         */
-        @JvmField
-        val sectionSeparatorColors = mapOf(
-                "\\part" to Color(152, 152, 152),
-                "\\chapter" to Color(172, 172, 172),
-                "\\section" to Color(182, 182, 182),
-                "\\subsection" to Color(202, 202, 202),
-                "\\subsubsection" to Color(212, 212, 212),
-                "\\paragraph" to Color(222, 222, 222),
-                "\\subparagraph" to Color(232, 232, 232)
         )
 
         /**
@@ -628,7 +676,7 @@ object Magic {
          * at the end of the sentence (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
          */
         @JvmField
-        val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.\\s)")!!
+        val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s~])")!!
 
         /**
          * Matches all comments, starting with % and ending with a newline.
@@ -786,7 +834,9 @@ object Magic {
          */
         val packagesLoadingOtherPackages = mapOf(
                 AMSSYMB to setOf(AMSFONTS),
-                MATHTOOLS to setOf(AMSMATH)
+                MATHTOOLS to setOf(AMSMATH),
+                GRAPHICX to setOf(GRAPHICS),
+                XCOLOR to setOf(COLOR)
         )
 
         /**
@@ -838,7 +888,7 @@ object Magic {
          * All commands that have a color as an argument.
          */
         @JvmField
-        val takeColorCommands = LatexRegularCommand.values()
+        val takeColorCommands = values()
                 .filter {
                     it.arguments.map { it.name }.contains("color")
                 }
@@ -848,7 +898,7 @@ object Magic {
          * All commands that define a new color.
          */
         @JvmField
-        val colorDefinitions = LatexRegularCommand.values()
+        val colorDefinitions = values()
                 .filter { it.dependency == XCOLOR }
                 .filter { it.arguments.map { it.name }.contains("name") }
 

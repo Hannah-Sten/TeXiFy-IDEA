@@ -51,9 +51,10 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                         null
                     }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
         }
-        else if (Magic.Command.labelReference.contains(command)) {
+        else if (Magic.Command.getLabelReferenceCommands(element.project).contains(command)) {
             return file.findLabelsInFileSetAsCollection()
                     .stream()
+                    .filter { it.extractLabelName().isNotBlank() }
                     .map { labelingCommand: PsiElement ->
                         LookupElementBuilder
                                 .create(labelingCommand.extractLabelName())

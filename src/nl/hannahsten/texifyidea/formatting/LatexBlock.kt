@@ -1,16 +1,11 @@
 package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.formatting.Alignment
-import com.intellij.formatting.Block
-import com.intellij.formatting.ChildAttributes
-import com.intellij.formatting.Indent
-import com.intellij.formatting.Spacing
-import com.intellij.formatting.Wrap
+import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import java.util.ArrayList
+import java.util.*
 
 /**
  * @author Sten Wessel

@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.splitWhitespace
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-@Suppress("unused")
+@Suppress("unused", "DuplicatedCode")
 enum class LatexCompiler(private val displayName: String, val executableName: String) {
 
     PDFLATEX("pdfLaTeX", "pdflatex") {
@@ -31,10 +31,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            // Output directory with Dockerized MiKTeX is not yet supported
-            if (outputPath != null && runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
-                command.add("-output-directory=$outputPath")
-            }
+            command.add("-output-directory=$outputPath")
 
             // -aux-directory only exists on MiKTeX
             if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
@@ -69,10 +66,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            // Output directory with Dockerized MiKTeX is not yet supported
-            if (outputPath != null && runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
-                command.add("-output-directory=$outputPath")
-            }
+            command.add("-output-directory=$outputPath")
 
             // Note that lualatex has no -aux-directory
             return command
@@ -103,10 +97,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-synctex=1")
             command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
 
-            // Output directory with Dockerized MiKTeX is not yet supported
-            if (outputPath != null && runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
-                command.add("-output-directory=$outputPath")
-            }
+            command.add("-output-directory=$outputPath")
 
             if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
@@ -140,10 +131,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-no-pdf")
             }
 
-            // Output directory with Dockerized MiKTeX is not yet supported
-            if (outputPath != null && runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
-                command.add("-output-directory=$outputPath")
-            }
+            command.add("-output-directory=$outputPath")
 
             if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
@@ -238,12 +226,36 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val fileIndex = rootManager.fileIndex
         val mainFile = runConfig.mainFile ?: return null
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
-        val moduleRoots = rootManager.contentSourceRoots
+        // For now we disable module roots with Docker
+        // Could be improved by mounting them to the right directory
+        val moduleRoots = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+            rootManager.contentSourceRoots
+        }
+        else {
+            emptyArray()
+        }
+
+        // If we used /miktex/work/out, an out directory would appear in the src folder on the host system
+        val dockerOutputDir = "/miktex/out"
+        val dockerAuxilDir = "/miktex/auxil"
+        val outputPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+            runConfig.outputPath?.path?.toPath(runConfig)
+        }
+        else {
+            dockerOutputDir
+        }
+
+        val auxilPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+            runConfig.auxilPath?.path?.toPath(runConfig)
+        }
+        else {
+            dockerAuxilDir
+        }
 
         var command = createCommand(
             runConfig,
-            runConfig.auxilPath?.path?.toPath(runConfig),
-            runConfig.outputPath?.path?.toPath(runConfig),
+            auxilPath,
+            outputPath,
             moduleRoot,
             moduleRoots
         )
@@ -253,29 +265,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         if (runConfig.latexDistribution == LatexDistributionType.DOCKER_MIKTEX) {
-            // See https://hub.docker.com/r/miktex/miktex
-            "docker volume create --name miktex".runCommand()
-
-            val parameterList = mutableListOf(
-                "docker",
-                "run",
-                "--rm",
-                "-v",
-                "miktex:/miktex/.miktex",
-                "-v",
-                "${mainFile.parent.path}:/miktex/work"
-            )
-
-            // Avoid mounting the mainfile parent also to /miktex/work/out,
-            // because there may be a good reason to make the output directory the same as the source directory
-            if (runConfig.outputPath != mainFile.parent) {
-                parameterList.addAll(listOf("-v", "${runConfig.outputPath?.path}:/miktex/work/out"))
-                command.add("-output-directory=/miktex/work/out")
-            }
-
-            parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
-
-            command.addAll(0, parameterList)
+            createDockerCommand(runConfig, dockerAuxilDir, dockerOutputDir, mainFile, command)
         }
 
         // Custom compiler arguments specified by the user
@@ -293,6 +283,40 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         return command
+    }
+
+    @Suppress("SameParameterValue")
+    private fun createDockerCommand(runConfig: LatexRunConfiguration, dockerAuxilDir: String, dockerOutputDir: String, mainFile: VirtualFile, command: MutableList<String>) {
+        // See https://hub.docker.com/r/miktex/miktex
+        "docker volume create --name miktex".runCommand()
+
+        val parameterList = mutableListOf(
+                "docker",
+                "run",
+                "--rm",
+                "-v",
+                "miktex:/miktex/.miktex",
+                "-v",
+                "${mainFile.parent.path}:/miktex/work"
+        )
+
+        // Avoid mounting the mainfile parent also to /miktex/work/out,
+        // because there may be a good reason to make the output directory the same as the source directory
+        if (runConfig.outputPath != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${runConfig.outputPath?.path}:$dockerOutputDir"))
+        }
+
+        if (runConfig.auxilPath == null) {
+            runConfig.setDefaultAuxilPath()
+        }
+
+        if (runConfig.auxilPath != null && runConfig.auxilPath != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${runConfig.auxilPath?.path}:$dockerAuxilDir"))
+        }
+
+        parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
+
+        command.addAll(0, parameterList)
     }
 
     /**

@@ -122,9 +122,9 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile:
  * @return The found file, or `null` when the file could not be found.
  */
 fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
-    val directory = containingDirectory.virtualFile
+    val directory = containingDirectory?.virtualFile
 
-    val file = directory.findFile(path, extensions
+    val file = directory?.findFile(path, extensions
             ?: Magic.File.includeExtensions)
             ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)

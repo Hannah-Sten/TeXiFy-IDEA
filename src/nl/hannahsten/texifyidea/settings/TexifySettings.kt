@@ -4,6 +4,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
@@ -32,14 +33,10 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var autoCompile = false
     var continuousPreview = false
     var includeBackslashInSelection = false
+    var showPackagesInStructureView = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
+    var missingLabelMinimumLevel = LatexRegularCommand.SUBSECTION
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
-
-    /**
-     * internal list which stores the commands data
-     */
-    val labelCommands: HashMap<String, LabelingCommandInformation> =
-            hashMapOf("\\label" to LabelingCommandInformation("\\label", 1, true))
 
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
@@ -50,9 +47,10 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
                 autoCompile = autoCompile,
                 continuousPreview = continuousPreview,
                 includeBackslashInSelection = includeBackslashInSelection,
+                showPackagesInStructureView = showPackagesInStructureView,
                 automaticQuoteReplacement = automaticQuoteReplacement,
-                pdfViewer = pdfViewer,
-                labelCommands = labelCommands.mapValues { it.value.toSerializableString() }
+                missingLabelMinimumLevel = missingLabelMinimumLevel,
+                pdfViewer = pdfViewer
         )
     }
 
@@ -64,22 +62,9 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         autoCompile = state.autoCompile
         continuousPreview = state.continuousPreview
         includeBackslashInSelection = state.includeBackslashInSelection
+        showPackagesInStructureView = state.showPackagesInStructureView
         automaticQuoteReplacement = state.automaticQuoteReplacement
+        missingLabelMinimumLevel = state.missingLabelMinimumLevel
         pdfViewer = state.pdfViewer
-        state.labelCommands.forEach { labelCommands[it.key] = LabelingCommandInformation.fromString(it.value) }
     }
-
-    fun addCommand(cmd: LabelingCommandInformation) {
-        labelCommands[cmd.commandName] = cmd
-    }
-
-    fun removeCommand(cmdName: String) {
-        labelCommands.remove(cmdName)
-    }
-
-    /**
-     * all commands in this map could be used to label a previous command like 'section'
-     */
-    val labelPreviousCommands: Map<String, LabelingCommandInformation>
-        get() = labelCommands.filter { it.value.labelsPreviousCommand }
 }

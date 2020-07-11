@@ -44,7 +44,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         val document = editor.document
 
         // Display a dialog to ask for the location and name of the new file.
-        val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, "")
+        val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, "")
                 .newFileFullPath ?: return
 
         // Find text.
@@ -58,7 +58,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         @Language("RegExp")
         // Note that we do not override the user-specified filename to be LaTeX-like.
         // Path of virtual file always contains '/' as file separators.
-        val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath
+        val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath
 
         // Execute write actions.
         runWriteAction {

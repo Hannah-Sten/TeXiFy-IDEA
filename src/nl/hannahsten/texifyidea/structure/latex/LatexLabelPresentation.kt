@@ -3,8 +3,9 @@ package nl.hannahsten.texifyidea.structure.latex
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
@@ -16,14 +17,14 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val presentableText: String
 
     init {
-        val labelingCommands = TexifySettings.getInstance().labelCommands
-        if (!labelingCommands.containsKey(labelCommand.commandToken.text)) {
+        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
+        if (!labelingCommands.contains(labelCommand.commandToken.text)) {
             val token = labelCommand.commandToken.text
             throw IllegalArgumentException("command '$token' is no \\label-command")
         }
 
-        val position = labelingCommands[labelCommand.commandToken.text ?: ""]?.position ?: 1
-        presentableText = labelCommand.requiredParameter(position - 1) ?: "no label found"
+        val position = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull() ?: 0
+        presentableText = labelCommand.requiredParameter(position) ?: "no label found"
 
         // Location string.
         val manager = FileDocumentManager.getInstance()

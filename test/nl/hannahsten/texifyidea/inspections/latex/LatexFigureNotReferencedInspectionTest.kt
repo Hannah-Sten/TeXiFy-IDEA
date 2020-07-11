@@ -2,8 +2,9 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.lang.CommandManager
 
-class FigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNotReferencedInspection()) {
+class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNotReferencedInspection()) {
 
     fun testFigureNotReferencedWarning() {
         myFixture.configureByText(LatexFileType, """
@@ -28,6 +29,25 @@ class FigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNo
                 \ref{fig:some-figure}
             \end{document}
         """.trimIndent())
+        myFixture.checkHighlighting(false, false, true, false)
+    }
+
+    fun testFigureReferencedCustomCommand() {
+        myFixture.configureByText(LatexFileType, """
+            \newcommand{\includenamedimage}[2]{
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{#1}
+                \caption{#2}
+                \label{fig:#1}
+            \end{figure}
+            }
+        
+            \includenamedimage{test.png}{fancy caption}
+        
+            some text~\ref{fig:test.png} more text.
+        """.trimIndent())
+        CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting(false, false, true, false)
     }
 

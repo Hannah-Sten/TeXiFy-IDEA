@@ -10,15 +10,15 @@ import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import java.io.IOException
-import java.util.LinkedList
+import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
 /**
  * @author Hannah Schellekens
  */
-class LatexCommandsStubElementType :
-    IStubElementType<LatexCommandsStub, LatexCommands>("latex-commands", LatexLanguage.INSTANCE) {
+class LatexCommandsStubElementType(debugName: String) :
+    IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage.INSTANCE) {
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return object : LatexCommandsImpl(latexCommandsStub, this) {
             init {

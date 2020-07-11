@@ -90,7 +90,7 @@ enum class DefaultEnvironment(
     SMALLMATRIX(environmentName = "smallmatrix", context = Context.MATH, dependency = AMSMATH),
     SPLIT(environmentName = "split", context = Context.MATH, dependency = AMSMATH),
     SUBARRAY(environmentName = "subarray", context = Context.MATH, dependency = AMSMATH),
-    SUBEQUATIONS(environmentName = "subequations", context = Context.MATH, dependency = AMSMATH),
+    SUBEQUATIONS(environmentName = "subequations", dependency = AMSMATH),
     VMATRIX(environmentName = "vmatrix", context = Context.MATH, dependency = AMSMATH),
     VMATRIX_CAPITAL(environmentName = "Vmatrix", context = Context.MATH, dependency = AMSMATH),
     XALIGNAT(environmentName = "xalignat", context = Context.MATH, dependency = AMSMATH),

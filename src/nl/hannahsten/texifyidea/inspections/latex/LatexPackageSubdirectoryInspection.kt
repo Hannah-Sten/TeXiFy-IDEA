@@ -36,8 +36,8 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
             val parameter = command.requiredParameters.firstOrNull() ?: continue
             val lastSlashIndex = parameter.indexOfLast { it == '/' }
             val providedDir = parameter.removeRange(max(0, lastSlashIndex), parameter.length)
-            val rootDir = file.findRootFile().containingDirectory
-            val dir = file.containingDirectory
+            val rootDir = file.findRootFile().containingDirectory ?: continue
+            val dir = file.containingDirectory ?: continue
             val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
             if (subDir != providedDir) {
                 descriptors.add(manager.createProblemDescriptor(

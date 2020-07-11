@@ -12,15 +12,12 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Magic.Command.illegalExtensions
-import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
-import nl.hannahsten.texifyidea.util.formatAsFilePath
-import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
 import java.util.*
 
@@ -45,6 +42,11 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
         // Loop through commands of file
         for (command in commands) {
+            // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions) {
+                continue
+            }
+
             val referencesList = command.references.filterIsInstance<InputFileReference>()
             for (reference in referencesList) {
                 if (reference.resolve() == null) {
@@ -105,10 +107,10 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement
             val file = cmd.containingFile ?: return
-            val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
-            val newFilePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, filePath.formatAsFilePath())
+            val newFilePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, filePath.formatAsFilePath())
                     .newFileFullPath ?: return
 
             runWriteAction {
@@ -124,7 +126,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     illegalExtensions[command]?.forEach { fileNameRelativeToRoot = fileNameRelativeToRoot.replace(it, "") }
                 }
 
-                reference.handleElementRename(fileNameRelativeToRoot)
+                reference.handleElementRename(fileNameRelativeToRoot, false)
             }
         }
     }

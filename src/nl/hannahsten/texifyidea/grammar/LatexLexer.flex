@@ -51,8 +51,6 @@ ROBUST_INLINE_MATH_START="\\("
 ROBUST_INLINE_MATH_END="\\)"
 OPEN_BRACKET="["
 CLOSE_BRACKET="]"
-M_OPEN_BRACKET="["
-M_CLOSE_BRACKET="]"
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
 OPEN_PAREN="("
@@ -71,9 +69,9 @@ MAGIC_COMMENT_LEXER_SWITCH="%" {WHITE_SPACE}? "!" {WHITE_SPACE}? (TeX)? {WHITE_S
 LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
-NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&]+
-// Separate from normal text, e.g. because they can be \verb delimiters
-NORMAL_TEXT_CHAR=[|!\"=&]
+NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&<>]+
+// Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
+NORMAL_TEXT_CHAR=[|!\"=&<>]
 ANY_CHAR=[^]
 
 // Algorithmicx
@@ -276,11 +274,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {ROBUST_INLINE_MATH_START}      { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START; }
 }
 
-<INLINE_MATH,INLINE_MATH_LATEX> {
-    {M_OPEN_BRACKET}    { return M_OPEN_BRACKET; }
-    {M_CLOSE_BRACKET}   { return M_CLOSE_BRACKET; }
-}
-
 <NESTED_INLINE_MATH> {
     "$"                 { yypopState(); return INLINE_MATH_END; }
 }
@@ -308,8 +301,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 }
 
 <DISPLAY_MATH> {
-    {M_OPEN_BRACKET}    { return M_OPEN_BRACKET; }
-    {M_CLOSE_BRACKET}   { return M_CLOSE_BRACKET; }
     "\\]"               { yypopState(); return DISPLAY_MATH_END; }
 }
 
@@ -319,13 +310,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // The array package provides <{...} and >{...} preamble options for tables
 // which are often used with $, in which case the $ is not an inline_math_start (because there's only one $ in the group, which would be a parse errror)
-// It has to be prefixed by . because any other letter before the < or > may be seen as a normal text word together with the < or >, so we need to catch them together
-.\<\{                   { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
-.>\{                    { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
+\<\{                   { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
+>\{                    { yypushState(PREAMBLE_OPTION); return OPEN_BRACE; }
 
-// In case a line ends with a backslash, then we do not want to lex the following newline as a command token,
+// In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line
-\\\n                    { return com.intellij.psi.TokenType.WHITE_SPACE; }
+\\                    { return NORMAL_TEXT_CHAR; }
 
 "*"                     { return STAR; }
 // A separate token, used for example for aligning & in tables

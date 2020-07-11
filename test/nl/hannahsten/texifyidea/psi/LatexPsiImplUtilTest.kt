@@ -136,4 +136,18 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
         assertEquals("lst:listing", element.label)
     }
+
+    @Test
+    fun testDefaultOptionalParameter() {
+        myFixture.configureByText(LatexFileType, """
+            % Second optional parameter of \newcommand makes the first parameter of \lvec optional with as default value 'n' (see LaTeX Companion page 845)
+            \newcommand{\lvec}[2][n]{\ensuremath{#2_1+\cdots + #2_{#1}}}
+            For the series \lvec{x} we have \[ \lvec{x} = \sum_{k=1}^{n} G_{\lvec[k]{y}} \]
+        """.trimIndent())
+
+        val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
+        val element = psiFile.firstChildOfType(LatexCommands::class)!!
+        assertTrue("2" in element.optionalParameters)
+        assertTrue("n" in element.optionalParameters)
+    }
 }

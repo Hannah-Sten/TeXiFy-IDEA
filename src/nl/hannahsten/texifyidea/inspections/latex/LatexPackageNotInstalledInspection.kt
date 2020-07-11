@@ -37,7 +37,8 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        if (LatexDistribution.isTexliveAvailable) {
+        // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
+        if (LatexDistribution.isTexliveAvailable && SystemEnvironment.isTlmgrInstalled) {
             val installedPackages = TexLivePackages.packageList
             val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project
                             .projectSearchScope)
@@ -56,7 +57,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                                     ?.isEmpty() != false) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
-                                "Package is not installed",
+                                "Package is not installed or \\ProvidesPackage is missing",
                                 InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
@@ -98,6 +99,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
                         override fun onSuccess() {
                             TexLivePackages.packageList.add(packageName)
+                            // Rerun inspections
                             DaemonCodeAnalyzer.getInstance(project)
                                     .restart(filePointer.containingFile
                                             ?: return)

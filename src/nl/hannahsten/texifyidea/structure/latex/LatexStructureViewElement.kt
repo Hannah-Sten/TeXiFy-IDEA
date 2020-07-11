@@ -24,6 +24,15 @@ import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.asSequence
+import kotlin.collections.contains
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.isNotEmpty
+import kotlin.collections.mapNotNull
+import kotlin.collections.toTypedArray
 
 /**
  * @author Hannah Schellekens
@@ -144,7 +153,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
 
             val elt = LatexStructureViewCommandElement.newCommand(command) ?: continue
-            for (psiFile in command.getIncludedFiles(true)) {
+            for (psiFile in command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView)) {
                 if (BibtexFileType == psiFile.fileType) {
                     elt.addChild(BibtexStructureViewElement(psiFile))
                 }
@@ -166,8 +175,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        val labelingCommands = TexifySettings.getInstance().labelCommands
-        commands.filter { labelingCommands.containsKey(it.commandToken.text) }
+        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
+        commands.filter { labelingCommands.contains(it.commandToken.text) }
                 .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
                 .forEach {
                     treeElements.add(it)
