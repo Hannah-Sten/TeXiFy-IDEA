@@ -56,7 +56,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         val commandsInText = LatexPsiHelper(parameters.originalFile.project).createFromText(autocompleteText).childrenOfType(LatexCommands::class)
         var finalCompleteText = autocompleteText
         for (command in commandsInText) {
-            val commandExpansion = LatexCommandsIndex.getCommandsByNames(parameters.originalFile, *Magic.Command.definitionsAndRedefinitions.toTypedArray())
+            val commandExpansion = LatexCommandsIndex.getCommandsByNames(parameters.originalFile, *Magic.Command.commandDefinitions.toTypedArray())
                 .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
                 ?.getRequiredArgumentValueByName("def")
             finalCompleteText = finalCompleteText.replace(command.text, commandExpansion ?: command.text)

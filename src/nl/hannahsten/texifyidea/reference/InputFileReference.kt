@@ -11,7 +11,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
@@ -46,12 +45,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
-        val searchPaths = if (element.name == "\\" + LatexRegularCommand.INCLUDEGRAPHICS.command) {
-            getGraphicsPaths(element.project)
-        }
-        else {
-            emptyList()
-        }.toMutableList()
+        val searchPaths = mutableListOf<String>()
 
         // Find the sources root of the current file.
         // findRootFile will also call getImportPaths, so that will be executed twice
