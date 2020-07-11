@@ -107,10 +107,10 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement
             val file = cmd.containingFile ?: return
-            val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
-            val newFilePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, filePath.formatAsFilePath())
+            val newFilePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, filePath.formatAsFilePath())
                     .newFileFullPath ?: return
 
             runWriteAction {

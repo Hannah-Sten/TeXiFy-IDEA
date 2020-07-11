@@ -13,9 +13,9 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
     override fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile> {
         val paths = getProjectRoots()
 
-        val rootDirectory = file.findRootFile().containingDirectory.virtualFile
+        val rootDirectory = file.findRootFile().containingDirectory?.virtualFile
         getGraphicsPaths(file.project).forEach {
-            paths.add(rootDirectory.findVirtualFileByAbsoluteOrRelativePath(it) ?: return@forEach)
+            paths.add(rootDirectory?.findVirtualFileByAbsoluteOrRelativePath(it) ?: return@forEach)
         }
 
         return paths

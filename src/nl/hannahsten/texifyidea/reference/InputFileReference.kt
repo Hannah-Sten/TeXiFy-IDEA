@@ -138,7 +138,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
         // Recall that \ is a file separator on Windows
         val newText = if (elementNameIsJustFilename) {
-            oldNode?.text?.trimStart('\\')?.replaceAfterLast(File.separator, "$newElementName}", default)
+            oldNode?.text?.trimStart('\\')?.replaceAfterLast(File.separator, "$newElementName}", default.trimStart('\\'))
                 ?.let { "\\" + it } ?: default
         }
         else {
