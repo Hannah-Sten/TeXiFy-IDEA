@@ -50,4 +50,35 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         testLog(log, expectedMessages)
     }
 
+    fun `test Sorry---you've exceeded BibTeX's`() {
+        val log = """
+            Database file #3: crypto.bib
+            Sorry---you've exceeded BibTeX's hash size 100000
+            Aborted at line 291526 of file crypto.bib
+            (That was a fatal error)
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("Sorry---you've exceeded BibTeX's hash size 100000", "crypto.bib", 291526, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test Illegal, another bibdata command`() {
+        val log = """
+            A level-1 auxiliary file: chapter2.aux
+            Illegal, another \bibdata command---line 4 of file chapter2.aux
+             : \bibdata
+             :         {references}
+            I'm skipping whatever remains of this command
+            Database file #1: references.bib
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("Illegal, another \\bibdata command", "chapter2.aux", 4, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }

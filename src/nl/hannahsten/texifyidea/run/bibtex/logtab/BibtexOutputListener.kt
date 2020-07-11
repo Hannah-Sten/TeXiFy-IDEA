@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.AuxErrPrintBibtexMessageHandler
+import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.CleanUpAndLeaveBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
@@ -62,7 +63,8 @@ class BibtexOutputListener(
      */
     fun extractMessage(windowList: List<String>): BibtexLogMessage? {
         val bibtexErrorHandlers = listOf(
-            AuxErrPrintBibtexMessageHandler
+            AuxErrPrintBibtexMessageHandler,
+            CleanUpAndLeaveBibtexMessageHandler
         )
 
         bibtexErrorHandlers.forEach { handler ->
