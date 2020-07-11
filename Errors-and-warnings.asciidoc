@@ -2261,6 +2261,7 @@ LaTeX Warning: You have requested, on input line 5, version
 == Errors
 
 === I couldn't open database file <file>
+=== I couldn't open style file <file>
 
 [source,latex,linenums]
 ----
@@ -2293,75 +2294,238 @@ Process finished with exit code 2
 
 [source,latex,linenums]
 ----
-
+% https://tex.stackexchange.com/questions/460183/bibtex-hash-size-exceeded
 ----
 
 ----
-
+Database file #3: crypto.bib
+Sorry---you've exceeded BibTeX's hash size 100000
+Aborted at line 291526 of file crypto.bib
+(That was a fatal error)
 ----
 
 === This database file appears more than once:
 
 [source,latex,linenums]
 ----
-
+\documentclass{article}
+\begin{document}
+    \cite{knuth19902}.
+    \bibliography{references,references}
+    \bibliographystyle{plain}
+\end{document}
 ----
 
 ----
-This database file appears more than once: references34.bib
+This database file appears more than once: references.bib
 ---line 3 of file bibtex-mwe.aux
- : \bibdata{references34
- :                      }
+ : \bibdata{references,references
+ :                               }
 I'm skipping whatever remains of this command
 ----
 
 === <reason of confusion>---this can't happen
 
+=== Illegal, another \bibdata command
+=== Illegal, another \bibstyle command
+
 [source,latex,linenums]
 ----
-
+\documentclass{article}
+\begin{document}
+    \cite{knuth1990}.
+    \bibliography{references}
+    \bibliography{references}
+    \bibliographystyle{plain}
+\end{document}
 ----
 
 ----
-
-----
-
-aux_err_print/aux_err_return format:
-
---- line <line> of file <file>
- : <input line part 1>
- : <input line part 2>
+Illegal, another \bibdata command---line 4 of file bibtex-mwe.aux
+ : \bibdata
+ :         {references}
 I'm skipping whatever remains of this command
+----
 
-=== Illegal, another \bib data command
-=== Illegal, another \bib style command
-
-=== No '}'
+=== No "}"
 This one complains when a command is missing its |right_brace|.
 
-=== Stuff after '}'
-This one complains when a command has stuff after its |right_brace|.
+=== Stuff after "}"
+
+[source,latex,linenums]
+----
+% https://tex.stackexchange.com/a/408548/98850
+----
+
+----
+Stuff after "}"---line 2 of file strange.aux
+ : \citation{a{
+ :             }b$}
+----
 
 === White space in argument
-And this one complains when a command has |white_space| in its
-argument.
 
-=== I couldn't open style file <file>
+[source,bibtex,linenums]
+----
+@Book{knuth 1990,
+    author    = {Knuth, Donald E.},
+    title     = {The {\TeX}book },
+    year      = {1990},
+    isbn      = {0-201-13447-0},
+    publisher = {Addison\,\textendash\,Wesley},
+}
+----
+
+----
+White space in argument---line 2 of file bibtex-mwe.aux
+ : \citation{knuth
+ :                 1990}
+I'm skipping whatever remains of this command
+----
+
 
 === Case mismatch error between cite keys <key> and <key>
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \cite{knuth1990}.
+    \cite{Knuth1990}.
+    \bibliography{references}
+    \bibliographystyle{plain}
+\end{document}
+----
+
+----
+Case mismatch error between cite keys Knuth1990 and knuth1990
+---line 3 of file bibtex-mwe.aux
+ : \citation{Knuth1990
+ :                    }
+I'm skipping whatever remains of this command
+----
 
 === <file> has a wrong extension
 
 === Already encountered file <file>
 
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \cite{knuth1990}.
+    \include{included}
+    \include{included}
+    \bibliography{references}
+    \bibliographystyle{plain}
+\end{document}
+----
+
+----
+Already encountered file included.aux
+---line 4 of file bibtex-mwe.aux
+ : \@input{included.aux
+ :                     }
+I'm skipping whatever remains of this command
+----
+
 === I couldn't open auxiliary file <file>
+
+----
+I couldn't open auxiliary file section.aux
+---line 3 of file includetest.aux
+ : \@input{section.aux
+ :                    }
+I'm skipping whatever remains of this command
+----
 
 === I found no <type> while reading file <file>
 
-=== Illegal end of style file in command:
+[source,latex,linenums]
+----
+\documentclass{article}
+\begin{document}
+    \cite{knuth1990}.
+%    \bibliography{references}
+    \bibliographystyle{plain}
+\end{document}
+----
 
-=== <char> begins identifier, command:
-=== <char> immediately follows identifier, command:
+----
+The style file: plain.bst
+I found no \bibdata command---while reading file bibtex-mwe.aux
+Warning--I didn't find a database entry for "knuth1990"
+(There was 1 error message)
+----
+
+//=== Illegal end of style file in command:
+
+//=== <char> begins identifier, command:
+//=== <char> immediately follows identifier, command:
+
+=== <char> is missing in command: <command>
+
+[source,latex,linenums]
+----
+% https://github.com/CarlOrff/apalike-german/issues/1
+----
+
+----
+"}" is missing in command: macro---line 767 of file apalike-german.bst
+ : macro {mar} {"M\"
+ :                  {a}rz"}
+----
+
+=== <function> is already a type "<type>" function name
+
+[source,latex,linenums]
+----
+% https://tex.stackexchange.com/questions/147607/article-is-already-a-type-wizard-defined-function-name
+----
+
+----
+article is already a type "wizard-defined" function name
+---line 592 of file plainyr_my.bst
+ : function {article
+ :                  }
+Database file #1: Publications.bib
+(There was 1 error message)
+----
+
+=== <something> is an unknown function
+=== <something> has bad function type
+
+[source,latex,linenums]
+----
+% https://tex.stackexchange.com/questions/329696/bibtex-error-1-is-an-integra-literal-not-a-string
+----
+
+----
+The style file: bibtex/harvardUK.bst url: is an unknown function---line 320 of file bibtex/harvardUK.bst
+----
+
+=== Curse you, wizard, before you recurse me: function <function> is illegal in its own definition
+
+[source,latex,linenums]
+----
+% https://tex.stackexchange.com/questions/552323/how-to-show-at-most-three-authors-for-any-bibliographic-entry
+----
+
+----
+The top-level auxiliary file: thesis_main.aux
+The style file: utphys_custom_threeAuthors.bst
+function is an unknown function---line 415 of file utphys_custom_threeAuthors.bst
+format.authors is an unknown function---line 415 of file utphys_custom_threeAuthors.bst
+Curse you, wizard, before you recurse me:
+function format.names is illegal in its own definition
+---line 418 of file utphys_custom_threeAuthors.bst
+----
+
+//=== <char> can't follow a literal
+
+
+//=== Illegal end of database file
+
 
 == Warnings
 
@@ -2383,6 +2547,27 @@ Warning--I didn't find a database entry for "knuth19902"
 (There was 1 warning)
 
 Process finished with exit code 0
+----
+
+=== I'm ignoring <something>
+
+[source,bibtex,linenums]
+----
+@Book{knuth1990,
+    author    = {Knuth, Donald E.},
+    author    = {Knuth, Donald E.},
+    title     = {The {\TeX}book },
+    year      = {1990},
+    isbn      = {0-201-13447-0},
+    publisher = {Addison\,\textendash\,Wesley},
+}
+----
+
+----
+Database file #1: references.bib
+Warning--I'm ignoring knuth1990's extra "author" field
+--line 5 of file references.bib
+(There was 1 warning)
 ----
 
 
