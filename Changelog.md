@@ -18,6 +18,6 @@
 * Fix optional parameter parsing for \newcommand when first parameter for the new command is optional. (#1453)
 * Fix auxiliary directory when using Dockerized MiKTeX. (#1517)
 * Cite before interpunction inspection should not trigger on abbreviations. (#1498)
-* Other small improvements and bug fixes (#1436, #1448, #1473, #1498, #1509)
+* Other small improvements and bug fixes (#1436, #1448, #1473, #1498, #1509, #1524)
 
 Thanks to Johannes Berger ([@Xaaris](https://github.com/xaaris)) and [@VhJoren](https://github.com/VhJoren) for contributing to this release.
