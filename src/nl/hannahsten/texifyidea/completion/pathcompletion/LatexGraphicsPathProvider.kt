@@ -52,7 +52,6 @@ class LatexGraphicsPathProvider : LatexPathProviderBase() {
             .filter { it.name == "\\graphicspath" }
             .flatMap { it.getGraphicsPaths() }
 
-
         // First find all graphicspaths commands in the file of the given command
         val graphicsPaths = graphicsPathsInFile(command.containingFile).toMutableList()
 

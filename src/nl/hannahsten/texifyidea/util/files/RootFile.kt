@@ -136,7 +136,7 @@ fun PsiFile.isRoot(): Boolean {
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
 
-    return isMainFileInAnyConfiguration || documentClass() != null && !usesSubFiles()
+    return (isMainFileInAnyConfiguration || documentClass() != null) && !usesSubFiles()
 }
 
 /**
