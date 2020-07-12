@@ -6,14 +6,14 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
 
 /**
- * Handle log messages which use the Clean up and leave macro in bibtex.web (line 11324)
- * and for which we assume the message is on the previous line.
+ * Handle log messages which use the procedure bst_ex_warn_print on line 6874 of bibtex.web.
+ * Even though it shows a line and file, this is from the bst file and most likely not the problem.
  */
-object CleanUpAndLeaveBibtexMessageHandler : BibtexMessageHandler() {
+object BstExWarnPrintBibtexMessageHandler : BibtexMessageHandler() {
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
-        BibtexLogMagicRegex.cleanUpAndLeave.find(window.lastOrNull() ?: "")?.apply {
+        BibtexLogMagicRegex.bstExWarnPrint.find(window.lastOrNull() ?: "")?.apply {
             if (window.size < 2) return null
-            return BibtexLogMessage(window[window.size - 2], groups["file"]?.value, groups["line"]?.value?.toInt(), BibtexLogMessageType.ERROR)
+            return BibtexLogMessage(window[window.size - 2], currentFile, null, BibtexLogMessageType.ERROR)
         }
         return null
     }
