@@ -50,7 +50,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             BibtexLogMessage("I couldn't open database file references34.bib", "bibtex-mwe.aux", 3, ERROR),
-            BibtexLogMessage("I found no database files", "bibtex-mwe.aux", null, ERROR)
+            BibtexLogMessage("I found no database files", "bibtex-mwe.aux", null, ERROR),
+            BibtexLogMessage("I didn't find a database entry for \"knuth19902\"", "", null, WARNING)
         )
 
         testLog(log, expectedMessages)
@@ -107,6 +108,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             refers to entry "nothing", which doesn't exist
             Warning--I didn't find a database entry for "nothing"
             (There was 1 error message)
+            
+            Process finished with exit code 2
         """.trimIndent()
 
         val expectedMessages = setOf(
@@ -155,6 +158,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             Database file #1: references.bib
             Warning--I didn't find a database entry for "knuth19902"
             (There was 1 warning)
+
+            Process finished with exit code 2
         """.trimIndent()
 
         val expectedMessages = setOf(

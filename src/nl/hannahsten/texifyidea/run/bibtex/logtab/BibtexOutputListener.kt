@@ -5,10 +5,7 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.AuxEndErrBibtexMessageHandler
-import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.AuxErrPrintBibtexMessageHandler
-import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.BstExWarnPrintBibtexMessageHandler
-import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.CleanUpAndLeaveBibtexMessageHandler
+import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.*
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.BibLnNumPrintBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.WarningBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
@@ -78,7 +75,8 @@ class BibtexOutputListener(
             BstExWarnPrintBibtexMessageHandler, // Should be before AuxErrPrintBibtexMessageHandler
             AuxErrPrintBibtexMessageHandler,
             CleanUpAndLeaveBibtexMessageHandler,
-            AuxEndErrBibtexMessageHandler
+            AuxEndErrBibtexMessageHandler,
+            NonexistentCrossReferenceBibtexMessageHandler
         )
 
         val bibtexWarningHandlers = listOf(

@@ -11,6 +11,7 @@ object BibtexLogMagicRegex {
     val cleanUpAndLeave = """^Aborted at line (?<line>\d+) of file (?<file>.+)$""".toRegex()
     val auxEndErr = """^(?<message>I found no .+)---while reading file (?<file>.+)$""".toRegex()
     val bstExWarnPrint = """while executing$auxErrPrint""".toRegex() // line 6874
+    val nonexistentCrossReferenceError = """^refers to entry .+, which doesn't exist$""".toRegex()
 
     /*
      * Warnings
