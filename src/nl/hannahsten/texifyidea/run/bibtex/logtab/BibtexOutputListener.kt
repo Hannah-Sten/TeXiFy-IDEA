@@ -7,6 +7,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.*
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.BibLnNumPrintBibtexMessageHandler
+import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.NoFieldsBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.WarningBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -80,6 +81,7 @@ class BibtexOutputListener(
         )
 
         val bibtexWarningHandlers = listOf(
+            NoFieldsBibtexMessageHandler,
             WarningBibtexMessageHandler,
             BibLnNumPrintBibtexMessageHandler
         )

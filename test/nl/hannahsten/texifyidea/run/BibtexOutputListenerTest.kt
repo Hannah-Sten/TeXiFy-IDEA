@@ -185,5 +185,38 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         testLog(log, expectedMessages)
     }
 
+    fun `test I didn't find any fields`() {
+        val log = """
+            The style file: style.bst
+            Warning--I didn't find any fields--line 1 of file style.bst
+            (There was 1 warning)
+            
+            Process finished with exit code 0
+        """.trimIndent()
 
+        val expectedMessages = setOf(
+            BibtexLogMessage("I didn't find any fields", "style.bst", 1, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test You've nested cross references`() {
+        val log = """
+            Database file #1: references.bib
+            Warning--you've nested cross references--entry "knuth1990"
+            refers to entry "greenwade1993", which also refers to something
+            Warning--can't use both volume and number fields in knuth1990
+            (There were 2 warnings)
+            
+            Process finished with exit code 0
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("you've nested cross references--entry \"knuth1990\" refers to entry \"greenwade1993\", which also refers to something", "references.bib", null, WARNING),
+            BibtexLogMessage("can't use both volume and number fields in knuth1990", "references.bib", null, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }

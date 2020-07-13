@@ -15,7 +15,14 @@ object BibLnNumPrintBibtexMessageHandler : BibtexMessageHandler() {
         // This case is handled by WarningBibtexMessageHandler
         if (BibtexLogMagicRegex.warning.matches(window[window.size - 2])) return null
         BibtexLogMagicRegex.bibLnNumPrint.find(window.lastOrNull() ?: "")?.apply {
-            return BibtexLogMessage(window[window.size - 2], groups["file"]?.value, groups["line"]?.value?.toInt(), BibtexLogMessageType.WARNING)
+            // Check if the message is on the same or previous line
+            val message = if (this.range.first > 0) {
+                window.last().substring(0, this.range.first)
+            }
+            else {
+                window[window.size - 2]
+            }
+            return BibtexLogMessage(message, groups["file"]?.value, groups["line"]?.value?.toInt(), BibtexLogMessageType.WARNING)
         }
         return null
     }
