@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.AuxErrP
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.BstExWarnPrintBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.CleanUpAndLeaveBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.BibLnNumPrintBibtexMessageHandler
+import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.WarningBibtexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
@@ -81,13 +82,16 @@ class BibtexOutputListener(
         )
 
         val bibtexWarningHandlers = listOf(
+            WarningBibtexMessageHandler,
             BibLnNumPrintBibtexMessageHandler
         )
 
         val handlers = bibtexErrorHandlers + bibtexWarningHandlers
 
         handlers.forEach { handler ->
-            handler.findMessage(windowList, currentFile)?.let { return it }
+            handler.findMessage(windowList, currentFile)?.let {
+                return it
+            }
         }
         return null
     }

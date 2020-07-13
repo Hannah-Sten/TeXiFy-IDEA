@@ -169,6 +169,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             Database file #1: mybib.bib
             Warning--"{" isn't a brace-balanced string for entry BTRAF
             while executing--line 939 of file prsty.bst
+            
+            Process finished with exit code 2
         """.trimIndent()
 
         val expectedMessages = setOf(

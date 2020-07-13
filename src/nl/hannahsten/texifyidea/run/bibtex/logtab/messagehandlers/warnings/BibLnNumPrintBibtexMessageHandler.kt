@@ -11,9 +11,11 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  */
 object BibLnNumPrintBibtexMessageHandler : BibtexMessageHandler() {
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
+        if (window.size < 3) return null
+        // This case is handled by WarningBibtexMessageHandler
+        if (BibtexLogMagicRegex.warning.matches(window[window.size - 2])) return null
         BibtexLogMagicRegex.bibLnNumPrint.find(window.lastOrNull() ?: "")?.apply {
-            if (window.size < 2) return null
-            return BibtexLogMessage(window[window.size - 2], groups["file"]?.value, groups["line"]?.value?.toInt(), BibtexLogMessageType.ERROR)
+            return BibtexLogMessage(window[window.size - 2], groups["file"]?.value, groups["line"]?.value?.toInt(), BibtexLogMessageType.WARNING)
         }
         return null
     }

@@ -16,5 +16,5 @@ object BibtexLogMagicRegex {
      * Warnings
      */
     val bibLnNumPrint = """--line (?<line>\d+) of file (?<file>.+)$""".toRegex()
-    val bstMildExWarnPrint = """while executing$bibLnNumPrint""".toRegex() // line 6898
+    val warning = """^Warning--(?<message>.+)$""".toRegex()
 }
