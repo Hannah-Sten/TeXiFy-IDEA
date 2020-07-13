@@ -101,6 +101,17 @@ class LatexRunConfiguration constructor(project: Project,
 
     /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null
+        get() {
+            // When the user modifies the run configuration template, then this variable will magically be replaced with the
+            // path to the /bin folder of IntelliJ, without the setter being called.
+            return if (field?.path?.endsWith("/bin") == true) {
+                field = null
+                field
+            }
+            else {
+                field
+            }
+        }
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF

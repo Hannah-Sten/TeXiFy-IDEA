@@ -12,6 +12,8 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICS
+import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
@@ -389,6 +391,12 @@ object Magic {
          * Commands from the import package which require a relative path as first parameter.
          */
         val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
+
+        /**
+         * All commands for which we assume that commas in required parameters do not separate parameters.
+         * By default we assume the comma is a separator.
+         */
+        val commandsWithNoCommaSeparatedParameters = setOf(INCLUDEGRAPHICS).map { "\\" + it.command }
 
         /**
          * All commands that define labels and that are present by default.
@@ -826,7 +834,9 @@ object Magic {
          */
         val packagesLoadingOtherPackages = mapOf(
                 AMSSYMB to setOf(AMSFONTS),
-                MATHTOOLS to setOf(AMSMATH)
+                MATHTOOLS to setOf(AMSMATH),
+                GRAPHICX to setOf(GRAPHICS),
+                XCOLOR to setOf(COLOR)
         )
 
         /**

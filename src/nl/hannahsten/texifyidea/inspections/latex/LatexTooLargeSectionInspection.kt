@@ -23,7 +23,7 @@ import nl.hannahsten.texifyidea.util.files.createFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import org.intellij.lang.annotations.Language
 import java.io.File
-import java.util.*
+import java.util.EnumSet
 import java.util.regex.Pattern
 
 /**
@@ -202,10 +202,10 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
                     .formatAsFileName()
-            val root = file.findRootFile().containingDirectory.virtualFile.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
-            val filePath = CreateFileDialog(file.containingDirectory.virtualFile.canonicalPath, fileName.formatAsFileName())
+            val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
                     .newFileFullPath ?: return
 
             runWriteAction {
