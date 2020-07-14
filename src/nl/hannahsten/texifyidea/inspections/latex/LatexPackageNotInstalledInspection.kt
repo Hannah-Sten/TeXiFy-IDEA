@@ -94,7 +94,14 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                             }
 
                             title = "Installing $packageName..."
-                            "tlmgr install $tlname".runCommand()
+                            val output = "tlmgr install $tlname".runCommand()
+                            val update = "tlmgr update --self"
+                            if (output?.contains(update) == true) {
+                                title = "Updating tlmgr..."
+                                update.runCommand()
+                                title = "Installing $packageName..."
+                                "tlmgr install $tlname".runCommand()
+                            }
                         }
 
                         override fun onSuccess() {
