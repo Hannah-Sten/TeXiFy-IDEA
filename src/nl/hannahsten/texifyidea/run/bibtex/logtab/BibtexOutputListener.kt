@@ -52,18 +52,22 @@ class BibtexOutputListener(
 
         if (!messageList.contains(logMessage)) {
             messageList.add(logMessage)
-            val file = mainFile?.parent?.findFile(logMessage.fileName ?: mainFile.name)
-            treeView.addMessage(
-                logMessage.type.category,
-                arrayOf(logMessage.message),
-                file,
-                (logMessage.line ?: 1) - 1, // treeview starts at 0
-                0,
-                null
-            )
+            addBibMessageToTree(logMessage)
         }
 
         // todo compare There were x warnings message with messageList.size
+    }
+
+    fun addBibMessageToTree(logMessage: BibtexLogMessage) {
+        val file = mainFile?.parent?.findFile(logMessage.fileName ?: mainFile.name)
+        treeView.addMessage(
+            logMessage.type.category,
+            arrayOf(logMessage.message),
+            file,
+            (logMessage.line ?: 1) - 1, // treeview starts at 0
+            0,
+            null
+        )
     }
 
     /**

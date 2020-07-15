@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
+import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
@@ -213,12 +215,12 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         return "test/resources/run"
     }
 
-    private fun testLog(log: String, expectedMessages: Set<LatexLogMessage>) {
+    private fun testLog(log: String, expectedMessages: Set<LatexLogMessage> = setOf(), expectedBibMessages: Set<BibtexLogMessage> = setOf()) {
         val srcRoot = myFixture.copyDirectoryToProject("./", "./")
         val project = myFixture.project
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
         val latexMessageList = mutableListOf<LatexLogMessage>()
-        val bibtexMessageList = mutableListOf<LatexLogMessage>()
+        val bibtexMessageList = mutableListOf<BibtexLogMessage>()
         val treeView = LatexCompileMessageTreeView(project)
         val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
 
@@ -226,6 +228,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         input.forEach { listener.processNewText(it) }
 
         assertEquals(expectedMessages, latexMessageList.toSet())
+        assertEquals(expectedBibMessages, bibtexMessageList.toSet())
     }
 
     fun testFullLog() {
@@ -357,5 +360,28 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         )
 
         testLog(log, expectedMessages)
+    }
+
+    fun `test latexmk bibtex warning`() {
+        val log = """
+            Latexmk: applying rule 'bibtex bibtex-mwe'...
+            For rule 'bibtex bibtex-mwe', running '&run_bibtex(  )' ...
+            This is BibTeX, Version 0.99d (TeX Live 2020)
+            The top-level auxiliary file: bibtex-mwe.aux
+            The style file: plain.bst
+            Database file #1: references.bib
+            Warning--I'm ignoring knuth1990's extra "author" field
+            --line 5 of file references.bib
+            (There was 1 warning)
+            Latexmk: All targets (/home/thomas/GitRepos/random-tex/src/bibtex-mwe.pdf) are up-to-date
+            
+            Process finished with exit code 0
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("I'm ignoring knuth1990's extra \"author\" field", "references.bib", 5, BibtexLogMessageType.WARNING)
+        )
+
+        testLog(log, expectedBibMessages = expectedMessages)
     }
 }

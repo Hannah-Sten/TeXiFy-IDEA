@@ -6,6 +6,8 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
+import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexOutputListener
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PACKAGE_WARNING_CONTINUATION
@@ -19,7 +21,7 @@ class LatexOutputListener(
     val project: Project,
     val mainFile: VirtualFile?,
     val messageList: MutableList<LatexLogMessage>,
-    val bibMessageList: MutableList<LatexLogMessage>,
+    val bibMessageList: MutableList<BibtexLogMessage>,
     val treeView: LatexCompileMessageTreeView,
     private val lineWidth: Int = LINE_WIDTH
 ) : ProcessListener {
@@ -47,6 +49,8 @@ class LatexOutputListener(
     // For latexmk, collect the bibtex/biber messages in a separate list, so
     // we don't lose them when resetting on each new (pdfla)tex run.
     private var isCollectingBib = false
+    private val bibtexOutputListener = BibtexOutputListener(project, mainFile, bibMessageList, treeView)
+
     var isCollectingMessage = false
     var currentLogMessage: LatexLogMessage? = null
 
@@ -55,6 +59,8 @@ class LatexOutputListener(
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         if (outputType !is ProcessOutputType) return
+        // Latexmk outputs on stderr, which interleaves with the pdflatex/bibtex/etc output on stdout
+        if (outputType.isStderr) return
 
         // We look for specific strings in the log output for which we know it was probably an error message
         // (it might be that it is actually not, since anything can be typed to the LaTeX output log, but we ignore
@@ -68,12 +74,28 @@ class LatexOutputListener(
 
         // Newlines are important to check when message end. Keep.
         val newText = event.text
-        newText.chunked(lineWidth).forEach { processNewText(it) }
+        newText.chunked(lineWidth).forEach {
+            processNewText(it)
+        }
     }
 
     fun processNewText(newText: String) {
+        if (isCollectingBib) {
+            bibtexOutputListener.processNewText(newText)
+        }
+        else {
+            processNewTextLatex(newText)
+        }
+    }
+
+    private fun processNewTextLatex(newText: String) {
         window.add(newText)
-        val text = window.joinToString(separator = "")
+        // No idea how we could possibly get an IndexOutOfBoundsException on the buffer, but we did
+        val text = try {
+            window.joinToString(separator = "")
+        } catch (e: IndexOutOfBoundsException) {
+            return
+        }
 
         // Check if we are currently in the process of collecting the full message of a matched message of interest
         if (isCollectingMessage) {
@@ -118,7 +140,7 @@ class LatexOutputListener(
                 treeView.errorViewStructure.clear()
                 messageList.clear()
                 // Re-add the bib messages to the tree.
-                bibMessageList.forEach { addBibMessageToLog(it) }
+                bibMessageList.forEach { bibtexOutputListener.addBibMessageToTree(it) }
             }
         }
     }
@@ -144,9 +166,8 @@ class LatexOutputListener(
                 val file = findProjectFileRelativeToMain(fileName)
 
                 if (messageList.isEmpty() || !messageList.contains(logMessage)) {
-                    if (isCollectingBib) addBibMessageToLog(logMessage)
                     // Use original filename, especially for tests to work (which cannot find the real file)
-                    else addMessageToLog(LatexLogMessage(message, fileName, line, type), file)
+                    addMessageToLog(LatexLogMessage(message, fileName, line, type), file)
                 }
             }
         }
@@ -195,10 +216,6 @@ class LatexOutputListener(
                 null
             )
         }
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    private fun addBibMessageToLog(logMessage: LatexLogMessage) {
     }
 
     override fun processTerminated(event: ProcessEvent) {

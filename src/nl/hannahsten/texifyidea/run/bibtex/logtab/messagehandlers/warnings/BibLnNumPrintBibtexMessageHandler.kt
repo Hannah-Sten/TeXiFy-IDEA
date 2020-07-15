@@ -14,6 +14,7 @@ object BibLnNumPrintBibtexMessageHandler : BibtexMessageHandler() {
         if (window.size < 3) return null
         // This case is handled by WarningBibtexMessageHandler
         if (BibtexLogMagicRegex.warning.matches(window[window.size - 2])) return null
+
         BibtexLogMagicRegex.bibLnNumPrint.find(window.lastOrNull() ?: "")?.apply {
             // Check if the message is on the same or previous line
             val message = if (this.range.first > 0) {

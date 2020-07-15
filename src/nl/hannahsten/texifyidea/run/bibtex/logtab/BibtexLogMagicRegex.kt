@@ -17,9 +17,9 @@ object BibtexLogMagicRegex {
     /*
      * Warnings
      */
-    val bibLnNumPrint = """--line (?<line>\d+) of file (?<file>.+)$""".toRegex()
-    val warning = """^Warning--(?<message>.+)$""".toRegex()
-    val noFields = """^Warning--(?<message>.+)$bibLnNumPrint$""".toRegex()
+    val bibLnNumPrint = """--line (?<line>\d+) of file (?<file>.+)\s*$""".toRegex()
+    val warning = """^Warning--(?<message>.+)\s*$""".toRegex()
+    val noFields = """^Warning--(?<message>.+)$bibLnNumPrint\s*$""".toRegex()
     val nestedCrossReference = """^Warning--you've nested cross references--entry .+$""".toRegex()
 
     /*
