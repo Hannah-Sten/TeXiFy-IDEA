@@ -6,9 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.*
-import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.BibLnNumPrintBibtexMessageHandler
-import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.NoFieldsBibtexMessageHandler
-import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.WarningBibtexMessageHandler
+import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.*
 import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
@@ -77,13 +75,21 @@ class BibtexOutputListener(
             AuxErrPrintBibtexMessageHandler,
             CleanUpAndLeaveBibtexMessageHandler,
             AuxEndErrBibtexMessageHandler,
-            NonexistentCrossReferenceBibtexMessageHandler
+            NonexistentCrossReferenceBibtexMessageHandler,
+            // Biber
+            BiberErrorBibtexSubsystemMessageHandler,
+            BiberErrorMessageHandler
         )
 
+        // Note that these bibtex handlers are triggered on the middle line of the given window (supposing it has 5 lines)
+        // to be able to look back and forward.
         val bibtexWarningHandlers = listOf(
             NoFieldsBibtexMessageHandler,
             WarningBibtexMessageHandler,
-            BibLnNumPrintBibtexMessageHandler
+            BibLnNumPrintBibtexMessageHandler,
+            // Biber
+            BiberWarningBibtexSubsystemMessageHandler,
+            BiberWarningMessageHandler
         )
 
         val handlers = bibtexErrorHandlers + bibtexWarningHandlers
@@ -98,6 +104,9 @@ class BibtexOutputListener(
 
     private fun updateCurrentFile(newText: String) {
         BibtexLogMagicRegex.bibFileOpened.find(newText)?.apply {
+            currentFile = groups["file"]?.value ?: ""
+        }
+        BibtexLogMagicRegex.biberFileOpened.find(newText)?.apply {
             currentFile = groups["file"]?.value ?: ""
         }
     }

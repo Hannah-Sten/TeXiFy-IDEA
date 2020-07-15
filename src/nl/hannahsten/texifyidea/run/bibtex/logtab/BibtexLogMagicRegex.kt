@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.bibtex.logtab
 object BibtexLogMagicRegex {
 
     val bibFileOpened = """^Database file #(\d+): (?<file>.+)$""".toRegex()
+    val biberFileOpened = """^INFO - Found BibTeX data source '(?<file>.+)'$""".toRegex()
 
     /*
      * Errors
@@ -20,4 +21,13 @@ object BibtexLogMagicRegex {
     val warning = """^Warning--(?<message>.+)$""".toRegex()
     val noFields = """^Warning--(?<message>.+)$bibLnNumPrint$""".toRegex()
     val nestedCrossReference = """^Warning--you've nested cross references--entry .+$""".toRegex()
+
+    /*
+     * Biber
+     */
+    val biberError = """^ERROR - (?<message>.+)$""".toRegex()
+    val biberErrorBibtexSubsystem = """^ERROR - BibTeX subsystem: .+, line (?<line>\d+), (?<message>.+)$""".toRegex()
+    val biberWarning = """^WARN - (?<message>.+)$""".toRegex()
+    val biberWarningBibtexSubsystem = """^WARN - BibTeX subsystem: .+, line (?<line>\d+), warning: (?<message>.+)$""".toRegex()
+    val biberWarningInFile = """^WARN - (?<message>.+) in file .+, skipping ...$""".toRegex()
 }

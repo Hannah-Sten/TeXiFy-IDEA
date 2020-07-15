@@ -219,4 +219,57 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
 
         testLog(log, expectedMessages)
     }
+
+    /*
+     * Biber
+     */
+
+    fun `test cannot find file`() {
+        val log = """
+            INFO - Globbed data source 'references2.bib' to references2.bib
+            INFO - Looking for bibtex format file 'references2.bib' for section 0
+            ERROR - Cannot find 'references2.bib'!
+            INFO - ERRORS: 1
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("Cannot find 'references2.bib'!", null, null, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test syntax error`() {
+        val log = """
+            INFO - Looking for bibtex format file 'references.bib' for section 0
+            INFO - LaTeX decoding ...
+            INFO - Found BibTeX data source '/home/thomas/GitRepos/random-tex/src/references.bib'
+            WARN - BibTeX subsystem: /tmp/biber_tmp_lucp/references.bib_402841.utf8, line 12, warning: possible runaway string started at line 11
+            ERROR - BibTeX subsystem: /tmp/biber_tmp_lucp/references.bib_402841.utf8, line 20, syntax error: found "{greenwade1993,     author  = "George D. Greenwade",     title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",     year    = "1993",     journal = "TUGBoat",     volume  = "14",     number  = "3",     pages   = "342--351",     note    = mytext, }", expected "="
+            INFO - WARNINGS: 1
+            INFO - ERRORS: 1
+            
+            Process finished with exit code 2
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("possible runaway string started at line 11", "/home/thomas/GitRepos/random-tex/src/references.bib", 12, WARNING),
+            BibtexLogMessage("syntax error: found \"{greenwade1993,     author  = \"George D. Greenwade\",     title   = \"The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})\",     year    = \"1993\",     journal = \"TUGBoat\",     volume  = \"14\",     number  = \"3\",     pages   = \"342--351\",     note    = mytext, }\", expected \"=\"", "/home/thomas/GitRepos/random-tex/src/references.bib", 20, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test warning in file`() {
+        val log = """
+            INFO - Found BibTeX data source 'references.bib'
+            WARN - Invalid or undefined BibTeX entry key in file '/tmp/biber_tmp_lucp/references.bib_402841.utf8', skipping ...
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("Invalid or undefined BibTeX entry key, skipping...", "references.bib", null, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
