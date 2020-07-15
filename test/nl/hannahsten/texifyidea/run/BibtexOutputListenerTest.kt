@@ -233,7 +233,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            BibtexLogMessage("Cannot find 'references2.bib'!", null, null, ERROR)
+            BibtexLogMessage("Cannot find 'references2.bib'!", "", null, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -267,7 +267,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            BibtexLogMessage("Invalid or undefined BibTeX entry key, skipping...", "references.bib", null, WARNING)
+            BibtexLogMessage("Invalid or undefined BibTeX entry key", "references.bib", null, WARNING)
         )
 
         testLog(log, expectedMessages)

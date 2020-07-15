@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  */
 object BiberWarningMessageHandler : BibtexMessageHandler() {
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
-        val regexes = listOf(BibtexLogMagicRegex.biberWarning, BibtexLogMagicRegex.biberWarningInFile)
+        val regexes = listOf(BibtexLogMagicRegex.biberWarningInFile, BibtexLogMagicRegex.biberWarning)
         regexes.forEach { regex ->
             regex.find(window.lastOrNull() ?: "")?.apply {
                 return BibtexLogMessage(groups["message"]?.value ?: "", currentFile, null, BibtexLogMessageType.WARNING)
