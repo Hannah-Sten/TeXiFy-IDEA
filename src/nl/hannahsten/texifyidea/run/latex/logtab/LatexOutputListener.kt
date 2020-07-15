@@ -86,6 +86,7 @@ class LatexOutputListener(
         else {
             processNewTextLatex(newText)
         }
+        resetIfNeeded(newText)
     }
 
     private fun processNewTextLatex(newText: String) {
@@ -93,7 +94,8 @@ class LatexOutputListener(
         // No idea how we could possibly get an IndexOutOfBoundsException on the buffer, but we did
         val text = try {
             window.joinToString(separator = "")
-        } catch (e: IndexOutOfBoundsException) {
+        }
+        catch (e: IndexOutOfBoundsException) {
             return
         }
 
@@ -109,8 +111,6 @@ class LatexOutputListener(
                 fileStack.update(newText)
                 return
             }
-
-            resetIfNeeded(newText)
 
             // Find an error message or warning in the current text.
             val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek())
@@ -212,7 +212,7 @@ class LatexOutputListener(
                 arrayOf(logMessage.message),
                 file,
                 logMessage.line - 1,
-                0,
+                -1,
                 null
             )
         }

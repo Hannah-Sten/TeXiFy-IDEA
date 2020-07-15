@@ -95,13 +95,13 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
      */
     fun testPackageWarning() {
         val text = "Package biblatex Warning: Please (re)run Biber on the file:(biblatex) main"
-        val expected = LatexLogMessage("biblatex: Please (re)run Biber on the file: main", currentFile, 0, WARNING)
+        val expected = LatexLogMessage("biblatex: Please (re)run Biber on the file: main", currentFile, -1, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testUnresolvedReferencesWarning() {
         val text = "LaTeX Warning: There were undefined references."
-        val expected = LatexLogMessage("There were undefined references.", currentFile, 0, WARNING)
+        val expected = LatexLogMessage("There were undefined references.", currentFile, -1, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -119,7 +119,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testEndInGroup() {
         val text = "(\\end occurred inside a group at level 1)"
-        val expected = LatexLogMessage("\\end occurred inside a group at level 1", currentFile, 0, WARNING)
+        val expected = LatexLogMessage("\\end occurred inside a group at level 1", currentFile, -1, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -132,7 +132,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testFileAlreadyExists() {
         val text = "LaTeX Warning: File `included.tex' already exists on the system. Not generating it from this source."
-        val expected = LatexLogMessage("File `included.tex' already exists on the system. Not generating it from this source.", currentFile, 0, WARNING)
+        val expected = LatexLogMessage("File `included.tex' already exists on the system. Not generating it from this source.", currentFile, -1, WARNING)
         testMessageExtractor(text, expected)
     }
 
@@ -156,14 +156,14 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testMissingCharacter() {
         val text = "Missing character: There is no in font !"
-        val expected = LatexLogMessage("Missing character: There is no in font !", currentFile, 0, WARNING)
+        val expected = LatexLogMessage("Missing character: There is no in font !", currentFile, -1, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun `test label multiply defined`() {
         val text = "LaTeX Warning: Label `mylabel' multiply defined.)"
         val newText = ")"
-        val expected = LatexLogMessage("Label `mylabel' multiply defined.", "test.tex", 0, WARNING)
+        val expected = LatexLogMessage("Label `mylabel' multiply defined.", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 
@@ -191,28 +191,28 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun `test Float specifier changed`() {
         val text = "LaTeX Warning: `h' float specifier changed to `ht'.\n"
         val newText = "\n"
-        val expected = LatexLogMessage("`h' float specifier changed to `ht'.", "test.tex", 0, WARNING)
+        val expected = LatexLogMessage("`h' float specifier changed to `ht'.", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 
     fun `test Missing character`() {
         val text = "Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!"
         val newText = ";!"
-        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", 0, WARNING)
+        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 
     fun `test No pages of output`() {
         val text = "Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!"
         val newText = ";!"
-        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", 0, WARNING)
+        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 
     fun `test You have requested package`() {
         val text = "LaTeX Warning: You have requested package `',               but the package provides `mypackage'."
         val newText = "               but the package provides `mypackage'."
-        val expected = LatexLogMessage("You have requested package `', but the package provides `mypackage'.", "test.tex", 0, WARNING)
+        val expected = LatexLogMessage("You have requested package `', but the package provides `mypackage'.", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 

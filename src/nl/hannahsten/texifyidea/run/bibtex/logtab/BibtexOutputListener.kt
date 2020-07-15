@@ -64,8 +64,8 @@ class BibtexOutputListener(
             logMessage.type.category,
             arrayOf(logMessage.message),
             file,
-            (logMessage.line ?: 1) - 1, // treeview starts at 0
-            0,
+            (logMessage.line ?: 0) - 1, // treeview starts at 0
+            -1,
             null
         )
     }

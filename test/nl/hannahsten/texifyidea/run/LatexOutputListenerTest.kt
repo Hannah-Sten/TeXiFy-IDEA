@@ -233,7 +233,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
     fun testFullLog() {
         val expectedMessages = setOf(
-                LatexLogMessage("Label `mylabel' multiply defined.", "/home/abby/Documents/texify-test/out/main.aux", 0, WARNING),
+                LatexLogMessage("Label `mylabel' multiply defined.", "/home/abby/Documents/texify-test/out/main.aux", -1, WARNING),
                 LatexLogMessage("fontenc: Encoding file `15enc.def' not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR),
                 LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
                 LatexLogMessage("Encoding scheme `15' unknown.", "./main.tex", 5, ERROR),
@@ -252,9 +252,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("Environment lstlisting undefined.", "./lipsum.tex", 11, ERROR),
                 LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "./lipsum.tex", 13, ERROR),
                 LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12", "./main.tex", 9, WARNING),
-                LatexLogMessage("There were undefined references.", "./main.tex", 0, WARNING),
-                LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "./main.tex", 0, WARNING),
-                LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./main.tex", 0, WARNING)
+                LatexLogMessage("There were undefined references.", "./main.tex", -1, WARNING),
+                LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "./main.tex", -1, WARNING),
+                LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./main.tex", -1, WARNING)
         )
 
         testLog(logTextLatexmk, expectedMessages)
@@ -328,7 +328,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./math.tex", 0, WARNING)
+            LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./math.tex", -1, WARNING)
         )
 
         testLog(log, expectedMessages)
