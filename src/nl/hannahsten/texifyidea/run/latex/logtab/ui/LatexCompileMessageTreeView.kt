@@ -17,4 +17,3 @@ class LatexCompileMessageTreeView(project: Project) : NewErrorTreeViewPanel(proj
         super.fillRightToolbarGroup(group)
     }
 }
-

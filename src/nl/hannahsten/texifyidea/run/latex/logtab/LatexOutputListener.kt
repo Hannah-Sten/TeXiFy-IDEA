@@ -105,6 +105,7 @@ class LatexOutputListener(
         // Check if we are currently in the process of collecting the full message of a matched message of interest
         if (isCollectingMessage) {
             collectMessageLine(text, newText)
+            fileStack.update(newText)
         }
         else {
             // Skip line if it is irrelevant.
