@@ -54,7 +54,7 @@ object LatexLogMessageExtractor {
         // because other errors might need the two lines, and would be
         // (partly) duplicated in the log if we allow the fallback to inspect
         // the two lines (or just the first).
-        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText)) }) {
+        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText.trim())) }) {
             return LatexErrorHandler.findMessage(text, newText, currentFile)
         }
 

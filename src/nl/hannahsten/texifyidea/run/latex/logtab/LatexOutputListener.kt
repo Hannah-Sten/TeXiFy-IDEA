@@ -32,11 +32,10 @@ class LatexOutputListener(
         /**
          * Returns true if newText is most likely the last line of the message.
          *
-         * @param message: Initial log message, will be checked for length. Note that it should only be given if it isn't
-         * joined with a next line yet.
+         * @param lineBeforeNewText: Will be checked for length.
          */
-        fun shouldStopCollectingMessage(newText: String, message: String = ""): Boolean {
-            return message.length < LINE_WIDTH &&
+        fun shouldStopCollectingMessage(newText: String, lineBeforeNewText: String = ""): Boolean {
+            return lineBeforeNewText.length < LINE_WIDTH &&
                     // Indent of LaTeX Warning/Error messages
                     !newText.startsWith("               ") &&
                     // Package warning/error continuation.
@@ -105,7 +104,7 @@ class LatexOutputListener(
 
         // Check if we are currently in the process of collecting the full message of a matched message of interest
         if (isCollectingMessage) {
-            collectMessageLine(newText)
+            collectMessageLine(text, newText)
         }
         else {
             // Skip line if it is irrelevant.
@@ -123,7 +122,7 @@ class LatexOutputListener(
             fileStack.update(newText)
 
             // Finally add the message to the log, or continue collecting this message when necessary.
-            addOrCollectMessage(newText, logMessage ?: return)
+            addOrCollectMessage(text, newText, logMessage ?: return)
         }
     }
 
@@ -152,18 +151,15 @@ class LatexOutputListener(
     /**
      * Keep collecting the message if necessary, otherwise add it to the log.
      */
-    private fun addOrCollectMessage(
-        newText: String,
-        logMessage: LatexLogMessage
-    ) {
+    private fun addOrCollectMessage(text: String, newText: String, logMessage: LatexLogMessage) {
         logMessage.apply {
             if (message.isEmpty()) return
 
-            if (!shouldStopCollectingMessage(newText, logMessage.message)) {
+            if (!shouldStopCollectingMessage(newText, logMessage.message) || text.removeSuffix(newText).length >= LINE_WIDTH) {
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true
-                checkIfShouldStopCollectingMessage(newText)
+                // checkIfShouldStopCollectingMessage(newText)
             }
             else {
                 val file = findProjectFileRelativeToMain(fileName)
@@ -189,8 +185,9 @@ class LatexOutputListener(
      * Add the current/new message to the log if it does not continue on the
      * next line.
      */
-    private fun collectMessageLine(newText: String, logMessage: LatexLogMessage? = null) {
-        if (currentLogMessage?.message?.endsWith(newText.trim()) == false) {
+    private fun collectMessageLine(text: String, newText: String, logMessage: LatexLogMessage? = null) {
+        // Check if newText is interesting before appending it to the message
+        if (currentLogMessage?.message?.endsWith(newText.trim()) == false && !shouldStopCollectingMessage(newText, text.removeSuffix(newText))) {
             // Append new text
             val message = logMessage ?: currentLogMessage!!
             val newTextTrimmed = if (newText.length < lineWidth) " ${newText.trim()}" else newText.trim()
@@ -212,8 +209,11 @@ class LatexOutputListener(
 
             currentLogMessage = LatexLogMessage(newMessage, message.fileName, line, message.type)
         }
-
-        checkIfShouldStopCollectingMessage(newText)
+        else {
+            isCollectingMessage = false
+            addMessageToLog(currentLogMessage!!)
+            currentLogMessage = null
+        }
     }
 
     private fun addMessageToLog(logMessage: LatexLogMessage, givenFile: VirtualFile? = null) {
