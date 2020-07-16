@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PACKAGE_WARNING_CONTINUATION
 import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.removeAll
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils
 import org.apache.commons.collections.buffer.CircularFifoBuffer
@@ -30,9 +31,12 @@ class LatexOutputListener(
     companion object {
         /**
          * Returns true if newText is most likely the last line of the message.
+         *
+         * @param message: Initial log message, will be checked for length. Note that it should only be given if it isn't
+         * joined with a next line yet.
          */
-        fun shouldStopCollectingMessage(newText: String): Boolean {
-            return newText.length < LINE_WIDTH &&
+        fun shouldStopCollectingMessage(newText: String, message: String = ""): Boolean {
+            return message.length < LINE_WIDTH &&
                     // Indent of LaTeX Warning/Error messages
                     !newText.startsWith("               ") &&
                     // Package warning/error continuation.
@@ -155,8 +159,7 @@ class LatexOutputListener(
         logMessage.apply {
             if (message.isEmpty()) return
 
-            // Check length of the string we would append to the message, if it fills the line then we assume it continues on the next line
-            if (!shouldStopCollectingMessage(newText)) {
+            if (!shouldStopCollectingMessage(newText, logMessage.message)) {
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true
@@ -174,7 +177,8 @@ class LatexOutputListener(
     }
 
     private fun checkIfShouldStopCollectingMessage(newText: String) {
-        if (shouldStopCollectingMessage(newText)) {
+        // todo the parameters do not make sense here
+        if (shouldStopCollectingMessage(newText, newText)) {
             isCollectingMessage = false
             addMessageToLog(currentLogMessage!!)
             currentLogMessage = null
@@ -192,10 +196,21 @@ class LatexOutputListener(
             val newTextTrimmed = if (newText.length < lineWidth) " ${newText.trim()}" else newText.trim()
             // LaTeX Warning: is replaced here because this method is also run when a message is added,
             // and the above check needs to return false so we can't replace this in the WarningHandler
-            val newMessage = (message.message + newTextTrimmed).replace("LaTeX Warning: ", "")
+            var newMessage = (message.message + newTextTrimmed).replace("LaTeX Warning: ", "")
                 .replace(PACKAGE_WARNING_CONTINUATION.toRegex(), "")
                 .replace(DUPLICATE_WHITESPACE.toRegex(), "")
-            currentLogMessage = LatexLogMessage(newMessage, message.fileName, message.line, message.type)
+
+            // The 'on input line <line>' may be a lot of lines after the 'LaTeX Warning:', thus the original regex may
+            // not have caught it. Try to catch the line number here.
+            var line = message.line
+            if (line == -1) {
+                LatexLogMagicRegex.LINE_REGEX.toRegex().find(newMessage)?.apply {
+                    line = groups["line"]?.value?.toInt() ?: -1
+                    newMessage = newMessage.removeAll(this.value).trim()
+                }
+            }
+
+            currentLogMessage = LatexLogMessage(newMessage, message.fileName, line, message.type)
         }
 
         checkIfShouldStopCollectingMessage(newText)

@@ -6,7 +6,5 @@ data class LatexLogMessage(val message: String, val fileName: String? = null, va
 
 enum class LatexLogMessageType(val category: Int) {
     ERROR(MessageCategory.ERROR),
-    PACKAGE_ERROR(MessageCategory.ERROR),
     WARNING(MessageCategory.WARNING),
-    FONT_WARNING(MessageCategory.WARNING);
 }

@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
@@ -226,7 +227,11 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
 
         val input = log.split('\n')
-        input.forEach { listener.processNewText(it) }
+        input.forEach { line ->
+            (line + "\n").chunked(LINE_WIDTH).forEach {
+                listener.processNewText(it)
+            }
+        }
 
         assertEquals(expectedMessages, latexMessageList.toSet())
         assertEquals(expectedBibMessages, bibtexMessageList.toSet())
@@ -297,23 +302,22 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         testLog(log, expectedMessages)
     }
 
-    // todo how to do this?
-    // fun `test fontenc encoding file not found`() {
-    //     val log = """
-    //         (/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty
-    //         /home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:104: Package font
-    //         enc Error: Encoding file `15enc.def' not found.
-    //         (fontenc)                You might have misspelt the name of the encoding.
-    //         /home/abby/texlive/2019/texmf-dist/tex/latex/base/
-    //         No file main.bbl.
-    //     """.trimIndent()
-    //
-    //     val expectedMessages = setOf(
-    //         LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "main.tex", 104, ERROR)
-    //     )
-    //
-    //     testLog(log, expectedMessages)
-    // }
+    fun `test fontenc encoding file not found`() {
+        val log = """
+            (/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty
+            /home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:104: Package font
+            enc Error: Encoding file `15enc.def' not found.
+            (fontenc)                You might have misspelt the name of the encoding.
+            /home/abby/texlive/2019/texmf-dist/tex/latex/base/
+            No file main.bbl.
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "main.tex", 104, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
 
     fun `test biblatex warning`() {
         val log = """
@@ -384,5 +388,51 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         )
 
         testLog(log, expectedBibMessages = expectedMessages)
+    }
+
+    fun `test datetime2 language module not installed`() {
+        val log = """
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/datetime2/datetime2.sty
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/tracklang/tracklang.sty
+            (/home/thomas/texlive/2020/texmf-dist/tex/generic/tracklang/tracklang.tex))
+            
+            Package datetime2 Warning: Date-Time Language Module `british' not installed on
+             input line 1913.
+            
+            ) (/home/thomas/texmf/tex/latex/zref/zref-savepos.sty
+            (/home/thomas/texmf/tex/latex/zref/zref-base.sty
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("datetime2: Date-Time Language Module `british' not installed", "/home/thomas/texlive/2020/texmf-dist/tex/latex/datetime2/datetime2.sty", 1913, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test overfull hbox`() {
+        val log = """
+            (./development-workflow.tex
+            
+
+
+            [13]
+            Overfull \hbox (2.5471pt too wide) in paragraph at lines 122--126
+            \T1/phv/m/n/10 (-20) databricks De-vOps repo, then in that di-rec-tory run \T1/
+            cmtt/m/n/10 databricks workspace export_dir / notebooks/
+            
+            LaTeX Warning: Reference `sec:to-copy-data-from-prins-sql-servers-to-the-etlsta
+            ging02-blob-storage-using-the-data-factory' on page 14 undefined on input line 
+            134.
+
+            
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Overfull \\hbox (2.5471pt too wide) in paragraph at lines 122--126", "./development-workflow.tex", 122, WARNING),
+            LatexLogMessage("Reference `sec:to-copy-data-from-prins-sql-servers-to-the-etlstaging02-blob-storage-using-the-data-factory' on page 14 undefined", "./development-workflow.tex", 134, WARNING)
+        )
+
+        testLog(log, expectedMessages)
     }
 }

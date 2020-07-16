@@ -17,11 +17,11 @@ object LatexLogMessageExtractor {
     }
 
     /**
-     * Look for a warning or error message in [text], and return a handler that
+     * Look for a warning or error message in [textWithNewlines], and return a handler that
      * can handle the warning (i.e., process it and output the correct log message).
-     * Return null if [text] does not contain such an error or warning.
+     * Return null if [textWithNewlines] does not contain such an error or warning.
      *
-     * @param text Text in which to search for error messages (will be two consecutive lines)
+     * @param textWithNewlines Text in which to search for error messages (will be two consecutive lines)
      * @param newText Second line of 'text',
      */
     fun findMessage(textWithNewlines: String, newText: String, currentFile: String?): LatexLogMessage? {
@@ -60,12 +60,14 @@ object LatexLogMessageExtractor {
 
         // Look for warnings that need special treatment.
         specialWarningHandlersList.forEach {
-            if (it.regex.any { r -> r.containsMatchIn(text) }) return it.findMessage(text, newText, currentFile)
+            if (it.regex.any { r -> r.containsMatchIn(text) }) {
+                return it.findMessage(text, newText, currentFile)
+            }
         }
 
         // Check if we have found a warning
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
-            var messageText = if (LatexOutputListener.shouldStopCollectingMessage(newText)) text.removeAll(newText) else text
+            var messageText = if (LatexOutputListener.shouldStopCollectingMessage(newText, text)) text.removeAll(newText) else text
             messageText = messageText.removeAll("LaTeX Warning:")
                 // .replace(newText, "")
                 .trim()

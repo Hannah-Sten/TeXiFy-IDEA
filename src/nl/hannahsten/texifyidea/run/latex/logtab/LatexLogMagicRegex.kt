@@ -4,7 +4,8 @@ package nl.hannahsten.texifyidea.run.latex.logtab
  * Regex (text) every error handler and message processor can use.
  */
 object LatexLogMagicRegex {
-    const val LINE_WIDTH = 79
+    // Line length (including newline at the end)
+    const val LINE_WIDTH = 80
 
     // Match filename:linenumber: as this probably denotes an error, but not if it appears in a stacktrace
     // and starts with ...
