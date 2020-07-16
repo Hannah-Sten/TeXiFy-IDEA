@@ -21,8 +21,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
 
     private val latexMessageList = mutableListOf<LatexLogMessage>()
     private val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-    private val treeView =
-        LatexCompileMessageTreeView(project)
+    private val treeView = LatexCompileMessageTreeView(project, latexMessageList)
 
     init {
         add(treeView, BorderLayout.CENTER)

@@ -220,16 +220,9 @@ class LatexOutputListener(
         // Don't log the same message twice
         if (!messageList.contains(logMessage)) {
             val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
-            messageList.add(LatexLogMessage(logMessage.message.trim(), logMessage.fileName, logMessage.line, logMessage.type))
-            // Correct the index because the treeview starts counting at line 0 instead of line 1.
-            treeView.addMessage(
-                logMessage.type.category,
-                arrayOf(logMessage.message),
-                file,
-                logMessage.line - 1,
-                -1,
-                null
-            )
+            val message = LatexLogMessage(logMessage.message.trim(), logMessage.fileName, logMessage.line, logMessage.type, file)
+            messageList.add(message)
+            treeView.addMessage(message)
         }
     }
 
