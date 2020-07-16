@@ -58,4 +58,3 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
         addMessage(message.type.category, arrayOf(message.message), message.file, message.line - 1, -1, null)
     }
 }
-

@@ -43,6 +43,4 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
     override fun getSearchComponent(): JComponent? = null
 
     override fun isContentBuiltIn() = false
-
-
 }
