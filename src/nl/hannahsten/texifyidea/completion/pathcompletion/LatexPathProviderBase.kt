@@ -53,9 +53,11 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             absolutePathSupport = parentCommand.isAbsolutePathSupported
         }
 
+        // Get all the commands that are used in the autocompleteText.
         val commandsInText = LatexPsiHelper(parameters.originalFile.project).createFromText(autocompleteText).childrenOfType(LatexCommands::class)
         var finalCompleteText = autocompleteText
         for (command in commandsInText) {
+            // Expand the command once, and replace the command with the expanded text
             val commandExpansion = LatexCommandsIndex.getCommandsByNames(parameters.originalFile, *Magic.Command.commandDefinitions.toTypedArray())
                 .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
                 ?.getRequiredArgumentValueByName("def")
@@ -108,7 +110,10 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * add completion entries for relative path
      */
     private fun addRelativePathCompletion(projectDir: VirtualFile, pathOffset: String) {
-        LocalFileSystem.getInstance().findFileByPath(projectDir.path + "/" + pathOffset)?.let { baseDir ->
+        // Don't use LocalFileSystem.findByPath here. In a normal IntelliJ, projectDir.path will be the
+        // full path (on the local file system) to the project directory, but in tests this will be just "src/"
+        // causing LocalFileSystem.findByPath to always return null.
+        projectDir.findFileByRelativePath(pathOffset)?.let { baseDir ->
             if (searchFolders()) {
                 addFolderNavigations(pathOffset)
                 getContents(baseDir, true).forEach {
@@ -231,7 +236,14 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     }
 
     /**
-     * prepare auto-complete text before searching for files
+     * Prepare auto-complete text before searching for files.
+     *
+     * This does the following:
+     * - Removes any start '{' and ending '}'
+     * - Remove 'IntelliJIdeaRulezz'
+     * - Removes any arguments before the last one (separated by ',')
+     * - Remove starting './' or '../'
+     * - Prevent '//' (removes the first '/')
      */
     private fun processAutocompleteText(autocompleteText: String): String {
 //        var result = if (autocompleteText.endsWith("}")) {
@@ -250,6 +262,12 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         if (result.startsWith("./")) {
             result = result.substring(2)
         }
+
+
+        // Prevent double ../
+//        if (result.startsWith("../")) {
+//            result = result.substring(3)
+//        }
 
         // Prevent double /
         if (result.startsWith("//")) {
