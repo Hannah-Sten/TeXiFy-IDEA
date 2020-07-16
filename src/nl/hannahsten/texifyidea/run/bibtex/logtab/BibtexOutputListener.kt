@@ -7,7 +7,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.*
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.*
-import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils

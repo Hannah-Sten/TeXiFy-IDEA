@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexOutputListener
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PACKAGE_WARNING_CONTINUATION
-import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils

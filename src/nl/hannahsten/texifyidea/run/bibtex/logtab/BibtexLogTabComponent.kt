@@ -5,7 +5,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 import java.awt.BorderLayout
 import javax.swing.JComponent
 
@@ -15,7 +15,8 @@ import javax.swing.JComponent
 class BibtexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
     private val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-    private val treeView = LatexCompileMessageTreeView(project)
+    private val treeView =
+        LatexCompileMessageTreeView(project)
 
     init {
         add(treeView, BorderLayout.CENTER)

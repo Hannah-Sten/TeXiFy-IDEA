@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType.WARNING
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexOutputListener
-import nl.hannahsten.texifyidea.run.latex.ui.LatexCompileMessageTreeView
+import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 
 class BibtexOutputListenerTest : BasePlatformTestCase() {
 
@@ -18,7 +18,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         val project = myFixture.project
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView = LatexCompileMessageTreeView(project)
+        val treeView =
+            LatexCompileMessageTreeView(project)
         val listener = BibtexOutputListener(project, mainFile, bibtexMessageList, treeView)
 
         val input = log.split('\n')
