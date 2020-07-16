@@ -30,8 +30,7 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
 
     override fun getTabTitle() = "Log messages"
 
-    override fun dispose() {
-    }
+    override fun dispose() {}
 
     override fun getPreferredFocusableComponent() = component
 
@@ -39,9 +38,11 @@ class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, sta
 
     override fun getToolbarContextComponent(): JComponent? = null
 
-    override fun getToolbarPlace(): String? = null
+    override fun getToolbarPlace(): String? = "top"
 
     override fun getSearchComponent(): JComponent? = null
 
     override fun isContentBuiltIn() = false
+
+
 }
