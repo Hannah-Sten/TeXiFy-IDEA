@@ -30,8 +30,7 @@ class LatexQuickRunLogParserTest : BasePlatformTestCase() {
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
         val latexMessageList = mutableListOf<LatexLogMessage>()
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView =
-            LatexCompileMessageTreeView(project)
+        val treeView = LatexCompileMessageTreeView(project, latexMessageList)
         val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
 
         val input = inputText.split('\n')

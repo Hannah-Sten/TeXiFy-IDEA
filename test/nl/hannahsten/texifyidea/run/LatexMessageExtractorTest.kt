@@ -137,14 +137,14 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun testFontSizeNotAvailable() {
-        val text = "LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <42> not available(Font) size <24.88> substituted on input line 5."
-        val expected = LatexLogMessage("Font shape `OT1/cmr/m/n' in size <42> not available size <24.88> substituted", currentFile, 5, WARNING)
+        val text = "LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <42> not available(Font)              size <24.88> substituted on input line 5."
+        val expected = LatexLogMessage("Font shape `OT1/cmr/m/n' in size <42> not available, size <24.88> substituted", currentFile, 5, WARNING)
         testMessageExtractor(text, expected)
     }
 
     fun testFontShapeUndefined() {
-        val text = "LaTeX Font Warning: Font shape `OT1/cmtt/b/n' undefined(Font) using `OT1/cmtt/m/n' instead on input line 3."
-        val expected = LatexLogMessage("Font shape `OT1/cmtt/b/n' undefined using `OT1/cmtt/m/n' instead", currentFile, 3, WARNING)
+        val text = "LaTeX Font Warning: Font shape `OT1/cmtt/b/n' undefined(Font)              using `OT1/cmtt/m/n' instead on input line 3."
+        val expected = LatexLogMessage("Font shape `OT1/cmtt/b/n' undefined, using `OT1/cmtt/m/n' instead", currentFile, 3, WARNING)
         testMessageExtractor(text, expected)
     }
 

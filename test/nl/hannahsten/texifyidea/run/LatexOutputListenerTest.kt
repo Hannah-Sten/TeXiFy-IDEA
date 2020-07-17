@@ -217,14 +217,11 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     private fun testLog(log: String, expectedMessages: Set<LatexLogMessage> = setOf(), expectedBibMessages: Set<BibtexLogMessage> = setOf()) {
-        val srcRoot = myFixture.copyDirectoryToProject("./", "./")
         val project = myFixture.project
-        val mainFile = srcRoot.findFileByRelativePath("main.tex")
         val latexMessageList = mutableListOf<LatexLogMessage>()
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView =
-            LatexCompileMessageTreeView(project)
-        val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
+        val treeView = LatexCompileMessageTreeView(project, latexMessageList)
+        val listener = LatexOutputListener(project, null, latexMessageList, bibtexMessageList, treeView)
 
         val input = log.split('\n')
         input.forEach { line ->
@@ -398,9 +395,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
     fun `test datetime2 language module not installed`() {
         val log = """
-            (/home/thomas/texlive/2020/texmf-dist/tex/latex/datetime2/datetime2.sty
-            (/home/thomas/texlive/2020/texmf-dist/tex/latex/tracklang/tracklang.sty
-            (/home/thomas/texlive/2020/texmf-dist/tex/generic/tracklang/tracklang.tex))
+            (/home/thomas/texlive/2018/texmf-dist/tex/latex/datetime2/datetime2.sty
+            (/home/thomas/texlive/2018/texmf-dist/tex/latex/tracklang/tracklang.sty
+            (/home/thomas/texlive/2018/texmf-dist/tex/generic/tracklang/tracklang.tex))
             
             Package datetime2 Warning: Date-Time Language Module `british' not installed on
              input line 1913.
@@ -410,7 +407,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("datetime2: Date-Time Language Module `british' not installed", "/home/thomas/texlive/2020/texmf-dist/tex/latex/datetime2/datetime2.sty", 1913, WARNING)
+            LatexLogMessage("datetime2: Date-Time Language Module `british' not installed", "/home/thomas/texlive/2018/texmf-dist/tex/latex/datetime2/datetime2.sty", 1913, WARNING)
         )
 
         testLog(log, expectedMessages)
@@ -437,6 +434,23 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val expectedMessages = setOf(
             LatexLogMessage("Overfull \\hbox (2.5471pt too wide) in paragraph at lines 122--126", "./development-workflow.tex", 122, WARNING),
             LatexLogMessage("Reference `sec:to-copy-data-from-prins-sql-servers-to-the-etlstaging02-blob-storage-using-the-data-factory' on page 14 undefined", "./development-workflow.tex", 134, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test Font shape undefined`() {
+        val log = """
+            (/home/thomas/GitRepos/thisisatestfile-this-isatestfile-/out/UMD00000000000000_
+            test-file-test-file-t.toc
+            
+            LaTeX Font Warning: Font shape `T1/phv/m/scit' undefined
+            (Font)              using `T1/phv/m/it' instead on input line 43.
+
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Font shape `T1/phv/m/scit' undefined, using `T1/phv/m/it' instead", "/home/thomas/GitRepos/thisisatestfile-this-isatestfile-/out/UMD00000000000000_test-file-test-file-t.toc", 43, WARNING)
         )
 
         testLog(log, expectedMessages)

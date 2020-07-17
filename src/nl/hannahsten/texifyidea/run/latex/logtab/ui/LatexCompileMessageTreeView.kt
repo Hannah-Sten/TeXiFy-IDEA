@@ -26,7 +26,7 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
     }
 
     fun getAllElements(): Set<ErrorTreeElement> {
-        this@LatexCompileMessageTreeView.errorViewStructure.let {tree ->
+        this@LatexCompileMessageTreeView.errorViewStructure.let { tree ->
             return tree.getChildElements(tree.rootElement).flatMap {
                 tree.getChildElements(it).toList()
             }.toSet()
