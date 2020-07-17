@@ -169,9 +169,9 @@ object CommandManager : Iterable<String?>, Serializable {
      * The alias to register for the command starting with a backslash. This could be either
      * a new command, or an existing command *E.g. `\start`*
      */
+    @Synchronized
     fun registerAlias(command: String, alias: String) {
-        if (!isRegistered(command)) return
-        val aliasSet = aliases[command]!!
+        val aliasSet = aliases[command] ?: mutableSetOf()
 
         // If the alias is already assigned: unassign it.
         if (isRegistered(alias)) {
