@@ -93,4 +93,24 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         }
         assertEquals("""./src/_minted-thesis/F21236103977357A063E148CA83348D21F2D8067E0A256B6FCF34360A44AFD35.pygtex""", stack.peek())
     }
+
+    // todo ignore the line with l.\d+ and the line after it (may be empty or contain second part of user text)
+    fun testExtraClosingParenthesis() {
+        val text = """
+            ! Undefined control sequence.
+            l.1229 ...canonical \) in \( \SO(8) \) is \( \Spin
+                                                              (7) \), see~\cite[Theorem~...
+            The control sequence at the end of the top line
+            of your error message was never \def'ed. If you have
+            misspelled it (e.g., `\hobx'), type `I' and the correct
+            spelling (e.g., `I\hbox'). Otherwise just continue,
+            and I'll forget about whatever was undefined.
+        """.trimIndent()
+        var stack = LatexFileStack()
+        for (line in text.split('\n')) {
+            line.chunked(LINE_WIDTH).forEach {
+                stack = stack.update(it)
+            }
+        }
+    }
 }

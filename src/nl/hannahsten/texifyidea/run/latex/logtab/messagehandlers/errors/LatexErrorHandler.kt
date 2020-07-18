@@ -37,7 +37,7 @@ object LatexErrorHandler : LatexMessageHandler(
 
                 val trimmedMessage = processedMessage.replace("\\s+".toRegex(), " ")
 
-                return LatexLogMessage(trimmedMessage, fileName, line ?: 1, messageType)
+                return LatexLogMessage(trimmedMessage, fileName, line ?: -1, messageType)
             }
         }
         return null

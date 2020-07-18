@@ -7,7 +7,7 @@ open class LatexMessageWithLineHandler(override val messageType: LatexLogMessage
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.first().find(text)?.apply {
             val message = this.value
-            val line = groupValues.drop(1).lastOrNull()?.toInt() ?: 1
+            val line = groupValues.drop(1).dropLastWhile { it.isBlank() }.lastOrNull()?.toInt() ?: 1
             return LatexLogMessage(message, currentFile, line,
                 messageType
             )

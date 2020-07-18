@@ -455,4 +455,67 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         testLog(log, expectedMessages)
     }
+
+    fun `test Encoding file not found`() {
+        val log = """
+            (/home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty
+            
+            /home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty:111: Package fo
+            ntenc Error: Encoding file `ly1enc.def' not found.
+            (fontenc)                You might have misspelt the name of the encoding.
+            
+            See the fontenc package documentation for explanation.
+            Type  H <return>  for immediate help.
+             ...                                              
+                                                              
+            l.111 \ProcessOptions*
+
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("fontenc: Encoding file `ly1enc.def' not found. You might have misspelt the name of the encoding.", "/home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty", 111, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test No file`() {
+        val log = """
+            (./main.tex
+            
+            (/home/thomas/GitRepos/random-tex/out/main.aux
+            (/home/thomas/GitRepos/random-tex/out/notexists.aux))
+            No file notexists.tex.
+            (/home/thomas/GitRepos/random-tex/out/main.aux
+            (/home/thomas/GitRepos/random-tex/out/notexists.aux)) )
+            No pages of output.
+            Transcript written on /home/thomas/GitRepos/random-tex/out/main.log.
+            
+            Process finished with exit code 0
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("No file notexists.tex.", "./main.tex", -1, WARNING),
+            LatexLogMessage("No pages of output.", "", -1, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test directlua unexpected symbol`() {
+        val log = """
+            (./main.tex
+            
+            (/home/thomas/texlive/2018/texmf-dist/tex/latex/base/ts1cmr.fd)[\directlua]:1: 
+            unexpected symbol near '3'.
+            l.4     \directlua{3 = x}
+
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("unexpected symbol near '3'", "./main.tex", 4, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
