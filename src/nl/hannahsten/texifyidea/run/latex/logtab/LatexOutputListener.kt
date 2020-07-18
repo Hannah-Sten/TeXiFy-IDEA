@@ -223,7 +223,7 @@ class LatexOutputListener(
             val file = givenFile ?: findProjectFileRelativeToMain(logMessage.fileName)
             val message = LatexLogMessage(logMessage.message.trim(), logMessage.fileName, logMessage.line, logMessage.type, file)
             messageList.add(message)
-            treeView.addMessage(message)
+            treeView.applyFilters()
         }
     }
 
