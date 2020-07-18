@@ -1,5 +1,9 @@
 == Use of `\over` discouraged
 == TeX styling primitives usage is discouraged
+
+Instead of using styling commands like `{\bf bold text}` and `{\it italic text}`, use `\textbf{bold text}` and `\textit{italic text}`.
+(In the second case, consider using `\emph{text}` for emphasis instead.)
+
 == Discouraged use of `\def` and `\let`
 
 == [[ins:avoid-eqnarray]]Avoid `eqnarray`

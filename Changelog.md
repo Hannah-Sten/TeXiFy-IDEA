@@ -12,6 +12,7 @@
 * Delay registering TikZ and Equation Preview tool windows until they are needed. (#1504)
 * Some include-like commands do not allow separating required arguments with commas. (#1515)
 * When a newline is inserted by the word wrap in an itemize environment, a new \item is not inserted. (#1516)
+* Update tlmgr when needed before installing a package. (#1527)
 
 # Bug fixes
 * Disable Non-Ascii inspection in non-identifier commands. (#1506)
