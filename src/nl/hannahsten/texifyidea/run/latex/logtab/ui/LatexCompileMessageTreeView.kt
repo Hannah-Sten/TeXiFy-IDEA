@@ -9,9 +9,7 @@ import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.containsAny
-import javax.swing.Icon
 
 class LatexCompileMessageTreeView(val project: Project, val logMessages: MutableList<LatexLogMessage>) :
     NewErrorTreeViewPanel(project, null) {
@@ -19,7 +17,7 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
 
     override fun fillRightToolbarGroup(group: DefaultActionGroup) {
         // Use myProject (from NewErrorTreeViewPanel) because somehow project is null
-        Magic.Icon.logKeywordFilterIcons.forEach { group.add(FilterKeyWordAction(it.key, it.value, myProject)) }
+        LatexKeywordFilters.values().forEach { group.add(FilterKeywordAction(it, myProject)) }
         // Search for the information action toggle so we can remove it (as we don't use it).
         val informationAction = group.childActionsOrStubs.find {
             it.templateText?.contains(IdeBundle.messagePointer("action.show.infos").get()) == true
@@ -36,7 +34,7 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
      * Elements are located as direct children of a file, which are direct children of the root.
      * Therefor, we only have to look one level deep to get all the messages.
      */
-    fun getAllElements(): Set<ErrorTreeElement> {
+    private fun getAllElements(): Set<ErrorTreeElement> {
         this@LatexCompileMessageTreeView.errorViewStructure.let { tree ->
             return tree.getChildElements(tree.rootElement).flatMap {
                 tree.getChildElements(it).toList()
@@ -44,31 +42,46 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
         }
     }
 
-    fun addMessage(message: LatexLogMessage) {
+    /**
+     * Add this [message] to the tree view.
+     */
+    private fun addMessage(message: LatexLogMessage) {
         // Correct the index because the tree view starts counting at line 0 instead of line 1.
         addMessage(message.type.category, arrayOf(message.message), message.file, message.line - 1, -1, null)
     }
 
+    /**
+     * Apply all filters to all messages in the [logMessages] list.
+     */
     fun applyFilters() {
         logMessages.forEach {
-            val hide = it.message.toLowerCase().containsAny(config().showKeywordWarnings.filter { (_, v) -> !v }.keys)
+            val hide = it.message.toLowerCase().containsAny(
+                LatexKeywordFilters.values()
+                    .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
+                    .map { f -> f.triggers.asList().flatten() }.flatten().toSet()
+            )
             if (!hide && it !in this) {
                 addMessage(it)
             }
             if (hide && it in this) {
                 errorViewStructure.removeElement(
                     // This element exists because we have checked for it with `it in this`
-                    getAllElements().first { e -> e.text.joinToString() == it.message }
+                    getAllElements().first { e -> e.fullString() == it.toString() }
                 )
             }
         }
         updateTree()
     }
 
-    private operator fun contains(message: LatexLogMessage): Boolean =
-        getAllElements().map { it.text.joinToString() }.contains(message.message)
+    private fun ErrorTreeElement.fullString(): String = "$exportTextPrefix ${text.joinToString()}"
 
-    inner class FilterKeyWordAction(private val keyword: String, val icon: Icon, val project: Project) : ToggleAction("text", "Hide $keyword messages", icon), DumbAware {
+    /**
+     * Check if a message is currently in the tree.
+     */
+    private operator fun contains(message: LatexLogMessage): Boolean =
+        getAllElements().map { it.fullString() }.contains(message.toString())
+
+    inner class FilterKeywordAction(private val keyword: LatexKeywordFilters, val project: Project) : ToggleAction("text", "Hide $keyword messages", keyword.icon), DumbAware {
         override fun isSelected(e: AnActionEvent): Boolean = config().showKeywordWarnings[keyword] ?: true
 
         override fun setSelected(e: AnActionEvent, state: Boolean) {

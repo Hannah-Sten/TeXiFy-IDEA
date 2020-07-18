@@ -3,12 +3,11 @@ package nl.hannahsten.texifyidea.run.latex.logtab.ui
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
-import nl.hannahsten.texifyidea.util.Magic
 
 @State(name = "LatexErrorTreeViewConfiguration", storages = [(Storage(
     StoragePathMacros.WORKSPACE_FILE
 ))])
-data class LatexErrorTreeViewConfiguration(var showKeywordWarnings: MutableMap<String, Boolean> = Magic.Icon.logKeywordFilterIcons.mapValues { true }.toMutableMap()) :
+data class LatexErrorTreeViewConfiguration(var showKeywordWarnings: MutableMap<LatexKeywordFilters, Boolean> = LatexKeywordFilters.values().associate { it to true }.toMutableMap()) :
     PersistentStateComponent<LatexErrorTreeViewConfiguration> {
     companion object {
         @JvmStatic

@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
@@ -871,15 +870,6 @@ object Magic {
                 "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
                 "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
                 "tikz" to TexifyIcons.TIKZ_FILE
-        )
-
-        /**
-         * Maps log message filters to the icons that show in the left bar.
-         * At the same time, this defines the default keyword filters.
-         */
-        @JvmField
-        val logKeywordFilterIcons = mapOf(
-            "overfull \\hbox" to AllIcons.Icons.Ide.NextStep
         )
     }
 
