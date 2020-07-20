@@ -32,6 +32,7 @@ object LatexLogMagicRegex {
             "Runaway text",
             "Missing character: There is no",
             "No auxiliary output files.",
+            "No file ",
             "No pages of output.",
             "Underfull \\hbox",
             "Overfull \\hbox",

@@ -239,6 +239,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("Label `mylabel' multiply defined.", "/home/abby/Documents/texify-test/out/main.aux", -1, WARNING),
                 LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR),
                 LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
+                LatexLogMessage("No file main.bbl.", "./main.tex", -1, WARNING),
                 LatexLogMessage("Encoding scheme `15' unknown.", "./main.tex", 5, ERROR),
                 LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "./main.tex", 6, ERROR),
                 LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "./main.tex", 7, WARNING),
@@ -316,7 +317,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR),
-            LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR)
+            LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
+            LatexLogMessage("No file main.bbl.", null, -1, WARNING)
         )
 
         testLog(log, expectedMessages)
@@ -473,7 +475,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("fontenc: Encoding file `ly1enc.def' not found. You might have misspelt the name of the encoding.", "/home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty", 111, WARNING)
+            LatexLogMessage("fontenc: Encoding file `ly1enc.def' not found. You might have misspelt the name of the encoding.", "/home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty", 111, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -496,7 +498,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             LatexLogMessage("No file notexists.tex.", "./main.tex", -1, WARNING),
-            LatexLogMessage("No pages of output.", "", -1, WARNING)
+            LatexLogMessage("No pages of output.", null, -1, WARNING)
         )
 
         testLog(log, expectedMessages)

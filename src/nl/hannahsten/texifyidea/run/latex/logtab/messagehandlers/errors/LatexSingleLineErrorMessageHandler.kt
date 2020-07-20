@@ -1,16 +1,16 @@
 package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors
 
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.FILE_LINE_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.FILE_LINE_REGEX
 
 /**
  * Single-line errors, for which the l.<line number> appears in 'text' but should be excluded for the error message.
  */
 object LatexSingleLineErrorMessageHandler : LatexMessageHandler(
         LatexLogMessageType.ERROR,
-        """^$FILE_LINE_REGEX (?<message>.+)\s*l.\d+""".toRegex()
+        """^$FILE_LINE_REGEX (?<message>.+)\s*l\.\d+""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {

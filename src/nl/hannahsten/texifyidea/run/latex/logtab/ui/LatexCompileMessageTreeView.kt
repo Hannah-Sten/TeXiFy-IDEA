@@ -67,7 +67,7 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
             if (hide && it in this) {
                 errorViewStructure.removeElement(
                     // This element exists because we have checked for it with `it in this`
-                    getAllElements().first { e -> e.fullString() == it.toString() }
+                    getAllElements().first { e -> e.fullString() == it.toTreeViewString() }
                 )
             }
         }
@@ -80,7 +80,7 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
      * Check if a message is currently in the tree.
      */
     private operator fun contains(message: LatexLogMessage): Boolean =
-        getAllElements().map { it.fullString().removeAll(",") }.contains(message.toString())
+        getAllElements().map { it.fullString().removeAll(",") }.contains(message.toTreeViewString())
 
     inner class FilterKeywordAction(private val keyword: LatexKeywordFilters, val project: Project) : ToggleAction("text", "Hide $keyword messages", keyword.icon), DumbAware {
         override fun isSelected(e: AnActionEvent): Boolean = config().showKeywordWarnings[keyword] ?: true

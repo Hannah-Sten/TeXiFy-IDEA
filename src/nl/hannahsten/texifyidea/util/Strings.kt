@@ -145,6 +145,11 @@ fun String.removeAll(vararg strings: String): String {
 }
 
 /**
+ * Remove [string] from [this].
+ */
+fun String.remove(string: String): String = this.replace(string, "")
+
+/**
  * Formats the string as a valid filename, removing not-allowed characters, in TeX-style with - as separator.
  */
 fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "\\")

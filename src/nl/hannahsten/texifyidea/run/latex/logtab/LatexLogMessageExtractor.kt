@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErr
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexSingleLineErrorMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexUndefinedControlSequenceHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.*
+import nl.hannahsten.texifyidea.util.remove
 import nl.hannahsten.texifyidea.util.removeAll
 
 object LatexLogMessageExtractor {
@@ -67,13 +68,16 @@ object LatexLogMessageExtractor {
 
         // Check if we have found a warning
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
-            var messageText = if (LatexOutputListener.shouldStopCollectingMessage(newText, text)) text.removeAll(newText) else text
-            messageText = messageText.removeAll("LaTeX Warning:")
-                // .replace(newText, "")
+            var messageText = if (LatexOutputListener.isLineEndOfMessage(newText, text)) text.remove(newText) else text
+            messageText = messageText.remove("LaTeX Warning:")
                 .trim()
                 // Improves readability, and at the moment we don't have an example where this would be incorrect
                 .trim('(', ')', '[', ']', ' ')
                 .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
+
+            if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText.trim()))) {
+                messageText = messageText.remove(newText.trim()).trim()
+            }
 
             return LatexLogMessage(
                 messageText,

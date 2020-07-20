@@ -24,7 +24,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun testPackageNotInstalledError() {
         val text = "! LaTeX Error: File `paralisy.sty' not found."
-        val expected = LatexLogMessage("File `paralisy.sty' not found.", currentFile, 1, ERROR)
+        val expected = LatexLogMessage("File `paralisy.sty' not found.", currentFile, -1, ERROR)
         testMessageExtractor(text, expected)
     }
 
@@ -50,7 +50,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun `test pdfTeX error cannot open encoding file`() {
         val text = "!pdfTeX error: pdflatex (file texnansi.enc): cannot open encoding file for reading"
         val newText = "ing"
-        val expected = LatexLogMessage("pdflatex (file texnansi.enc): cannot open encoding file for reading", "test.tex", 1, ERROR)
+        val expected = LatexLogMessage("pdflatex (file texnansi.enc): cannot open encoding file for reading", "test.tex", -1, ERROR)
         testMessageExtractor(text, expected, newText)
     }
 
@@ -198,7 +198,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun `test Missing character`() {
         val text = "Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!"
         val newText = ";!"
-        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!", "test.tex", -1, WARNING)
+        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 

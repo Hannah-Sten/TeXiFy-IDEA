@@ -30,17 +30,15 @@ class LatexOutputListener(
     // This should probably be located somewhere else
     companion object {
         /**
-         * Returns true if newText is most likely the last line of the message.
-         *
-         * @param lineBeforeNewText: Will be checked for length.
+         * Returns true if line is most likely the last line of the message.
          */
-        fun shouldStopCollectingMessage(newText: String, lineBeforeNewText: String = ""): Boolean {
-            return lineBeforeNewText.length < LINE_WIDTH &&
+        fun isLineEndOfMessage(nextLine: String, line: String): Boolean {
+            return line.length < LINE_WIDTH &&
                     // Indent of LaTeX Warning/Error messages
-                    !newText.startsWith("               ") &&
+                    !nextLine.startsWith("               ") &&
                     // Package warning/error continuation.
-                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(newText) &&
-                    LatexLogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { newText.startsWith(it) }
+                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(nextLine) &&
+                    LatexLogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { nextLine.startsWith(it) }
         }
     }
 
@@ -156,11 +154,10 @@ class LatexOutputListener(
         logMessage.apply {
             if (message.isEmpty()) return
 
-            if (!shouldStopCollectingMessage(newText, logMessage.message) || text.removeSuffix(newText).length >= LINE_WIDTH) {
+            if (!isLineEndOfMessage(newText, logMessage.message) || text.removeSuffix(newText).length >= LINE_WIDTH) {
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true
-                // checkIfShouldStopCollectingMessage(newText)
             }
             else {
                 val file = findProjectFileRelativeToMain(fileName)
@@ -173,22 +170,13 @@ class LatexOutputListener(
         }
     }
 
-    private fun checkIfShouldStopCollectingMessage(newText: String) {
-        // todo the parameters do not make sense here
-        if (shouldStopCollectingMessage(newText, newText)) {
-            isCollectingMessage = false
-            addMessageToLog(currentLogMessage!!)
-            currentLogMessage = null
-        }
-    }
-
     /**
      * Add the current/new message to the log if it does not continue on the
      * next line.
      */
     private fun collectMessageLine(text: String, newText: String, logMessage: LatexLogMessage? = null) {
         // Check if newText is interesting before appending it to the message
-        if (currentLogMessage?.message?.endsWith(newText.trim()) == false && !shouldStopCollectingMessage(newText, text.removeSuffix(newText))) {
+        if (currentLogMessage?.message?.endsWith(newText.trim()) == false && !isLineEndOfMessage(newText, text.removeSuffix(newText))) {
             // Append new text
             val message = logMessage ?: currentLogMessage!!
             val newTextTrimmed = if (newText.length < lineWidth) " ${newText.trim()}" else newText.trim()
