@@ -10,6 +10,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.util.containsAny
+import nl.hannahsten.texifyidea.util.removeAll
 
 class LatexCompileMessageTreeView(val project: Project, val logMessages: MutableList<LatexLogMessage>) :
     NewErrorTreeViewPanel(project, null) {
@@ -79,7 +80,7 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
      * Check if a message is currently in the tree.
      */
     private operator fun contains(message: LatexLogMessage): Boolean =
-        getAllElements().map { it.fullString() }.contains(message.toString())
+        getAllElements().map { it.fullString().removeAll(",") }.contains(message.toString())
 
     inner class FilterKeywordAction(private val keyword: LatexKeywordFilters, val project: Project) : ToggleAction("text", "Hide $keyword messages", keyword.icon), DumbAware {
         override fun isSelected(e: AnActionEvent): Boolean = config().showKeywordWarnings[keyword] ?: true

@@ -518,4 +518,57 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         testLog(log, expectedMessages)
     }
+
+    fun `test FiXme notes`() {
+        val log = """
+            (./main.tex
+            
+
+            FiXme Warning: 'this is a warning' on input line 7.
+            
+            
+            FiXme Error: 'this is an error' on input line 8.
+            
+            
+            FiXme Fatal Error: 'this kills me' on input line 9.
+            
+            
+            FiXme Summary: Number of notes: 1,
+            (FiXme)        Number of warnings: 1,
+            (FiXme)        Number of errors: 1,
+            (FiXme)        Number of fatal errors: 1,
+            (FiXme)        Total: 4.
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("FiXme: this is a warning", "./main.tex", 7, WARNING),
+            LatexLogMessage("FiXme: this is an error", "./main.tex", 8, ERROR),
+            LatexLogMessage("FiXme: this kills me", "./main.tex", 9, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    // todo guessing that package linebreaks need a space, but latex linebreaks (on 80 chars) don't
+    fun `test Unknown option babel`() {
+        val log = """
+            /home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty:1036: Package 
+            babel Error: Unknown option `brazil'. Either you misspelled it
+            (babel)                or the language definition file brazil.ldf was not found
+            .
+            
+            See the babel package documentation for explanation.
+            Type  H <return>  for immediate help.
+             ...                                              
+                                                              
+            l.1036 \ProcessOptions*
+                     
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Unknown option `brazil'. Either you misspelled it or the language definition file brazil.ldf was not found.", "/home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty", 1036, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
