@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.lineNumber
 import java.util.ArrayDeque
 
 class LatexFileStack(
@@ -8,6 +9,8 @@ class LatexFileStack(
     /** Number of open parentheses that do not represent file openings and have not yet been closed. */
     var notClosedNonFileOpenParentheses: Int = 0
 ) : ArrayDeque<String>() {
+
+    private var shouldSkipNextLine = false
 
     init {
         addAll(file)
@@ -26,6 +29,19 @@ class LatexFileStack(
      * (It works for rubber: https://github.com/tsgates/die/blob/master/bin/parse-latex-log.py)
      */
     fun update(line: String): LatexFileStack {
+
+        // Lines starting with a line number seem to contain user content, as well as the next line (which could be empty
+        // as well, but in that case it isn't interesting either)
+        if (lineNumber.containsMatchIn(line)) {
+            shouldSkipNextLine = true
+            return this
+        }
+
+        if (shouldSkipNextLine) {
+            shouldSkipNextLine = false
+            return this
+        }
+
         if (currentCollectingFile.isNotEmpty()) {
             currentCollectingFile += line.trim()
             // Check if this was the last part of the file

@@ -19,6 +19,21 @@ object LatexLogMagicRegex {
     const val PACKAGE_WARNING_CONTINUATION = "\\(\\w+\\) {${"Package warning:".length}}"
     const val DUPLICATE_WHITESPACE = """\s{2,}"""
 
+    val lineNumber = """^l.\d+ """.toRegex()
+
+    /*
+     * Errors
+     */
+
+    /** A variation on [FILE_LINE_REGEX] by lualatex (?) */
+    val directLuaError = """^\((?!\s*\.\.\.)(.+\.\w+)\)(\[.+\])?:(?<line>\d+): (?<message>.*)""".toRegex()
+    val fixMeError = """FiXme (Fatal )?Error: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
+
+    /*
+     * Warnings
+     */
+    val fixMeWarning = """FiXme Warning: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
+
     val TEX_MISC_WARNINGS = listOf(
             "LaTeX Warning: ",
             "LaTeX Font Warning: ",

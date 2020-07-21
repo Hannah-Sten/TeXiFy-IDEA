@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.FILE_LINE_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LATEX_ERROR_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PDFTEX_ERROR_REGEX
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.directLuaError
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
@@ -11,7 +12,8 @@ object LatexErrorHandler : LatexMessageHandler(
         LatexLogMessageType.ERROR,
         """^$FILE_LINE_REGEX (?<message>.+)""".toRegex(),
         """^$LATEX_ERROR_REGEX (?<message>.+)""".toRegex(),
-        """^$PDFTEX_ERROR_REGEX (?<message>.+)""".toRegex()
+        """^$PDFTEX_ERROR_REGEX (?<message>.+)""".toRegex(),
+        directLuaError
 ) {
     private val messageProcessors = listOf(LatexPackageErrorProcessor, LatexRemoveErrorTextProcessor)
 

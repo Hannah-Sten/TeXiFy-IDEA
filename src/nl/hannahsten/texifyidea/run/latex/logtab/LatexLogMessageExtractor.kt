@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
+import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexFixMeErrorMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexSingleLineErrorMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexUndefinedControlSequenceHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.*
@@ -30,7 +31,8 @@ object LatexLogMessageExtractor {
 
         val specialErrorHandlersList = listOf(
             LatexUndefinedControlSequenceHandler,
-            LatexSingleLineErrorMessageHandler
+            LatexSingleLineErrorMessageHandler,
+            LatexFixMeErrorMessageHandler
         )
 
         // Most of these are just to have a special regex to extract the right line number
@@ -41,7 +43,8 @@ object LatexLogMessageExtractor {
             EndOccurredWhenConditionWasIncompleteWarningHandler,
             LatexPackageWarningHandler,
             LatexReferenceCitationWarningHandler,
-            LatexLineWarningHandler
+            LatexLineWarningHandler,
+            LatexFixMeWarningMessageHandler
         )
 
         // Look for errors that need special treatment.
