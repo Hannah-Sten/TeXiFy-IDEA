@@ -69,10 +69,9 @@ object LatexLogMessageExtractor {
         // Check if we have found a warning
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
             var messageText = if (LatexOutputListener.isLineEndOfMessage(newText, text)) text.remove(newText) else text
-            messageText = messageText.remove("LaTeX Warning:")
-                .trim()
+            messageText = messageText.remove("LaTeX Warning: ")
                 // Improves readability, and at the moment we don't have an example where this would be incorrect
-                .trim('(', ')', '[', ']', ' ')
+                .trim('(', ')', '[', ']')
                 .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
 
             if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText.trim()))) {

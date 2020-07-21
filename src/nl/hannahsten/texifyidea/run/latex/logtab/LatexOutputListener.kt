@@ -164,7 +164,9 @@ class LatexOutputListener(
 
                 if (messageList.isEmpty() || !messageList.contains(logMessage)) {
                     // Use original filename, especially for tests to work (which cannot find the real file)
-                    addMessageToLog(LatexLogMessage(message, fileName, line, type), file)
+                    // Trim message here instead of earlier in order to keep spaces in case we needed to continue
+                    // collecting the message and the spaces were actually relevant
+                    addMessageToLog(LatexLogMessage(message.trim(), fileName, line, type), file)
                 }
             }
         }
@@ -179,7 +181,11 @@ class LatexOutputListener(
         if (currentLogMessage?.message?.endsWith(newText.trim()) == false && !isLineEndOfMessage(newText, text.removeSuffix(newText))) {
             // Append new text
             val message = logMessage ?: currentLogMessage!!
-            val newTextTrimmed = if (newText.length < lineWidth) " ${newText.trim()}" else newText.trim()
+
+            // Assume that lines that end prematurely do need an extra space to be inserted, like LaTeX and package
+            // warnings with manual newlines, unlike 80-char forced linebreaks which should not have a space inserted
+            val newTextTrimmed = if (text.removeSuffix(newText).length < lineWidth) " ${newText.trim()}" else newText.trim()
+
             // LaTeX Warning: is replaced here because this method is also run when a message is added,
             // and the above check needs to return false so we can't replace this in the WarningHandler
             var newMessage = (message.message + newTextTrimmed).replace("LaTeX Warning: ", "")

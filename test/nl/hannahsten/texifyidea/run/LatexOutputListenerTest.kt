@@ -426,8 +426,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             \T1/phv/m/n/10 (-20) databricks De-vOps repo, then in that di-rec-tory run \T1/
             cmtt/m/n/10 databricks workspace export_dir / notebooks/
             
-            LaTeX Warning: Reference `sec:to-copy-data-from-prins-sql-servers-to-the-etlsta
-            ging02-blob-storage-using-the-data-factory' on page 14 undefined on input line 
+            LaTeX Warning: Reference `sec:to-copy-data-from-tests-sql-servers-to-the-blabla
+            blabla-blob-storage-using-the-data-factory' on page 14 undefined on input line 
             134.
 
             
@@ -435,7 +435,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             LatexLogMessage("Overfull \\hbox (2.5471pt too wide) in paragraph at lines 122--126", "./development-workflow.tex", 122, WARNING),
-            LatexLogMessage("Reference `sec:to-copy-data-from-prins-sql-servers-to-the-etlstaging02-blob-storage-using-the-data-factory' on page 14 undefined", "./development-workflow.tex", 134, WARNING)
+            LatexLogMessage("Reference `sec:to-copy-data-from-tests-sql-servers-to-the-blablablabla-blob-storage-using-the-data-factory' on page 14 undefined", "./development-workflow.tex", 134, WARNING)
         )
 
         testLog(log, expectedMessages)
@@ -551,9 +551,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         testLog(log, expectedMessages)
     }
 
-    // todo guessing that package linebreaks need a space, but latex linebreaks (on 80 chars) don't
     fun `test Unknown option babel`() {
         val log = """
+            
             /home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty:1036: Package 
             babel Error: Unknown option `brazil'. Either you misspelled it
             (babel)                or the language definition file brazil.ldf was not found
@@ -568,7 +568,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            LatexLogMessage("Unknown option `brazil'. Either you misspelled it or the language definition file brazil.ldf was not found.", "/home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty", 1036, WARNING)
+            LatexLogMessage("babel: Unknown option `brazil'. Either you misspelled it or the language definition file brazil.ldf was not found.", "/home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty", 1036, ERROR)
         )
 
         testLog(log, expectedMessages)
