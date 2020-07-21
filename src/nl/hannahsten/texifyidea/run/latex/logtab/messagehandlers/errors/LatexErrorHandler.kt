@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.FILE_LINE_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LATEX_ERROR_REGEX
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PDFTEX_ERROR_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.directLuaError
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
@@ -27,7 +28,13 @@ object LatexErrorHandler : LatexMessageHandler(
                     Pair(null, currentFile)
                 }
 
-                val message = groups["message"]?.value?.trim() ?: ""
+                var message = groups["message"]?.value?.trim() ?: ""
+
+                // Since 'text' is two lines join together, check line length to find out whether the next line
+                // is also part of the message (and remove it if not)
+                if (text.removeSuffix(newText.trim()).length < LINE_WIDTH - 1) {
+                    message = message.removeSuffix(newText.trim())
+                }
 
                 // Process a found error message (e.g. remove "LaTeX Error:")
                 val processedMessage = messageProcessors.mapNotNull { p ->

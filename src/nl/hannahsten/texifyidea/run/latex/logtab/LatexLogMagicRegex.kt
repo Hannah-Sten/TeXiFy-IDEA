@@ -33,6 +33,7 @@ object LatexLogMagicRegex {
      * Warnings
      */
     val fixMeWarning = """FiXme Warning: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
+    val pdfTeXWarning = """pdfTeX warning(.+)?: (?<message>.+)""".toRegex()
 
     val TEX_MISC_WARNINGS = listOf(
             "LaTeX Warning: ",

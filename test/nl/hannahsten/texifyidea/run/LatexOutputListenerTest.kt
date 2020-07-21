@@ -74,8 +74,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         
         ./main.tex:5: LaTeX Error: Encoding scheme `15' unknown.
         
-        ./main.tex:6: LaTeX Error: Cannot determine size of graphic in figures/backgr
-        ound-black-cat.jpg (no BoundingBox).
+        ! LaTeX Error: Cannot determine size of graphic in figures/background-black-cat
+        .jpg (no BoundingBox).
+
         
         LaTeX Warning: Citation 'DBLP.books.daglib.0076726' on page 1 undefined on inpu
         t line 7.
@@ -241,7 +242,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                 LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
                 LatexLogMessage("No file main.bbl.", "./main.tex", -1, WARNING),
                 LatexLogMessage("Encoding scheme `15' unknown.", "./main.tex", 5, ERROR),
-                LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "./main.tex", 6, ERROR),
+                LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "./main.tex", -1, ERROR),
                 LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "./main.tex", 7, WARNING),
                 LatexLogMessage("Environment align undefined.", "./math.tex", 7, ERROR),
                 LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "./math.tex", 5, WARNING),
@@ -570,6 +571,56 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             LatexLogMessage("babel: Unknown option `brazil'. Either you misspelled it or the language definition file brazil.ldf was not found.", "/home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty", 1036, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test Fatal error occurred`() {
+        val log = """
+            <inserted text> 
+            \fi 
+            <*> main.tex
+                     
+            ! Emergency stop.
+            <*> main.tex
+                     
+             549 words of node memory still in use:
+               4 hlist, 1 vlist, 2 rule, 1 mark, 1 local_par, 1 dir, 4 glue, 3 kern, 3 glyp
+            h, 7 attribute, 62 glue_spec, 7 attribute_list, 1 temp, 1 if_stack nodes
+               avail lists: 2:4,3:2,4:2,5:2,7:2
+            !  ==> Fatal error occurred, no output PDF file produced!
+            Transcript written on main.log.
+            
+            Process finished with exit code 1
+                     
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("Emergency stop.", null, -1, ERROR),
+            LatexLogMessage("==> Fatal error occurred, no output PDF file produced!", null, -1, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test pdfTeX warning`() {
+        val log = """
+            (./main.tex
+            
+            (/home/thomas/GitRepos/random-tex/out/main.out) [1{/home/thomas/texlive/2020/te
+            xmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+            (/home/thomas/GitRepos/random-tex/out/main.aux) )pdfTeX warning (dest): name{su
+            mmary} has been referenced but does not exist, replaced by a fixed one
+            
+            </home/thomas/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+            Output written on /home/thomas/GitRepos/random-tex/out/main.pdf (1 page, 12113 
+            bytes).
+                     
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("name{summary} has been referenced but does not exist, replaced by a fixed one", null, -1, WARNING)
         )
 
         testLog(log, expectedMessages)

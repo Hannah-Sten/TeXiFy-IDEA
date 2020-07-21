@@ -44,7 +44,8 @@ object LatexLogMessageExtractor {
             LatexPackageWarningHandler,
             LatexReferenceCitationWarningHandler,
             LatexLineWarningHandler,
-            LatexFixMeWarningMessageHandler
+            LatexFixMeWarningMessageHandler,
+            LatexPdftexWarningMessageHandler
         )
 
         // Look for errors that need special treatment.
