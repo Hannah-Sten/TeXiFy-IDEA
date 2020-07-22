@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageExtractor
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
+import nl.hannahsten.texifyidea.util.removeAll
 
 /**
  * Tests for errors and warnings consisting of a most two lines.
@@ -198,7 +199,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     fun `test Missing character`() {
         val text = "Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!"
         val newText = ";!"
-        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text", "test.tex", -1, WARNING)
+        val expected = LatexLogMessage("Missing character: There is no ^^A in font [lmroman10-regular]:mapping=tex-text;!", "test.tex", -1, WARNING)
         testMessageExtractor(text, expected, newText)
     }
 
@@ -214,7 +215,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
      * @param newText Line 2
      */
     private fun testMessageExtractor(text: String, expected: LatexLogMessage?, newText: String = "") {
-        val real = LatexLogMessageExtractor.findMessage(text, newText, currentFile)
+        val real = LatexLogMessageExtractor.findMessage(text.removeAll("\n", "\r"), newText.removeAll("\n"), currentFile)
         assertEquals(expected, real)
     }
 }

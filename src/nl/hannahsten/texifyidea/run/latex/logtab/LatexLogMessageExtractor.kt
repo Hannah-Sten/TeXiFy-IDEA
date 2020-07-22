@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexSin
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexUndefinedControlSequenceHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.*
 import nl.hannahsten.texifyidea.util.remove
-import nl.hannahsten.texifyidea.util.removeAll
 
 object LatexLogMessageExtractor {
     /**
@@ -19,15 +18,14 @@ object LatexLogMessageExtractor {
     }
 
     /**
-     * Look for a warning or error message in [textWithNewlines], and return a handler that
+     * Look for a warning or error message in [text], and return a handler that
      * can handle the warning (i.e., process it and output the correct log message).
-     * Return null if [textWithNewlines] does not contain such an error or warning.
+     * Return null if [text] does not contain such an error or warning.
      *
-     * @param textWithNewlines Text in which to search for error messages (will be two consecutive lines)
+     * @param text Text in which to search for error messages (will be two consecutive lines)
      * @param newText Second line of 'text',
      */
-    fun findMessage(textWithNewlines: String, newText: String, currentFile: String?): LatexLogMessage? {
-        val text = textWithNewlines.removeAll("\n", "\r")
+    fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
 
         val specialErrorHandlersList = listOf(
             LatexUndefinedControlSequenceHandler,
@@ -59,7 +57,7 @@ object LatexLogMessageExtractor {
         // because other errors might need the two lines, and would be
         // (partly) duplicated in the log if we allow the fallback to inspect
         // the two lines (or just the first).
-        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText.trim())) }) {
+        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText)) }) {
             return LatexErrorHandler.findMessage(text, newText, currentFile)
         }
 
@@ -68,7 +66,7 @@ object LatexLogMessageExtractor {
             // Check if the match starts in 'text', because if not then we will encounter it again the next time
             if (handler.regex.any { r ->
                     r.containsMatchIn(text) &&
-                    r.find(text)?.range?.start?.let { it <= text.removeSuffix(newText.trim()).length - 1 } == true }
+                    r.find(text)?.range?.start?.let { it <= text.removeSuffix(newText).length - 1 } == true }
             ) {
                 return handler.findMessage(text, newText, currentFile)
             }
@@ -84,8 +82,8 @@ object LatexLogMessageExtractor {
                 .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
 
             // Don't include the second line if it is not part of the message
-            if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText.trim()))) {
-                messageText = messageText.remove(newText.trim()).trim()
+            if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText))) {
+                messageText = messageText.remove(newText).trim()
             }
 
             return LatexLogMessage(

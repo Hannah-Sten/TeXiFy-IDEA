@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.PACKAGE_WARNING_CONTINUATION
 import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.remove
 import nl.hannahsten.texifyidea.util.removeAll
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils
@@ -30,15 +31,15 @@ class LatexOutputListener(
     // This should probably be located somewhere else
     companion object {
         /**
-         * Returns true if line is most likely the last line of the message.
+         * Returns true if firstLine is most likely the last line of the message.
          */
-        fun isLineEndOfMessage(nextLine: String, line: String): Boolean {
-            return line.length < LINE_WIDTH &&
+        fun isLineEndOfMessage(secondLine: String, firstLine: String): Boolean {
+            return firstLine.remove("\n").length < LINE_WIDTH - 1 &&
                     // Indent of LaTeX Warning/Error messages
-                    !nextLine.startsWith("               ") &&
+                    !secondLine.startsWith("               ") &&
                     // Package warning/error continuation.
-                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(nextLine) &&
-                    LatexLogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { nextLine.startsWith(it) }
+                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine) &&
+                    LatexLogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { secondLine.startsWith(it) }
         }
     }
 
@@ -115,7 +116,7 @@ class LatexOutputListener(
             }
 
             // Find an error message or warning in the current text.
-            val logMessage = LatexLogMessageExtractor.findMessage(text, newText, fileStack.peek())
+            val logMessage = LatexLogMessageExtractor.findMessage(text.removeAll("\n", "\r"), newText.removeAll("\n"), fileStack.peek())
 
             // Check for potential file opens/closes, modify the stack accordingly.
             fileStack.update(newText)
