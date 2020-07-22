@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessageType
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.ERROR
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType.WARNING
@@ -226,9 +225,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         val input = log.split('\n')
         input.forEach { line ->
-            (line + "\n").chunked(LINE_WIDTH).forEach {
-                listener.processNewText(it)
-            }
+            listener.processNewText(line + "\n")
         }
 
         assertEquals(expectedMessages, latexMessageList.toSet())

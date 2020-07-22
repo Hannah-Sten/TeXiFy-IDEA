@@ -243,7 +243,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         val log = """
             INFO - Looking for bibtex format file 'references.bib' for section 0
             INFO - LaTeX decoding ...
-            INFO - Found BibTeX data source '/home/thomas/GitRepos/random-tex/src/references.bib'
+            INFO - Found BibTeX data source '/home/thomas/stuffs/src/references.bib'
             WARN - BibTeX subsystem: /tmp/biber_tmp_lucp/references.bib_402841.utf8, line 12, warning: possible runaway string started at line 11
             ERROR - BibTeX subsystem: /tmp/biber_tmp_lucp/references.bib_402841.utf8, line 20, syntax error: found "{greenwade1993,     author  = "George D. Greenwade",     title   = "The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})",     year    = "1993",     journal = "TUGBoat",     volume  = "14",     number  = "3",     pages   = "342--351",     note    = mytext, }", expected "="
             INFO - WARNINGS: 1
@@ -253,8 +253,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         """.trimIndent()
 
         val expectedMessages = setOf(
-            BibtexLogMessage("possible runaway string started at line 11", "/home/thomas/GitRepos/random-tex/src/references.bib", 12, WARNING),
-            BibtexLogMessage("syntax error: found \"{greenwade1993,     author  = \"George D. Greenwade\",     title   = \"The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})\",     year    = \"1993\",     journal = \"TUGBoat\",     volume  = \"14\",     number  = \"3\",     pages   = \"342--351\",     note    = mytext, }\", expected \"=\"", "/home/thomas/GitRepos/random-tex/src/references.bib", 20, ERROR)
+            BibtexLogMessage("possible runaway string started at line 11", "/home/thomas/stuffs/src/references.bib", 12, WARNING),
+            BibtexLogMessage("syntax error: found \"{greenwade1993,     author  = \"George D. Greenwade\",     title   = \"The {C}omprehensive {T}ex {A}rchive {N}etwork ({CTAN})\",     year    = \"1993\",     journal = \"TUGBoat\",     volume  = \"14\",     number  = \"3\",     pages   = \"342--351\",     note    = mytext, }\", expected \"=\"", "/home/thomas/stuffs/src/references.bib", 20, ERROR)
         )
 
         testLog(log, expectedMessages)
@@ -268,6 +268,27 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
 
         val expectedMessages = setOf(
             BibtexLogMessage("Invalid or undefined BibTeX entry key", "references.bib", null, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test long biber warning`() {
+        val log = """
+            INFO - Globbed data source 'references.bib' to references.bib
+            INFO - Looking for bibtex format file 'references.bib' for section 0
+            INFO - LaTeX decoding ...
+            INFO - Found BibTeX data source 'references.bib'
+            WARN - Possible typo (case mismatch) between citation and datasource keys: 'blablablaS' and 'blablablas' in file 'references.bib'
+            WARN - I didn't find a database entry for 'blablablaS' (section 0)
+            INFO - Overriding locale 'en-GB' defaults 'variable = shifted' with 'variable = non-ignorable'
+            INFO - Overriding locale 'en-GB' defaults 'normalization = NFD' with 'normalization = prenormalized'
+            INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'en-GB'
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            BibtexLogMessage("Possible typo (case mismatch) between citation and datasource keys: 'blablablaS' and 'blablablas' in file 'references.bib'", "references.bib", null, WARNING),
+            BibtexLogMessage("I didn't find a database entry for 'blablablaS' (section 0)", "references.bib", null, WARNING)
         )
 
         testLog(log, expectedMessages)

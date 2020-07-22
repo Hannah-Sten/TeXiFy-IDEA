@@ -24,8 +24,7 @@ class LatexOutputListener(
     val mainFile: VirtualFile?,
     val messageList: MutableList<LatexLogMessage>,
     val bibMessageList: MutableList<BibtexLogMessage>,
-    val treeView: LatexCompileMessageTreeView,
-    private val lineWidth: Int = LINE_WIDTH
+    val treeView: LatexCompileMessageTreeView
 ) : ProcessListener {
 
     // This should probably be located somewhere else
@@ -75,18 +74,18 @@ class LatexOutputListener(
         // on the next line. This may not be accurate, but there is no way of distinguishing this.
 
         // Newlines are important to check when message end. Keep.
-        val newText = event.text
-        newText.chunked(lineWidth).forEach {
-            processNewText(it)
-        }
+        processNewText(event.text)
     }
 
     fun processNewText(newText: String) {
         if (isCollectingBib) {
+            // Don't chunk bibtex lines, as they don't usually break by themselves and they are often not long anyway
             bibtexOutputListener.processNewText(newText)
         }
         else {
-            processNewTextLatex(newText)
+            newText.chunked(LINE_WIDTH).forEach {
+                processNewTextLatex(it)
+            }
         }
         resetIfNeeded(newText)
     }
@@ -155,7 +154,7 @@ class LatexOutputListener(
         logMessage.apply {
             if (message.isEmpty()) return
 
-            if (!isLineEndOfMessage(newText, logMessage.message) || text.removeSuffix(newText).length >= LINE_WIDTH) {
+            if (!isLineEndOfMessage(newText, logMessage.message) || text.removeSuffix(newText).length >= LatexLogMagicRegex.LINE_WIDTH) {
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true
@@ -185,7 +184,7 @@ class LatexOutputListener(
 
             // Assume that lines that end prematurely do need an extra space to be inserted, like LaTeX and package
             // warnings with manual newlines, unlike 80-char forced linebreaks which should not have a space inserted
-            val newTextTrimmed = if (text.removeSuffix(newText).length < lineWidth) " ${newText.trim()}" else newText.trim()
+            val newTextTrimmed = if (text.removeSuffix(newText).length < LINE_WIDTH) " ${newText.trim()}" else newText.trim()
 
             // LaTeX Warning: is replaced here because this method is also run when a message is added,
             // and the above check needs to return false so we can't replace this in the WarningHandler

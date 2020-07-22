@@ -53,7 +53,7 @@ class BibtexRunConfiguration(
         super.createAdditionalTabComponents(manager, startedProcess)
 
         if (manager is LogConsoleManagerBase && startedProcess != null) {
-            manager.addAdditionalTabComponent(BibtexLogTabComponent(project, mainFile, startedProcess), "BibTeX-Log", AllIcons.Debugger.Console, false)
+            manager.addAdditionalTabComponent(BibtexLogTabComponent(project, mainFile, startedProcess), "BibTeX-Log", AllIcons.Vcs.Changelist, false)
         }
     }
 
