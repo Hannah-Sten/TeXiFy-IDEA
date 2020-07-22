@@ -64,13 +64,18 @@ object LatexLogMessageExtractor {
         }
 
         // Look for warnings that need special treatment.
-        specialWarningHandlersList.forEach {
-            if (it.regex.any { r -> r.containsMatchIn(text) }) {
-                return it.findMessage(text, newText, currentFile)
+        specialWarningHandlersList.forEach { handler ->
+            // Check if the match starts in 'text', because if not then we will encounter it again the next time
+            if (handler.regex.any { r ->
+                    r.containsMatchIn(text) &&
+                    r.find(text)?.range?.start?.let { it <= text.removeSuffix(newText.trim()).length - 1 } == true }
+            ) {
+                return handler.findMessage(text, newText, currentFile)
             }
         }
 
         // Check if we have found a warning
+        // Assumes
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
             var messageText = if (LatexOutputListener.isLineEndOfMessage(newText, text)) text.remove(newText) else text
             messageText = messageText.remove("LaTeX Warning: ")
@@ -78,6 +83,7 @@ object LatexLogMessageExtractor {
                 .trim('(', ')', '[', ']')
                 .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
 
+            // Don't include the second line if it is not part of the message
             if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText.trim()))) {
                 messageText = messageText.remove(newText.trim()).trim()
             }

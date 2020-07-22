@@ -267,6 +267,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
     fun `test You have requested, on line n, version d of m`() {
         val log = """
+            
             LaTeX Warning: You have requested, on input line 5, version
                            `9999/99/99' of package test998,
                            but only version

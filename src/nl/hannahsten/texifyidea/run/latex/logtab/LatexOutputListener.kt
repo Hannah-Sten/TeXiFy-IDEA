@@ -190,7 +190,7 @@ class LatexOutputListener(
             // and the above check needs to return false so we can't replace this in the WarningHandler
             var newMessage = (message.message + newTextTrimmed).replace("LaTeX Warning: ", "")
                 .replace(PACKAGE_WARNING_CONTINUATION.toRegex(), "")
-                .replace(DUPLICATE_WHITESPACE.toRegex(), "")
+                .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
 
             // The 'on input line <line>' may be a lot of lines after the 'LaTeX Warning:', thus the original regex may
             // not have caught it. Try to catch the line number here.
