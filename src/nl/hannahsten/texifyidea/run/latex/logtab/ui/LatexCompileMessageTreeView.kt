@@ -10,7 +10,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.util.containsAny
-import nl.hannahsten.texifyidea.util.removeAll
+import nl.hannahsten.texifyidea.util.remove
 
 class LatexCompileMessageTreeView(val project: Project, val logMessages: MutableList<LatexLogMessage>) :
     NewErrorTreeViewPanel(project, null) {
@@ -56,33 +56,38 @@ class LatexCompileMessageTreeView(val project: Project, val logMessages: Mutable
      */
     fun applyFilters() {
         logMessages.forEach {
-            val hide = it.message.toLowerCase().containsAny(
-                LatexKeywordFilters.values()
-                    .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
-                    .map { f -> f.triggers.asList().flatten() }.flatten().toSet()
+            applyFilters(it)
+        }
+    }
+
+    fun applyFilters(logMessage: LatexLogMessage) {
+        val hide = logMessage.message.toLowerCase().containsAny(
+            LatexKeywordFilters.values()
+                .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
+                .map { f -> f.triggers }.flatten().toSet()
+        )
+        if (!hide && logMessage !in this) {
+            addMessage(logMessage)
+        }
+        if (hide && logMessage in this) {
+            errorViewStructure.removeElement(
+                // This element exists because we have checked for it with `logMessage in this`
+                getAllElements().first { e -> e.fullString() == logMessage.toTreeViewString() }
             )
-            if (!hide && it !in this) {
-                addMessage(it)
-            }
-            if (hide && it in this) {
-                errorViewStructure.removeElement(
-                    // This element exists because we have checked for it with `it in this`
-                    getAllElements().first { e -> e.fullString() == it.toTreeViewString() }
-                )
-            }
         }
         updateTree()
     }
 
-    private fun ErrorTreeElement.fullString(): String = "$exportTextPrefix ${text.joinToString()}"
+    // Remove , because they are inserted for line numbers > 999
+    private fun ErrorTreeElement.fullString(): String = "${exportTextPrefix.remove(",")} ${text.joinToString()}"
 
     /**
      * Check if a message is currently in the tree.
      */
     private operator fun contains(message: LatexLogMessage): Boolean =
-        getAllElements().map { it.fullString().removeAll(",") }.contains(message.toTreeViewString())
+        getAllElements().map { it.fullString() }.contains(message.toTreeViewString())
 
-    inner class FilterKeywordAction(private val keyword: LatexKeywordFilters, val project: Project) : ToggleAction("text", "Hide $keyword messages", keyword.icon), DumbAware {
+    inner class FilterKeywordAction(private val keyword: LatexKeywordFilters, val project: Project) : ToggleAction("Show $keyword messages", "Show $keyword messages", keyword.icon), DumbAware {
         override fun isSelected(e: AnActionEvent): Boolean = config().showKeywordWarnings[keyword] ?: true
 
         override fun setSelected(e: AnActionEvent, state: Boolean) {
