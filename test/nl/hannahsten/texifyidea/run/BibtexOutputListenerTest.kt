@@ -18,7 +18,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
         val project = myFixture.project
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView = LatexCompileMessageTreeView(project, mutableListOf())
+        val treeView = LatexCompileMessageTreeView(project, mutableListOf(), bibtexMessageList)
         val listener = BibtexOutputListener(project, mainFile, bibtexMessageList, treeView)
 
         val input = log.split('\n')

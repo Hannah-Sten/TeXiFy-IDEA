@@ -35,7 +35,7 @@ Underfull \vbox (badness 3449) has occurred while \output is active []
         val mainFile = srcRoot.findFileByRelativePath("main.tex")
         val latexMessageList = mutableListOf<LatexLogMessage>()
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView = LatexCompileMessageTreeView(project, latexMessageList)
+        val treeView = LatexCompileMessageTreeView(project, latexMessageList, bibtexMessageList)
         val listener = LatexOutputListener(project, mainFile, latexMessageList, bibtexMessageList, treeView)
 
         val input = inputText.split('\n')

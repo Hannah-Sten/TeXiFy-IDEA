@@ -15,7 +15,7 @@ import javax.swing.JComponent
 class BibtexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
     private val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-    private val treeView = LatexCompileMessageTreeView(project, mutableListOf())
+    private val treeView = LatexCompileMessageTreeView(project, mutableListOf(), bibtexMessageList)
 
     init {
         add(treeView, BorderLayout.CENTER)

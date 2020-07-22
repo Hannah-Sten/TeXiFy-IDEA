@@ -221,7 +221,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         val project = myFixture.project
         val latexMessageList = mutableListOf<LatexLogMessage>()
         val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-        val treeView = LatexCompileMessageTreeView(project, latexMessageList)
+        val treeView = LatexCompileMessageTreeView(project, latexMessageList, bibtexMessageList)
         val listener = LatexOutputListener(project, null, latexMessageList, bibtexMessageList, treeView)
 
         val input = log.split('\n')

@@ -20,8 +20,9 @@ import javax.swing.JComponent
 class LatexLogTabComponent(val project: Project, val mainFile: VirtualFile?, startedProcess: ProcessHandler) : AdditionalTabComponent(BorderLayout()) {
 
     private val latexMessageList = mutableListOf<LatexLogMessage>()
+    // bibtex messages that need to be shown in the latex log tab (latexmk)
     private val bibtexMessageList = mutableListOf<BibtexLogMessage>()
-    private val treeView = LatexCompileMessageTreeView(project, latexMessageList)
+    private val treeView = LatexCompileMessageTreeView(project, latexMessageList, bibtexMessageList)
 
     init {
         add(treeView, BorderLayout.CENTER)
