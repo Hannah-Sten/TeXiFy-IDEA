@@ -54,7 +54,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                 if (`package` !in packages) {
                     // Manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
                     if ("tlmgr search --file /$`package`.sty".runCommand()
-                                    ?.isEmpty() != false) {
+                                    ?.isEmpty() == true) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed or \\ProvidesPackage is missing",
