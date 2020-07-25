@@ -19,6 +19,13 @@ class LatexSpaceAfterAbbreviationInspectionTest : TexifyInspectionTestBase(Latex
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarningNonBreakingSpace() {
+        myFixture.configureByText(LatexFileType, """
+            e.g.~text
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
     fun testQuickfix() {
         myFixture.configureByText(LatexFileType,
         """
