@@ -60,12 +60,4 @@ object LatexLogMagicRegex {
             "Tight \\vbox",
             "(\\end occurred"
     )
-
-    /**
-     * These warnings span more than two lines, so the [LatexOutputListener] needs to continue collecting it.
-     * todo this one should be detected automatically?
-     */
-    val TEX_MISC_WARNINGS_MULTIPLE_LINES = listOf(
-        "LaTeX Warning: You have requested, on input line"
-    )
 }

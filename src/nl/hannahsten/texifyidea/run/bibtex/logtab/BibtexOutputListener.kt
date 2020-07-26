@@ -51,7 +51,12 @@ class BibtexOutputListener(
         window.add(newText)
 
         updateCurrentFile(newText)
-        compareNumberOfMessages(newText)
+
+        // Check for summary in the middle of the window, otherwise we might
+        // be checking the summary before we processed all the messages
+        if (window.size > 2) {
+            compareNumberOfMessages(window.toList()[window.size - 3] as String)
+        }
 
         val windowList: List<String> = window.mapNotNull { it as? String }
         val logMessage = extractMessage(windowList) ?: return
@@ -81,8 +86,9 @@ class BibtexOutputListener(
         for (regex in regexes) {
             regex.find(newText)?.apply {
                 val number = try {
-                    groups["number"]?.value?.toInt() ?: 0
-                } catch (e: IllegalArgumentException) {
+                    groups["number"]?.value?.toInt() ?: 1
+                }
+                catch (e: IllegalArgumentException) {
                     1
                 }
                 if (number != messageList.filter { it.type == type }.size) {

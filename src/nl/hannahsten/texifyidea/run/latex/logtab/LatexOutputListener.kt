@@ -37,8 +37,7 @@ class LatexOutputListener(
                     // Indent of LaTeX Warning/Error messages
                     !secondLine.startsWith("               ") &&
                     // Package warning/error continuation.
-                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine) &&
-                    LatexLogMagicRegex.TEX_MISC_WARNINGS_MULTIPLE_LINES.none { secondLine.startsWith(it) }
+                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine)
         }
     }
 

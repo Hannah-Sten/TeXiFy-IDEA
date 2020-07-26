@@ -95,22 +95,4 @@ object LatexLogMessageExtractor {
 
         return null
     }
-
-    /*
-    Can be useful. TODO remove when done
-    re_loghead    = re.compile("This is [0-9a-zA-Z-]*(TeX|Omega)")
-re_rerun      = re.compile("LaTeX Warning:.*Rerun")
-re_file       = re.compile("(\\((?P<file>[^ \n\t(){}]*)|\\))")
-re_badbox     = re.compile(r"(Ov|Und)erfull \\[hv]box ")
-re_line       = re.compile(r"(l\.(?P<line>[0-9]+)( (?P<code>.*))?$|<\*>)")
-re_cseq       = re.compile(r".*(?P<seq>\\[^ ]*) ?$")
-re_page       = re.compile("\[(?P<num>[0-9]+)\]")
-re_atline     = re.compile("( detected| in paragraph)? at lines? (?P<line>[0-9]*)(--(?P<last>[0-9]*))?")
-re_reference  = re.compile("LaTeX Warning: Reference `(?P<ref>.*)' on page (?P<page>[0-9]*) undefined on input line (?P<line>[0-9]*)\\.$")
-re_citation   = re.compile("^.*Citation `(?P<cite>.*)' on page (?P<page>[0-9]*) undefined on input line (?P<line>[0-9]*)\\.$")
-re_label      = re.compile("LaTeX Warning: (?P<text>Label .*)$")
-re_warning    = re.compile("(LaTeX|Package)( (?P<pkg>.*))? Warning: (?P<text>.*)$")
-re_online     = re.compile("(; reported)? on input line (?P<line>[0-9]*)")
-re_ignored    = re.compile("; all text was ignored after line (?P<line>[0-9]*).$")
-     */
 }
