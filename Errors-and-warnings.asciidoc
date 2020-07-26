@@ -1,4 +1,4 @@
-This is a list of all the errors and warnings that are in Appendix B of _The Latex Companion_ <<mittelbach2004>>, plus some more we encountered while error/warning hunting.
+This is a list of most of the errors and warnings that are in Appendix B of _The Latex Companion_ <<mittelbach2004>>, plus some more we encountered while error/warning hunting.
 For each error/warning, we give a minimal working example, and the relevant part of the output log.
 For more info on a message, see <<mittelbach2004>>.
 Used by us for testing purposes, written down here for future reference.
@@ -1169,6 +1169,7 @@ l.5 \end{document}
 ----
 
 ----
+
 ./main.tex:3: LaTeX Error: Missing p-arg in array arg.
 
 See the LaTeX manual or LaTeX Companion for explanation.
@@ -1176,7 +1177,13 @@ Type  H <return>  for immediate help.
  ...
 
 l.3     \begin{tabular}{p}
+
 ./main.tex:3: Missing # inserted in alignment preamble.
+<to be read again>
+                   \cr
+l.3     \begin{tabular}{p}
+
+
 ----
 
 === Missing = inserted for \ifnum
@@ -1212,6 +1219,13 @@ l.4 \end{document}
 <inserted text>
                 $
 l.3     _
+
+./main.tex:4: Missing { inserted.
+<to be read again>
+                   \let
+l.4 \end{document}
+
+
 ----
 
 === Missing \endgroup inserted
@@ -2243,6 +2257,29 @@ LaTeX Warning: You have requested, on input line 5, version
                but only version
                `2020/04/08'
                is available.
+----
+
+=== pdfTeX warning
+
+[source,latex,linenums]
+----
+\documentclass{article}
+\usepackage{hyperref}
+
+\begin{document}
+
+    \hyperlink{summary}{summary}
+
+\end{document}
+----
+
+----
+(/home/thomas/GitRepos/random-tex/out/main.aux) )pdfTeX warning (dest): name{su
+mmary} has been referenced but does not exist, replaced by a fixed one
+
+</home/thomas/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+Output written on /home/thomas/GitRepos/random-tex/out/main.pdf (1 page, 12113
+bytes).
 ----
 
 = BibTeX
