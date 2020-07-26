@@ -58,4 +58,9 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     //     myFixture.configureByFiles(name, "references.bib")
     //     myFixture.checkHighlighting()
     // }
+
+    fun testComma() {
+        myFixture.configureByText(LatexFileType, """\input{name,with,.tex}""")
+        myFixture.checkHighlighting()
+    }
 }

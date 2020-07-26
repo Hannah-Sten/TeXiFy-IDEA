@@ -12,6 +12,8 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICS
+import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
@@ -391,6 +393,12 @@ object Magic {
         val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
 
         /**
+         * All commands for which we assume that commas in required parameters do not separate parameters.
+         * By default we assume the comma is a separator.
+         */
+        val commandsWithNoCommaSeparatedParameters = setOf(INCLUDEGRAPHICS).map { "\\" + it.command }
+
+        /**
          * All commands that define labels and that are present by default.
          * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
          */
@@ -670,6 +678,9 @@ object Magic {
         @JvmField
         val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s~])")!!
 
+        /** [abbreviation]s that are missing a normal space (or a non-breaking space) */
+        val abbreviationWithoutNormalSpace = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s])")!!
+
         /**
          * Matches all comments, starting with % and ending with a newline.
          */
@@ -826,7 +837,9 @@ object Magic {
          */
         val packagesLoadingOtherPackages = mapOf(
                 AMSSYMB to setOf(AMSFONTS),
-                MATHTOOLS to setOf(AMSMATH)
+                MATHTOOLS to setOf(AMSMATH),
+                GRAPHICX to setOf(GRAPHICS),
+                XCOLOR to setOf(COLOR)
         )
 
         /**

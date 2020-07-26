@@ -7,8 +7,6 @@ import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 /**
@@ -78,16 +76,13 @@ object AutoCompileState {
             return
         }
 
-        GlobalScope.launch {
+        // Changing focus would interrupt the user during typing
+        (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
 
-            // Changing focus would interrupt the user during typing
-            (runConfigSettings.configuration as LatexRunConfiguration).allowFocusChange = false
-
-            ExecutionManager.getInstance(project!!).restartRunProfile(project!!,
-                    DefaultRunExecutor.getRunExecutorInstance(),
-                    ExecutionTargetManager.getInstance(project!!).activeTarget,
-                    runConfigSettings,
-                    null)
-        }
+        ExecutionManager.getInstance(project!!).restartRunProfile(project!!,
+                DefaultRunExecutor.getRunExecutorInstance(),
+                ExecutionTargetManager.getInstance(project!!).activeTarget,
+                runConfigSettings,
+                null)
     }
 }
