@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.run.latex.logtab.ui
 
+import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.errorTreeView.ErrorTreeElement
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ToggleAction
@@ -25,7 +27,8 @@ class LatexCompileMessageTreeView(
     override fun fillRightToolbarGroup(group: DefaultActionGroup) {
         // Use myProject (from NewErrorTreeViewPanel) because somehow project is null
         LatexKeywordFilter.values().forEach { group.add(FilterKeywordAction(it, myProject)) }
-        group.add(FilterBibtexAction(myProject))
+        group.addAll(FilterBibtexAction(myProject), ExpandAllAction(), CollapseAllAction())
+
         // Search for the information action toggle so we can remove it (as we don't use it).
         val informationAction = group.childActionsOrStubs.find {
             it.templateText?.contains(IdeBundle.messagePointer("action.show.infos").get()) == true
@@ -40,14 +43,26 @@ class LatexCompileMessageTreeView(
      * Get all elements that are currently in the tree.
      *
      * Elements are located as direct children of a file, which are direct children of the root.
-     * Therefor, we only have to look one level deep to get all the messages.
+     * Therefore, we only have to look one level deep to get all the messages.
      */
-    private fun getAllElements(): Set<ErrorTreeElement> {
+    private fun getAllElements(): List<ErrorTreeElement> {
         this@LatexCompileMessageTreeView.errorViewStructure.let { tree ->
             return tree.getChildElements(tree.rootElement).flatMap {
                 tree.getChildElements(it).toList()
-            }.toSet()
+            }
         }
+    }
+
+    /**
+     * Get selected elements.
+     */
+    private fun getSelectedElements(): List<ErrorTreeElement> {
+        val selectedRows = myTree.selectionRows ?: return emptyList()
+        val tree = errorViewStructure
+        val rows = tree.getChildElements(tree.rootElement).flatMap {
+            listOf(it) + tree.getChildElements(it).toList()
+        }
+        return rows.filterIndexed { index, _ -> index in selectedRows }
     }
 
     /**
@@ -135,6 +150,20 @@ class LatexCompileMessageTreeView(
         override fun setSelected(e: AnActionEvent, state: Boolean) {
             config().showBibtexWarnings = state
             applyFiltersToAllMessages()
+        }
+    }
+
+    inner class ExpandAllAction : AnAction("Expand All", "", AllIcons.Actions.Expandall), DumbAware {
+        override fun actionPerformed(e: AnActionEvent) {
+            expandAll()
+            config().expanded = true
+        }
+    }
+
+    inner class CollapseAllAction : AnAction("Collapse All", "", AllIcons.Actions.Collapseall), DumbAware {
+        override fun actionPerformed(e: AnActionEvent) {
+            collapseAll()
+            config().expanded = false
         }
     }
 }

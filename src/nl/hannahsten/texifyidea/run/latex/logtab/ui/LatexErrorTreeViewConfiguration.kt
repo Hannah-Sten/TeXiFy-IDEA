@@ -11,7 +11,11 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "LatexErrorTreeViewConfiguration", storages = [(Storage(
     StoragePathMacros.WORKSPACE_FILE
 ))])
-data class LatexErrorTreeViewConfiguration(var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.values().associate { it to true }.toMutableMap(), var showBibtexWarnings: Boolean = true) :
+data class LatexErrorTreeViewConfiguration(
+    var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.values().associate { it to true }.toMutableMap(),
+    var showBibtexWarnings: Boolean = true,
+    var expanded: Boolean = true // Unfortunately we cannot use this, because expandAll() apparently only works in Actions
+) :
     PersistentStateComponent<LatexErrorTreeViewConfiguration> {
     companion object {
         @JvmStatic

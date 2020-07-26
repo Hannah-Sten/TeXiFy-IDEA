@@ -154,7 +154,7 @@ class LatexOutputListener(
         logMessage.apply {
             if (message.isEmpty()) return
 
-            if (!isLineEndOfMessage(newText, logMessage.message) || text.removeSuffix(newText).length >= LatexLogMagicRegex.LINE_WIDTH) {
+            if (!isLineEndOfMessage(newText, logMessage.message) || text.removeSuffix(newText).length >= LINE_WIDTH) {
                 // Keep on collecting output for this message
                 currentLogMessage = logMessage
                 isCollectingMessage = true

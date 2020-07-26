@@ -5,6 +5,12 @@ object BibtexLogMagicRegex {
     val bibFileOpened = """^Database file #(\d+): (?<file>.+)$""".toRegex()
     val biberFileOpened = """^INFO - Found BibTeX data source '(?<file>.+)'$""".toRegex()
 
+    val bibtexNumberOfWarnings = """\(There (was 1 warning|were (?<number>\d+) warnings)\)""".toRegex()
+    val bibtexNumberOfErrors = """\(There (was 1 error message|were (?<number>\d+) error messages)\)""".toRegex()
+
+    val biberNumberOfWarnings = """INFO - WARNINGS: (?<number>\d+)""".toRegex()
+    val biberNumberOfErrors = """INFO - ERRORS: (?<number>\d+)""".toRegex()
+
     /*
      * Errors
      */

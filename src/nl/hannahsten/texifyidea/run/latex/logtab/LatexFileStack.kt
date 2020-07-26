@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.lineNumber
 import java.util.ArrayDeque
@@ -89,6 +90,9 @@ class LatexFileStack(
                 }
                 if (notClosedNonFileOpenParentheses > 0) notClosedNonFileOpenParentheses--
                 else {
+                    if (isEmpty()) {
+                        throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker.")
+                    }
                     pop()
                 }
             }

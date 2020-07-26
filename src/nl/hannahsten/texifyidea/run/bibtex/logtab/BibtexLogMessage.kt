@@ -14,5 +14,9 @@ data class BibtexLogMessage(val message: String, val fileName: String? = null, v
 
 enum class BibtexLogMessageType(val category: Int) {
     ERROR(MessageCategory.ERROR),
-    WARNING(MessageCategory.WARNING),
+    WARNING(MessageCategory.WARNING);
+
+    override fun toString(): String {
+        return super.toString().toLowerCase()
+    }
 }
