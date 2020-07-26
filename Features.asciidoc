@@ -95,6 +95,7 @@ toc::[]
 * link:Skim-support[Skim (MacOS) support with forward and backward search]
 * link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
 * Opens system default pdf viewer when no custom or supported pdf viewer is known
+* link:Log-messages[A clean overview of LaTeX, BibTeX and Biber warnings and errors]
 * link:Automatic-compilation[Support for automatic compilation]
 * The pdf will appear in a separate out/ directory to avoid cluttering the source directory
 * Auxiliary files will be put in a separate auxil/ directory on Windows
