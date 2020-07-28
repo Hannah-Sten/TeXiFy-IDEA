@@ -1,15 +1,15 @@
-//package nl.hannahsten.texifyidea.inspections.grazie
+// package nl.hannahsten.texifyidea.inspections.grazie
 //
-//import com.intellij.grazie.ide.inspection.grammar.GrazieInspection
-//import com.intellij.grazie.ide.msg.GrazieStateLifecycle
-//import com.intellij.openapi.application.ApplicationManager
-//import com.intellij.spellchecker.inspections.SpellCheckingInspection
-//import com.intellij.testFramework.fixtures.BasePlatformTestCase
-//import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
-//import com.intellij.util.messages.Topic
-//import nl.hannahsten.texifyidea.file.LatexFileType
+// import com.intellij.grazie.ide.inspection.grammar.GrazieInspection
+// import com.intellij.grazie.ide.msg.GrazieStateLifecycle
+// import com.intellij.openapi.application.ApplicationManager
+// import com.intellij.spellchecker.inspections.SpellCheckingInspection
+// import com.intellij.testFramework.fixtures.BasePlatformTestCase
+// import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
+// import com.intellij.util.messages.Topic
+// import nl.hannahsten.texifyidea.file.LatexFileType
 //
-//class GrazieInspectionTest : BasePlatformTestCase() {
+// class GrazieInspectionTest : BasePlatformTestCase() {
 //    override fun getTestDataPath(): String {
 //        return "test/resources/inspections/grazie"
 //    }
@@ -27,8 +27,8 @@
 //    fun testCheckGrammarInConstructs() {
 //        myFixture.configureByText(LatexFileType, """Is these an error with a sentence ${'$'}\xi${'$'} end or not.""")
 //        myFixture.checkHighlighting()
-////        val testName = getTestName(false)
-////        myFixture.configureByFile("$testName.tex")
-////        myFixture.checkHighlighting(true, false, false, true)
+// //        val testName = getTestName(false)
+// //        myFixture.configureByFile("$testName.tex")
+// //        myFixture.checkHighlighting(true, false, false, true)
 //    }
-//}
+// }

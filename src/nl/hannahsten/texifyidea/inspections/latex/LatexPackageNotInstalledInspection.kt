@@ -54,7 +54,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                 if (`package` !in packages) {
                     // Manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
                     if ("tlmgr search --file /$`package`.sty".runCommand()
-                                    ?.isEmpty() != false) {
+                                    ?.isEmpty() == true) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed or \\ProvidesPackage is missing",
@@ -94,7 +94,14 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                             }
 
                             title = "Installing $packageName..."
-                            "tlmgr install $tlname".runCommand()
+                            val output = "tlmgr install $tlname".runCommand()
+                            val update = "tlmgr update --self"
+                            if (output?.contains(update) == true) {
+                                title = "Updating tlmgr..."
+                                update.runCommand()
+                                title = "Installing $packageName..."
+                                "tlmgr install $tlname".runCommand()
+                            }
                         }
 
                         override fun onSuccess() {
