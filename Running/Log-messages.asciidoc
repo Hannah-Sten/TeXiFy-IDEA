@@ -1,6 +1,6 @@
 :experimental:
 
-_Since b0.7.1_
+_Since b0.7_
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Running/figures/log-tab.png[Log tab image]
 
