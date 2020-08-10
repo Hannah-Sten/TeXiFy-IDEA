@@ -1,6 +1,7 @@
 # Beta 0.7
 
 # Additions
+* Compile messages. (#1209)
 * Add inspection to encourage proper nesting of sectioning commands. (#1492)
 * Add support for custom labeling and referencing commands. (#1442, #1507)
 * Add folding for escaped symbols. (#1511)
