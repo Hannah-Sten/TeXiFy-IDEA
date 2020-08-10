@@ -29,9 +29,4 @@ class LatexLineMarkerProvider : LineMarkerProvider {
         }
         else null
     }
-
-    override fun collectSlowLineMarkers(
-            elements: MutableList<PsiElement>,
-            result: MutableCollection<LineMarkerInfo<PsiElement>>
-    ) = Unit
 }

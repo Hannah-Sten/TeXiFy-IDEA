@@ -67,4 +67,8 @@ object ShiftTracker : KeyListener, TypedHandlerDelegate() {
             shift = false
         }
     }
+
+    fun unload() {
+        registered.forEach { it.removeKeyListener(this) }
+    }
 }

@@ -15,7 +15,9 @@ import javax.swing.*
  * @author Hannah Schellekens, Sten Wessel
  */
 @Suppress("SameParameterValue")
-class TexifyConfigurable(private val settings: TexifySettings) : SearchableConfigurable {
+class TexifyConfigurable : SearchableConfigurable {
+
+    private val settings: TexifySettings = TexifySettings.getInstance()
 
     private lateinit var automaticSecondInlineMathSymbol: JBCheckBox
     private lateinit var automaticUpDownBracket: JBCheckBox
