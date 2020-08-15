@@ -242,14 +242,10 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * - Removes any start '{' and ending '}'
      * - Remove 'IntelliJIdeaRulezz'
      * - Removes any arguments before the last one (separated by ',')
-     * - Remove starting './' or '../'
+     * - Remove starting './'
      * - Prevent '//' (removes the first '/')
      */
     private fun processAutocompleteText(autocompleteText: String): String {
-//        var result = if (autocompleteText.endsWith("}")) {
-//            autocompleteText.substring(0, autocompleteText.length - 1)
-//        }
-//        else autocompleteText
         var result = autocompleteText.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
 
         // When the last parameter is autocompleted, parameters before that may also be present in
@@ -262,8 +258,6 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         if (result.startsWith("./")) {
             result = result.substring(2)
         }
-
-
         // Prevent double ../
 //        if (result.startsWith("../")) {
 //            result = result.substring(3)

@@ -41,7 +41,7 @@ class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
 
         val result = myFixture.complete(CompletionType.BASIC)
 
-        assert(result.any { it.lookupString == "inputted.tex"})
+        assert(result.any { it.lookupString == "inputted.tex" })
     }
 
     fun `test completion in included file from subdirectory for directories in main dir`() {
@@ -49,6 +49,6 @@ class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
 
         val result = myFixture.complete(CompletionType.BASIC)
 
-        assert(result.any { it.lookupString == "nest"})
+        assert(result.any { it.lookupString == "nest/" })
     }
 }
