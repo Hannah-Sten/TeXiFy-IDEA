@@ -567,8 +567,11 @@ object Magic {
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
                 "\\usepackage" to hashSetOf("sty"),
-                "\\documentclass" to hashSetOf("cls")
+                "\\documentclass" to hashSetOf("cls"),
+                "\\" + EXTERNALDOCUMENT.command to hashSetOf("tex") // Not completely true, as it only includes labels
         )
+
+        val includeCommands = includeOnlyExtensions.keys
 
         /**
          * All commands that end if.

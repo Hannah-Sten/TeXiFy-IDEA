@@ -82,6 +82,7 @@ enum class LatexRegularCommand(
     ENQUOTE_STAR("enquote*", dependency = CSQUOTES),
     EQREF("eqref", "eqLabel".asRequired(Type.TEXT), dependency = AMSMATH),
     EVENSIDEMARGIN("evensidemargin"),
+    EXTERNALDOCUMENT("externaldocument", "prefix".asOptional(), "file".asRequired()),
     EXTRACTCOLORSPEC("extractcolorspec", "color".asRequired(), "cmd".asRequired(), dependency = XCOLOR),
     EXTRACTCOLORSPECS("extractcolorspecs", "color".asRequired(), "model-cmd".asRequired(), "color-cmd".asRequired(), dependency = XCOLOR),
     FAMILY("family"),

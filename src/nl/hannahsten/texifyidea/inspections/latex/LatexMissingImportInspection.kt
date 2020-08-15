@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -9,6 +10,8 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -25,7 +28,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
-import java.util.*
+import java.util.EnumSet
 
 /**
  * Currently works for built-in commands and environments.
@@ -33,6 +36,7 @@ import java.util.*
  * @author Hannah Schellekens
  */
 open class LatexMissingImportInspection : TexifyInspectionBase() {
+    var numberOfIndexedUsePackages = 0
 
     override val inspectionGroup = InsightGroup.LATEX
 
@@ -53,6 +57,22 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         val includedPackages = PackageUtils.getIncludedPackages(file)
         analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
         analyseEnvironments(file, includedPackages, descriptors, manager, isOntheFly)
+
+
+        val indexedUsePackages = LatexCommandsIndex.getCommandsByNames(
+            Magic.Command.includeCommands,
+            file.project,
+            GlobalSearchScope.projectScope(file.project)
+        ).count()
+
+        if (numberOfIndexedUsePackages != indexedUsePackages) {
+            numberOfIndexedUsePackages = indexedUsePackages
+            // Rerun inspections, because IntelliJ will leave the old problem descriptors
+            // there when a \usepackage is added, even though this inspection is then
+            // run and does not create problem descriptions. Rerunning the inspections
+            // solves this problem.
+            DaemonCodeAnalyzer.getInstance(file.project).restart(file)
+        }
 
         return descriptors
     }
