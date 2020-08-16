@@ -259,9 +259,9 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             result = result.substring(2)
         }
         // Prevent double ../
-//        if (result.startsWith("../")) {
-//            result = result.substring(3)
-//        }
+        if (result.startsWith("../")) {
+            result = result.substring(3)
+        }
 
         // Prevent double /
         if (result.startsWith("//")) {
