@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import org.junit.Test
@@ -23,10 +24,10 @@ class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
     fun testAbsoluteFolderCompletion() {
         myFixture.configureByText(LatexFileType, """"\graphicspath{{$absoluteWorkingPath/test/resources/completion/path/<caret>}}""")
 
-        val result = myFixture.complete(CompletionType.BASIC)
+        val result: Array<LookupElement> = myFixture.complete(CompletionType.BASIC)
 
-        // only ./ and ../ should be shown
-        assert(result.size == 2)
+        // Should only show folders
+        assert(result.removeFolderEntries().isEmpty())
     }
 
     @Test
@@ -35,7 +36,6 @@ class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
 
         val result = myFixture.complete(CompletionType.BASIC)
 
-        // then
         assert(result.isNotEmpty())
     }
 
@@ -43,11 +43,10 @@ class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
     fun testSupportedPictureExtensions() {
         myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/<caret>}""")
 
-        // when
         val result = myFixture.complete(CompletionType.BASIC)
 
-        // is only allowed to show ./ ../ and the png file
-        assert(result.size == 3)
+        // is only allowed to show folders and the png file
+        assert(result.removeFolderEntries().size == 1)
     }
 
     @Test
@@ -56,8 +55,8 @@ class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
 
         val result = myFixture.complete(CompletionType.BASIC)
 
-        // is only allowed to show ./ ../ and the tex file
-        assert(result.size == 3)
+        // is only allowed to show folders and the tex file
+        assert(result.removeFolderEntries().size == 1)
     }
 
     @Test
@@ -69,4 +68,6 @@ class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
         // no absolute paths allowed with \include
         assert(result.isEmpty())
     }
+
+    fun Array<LookupElement>.removeFolderEntries() = filterNot { it.lookupString.endsWith("/") }
 }
