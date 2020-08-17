@@ -2,12 +2,13 @@ package nl.hannahsten.texifyidea.lang
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
-import kotlinx.coroutines.sync.Mutex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import java.io.Serializable
-import java.util.*
+import java.util.Collections
+import java.util.HashSet
+import java.util.Spliterator
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
 import java.util.stream.StreamSupport

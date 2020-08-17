@@ -11,6 +11,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -58,7 +60,6 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
         analyseEnvironments(file, includedPackages, descriptors, manager, isOntheFly)
 
-
         val indexedUsePackages = LatexCommandsIndex.getCommandsByNames(
             Magic.Command.includeCommands,
             file.project,
@@ -71,7 +72,10 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             // there when a \usepackage is added, even though this inspection is then
             // run and does not create problem descriptions. Rerunning the inspections
             // solves this problem.
-            DaemonCodeAnalyzer.getInstance(file.project).restart(file)
+            // Using a coroutine to avoid "PSI/document/model changes are not allowed during highlighting" exception
+            GlobalScope.launch {
+                DaemonCodeAnalyzer.getInstance(file.project).restart(file)
+            }
         }
 
         return descriptors
