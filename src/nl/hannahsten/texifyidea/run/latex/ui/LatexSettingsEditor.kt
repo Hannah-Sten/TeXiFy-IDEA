@@ -22,7 +22,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
-import java.awt.Color
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -98,7 +97,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
-        outputPathTextField.text = runConfiguration.outputPath?.path ?: ""
+        outputPathTextField.text = runConfiguration.outputPath.getPath().path
 
         // Reset whether to compile twice
         if (compileTwice != null) {
@@ -200,19 +199,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
         if (outputPathTextField.text.endsWith("/bin")) {
-            runConfiguration.setDefaultOutputPath()
+            runConfiguration.outputPath.setDefault()
         }
         else {
             runConfiguration.setFileOutputPath(outputPathTextField.text)
-            if (runConfiguration.outputPath == null) {
-                // Perhaps not entirely IJ-style, but don't know of a better way at the moment to provide a non-blocking warning
-                outputPathTextField.background = Color.RED
-                outputPathTextField.toolTipText = "Path not found, a default path will be used when executed"
-            }
-            else {
-                outputPathTextField.background = null
-                outputPathTextField.toolTipText = null
-            }
         }
 
         if (auxilPath != null) {
