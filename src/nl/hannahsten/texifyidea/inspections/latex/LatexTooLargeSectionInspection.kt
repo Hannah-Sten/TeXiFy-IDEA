@@ -125,7 +125,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
     private fun isAlreadySplit(commands: Collection<LatexCommands>): Boolean {
         val smallestIndex = commands.asSequence()
                 .map { cmd -> SECTION_NAMES.indexOf(cmd.name) }
-                .min() ?: return false
+                .minOrNull() ?: return false
 
         // Just check if \section or \chapter occur only once.
         for (name in SECTION_NAMES) {

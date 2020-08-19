@@ -106,7 +106,7 @@ fun List<String>.removeIndents(): List<String> {
     val (maxIndent, _) = asSequence()
             .filter { !it.isBlank() }
             .map { Pair(it.getIndent().length, it) }
-            .minBy { it.first } ?: return this
+            .minByOrNull { it.first } ?: return this
 
     var noContentYet = true
     for (originalLine in this) {

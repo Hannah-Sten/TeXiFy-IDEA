@@ -151,7 +151,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             // If none of the dependencies are included
             if (includedPackages.toSet().intersect(dependencies.map { it.name }).isEmpty()) {
                 // We know dependencies is not empty
-                val range = TextRange(0, latexCommands.minBy { it.command.length }!!.command.length + 1)
+                val range = TextRange(0, latexCommands.minByOrNull { it.command.length }!!.command.length + 1)
                 val dependencyNames = dependencies.joinToString { it.name }.replaceAfterLast(", ", "or ${dependencies.last().name}")
                 val fixes = dependencies.map { ImportCommandFix(it) }.toTypedArray()
                 descriptors.add(manager.createProblemDescriptor(

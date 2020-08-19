@@ -14,13 +14,13 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
     /**
      * The number of blank lines to use before a sectioning command.
      */
-    @JvmField var BLANK_LINES_BEFORE_PART: Int = 2
-    @JvmField var BLANK_LINES_BEFORE_CHAPTER: Int = 2
-    @JvmField var BLANK_LINES_BEFORE_SECTION: Int = 2
-    @JvmField var BLANK_LINES_BEFORE_SUBSECTION: Int = 1
-    @JvmField var BLANK_LINES_BEFORE_SUBSUBSECTION: Int = 1
-    @JvmField var BLANK_LINES_BEFORE_PARAGRAPH: Int = 1
-    @JvmField var BLANK_LINES_BEFORE_SUBPARAGRAPH: Int = 1
+    var BLANK_LINES_BEFORE_PART: Int = 2
+    var BLANK_LINES_BEFORE_CHAPTER: Int = 2
+    var BLANK_LINES_BEFORE_SECTION: Int = 2
+    var BLANK_LINES_BEFORE_SUBSECTION: Int = 1
+    var BLANK_LINES_BEFORE_SUBSUBSECTION: Int = 1
+    var BLANK_LINES_BEFORE_PARAGRAPH: Int = 1
+    var BLANK_LINES_BEFORE_SUBPARAGRAPH: Int = 1
 
     companion object {
         val blankLinesOptions = mapOf(

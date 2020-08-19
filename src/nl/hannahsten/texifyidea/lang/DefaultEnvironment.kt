@@ -30,8 +30,8 @@ enum class DefaultEnvironment(
     ENUMERATE(environmentName = "enumerate", initialContents = "\\item "),
     EQUATION(environmentName = "equation", context = Context.MATH),
     EQNARRAY(environmentName = "eqnarray"),
-    FIGURE(environmentName = "figure", arguments = *arrayOf(OptionalArgument("placement"))),
-    FIGURE_STAR(environmentName = "figure*", arguments = *arrayOf(OptionalArgument("placement"))),
+    FIGURE(environmentName = "figure", arguments = arrayOf(OptionalArgument("placement"))),
+    FIGURE_STAR(environmentName = "figure*", arguments = arrayOf(OptionalArgument("placement"))),
     FILECONTENTS(environmentName = "filecontents"),
     FILECONTENTS_STAR(environmentName = "filecontents*"),
     FLUSHLEFT(environmentName = "flushleft"),
@@ -53,13 +53,13 @@ enum class DefaultEnvironment(
     SCRIPTSIZE(environmentName = "scriptsize"),
     SMALL(environmentName = "small"),
     TABBING(environmentName = "tabbing"),
-    TABLE(environmentName = "table", arguments = *arrayOf(OptionalArgument("placement"))),
-    TABLE_STAR(environmentName = "table*", arguments = *arrayOf(OptionalArgument("placement"))),
+    TABLE(environmentName = "table", arguments = arrayOf(OptionalArgument("placement"))),
+    TABLE_STAR(environmentName = "table*", arguments = arrayOf(OptionalArgument("placement"))),
     TABULAR(OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular"),
     TABULAR_STAR(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular*"),
-    THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = *arrayOf(RequiredArgument("widestlabel"))),
+    THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = arrayOf(RequiredArgument("widestlabel"))),
     THEINDEX(environmentName = "theindex"),
-    THEOREM(environmentName = "theorem", arguments = *arrayOf(OptionalArgument("optional"))),
+    THEOREM(environmentName = "theorem", arguments = arrayOf(OptionalArgument("optional"))),
     TINY(environmentName = "tiny"),
     TITLEPAGE(environmentName = "titlepage"),
     TRIVLIST(environmentName = "trivlist"),
@@ -132,7 +132,7 @@ enum class DefaultEnvironment(
     TIKZPICTURE(environmentName = "tikzpicture", dependency = Package.TIKZ),
 
     // xcolor
-    TESTCOLORS(environmentName = "testcolors", arguments = *arrayOf(OptionalArgument("num models")), dependency = XCOLOR);
+    TESTCOLORS(environmentName = "testcolors", arguments = arrayOf(OptionalArgument("num models")), dependency = XCOLOR);
 
     companion object {
 

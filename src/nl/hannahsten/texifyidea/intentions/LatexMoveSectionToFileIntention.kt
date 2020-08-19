@@ -53,7 +53,7 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         // Find text.
         val start = label?.endOffset() ?: sectionCommand.endOffset()
         val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
-        val end = (nextCmd?.textOffset ?: document.textLength ?: return) - cmdIndent.length
+        val end = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
         val text = document.getText(TextRange(start, end)).trimEnd().removeIndents()
 
         // Create new file.

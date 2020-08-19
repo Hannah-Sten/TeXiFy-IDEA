@@ -157,7 +157,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  * Indexed by line, then by level.
  */
 private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
-    val nrLevels = relativeIndices.map { it.size }.max() ?: 0
+    val nrLevels = relativeIndices.map { it.size }.maxOrNull() ?: 0
 
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.
@@ -180,7 +180,7 @@ private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWitho
 
     // Take the maximum width of each i-th cell over all lines.
     val cellWidths = cellWidthsPerLine.first().indices.map { level ->
-        cellWidthsPerLine.map { it[level] }.max() ?: return mutableListOf()
+        cellWidthsPerLine.map { it[level] }.maxOrNull() ?: return mutableListOf()
     }
 
     // The number of spaces that has to be added to this cell is the
