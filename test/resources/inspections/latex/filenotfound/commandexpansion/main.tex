@@ -1,0 +1,17 @@
+\providecommand{\main}{.}
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subfiles}
+\usepackage{biblatex}
+
+\addbibresource{\main/main.bib}
+
+% Document
+\begin{document}
+    hallo~\cite{goossens}
+    \subfile{\main/nest/sub.tex}
+    \printbibliography
+\end{document}

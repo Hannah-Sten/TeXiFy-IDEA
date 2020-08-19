@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import org.junit.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -104,6 +106,18 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     @Test
     fun testInvalidImportRelativePathIncludedFile() {
         myFixture.configureByFiles("chapters/notincluded.tex", "ImportPackageRelativePathInvalid.tex", "chapters/included2.tex")
+        myFixture.checkHighlighting()
+    }
+
+    @Test
+    fun `test command expansion in root file`() {
+        myFixture.configureByFiles("commandexpansion/main.tex", "commandexpansion/nest/sub.tex")
+        myFixture.checkHighlighting()
+    }
+
+    @Test
+    fun `test command expansion in subfile`() {
+        myFixture.configureByFiles("commandexpansion/nest/sub.tex", "commandexpansion/main.tex", "commandexpansion/nest/sub2.tex")
         myFixture.checkHighlighting()
     }
 }
