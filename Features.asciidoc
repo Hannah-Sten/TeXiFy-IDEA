@@ -14,8 +14,11 @@ This is a work in progress. More features should be added, and each should link 
 
 toc::[]
 
+== [[searching]] Searching through this wiki
 
-// todo: each features which has a menu entry/shortcut should mention it (at the top of the description page?)
+You can search through this wiki by using the GitHub global search bar at the top of the page, and then selecting Wiki results.
+
+// todo: each feature which has a menu entry/shortcut should mention it (at the top of the description page?)
 
 == Installation
 
