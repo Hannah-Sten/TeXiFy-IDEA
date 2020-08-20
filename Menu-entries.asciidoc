@@ -1,7 +1,20 @@
 :experimental:
 
-=== [[table-creation-wizard]]Table Creation Wizard
-_alpha versions_
+== Word counting tool
+
+menu:Analyze[LaTeX > Word count]
+
+Count words in the currently open file, excluding LaTeX commands.
+
+== [[file-templates]] Customizable file templates
+
+menu:Settings[Editor > File and Code Templates]
+
+Right-click in Project tool window, then menu:New[LaTeX File].
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/figures/new-file.png[]
+
+== [[table-creation-wizard]]Table Creation Wizard
 
 menu:Edit[LaTeX > Table Creation Wizard]
 
@@ -19,7 +32,7 @@ LaTeX.
 - Numbers: As per convention, numbers are aligned on the right.
 
 
-=== [[clear-aux-files]]Clear Auxiliary Files
+== [[clear-aux-files]]Clear Auxiliary Files
 
 menu:Tools[LaTeX > Clear Auxiliary Files]
 
@@ -30,7 +43,7 @@ aux, bbl, bcf, brf, fls, idx, ind, lot, lot, nav, out, snm, toc
 
 If auxiliary files in a certain directory do not get deleted, make sure you mark that directory as a source directory by right-clicking on it and selecting menu:Mark Directory as[Sources Root].
 
-=== Clear generated files
+== Clear generated files
 
 _Since b0.6.7_
 
