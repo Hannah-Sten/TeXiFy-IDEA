@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.action.EditorAction
+import nl.hannahsten.texifyidea.action.ForwardSearchActionBase
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 
@@ -16,24 +17,4 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
  *
  * @author Stephan Sundermann
  */
-open class ForwardSearchAction : EditorAction(
-        "_ForwardSearch",
-        TexifyIcons.RIGHT
-) {
-    private val skim = PdfViewer.SKIM
-
-    override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
-        if (!skim.isAvailable()) {
-            return
-        }
-
-        val document = textEditor.editor.document
-        val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
-
-        skim.conversation!!.forwardSearch(null, file.path, line, project, focusAllowed = true)
-    }
-
-    override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = TexifySettings.getInstance().pdfViewer == skim
-    }
-}
+open class ForwardSearchAction : ForwardSearchActionBase(PdfViewer.SKIM)

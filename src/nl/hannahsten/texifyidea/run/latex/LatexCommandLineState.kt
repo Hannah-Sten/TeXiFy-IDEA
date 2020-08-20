@@ -177,7 +177,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }
-        else if (TexifySettings.getInstance().pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR, PdfViewer.SKIM)) {
+        else if (TexifySettings.getInstance().pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR, PdfViewer.ZATHURA, PdfViewer.SKIM)) {
             ViewerForwardSearch(TexifySettings.getInstance().pdfViewer).execute(handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {
