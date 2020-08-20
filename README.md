@@ -26,38 +26,33 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 
 ## Features
 
-<!-- todo links to wiki -->
-* Syntax highlighting
-* Autocomplete of labels, (custom defined) commands and environments
-* Writer ergonomics - writing LaTeX made less cumbersome
-* Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber
-* Inspections. Intentions. And heaps more inspections
-* Full BibTeX support
-* Formatter for LaTeX and BibTeX
-* Structure view for LaTeX and BibTeX with filters
-* Code folding for imports, sections, and environments
-* SumatraPDF (Windows), Evince (Linux), Okular (Linux) and Skim (MacOS) support with forward and backward search
-* Smart Quotes
-* Unicode math preview
-* Equation preview
-* Gutter icons for quick compilation and file includes
-* Fancy icons that fit in with the IntelliJ style
-* Brace matching
-* Word counting tool
-* File templates for .tex, .sty, .cls and .bib files
-* Automagically import packages of common commands
-* Go to declaration and find usages for labels, citations, and custom commands
-* Renaming of labels, citations, environments and files
-* Shortcuts for styling text
-* Line commenter
-* Support for user-created document classes and packages
-* Toggle star action
-* Words of encouragement
+* [Syntax highlighting](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Syntax-highlighting)
+* [Autocompletion of labels, (custom defined) commands and environments](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Autocomplete)
+* [Writer ergonomics - writing LaTeX made less cumbersome](https://www.jetbrains.com/idea/features/)
+* [Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, bibtex, and biber](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Compilers)
+* [Inspections. Intentions. And heaps more inspections](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features#inspections)
+* [Full BibTeX support](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features#bibtex)
+* [Formatter for LaTeX and BibTeX](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-formatting)
+* [Structure view for LaTeX and BibTeX with filters](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Structure%20view)
+* [Code folding for imports, sections, and environments](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-folding)
+* [SumatraPDF (Windows)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/SumatraPDF-support), [Evince (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Evince-support), [Okular (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Okular-support) and [Skim (MacOS)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Skim-support) support with forward and backward search
+* [Smart Quotes](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Smart-quotes)
+* [Unicode math preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Unicode-math-preview)
+* [Equation preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Equation-preview)
+* [Gutter icons for quick compilation and file includes](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/File-inclusion-navigation)
+* [Fancy icons that fit in with the IntelliJ style](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/UI#Icons)
+* [Brace matching](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Brace-matching)
+* [Word counting tool](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Menu-entries#Word-counting-tool)
+* [File templates for .tex, .sty, .cls and .bib files](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Menu-entries#file-templates)
+* [Automagically import packages of common commands](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Automatic-package-importing)
+* [Go to declaration](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Go-to-declaration) and [find usages](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Find-usages) for labels, citations, and custom commands
+* [Renaming of labels, citations, environments and files](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Refactoring)
+* [Shortcuts for styling text](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features#menu-entries)
+* [Line commenter](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Line-commenting)
+* [Support for user-created document classes and packages](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/File-inclusion-navigation)
 
 A more extensive (but not complete) list as well as documentation for these features can be found in the [Wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Features).
-You can find IntelliJ documentation at https://www.jetbrains.com/idea/documentation/.
-
-<!-- todo feature images -->
+You can find IntelliJ documentation at https://www.jetbrains.com/idea/documentation/ and https://www.jetbrains.com/help/idea/.
 
 ## Installation instructions and getting started
 
@@ -69,3 +64,23 @@ See https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation for how to inst
 * [Troubleshooting issues with TeXiFy-IDEA](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Troubleshooting)
 * [Installing alpha builds](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Alpha-builds) for the latest features.
 * [Building the project from source](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Contributing-to-TeXiFy#building-from-source)
+
+## Screenshots
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19301.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19302.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19303.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19304.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19305.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19306.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19307.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19308.png)
+
+![](https://plugins.jetbrains.com/files/9473/screenshot_19309.png)
