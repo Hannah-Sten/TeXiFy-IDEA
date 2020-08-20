@@ -1,6 +1,14 @@
 = Troubleshooting
 
-Have a look at the https://github.com/Ruben-Sten/TeXiFy-IDEA#faq[FAQ] in the readme as well.
+If you run into troubles while using TeXiFy, you can try the following things.
+
+* If you have problems with installation, make sure you followed the link:Installation[Installation wiki page].
+* Search through the features list at link:Features[Features] or the link:Features#searching[complete wiki] to find documentation about the feature you're having problems with.
+* Search through the https://github.com/Hannah-Sten/TeXiFy-IDEA/issues?q=is%3Aissue[GitHub issues] to find similar problems, and if your issue has already been resolved
+* Look through the list of common problems at this page
+* Ask for help at https://gitter.im/TeXiFy-IDEA[gitter]
+* https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose[Open an issue]
+
 
 == The equation/TikZ preview is not working
 

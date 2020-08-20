@@ -31,6 +31,44 @@ When you edit a `.bnf` file, regenerate the parser with Grammar-Kit from the con
 
 Note that we have the generated files committed to git because of https://github.com/JetBrains/gradle-grammar-kit-plugin/issues/3
 
+== Building from source
+
+=== I know what I'm doing
+
+* This project uses gradle. Make a new project from existing sources and import the project. Done.
+
+=== I never did this before
+
+We assume that git, IntelliJ, java and LaTeX are installed. If not, try the normal https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Installation[installation instructions] first.
+
+* Make a new project from version control if you don't have it yet downloaded, or from existing sources if you have.
+* On the GitHub https://github.com/Hannah-Sten/TeXiFy-IDEA[home page] of TeXiFy click 'clone or download' and copy the url to Git Repository Url.
+* If the project opens and you get a popup 'Import Gradle project', click that.
+* If you are prompted to open the `build.gradle` file, do so.
+* Select 'Use auto-import'.
+* Thank Gradle that you're done now!
+* Check that in menu:Settings[Build, Execution, Deployment > Compiler > Kotlin Compiler] the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
+* Test it worked by executing the 'build' task in menu:Tasks[build > build].
+* You can ignore deprecation warnings in the build output.
+* If something doesn't work, try looking at the https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Troubleshooting[FAQ] first.
+
+==== To run directly from source
+* Click the Gradle button on the right, the gradle task is located in menu:Tasks[intellj > runIde]. Double-click to run.
+* If at some time you cannot use this and you need to run from command line, use `gradlew runIde`.
+* Note how IntelliJ adds this task as a run configuration in the normal location if you have run it once, so you can use that one the next time.
+* The first time it will look like you are installing a new IntelliJ - don't worry, just click through it.
+* You can also debug against other IDEs. At the moment only PyCharm is set up, but it is easy to add others. You can use it by specifying the argument `-PusePycharm=true` in your runIde run configuration.
+* To make a new project but also to open existing `.tex` files, use menu:New Project[LaTeX].
+* Compile a `.tex` file by clicking on the gutter icon next to `\begin{document}` or create a custom run configuration using the drop-down menu.
+
+==== To build a zip which contains the plugin
+* Click the Gradle button on the right, the gradle task is located in menu:Tasks[intellij > buildPlugin]. Right-click and run. The zip will be in build/distributions.
+* Install the zip in IntelliJ using menu:Settings[Plugins > Install plugin from disk].
+
+==== To run tests
+* Click the Gradle button on the right, the gradle task is located in menu:Tasks[verification > check]. Right-click and run. Note that check includes test so it will run the tests as well as ktlint.
+
+
 == LatexCommands.commandToken.text vs LatexCommands.name
 
 Throughout the code, you may see either `LatexCommands.commandToken.text` or `LatexCommands.name` being used to get the command name (e.g. `\section`).
@@ -46,7 +84,7 @@ default String getName() {
 you would think that these are the same.
 But there is an important difference! The `name` is _indexed_ (see `LatexCommandsIndex`).
 This means that probably using `name` is recommended, as it would use the index, but it may be completely wrong if the index is not updated correctly.
-This can lead to strange behaviour (see e.g. https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1097[#1097]).
+This can lead to strange behaviour (see e.g. https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1097[#1097]), which can be fixed by updating the index correctly.
 
 == Execution failed for task ':runIde'.	Process 'command java.exe' finished with non-zero exit value 1
 
