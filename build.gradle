@@ -22,7 +22,7 @@ plugins {
 }
 
 group 'nl.hannahsten'
-version '0.7-rc3.3'
+version '0.7-rc4'
 
 repositories {
     mavenCentral()
