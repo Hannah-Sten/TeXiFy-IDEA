@@ -1,3 +1,5 @@
+:experimental:
+
 = Troubleshooting
 
 If you run into troubles while using TeXiFy, you can try the following things.
@@ -173,9 +175,64 @@ Make sure you have followed all the installation instructions at https://github.
 . If you are on Windows or Mac and installing MikTeX, you can also try installing TeX Live instead.
 . Ask on https://tex.stackexchange.com, providing as much details as possible (at least operating system, results of the tests of the first step, any attempts to solve it).
 
+
+== What should my document structure look like?
+
+In general you have a main file which contains the documentclass and the document environment (the `\begin{document}` and `\end{document}`).
+From here you can include other files which can then include even more files and so on.
+An example is:
+
+[source,latex]
+----
+\documentclass{exam}
+
+% Packages
+\usepackage{amsthm}
+
+\author{L.A.\ TeX}
+\title{Example document setup}
+
+% Possible other definitions, configurations etc. that you need
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+
+% Document
+\begin{document}
+
+    \maketitle
+
+    \section{Introduction}\label{sec:introduction}
+    \input{introduction}
+
+    \section{Example theorems} \label{sec:exampleTheorem}
+    \input{example-theorems}
+
+\end{document}
+----
+
+where the files `introduction.tex` and `example-theorems.tex` contain just the content, for example these could be the complete file contents of `introduction.tex`:
+
+[source,latex]
+----
+\begin{theorem}
+    If the meanings of 'true' and 'false' were switched, then this sentence wouldn't be false.
+\end{theorem}
+----
+
 == I have an error which complains about openout_any = p
 
-This can happen for example if you try to use an index or bibtex as well as an auxiliary directory.
+When you get during compilation the error
+----
+makeindex: Not writing to /path/to/project/latexfile.ind (openout_any = p).
+Can't create output index file /path/to/project/latexfile.ind.
+----
+
+or
+----
+bibtex: Not writing to ../out/latexfile.blg (openout_any = p).
+----
+
+this probably happens because you are trying to use makeindex or bibtex with a separate output directory. You should either disable the out directory in the run config or change the security setting in `texmf.cnf`, see https://tex.stackexchange.com/questions/12686/how-do-i-run-bibtex-after-using-the-output-directory-flag-with-pdflatex-when-f/289336#289336[this tex.stackexchange.com answer].
 This is a TeX Live security setting which you can change by editing `/path/to/texlive/2019/texmf-dist/web2c/texmf.cnf` and changing `openout_any = p` to `openout_any = a`.
 
 == My index is not generated correctly
@@ -205,4 +262,26 @@ Example:
     \printindex
 \end{document}
 ----
+
+
+== How can I set-up shortcuts for e.g. `\emph{}` or the itemize environment?
+
+You can define a live template via menu:File[Settings > Editor > Live Templates]. For example, for the `itemize` environment, you could use the following template:
+
+----
+\begin{itemize}
+    \item $PARM1$
+\end{itemize}
+----
+
+Set the template to be applicable in LaTeX files.
+Also see https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Live-templates
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/marco.png[Screenshot of live template UI, showing the template text above along with an abbreviation of itemize and a description of 'Add itemize env'. The macro is set to be 'Applicable in LaTeX' and expands with the Tab key.]
+
+Once the live template is created, close the Settings dialog. Use menu:Edit[Macros > Start Macro Recording] and enter the live template abbreviation. Finish recording the macro, and name it. Via menu:Settings[Keymap], assign the macro a key binding such as kbd:[Ctrl + Alt + Shift + I].
+
+Now, you can use the macro key binding and hit kbd:[Enter] to insert a new `itemize` environment with an item. The cursor will automatically move to the first `\item`.
+
+For commands, you can define templates for e.g. `\emph{$PARM1$}`.
 

@@ -86,6 +86,27 @@ But there is an important difference! The `name` is _indexed_ (see `LatexCommand
 This means that probably using `name` is recommended, as it would use the index, but it may be completely wrong if the index is not updated correctly.
 This can lead to strange behaviour (see e.g. https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1097[#1097]), which can be fixed by updating the index correctly.
 
-== Execution failed for task ':runIde'.	Process 'command java.exe' finished with non-zero exit value 1
+== Troubleshooting
+
+=== Execution failed for task ':runIde'.	Process 'command java.exe' finished with non-zero exit value 1
 
 If you get the error `Caused by: org.gradle.process.internal.ExecException: Process 'command 'C:\Users\username\.gradle\caches\modules-2\files-2.1\com.jetbrains\jbre\jbr-11_0_6-windows-x64-b765.25\jbr\bin\java.exe'' finished with non-zero exit value 1` then delete the `jbre` folder in that path.
+
+=== `Gtk-WARNING **: Unable to locate theme engine in module_path: "murrine"`
+
+If you get this warning, it is not critical so you could ignore it but to solve it you can install the mentioned gtk engine, in this case Murrine.
+For example on Arch Linux, install the `gtk-engine-murrine` package. Arch Linux sets the default theme to Adwaita, so install that with the `gnome-themes-extra` package.
+For more information see https://wiki.archlinux.org/index.php/GTK+[wiki.archlinux.org].
+
+=== `Unable to find method 'sun.misc.Unsafe.defineClass'` or `Please provide the path to the Android SDK` when syncing Gradle
+
+This probably means your Gradle cache is corrupt, delete (on Windows) `C:\Users\username\.gradle\caches` and `C:\Users\username\.gradle\wrapper\dists` or (on Linux) `~/.gradle/caches` and `~/.gradle/wrapper/dists`, then reboot your system.
+
+=== `Error: java: package com.google.common.base does not exist`
+
+* Update IntelliJ (help - check for updates).
+* Update your IntelliJ SDK: go to Project Structure - SDKs.
+* Hit the plus in the middle column and select IntelliJ Platform Plugin SDK.
+* Select your IntelliJ installation directory (e.g. `C:\Program Files (x86)\JetBrains\IntelliJ IDEA xxxx.x`).
+* Remove your old SDK. It is called 'IntelliJ IDEA IU-xxx' where `xxx` is anything but the highest number.
+* Go to Project Structure - Project and select the new SDK.
