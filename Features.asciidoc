@@ -36,7 +36,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 * link:Autocomplete[Autocomplete of labels, many common commands, custom defined commands and (custom) environments]
 * link:Smart-quotes[Smart quotes]
 * link:Automatic-package-importing[Automagically import packages of common commands]
-* Shortcuts for styling text
+* link:Features#Menu-entries[Shortcuts for styling text]
 * link:Line-commenting[Line commenting shortcut]
 * link:Refactoring[Renaming of labels and environments]
 * Support for user-created document classes and packages
@@ -141,8 +141,8 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * https://www.jetbrains.com/help/idea/text-direction.html[RTL/bidirectional support]
 
 == Utilities
-* Word counting tool
-* Customizable file templates for .tex, .sty, .cls and .bib files
+* link:Menu-entries#Word-counting-tool[Word counting tool]
+* link:Menu-entries#file-templates[Customizable file templates for .tex, .sty, .cls and .bib files]
 * link:++Menu-entries#table-creation-wizard++[Table Creation Wizard]
 * link:++Menu-entries#clear-aux-files++[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
