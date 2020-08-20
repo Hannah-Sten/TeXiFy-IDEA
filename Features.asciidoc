@@ -42,7 +42,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 * Support for user-created document classes and packages
 * Toggle star action
 * Custom shortcuts for menu items
-* Brace matching
+* link:Brace-matching[Brace matching]
 * link:Live-templates[Live templates]
 * Custom live templates
 * link:Postfix-templates[Postfix templates]
@@ -133,13 +133,12 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * Running external tools before compiling
 
 == UI
-* Fancy icons that fit in with the IntelliJ style
-* Editor tabs
-* Split screen editing
-* Change display font
-* Custom color scheme
-* RTL/bidirectional support
-* Words of encouragement
+* link:UI#Icons[Fancy icons that fit in with the IntelliJ style]
+* https://www.jetbrains.com/help/idea/using-code-editor.html#manage_tabs[Editor tabs]
+* https://www.jetbrains.com/help/idea/using-code-editor.html#split_screen[Split screen editing]
+* https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#fonts[Change display font]
+* https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#customize-color-scheme[Custom color scheme]
+* https://www.jetbrains.com/help/idea/text-direction.html[RTL/bidirectional support]
 
 == Utilities
 * Word counting tool

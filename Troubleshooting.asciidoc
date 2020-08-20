@@ -1,7 +1,5 @@
 :experimental:
 
-= Troubleshooting
-
 If you run into troubles while using TeXiFy, you can try the following things.
 
 * If you have problems with installation, make sure you followed the link:Installation[Installation wiki page].

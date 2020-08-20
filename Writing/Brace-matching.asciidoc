@@ -1,0 +1,2 @@
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/brace-matching.png[]
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/brace-matching2.png[]
