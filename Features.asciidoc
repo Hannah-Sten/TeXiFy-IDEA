@@ -95,6 +95,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 * link:SumatraPDF-support[SumatraPDF (Windows) support with forward and backward search]
 * link:Evince-support[Evince (Linux) support with forward and backward search]
 * link:Okular-support[Okular (Linux) support with forward and backward search]
+* link:Zathura-support[Zathura (Linux) support with forward and backward search]
 * link:Skim-support[Skim (MacOS) support with forward and backward search]
 * link:Run-configurations#Custom-pdf-viewer[Custom pdf viewer]
 * Opens system default pdf viewer when no custom or supported pdf viewer is known
