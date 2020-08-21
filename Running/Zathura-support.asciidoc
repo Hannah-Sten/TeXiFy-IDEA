@@ -2,7 +2,7 @@
 
 _Since b0.7_
 
-On non-Windows systems, TeXiFy supports Zathura as a pdf viewer with forward and inverse search.
+On non-Windows systems, TeXiFy supports https://pwmt.org/projects/zathura/[Zathura] as a pdf viewer with forward and inverse search.
 
 == Shortcuts
 
