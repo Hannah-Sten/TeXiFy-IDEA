@@ -39,7 +39,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // or the user did not create a new project, for example by opening or importing existing resources,
         // so they still need to be created.
         if (runConfig.outputPath.virtualFile == null) {
-            runConfig.outputPath.create()
+            runConfig.outputPath.getAndCreatePath()
         }
 
         // Some initial setup

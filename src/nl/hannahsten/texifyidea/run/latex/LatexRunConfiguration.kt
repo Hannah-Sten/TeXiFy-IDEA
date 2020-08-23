@@ -85,6 +85,11 @@ class LatexRunConfiguration constructor(project: Project,
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
+        set(value) {
+            field = value
+            this.outputPath.mainFile = value
+            this.outputPath.contentRoot = getMainFileContentRoot()
+        }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
@@ -306,7 +311,7 @@ class LatexRunConfiguration constructor(project: Project,
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
-        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.getPath().path})
+        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.getAndCreatePath()?.path })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath?.path ?: "" })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
@@ -452,7 +457,7 @@ class LatexRunConfiguration constructor(project: Project,
             auxilPath
         }
         else {
-            outputPath.getPath()
+            outputPath.getAndCreatePath()
         }
     }
 
@@ -471,7 +476,7 @@ class LatexRunConfiguration constructor(project: Project,
 
     // Path to output file (e.g. pdf)
     override fun getOutputFilePath(): String {
-        val outputDir = outputPath.getPath()
+        val outputDir = outputPath.getAndCreatePath()
         return "$outputDir/" + mainFile!!
                 .nameWithoutExtension + "." + outputFormat.toString()
                 .toLowerCase()
@@ -486,6 +491,10 @@ class LatexRunConfiguration constructor(project: Project,
         }
         else {
             this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
+            // If not possible to resolve directly, we might resolve it later
+            if (this.outputPath.virtualFile == null) {
+                this.outputPath.pathString = fileOutputPath
+            }
         }
     }
 
@@ -529,7 +538,7 @@ class LatexRunConfiguration constructor(project: Project,
             auxilPath != mainFile?.parent
         }
 
-        val usesOutDir = outputPath.getPath() != mainFile?.parent
+        val usesOutDir = outputPath.getAndCreatePath() != mainFile?.parent
 
         return usesAuxilDir || usesOutDir
     }
