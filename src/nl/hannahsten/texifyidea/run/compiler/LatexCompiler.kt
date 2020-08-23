@@ -239,7 +239,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val dockerOutputDir = "/miktex/out"
         val dockerAuxilDir = "/miktex/auxil"
         val outputPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.outputPath.getPath().path.toPath(runConfig)
+            runConfig.outputPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
         else {
             dockerOutputDir
@@ -302,8 +302,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         // Avoid mounting the mainfile parent also to /miktex/work/out,
         // because there may be a good reason to make the output directory the same as the source directory
-        if (runConfig.outputPath.getPath() != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.outputPath.getPath().path}:$dockerOutputDir"))
+        if (runConfig.outputPath.getAndCreatePath() != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${runConfig.outputPath.getAndCreatePath()?.path}:$dockerOutputDir"))
         }
 
         if (runConfig.auxilPath == null) {

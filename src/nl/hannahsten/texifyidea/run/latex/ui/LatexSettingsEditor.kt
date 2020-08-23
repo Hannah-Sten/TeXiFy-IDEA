@@ -97,7 +97,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
-        outputPathTextField.text = runConfiguration.outputPath.getPath().path
+        outputPathTextField.text = runConfiguration.outputPath.getAndCreatePath()?.path ?: ""
 
         // Reset whether to compile twice
         if (compileTwice != null) {

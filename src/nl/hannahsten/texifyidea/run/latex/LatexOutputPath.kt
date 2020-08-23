@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.ExecutionException
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
@@ -8,6 +10,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -24,15 +27,24 @@ import java.io.File
  *
  * @param variant: out or auxil
  */
-// todo is mainFile updated? Or pass to every method?
-class LatexOutputPath(private val variant: String, private val contentRoot: VirtualFile?, private val mainFile: VirtualFile?, private val project: Project) {
+class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?, var mainFile: VirtualFile?, private val project: Project) {
     private val projectDirString = "${'$'}projectDir"
     private val mainFileString = "${'$'}mainFile"
 
     var virtualFile: VirtualFile? = null
     var pathString: String = "$projectDirString/$variant"
 
-    fun getPath(): VirtualFile {
+    /**
+     * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
+     */
+    fun getAndCreatePath(): VirtualFile? {
+        // Caching of the result
+        return getPath().also {
+            virtualFile = it
+        }
+    }
+
+    private fun getPath(): VirtualFile? {
         // When the user modifies the run configuration template, then this variable will magically be replaced with the
         // path to the /bin folder of IntelliJ, without the setter being called.
         if (virtualFile?.path?.endsWith("/bin") == true) {
@@ -50,14 +62,36 @@ class LatexOutputPath(private val variant: String, private val contentRoot: Virt
                 pathString.replace(mainFileString, mainFile?.path ?: "")
             }
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
-            // todo create path if not exists
-            // todo check path is directory
-            if (path != null) {
+            if (path != null && path.isDirectory) {
                 return path
             }
-            // Path is invalid (perhaps the user provided an invalid path
-            // todo create and return default path
-            return contentRoot!!
+            else {
+                // Try to create the path
+                // todo use createExcludedDir
+                if (File(pathString).mkdirs()) {
+                    LocalFileSystem.getInstance().refreshAndFindFileByPath(pathString)?.let {
+                        return it
+                    }
+                }
+            }
+            // Path is invalid (perhaps the user provided an invalid path)
+            Notification("LatexOutputPath", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
+
+            // Create and return default path
+            if (contentRoot != null) {
+                val defaultPathString = contentRoot!!.path + "/" + variant
+                if (File(defaultPathString).mkdir()) {
+                    LocalFileSystem.getInstance().refreshAndFindFileByPath(defaultPathString)?.let {
+                        return it
+                    }
+                }
+            }
+
+            if (contentRoot != null) {
+                return contentRoot!!
+            }
+
+            return null
         }
     }
 
@@ -73,7 +107,7 @@ class LatexOutputPath(private val variant: String, private val contentRoot: Virt
         if (mainFile == null) return null
         var defaultOutputPath: VirtualFile? = null
         runReadAction {
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
             defaultOutputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/" + variant)
         }
         return defaultOutputPath
