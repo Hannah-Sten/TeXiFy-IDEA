@@ -55,6 +55,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 
     @Test
     fun testAbsoluteGraphicsDirWithInclude() {
+        myFixture.copyFileToProject("myPicture.png")
         myFixture.configureByText(LatexFileType, """
             \graphicspath{{$absoluteWorkingPath/test/resources/completion/path/}}
             \includegraphics{myPicture.png}
