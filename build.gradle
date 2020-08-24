@@ -176,6 +176,7 @@ test {
     // Show test results
     testLogging {
         events "skipped", "failed"
+        exceptionFormat "full"
     }
 }
 
