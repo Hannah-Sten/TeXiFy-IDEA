@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import java.io.Serializable
@@ -241,11 +242,7 @@ object CommandManager : Iterable<String?>, Serializable {
 
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(
-            Magic.Command.commandDefinitions,
-            project,
-            GlobalSearchScope.projectScope(project)
-        )
+        val indexedCommandDefinitions = LatexDefinitionIndex.getItems(project)
 
         // Also do this the first time something is registered, because then we have to update aliases as well
         if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size || wasRegistered) {
@@ -260,7 +257,7 @@ object CommandManager : Iterable<String?>, Serializable {
                 }
             }
 
-            numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
+            numberOfIndexedCommandDefinitions = indexedCommandDefinitions.size
         }
     }
 
