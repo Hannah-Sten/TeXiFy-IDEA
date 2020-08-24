@@ -18,7 +18,7 @@ open class BibtexStructureViewFactory : PsiStructureViewFactory {
         override fun createStructureViewModel(editor: Editor?): StructureViewModel {
             val project = editor?.project ?: return BibtexStructureViewModel(file, editor)
             val manager = PsiManager.getInstance(project)
-            manager.addPsiTreeChangeListener(StructurePsiChangeListener(project))
+            manager.addPsiTreeChangeListener(StructurePsiChangeListener(project)) { }
 
             return BibtexStructureViewModel(file, editor)
         }

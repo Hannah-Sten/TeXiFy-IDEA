@@ -29,6 +29,9 @@ fun VirtualFile.findVirtualFileByAbsoluteOrRelativePath(filePath: String): Virtu
 /**
  * Looks for a certain file, relative to this directory or if the given path is absolute use that directly.
  *
+ * When this is a file (instead of a directory) it doesn't find files that are in
+ * the same directory as this file. When that is your goal, pass in the parent directory instead.
+ *
  * First looks if the file including extensions exists, when it doesn't it tries to append all
  * possible extensions until it finds a good one.
  *

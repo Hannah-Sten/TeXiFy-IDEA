@@ -33,7 +33,7 @@
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="201.5616.10"/>
+    <idea-version since-build="202.5103.13"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
@@ -85,6 +85,9 @@
         <p><strong>Alpha releases</strong></p>
         <p>
             This is an alpha release, which contains the very latest features of TeXiFy IDEA.
+        <p>
+        <p>
+            Please help us out with the compile messages feature by submitting examples of log messages that are not parsed correctly at https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose
         <p>
         <p>
             If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with merged PRs.
@@ -276,6 +279,8 @@
 
     <applicationListeners>
         <listener class="nl.hannahsten.texifyidea.file.listeners.VfsChangeListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+        <listener class="nl.hannahsten.texifyidea.startup.LoadUnloadListener"
+                  topic="com.intellij.ide.plugins.DynamicPluginListener" />
     </applicationListeners>
 
     <!-- Hooks for plugin functionality -->
@@ -337,6 +342,7 @@
 
         <!-- Project settings -->
         <projectService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
+        <projectService serviceImplementation="nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexErrorTreeViewConfiguration"/>
         <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
 
         <!-- Languages -->

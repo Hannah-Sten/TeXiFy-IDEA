@@ -18,7 +18,7 @@ class LatexStructureViewFactory : PsiStructureViewFactory {
         override fun createStructureViewModel(editor: Editor?): StructureViewModel {
             val project = editor?.project ?: return LatexStructureViewModel(psiFile, editor)
             val manager = PsiManager.getInstance(project)
-            manager.addPsiTreeChangeListener(StructurePsiChangeListener(project))
+            manager.addPsiTreeChangeListener(StructurePsiChangeListener(project)) { }
             return LatexStructureViewModel(psiFile, editor)
         }
     }

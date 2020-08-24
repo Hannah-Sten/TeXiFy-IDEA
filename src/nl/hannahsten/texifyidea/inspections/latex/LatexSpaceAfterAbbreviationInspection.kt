@@ -44,7 +44,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                 commentParts.add(commentMatcher.start()..commentMatcher.end())
             }
 
-            val matcher = Magic.Pattern.abbreviation.matcher(text.text)
+            val matcher = Magic.Pattern.abbreviationWithoutNormalSpace.matcher(text.text)
             while (matcher.find()) {
                 val matchRange = matcher.start()..matcher.end()
 

@@ -13,7 +13,10 @@ import javax.swing.JPanel
  *
  * The project settings are a property so they will differ per project.
  */
-class TexifyProjectConfigurable(private val projectSettings: TexifyProjectSettings) : SearchableConfigurable {
+class TexifyProjectConfigurable : SearchableConfigurable {
+
+    private val projectSettings: TexifyProjectSettings = TexifyProjectSettings()
+
     private lateinit var compilerCompatibility: ComboBox<LatexCompiler>
 
     override fun getId() = "TexifyProjectConfigurable"

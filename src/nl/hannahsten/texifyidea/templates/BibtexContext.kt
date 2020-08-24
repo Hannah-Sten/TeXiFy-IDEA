@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.templates
 
+import com.intellij.codeInsight.template.TemplateActionContext
 import com.intellij.codeInsight.template.TemplateContextType
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.BibtexFile
 
 /**
@@ -9,5 +9,5 @@ import nl.hannahsten.texifyidea.file.BibtexFile
  */
 open class BibtexContext : TemplateContextType("BIBTEX", "BibTeX") {
 
-    override fun isInContext(file: PsiFile, offset: Int) = file is BibtexFile
+    override fun isInContext(context: TemplateActionContext) = context.file is BibtexFile
 }

@@ -567,8 +567,11 @@ object Magic {
                 "\\addbibresource" to hashSetOf("bib"),
                 "\\RequirePackage" to hashSetOf("sty"),
                 "\\usepackage" to hashSetOf("sty"),
-                "\\documentclass" to hashSetOf("cls")
+                "\\documentclass" to hashSetOf("cls"),
+                "\\" + EXTERNALDOCUMENT.command to hashSetOf("tex") // Not completely true, as it only includes labels
         )
+
+        val includeCommands = includeOnlyExtensions.keys
 
         /**
          * All commands that end if.
@@ -677,6 +680,9 @@ object Magic {
          */
         @JvmField
         val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s~])")!!
+
+        /** [abbreviation]s that are missing a normal space (or a non-breaking space) */
+        val abbreviationWithoutNormalSpace = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s])")!!
 
         /**
          * Matches all comments, starting with % and ending with a newline.

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex
 
+import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
@@ -7,7 +8,9 @@ import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.filters.RegexpFilter
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -24,6 +27,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -149,6 +153,15 @@ class LatexRunConfiguration constructor(project: Project,
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(project)
+    }
+
+    override fun createAdditionalTabComponents(manager: AdditionalTabComponentManager,
+                                               startedProcess: ProcessHandler?) {
+        super.createAdditionalTabComponents(manager, startedProcess)
+
+        if (manager is LogConsoleManagerBase && startedProcess != null) {
+            manager.addAdditionalTabComponent(LatexLogTabComponent(project, mainFile, startedProcess), "LaTeX-Log", AllIcons.Vcs.Changelist, false)
+        }
     }
 
     @Throws(RuntimeConfigurationException::class)

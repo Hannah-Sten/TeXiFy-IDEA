@@ -60,4 +60,8 @@ object ControlTracker : KeyListener, TypedHandlerDelegate() {
             isControlPressed = false
         }
     }
+
+    fun unload() {
+        registered.forEach { it.removeKeyListener(this) }
+    }
 }

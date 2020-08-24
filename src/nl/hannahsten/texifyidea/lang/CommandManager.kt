@@ -133,7 +133,9 @@ object CommandManager : Iterable<String?>, Serializable {
         val aliasSet: MutableSet<String> = HashSet()
         aliasSet.add(command)
         original[command] = aliasSet
-        aliases[command] = aliasSet
+        synchronized(aliases) {
+            aliases[command] = aliasSet
+        }
     }
 
     /**
@@ -167,18 +169,20 @@ object CommandManager : Iterable<String?>, Serializable {
      * The alias to register for the command starting with a backslash. This could be either
      * a new command, or an existing command *E.g. `\start`*
      */
+    @Synchronized
     fun registerAlias(command: String, alias: String) {
-        if (!isRegistered(command)) return
-        val aliasSet = aliases[command]!!
+        synchronized(aliases) {
+            val aliasSet = aliases[command] ?: mutableSetOf()
 
-        // If the alias is already assigned: unassign it.
-        if (isRegistered(alias)) {
-            val previousAliases = aliases[alias]
-            previousAliases?.remove(alias)
-            aliases.remove(alias)
+            // If the alias is already assigned: unassign it.
+            if (isRegistered(alias)) {
+                val previousAliases = aliases[alias]
+                previousAliases?.remove(alias)
+                aliases.remove(alias)
+            }
+            aliasSet.add(alias)
+            aliases[alias] = aliasSet
         }
-        aliasSet.add(alias)
-        aliases[alias] = aliasSet
     }
 
     /**
@@ -212,13 +216,16 @@ object CommandManager : Iterable<String?>, Serializable {
      */
     fun getAliases(command: String): Set<String> {
         if (!isRegistered(command)) return emptySet()
-        return aliases[command]?.toSet() ?: emptySet()
+        synchronized(aliases) {
+            return aliases[command]?.toSet() ?: emptySet()
+        }
     }
 
     /**
      * If needed (based on the number of indexed \newcommand-like commands) check for new aliases of the given alias set. This alias can be any alias of its alias set.
      * If the alias set is not yet registered, it will be registered as a new alias set.
      */
+    @Synchronized
     fun updateAliases(aliasSet: Set<String>, project: Project) {
         // Register if needed
         if (aliasSet.isEmpty()) return
@@ -244,9 +251,11 @@ object CommandManager : Iterable<String?>, Serializable {
             // Alternatively we could save a numberOfIndexedCommandDefinitions per alias set, and only update the
             // requested alias set (otherwise only the first alias set requesting an update will get it)
             // We have to deepcopy the set of alias sets before iterating over it, because we want to modify aliases
-            val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
-            for (copiedAliasSet in deepCopy) {
-                findAllAliases(copiedAliasSet, indexedCommandDefinitions)
+            synchronized(aliases) {
+                val deepCopy = aliases.values.map { it1 -> it1.map { it }.toSet() }.toSet()
+                for (copiedAliasSet in deepCopy) {
+                    findAllAliases(copiedAliasSet, indexedCommandDefinitions)
+                }
             }
 
             numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
@@ -398,7 +407,9 @@ object CommandManager : Iterable<String?>, Serializable {
      * otherwise.
      */
     fun isRegistered(command: String): Boolean {
-        return aliases.containsKey(command)
+        synchronized(aliases) {
+            return aliases.containsKey(command)
+        }
     }
 
     /**
