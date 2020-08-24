@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import java.awt.event.ItemEvent
@@ -97,7 +98,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
-        outputPathTextField.text = runConfiguration.outputPath.getAndCreatePath()?.path ?: ""
+        // We may be editing a run configuration template, don't resolve any path
+        outputPathTextField.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
 
         // Reset whether to compile twice
         if (compileTwice != null) {
@@ -198,10 +200,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         runConfiguration.setMainFile(filePath)
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
-        if (outputPathTextField.text.endsWith("/bin")) {
-            runConfiguration.outputPath.setDefault()
-        }
-        else {
+        if (!outputPathTextField.text.endsWith("/bin")) {
             runConfiguration.setFileOutputPath(outputPathTextField.text)
         }
 
@@ -321,12 +320,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         outputPathField.addBrowseFolderListener(
                 TextBrowseFolderListener(
                         FileChooserDescriptor(false, true, false, false, false, false)
-                                .withTitle("Choose a directory for output files")
+                                .withTitle("Choose a directory for output files.")
                                 .withRoots(*ProjectRootManager.getInstance(project!!)
                                         .contentRootsFromAllModules)
                 )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX)")
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX),\n or use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
         panel.add(outputPath)
     }
 
