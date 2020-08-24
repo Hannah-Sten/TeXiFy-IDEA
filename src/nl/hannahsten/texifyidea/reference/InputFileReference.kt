@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 
@@ -75,15 +76,17 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             }
         }
 
+        val processedKey = expandCommandsOnce(key, element.project, file = rootFile.psiFile(element.project)) ?: key
+
         // Try to find the target file directly from the given path
         if (targetFile == null) {
-            targetFile = rootDirectory.findFile(key, extensions)
+            targetFile = rootDirectory.findFile(filePath = processedKey, extensions = extensions)
         }
 
         // Try content roots
         if (targetFile == null && LatexDistribution.isMiktexAvailable) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
-                targetFile = moduleRoot.findFile(key, extensions)
+                targetFile = moduleRoot.findFile(processedKey, extensions)
                 if (targetFile != null) break
             }
         }
@@ -94,14 +97,14 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
-                targetFile = rootDirectory.findFile(path + key, extensions)
+                targetFile = rootDirectory.findFile(path + processedKey, extensions)
                 if (targetFile != null) break
             }
         }
 
         @Suppress("RemoveExplicitTypeArguments")
         if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
-            targetFile = element.getFileNameWithExtensions(key)
+            targetFile = element.getFileNameWithExtensions(processedKey)
                     ?.map { LatexPackageLocationCache.getPackageLocation(it) }
                     ?.map { getExternalFile(it ?: return null) }
                     ?.firstOrNull { it != null }

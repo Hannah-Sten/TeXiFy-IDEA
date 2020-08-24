@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -22,6 +23,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
@@ -53,16 +55,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
             absolutePathSupport = parentCommand.isAbsolutePathSupported
         }
 
-        // Get all the commands that are used in the autocompleteText.
-        val commandsInText = LatexPsiHelper(parameters.originalFile.project).createFromText(autocompleteText).childrenOfType(LatexCommands::class)
-        var finalCompleteText = autocompleteText
-        for (command in commandsInText) {
-            // Expand the command once, and replace the command with the expanded text
-            val commandExpansion = LatexCommandsIndex.getCommandsByNames(parameters.originalFile, *Magic.Command.commandDefinitions.toTypedArray())
-                .firstOrNull { it.getRequiredArgumentValueByName("cmd") == command.text }
-                ?.getRequiredArgumentValueByName("def")
-            finalCompleteText = finalCompleteText.replace(command.text, commandExpansion ?: command.text)
-        }
+        var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile) ?: autocompleteText
+
         // Process the expanded text again
         finalCompleteText = processAutocompleteText(finalCompleteText)
         resultSet = result.withPrefixMatcher(finalCompleteText)

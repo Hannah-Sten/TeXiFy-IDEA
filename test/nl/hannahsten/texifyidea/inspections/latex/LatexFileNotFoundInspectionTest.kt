@@ -3,8 +3,6 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import org.junit.Test
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Tag
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -111,7 +109,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 
     @Test
     fun `test command expansion in root file`() {
-        myFixture.configureByFiles("commandexpansion/main.tex", "commandexpansion/nest/sub.tex")
+        myFixture.configureByFiles("commandexpansion/main.tex", "commandexpansion/main.bib", "commandexpansion/nest/sub.tex")
         myFixture.checkHighlighting()
     }
 

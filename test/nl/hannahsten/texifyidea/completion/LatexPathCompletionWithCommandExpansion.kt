@@ -48,6 +48,6 @@ class LatexPathCompletionWithCommandExpansion : BasePlatformTestCase() {
 
         val result = myFixture.complete(CompletionType.BASIC)
 
-        assert(result.any { it.lookupString == "images/sub2.tex" })
+        assert(result.any { it.lookupString == "images/pepper.jpg" })
     }
 }
