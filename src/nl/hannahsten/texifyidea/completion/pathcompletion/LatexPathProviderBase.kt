@@ -4,7 +4,6 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -16,17 +15,11 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.RequiredFileArgument
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.getRequiredArgumentValueByName
 import java.io.File
 import java.util.regex.Pattern
 
