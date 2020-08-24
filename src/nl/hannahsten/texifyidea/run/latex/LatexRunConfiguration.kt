@@ -230,7 +230,7 @@ class LatexRunConfiguration constructor(project: Project,
             }
             else {
                 this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
-                this.outputPath.virtualFile = fileSystem.findFileByPath(outputPathString)
+                this.outputPath.pathString = outputPathString
             }
         }
 
@@ -311,7 +311,7 @@ class LatexRunConfiguration constructor(project: Project,
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
-        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.getAndCreatePath()?.path })
+        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath?.path ?: "" })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
@@ -486,15 +486,11 @@ class LatexRunConfiguration constructor(project: Project,
      * Set [outputPath]
      */
     override fun setFileOutputPath(fileOutputPath: String) {
-        if (fileOutputPath.endsWith("/bin")) {
-            this.outputPath.setDefault()
-        }
-        else {
-            this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
-            // If not possible to resolve directly, we might resolve it later
-            if (this.outputPath.virtualFile == null) {
-                this.outputPath.pathString = fileOutputPath
-            }
+        if (fileOutputPath.isBlank()) return
+        this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
+        // If not possible to resolve directly, we might resolve it later
+        if (this.outputPath.virtualFile == null) {
+            this.outputPath.pathString = fileOutputPath
         }
     }
 

@@ -10,7 +10,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -28,8 +27,10 @@ import java.io.File
  * @param variant: out or auxil
  */
 class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?, var mainFile: VirtualFile?, private val project: Project) {
-    private val projectDirString = "${'$'}projectDir"
-    private val mainFileString = "${'$'}mainFile"
+    companion object {
+        const val projectDirString = "{projectDir}"
+        const val mainFileString = "{mainFileParent}"
+    }
 
     var virtualFile: VirtualFile? = null
     var pathString: String = "$projectDirString/$variant"
@@ -56,10 +57,12 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         }
         else {
             val pathString = if (pathString.contains(projectDirString)) {
+                if (contentRoot == null) return null
                 pathString.replace(projectDirString, contentRoot?.path ?: "")
             }
             else {
-                pathString.replace(mainFileString, mainFile?.path ?: "")
+                if (mainFile == null) return null
+                pathString.replace(mainFileString, mainFile?.parent?.path ?: "")
             }
             val path = LocalFileSystem.getInstance().findFileByPath(pathString)
             if (path != null && path.isDirectory) {
@@ -95,14 +98,6 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         }
     }
 
-    /**
-     * Assuming the main file is known, set a default output path if not already set.
-     */
-    fun setDefault() {
-        if (virtualFile != null || mainFile == null) return
-        this.virtualFile = getDefaultOutputPath()
-    }
-
     private fun getDefaultOutputPath(): VirtualFile? {
         if (mainFile == null) return null
         var defaultOutputPath: VirtualFile? = null
@@ -117,7 +112,6 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
      * Whether the current output path is the default.
      */
     fun isDefault() = getDefaultOutputPath() == virtualFile
-
 
     /**
      * Creates the output directories to place all produced files.
