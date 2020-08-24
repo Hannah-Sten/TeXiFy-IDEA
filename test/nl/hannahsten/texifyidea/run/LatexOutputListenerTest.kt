@@ -623,4 +623,37 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         testLog(log, expectedMessages)
     }
+
+    fun `test babel unknown language`() {
+        val log = """
+s
+(C:/Users/thoscho/GitRepos/test/latex-templates/auxil\test.aux
+
+Package babel Warning: Unknown language `english'. Very likely you
+(babel)                requested it in a previous run. Expect some
+(babel)                wrong results in this run, which should vanish
+(babel)                in the next one. Reported on input line 21.
+
+) ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\t1phv.f
+d"
+
+LaTeX Warning: Font shape declaration has incorrect series value `mc'.
+               It should not contain an `m'! Please correct it.
+               Found on input line 20.
+
+
+) ABD: EveryShipout initializing macros
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+
+                     
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("babel: Unknown language `english'. Very likely you requested it in a previous run. Expect some wrong results in this run, which should vanish in the next one.", "C:/Users/thoscho/GitRepos/test/latex-templates/auxil\\test.aux", 21, WARNING),
+            LatexLogMessage("Font shape declaration has incorrect series value `mc'. It should not contain an `m'! Please correct it.", "C:\\Users\\thoscho\\AppData\\Local\\Programs\\MiKTeX 2.9\\tex/latex/psnfss\\t1phv.fd", 20, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
