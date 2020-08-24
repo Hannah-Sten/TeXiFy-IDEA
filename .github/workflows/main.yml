@@ -16,7 +16,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run linting
       run: |
-        cat build.gradle
         chmod +x gradlew
         ./gradlew ktlintCheck
     - name: Run tests
