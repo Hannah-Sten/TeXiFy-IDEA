@@ -1,6 +1,6 @@
 :experimental:
 
-_Since b0.7_
+_Since b0.7.1_
 
 On non-Windows systems, TeXiFy supports https://pwmt.org/projects/zathura/[Zathura] as a pdf viewer with forward and inverse search.
 
