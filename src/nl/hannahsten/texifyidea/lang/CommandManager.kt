@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
 import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
