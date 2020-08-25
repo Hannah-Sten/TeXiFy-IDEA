@@ -32,6 +32,10 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         const val mainFileString = "{mainFileParent}"
     }
 
+    fun clone(): LatexOutputPath {
+        return LatexOutputPath(variant, contentRoot, mainFile, project)
+    }
+
     var virtualFile: VirtualFile? = null
     var pathString: String = "$projectDirString/$variant"
 

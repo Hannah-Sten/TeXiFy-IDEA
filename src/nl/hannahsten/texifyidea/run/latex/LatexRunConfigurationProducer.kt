@@ -22,9 +22,11 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         return LatexConfigurationFactory(LatexRunConfigurationType.instance)
     }
 
-    override fun setupConfigurationFromContext(runConfiguration: LatexRunConfiguration,
-                                               context: ConfigurationContext,
-                                               sourceElement: Ref<PsiElement>): Boolean {
+    override fun setupConfigurationFromContext(
+            runConfiguration: LatexRunConfiguration,
+            context: ConfigurationContext,
+            sourceElement: Ref<PsiElement>
+    ): Boolean {
         val location = context.location ?: return false
         val container = getEntryPointContainer(location) ?: return false
         val mainFile = container.virtualFile ?: return false
@@ -41,6 +43,8 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.psiFile = container
         runConfiguration.setDefaultAuxilPath()
         runConfiguration.setSuggestedName()
+        // Avoid changing the outputPath of the template run config (which is a shallow clone)
+        runConfiguration.outputPath = runConfiguration.outputPath.clone()
 
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
         val runProgram = container.allParentMagicComments().value(DefaultMagicKeys.PROGRAM)
