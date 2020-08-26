@@ -1,10 +1,21 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
+import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
+    override fun getTestDataPath(): String {
+        return "test/resources/inspections/latex/missingimport"
+    }
+
+    override fun setUp() {
+        super.setUp()
+        myFixture.copyDirectoryToProject("", "")
+        (myFixture as CodeInsightTestFixtureImpl).canChangeDocumentDuringHighlighting(true)
+    }
+
     fun testWarning() {
         myFixture.configureByText(LatexFileType, """
             <error descr="Command requires xcolor package">\color</error>{blue}
@@ -40,5 +51,15 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
                 \color{blue}
             \end{document}
         """.trimIndent())
+    }
+
+    fun `test package imported in subfile root`() {
+        myFixture.configureByFiles("main.tex", "sub.tex")
+        myFixture.checkHighlighting()
+    }
+
+    fun `test package not imported in subfile root`() {
+        myFixture.configureByFiles("missingsub.tex", "missingmain.tex")
+        myFixture.checkHighlighting()
     }
 }
