@@ -47,7 +47,8 @@ class LatexFileStack(
             currentCollectingFile += line.trim()
             // Check if this was the last part of the file
             if (line.length < LINE_WIDTH) {
-                push(currentCollectingFile)
+                // Assume that paths can be quoted, but there are no " in folder/file names
+                push(currentCollectingFile.trim('"'))
                 currentCollectingFile = ""
             }
         }
@@ -74,7 +75,7 @@ class LatexFileStack(
                 // Check if file spans multiple lines
                 // +1 because the starting ( is not in the group
                 // -1 because the newline is not here
-                if (file.length + 1 >= LINE_WIDTH - 1) {
+                if (file.length + 1 >= LINE_WIDTH - 1 || (line.length >= LINE_WIDTH && line.trim().endsWith(file))) {
                     currentCollectingFile += file
                 }
                 else {
