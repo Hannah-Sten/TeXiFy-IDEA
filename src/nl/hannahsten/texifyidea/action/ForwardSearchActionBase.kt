@@ -8,10 +8,10 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 
-open class ForwardSearchActionBase(val viewer: PdfViewer): EditorAction(
+open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
         name = "_ForwardSearch",
         icon = TexifyIcons.RIGHT
-){
+) {
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!viewer.isAvailable()) {
             return

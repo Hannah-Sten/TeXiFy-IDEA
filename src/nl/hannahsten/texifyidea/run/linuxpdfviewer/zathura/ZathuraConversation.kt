@@ -6,7 +6,6 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
 
 object ZathuraConversation : ViewerConversation() {
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
