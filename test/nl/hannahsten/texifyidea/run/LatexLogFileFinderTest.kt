@@ -121,4 +121,27 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         }
         assertEquals("""C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\t1phv.fd""", stack.peek())
     }
+
+    fun testSingleFile() {
+        val log = """
+("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+thfunctions.base.code.tex")
+("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+thfunctions.round.code.tex")
+("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+thfunctions.misc.code.tex")
+
+("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/math\pgfmath
+.sty"
+("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\
+pgfkeys.code.tex"
+("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+thfloat.code.tex")))
+""".trimIndent()
+        var stack = LatexFileStack()
+        log.split('\n').forEach {
+            stack = stack.update(it + "\n")
+        }
+        assertTrue(stack.isEmpty())
+    }
 }
