@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.Package.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
+import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
@@ -173,6 +174,7 @@ enum class LatexRegularCommand(
     MAKEINDEX("makeindex"),
     MAKELABEL("makelabel"),
     MAKELABELS("makelabels", "number".asRequired()),
+    MAKENOIDXGLOSSARIES("makenoidxglossaries", dependency = GLOSSARIES),
     MAKETITLE("maketitle"),
     MASKCOLORS("maskcolors", "num model".asOptional(), "color".asRequired(), dependency = XCOLOR),
     MBOX("mbox", "text".asRequired()),
@@ -223,6 +225,7 @@ enum class LatexRegularCommand(
     POUNDS("pounds", display = "£"),
     PRINTBIBLIOGRAPHY("printbibliography", dependency = BIBLATEX),
     PRINTINDEX("printindex"),
+    PRINTNOIDXGLOSSARIES("printnoidxglossaries", dependency = GLOSSARIES),
     PROVIDESCLASS("ProvidesClass"),
     PROVIDESPACKAGE("ProvidesPackage"),
     R("r", display = "˚ (accent)"),

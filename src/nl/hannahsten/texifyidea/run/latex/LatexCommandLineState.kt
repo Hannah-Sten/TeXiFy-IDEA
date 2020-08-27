@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
@@ -50,6 +51,36 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             createOutDirs(runConfig)
         }
 
+        firstRunSetup(compiler)
+        updateOutputSubDirs(mainFile, runConfig.outputPath)
+
+        val handler = createHandler(mainFile, compiler)
+        val isMakeindexNeeded = runMakeindexIfNeeded(handler)
+        runConfig.hasBeenRun = true
+
+        if (!isLastCompile(isMakeindexNeeded, handler)) return handler
+        scheduleBibtexRunIfNeeded(handler)
+        schedulePdfViewerIfNeeded(handler)
+
+        return handler
+    }
+
+    private fun createHandler(mainFile: VirtualFile, compiler: LatexCompiler): KillableProcessHandler {
+        // Make sure to create the command after generating the bib run config (which might change the output path)
+        val command: List<String> = compiler.getCommand(runConfig, environment.project)
+                ?: throw ExecutionException("Compile command could not be created.")
+
+        val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
+                .withEnvironment(runConfig.environmentVariables.envs)
+        val handler = KillableProcessHandler(commandLine)
+
+        // Reports exit code to run output window when command is terminated
+        ProcessTerminatedListener.attach(handler, environment.project)
+
+        return handler
+    }
+
+    private fun firstRunSetup(compiler: LatexCompiler) {
         // Some initial setup
         if (!runConfig.hasBeenRun) {
             // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
@@ -68,20 +99,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 }
             }
         }
+    }
 
-        // Make sure to create the command after generating the bib run config (which might change the output path)
-        val command: List<String> = compiler.getCommand(runConfig, environment.project)
-                ?: throw ExecutionException("Compile command could not be created.")
-
-        updateOutputSubDirs(mainFile, runConfig.outputPath)
-
-        val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
-                .withEnvironment(runConfig.environmentVariables.envs)
-        val handler = KillableProcessHandler(commandLine)
-
-        // Reports exit code to run output window when command is terminated
-        ProcessTerminatedListener.attach(handler, environment.project)
-
+    private fun runMakeindexIfNeeded(handler: KillableProcessHandler): Boolean {
         var isMakeindexNeeded = false
 
         // Run makeindex when applicable
@@ -102,8 +122,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
         }
 
-        runConfig.hasBeenRun = true
+        return isMakeindexNeeded
+    }
 
+    private fun isLastCompile(isMakeindexNeeded: Boolean, handler: KillableProcessHandler): Boolean {
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
         if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded) {
             if (!runConfig.compileTwice) {
@@ -113,10 +135,14 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // Schedule the second compile only if this is the first compile
             if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
                 handler.addProcessListener(RunLatexListener(runConfig, environment))
-                return handler
+                return false
             }
         }
 
+        return true
+    }
+
+    private fun scheduleBibtexRunIfNeeded(handler: KillableProcessHandler) {
         runConfig.bibRunConfigs.forEachIndexed { index, bibSettings ->
             if (!runConfig.isFirstRunConfig) {
                 return@forEachIndexed
@@ -130,14 +156,14 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, false))
             }
         }
+    }
 
+    private fun schedulePdfViewerIfNeeded(handler: KillableProcessHandler) {
         // Do not schedule to open the pdf viewer when this is not the last run config in the chain
         if (runConfig.isLastRunConfig) {
             addOpenViewerListener(handler, runConfig.allowFocusChange)
             handler.addProcessListener(AutoCompileDoneListener())
         }
-
-        return handler
     }
 
     /**
