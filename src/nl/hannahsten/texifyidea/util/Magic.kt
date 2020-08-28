@@ -12,6 +12,8 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIES
+import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIESEXTRA
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICS
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
@@ -827,6 +829,11 @@ object Magic {
         val index = hashSetOf(
                 "makeidx", "multind", "index", "splitidx", "splitindex", "imakeidx", "hvindex", "idxlayout", "repeatindex", "indextools"
         )
+
+        /**
+         * Packages which provide a glossary.
+         */
+        val glossary = hashSetOf(GLOSSARIES, GLOSSARIESEXTRA)
 
         /**
          * Known conflicting packages.

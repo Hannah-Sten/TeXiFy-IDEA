@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
@@ -24,11 +25,8 @@ import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.Magic.Package.index
-import nl.hannahsten.texifyidea.util.files.FileUtil
-import nl.hannahsten.texifyidea.util.files.createExcludedDir
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.Magic.Package
+import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.includedPackages
 import java.io.File
 
@@ -55,7 +53,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         updateOutputSubDirs(mainFile, runConfig.outputPath)
 
         val handler = createHandler(mainFile, compiler)
-        val isMakeindexNeeded = runMakeindexIfNeeded(handler)
+        val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile)
         runConfig.hasBeenRun = true
 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
@@ -101,8 +99,21 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
     }
 
-    private fun runMakeindexIfNeeded(handler: KillableProcessHandler): Boolean {
+    private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile): Boolean {
         var isMakeindexNeeded = false
+
+        if (!runConfig.hasBeenRun) {
+            // todo is this too slow? Could use index for glossary/makeindex relevant commands
+            //     alternatively, check for output files
+            val commandsInFileSet = mainFile.psiFile(environment.project)?.commandsInFileSet()?.mapNotNull { it.name } ?: emptyList()
+
+            // Option 1 in http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf
+            val usesTexForGlossaries = LatexRegularCommand.MAKENOIDXGLOSSARIES.command in commandsInFileSet
+
+            if (usesTexForGlossaries) {
+                runConfig.compileTwice = true
+            }
+        }
 
         // Run makeindex when applicable
         if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfig != null || !runConfig.hasBeenRun)) {
@@ -111,7 +122,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     ?.psiFile(runConfig.project)
                     ?.includedPackages()
                     ?: setOf()
-            isMakeindexNeeded = includedPackages.intersect(index.asIterable()).isNotEmpty() && runConfig.compiler?.includesMakeindex == false
+            // todo but not if using option 1
+            isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false
 
             if (isMakeindexNeeded) {
                 // Some packages do handle makeindex themselves

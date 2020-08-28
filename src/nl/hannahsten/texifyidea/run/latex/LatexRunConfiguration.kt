@@ -143,6 +143,7 @@ class LatexRunConfiguration constructor(project: Project,
             }
         }
 
+    // todo support multiple makeindex run configs
     private var makeindexRunConfigId = ""
     var makeindexRunConfig: RunnerAndConfigurationSettings?
         get() = RunManagerImpl.getInstanceImpl(project)

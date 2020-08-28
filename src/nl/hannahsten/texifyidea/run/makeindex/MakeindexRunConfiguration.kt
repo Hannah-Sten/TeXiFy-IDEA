@@ -10,9 +10,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.includedPackages
 import org.jdom.Element
 
 /**
@@ -116,7 +119,16 @@ class MakeindexRunConfiguration(
      */
     private fun findMakeindexProgram(indexPackageOptions: List<String>, makeindexOptions: HashMap<String, String>): MakeindexProgram {
 
-        var indexProgram = if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
+        val usedPackages = mainFile?.psiFile(project)?.includedPackages() ?: emptySet()
+
+        var indexProgram = if (usedPackages.intersect(Magic.Package.index).isNotEmpty()) {
+            if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
+        }
+        else {
+            // todo makeglossaries-lite
+            if (Package.GLOSSARIES.name in usedPackages) MakeindexProgram.MAKEGLOSSARIES else if (Package.GLOSSARIESEXTRA.name in usedPackages && "record" in indexPackageOptions) MakeindexProgram.BIB2GLS else MakeindexProgram.MAKEGLOSSARIESLITE
+        }
+
 
         // Possible extra settings to override the indexProgram, see the imakeidx docs
         if (makeindexOptions.contains("makeindex")) {
