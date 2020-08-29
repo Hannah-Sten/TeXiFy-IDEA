@@ -60,11 +60,11 @@ class MakeindexRunConfiguration(
                 MakeindexProgram.valueOf(programText)
             }
             else {
-                MakeindexProgram.MAKEINDEX
+                null
             }
         }
         catch (e: NullPointerException) {
-            MakeindexProgram.MAKEINDEX
+            null
         }
 
         val mainFilePath = try {
@@ -73,7 +73,7 @@ class MakeindexRunConfiguration(
         catch (e: NullPointerException) {
             null
         }
-        mainFile = if (mainFilePath != null) {
+        mainFile = if (!mainFilePath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
         }
         else {
@@ -86,7 +86,7 @@ class MakeindexRunConfiguration(
         catch (e: NullPointerException) {
             null
         }
-        workingDirectory = if (workDirPath != null) {
+        workingDirectory = if (!workDirPath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(workDirPath)
         }
         else {

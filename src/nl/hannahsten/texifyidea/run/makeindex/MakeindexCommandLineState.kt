@@ -28,7 +28,8 @@ class MakeindexCommandLineState(
             throw ExecutionException("Main file to compile is not found or missing.")
         }
 
-        val indexFilename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension).appendExtension("idx")
+        // todo does makeindex require extension?
+        val indexFilename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension)
 
         val command = listOf(indexProgram.executableName, indexFilename)
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)

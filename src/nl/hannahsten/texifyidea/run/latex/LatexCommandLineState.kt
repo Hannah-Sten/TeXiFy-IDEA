@@ -102,18 +102,19 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile): Boolean {
         var isMakeindexNeeded = false
 
-        if (!runConfig.hasBeenRun) {
+        // todo cache?
+//        if (!runConfig.hasBeenRun) {
             // todo is this too slow? Could use index for glossary/makeindex relevant commands
             //     alternatively, check for output files
             val commandsInFileSet = mainFile.psiFile(environment.project)?.commandsInFileSet()?.mapNotNull { it.name } ?: emptyList()
 
             // Option 1 in http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf
-            val usesTexForGlossaries = LatexRegularCommand.MAKENOIDXGLOSSARIES.command in commandsInFileSet
+            val usesTexForGlossaries = "\\" + LatexRegularCommand.MAKENOIDXGLOSSARIES.command in commandsInFileSet
 
             if (usesTexForGlossaries) {
                 runConfig.compileTwice = true
             }
-        }
+//        }
 
         // Run makeindex when applicable
         if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfig != null || !runConfig.hasBeenRun)) {
@@ -123,7 +124,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                     ?.includedPackages()
                     ?: setOf()
             // todo but not if using option 1
-            isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false
+            isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 
             if (isMakeindexNeeded) {
                 // Some packages do handle makeindex themselves

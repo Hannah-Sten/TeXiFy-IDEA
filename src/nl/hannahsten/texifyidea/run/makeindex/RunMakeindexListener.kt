@@ -13,6 +13,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.appendExtension
 import java.io.File
 import java.io.FileNotFoundException
@@ -42,9 +43,11 @@ class RunMakeindexListener(
         try {
             val makeindexRunConfig = runConfigSettings.configuration as MakeindexRunConfiguration
             val options = makeindexRunConfig.getMakeindexOptions()
-            val indexFilename = options.getOrDefault("name", makeindexRunConfig.mainFile?.nameWithoutExtension)?.appendExtension("ind") ?: return
+            val baseFileName = options.getOrDefault("name", makeindexRunConfig.mainFile?.nameWithoutExtension) ?: return
 
-            if (!copyIndexFile(indexFilename)) return
+            // todo cleanup files, but only if they didn't exist already (copied manually by user)
+            val copiedFiles = copyIndexFiles(baseFileName)
+
 
             // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
             if (latexRunConfig.bibRunConfigs.isEmpty()) {
@@ -85,23 +88,35 @@ class RunMakeindexListener(
     }
 
     /**
-     * Copy .ind file where it was generated to next to the main file, so an index package will hopefully find it.
+     * Copy .ind and similar files from where they were generated to next to the main file, so an index package will hopefully find it.
      *
-     * @param indexFileName Filename of the .ind file, with extension.
+     * @param baseFileName Filename of generated files without extension.
+     *
+     * @return List of files that were copied.
      */
-    private fun copyIndexFile(indexFileName: String): Boolean {
-        val mainFile = latexRunConfig.mainFile ?: return false
-        val workDir = latexRunConfig.getAuxilDirectory() ?: return false
+    private fun copyIndexFiles(baseFileName: String): List<File> {
 
-        val indexFileSource = workDir.path + '/' + indexFileName
-        val indexFileDestination = File(mainFile.path).parent + '/' + indexFileName
-        try {
-            FileUtil.copy(File(indexFileSource), File(indexFileDestination))
+        val mainFile = latexRunConfig.mainFile ?: return emptyList()
+        val workDir = latexRunConfig.getAuxilDirectory() ?: return emptyList()
+
+        val copiedFiles = mutableListOf<File>()
+
+        // Just try all extensions for files that need to be copied
+        for (extension in Magic.File.indexFileExtensions) {
+
+            val indexFileName = baseFileName.appendExtension(extension)
+            // todo only copy file if exists
+            val indexFileSource = File(workDir.path + '/' + indexFileName)
+            if (!indexFileSource.isFile) continue
+            val indexFileDestination = File(File(mainFile.path).parent + '/' + indexFileName)
+
+            try {
+                FileUtil.copy(indexFileSource, indexFileDestination)
+                copiedFiles.add(indexFileDestination)
+            }
+            catch (ignored: FileNotFoundException) {}
         }
-        catch (e: FileNotFoundException) {
-            Notifications.Bus.notify(Notification("nl.hannahsten.texifyidea", "Error when copying the index file", e.message ?: "", NotificationType.ERROR), environment.project)
-        }
-        return true
+        return copiedFiles
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {}
