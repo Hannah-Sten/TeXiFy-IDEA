@@ -88,24 +88,28 @@ private fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
         // Find included files
         val declaredIn = command.containingFile
 
-        // Check if import package is used
-        val fileMaybe = searchFileByImportPaths(command)
-        if (fileMaybe != null) {
-            inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(fileMaybe)
+        val includedNames = command.getAllRequiredArguments() ?: continue
+
+        var foundFile = false
+
+        for (includedName in includedNames) {
+            val referenced = declaredIn.findFile(includedName)
+                    ?: continue
+
+            foundFile = true
+
+            // When it looks like a file includes itself, we skip it
+            if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
+                continue
+            }
+
+            inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
         }
-        else {
-            val includedNames = command.getAllRequiredArguments() ?: continue
 
-            for (includedName in includedNames) {
-                val referenced = declaredIn.findFile(includedName)
-                        ?: continue
-
-                // When it looks like a file includes itself, we skip it
-                if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
-                    continue
-                }
-
-                inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
+        if (!foundFile) {
+            // Check if import package is used
+            searchFileByImportPaths(command)?.let {
+                inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(it)
             }
         }
     }
