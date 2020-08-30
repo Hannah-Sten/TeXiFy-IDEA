@@ -623,4 +623,26 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         testLog(log, expectedMessages)
     }
+
+    fun `test glossaries-extra warning`() {
+        val log = """
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/glossaries/styles/glossary-tree
+            .sty)
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/glossaries-extra/glossaries-ext
+            ra-bib2gls.sty)
+            
+            Package glossaries-extra Warning: No file `glossaries-option4-bib2gls.glstex' o
+            n input line 17.
+            
+            
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
+            ) (/home/thomas/GitRepos/random-tex/out/glossaries-option4-bib2gls.aux)
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("glossaries-extra: No file `glossaries-option4-bib2gls.glstex'", null, 17, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }

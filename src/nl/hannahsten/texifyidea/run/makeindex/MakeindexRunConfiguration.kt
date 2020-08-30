@@ -36,16 +36,13 @@ class MakeindexRunConfiguration(
     }
 
     // The following variables are saved in the MakeindexSettingsEditor
-    var makeindexProgram: MakeindexProgram? = null
+    var makeindexProgram: MakeindexProgram = MakeindexProgram.MAKEINDEX
     var mainFile: VirtualFile? = null
     var workingDirectory: VirtualFile? = null
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         val makeindexOptions = getMakeindexOptions()
-        // todo find program once at a place where run config is run for first time
-        val indexProgram = makeindexProgram ?: findMakeindexProgram(getIndexPackageOptions(), makeindexOptions)
-
-        return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, indexProgram)
+        return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, makeindexProgram)
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = MakeindexSettingsEditor(project)
@@ -55,18 +52,13 @@ class MakeindexRunConfiguration(
 
         val parent = element.getChild(PARENT_ELEMENT)
 
-        makeindexProgram = try {
+        try {
             val programText = parent.getChildText(PROGRAM)
             if (!programText.isNullOrEmpty()) {
-                MakeindexProgram.valueOf(programText)
-            }
-            else {
-                null
+                makeindexProgram = MakeindexProgram.valueOf(programText)
             }
         }
-        catch (e: NullPointerException) {
-            null
-        }
+        catch (ignored: NullPointerException) {}
 
         val mainFilePath = try {
             parent.getChildText(MAIN_FILE)
@@ -101,7 +93,7 @@ class MakeindexRunConfiguration(
         val parent = element.getChild(PARENT_ELEMENT) ?: Element(PARENT_ELEMENT).apply { element.addContent(this) }
         parent.removeContent()
 
-        parent.addContent(Element(PROGRAM).apply { text = makeindexProgram?.name ?: "" })
+        parent.addContent(Element(PROGRAM).apply { text = makeindexProgram.name })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
         parent.addContent(Element(WORK_DIR).apply { text = workingDirectory?.path ?: "" })
     }
@@ -116,11 +108,15 @@ class MakeindexRunConfiguration(
 
     /**
      * Try to find out which index program the user wants to use, based on the given options.
-     * Will also set [makeindexProgram] if not already set.
+     * Will change [makeindexProgram] even if already set.
      */
-    private fun findMakeindexProgram(indexPackageOptions: List<String>, makeindexOptions: HashMap<String, String>): MakeindexProgram {
+    fun setDefaultMakeindexProgram() {
+        val indexPackageOptions = getIndexPackageOptions()
+        val makeindexOptions = getMakeindexOptions()
 
-        val usedPackages = mainFile?.psiFile(project)?.includedPackages() ?: emptySet()
+        val usedPackages = runReadAction {
+            mainFile?.psiFile(project)?.includedPackages() ?: emptySet()
+        }
 
         var indexProgram = if (usedPackages.intersect(Magic.Package.index).isNotEmpty()) {
             if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
@@ -142,10 +138,7 @@ class MakeindexRunConfiguration(
             indexProgram = MakeindexProgram.TRUEXINDY
         }
 
-        if (makeindexProgram == null) {
-            makeindexProgram = indexProgram
-        }
-        return indexProgram
+        makeindexProgram = indexProgram
     }
 
     /**
@@ -157,7 +150,7 @@ class MakeindexRunConfiguration(
             val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
             LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
                     .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
-                    .filter { command -> command.requiredParameters.any { it == "imakeidx" } }
+                    .filter { command -> command.requiredParameters.any { it in Magic.Package.index  || it in Magic.Package.glossary } }
                     .flatMap { it.optionalParameters.keys }
         }
     }

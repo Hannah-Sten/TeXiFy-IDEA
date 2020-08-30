@@ -35,7 +35,7 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
 
     // Save user selected settings to the given run config
     override fun applyEditorTo(runConfig: MakeindexRunConfiguration) {
-        runConfig.makeindexProgram = makeindexProgram.component.selectedItem as? MakeindexProgram
+        runConfig.makeindexProgram = makeindexProgram.component.selectedItem as MakeindexProgram
         runConfig.mainFile = LocalFileSystem.getInstance().findFileByPath(mainFile.component.text)
         runConfig.workingDirectory = LocalFileSystem.getInstance().findFileByPath(workingDirectory.component.text)
     }

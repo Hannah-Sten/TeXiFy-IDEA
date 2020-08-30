@@ -28,7 +28,6 @@ class MakeindexCommandLineState(
             throw ExecutionException("Main file to compile is not found or missing.")
         }
 
-        // todo does makeindex require extension?
         val indexFilename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension)
 
         val command = listOf(indexProgram.executableName, indexFilename)
