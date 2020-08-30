@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
@@ -53,12 +54,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         updateOutputSubDirs(mainFile, runConfig.outputPath)
 
         val handler = createHandler(mainFile, compiler)
-        val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile)
+        val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
         runConfig.hasBeenRun = true
 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
+        scheduleFileCleanup(runConfig.filesToCleanUp, handler)
 
         return handler
     }
@@ -99,7 +101,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
     }
 
-    private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile): Boolean {
+    private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile, filesToCleanUp: MutableList<File>): Boolean {
         var isMakeindexNeeded = false
 
         // todo cache?
@@ -130,7 +132,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 // Some packages do handle makeindex themselves
                 // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
                 if (!includedPackages.contains("imakeidx") || runConfig.usesAuxilOrOutDirectory()) {
-                    handler.addProcessListener(RunMakeindexListener(runConfig, environment))
+                    handler.addProcessListener(RunMakeindexListener(runConfig, environment, filesToCleanUp))
                 }
             }
         }
@@ -176,6 +178,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (runConfig.isLastRunConfig) {
             addOpenViewerListener(handler, runConfig.allowFocusChange)
             handler.addProcessListener(AutoCompileDoneListener())
+        }
+    }
+
+    private fun scheduleFileCleanup(filesToCleanUp: MutableList<File>, handler: KillableProcessHandler) {
+        if (runConfig.isLastRunConfig) {
+            handler.addProcessListener(FileCleanupListener(filesToCleanUp))
         }
     }
 

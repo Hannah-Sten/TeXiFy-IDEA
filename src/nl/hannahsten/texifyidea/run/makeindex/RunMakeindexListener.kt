@@ -6,9 +6,6 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
@@ -23,7 +20,8 @@ import java.io.FileNotFoundException
  */
 class RunMakeindexListener(
         private val latexRunConfig: LatexRunConfiguration,
-        private val environment: ExecutionEnvironment
+        private val environment: ExecutionEnvironment,
+        private val filesToCleanUp: MutableList<File>
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -45,9 +43,7 @@ class RunMakeindexListener(
             val options = makeindexRunConfig.getMakeindexOptions()
             val baseFileName = options.getOrDefault("name", makeindexRunConfig.mainFile?.nameWithoutExtension) ?: return
 
-            // todo cleanup files, but only if they didn't exist already (copied manually by user)
-            val copiedFiles = copyIndexFiles(baseFileName)
-
+            copyIndexFiles(baseFileName)
 
             // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
             if (latexRunConfig.bibRunConfigs.isEmpty()) {
@@ -92,31 +88,34 @@ class RunMakeindexListener(
      *
      * @param baseFileName Filename of generated files without extension.
      *
-     * @return List of files that were copied.
+     * @return List of files that should be cleaned up.
      */
-    private fun copyIndexFiles(baseFileName: String): List<File> {
+    private fun copyIndexFiles(baseFileName: String) {
 
-        val mainFile = latexRunConfig.mainFile ?: return emptyList()
-        val workDir = latexRunConfig.getAuxilDirectory() ?: return emptyList()
-
-        val copiedFiles = mutableListOf<File>()
+        val mainFile = latexRunConfig.mainFile ?: return
+        val workDir = latexRunConfig.getAuxilDirectory() ?: return
+        val sourceDir = workDir.path + '/'
+        val destinationDir = File(mainFile.path).parent + '/'
 
         // Just try all extensions for files that need to be copied
         for (extension in Magic.File.indexFileExtensions) {
 
             val indexFileName = baseFileName.appendExtension(extension)
             // todo only copy file if exists
-            val indexFileSource = File(workDir.path + '/' + indexFileName)
+            val indexFileSource = File(sourceDir + indexFileName)
             if (!indexFileSource.isFile) continue
-            val indexFileDestination = File(File(mainFile.path).parent + '/' + indexFileName)
+            val indexFileDestination = File(destinationDir + indexFileName)
+
+            // Only clean up file if not copied there by user
+            if (indexFileSource.exists() && !indexFileDestination.exists()) {
+                filesToCleanUp.add(indexFileDestination)
+            }
 
             try {
                 FileUtil.copy(indexFileSource, indexFileDestination)
-                copiedFiles.add(indexFileDestination)
             }
             catch (ignored: FileNotFoundException) {}
         }
-        return copiedFiles
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {}

@@ -42,6 +42,7 @@ class MakeindexRunConfiguration(
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         val makeindexOptions = getMakeindexOptions()
+        // todo find program once at a place where run config is run for first time
         val indexProgram = makeindexProgram ?: findMakeindexProgram(getIndexPackageOptions(), makeindexOptions)
 
         return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, indexProgram)

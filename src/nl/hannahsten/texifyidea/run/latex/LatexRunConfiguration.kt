@@ -37,6 +37,7 @@ import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
 import nl.hannahsten.texifyidea.util.usesBiber
 import org.jdom.Element
+import java.io.File
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -151,6 +152,11 @@ class LatexRunConfiguration constructor(project: Project,
         set(makeindexRunConfig) {
             this.makeindexRunConfigId = makeindexRunConfig?.uniqueID ?: ""
         }
+
+    // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
+    // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
+    val filesToCleanUp = mutableListOf<File>()
+
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(project)
