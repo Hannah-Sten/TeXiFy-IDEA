@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
 import org.jdom.Element
@@ -122,8 +123,20 @@ class MakeindexRunConfiguration(
             if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
         }
         else {
-            // todo makeglossaries-lite
-            if (Package.GLOSSARIES.name in usedPackages) MakeindexProgram.MAKEGLOSSARIES else if (Package.GLOSSARIESEXTRA.name in usedPackages && "record" in indexPackageOptions) MakeindexProgram.BIB2GLS else MakeindexProgram.MAKEGLOSSARIESLITE
+            if (Package.GLOSSARIES.name in usedPackages) {
+                if (SystemEnvironment.isPerlInstalled) {
+                    MakeindexProgram.MAKEGLOSSARIES
+                }
+                else {
+                    MakeindexProgram.MAKEGLOSSARIESLITE
+                }
+            }
+            else if (Package.GLOSSARIESEXTRA.name in usedPackages && "record" in indexPackageOptions) {
+                MakeindexProgram.BIB2GLS
+            }
+            else {
+                MakeindexProgram.MAKEGLOSSARIESLITE
+            }
         }
 
 

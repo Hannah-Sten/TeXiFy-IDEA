@@ -22,7 +22,6 @@ import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
-import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
@@ -105,10 +104,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile, filesToCleanUp: MutableList<File>): Boolean {
         var isMakeindexNeeded = false
 
-        // todo cache?
-//        if (!runConfig.hasBeenRun) {
-            // todo is this too slow? Could use index for glossary/makeindex relevant commands
-            //     alternatively, check for output files
+        // To find out whether makeindex is needed is relatively expensive,
+        // so we only do this the first time
+        if (!runConfig.hasBeenRun) {
             val commandsInFileSet = mainFile.psiFile(environment.project)?.commandsInFileSet()?.mapNotNull { it.name } ?: emptyList()
 
             // Option 1 in http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf
@@ -117,25 +115,25 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             if (usesTexForGlossaries) {
                 runConfig.compileTwice = true
             }
-//        }
 
-        // Run makeindex when applicable
-        if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfig != null || !runConfig.hasBeenRun)) {
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = runConfig.mainFile
                     ?.psiFile(runConfig.project)
                     ?.includedPackages()
                     ?: setOf()
-            // todo but not if using option 1
+
             isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 
-            if (isMakeindexNeeded) {
-                // Some packages do handle makeindex themselves
-                // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
-                if (!includedPackages.contains("imakeidx") || runConfig.usesAuxilOrOutDirectory()) {
-                    handler.addProcessListener(RunMakeindexListener(runConfig, environment, filesToCleanUp))
-                }
+            // Some packages do handle makeindex themselves
+            // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
+            if (includedPackages.contains("imakeidx") && !runConfig.usesAuxilOrOutDirectory()) {
+                isMakeindexNeeded = false
             }
+        }
+
+        // Run makeindex when applicable
+        if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfig != null || isMakeindexNeeded)) {
+            handler.addProcessListener(RunMakeindexListener(runConfig, environment, filesToCleanUp))
         }
 
         return isMakeindexNeeded
