@@ -1,22 +1,14 @@
 package nl.hannahsten.texifyidea.run.makeindex
 
-import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.SystemEnvironment
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import org.jdom.Element
 
 /**
@@ -42,7 +34,7 @@ class MakeindexRunConfiguration(
     var workingDirectory: VirtualFile? = null
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        val makeindexOptions = getMakeindexOptions()
+        val makeindexOptions = getMakeindexOptions(mainFile, project)
         return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, makeindexProgram)
     }
 
@@ -101,86 +93,9 @@ class MakeindexRunConfiguration(
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension.plus(" index")
+    override fun suggestedName() = mainFile?.nameWithoutExtension + " " + makeindexProgram.name.toLowerCase()
 
     fun setSuggestedName() {
         name = suggestedName()
-    }
-
-    /**
-     * Try to find out which index program the user wants to use, based on the given options.
-     * Will change [makeindexProgram] even if already set.
-     */
-    fun setDefaultMakeindexProgram() {
-        val indexPackageOptions = getIndexPackageOptions()
-        val makeindexOptions = getMakeindexOptions()
-
-        val usedPackages = runReadAction {
-            mainFile?.psiFile(project)?.includedPackages() ?: emptySet()
-        }
-
-        var indexProgram = if (usedPackages.intersect(Magic.Package.index).isNotEmpty()) {
-            if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
-        }
-        else {
-            if (Package.GLOSSARIES.name in usedPackages) {
-                if (SystemEnvironment.isPerlInstalled) {
-                    MakeindexProgram.MAKEGLOSSARIES
-                }
-                else {
-                    MakeindexProgram.MAKEGLOSSARIESLITE
-                }
-            }
-            else if (Package.GLOSSARIESEXTRA.name in usedPackages && "record" in indexPackageOptions) {
-                MakeindexProgram.BIB2GLS
-            }
-            else {
-                MakeindexProgram.MAKEGLOSSARIESLITE
-            }
-        }
-
-
-        // Possible extra settings to override the indexProgram, see the imakeidx docs
-        if (makeindexOptions.contains("makeindex")) {
-            indexProgram = MakeindexProgram.MAKEINDEX
-        }
-        else if (makeindexOptions.contains("xindy") || makeindexOptions.contains("texindy")) {
-            indexProgram = MakeindexProgram.XINDY
-        }
-        else if (makeindexOptions.contains("truexindy")) {
-            indexProgram = MakeindexProgram.TRUEXINDY
-        }
-
-        makeindexProgram = indexProgram
-    }
-
-    /**
-     * Get package options for included index packages.
-     */
-    private fun getIndexPackageOptions(): List<String> {
-        return runReadAction {
-            // Find index package options
-            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
-            LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-                    .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
-                    .filter { command -> command.requiredParameters.any { it in Magic.Package.index  || it in Magic.Package.glossary } }
-                    .flatMap { it.optionalParameters.keys }
-        }
-    }
-
-    /**
-     * Get optional parameters of the \makeindex command. If an option key does not have a value it will map to the empty string.
-     */
-    fun getMakeindexOptions(): HashMap<String, String> {
-        return runReadAction {
-            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
-            val makeindexOptions = HashMap<String, String>()
-            LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-                    .filter { it.commandToken.text == "\\makeindex" }
-                    .forEach {
-                        makeindexOptions.putAll(it.optionalParameters)
-                    }
-            makeindexOptions
-        }
     }
 }

@@ -146,12 +146,16 @@ class LatexRunConfiguration constructor(project: Project,
 
     // todo support multiple makeindex run configs
     // todo test using both index and glossary
-    private var makeindexRunConfigId = ""
-    var makeindexRunConfig: RunnerAndConfigurationSettings?
-        get() = RunManagerImpl.getInstanceImpl(project)
-                .getConfigurationById(makeindexRunConfigId)
-        set(makeindexRunConfig) {
-            this.makeindexRunConfigId = makeindexRunConfig?.uniqueID ?: ""
+    private var makeindexRunConfigIds = mutableSetOf<String>()
+    var makeindexRunConfigs: Set<RunnerAndConfigurationSettings>
+        get() = makeindexRunConfigIds.mapNotNull {
+            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
+        }.toSet()
+        set(makeindexRunConfigs) {
+            makeindexRunConfigIds = mutableSetOf()
+            makeindexRunConfigs.forEach {
+                makeindexRunConfigIds.add(it.uniqueID)
+            }
         }
 
     // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
@@ -295,9 +299,9 @@ class LatexRunConfiguration constructor(project: Project,
         // Assume the list is of the form [id 1,id 2]
         this.bibRunConfigIds = bibRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
 
-        // Read makeindex run configuration
+        // Read makeindex run configurations
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
-        this.makeindexRunConfigId = makeindexRunConfigElt ?: ""
+        this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
     }
 
     @Throws(WriteExternalException::class)
@@ -330,7 +334,7 @@ class LatexRunConfiguration constructor(project: Project,
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
         parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
         parent.addContent(Element(BIB_RUN_CONFIG).also { it.text = bibRunConfigIds.toString() })
-        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).also { it.text = makeindexRunConfigId })
+        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).also { it.text = makeindexRunConfigIds.toString() })
     }
 
     /**

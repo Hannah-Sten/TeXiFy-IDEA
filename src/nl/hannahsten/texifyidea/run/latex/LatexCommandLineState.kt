@@ -132,7 +132,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // Run makeindex when applicable
-        if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfig != null || isMakeindexNeeded)) {
+        if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfigs.isNotEmpty() || isMakeindexNeeded)) {
             handler.addProcessListener(RunMakeindexListener(runConfig, environment, filesToCleanUp))
         }
 

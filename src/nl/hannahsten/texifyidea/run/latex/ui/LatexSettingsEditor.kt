@@ -142,7 +142,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         bibliographyPanel.configurations = runConfiguration.bibRunConfigs.toMutableSet()
 
         // Reset makeindex
-        makeindexPanel.configurations = if (runConfiguration.makeindexRunConfig != null) mutableSetOf(runConfiguration.makeindexRunConfig!!) else mutableSetOf()
+        makeindexPanel.configurations = if (runConfiguration.makeindexRunConfigs.isNotEmpty()) runConfiguration.makeindexRunConfigs.toMutableSet() else mutableSetOf()
     }
 
     // Confirm the changes, i.e. copy current UI state into the target settings object.
@@ -165,15 +165,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         if (runConfiguration.compiler?.includesMakeindex == true) {
-            runConfiguration.makeindexRunConfig = null
+            runConfiguration.makeindexRunConfigs = emptySet()
             makeindexPanel.isVisible = false
         }
         else {
             makeindexPanel.isVisible = true
 
             // Apply makeindex
-            // For now we just run the first one, this can be extended to run all of them but that requires some extra work
-            runConfiguration.makeindexRunConfig = makeindexPanel.configurations.firstOrNull()
+            runConfiguration.makeindexRunConfigs = makeindexPanel.configurations
         }
 
         // Apply custom compiler path if applicable
