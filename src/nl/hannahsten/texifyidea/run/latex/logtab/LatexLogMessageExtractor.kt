@@ -76,15 +76,17 @@ object LatexLogMessageExtractor {
         // Assumes
         if (TEX_MISC_WARNINGS.any { text.removeSuffix(newText).startsWith(it) }) {
             var messageText = if (LatexOutputListener.isLineEndOfMessage(newText, text)) text.remove(newText) else text
+
+            // Don't include the second line if it is not part of the message
+            // (Do this before cleaning up the messageText)
+            if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText))) {
+                messageText = messageText.remove(newText).trim()
+            }
+
             messageText = messageText.remove("LaTeX Warning: ")
                 // Improves readability, and at the moment we don't have an example where this would be incorrect
                 .trim('(', ')', '[', ']')
                 .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
-
-            // Don't include the second line if it is not part of the message
-            if (LatexOutputListener.isLineEndOfMessage(newText, text.remove(newText))) {
-                messageText = messageText.remove(newText).trim()
-            }
 
             return LatexLogMessage(
                 messageText,
