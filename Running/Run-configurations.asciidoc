@@ -83,6 +83,7 @@ This path will be passed to the `-output-directory` for pdflatex, and similar fo
 Make sure to _choose the directory of your main file when using BibTeX without MiKTeX_, otherwise bibtex won't be run correctly.
 The exception to this is when you have changed your `openout_any` setting in TeX Live.
 
+_Since b0.7.1_
 You can use the `{mainFileParent}` and `{projectDir}` placeholders here, which will be resolved when you run the run configuration.
 The first one resolves to the directory your main file is in, the second to the content root of the main file.
 These placeholders are especially useful in template run configurations, so you can specify paths relative to these directories in the template run configuration, when the main file is not yet known.

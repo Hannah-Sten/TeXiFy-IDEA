@@ -90,7 +90,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 
 == Running
 * Gutter icons for quick compilation
-* link:Run-configurations[One run configuration per fileset]
+* link:Run-configurations[Customizable run configurations to compile LaTeX files]
 * link:Compilers[Compiler support for pdfLaTeX, LuaTeX, Latexmk, texliveonfly, XeLaTeX, Tectonic, bibtex, and biber]
 * link:SumatraPDF-support[SumatraPDF (Windows) support with forward and backward search]
 * link:Evince-support[Evince (Linux) support with forward and backward search]
