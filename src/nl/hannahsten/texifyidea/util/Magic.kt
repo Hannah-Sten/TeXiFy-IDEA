@@ -773,6 +773,11 @@ object Magic {
         @JvmField
         val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
 
+        val automaticExtensions = mapOf(
+                "\\include" to LatexFileType.defaultExtension,
+                "\\bibliography" to BibtexFileType.defaultExtension
+        )
+
         /**
          * All possible file types.
          */
