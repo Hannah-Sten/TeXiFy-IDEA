@@ -143,7 +143,7 @@ fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
  *
  * @param command
  *         The include command
- * @return The found file(s), or an empty set when no files could not be found.
+ * @return The found file(s), or an empty set when no files could be found.
  */
 fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
     val arguments = command.getAllRequiredArguments() ?: return emptySet()
