@@ -137,7 +137,6 @@ fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
     return psiFile
 }
 
-
 /**
  * Looks up the file(s) included by a command relative to this file.
  *
