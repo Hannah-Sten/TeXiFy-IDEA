@@ -17,19 +17,13 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
 
     @Test
     fun testCompleteLatexReferences() {
-        // given
-        val testName = getTestName(false)
-        myFixture.configureByFiles("$testName.tex", "bibtex.bib")
-
-        // Seems like this also helps making sure the file is indexed before using autocompletion
-        assertTrue(myFixture.findAllGutters().size > 0)
-
         // when
-        val result = myFixture.complete(CompletionType.BASIC)
+        runCompletion()
+        val result = myFixture.lookupElements!!
 
         // then
         assertEquals(3, result.size)
-        val entry1 = result.first { l -> l.lookupString == "Evans2015" }
+        val entry1 = result.first { l -> l!!.lookupString == "Evans2015" }!!
         assertTrue(entry1.allLookupStrings.contains("Evans, Isaac"))
         assertTrue(entry1.allLookupStrings.contains("Evans2015"))
         assertTrue(entry1.allLookupStrings.contains("Missing the Point(er): On the Effectiveness of Code Pointer Integrity"))
@@ -37,14 +31,8 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
 
     @Test
     fun testCompletionResultsLowerCase() {
-        // given
-        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
-
-        // Seems like this also helps making sure the file is indexed before using autocompletion
-        assertTrue(myFixture.findAllGutters().size > 0)
-
         // when
-        myFixture.complete(CompletionType.BASIC)
+        runCompletion()
         val result = myFixture.lookupElementStrings
 
         // then
@@ -52,16 +40,32 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertTrue(result?.contains("Muchnick1997") == true)
     }
 
-//    @Test
-//    fun testCompleteBibtexWithCorrectCase() {
+    @Test
+    fun testCompletionResultsSecondEntry() {
+        // when
+        runCompletion()
+        val result = myFixture.lookupElementStrings
+
+        // then
+        assertEquals(3, result?.size)
+        assertTrue(result?.contains("Muchnick1997") == true)
+        assertTrue(result?.contains("Evans2015") == true)
+        assertTrue(result?.contains("Burow2016") == true)
+    }
+
+    private fun runCompletion() {
+        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
+
+        // when
+        myFixture.complete(CompletionType.BASIC)
+    }
+
+    @Test
+    fun testCompleteBibtexWithCorrectCase() {
         // Using the following failed sometimes
-//        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
-//        val testName = getTestName(false)
-//        myFixture.configureByFiles("${testName}_before.tex", "$testName.bib")
-//        myFixture.complete(CompletionType.BASIC)
-//        myFixture.findAllGutters() // This seems to allow the completion to complete, and to make the test pass
-//        myFixture.checkResultByFile("${testName}_after.tex")
-//    }
+        val testName = getTestName(false)
+        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
+    }
 
     @Test
     fun testLabelReferenceCompletion() {
