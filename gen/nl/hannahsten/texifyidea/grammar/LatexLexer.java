@@ -576,9 +576,7 @@ public class LatexLexer implements FlexLexer {
     return j;
   }
 
-  /**
-   * the input device
-   */
+  /** the input device */
   private java.io.Reader zzReader;
 
   /** the current state of the DFA */
@@ -1041,15 +1039,18 @@ public class LatexLexer implements FlexLexer {
         if (Magic.Environment.verbatim.contains(yytext().toString())) {
             yypushState(VERBATIM_START);
         }
-        return NORMAL_TEXT_WORD;
-            } 
-            // fall through
-          case 84: break;
-          case 29: 
-            { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET;
-            } 
-            // fall through
-          case 85: break;
+              return NORMAL_TEXT_WORD;
+            }
+          // fall through
+          case 84:
+            break;
+          case 29: {
+            verbatimOptionalArgumentBracketsCount++;
+            return OPEN_BRACKET;
+          }
+          // fall through
+          case 85:
+            break;
           case 30: {
             verbatimOptionalArgumentBracketsCount--;
             if (verbatimOptionalArgumentBracketsCount == 0) {
@@ -1057,17 +1058,23 @@ public class LatexLexer implements FlexLexer {
               yypushState(VERBATIM);
             }
             return CLOSE_BRACKET;
-            } 
-            // fall through
-          case 86: break;
-          case 31: 
-            { yypopState(); yypushState(POSSIBLE_VERBATIM_OPTIONAL_ARG); return CLOSE_BRACE;
-            } 
-            // fall through
-          case 87: break;
-          case 32: 
-            { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN;
-            } 
+          }
+          // fall through
+          case 86:
+            break;
+          case 31: {
+            yypopState();
+            yypushState(POSSIBLE_VERBATIM_OPTIONAL_ARG);
+            return CLOSE_BRACE;
+          }
+          // fall through
+          case 87:
+            break;
+          case 32: {
+            yypopState();
+            yypushState(VERBATIM);
+            return RAW_TEXT_TOKEN;
+          }
             // fall through
           case 88: break;
           case 33: 
