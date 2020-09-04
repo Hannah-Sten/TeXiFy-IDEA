@@ -7,6 +7,7 @@
 
 
 # Bug fixes
+* Fix a concurrency issue with the fileset cache. (#1567)
 * Fix bibtex autocompletion not working with multiple comma-separated keys. (#1566)
 
 Thanks to Felix Berlakovich ([@
