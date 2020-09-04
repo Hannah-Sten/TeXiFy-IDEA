@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.codeInsight.completion.CompletionType
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import org.junit.Test
 
-class LatexLabelCompletionTest : LightJavaCodeInsightFixtureTestCase() {
+class LatexLabelCompletionTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return "test/resources/completion/cite"
     }
@@ -56,23 +56,16 @@ class LatexLabelCompletionTest : LightJavaCodeInsightFixtureTestCase() {
     private fun runCompletion() {
         myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
 
-        // Seems like this also helps making sure the file is indexed before using autocompletion
-        assertTrue(myFixture.findAllGutters().size > 0)
-
         // when
         myFixture.complete(CompletionType.BASIC)
     }
 
-//    @Test
-//    fun testCompleteBibtexWithCorrectCase() {
-    // Using the following failed sometimes
-//        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
-//        val testName = getTestName(false)
-//        myFixture.configureByFiles("${testName}_before.tex", "$testName.bib")
-//        myFixture.complete(CompletionType.BASIC)
-//        myFixture.findAllGutters() // This seems to allow the completion to complete, and to make the test pass
-//        myFixture.checkResultByFile("${testName}_after.tex")
-//    }
+    @Test
+    fun testCompleteBibtexWithCorrectCase() {
+        // Using the following failed sometimes
+        val testName = getTestName(false)
+        myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
+    }
 
     @Test
     fun testLabelReferenceCompletion() {
