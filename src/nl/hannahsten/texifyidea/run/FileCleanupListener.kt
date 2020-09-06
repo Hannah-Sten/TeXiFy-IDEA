@@ -11,7 +11,7 @@ import java.io.File
 /**
  * Clean up given files after the process is done.
  */
-class FileCleanupListener(private val filesToCleanUp: MutableList<File>): ProcessListener {
+class FileCleanupListener(private val filesToCleanUp: MutableList<File>) : ProcessListener {
     override fun startNotified(event: ProcessEvent) {
     }
 

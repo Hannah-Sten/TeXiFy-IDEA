@@ -31,7 +31,7 @@ class MakeindexCommandLineState(
         val indexBasename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension)
 
         // texindy requires the file extension
-        val indexFilename = if (indexProgram != MakeindexProgram.XINDY) { indexBasename } else { indexBasename.appendExtension("idx") }
+        val indexFilename = if (indexProgram != MakeindexProgram.XINDY) indexBasename else indexBasename.appendExtension("idx")
 
         val command = listOf(indexProgram.executableName, indexFilename)
         val commandLine = GeneralCommandLine(command).withWorkDirectory(workingDirectory?.path)

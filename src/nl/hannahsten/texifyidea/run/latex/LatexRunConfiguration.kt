@@ -155,7 +155,6 @@ class LatexRunConfiguration constructor(project: Project,
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
 
-
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         return LatexSettingsEditor(project)
     }

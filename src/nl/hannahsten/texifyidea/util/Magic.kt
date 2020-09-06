@@ -822,7 +822,6 @@ object Magic {
          * Extensions of files required by bib2gls
          */
         val bib2glsDependenciesExtensions = setOf("aux", "glg", "log")
-
     }
 
     /**
