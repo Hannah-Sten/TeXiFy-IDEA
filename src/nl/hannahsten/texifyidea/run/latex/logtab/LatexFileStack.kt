@@ -95,7 +95,7 @@ class LatexFileStack(
                 if (notClosedNonFileOpenParentheses > 0) notClosedNonFileOpenParentheses--
                 else {
                     if (isEmpty()) {
-                        throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker.")
+                        throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker. Line content: $line")
                     }
                     pop()
                 }
