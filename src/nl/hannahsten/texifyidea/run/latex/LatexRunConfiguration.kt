@@ -32,6 +32,7 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.hasBibliography
 import nl.hannahsten.texifyidea.util.includedPackages
@@ -85,24 +86,18 @@ class LatexRunConfiguration constructor(project: Project,
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
     var mainFile: VirtualFile? = null
+        set(value) {
+            field = value
+            this.outputPath.mainFile = value
+            this.outputPath.contentRoot = getMainFileContentRoot()
+        }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: PsiFile? = null
 
     /** Path to the directory containing the output files. */
-    var outputPath: VirtualFile? = null
-        get() {
-            // When the user modifies the run configuration template, then this variable will magically be replaced with the
-            // path to the /bin folder of IntelliJ, without the setter being called.
-            return if (field?.path?.endsWith("/bin") == true) {
-                field = null
-                field
-            }
-            else {
-                field
-            }
-        }
+    var outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
 
     /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null
@@ -243,10 +238,11 @@ class LatexRunConfiguration constructor(project: Project,
         val outputPathString = parent.getChildText(OUTPUT_PATH)
         if (outputPathString != null) {
             if (outputPathString.endsWith("/bin")) {
-                this.outputPath = getDefaultOutputPath()
+                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
             }
             else {
-                this.outputPath = fileSystem.findFileByPath(outputPathString)
+                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+                this.outputPath.pathString = outputPathString
             }
         }
 
@@ -268,11 +264,11 @@ class LatexRunConfiguration constructor(project: Project,
                 this.auxilPath = LocalFileSystem.getInstance().findFileByPath(path)
             }
             val outDirBoolean = parent.getChildText(OUT_DIR)
-            if (outDirBoolean != null && this.outputPath == null && this.mainFile != null) {
+            if (outDirBoolean != null && this.outputPath.virtualFile == null && this.mainFile != null) {
                 val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
                 val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
                 val path = if (usesOutDir) moduleRoot?.path + "/out" else this.mainFile!!.parent.path
-                this.outputPath = LocalFileSystem.getInstance().findFileByPath(path)
+                this.outputPath.virtualFile = LocalFileSystem.getInstance().findFileByPath(path)
             }
         }
 
@@ -327,7 +323,7 @@ class LatexRunConfiguration constructor(project: Project,
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
-        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath?.path ?: "" })
+        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath?.path ?: "" })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
@@ -389,8 +385,8 @@ class LatexRunConfiguration constructor(project: Project,
         // On non-MiKTeX systems, override outputPath to disable the out/ directory by default for bibtex to work
         if (!latexDistribution.isMiktex()) {
             // Only if default, because the user could have changed it after creating the run config but before running
-            if (isDefaultOutputPath() && mainFile != null) {
-                outputPath = mainFile!!.parent
+            if (outputPath.isDefault() && mainFile != null) {
+                outputPath.virtualFile = mainFile!!.parent
             }
         }
 
@@ -451,26 +447,6 @@ class LatexRunConfiguration constructor(project: Project,
         this.mainFile = null
     }
 
-    /**
-     * Try to find the virtual file, as absolute path or relative to a content root.
-     */
-    fun findVirtualFileByPath(path: String): VirtualFile? {
-        val fileSystem = LocalFileSystem.getInstance()
-
-        val file = fileSystem.findFileByPath(path)
-        if (file != null) {
-            return file
-        }
-        else {
-            // Maybe it is a relative path
-            ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
-                root.findFileByRelativePath(path)?.let { return it }
-            }
-        }
-
-        return null
-    }
-
     fun setDefaultCompiler() {
         compiler = LatexCompiler.PDFLATEX
     }
@@ -486,20 +462,14 @@ class LatexRunConfiguration constructor(project: Project,
     /**
      * Find the directory where auxiliary files will be placed, depending on the run config settings.
      *
-     * @return The auxil folder when MiKTeX used, or else the out folder when used, or else the folder where the main file is, or null if there is no main file.
+     * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        val auxilDir = when {
-            auxilPath != null && latexDistribution.isMiktex() -> auxilPath
-            outputPath != null -> outputPath
-            mainFile != null -> mainFile?.parent
-            else -> null
-        }
-        return if (auxilDir?.path?.endsWith("/bin") == true) {
-            mainFile?.parent
+        return if (auxilPath != null && latexDistribution.isMiktex() && auxilPath?.path?.endsWith("/bin") == false) {
+            auxilPath
         }
         else {
-            auxilDir
+            outputPath.getAndCreatePath()
         }
     }
 
@@ -518,8 +488,8 @@ class LatexRunConfiguration constructor(project: Project,
 
     // Path to output file (e.g. pdf)
     override fun getOutputFilePath(): String {
-        val outputDir = if (outputPath != null) outputPath!!.path else mainFile?.parent?.path
-        return "$outputDir/" + mainFile!!
+        val outputDir = outputPath.getAndCreatePath()
+        return "${outputDir?.path}/" + mainFile!!
                 .nameWithoutExtension + "." + outputFormat.toString()
                 .toLowerCase()
     }
@@ -528,37 +498,25 @@ class LatexRunConfiguration constructor(project: Project,
      * Set [outputPath]
      */
     override fun setFileOutputPath(fileOutputPath: String) {
-        if (fileOutputPath.endsWith("/bin")) {
-            this.outputPath = getDefaultOutputPath()
-        }
-        else {
-            this.outputPath = findVirtualFileByPath(fileOutputPath)
+        if (fileOutputPath.isBlank()) return
+        this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
+        // If not possible to resolve directly, we might resolve it later
+        if (this.outputPath.virtualFile == null) {
+            this.outputPath.pathString = fileOutputPath
         }
     }
 
     /**
-     * Assuming the main file is known, set a default output path if not already set.
+     * Get the content root of the main file.
      */
-    fun setDefaultOutputPath() {
-        if (outputPath != null || mainFile == null) return
-        this.outputPath = getDefaultOutputPath()
-    }
-
-    private fun getDefaultOutputPath(): VirtualFile? {
+    private fun getMainFileContentRoot(): VirtualFile? {
         if (mainFile == null) return null
-        var defaultOutputPath: VirtualFile? = null
-        runReadAction {
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-            defaultOutputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/out")
+        return runReadAction {
+            return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         }
-        return defaultOutputPath
     }
 
-    /**
-     * Whether the current output path is the default.
-     */
-    private fun isDefaultOutputPath() = getDefaultOutputPath() == outputPath
-
+    // todo refactor following methods in to LatexOutputPath
     /**
      * Assuming the main file is known, set a default auxil path if not already set.
      * Will be set to null if not used.
@@ -574,7 +532,7 @@ class LatexRunConfiguration constructor(project: Project,
      * Set [auxilPath]
      */
     fun setFileAuxilPath(fileAuxilPath: String) {
-        this.auxilPath = findVirtualFileByPath(fileAuxilPath)
+        this.auxilPath = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
     }
 
     /**
@@ -588,12 +546,7 @@ class LatexRunConfiguration constructor(project: Project,
             auxilPath != mainFile?.parent
         }
 
-        val usesOutDir = if (outputPath == null) {
-            false
-        }
-        else {
-            outputPath != mainFile?.parent
-        }
+        val usesOutDir = outputPath.getAndCreatePath() != mainFile?.parent
 
         return usesAuxilDir || usesOutDir
     }

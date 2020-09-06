@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.lineNumber
+import nl.hannahsten.texifyidea.util.remove
 import java.util.ArrayDeque
 
 class LatexFileStack(
@@ -44,10 +45,13 @@ class LatexFileStack(
         }
 
         if (currentCollectingFile.isNotEmpty()) {
-            currentCollectingFile += line.trim()
+            // Files may end halfway the line
+            val endIndex = if (")" in line) line.indexOf(')') else line.length
+            currentCollectingFile += line.substring(0, endIndex).remove("\n")
             // Check if this was the last part of the file
-            if (line.length < LINE_WIDTH) {
-                push(currentCollectingFile)
+            if (line.substring(0, endIndex).length < LINE_WIDTH) {
+                // Assume that paths can be quoted, but there are no " in folder/file names
+                push(currentCollectingFile.trim('"'))
                 currentCollectingFile = ""
             }
         }
@@ -69,12 +73,12 @@ class LatexFileStack(
         while (result != null) {
             // If the regex matches an open par (with filename), register file
             if (linePart[result.range.first] == '(') {
-                val file = result.groups["file"]?.value ?: break
+                val file = result.groups["file"]?.value?.trim() ?: break
 
                 // Check if file spans multiple lines
                 // +1 because the starting ( is not in the group
                 // -1 because the newline is not here
-                if (file.length + 1 >= LINE_WIDTH - 1) {
+                if (file.length + 1 >= LINE_WIDTH - 1 || (line.length >= LINE_WIDTH && line.trim().endsWith(file))) {
                     currentCollectingFile += file
                 }
                 else {
@@ -91,7 +95,7 @@ class LatexFileStack(
                 if (notClosedNonFileOpenParentheses > 0) notClosedNonFileOpenParentheses--
                 else {
                     if (isEmpty()) {
-                        throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker.")
+                        throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker. Line content: $line")
                     }
                     pop()
                 }

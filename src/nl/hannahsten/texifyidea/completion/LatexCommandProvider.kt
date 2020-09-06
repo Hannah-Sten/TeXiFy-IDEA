@@ -169,8 +169,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
     private fun getArgumentsFromDefinition(commands: LatexCommands): List<Argument> {
         val argumentString = getTailText(commands)
-        val argumentStrings = """(\[[\w\d]*\])|(\{[\w\d]*\})""".toRegex().findAll(argumentString).map { it.value }.toList()
-        return argumentStrings.map { it ->
+        val argumentStrings = """(\[[\w\d]*])|(\{[\w\d]*})""".toRegex().findAll(argumentString).map { it.value }.toList()
+        return argumentStrings.map {
             if (it.startsWith("{")) RequiredArgument(it.drop(1).dropLast(1))
             else OptionalArgument(it.drop(1).dropLast(1))
         }
@@ -217,7 +217,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             }
 
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
-                val paramSpecification = commands.requiredParameters[1].removeAll("null", " ")
+                val paramSpecification = commands.requiredParameters.getOrNull(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
                     if (Magic.Package.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"
