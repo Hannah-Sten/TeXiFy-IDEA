@@ -323,9 +323,6 @@
                     text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
                 <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
             </action>
-
-<!--            <action class="nl.hannahsten.texifyidea.action.okular.ConfigureInverseSearchAction" id="texify.okular.ConfigureInverseSearch"-->
-<!--                    text="Configure Inverse Search" description="Instructions for configuring inverse search."/>-->
         </group>
 
     </actions>
