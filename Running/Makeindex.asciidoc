@@ -52,6 +52,8 @@ You can tell imakeidx to not worry about it with the `noautomatic` option, so wr
 
 == Glossary examples
 
+_Since b0.7.1_
+
 The `glossaries` package http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf[Beginners' guide] contains four options of building a glossary.
 For completeness we repeat these examples below, so you can easily copy paste and run them.
 
