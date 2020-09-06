@@ -2,13 +2,17 @@
 
 # Additions
 * Support paths relative to main file or project dir in run configuration template. (#1553)
+* Add support for the Zathura pdf viewer. (#1551)
 
 # Changes
 
 
 # Bug fixes
+* Fix a parse error with nested brackets in optional parameter of verbatim environment. (#1569)
+* Fix file inclusion loop triggered incorrectly. (#1570)
 * Fix a concurrency issue with the fileset cache. (#1567)
 * Fix bibtex autocompletion not working with multiple comma-separated keys. (#1566)
+* Other bug fixes and improvements. (#1576)
 
 Thanks to Felix Berlakovich ([@
 fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
