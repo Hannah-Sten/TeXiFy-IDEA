@@ -139,8 +139,6 @@ class LatexRunConfiguration constructor(project: Project,
             }
         }
 
-    // todo support multiple makeindex run configs
-    // todo test using both index and glossary
     private var makeindexRunConfigIds = mutableSetOf<String>()
     var makeindexRunConfigs: Set<RunnerAndConfigurationSettings>
         get() = makeindexRunConfigIds.mapNotNull {

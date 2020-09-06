@@ -8,6 +8,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.run.FileCleanupListener
@@ -22,8 +23,10 @@ import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Magic.Package
+import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
+import java.io.File
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -37,7 +40,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
-        // todo
         // If the outdirs do not exist, we assume this is because either something went wrong and an incorrect output path was filled in,
         // or the user did not create a new project, for example by opening or importing existing resources,
         // so they still need to be created.
@@ -46,7 +48,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         firstRunSetup(compiler)
-        runConfig.outputPath.updateOutputSubdirs()
+        runConfig.outputPath.updateOutputSubDirs()
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
