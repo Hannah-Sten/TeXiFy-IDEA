@@ -7,12 +7,7 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.project.IndexNotReadyException
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
@@ -24,12 +19,8 @@ import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Magic.Package.index
-import nl.hannahsten.texifyidea.util.files.FileUtil
-import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.includedPackages
-import java.io.File
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -43,11 +34,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
+        // todo
         // If the outdirs do not exist, we assume this is because either something went wrong and an incorrect output path was filled in,
         // or the user did not create a new project, for example by opening or importing existing resources,
         // so they still need to be created.
-        if (runConfig.outputPath == null) {
-            createOutDirs(runConfig)
+        if (runConfig.outputPath.virtualFile == null) {
+            runConfig.outputPath.getAndCreatePath()
         }
 
         // Some initial setup
@@ -73,7 +65,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")
 
-        updateOutputSubDirs(mainFile, runConfig.outputPath)
+        runConfig.outputPath.updateOutputSubDirs()
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
                 .withEnvironment(runConfig.environmentVariables.envs)
@@ -191,46 +183,5 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandList = arrayListOf("xdg-open", runConfig.outputFilePath)
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), failSilently = true, runConfig = runConfig))
         }
-    }
-
-    /**
-     * Creates the output directories to place all produced files.
-     */
-    private fun createOutDirs(runConfig: LatexRunConfiguration) {
-        val mainFile = runConfig.mainFile ?: return
-
-        val fileIndex = ProjectRootManager.getInstance(environment.project).fileIndex
-
-        val includeRoot = mainFile.parent
-        val parentPath = fileIndex.getContentRootForFile(mainFile, false)?.path ?: includeRoot.path
-        val outPath = "$parentPath/out"
-
-        // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
-        val module = fileIndex.getModuleForFile(mainFile, false)
-        File(outPath).mkdirs()
-        runConfig.outputPath = LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)
-        module?.createExcludedDir(outPath)
-    }
-
-    /**
-     * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems
-     */
-    @Throws(ExecutionException::class)
-    fun updateOutputSubDirs(mainFile: VirtualFile, outputPath: VirtualFile?) {
-        val includeRoot = mainFile.parent
-        val outPath = outputPath?.path ?: return
-
-        val files: Set<PsiFile>
-        try {
-            files = mainFile.psiFile(environment.project)?.referencedFileSet() ?: emptySet()
-        }
-        catch (e: IndexNotReadyException) {
-            throw ExecutionException("Please wait until the indices are built.", e)
-        }
-
-        // Create output paths for mac (see issue #70 on GitHub)
-        files.asSequence()
-            .mapNotNull { FileUtil.pathRelativeTo(includeRoot.path, it.virtualFile.parent.path) }
-            .forEach { File(outPath + it).mkdirs() }
     }
 }

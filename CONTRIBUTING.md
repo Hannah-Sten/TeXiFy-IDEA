@@ -42,7 +42,7 @@ Be sure to run your idea by us (see [here](#i-just-have-a-question) how to do th
 This prevents your changes to be rejected in a later stage.
 
 
-Have a look at the [README](README.md) to see how you can setup local development and build from source and the [helpful resources](#helpful-resources).
+Have a look at the [wiki](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Contributing-to-TeXiFy#building-from-source) to see how you can setup local development and build from source and the [helpful resources](#helpful-resources).
 
 At any point, feel free to ask for help!
 Everyone is a beginner at first, and we will try to help you on your way as good as we can.

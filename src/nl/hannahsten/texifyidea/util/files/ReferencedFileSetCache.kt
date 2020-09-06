@@ -3,8 +3,7 @@ package nl.hannahsten.texifyidea.util.files
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nl.hannahsten.texifyidea.file.listeners.VfsChangeListener
@@ -61,7 +60,7 @@ class ReferencedFileSetCache {
             // getOrPut cannot be used because it will still execute the defaultValue function even if the key is already in the map (see its javadoc)
             // Wrapping the code with synchronized (myLock) { ... } also didn't work
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
-            GlobalScope.launch {
+            runBlocking {
                 mutex.withLock {
                     if (!fileSetCache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                         runReadAction {
