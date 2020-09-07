@@ -20,7 +20,7 @@ class LatexFileStack(
     // Usage: set to true to output all file openings/closings to idea.log
     // Then open the LaTeX log and the relevant part of idea.log in IntelliJ, and start from the idea.log parenthesis which
     // was closed incorrectly, use the LaTeX log and brace matching to find which file should have been closed, then check where it was actually closed, etc.
-    private val debug = true
+    private val debug = false
     private val logger = Logger.getInstance("LatexFileStack")
 
     init {
