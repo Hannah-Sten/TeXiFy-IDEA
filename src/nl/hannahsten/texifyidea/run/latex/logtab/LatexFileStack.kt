@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
+import com.intellij.openapi.diagnostic.Logger
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.lineNumber
@@ -13,6 +14,9 @@ class LatexFileStack(
 ) : ArrayDeque<String>() {
 
     private var shouldSkipNextLine = false
+
+    private val debug = false
+    private val logger = Logger.getInstance("LatexFileStack")
 
     init {
         addAll(file)
@@ -52,6 +56,7 @@ class LatexFileStack(
             if (line.substring(0, endIndex).length < LINE_WIDTH) {
                 // Assume that paths can be quoted, but there are no " in folder/file names
                 push(currentCollectingFile.trim('"'))
+                if (debug) logger.info("$line ---- Opening ${currentCollectingFile.trim('"')}")
                 currentCollectingFile = ""
             }
         }
@@ -78,11 +83,14 @@ class LatexFileStack(
                 // Check if file spans multiple lines
                 // +1 because the starting ( is not in the group
                 // -1 because the newline is not here
-                if (file.length + 1 >= LINE_WIDTH - 1 || (line.length >= LINE_WIDTH && line.trim().endsWith(file))) {
+                // Files could span exactly the full line width, but not continue on the next line
+                if (!file.endsWith(".tex") && (file.length + 1 >= LINE_WIDTH - 1 || (line.length >= LINE_WIDTH && line.trim().endsWith(file)))) {
                     currentCollectingFile += file
                 }
                 else {
                     push(file)
+                    if (debug) logger.info("$line ---- Opening $file")
+
                 }
             }
 
@@ -94,10 +102,12 @@ class LatexFileStack(
                 }
                 if (notClosedNonFileOpenParentheses > 0) notClosedNonFileOpenParentheses--
                 else {
+                    if (debug) logger.info("$line ---- Closing ${peek()}")
                     if (isEmpty()) {
                         throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker.")
                     }
                     pop()
+
                 }
             }
             linePart = linePart.substring(result.range.last + 1)
