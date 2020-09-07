@@ -124,20 +124,55 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
 
     fun testSingleFile() {
         val log = """
-("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
-thfunctions.base.code.tex")
-("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
-thfunctions.round.code.tex")
-("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
-thfunctions.misc.code.tex")
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfunctions.base.code.tex")
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfunctions.round.code.tex")
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfunctions.misc.code.tex")
+            
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/math\pgfmath
+            .sty"
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\
+            pgfkeys.code.tex"
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfloat.code.tex")))
+            """.trimIndent()
+        var stack = LatexFileStack()
+        log.split('\n').forEach {
+            stack = stack.update(it + "\n")
+        }
+        assertTrue(stack.isEmpty())
+    }
 
-("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/math\pgfmath
-.sty"
-("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\
-pgfkeys.code.tex"
-("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
-thfloat.code.tex")))
-""".trimIndent()
+    fun testFileEndingHalfwayOpen() {
+        val log = """
+            (/usr/local/texlive/2020/texmf-dist/tex/latex/glossaries/base/glossaries.sty
+            (/usr/local/texlive/2020/texmf-dist/tex/latex/glossaries/styles/glossary-super.
+            sty (/usr/local/texlive/2020/texmf-dist/tex/latex/supertabular/supertabular.sty
+            ))
+            (/usr/local/texlive/2020/texmf-dist/tex/latex/glossaries/styles/glossary-tree.s
+            ty))
+        """.trimIndent()
+        var stack = LatexFileStack()
+        log.split('\n').forEach {
+            stack = stack.update(it + "\n")
+        }
+        assertTrue(stack.isEmpty())
+    }
+
+    fun testFileEndingHalfwayOpen2() {
+        val log = """
+(/usr/local/texlive/2020/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2020/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.c
+ode.tex))
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
+ef) )))
+        """.trimIndent()
         var stack = LatexFileStack()
         log.split('\n').forEach {
             stack = stack.update(it + "\n")
