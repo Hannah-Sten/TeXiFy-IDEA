@@ -15,7 +15,7 @@ object LatexLogMagicRegex {
     const val LATEX_ERROR_REGEX: String = "!" // error
     const val PDFTEX_ERROR_REGEX: String = "!pdfTeX error:"
     const val LATEX_WARNING_REGEX: String = "LaTeX( Font)? Warning:" // warning
-    const val PACKAGE_REGEX: String = """(?<package>[\d\w]+)""" // package error/warning?
+    const val PACKAGE_REGEX: String = """(?<package>[\d\w-\.]+)""" // package error/warning?
     const val REFERENCE_REGEX: String = """(?<label>(`|').+')""" // reference warning
     const val PACKAGE_WARNING_CONTINUATION = "\\(\\w+\\) {${"Package warning:".length}}"
     const val DUPLICATE_WHITESPACE = """\s{2,}"""
@@ -27,7 +27,7 @@ object LatexLogMagicRegex {
      */
 
     /** A variation on [FILE_LINE_REGEX] by lualatex (?) */
-    val directLuaError = """^\((?!\s*\.\.\.)(.+\.\w+)\)(\[.+\])?:(?<line>\d+): (?<message>.*)""".toRegex()
+    val directLuaError = """^\((?!\s*\.\.\.)(.+\.\w+)\)(\[.+])?:(?<line>\d+): (?<message>.*)""".toRegex()
     val fixMeError = """FiXme (Fatal )?Error: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
 
     /*

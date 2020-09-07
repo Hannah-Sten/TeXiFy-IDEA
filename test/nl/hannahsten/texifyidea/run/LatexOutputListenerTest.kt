@@ -656,4 +656,45 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
         testLog(log, expectedMessages)
     }
+
+    fun `test no file`() {
+        val log = """
+            (./main.tex
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/base/size10.clo)
+(/home/thomas/texlive/2020/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
+)
+No file synctest.aux.
+[1{/home/thomas/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+[2] [3] (/home/thomas/GitRepos/random-tex/out/synctest.aux) )</home/thomas/texl
+ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("No file synctest.aux.", "./main.tex", -1, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test glossaries-extra warning`() {
+        val log = """
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/glossaries/styles/glossary-tree
+            .sty)
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/glossaries-extra/glossaries-ext
+            ra-bib2gls.sty)
+            
+            Package glossaries-extra Warning: No file `glossaries-option4-bib2gls.glstex' o
+            n input line 17.
+            
+            
+            (/home/thomas/texlive/2020/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
+            ) (/home/thomas/GitRepos/random-tex/out/glossaries-option4-bib2gls.aux)
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+                LatexLogMessage("glossaries-extra: No file `glossaries-option4-bib2gls.glstex'", null, 17, WARNING)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
