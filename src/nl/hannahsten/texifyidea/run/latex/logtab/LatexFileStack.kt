@@ -116,9 +116,9 @@ class LatexFileStack(
                         throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker. Line content: $line")
                     }
                     pop()
-
                 }
             }
+
             linePart = linePart.substring(result.range.last + 1)
             result = fileRegex.find(linePart)
         }
