@@ -15,6 +15,7 @@ import com.intellij.openapi.startup.StartupActivity
  */
 class AnalyzeMenuRegistration : StartupActivity, DumbAware {
 
+    @Synchronized
     override fun runActivity(project: Project) {
         // Get the group which should be added to either the Analyze menu or something else
         val latexAnalyzeMenuGroup = ActionManager.getInstance().getAction("texify.LatexMenuAnalyze") as DefaultActionGroup
