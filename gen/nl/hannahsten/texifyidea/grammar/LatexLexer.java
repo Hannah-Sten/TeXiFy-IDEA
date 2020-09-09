@@ -54,13 +54,13 @@ public class LatexLexer implements FlexLexer {
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
    * ZZ_LEXSTATE[l+1] is the state in the DFA for the lexical state l
-   *                  at the beginning of a line
+   * at the beginning of a line
    * l is of the form l = 2*k, k a non negative integer
    */
-  private static final int[] ZZ_LEXSTATE = {
-     0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7, 
-     8,  8,  9,  9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 
-    16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23
+  private static final int ZZ_LEXSTATE[] = {
+          0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7,
+          8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15,
+          16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23
   };
 
   /** 
@@ -73,21 +73,21 @@ public class LatexLexer implements FlexLexer {
   }
 
   /* The ZZ_CMAP_Z table has 68 entries */
-  static final char[] ZZ_CMAP_Z = zzUnpackCMap(
-    "\1\0\103\200");
+  static final char ZZ_CMAP_Z[] = zzUnpackCMap(
+          "\1\0\103\200");
 
   /* The ZZ_CMAP_Y table has 256 entries */
-  static final char[] ZZ_CMAP_Y = zzUnpackCMap(
-    "\1\0\1\1\53\2\1\3\22\2\1\4\37\2\1\3\237\2");
+  static final char ZZ_CMAP_Y[] = zzUnpackCMap(
+          "\1\0\1\1\53\2\1\3\22\2\1\4\37\2\1\3\237\2");
 
   /* The ZZ_CMAP_A table has 640 entries */
-  static final char[] ZZ_CMAP_A = zzUnpackCMap(
-    "\11\0\1\10\1\20\2\22\1\21\22\0\1\10\1\35\1\64\1\0\1\67\1\34\1\45\1\0\1\2\1"+
-    "\3\1\62\21\0\1\70\1\42\1\70\1\0\1\24\1\47\3\17\1\57\1\46\2\17\1\51\2\17\1"+
-    "\54\3\17\1\56\1\17\1\53\1\17\1\36\1\60\1\17\1\52\1\37\2\17\1\4\1\1\1\5\3\0"+
-    "\1\32\1\11\1\30\1\16\1\12\1\25\1\13\1\31\1\14\2\17\1\50\1\66\1\15\1\43\1\40"+
-    "\1\17\1\33\1\41\1\27\1\55\1\61\1\65\1\26\2\17\1\6\1\63\1\7\7\0\1\23\32\0\1"+
-    "\44\337\0\1\44\177\0\13\44\35\0\2\23\5\0\1\44\57\0\1\44\40\0");
+  static final char ZZ_CMAP_A[] = zzUnpackCMap(
+          "\11\0\1\10\1\20\2\22\1\21\22\0\1\10\1\35\1\64\1\0\1\67\1\34\1\45\1\0\1\2\1" +
+                  "\3\1\62\21\0\1\70\1\42\1\70\1\0\1\24\1\47\3\17\1\57\1\46\2\17\1\51\2\17\1" +
+                  "\54\3\17\1\56\1\17\1\53\1\17\1\36\1\60\1\17\1\52\1\37\2\17\1\4\1\1\1\5\3\0" +
+                  "\1\32\1\11\1\30\1\16\1\12\1\25\1\13\1\31\1\14\2\17\1\50\1\66\1\15\1\43\1\40" +
+                  "\1\17\1\33\1\41\1\27\1\55\1\61\1\65\1\26\2\17\1\6\1\63\1\7\7\0\1\23\32\0\1" +
+                  "\44\337\0\1\44\177\0\13\44\35\0\2\23\5\0\1\44\57\0\1\44\40\0");
 
   /** 
    * Translates DFA states to action switch labels.
@@ -577,7 +577,7 @@ public class LatexLexer implements FlexLexer {
   }
 
   /** the input device */
-  private final java.io.Reader zzReader;
+  private java.io.Reader zzReader;
 
   /** the current state of the DFA */
   private int zzState;
@@ -614,7 +614,7 @@ public class LatexLexer implements FlexLexer {
   private boolean zzEOFDone;
 
   /* user code: */
-  private final Deque<Integer> stack = new ArrayDeque<>();
+  private Deque<Integer> stack = new ArrayDeque<>();
 
 
   public void yypushState(int newState) {
@@ -628,7 +628,7 @@ public class LatexLexer implements FlexLexer {
 
 
   public LatexLexer() {
-    this(null);
+    this((java.io.Reader) null);
   }
 
   /**
@@ -1039,30 +1039,42 @@ public class LatexLexer implements FlexLexer {
         if (Magic.Environment.verbatim.contains(yytext().toString())) {
             yypushState(VERBATIM_START);
         }
-        return NORMAL_TEXT_WORD;
-            } 
-            // fall through
-          case 84: break;
-          case 29: 
-            { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET;
-            } 
-            // fall through
-          case 85: break;
-          case 30: 
-            { verbatimOptionalArgumentBracketsCount--;
-        if (verbatimOptionalArgumentBracketsCount == 0) yypopState(); yypushState(VERBATIM);
-        return CLOSE_BRACKET;
-            } 
-            // fall through
-          case 86: break;
-          case 31: 
-            { yypopState(); yypushState(POSSIBLE_VERBATIM_OPTIONAL_ARG); return CLOSE_BRACE;
-            } 
-            // fall through
-          case 87: break;
-          case 32: 
-            { yypopState(); yypushState(VERBATIM); return RAW_TEXT_TOKEN;
-            } 
+              return NORMAL_TEXT_WORD;
+            }
+          // fall through
+          case 84:
+            break;
+          case 29: {
+            verbatimOptionalArgumentBracketsCount++;
+            return OPEN_BRACKET;
+          }
+          // fall through
+          case 85:
+            break;
+          case 30: {
+            verbatimOptionalArgumentBracketsCount--;
+            if (verbatimOptionalArgumentBracketsCount == 0) {
+              yypopState();
+              yypushState(VERBATIM);
+            }
+            return CLOSE_BRACKET;
+          }
+          // fall through
+          case 86:
+            break;
+          case 31: {
+            yypopState();
+            yypushState(POSSIBLE_VERBATIM_OPTIONAL_ARG);
+            return CLOSE_BRACE;
+          }
+          // fall through
+          case 87:
+            break;
+          case 32: {
+            yypopState();
+            yypushState(VERBATIM);
+            return RAW_TEXT_TOKEN;
+          }
             // fall through
           case 88: break;
           case 33: 

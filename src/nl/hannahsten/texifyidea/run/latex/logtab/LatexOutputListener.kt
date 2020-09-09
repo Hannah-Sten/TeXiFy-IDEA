@@ -195,7 +195,7 @@ class LatexOutputListener(
             // not have caught it. Try to catch the line number here.
             var line = message.line
             if (line == -1) {
-                LatexLogMagicRegex.LINE_REGEX.toRegex().find(newMessage)?.apply {
+                LatexLogMagicRegex.REPORTED_ON_LINE_REGEX.find(newMessage)?.apply {
                     line = groups["line"]?.value?.toInt() ?: -1
                     newMessage = newMessage.removeAll(this.value).trim()
                 }

@@ -169,7 +169,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     {OPEN_BRACKET}      { verbatimOptionalArgumentBracketsCount++; return OPEN_BRACKET; }
     {CLOSE_BRACKET}     {
         verbatimOptionalArgumentBracketsCount--;
-        if (verbatimOptionalArgumentBracketsCount == 0) yypopState(); yypushState(VERBATIM);
+        if (verbatimOptionalArgumentBracketsCount == 0) { yypopState(); yypushState(VERBATIM); }
         return CLOSE_BRACKET;
     }
 }

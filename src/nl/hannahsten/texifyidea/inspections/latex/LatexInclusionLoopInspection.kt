@@ -8,8 +8,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
+import nl.hannahsten.texifyidea.util.files.findIncludedFile
 import nl.hannahsten.texifyidea.util.files.searchFileByImportPaths
 import java.util.*
 
@@ -47,11 +46,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                 inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(fileMaybe)
             }
             else {
-                val includedNames = command.getAllRequiredArguments() ?: continue
-
-                for (includedName in includedNames) {
-                    val referenced = declaredIn.findFile(includedName)
-                            ?: continue
+                for (referenced in declaredIn.findIncludedFile(command)) {
 
                     inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
 

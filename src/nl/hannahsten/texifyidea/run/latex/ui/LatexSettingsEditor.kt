@@ -20,9 +20,9 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
-import java.awt.Color
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -98,7 +98,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
-        outputPathTextField.text = runConfiguration.outputPath?.path ?: ""
+        // We may be editing a run configuration template, don't resolve any path
+        outputPathTextField.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
 
         // Reset whether to compile twice
         if (compileTwice != null) {
@@ -142,7 +143,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         bibliographyPanel.configurations = runConfiguration.bibRunConfigs.toMutableSet()
 
         // Reset makeindex
-        makeindexPanel.configurations = if (runConfiguration.makeindexRunConfig != null) mutableSetOf(runConfiguration.makeindexRunConfig!!) else mutableSetOf()
+        makeindexPanel.configurations = if (runConfiguration.makeindexRunConfigs.isNotEmpty()) runConfiguration.makeindexRunConfigs.toMutableSet() else mutableSetOf()
     }
 
     // Confirm the changes, i.e. copy current UI state into the target settings object.
@@ -165,15 +166,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         }
 
         if (runConfiguration.compiler?.includesMakeindex == true) {
-            runConfiguration.makeindexRunConfig = null
+            runConfiguration.makeindexRunConfigs = emptySet()
             makeindexPanel.isVisible = false
         }
         else {
             makeindexPanel.isVisible = true
 
             // Apply makeindex
-            // For now we just run the first one, this can be extended to run all of them but that requires some extra work
-            runConfiguration.makeindexRunConfig = makeindexPanel.configurations.firstOrNull()
+            runConfiguration.makeindexRunConfigs = makeindexPanel.configurations
         }
 
         // Apply custom compiler path if applicable
@@ -199,20 +199,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         runConfiguration.setMainFile(filePath)
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
-        if (outputPathTextField.text.endsWith("/bin")) {
-            runConfiguration.setDefaultOutputPath()
-        }
-        else {
+        if (!outputPathTextField.text.endsWith("/bin")) {
             runConfiguration.setFileOutputPath(outputPathTextField.text)
-            if (runConfiguration.outputPath == null) {
-                // Perhaps not entirely IJ-style, but don't know of a better way at the moment to provide a non-blocking warning
-                outputPathTextField.background = Color.RED
-                outputPathTextField.toolTipText = "Path not found, a default path will be used when executed"
-            }
-            else {
-                outputPathTextField.background = null
-                outputPathTextField.toolTipText = null
-            }
         }
 
         if (auxilPath != null) {
@@ -331,12 +319,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         outputPathField.addBrowseFolderListener(
                 TextBrowseFolderListener(
                         FileChooserDescriptor(false, true, false, false, false, false)
-                                .withTitle("Choose a directory for output files")
+                                .withTitle("Choose a directory for output files.")
                                 .withRoots(*ProjectRootManager.getInstance(project!!)
                                         .contentRootsFromAllModules)
                 )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX)")
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX),\n or use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
         panel.add(outputPath)
     }
 

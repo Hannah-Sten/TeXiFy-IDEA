@@ -214,6 +214,17 @@ fun String.runCommand(): String? {
     }
 }
 
+/**
+ * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.
+ */
+fun String.firstIndexOfAny(vararg chars: Char): Int {
+    var index = length - 1
+    for (char in chars) {
+        if (indexOf(char) != -1) index = min(index, indexOf(char))
+    }
+    return index
+}
+
 /** If this contains any of the given set. */
 fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
 

@@ -26,7 +26,7 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         line.chunked(LINE_WIDTH).forEach {
             stack = stack.update(it)
         }
-        assertEquals(""""C:\Users\thomas\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmisc.sty"""", stack.peek())
+        assertEquals("""C:\Users\thomas\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmisc.sty""", stack.peek())
     }
 
     fun testNewFile() {
@@ -94,7 +94,6 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
         assertEquals("""./src/_minted-thesis/F21236103977357A063E148CA83348D21F2D8067E0A256B6FCF34360A44AFD35.pygtex""", stack.peek())
     }
 
-    // todo ignore the line with l.\d+ and the line after it (may be empty or contain second part of user text)
     fun testExtraClosingParenthesis() {
         val text = """
             ! Undefined control sequence.
@@ -112,5 +111,72 @@ class LatexLogFileFinderTest : BasePlatformTestCase() {
                 stack = stack.update(it)
             }
         }
+    }
+
+    fun testFileMultipleLines() {
+        val line = """) ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\t1phv.fd""""
+        var stack = LatexFileStack("./lipsum.tex", "./main.tex")
+        line.chunked(LINE_WIDTH).forEach {
+            stack = stack.update(it)
+        }
+        assertEquals("""C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\t1phv.fd""", stack.peek())
+    }
+
+    fun testSingleFile() {
+        val log = """
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfunctions.base.code.tex")
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfunctions.round.code.tex")
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfunctions.misc.code.tex")
+            
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/math\pgfmath
+            .sty"
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilities\
+            pgfkeys.code.tex"
+            ("C:\Users\thoscho\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgfma
+            thfloat.code.tex")))
+            """.trimIndent()
+        var stack = LatexFileStack()
+        log.split('\n').forEach {
+            stack = stack.update(it + "\n")
+        }
+        assertTrue(stack.isEmpty())
+    }
+
+    fun testFileEndingHalfwayOpen() {
+        val log = """
+            (/usr/local/texlive/2020/texmf-dist/tex/latex/glossaries/base/glossaries.sty
+            (/usr/local/texlive/2020/texmf-dist/tex/latex/glossaries/styles/glossary-super.
+            sty (/usr/local/texlive/2020/texmf-dist/tex/latex/supertabular/supertabular.sty
+            ))
+            (/usr/local/texlive/2020/texmf-dist/tex/latex/glossaries/styles/glossary-tree.s
+            ty))
+        """.trimIndent()
+        var stack = LatexFileStack()
+        log.split('\n').forEach {
+            stack = stack.update(it + "\n")
+        }
+        assertTrue(stack.isEmpty())
+    }
+
+    fun testFileEndingHalfwayOpen2() {
+        val log = """
+(/usr/local/texlive/2020/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2020/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.c
+ode.tex))
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/local/texlive/2020/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
+ef) )))
+        """.trimIndent()
+        var stack = LatexFileStack()
+        log.split('\n').forEach {
+            stack = stack.update(it + "\n")
+        }
+        assertTrue(stack.isEmpty())
     }
 }

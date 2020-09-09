@@ -1,18 +1,14 @@
 package nl.hannahsten.texifyidea.run.makeindex
 
-import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import org.jdom.Element
 
 /**
@@ -33,15 +29,13 @@ class MakeindexRunConfiguration(
     }
 
     // The following variables are saved in the MakeindexSettingsEditor
-    var makeindexProgram: MakeindexProgram? = null
+    var makeindexProgram: MakeindexProgram = MakeindexProgram.MAKEINDEX
     var mainFile: VirtualFile? = null
     var workingDirectory: VirtualFile? = null
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        val makeindexOptions = getMakeindexOptions()
-        val indexProgram = makeindexProgram ?: findMakeindexProgram(getIndexPackageOptions(), makeindexOptions)
-
-        return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, indexProgram)
+        val makeindexOptions = getMakeindexOptions(mainFile, project)
+        return MakeindexCommandLineState(environment, mainFile, workingDirectory, makeindexOptions, makeindexProgram)
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = MakeindexSettingsEditor(project)
@@ -51,18 +45,13 @@ class MakeindexRunConfiguration(
 
         val parent = element.getChild(PARENT_ELEMENT)
 
-        makeindexProgram = try {
+        try {
             val programText = parent.getChildText(PROGRAM)
             if (!programText.isNullOrEmpty()) {
-                MakeindexProgram.valueOf(programText)
-            }
-            else {
-                MakeindexProgram.MAKEINDEX
+                makeindexProgram = MakeindexProgram.valueOf(programText)
             }
         }
-        catch (e: NullPointerException) {
-            MakeindexProgram.MAKEINDEX
-        }
+        catch (ignored: NullPointerException) {}
 
         val mainFilePath = try {
             parent.getChildText(MAIN_FILE)
@@ -70,7 +59,7 @@ class MakeindexRunConfiguration(
         catch (e: NullPointerException) {
             null
         }
-        mainFile = if (mainFilePath != null) {
+        mainFile = if (!mainFilePath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(mainFilePath)
         }
         else {
@@ -83,7 +72,7 @@ class MakeindexRunConfiguration(
         catch (e: NullPointerException) {
             null
         }
-        workingDirectory = if (workDirPath != null) {
+        workingDirectory = if (!workDirPath.isNullOrBlank()) {
             LocalFileSystem.getInstance().findFileByPath(workDirPath)
         }
         else {
@@ -97,71 +86,16 @@ class MakeindexRunConfiguration(
         val parent = element.getChild(PARENT_ELEMENT) ?: Element(PARENT_ELEMENT).apply { element.addContent(this) }
         parent.removeContent()
 
-        parent.addContent(Element(PROGRAM).apply { text = makeindexProgram?.name ?: "" })
+        parent.addContent(Element(PROGRAM).apply { text = makeindexProgram.name })
         parent.addContent(Element(MAIN_FILE).apply { text = mainFile?.path ?: "" })
         parent.addContent(Element(WORK_DIR).apply { text = workingDirectory?.path ?: "" })
     }
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension.plus(" index")
+    override fun suggestedName() = mainFile?.nameWithoutExtension + " " + makeindexProgram.name.toLowerCase()
 
     fun setSuggestedName() {
         name = suggestedName()
-    }
-
-    /**
-     * Try to find out which index program the user wants to use, based on the given options.
-     * Will also set [makeindexProgram] if not already set.
-     */
-    private fun findMakeindexProgram(indexPackageOptions: List<String>, makeindexOptions: HashMap<String, String>): MakeindexProgram {
-
-        var indexProgram = if (indexPackageOptions.contains("xindy")) MakeindexProgram.XINDY else MakeindexProgram.MAKEINDEX
-
-        // Possible extra settings to override the indexProgram, see the imakeidx docs
-        if (makeindexOptions.contains("makeindex")) {
-            indexProgram = MakeindexProgram.MAKEINDEX
-        }
-        else if (makeindexOptions.contains("xindy") || makeindexOptions.contains("texindy")) {
-            indexProgram = MakeindexProgram.XINDY
-        }
-        else if (makeindexOptions.contains("truexindy")) {
-            indexProgram = MakeindexProgram.TRUEXINDY
-        }
-
-        if (makeindexProgram == null) {
-            makeindexProgram = indexProgram
-        }
-        return indexProgram
-    }
-
-    /**
-     * Get package options for included index packages.
-     */
-    private fun getIndexPackageOptions(): List<String> {
-        return runReadAction {
-            // Find index package options
-            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
-            LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-                    .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
-                    .filter { command -> command.requiredParameters.any { it == "imakeidx" } }
-                    .flatMap { it.optionalParameters.keys }
-        }
-    }
-
-    /**
-     * Get optional parameters of the \makeindex command. If an option key does not have a value it will map to the empty string.
-     */
-    fun getMakeindexOptions(): HashMap<String, String> {
-        return runReadAction {
-            val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
-            val makeindexOptions = HashMap<String, String>()
-            LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-                    .filter { it.commandToken.text == "\\makeindex" }
-                    .forEach {
-                        makeindexOptions.putAll(it.optionalParameters)
-                    }
-            makeindexOptions
-        }
     }
 }

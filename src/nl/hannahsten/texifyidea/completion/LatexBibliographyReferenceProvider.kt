@@ -45,6 +45,14 @@ object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParamet
                         }
                     }
                 }
-        result.withPrefixMatcher(CamelHumpMatcher(result.prefixMatcher.prefix, false)).addAllElements(lookupItems)
+        val before = result.prefixMatcher.prefix
+        val prefix =
+                if (before.contains(',')) {
+                    before.substring(before.lastIndexOf(',') + 1)
+                }
+                else {
+                    before
+                }
+        result.withPrefixMatcher(CamelHumpMatcher(prefix, false)).addAllElements(lookupItems)
     }
 }
