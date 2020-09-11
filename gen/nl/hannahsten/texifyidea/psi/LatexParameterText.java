@@ -9,6 +9,9 @@ import com.intellij.psi.PsiReference;
 
 public interface LatexParameterText extends PsiNameIdentifierOwner {
 
+  @NotNull
+  List<LatexCommands> getCommandsList();
+
   PsiReference[] getReferences();
 
   PsiReference getReference();

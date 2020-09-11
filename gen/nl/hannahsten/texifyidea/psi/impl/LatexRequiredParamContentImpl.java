@@ -28,12 +28,6 @@ public class LatexRequiredParamContentImpl extends ASTWrapperPsiElement implemen
 
   @Override
   @Nullable
-  public LatexCommands getCommands() {
-    return PsiTreeUtil.getChildOfType(this, LatexCommands.class);
-  }
-
-  @Override
-  @Nullable
   public LatexComment getComment() {
     return PsiTreeUtil.getChildOfType(this, LatexComment.class);
   }

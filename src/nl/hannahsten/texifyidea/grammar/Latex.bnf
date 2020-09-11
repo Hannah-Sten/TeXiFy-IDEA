@@ -106,13 +106,14 @@ required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
 optional_param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
-required_param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+required_param_content ::= raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
 
 // The lowest level of a parameter must have the getReferences etc. implemented
 // We don't do this on normal_text because then every normal_text in the document would be a reference
 // So, the following is like normal_text
 // This assumes that parameter text which is a reference, appears directly under param_content
-parameter_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
+// Commands is here instead of in required_param_content because it can be part of reference text for example to a file
+parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
    methods=[getReferences getReference getNameIdentifier getName setName]
 }
 
