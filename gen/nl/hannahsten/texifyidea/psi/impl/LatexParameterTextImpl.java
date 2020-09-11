@@ -28,6 +28,12 @@ public class LatexParameterTextImpl extends ASTWrapperPsiElement implements Late
   }
 
   @Override
+  @NotNull
+  public List<LatexCommands> getCommandsList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexCommands.class);
+  }
+
+  @Override
   public PsiReference[] getReferences() {
     return LatexPsiImplUtil.getReferences(this);
   }

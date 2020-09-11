@@ -1,15 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
-
-import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.PsiParser;
+import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -429,7 +429,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+
+  // (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+
   public static boolean parameter_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text")) return false;
     boolean r;
@@ -444,11 +444,12 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR
+  // commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR
   private static boolean parameter_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text_0")) return false;
     boolean r;
-    r = consumeToken(b, NORMAL_TEXT_WORD);
+    r = commands(b, l + 1);
+    if (!r) r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
     if (!r) r = consumeToken(b, AMPERSAND);
     if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
@@ -601,7 +602,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
   public static boolean required_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_content")) return false;
     boolean r;
@@ -612,7 +613,6 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = pseudocode_block(b, l + 1);
     if (!r) r = math_environment(b, l + 1);
     if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
-    if (!r) r = commands(b, l + 1);
     if (!r) r = group(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);

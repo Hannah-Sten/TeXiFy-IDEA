@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface LatexRequiredParamContent extends PsiElement {
 
   @Nullable
-  LatexCommands getCommands();
-
-  @Nullable
   LatexComment getComment();
 
   @Nullable
