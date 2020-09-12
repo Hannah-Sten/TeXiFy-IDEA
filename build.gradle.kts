@@ -66,11 +66,6 @@ tasks.compileTestKotlin {
 }
 
 dependencies {
-    // Local dependencies
-    implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
-    implementation(files("lib/JavaDDE.dll"))
-    implementation(files("lib/JavaDDEx64.dll"))
-
     // From Kotlin documentation
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
 
