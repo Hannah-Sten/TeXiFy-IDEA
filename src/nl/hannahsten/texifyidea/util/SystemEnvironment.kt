@@ -44,7 +44,7 @@ fun runCommand(vararg commands: String): String {
         return proc.inputStream.bufferedReader().readText()
     }
     catch (e: IOException) {
-        e.printStackTrace()
+        // Don't print the stacktrace because that is confusing.
     }
     return ""
 }
