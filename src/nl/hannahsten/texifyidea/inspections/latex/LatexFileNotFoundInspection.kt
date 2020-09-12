@@ -114,10 +114,13 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                     .newFileFullPath ?: return
 
             runWriteAction {
-                val createdFile = createFile("$newFilePath.$extension", "")
+                val expandedFilePath = expandCommandsOnce(newFilePath, file.project, file) ?: newFilePath
+                createFile("$expandedFilePath.$extension", "")
 
-                // Update LaTeX command parameter with chosen filename
-                var fileNameRelativeToRoot = createdFile.absolutePath
+                // Update LaTeX command parameter with chosen filename.
+                // We can safely add the extension since illegal extensions are removed later.
+                // We add the extension for consistency with the file name auto completion, which also adds the extension.
+                var fileNameRelativeToRoot = "$newFilePath.$extension"
                         .replace(File.separator, "/")
                         .replace("$root/", "")
 
