@@ -11,20 +11,12 @@ class LatexMoveElementLeftRightHandlerTest : BasePlatformTestCase() {
         commandWithSubElements("""\fbox{text}""", "{text}")
     }
 
-    fun `test command with two required arguments`() {
-        commandWithSubElements("""\sbox{text}{5cm}""", "{text}", "{5cm}")
-    }
-
     fun `test command with three required arguments`() {
         commandWithSubElements("""\bloop{a}{b}{c}""", "{a}", "{b}", "{c}")
     }
 
     fun `test command with single optional argument`() {
         commandWithSubElements("""\bloop[a]""", "[a]")
-    }
-
-    fun `test command with two optional arguments`() {
-        commandWithSubElements("""\bloop[a][b]""", "[a]", "[b]")
     }
 
     fun `test command with three optional arguments`() {
