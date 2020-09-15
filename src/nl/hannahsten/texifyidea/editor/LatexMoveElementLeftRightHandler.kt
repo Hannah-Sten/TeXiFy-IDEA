@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
-class LatexMoveElementLeftRightHandler : MoveElementLeftRightHandler(){
+class LatexMoveElementLeftRightHandler : MoveElementLeftRightHandler() {
 
     override fun getMovableSubElements(element: PsiElement): Array<PsiElement> {
         return (element as? LatexCommands)?.parameterList?.map { it as PsiElement }?.toArray(emptyArray()) ?: emptyArray()
