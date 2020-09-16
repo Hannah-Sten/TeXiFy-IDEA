@@ -99,6 +99,7 @@ class LatexRunConfiguration constructor(project: Project,
     /** Path to the directory containing the output files. */
     var outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
 
+    // todo same as outputpath
     /** Path to the directory containing the auxiliary files. */
     var auxilPath: VirtualFile? = null
         get() {

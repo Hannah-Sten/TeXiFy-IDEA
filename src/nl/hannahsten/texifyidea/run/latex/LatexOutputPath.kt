@@ -27,16 +27,19 @@ import java.io.File
  * @param variant: out or auxil
  */
 class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?, var mainFile: VirtualFile?, private val project: Project) {
+
     companion object {
         const val projectDirString = "{projectDir}"
         const val mainFileString = "{mainFileParent}"
     }
 
     fun clone(): LatexOutputPath {
-        return LatexOutputPath(variant, contentRoot, mainFile, project)
+        return LatexOutputPath(variant, contentRoot, mainFile, project).apply { this.pathString = this@LatexOutputPath.pathString }
     }
 
+    // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
+
     var pathString: String = "$projectDirString/$variant"
 
     /**
