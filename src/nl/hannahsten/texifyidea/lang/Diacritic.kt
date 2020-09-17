@@ -8,7 +8,7 @@ interface Diacritic {
     companion object {
 
         fun buildChain(base: String, diacritics: List<Diacritic?>): String? {
-            if (diacritics.contains(null)) {
+            if (diacritics.contains(null) || diacritics.isEmpty()) {
                 return null
             }
             return diacritics.fold(base) { s, d -> d!!.buildCommand(s) }

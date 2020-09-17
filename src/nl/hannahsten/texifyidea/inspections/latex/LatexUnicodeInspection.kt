@@ -243,10 +243,13 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val diacritics = (mods.indices)
                     // Modifiers in reversed order
                     .map { mods[mods.size - 1 - it] }
-                    .map { if (inMathMode)
-                        Diacritic.Math.fromUnicode(it) as Diacritic
-                    else
-                        Diacritic.Normal.fromUnicode(it) }
+                    .mapNotNull {
+                        @Suppress("USELESS_CAST")
+                        if (inMathMode)
+                            Diacritic.Math.fromUnicode(it) as? Diacritic
+                        else
+                            Diacritic.Normal.fromUnicode(it) as? Diacritic
+                    }
 
             return Diacritic.buildChain(base, diacritics)
         }

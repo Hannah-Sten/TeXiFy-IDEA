@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherEquationsInspection()) {
     fun `test two consecutive display math environments`() {
@@ -30,7 +29,7 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
     }
 
     fun `test quick fix`() {
-        val before = """
+        testQuickFix("""
             \usepackage{amsmath}
             \begin{equation}\label{eq:xx}
                 x = x
@@ -47,8 +46,7 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
             \begin{equation}\label{eq:yy}
                 y = y
             \end{equation}
-        """.trimIndent()
-        val after = """
+        """.trimIndent(), """
             \usepackage{amsmath}
             \begin{equation}\label{eq:xx}
                 x = x
@@ -61,16 +59,8 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
             \begin{equation}\label{eq:yy}
                 y = y
             \end{equation}
-        """.trimIndent()
-
-        myFixture.configureByText(LatexFileType, before)
-        // Collect the quick fixed before going into write action, to avoid AssertionError: Must not start highlighting from within write action.
-        val quickFixes = myFixture.getAllQuickFixes()
-        writeCommand(myFixture.project) {
-            // Use the middle quickfix so we test both lookbehind and lookahead.
-            quickFixes[1].invoke(myFixture.project, myFixture.editor, myFixture.file)
-        }
-
-        myFixture.checkResult(after)
+        """.trimIndent(),
+                3,
+                2)
     }
 }
