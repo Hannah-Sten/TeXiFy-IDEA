@@ -85,6 +85,8 @@ abstract class IndexUtilBase<T : PsiElement>(
 
     /**
      * Get all the items in the index that are in the given file.
+     *
+     * NOTE: this does not preserve the order of the commands.
      */
     fun getItems(file: PsiFile) = getItems(file.project, GlobalSearchScope.fileScope(file))
 

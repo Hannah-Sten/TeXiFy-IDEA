@@ -75,8 +75,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             }
 
             // If no command was found, find the end of the document.
-            val children = command.containingFile.childrenOfType(LatexEndCommand::class)
-            return if (children.isEmpty()) null else children.last()
+            return command.containingFile.childrenOfType(LatexEndCommand::class).lastOrNull()
         }
     }
 
@@ -94,13 +93,13 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val commands = file.commandsInFile()
                 .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
 
-        if (isAlreadySplit(commands)) {
-            return descriptors
-        }
-
         for (i in commands.indices) {
             if (!isTooLong(commands[i], findNextSection(commands[i]))) {
                 continue
+            }
+
+            if (isAlreadySplit(commands[i], commands)) {
+                return descriptors
             }
 
             descriptors.add(
@@ -118,27 +117,11 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
     }
 
     /**
-     * Checks if the given file is already a split up section.
-     *
-     * Not the best way perhaps, but it does the job.
+     * Checks if the given file is already a split up section or chapter, with [command] being the only section/chapter
+     * in this file. (If [command] is a \chapter, \section can still occur.)
      */
-    private fun isAlreadySplit(commands: Collection<LatexCommands>): Boolean {
-        val smallestIndex = commands.asSequence()
-                .map { cmd -> SECTION_NAMES.indexOf(cmd.name) }
-                .min() ?: return false
-
-        // Just check if \section or \chapter occur only once.
-        for (name in SECTION_NAMES) {
-            if (SECTION_NAMES.indexOf(name) > smallestIndex) {
-                continue
-            }
-
-            if (commands.asSequence().filter { cmd -> cmd.name == name }.count() > 1) {
-                return false
-            }
-        }
-
-        return true
+    private fun isAlreadySplit(command: LatexCommands, commands: Collection<LatexCommands>): Boolean {
+        return commands.asSequence().filter { cmd -> cmd.name == command.name }.count() <= 1
     }
 
     /**
