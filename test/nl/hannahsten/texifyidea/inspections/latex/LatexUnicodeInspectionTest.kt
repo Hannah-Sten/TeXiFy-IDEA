@@ -105,7 +105,7 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
     }
 }
 
-open class LatexUnicodeInspectionTest : TexifyInspectionTestBase(LatexUnicodeInspection()) {
+abstract class LatexUnicodeInspectionTest : TexifyInspectionTestBase(LatexUnicodeInspection()) {
 
     /**
      * Set the TeXiFy Project Settings and the Latex Distribution in a way to ensure either unicode support, or no unicode support.
