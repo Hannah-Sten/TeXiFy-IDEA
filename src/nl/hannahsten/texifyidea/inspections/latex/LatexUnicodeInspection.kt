@@ -151,7 +151,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     }
 
     /**
-     * Open the settings page so the user can change the compiler compability.
+     * Open the settings page so the user can change the compiler compatibility.
      */
     private class ChangeCompilerCompatibilityFix : LocalQuickFix {
         @Nls
@@ -172,7 +172,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
      *
      *
      * The following attempts are made, in order, to determine a suitable replacement:   1.  The
-     * character is matched against the *display* attribute of either [ ] or [LatexMathCommand] (where appropiate). When there is a match,
+     * character is matched against the *display* attribute of either [ ] or [LatexMathCommand] (where appropriate). When there is a match,
      * the corresponding command is used as replacement.   1.  The character is decomposed to
      * separate combining marks (see also [Unicode](http://unicode.org/reports/tr15/)).
      * An attempt is made to match the combining sequence against LaTeX character diacritical

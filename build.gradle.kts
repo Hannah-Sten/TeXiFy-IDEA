@@ -96,6 +96,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime:1.3.72")
 
+    testImplementation("io.mockk:mockk:1.10.0")
+
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.1.jar"))
 }
@@ -144,6 +146,8 @@ tasks.publishPlugin {
 }
 
 tasks.test {
+    // For MockK. Make sure it finds the libattach.so in the lib folder.
+    jvmArgs = listOf("-Djdk.attach.allowAttachSelf=true", "-Djava.library.path=lib/")
     // Enable JUnit 5 (Gradle 4.6+).
     useJUnitPlatform()
     // Show test results
