@@ -12,6 +12,11 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         myFixture.enableInspections(*inspections)
     }
 
+    protected fun testHighlighting(text: String) {
+        myFixture.configureByText(LatexFileType, text)
+        myFixture.checkHighlighting()
+    }
+
     protected fun testQuickFix(before: String, after: String, numberOfFixes: Int = 1, selectedFix: Int = 1) {
         myFixture.configureByText(LatexFileType, before)
         // Collect the quick fixed before going into write action, to avoid AssertionError: Must not start highlighting from within write action.
