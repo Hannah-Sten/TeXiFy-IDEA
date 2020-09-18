@@ -6,6 +6,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
 
@@ -90,12 +91,17 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
-            // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
-            command.add("-pdf")
-            command.add("-file-line-error")
-            command.add("-interaction=nonstopmode")
-            command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig.compilerArguments, runConfig.mainFile?.parent?.path)
+
+            // If it is present, assume that it will handle everything (command line options would overwrite latexmkrc options)
+            if (!isLatexmkRcFilePresent) {
+                // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
+                command.add("-pdf")
+                command.add("-file-line-error")
+                command.add("-interaction=nonstopmode")
+                command.add("-synctex=1")
+                command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            }
 
             command.add("-output-directory=$outputPath")
 
