@@ -24,6 +24,8 @@ When multiplying numbers, use `\cdot` instead of `.`.
 Use `Sentence~\cite{knuth1990}.` and not `Sentence.~\cite{knuth1990}`
 
 == Gather equations
+Multiple display math equations (which are surrounded by `\[..\]`) can be grouped into the `gather` environment.
+
 == Figure not referenced
 
 _Since b0.6.6_
