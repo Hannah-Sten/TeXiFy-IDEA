@@ -3,11 +3,14 @@
 # Additions
 * Support paths relative to main file or project dir in run configuration template. (#1553)
 * Add support for the Zathura pdf viewer. (#1551)
+* Add support for the glossaries package. (#1572)
 
 # Changes
 
 
 # Bug fixes
+* Fix some log parsing issues with parentheses. (#1579)
+* Include optional parameters in position when looking for labels from redefined commands. (#1577)
 * Fix a parse error with nested brackets in optional parameter of verbatim environment. (#1569)
 * Fix file inclusion loop triggered incorrectly. (#1570)
 * Fix a concurrency issue with the fileset cache. (#1567)
