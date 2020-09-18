@@ -4,9 +4,10 @@
 * Support paths relative to main file or project dir in run configuration template. (#1553)
 * Add support for the Zathura pdf viewer. (#1551)
 * Add support for the glossaries package. (#1572)
+* Add action to shift arguments. (#1585)
 
 # Changes
-
+* Don't override command line arguments when a latexmkrc file is used. (#1586)
 
 # Bug fixes
 * Fix some log parsing issues with parentheses. (#1579)

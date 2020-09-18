@@ -62,6 +62,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 * link:Graphicspath-support[Support for `\graphicspath` from the graphicx package.]
 * link:Magic-comments[Magic comments]
 * link:Custom-commands[Support for `\newcommand`-like custom definitions of cite and label commands]
+* link:Move-arguments[Action for swapping arguments of LaTeX commands]
 
 == Reading
 * Customizable syntax highlighting
