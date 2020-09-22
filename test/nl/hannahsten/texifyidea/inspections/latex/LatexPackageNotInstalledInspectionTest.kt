@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.inspections.latex
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.SystemEnvironment
