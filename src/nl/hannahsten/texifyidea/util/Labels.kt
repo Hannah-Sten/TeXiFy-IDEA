@@ -165,7 +165,7 @@ fun PsiElement.extractLabelName(): String {
             val position = info?.positions?.firstOrNull() ?: 0
             val prefix = info?.prefix ?: ""
             // Optional and required parameters both count as parameters
-            prefix + this.parameterList.getOrNull(position)?.text?.drop(1)?.dropLast(1)
+            prefix + this.requiredParameter(position)
         }
         is LatexEnvironment -> this.label ?: ""
         else -> text
