@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.io.File
 
 /**
@@ -69,7 +71,13 @@ object LatexmkRcFileFinder {
         return false
     }
 
-    fun isLatexmkRcFilePresent(compilerArguments: String?, workingDir: String?): Boolean {
-        return isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(compilerArguments, workingDir)
+    fun isLatexmkRcFilePresent(runConfig: LatexRunConfiguration): Boolean {
+        val isPresent = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(runConfig.compilerArguments, runConfig.mainFile?.parent?.path)
+
+        // The first time, by default don't override what's in the latexmkrc (but avoid resetting the user chosen output format)
+        if (isPresent && !runConfig.hasBeenRun) {
+            runConfig.outputFormat = LatexCompiler.Format.DEFAULT
+        }
+        return isPresent
     }
 }
