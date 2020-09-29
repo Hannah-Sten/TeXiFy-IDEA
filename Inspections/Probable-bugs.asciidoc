@@ -87,7 +87,14 @@ For example if you want to include a bibliography in `references.bib` then `\add
 
 
 == Missing documentclass
+A LaTeX file that is the root of a document should contain a `\documentclass{...}`.
+
+This inspection is off by default.
+
 == Missing document environment
+A LaTeX file that is the root of a document should contain a `document` environment.
+
+This inspection is off by default.
 
 == Package is not installed
 _Since b0.6.9_
