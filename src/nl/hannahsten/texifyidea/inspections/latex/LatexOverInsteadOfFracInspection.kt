@@ -5,19 +5,19 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.refactoring.extractMethod.newImpl.ExtractMethodHelper.addSiblingAfter
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMathContent
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getNextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.deleteElement
 import org.jetbrains.annotations.Nls
-import java.util.EnumSet
+import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -79,25 +79,22 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
             }
             val previous = getPreviousSiblingIgnoreWhitespace(content!!)
             val next = getNextSiblingIgnoreWhitespace(content)
-            val before = if (previous == null) "" else previous.text
-            val after = if (next == null) "" else next.text
-            val replacement = String.format("\\frac{%s}{%s}", before, after)
-            val document =
-                PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+            val before = previous?.text ?: ""
+            val after = next?.text ?: ""
+            val psiReplacement = LatexPsiHelper(project).createFromText("\\frac{$before}{$after}").firstChild
 
-            // Delete denominator.
+            // Add the replacement in the psi tree.
+            (next ?: content).addSiblingAfter(psiReplacement)
+            // Remove the old fraction (numerator\over denominator), including a possible space between \over and the
+            // denominator. Remove this space before removing the \over command so content still exists when removing
+            // its next sibling. If there is no space after \over, this will remove the denominator (next) and removing
+            // next does nothing.
             if (next != null) {
-                document!!.deleteElement(next)
+                content.nextSibling.delete()
+                next.delete()
             }
-
-            // Replace command.
-            val range = element.commandToken.textRange
-            document?.replaceString(range.startOffset, range.endOffset, replacement)
-
-            // Replace numerator.
-            if (previous != null) {
-                document!!.deleteElement(previous)
-            }
+            previous?.delete()
+            content.delete()
         }
     }
 }
