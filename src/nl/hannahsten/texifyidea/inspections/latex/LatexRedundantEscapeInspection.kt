@@ -91,7 +91,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             if (param != null) {
                 // Just a required parameter
                 range = command.textRange
-                base = param
+                base = if (param == "\\i" || param == "\\j") param.substring(1) else param
             }
             else {
                 // Now find a sibling

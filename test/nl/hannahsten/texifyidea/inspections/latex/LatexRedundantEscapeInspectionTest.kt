@@ -50,4 +50,10 @@ class LatexRedundantEscapeInspectionTest : TexifyInspectionTestBase(LatexRedunda
 
         testQuickFix("\\'{ee}", "ée")
     }
+
+    fun `test quick fix with dotless i`() {
+        setUnicodeSupport(myFixture.project, true)
+
+        testQuickFix("\\^{\\i}", "î")
+    }
 }
