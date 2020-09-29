@@ -82,6 +82,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val handlesNumberOfCompiles = true
 
+        override val outputFormats = arrayOf(Format.DEFAULT, Format.PDF, Format.DVI)
+
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
@@ -91,7 +93,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
-            val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig.compilerArguments, runConfig.mainFile?.parent?.path)
+            val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
 
             // If it is present, assume that it will handle everything (command line options would overwrite latexmkrc options)
             if (!isLatexmkRcFilePresent) {
@@ -100,6 +102,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-file-line-error")
                 command.add("-interaction=nonstopmode")
                 command.add("-synctex=1")
+            }
+
+            if (runConfig.outputFormat != Format.DEFAULT) {
                 command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
             }
 
@@ -377,6 +382,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      */
     enum class Format {
 
+        DEFAULT, // Means: don't overwite the default, e.g. a default from the latexmkrc, i.e. don't add any command line parameters
         PDF,
         DVI,
         HTML,
