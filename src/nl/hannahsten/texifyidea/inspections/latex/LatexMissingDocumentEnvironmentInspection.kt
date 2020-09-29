@@ -78,8 +78,6 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
                 |
                 |\begin{document}
                 |
-                |
-                |
                 |\end{document}""".trimMargin())
         }
     }
