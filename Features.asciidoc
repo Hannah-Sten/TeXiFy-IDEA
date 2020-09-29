@@ -283,8 +283,8 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * link:Probable-bugs#Unsupported-Unicode-character[Unsupported Unicode character]
 * link:++Probable-bugs#File argument should not include the extension++[File argument should not include the extension]
 * link:++Probable-bugs#File argument should include the extension++[File argument should include the extension]
-* Missing documentclass
-* Missing document environment
+* link:Probable-bugs#Missing-documentclass[Missing documentclass]
+* link:Probable-bugs#Missing-document-environment[Missing document environment]
 * link:Probable-bugs#Package-may-not-exist[Package may not exist]
 * link:Probable-bugs#Package-not-installed[Package is not installed]
 * link:Probable-bugs#Package-name-does-not-match-file-name[Package name does not match file name]
