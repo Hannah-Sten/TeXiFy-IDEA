@@ -7,11 +7,12 @@
 * Add action to shift arguments. (#1585)
 
 # Changes
-* Don't override command line arguments when a latexmkrc file is used. (#1586)
+* Don't override command line arguments when a latexmkrc file is used. (#1586, #1597)
+* Improve speed of package not installed inspection when a package is not installed. (#1595)
 
 # Bug fixes
 * Fix some log parsing issues with parentheses. (#1579)
-* Include optional parameters in position when looking for labels from redefined commands. (#1577)
+* Include optional parameters in position when looking for labels from redefined commands. (#1577, #1598)
 * Fix a parse error with nested brackets in optional parameter of verbatim environment. (#1569)
 * Fix file inclusion loop triggered incorrectly. (#1570)
 * Fix a concurrency issue with the fileset cache. (#1567)
