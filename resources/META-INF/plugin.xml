@@ -82,56 +82,12 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7</strong></p>
+        <p><strong>Alpha releases</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7, an update which brings among a lot of other things a new Log messages tab which contains a summary of errors and warnings found in the LaTeX compilation output.
-            It already filters a lot of messages, but since LaTeX log parsing is inherently difficult please help us out by submitting examples of incorrectly parsed log files to <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose">GitHub issues</a>!
+            This is an alpha release, which contains the very latest features of TeXiFy IDEA.
         <p>
         <p>
-            We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
-            Your input is valuable and well appreciated.
-        </p>
-        <br>
-        <p>
-            <em>Additions</em>
-        </p>
-        <ul>
-            <li> Compile messages. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1209">#1209</a>)</li>
-            <li> Add inspection to encourage proper nesting of sectioning commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1492">#1492</a>)</li>
-            <li> Add support for custom labeling and referencing commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1442">#1442</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1507">#1507</a>)</li>
-            <li> Add folding for escaped symbols. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1511">#1511</a>)</li>
-            <li> Add support for root file magic comments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1516">#1516</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Changes</em>
-        </p>
-        <ul>
-            <li> Commands with optional parameters now appear separately in the autocomplete. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1461">#1461</a>)</li>
-            <li> Create and use default output path if no output path is present. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1460">#1460</a>)</li>
-            <li> Delay registering TikZ and Equation Preview tool windows until they are needed. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1504">#1504</a>)</li>
-            <li> Some include-like commands do not allow separating required arguments with commas. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1515">#1515</a>)</li>
-            <li> When a newline is inserted by the word wrap in an itemize environment, a new \item is not inserted. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1516">#1516</a>)</li>
-            <li> Update tlmgr when needed before installing a package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1527">#1527</a>)</li>
-        </ul>
-        <br>
-        <p>
-            <em>Bug fixes</em>
-        </p>
-        <ul>
-            <li> Disable Non-Ascii inspection in non-identifier commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1506">#1506</a>)</li>
-            <li> Fix optional parameter parsing for \newcommand when first parameter for the new command is optional. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1453">#1453</a>)</li>
-            <li> Fix auxiliary directory when using Dockerized MiKTeX. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1517">#1517</a>)</li>
-            <li> Cite before interpunction inspection should not trigger on abbreviations. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1498">#1498</a>)</li>
-            <li> Other small improvements and bug fixes (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1436">#1436</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1448">#1448</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1473">#1473</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1498">#1498</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1509">#1509</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1524">#1524</a>)</li>
-        </ul>
-        <br>
-        <p>
-            Thanks to <a href="https://github.com/xaaris">Johannes Berger</a> and <a href="https://github.com/VhJoren">@VhJoren</a> for contributing to this release.
-        </p>
-        <br>
-        <p>
-            The full list of releases is available on the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a>.
+            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with git logs.
         </p>
     ]]></change-notes>
 
