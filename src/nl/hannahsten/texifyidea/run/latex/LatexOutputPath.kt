@@ -46,6 +46,11 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
      */
     fun getAndCreatePath(): VirtualFile? {
+        // No auxil directory should be present/created when there's no MiKTeX around, assuming that TeX Live does not support this
+        if (!LatexDistribution.isMiktexAvailable && variant == "auxil") {
+            return null
+        }
+
         // Caching of the result
         return getPath().also {
             virtualFile = it
@@ -77,12 +82,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             }
             else {
                 // Try to create the path
-                // todo use createExcludedDir
-                if (File(pathString).mkdirs()) {
-                    LocalFileSystem.getInstance().refreshAndFindFileByPath(pathString)?.let {
-                        return it
-                    }
-                }
+                createOutputPath(pathString)?.let { return it }
             }
             // Path is invalid (perhaps the user provided an invalid path)
             Notification("LatexOutputPath", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
@@ -90,11 +90,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             // Create and return default path
             if (contentRoot != null) {
                 val defaultPathString = contentRoot!!.path + "/" + variant
-                if (File(defaultPathString).mkdir()) {
-                    LocalFileSystem.getInstance().refreshAndFindFileByPath(defaultPathString)?.let {
-                        return it
-                    }
-                }
+                createOutputPath(defaultPathString)?.let { return it }
             }
 
             if (contentRoot != null) {
@@ -121,22 +117,19 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     fun isDefault() = getDefaultOutputPath() == virtualFile
 
     /**
-     * Creates the output directories to place all produced files.
+     * Creates the output directory to place all produced files.
      */
-    fun create() {
-        val mainFile = mainFile ?: return
-
+    private fun createOutputPath(outPath: String): VirtualFile? {
+        val mainFile = mainFile ?: return null
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
-
-        val includeRoot = mainFile.parent
-        val parentPath = fileIndex.getContentRootForFile(mainFile, false)?.path ?: includeRoot.path
-        val outPath = "$parentPath/out"
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
         val module = fileIndex.getModuleForFile(mainFile, false)
-        File(outPath).mkdirs()
-        virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)
-        module?.createExcludedDir(outPath)
+        if (File(outPath).mkdirs()) {
+            module?.createExcludedDir(outPath)
+            return LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)
+        }
+        return null
     }
 
     /**

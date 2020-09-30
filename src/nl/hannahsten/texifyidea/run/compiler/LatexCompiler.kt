@@ -246,7 +246,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         val auxilPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.auxilPath?.path?.toPath(runConfig)
+            runConfig.auxilPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
         else {
             dockerAuxilDir
@@ -306,12 +306,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             parameterList.addAll(listOf("-v", "${runConfig.outputPath.getAndCreatePath()?.path}:$dockerOutputDir"))
         }
 
-        if (runConfig.auxilPath == null) {
-            runConfig.setDefaultAuxilPath()
-        }
-
-        if (runConfig.auxilPath != null && runConfig.auxilPath != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath?.path}:$dockerAuxilDir"))
+        if (runConfig.auxilPath.getAndCreatePath() != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()}:$dockerAuxilDir"))
         }
 
         parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
