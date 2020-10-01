@@ -697,4 +697,34 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         testLog(log, expectedMessages)
     }
+
+    fun `test undefined control sequence`() {
+        val log = """
+            (C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.
+            aux
+            C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.a
+            ux:21: Undefined control sequence.
+            l.21 \pgfsyspdfmark
+                                {pgfid1}{2046862}{52519048}
+            
+            C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.a
+            ux:21: LaTeX Error: Missing \begin{document}.
+            
+            See the LaTeX manual or LaTeX Companion for explanation.
+            Type  H <return>  for immediate help.
+             ...                                              
+                                                              
+            l.21 \pgfsyspdfmark {p
+                                  gfid1}{2046862}{52519048}
+            
+
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+                LatexLogMessage("Undefined control sequence \\pgfsyspdfmark", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR),
+                LatexLogMessage("Missing \\begin{document}", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
