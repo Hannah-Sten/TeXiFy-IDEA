@@ -118,7 +118,7 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
                         .indexOfFirst { arg -> arg.name == argument }
             }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else requiredParameters[min(requiredArgIndices.first(), requiredParameters.size - 1)]
+    else requiredParameters.getOrNull(min(requiredArgIndices.first(), requiredParameters.size - 1))
 }
 
 /**
