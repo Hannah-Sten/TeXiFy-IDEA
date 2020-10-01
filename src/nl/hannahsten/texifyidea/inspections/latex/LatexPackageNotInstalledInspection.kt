@@ -21,7 +21,15 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.*
 
+/**
+ * Check if a LaTeX package is not installed (only for TeX Live, since MiKTeX downloads them automatically).
+ */
 class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
+    // This caches packages which are not installed, which is needed
+    // otherwise we are running the expensive call to tlmgr basically on
+    // every letter typed - exactly the same call with the same results
+    private val knownNotInstalledPackages = mutableSetOf<String>()
+
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =
@@ -43,7 +51,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project
                             .projectSearchScope)
                     .map { it.requiredParameter(0) }
-                    .map { it?.toLowerCase() }
+                    .mapNotNull { it?.toLowerCase() }
             val packages = installedPackages + customPackages
 
             val commands = file.childrenOfType(LatexCommands::class)
@@ -52,16 +60,21 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             for (command in commands) {
                 val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
                 if (`package` !in packages) {
-                    // Manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
-                    if ("tlmgr search --file /$`package`.sty".runCommand()
+                    // Use the cache or manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
+                    if (knownNotInstalledPackages.contains(`package`) || "tlmgr search --file /$`package`.sty".runCommand()
                                     ?.isEmpty() == true) {
                         descriptors.add(manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed or \\ProvidesPackage is missing",
-                                InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`),
+                                InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`, knownNotInstalledPackages),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
                         ))
+                        knownNotInstalledPackages.add(`package`)
+                    }
+                    else {
+                        // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
+                        TexLivePackages.packageList.add(`package`)
                     }
                 }
             }
@@ -69,7 +82,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private class InstallPackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String) : LocalQuickFix {
+    private class InstallPackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String, val knownNotInstalledPackages: MutableSet<String>) : LocalQuickFix {
         override fun getFamilyName(): String = "Install $packageName"
 
         /**
@@ -77,6 +90,9 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
          * packages when done.
          */
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            // I don't know if you actually could install multiple packages
+            // with one fix, but it's not a bad idea to clear cache once in a while
+            knownNotInstalledPackages.clear()
             ProgressManager.getInstance()
                     .run(object : Task.Backgroundable(project, "Installing $packageName...") {
                         override fun run(indicator: ProgressIndicator) {

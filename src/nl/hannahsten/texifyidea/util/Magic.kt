@@ -235,7 +235,7 @@ object Magic {
         val figures = hashSetOf("figure")
 
         @JvmField
-        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*")
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*", "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample")
 
         @JvmField
         val algorithmEnvironments = setOf("algorithmic")
@@ -249,7 +249,7 @@ object Magic {
                 "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
                 "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
                 "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
-                "gmatrix"
+                "gmatrix", "tikz-cd"
         )
 
         @JvmField
@@ -585,7 +585,7 @@ object Magic {
          * All commands that at first glance look like \if-esque commands, but that actually aren't.
          */
         @JvmField
-        val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot")
+        val ignoredIfs = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot", "\\ifcsvstrcmp")
 
         /**
          * List of all TeX style primitives.

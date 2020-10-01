@@ -475,7 +475,7 @@ class LatexRunConfiguration constructor(project: Project,
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath()
         return "${outputDir?.path}/" + mainFile!!
-                .nameWithoutExtension + "." + outputFormat.toString()
+                .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf" else outputFormat.toString()
                 .toLowerCase()
     }
 

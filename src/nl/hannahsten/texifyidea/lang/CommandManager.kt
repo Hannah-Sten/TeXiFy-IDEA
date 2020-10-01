@@ -283,12 +283,15 @@ object CommandManager : Iterable<String?>, Serializable {
                 val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
                 if (definedCommand.isBlank()) return@forEach
 
+                val isFirstParameterOptional = commandDefinition.optionalParameters.size > 1
+
                 val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
                     ?.requiredParamContentList
                     ?.flatMap { it.childrenOfType(LatexCommands::class) }
                     ?.asSequence()
                     ?.filterNotNull()
 
+                // Positions of label parameters in the custom commands (starting from 0)
                 val positions = parameterCommands
                     ?.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
                     ?.mapNotNull { it.requiredParameter(0) }
@@ -301,6 +304,8 @@ object CommandManager : Iterable<String?>, Serializable {
                     ?.map(Character::getNumericValue)
                     // LaTeX starts from 1, we from 0 (consistent with how we count required parameters)
                     ?.map { it - 1 }
+                    // For the moment we only consider required parameters and ignore the optional one
+                    ?.map { if (isFirstParameterOptional) it - 1 else it }
                     ?.filter { it >= 0 }
                     ?.toList() ?: return@forEach
                 if (positions.isEmpty()) return@forEach
