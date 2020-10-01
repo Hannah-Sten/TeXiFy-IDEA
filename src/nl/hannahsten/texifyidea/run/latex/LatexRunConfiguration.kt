@@ -494,7 +494,7 @@ class LatexRunConfiguration constructor(project: Project,
     /**
      * Get the content root of the main file.
      */
-    private fun getMainFileContentRoot(): VirtualFile? {
+    fun getMainFileContentRoot(): VirtualFile? {
         if (mainFile == null) return null
         return runReadAction {
             return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
