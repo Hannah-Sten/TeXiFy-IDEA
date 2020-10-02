@@ -14,6 +14,29 @@ This e<weak_warning descr="Sentence does not start on a new line">tc. is missing
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarning() {
+        myFixture.configureByText(LatexFileType, """
+            First sentence.
+            Second sentence.
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningWithComment() {
+        myFixture.configureByText(LatexFileType, """
+            This is an abbreviation (ABC). % commemt
+            More text here.
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoWarningInMathMode() {
+        myFixture.configureByText(LatexFileType, """
+            \[ Why. would. you. do. this. \]
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
     fun testQuickfix() {
         myFixture.configureByText(LatexFileType,
         """
