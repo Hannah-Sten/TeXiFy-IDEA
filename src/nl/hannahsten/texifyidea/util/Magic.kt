@@ -235,7 +235,7 @@ object Magic {
         val figures = hashSetOf("figure")
 
         @JvmField
-        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*", "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample")
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*", "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted")
 
         @JvmField
         val algorithmEnvironments = setOf("algorithmic")
