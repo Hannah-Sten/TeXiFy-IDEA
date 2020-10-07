@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.1-alpha.1.5"
+version = "0.7.1-alpha.4"
 
 repositories {
     mavenCentral()

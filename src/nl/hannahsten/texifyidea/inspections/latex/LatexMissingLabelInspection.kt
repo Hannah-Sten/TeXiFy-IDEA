@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nls
 import java.util.EnumSet
 
 /**
- * Currently only works for Chapters, Sections and Subsections.
+ * Check for commands which should have a label but don't.
  *
  * @author Hannah Schellekens
  */

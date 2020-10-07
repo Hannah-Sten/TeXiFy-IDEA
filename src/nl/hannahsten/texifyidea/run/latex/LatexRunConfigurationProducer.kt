@@ -41,10 +41,10 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         // Change the main file as given by the template run configuration to the current file
         runConfiguration.mainFile = mainFile
         runConfiguration.psiFile = container
-        runConfiguration.setDefaultAuxilPath()
         runConfiguration.setSuggestedName()
         // Avoid changing the outputPath of the template run config (which is a shallow clone)
         runConfiguration.outputPath = runConfiguration.outputPath.clone()
+        runConfiguration.auxilPath = runConfiguration.auxilPath.clone()
 
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
         val runProgram = container.allParentMagicComments().value(DefaultMagicKeys.PROGRAM)

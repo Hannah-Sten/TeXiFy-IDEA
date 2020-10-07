@@ -47,8 +47,9 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 val startOffset = matcher.start()
                 val endOffset = matcher.end() + (endLine - offset)
 
-                // Do not trigger the inspection when in a comment.
-                if (file.findElementAt(startOffset + text.startOffset)?.isComment() == true) {
+                val element = file.findElementAt(startOffset + text.startOffset)
+                // Do not trigger the inspection when in a comment or when a comment starts directly after.
+                if ((element?.isComment() == true) || (element?.nextSiblingIgnoreWhitespace()?.isComment() == true)) {
                     continue
                 }
 

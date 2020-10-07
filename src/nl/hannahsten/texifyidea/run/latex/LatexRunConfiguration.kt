@@ -100,18 +100,7 @@ class LatexRunConfiguration constructor(project: Project,
     var outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
 
     /** Path to the directory containing the auxiliary files. */
-    var auxilPath: VirtualFile? = null
-        get() {
-            // When the user modifies the run configuration template, then this variable will magically be replaced with the
-            // path to the /bin folder of IntelliJ, without the setter being called.
-            return if (field?.path?.endsWith("/bin") == true) {
-                field = null
-                field
-            }
-            else {
-                field
-            }
-        }
+    var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
@@ -229,8 +218,6 @@ class LatexRunConfiguration constructor(project: Project,
         val filePath = parent.getChildText(MAIN_FILE)
         setMainFile(filePath)
 
-        val fileSystem = LocalFileSystem.getInstance()
-
         // Read output path
         val outputPathString = parent.getChildText(OUTPUT_PATH)
         if (outputPathString != null) {
@@ -246,19 +233,20 @@ class LatexRunConfiguration constructor(project: Project,
         // Read auxil path
         val auxilPathString = parent.getChildText(AUXIL_PATH)
         if (auxilPathString != null) {
-            this.auxilPath = fileSystem.findFileByPath(auxilPathString)
+            this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
+            this.auxilPath.pathString = auxilPathString
         }
 
         // Backwards compatibility
         runReadAction {
             val auxDirBoolean = parent.getChildText(AUX_DIR)
-            if (auxDirBoolean != null && this.auxilPath == null && this.mainFile != null) {
+            if (auxDirBoolean != null && this.auxilPath.virtualFile == null && this.mainFile != null) {
                 // If there is no auxil path yet but this option still exists,
                 // guess the output path in the same way as it was previously done
                 val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
                 val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
                 val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else this.mainFile!!.parent.path
-                this.auxilPath = LocalFileSystem.getInstance().findFileByPath(path)
+                this.auxilPath.virtualFile = LocalFileSystem.getInstance().findFileByPath(path)
             }
             val outDirBoolean = parent.getChildText(OUT_DIR)
             if (outDirBoolean != null && this.outputPath.virtualFile == null && this.mainFile != null) {
@@ -321,7 +309,7 @@ class LatexRunConfiguration constructor(project: Project,
         this.environmentVariables.writeExternal(parent)
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
-        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath?.path ?: "" })
+        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
@@ -462,8 +450,8 @@ class LatexRunConfiguration constructor(project: Project,
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return if (auxilPath != null && latexDistribution.isMiktex() && auxilPath?.path?.endsWith("/bin") == false) {
-            auxilPath
+        return if (latexDistribution.isMiktex()) {
+            auxilPath.getAndCreatePath()
         }
         else {
             outputPath.getAndCreatePath()
@@ -487,7 +475,7 @@ class LatexRunConfiguration constructor(project: Project,
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath()
         return "${outputDir?.path}/" + mainFile!!
-                .nameWithoutExtension + "." + outputFormat.toString()
+                .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf" else outputFormat.toString()
                 .toLowerCase()
     }
 
@@ -506,43 +494,30 @@ class LatexRunConfiguration constructor(project: Project,
     /**
      * Get the content root of the main file.
      */
-    private fun getMainFileContentRoot(): VirtualFile? {
+    fun getMainFileContentRoot(): VirtualFile? {
         if (mainFile == null) return null
         return runReadAction {
             return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         }
     }
 
-    // todo refactor following methods in to LatexOutputPath
-    /**
-     * Assuming the main file is known, set a default auxil path if not already set.
-     * Will be set to null if not used.
-     */
-    fun setDefaultAuxilPath() {
-        // -aux-directory pdflatex flag only exists on MiKTeX, so disable auxil otherwise
-        if (auxilPath != null || mainFile == null || !latexDistribution.isMiktex()) return
-        val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-        this.auxilPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot?.path + "/auxil")
-    }
-
     /**
      * Set [auxilPath]
      */
     fun setFileAuxilPath(fileAuxilPath: String) {
-        this.auxilPath = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
+        if (fileAuxilPath.isBlank()) return
+        this.auxilPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
+        // If not possible to resolve directly, we might resolve it later
+        if (this.auxilPath.virtualFile == null) {
+            this.auxilPath.pathString = fileAuxilPath
+        }
     }
 
     /**
      * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
      */
     fun usesAuxilOrOutDirectory(): Boolean {
-        val usesAuxilDir = if (auxilPath == null) {
-            false
-        }
-        else {
-            auxilPath != mainFile?.parent
-        }
-
+        val usesAuxilDir = auxilPath.getAndCreatePath() != mainFile?.parent
         val usesOutDir = outputPath.getAndCreatePath() != mainFile?.parent
 
         return usesAuxilDir || usesOutDir

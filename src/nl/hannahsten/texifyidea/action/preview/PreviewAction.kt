@@ -48,7 +48,8 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         val toolWindowManager = ToolWindowManager.getInstance(project)
 
         val task = RegisterToolWindowTask(toolWindowId, contentFactory = PreviewToolWindowFactory(), icon = icon)
-        val toolWindow = toolWindowManager.registerToolWindow(task)
+        // Avoid adding it twice
+        val toolWindow = toolWindowManager.getToolWindow(toolWindowId) ?: toolWindowManager.registerToolWindow(task)
 
         val containingFile = element.containingFile
         val psiDocumentManager = PsiDocumentManager.getInstance(project)

@@ -6,6 +6,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
 
@@ -81,6 +82,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val handlesNumberOfCompiles = true
 
+        override val outputFormats = arrayOf(Format.DEFAULT, Format.PDF, Format.DVI)
+
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
@@ -90,12 +93,20 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
             val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
 
-            // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
-            command.add("-pdf")
-            command.add("-file-line-error")
-            command.add("-interaction=nonstopmode")
-            command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
+
+            // If it is present, assume that it will handle everything (command line options would overwrite latexmkrc options)
+            if (!isLatexmkRcFilePresent) {
+                // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
+                command.add("-pdf")
+                command.add("-file-line-error")
+                command.add("-interaction=nonstopmode")
+                command.add("-synctex=1")
+            }
+
+            if (runConfig.outputFormat != Format.DEFAULT) {
+                command.add("-output-format=${runConfig.outputFormat.name.toLowerCase()}")
+            }
 
             command.add("-output-directory=$outputPath")
 
@@ -246,7 +257,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         val auxilPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.auxilPath?.path?.toPath(runConfig)
+            runConfig.auxilPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
         else {
             dockerAuxilDir
@@ -306,12 +317,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             parameterList.addAll(listOf("-v", "${runConfig.outputPath.getAndCreatePath()?.path}:$dockerOutputDir"))
         }
 
-        if (runConfig.auxilPath == null) {
-            runConfig.setDefaultAuxilPath()
-        }
-
-        if (runConfig.auxilPath != null && runConfig.auxilPath != mainFile.parent) {
-            parameterList.addAll(listOf("-v", "${runConfig.auxilPath?.path}:$dockerAuxilDir"))
+        if (runConfig.auxilPath.getAndCreatePath() != mainFile.parent) {
+            parameterList.addAll(listOf("-v", "${runConfig.auxilPath.getAndCreatePath()}:$dockerAuxilDir"))
         }
 
         parameterList.add("docker.pkg.github.com/hannah-sten/texify-idea/miktex:latest")
@@ -371,6 +378,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      */
     enum class Format {
 
+        DEFAULT, // Means: don't overwite the default, e.g. a default from the latexmkrc, i.e. don't add any command line parameters
         PDF,
         DVI,
         HTML,
