@@ -22,7 +22,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.1-alpha.4"
+version = "0.7.1-alpha.6"
 
 repositories {
     mavenCentral()
@@ -113,7 +113,7 @@ intellij {
     pluginName = "TeXiFy-IDEA"
 
     // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    setPlugins("tanvd.grazi:202.6397.21", "java")
+    setPlugins("tanvd.grazi:203.4449.8", "java")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -123,7 +123,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "2020.2"
+//    version = "2020.3"
 
     // Example to use a different, locally installed, IDE
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
