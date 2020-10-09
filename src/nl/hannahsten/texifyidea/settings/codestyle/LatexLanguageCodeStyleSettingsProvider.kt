@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.settings.codestyle
 
 import com.intellij.application.options.SmartIndentOptionsEditor
+import com.intellij.openapi.application.ApplicationBundle
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_ADD_SPACE
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption.LINE_COMMENT_AT_FIRST_COLUMN
@@ -52,7 +53,7 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
                     LatexCodeStyleSettings::class.java,
                     it.key.name,
                     it.value,
-                    CodeStyleSettingsCustomizable.BLANK_LINES
+                    ApplicationBundle.message("title.minimum.blank.lines")
             )
         }
     }
