@@ -1,8 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
 import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import java.io.Serializable
@@ -241,11 +240,7 @@ object CommandManager : Iterable<String?>, Serializable {
 
         // If the command name itself is not directly in the given set, check if it is perhaps an alias of a command in the set
         // Uses projectScope now, may be improved to filesetscope
-        val indexedCommandDefinitions = LatexCommandsIndex.getCommandsByNames(
-            Magic.Command.commandDefinitions,
-            project,
-            GlobalSearchScope.projectScope(project)
-        )
+        val indexedCommandDefinitions = LatexDefinitionIndex.getItems(project)
 
         // Also do this the first time something is registered, because then we have to update aliases as well
         if (numberOfIndexedCommandDefinitions != indexedCommandDefinitions.size || wasRegistered) {
@@ -260,7 +255,7 @@ object CommandManager : Iterable<String?>, Serializable {
                 }
             }
 
-            numberOfIndexedCommandDefinitions = indexedCommandDefinitions.count()
+            numberOfIndexedCommandDefinitions = indexedCommandDefinitions.size
         }
     }
 
@@ -288,12 +283,15 @@ object CommandManager : Iterable<String?>, Serializable {
                 val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
                 if (definedCommand.isBlank()) return@forEach
 
+                val isFirstParameterOptional = commandDefinition.optionalParameters.size > 1
+
                 val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
                     ?.requiredParamContentList
                     ?.flatMap { it.childrenOfType(LatexCommands::class) }
                     ?.asSequence()
                     ?.filterNotNull()
 
+                // Positions of label parameters in the custom commands (starting from 0)
                 val positions = parameterCommands
                     ?.filter { it.name in Magic.Command.labelDefinitionsWithoutCustomCommands }
                     ?.mapNotNull { it.requiredParameter(0) }
@@ -306,6 +304,8 @@ object CommandManager : Iterable<String?>, Serializable {
                     ?.map(Character::getNumericValue)
                     // LaTeX starts from 1, we from 0 (consistent with how we count required parameters)
                     ?.map { it - 1 }
+                    // For the moment we only consider required parameters and ignore the optional one
+                    ?.map { if (isFirstParameterOptional) it - 1 else it }
                     ?.filter { it >= 0 }
                     ?.toList() ?: return@forEach
                 if (positions.isEmpty()) return@forEach

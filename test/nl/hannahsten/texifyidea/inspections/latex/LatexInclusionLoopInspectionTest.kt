@@ -18,4 +18,9 @@ class LatexInclusionLoopInspectionTest : TexifyInspectionTestBase(LatexInclusion
         myFixture.configureByFiles("main.tex", "main.sty")
         myFixture.checkHighlighting()
     }
+
+    fun testInspectionIsExtensionAware() {
+        myFixture.configureByFiles("extensioninclusion.tex")
+        myFixture.checkHighlighting()
+    }
 }

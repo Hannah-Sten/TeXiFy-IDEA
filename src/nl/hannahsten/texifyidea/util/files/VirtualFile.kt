@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -24,6 +25,28 @@ fun VirtualFile.findVirtualFileByAbsoluteOrRelativePath(filePath: String): Virtu
     else {
         LocalFileSystem.getInstance().findFileByPath(filePath)
     }
+}
+
+/**
+ * Try to find the virtual file, as absolute path or relative to a content root.
+ */
+fun findVirtualFileByAbsoluteOrRelativePath(path: String, project: Project): VirtualFile? {
+    if (path.isBlank()) return null
+
+    val fileSystem = LocalFileSystem.getInstance()
+
+    val file = fileSystem.findFileByPath(path)
+    if (file != null) {
+        return file
+    }
+    else {
+        // Maybe it is a relative path
+        ProjectRootManager.getInstance(project).contentRoots.forEach { root ->
+            root.findFileByRelativePath(path)?.let { return it }
+        }
+    }
+
+    return null
 }
 
 /**

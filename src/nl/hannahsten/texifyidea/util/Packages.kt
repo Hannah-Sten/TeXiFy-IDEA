@@ -294,6 +294,9 @@ object PackageUtils {
 }
 
 object TexLivePackages {
+    /**
+     * List of installed packages.
+     */
     var packageList: MutableList<String> = mutableListOf()
 
     /**
@@ -314,6 +317,7 @@ object TexLivePackages {
     fun findTexLiveName(task: Task.Backgroundable, packageName: String): String? {
         // Find the package name for tlmgr.
         task.title = "Searching for $packageName..."
+        // Assume that you can not use the bundle name in a \usepackage if it is different from the package name (otherwise this search won't work and we would need to use tlmgr search --global $packageName
         val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand()
                 ?: return null
 

@@ -26,7 +26,7 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.6.10</version>
+    <version>0.7</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
@@ -87,10 +87,7 @@
             This is an alpha release, which contains the very latest features of TeXiFy IDEA.
         <p>
         <p>
-            Please help us out with the compile messages feature by submitting examples of log messages that are not parsed correctly at https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new/choose
-        <p>
-        <p>
-            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with merged PRs.
+            If you want to check what features are included in a certain alpha build, you can check the <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/releases">GitHub releases page</a> or look at the release date and compare with git logs.
         </p>
     ]]></change-notes>
 
@@ -273,6 +270,17 @@
                     text="Configure Inverse Search" description="Instructions for configuring inverse search."/>
         </group>
 
+        <!-- Zathura -->
+        <group id="texify.LatexMenu.Zathura" class="nl.hannahsten.texifyidea.action.group.ZathuraActionGroup" text="Zathura"
+               description="Interact with Zathura." popup="true">
+            <add-to-group group-id="texify.LatexMenuTools" anchor="first"/>
+
+            <action class="nl.hannahsten.texifyidea.action.zathura.ForwardSearchAction" id="texify.zathura.ForwardSearch"
+                    text="Go to _Line in PDF" description="Find the content on cursor in the PDF.">
+                <keyboard-shortcut first-keystroke="control alt shift PERIOD" keymap="$default"/>
+            </action>
+        </group>
+
     </actions>
 
     <!-- Listeners -->
@@ -292,7 +300,7 @@
 
         <!-- Files and project -->
         <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType"/>
-        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex;glstex" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.StyleFileType" name="LaTeX style file" language="Latex" extensions="sty;dbx;bbx" /> <!-- dbx is a Biblatex Data Model, bbx a Biblatex Style -->
         <fileType name="LaTeX style file" fileNames="biblatex.cfg" /> <!-- Biblatex configuration -->
         <fileType implementationClass="nl.hannahsten.texifyidea.file.ClassFileType" name="LaTeX class file" language="Latex" extensions="cls" />
@@ -382,6 +390,7 @@
         <completion.contributor language="Bibtex" implementationClass="nl.hannahsten.texifyidea.completion.TexifyCompletionContributor"/>
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.LatexCommands" implementationClass="nl.hannahsten.texifyidea.completion.LatexCommandElementManipulators"/>
         <nameSuggestionProvider implementation="nl.hannahsten.texifyidea.refactoring.LatexNameSuggestionProvider"/>
+        <moveLeftRightHandler language="Latex" implementationClass="nl.hannahsten.texifyidea.editor.LatexMoveElementLeftRightHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.insight.LatexEnterBetweenBracesHandler"/>
         <enterHandlerDelegate implementation="nl.hannahsten.texifyidea.completion.InsertBibtexTag"/>
         <codeInsight.parameterInfo language="Latex" implementationClass="nl.hannahsten.texifyidea.insight.LatexParameterInfoHandler"/>

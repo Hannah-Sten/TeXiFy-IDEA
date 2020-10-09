@@ -4,6 +4,7 @@ import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.evince.EvinceConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.okular.OkularConversation
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.skim.SkimConversation
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.zathura.ZathuraConversation
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -18,6 +19,7 @@ enum class PdfViewer(private val viewerCommand: String,
                      val conversation: ViewerConversation?) {
     EVINCE("evince", "Evince", EvinceConversation),
     OKULAR("okular", "Okular", OkularConversation),
+    ZATHURA("zathura", "Zathura", ZathuraConversation),
     SKIM("skim", "Skim", SkimConversation),
     SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
     OTHER("other", "Custom PDF viewer", null);

@@ -9,7 +9,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import nl.hannahsten.texifyidea.LatexLanguage
 
 /**
- * Provides the LaTex code style settings.
+ * Provides the LaTeX code style settings.
  *
  * The most useful thing here is that we specify which tabs to show in the
  * settings.

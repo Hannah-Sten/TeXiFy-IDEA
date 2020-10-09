@@ -1,9 +1,12 @@
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/Hannah-Sten/TeXiFy-IDEA/CI/master?style=flat-square)
 [![Version](https://img.shields.io/jetbrains/plugin/v/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
 [![View at JetBrains](https://img.shields.io/jetbrains/plugin/d/9473-texify-idea.svg?style=flat-square)](https://plugins.jetbrains.com/plugin/9473-texify-idea)
+![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/r/rating/9473-texify-idea?style=flat-square)
 [![Join the chat at https://gitter.im/TeXiFy-IDEA/Lobby](https://img.shields.io/badge/gitter-join%20chat-green.svg?style=flat-square)](https://gitter.im/TeXiFy-IDEA)
 [![Donate via PayPal](https://img.shields.io/badge/Donate!-PayPal-orange.png?style=flat-square)](https://www.paypal.me/HannahSchellekens)
 [![codecov](https://img.shields.io/codecov/c/github/Hannah-Sten/TeXiFy-IDEA/master?style=flat-square)](https://codecov.io/gh/Hannah-Sten/TeXiFy-IDEA)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/Hannah-Sten/TeXiFy-IDEA.svg)](http://isitmaintained.com/project/Hannah-Sten/TeXiFy-IDEA "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/Hannah-Sten/TeXiFy-IDEA.svg)](http://isitmaintained.com/project/Hannah-Sten/TeXiFy-IDEA "Percentage of issues still open")
 
 # TeXiFy-IDEA
 LaTeX support for the IntelliJ Platform by [JetBrains](https://www.jetbrains.com/).
@@ -35,7 +38,7 @@ Please have a look at the [contributing guidelines](CONTRIBUTING.md) to get star
 * [Formatter for LaTeX and BibTeX](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-formatting)
 * [Structure view for LaTeX and BibTeX with filters](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Structure%20view)
 * [Code folding for imports, sections, and environments](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Code-folding)
-* [SumatraPDF (Windows)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/SumatraPDF-support), [Evince (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Evince-support), [Okular (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Okular-support) and [Skim (MacOS)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Skim-support) support with forward and backward search
+* [SumatraPDF (Windows)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/SumatraPDF-support), [Evince (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Evince-support), [Okular (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Okular-support), [Zathura (Linux)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Zathura-support) and [Skim (MacOS)](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Skim-support) support with forward and backward search
 * [Smart Quotes](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Smart-quotes)
 * [Unicode math preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Unicode-math-preview)
 * [Equation preview](https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Preview#Equation-preview)

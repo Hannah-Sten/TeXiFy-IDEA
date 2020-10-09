@@ -24,6 +24,8 @@ open class Package @JvmOverloads constructor(
         @JvmField val CSQUOTES = Package("csquotes")
         @JvmField val FONTENC = Package("fontenc")
         @JvmField val GAUSS = Package("gauss")
+        @JvmField val GLOSSARIES = Package("glossaries")
+        @JvmField val GLOSSARIESEXTRA = Package("glossaries-extra")
         @JvmField val GRAPHICS = Package("graphics")
         @JvmField val GRAPHICX = Package("graphicx")
         @JvmField val HYPERREF = Package("hyperref")

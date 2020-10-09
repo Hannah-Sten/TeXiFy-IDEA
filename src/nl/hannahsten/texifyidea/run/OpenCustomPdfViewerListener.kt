@@ -2,8 +2,9 @@ package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.util.Key
-import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.io.IOException
 
@@ -18,7 +19,8 @@ class OpenCustomPdfViewerListener(val command: Array<String>, val failSilently: 
             }
             catch (e: IOException) {
                 if (!failSilently) {
-                    throw TeXception("An error occured when trying to open the pdf using $command with message ${e.message}")
+                    // Probably user error
+                    Notification("OpenCustomPdfViewerListener", "Could not open pdf file", "An error occured when trying to open the pdf using ${command.joinToString(" ")} with message ${e.message}", NotificationType.ERROR).notify(runConfig.project)
                 }
             }
         }

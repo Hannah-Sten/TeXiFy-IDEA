@@ -7,9 +7,7 @@ import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
@@ -164,10 +162,28 @@ fun PsiElement.extractLabelName(): String {
             val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
             val position = info?.positions?.firstOrNull() ?: 0
             val prefix = info?.prefix ?: ""
+            // Skip optional parameters for now (also below and in
             prefix + this.requiredParameter(position)
         }
         is LatexEnvironment -> this.label ?: ""
         else -> text
+    }
+}
+
+/**
+ * Extracts the label element (so the element that should be resolved to) from the PsiElement given that the PsiElement represents a label.
+ */
+fun PsiElement.extractLabelElement(): PsiElement? {
+    return when (this) {
+        is BibtexEntry -> firstChildOfType(BibtexId::class)
+        is LatexCommands -> {
+            // For now just take the first label name (may be multiple for user defined commands)
+            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+            val position = info?.positions?.firstOrNull() ?: 0
+            // Skip optional parameters for now
+            this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)?.firstChildOfType(LatexParameterText::class)
+        }
+        else -> null
     }
 }
 

@@ -111,4 +111,13 @@ class LatexParserTest : BasePlatformTestCase() {
         """.trimIndent())
         myFixture.checkHighlighting()
     }
+
+    fun testNestedVerbatimBrackets() {
+        myFixture.configureByText(LatexFileType, """
+            \begin{lstlisting}[language={[x86masm]Assembler},label={lst:lstlisting}]
+                push   %rbp
+            \end{lstlisting}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
 }
