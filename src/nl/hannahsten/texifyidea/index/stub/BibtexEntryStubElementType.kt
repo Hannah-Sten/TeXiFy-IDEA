@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.impl.BibtexEntryImpl
 
-open class BibtexEntryStubElementType(private val debugName: String) : IStubElementType<BibtexEntryStub, BibtexEntry>(debugName, BibtexLanguage) {
+open class BibtexEntryStubElementType(debugName: String) : IStubElementType<BibtexEntryStub, BibtexEntry>(debugName, BibtexLanguage) {
     override fun createPsi(stub: BibtexEntryStub): BibtexEntry {
         return BibtexEntryImpl(stub, this)
     }
@@ -30,7 +30,7 @@ open class BibtexEntryStubElementType(private val debugName: String) : IStubElem
         return BibtexEntryStubImpl(parentStub, this, entry.identifier, entry.authors, entry.year, entry.title)
     }
 
-    override fun getExternalId() = debugName
+    override fun getExternalId() = "entry"
 
     override fun indexStub(stub: BibtexEntryStub, sink: IndexSink) {
         sink.occurrence(BibtexEntryIndex.key, stub.name ?: "")

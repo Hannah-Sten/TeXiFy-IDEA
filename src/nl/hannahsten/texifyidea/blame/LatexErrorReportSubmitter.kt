@@ -22,11 +22,11 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         private const val ENCODING = "UTF-8"
     }
 
+    @Suppress("DialogTitleCapitalization")
     override fun getReportActionText() = "Report to TeXiFy-IDEA issue tracker"
 
-    override fun submit(events: Array<IdeaLoggingEvent>, additionalInfo: String?,
-                        parentComponent: Component, consumer: Consumer<SubmittedReportInfo>): Boolean {
-        val event = events.firstOrNull()
+    override fun submit(events: Array<out IdeaLoggingEvent>?, additionalInfo: String?, parentComponent: Component, consumer: Consumer<in SubmittedReportInfo>): Boolean {
+        val event = events?.firstOrNull()
         val title = event?.throwableText?.lineSequence()?.first()
                 ?: event?.message
                 ?: "Crash Report: <Fill in title>"
