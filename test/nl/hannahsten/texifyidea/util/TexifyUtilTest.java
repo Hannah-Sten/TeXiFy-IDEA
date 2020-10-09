@@ -59,10 +59,4 @@ public class TexifyUtilTest {
         String expectedResult = "SomePath.tex";
         assertTrue("SoMEPaTH.TEx + tEX", actualResult.equalsIgnoreCase(expectedResult));
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void appendExtesionNullParameters() throws Exception {
-        StringsKt.appendExtension(null, null);
-    }
-
 }
