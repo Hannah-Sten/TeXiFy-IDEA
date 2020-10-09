@@ -13,9 +13,9 @@ import nl.hannahsten.texifyidea.util.insertUsepackage
  * @author Hannah Schellekens
  */
 class InsertStrikethroughAction : InsertEditorAction(
-        "Strikethrough (ulem package)",
-        TexifyIcons.FONT_STRIKETHROUGH,
-        "\\sout{", "}"
+    "Strikethrough (ulem package)",
+    TexifyIcons.FONT_STRIKETHROUGH,
+    "\\sout{", "}"
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {

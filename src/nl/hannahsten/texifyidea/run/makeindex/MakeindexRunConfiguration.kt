@@ -15,10 +15,10 @@ import org.jdom.Element
  * Run configuration for running the makeindex tool.
  */
 class MakeindexRunConfiguration(
-        project: Project,
-        factory: ConfigurationFactory,
-        name: String
-        ) : RunConfigurationBase<MakeindexCommandLineState>(project, factory, name), LocatableConfiguration {
+    project: Project,
+    factory: ConfigurationFactory,
+    name: String
+) : RunConfigurationBase<MakeindexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
 

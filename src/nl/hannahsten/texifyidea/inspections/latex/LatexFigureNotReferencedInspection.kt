@@ -40,29 +40,30 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
         for (command in file.commandsInFileSet()) {
             // Don't resolve references in command definitions
             if (command.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions ||
-                referenceCommands.contains(command.name)) {
+                referenceCommands.contains(command.name)
+            ) {
                 command.referencedLabelNames.forEach { figureLabels.remove(it) }
             }
         }
     }
 
     private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor =
-            manager.createProblemDescriptor(
-                    label,
-                    "Figure is not referenced",
-                    isOntheFly,
-                    emptyArray(),
-                    ProblemHighlightType.WEAK_WARNING
-            )
+        manager.createProblemDescriptor(
+            label,
+            "Figure is not referenced",
+            isOntheFly,
+            emptyArray(),
+            ProblemHighlightType.WEAK_WARNING
+        )
 
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
-            file.findLabelingCommandsInFileAsSequence()
-                    .filter(this::isFigureLabel)
-                    .associateBy(LatexCommands::labelName)
-                    .toMutableMap()
+        file.findLabelingCommandsInFileAsSequence()
+            .filter(this::isFigureLabel)
+            .associateBy(LatexCommands::labelName)
+            .toMutableMap()
 
     private fun isFigureLabel(label: LatexCommands): Boolean =
-            label.inDirectEnvironment(Magic.Environment.figures)
+        label.inDirectEnvironment(Magic.Environment.figures)
 }
 
 private val LatexCommands.labelName: String?

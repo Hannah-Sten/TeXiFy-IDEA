@@ -58,8 +58,10 @@ object LatexPsiUtil {
      * @return The first parent that has the given class, or `null` when the parent can't be
      * found.
      */
-    fun <T : PsiElement?> getParentOfType(child: PsiElement?,
-                                          parentClass: Class<T>): T? {
+    fun <T : PsiElement?> getParentOfType(
+        child: PsiElement?,
+        parentClass: Class<T>
+    ): T? {
         var element = child
         while (element != null) {
             if (parentClass.isAssignableFrom(element.javaClass)) {

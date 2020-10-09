@@ -56,14 +56,16 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private fun analyseEnvironments(file: PsiFile, includedPackages: Collection<String>,
-                                descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
-                                isOntheFly: Boolean) {
+    private fun analyseEnvironments(
+        file: PsiFile, includedPackages: Collection<String>,
+        descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
+        isOntheFly: Boolean
+    ) {
         val environments = file.childrenOfType(LatexEnvironment::class)
         val defined = file.definitionsAndRedefinitionsInFileSet().asSequence()
-                .filter { it.isEnvironmentDefinition() }
-                .mapNotNull { it.requiredParameter(0) }
-                .toSet()
+            .filter { it.isEnvironmentDefinition() }
+            .mapNotNull { it.requiredParameter(0) }
+            .toSet()
 
         for (env in environments) {
             // Don't consider environments that have been defined.
@@ -89,20 +91,24 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 continue
             }
 
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     env,
                     TextRange(7, 7 + name.length),
                     "Environment requires ${pack.name} package",
                     ProblemHighlightType.ERROR,
                     isOntheFly,
                     ImportEnvironmentFix(pack.name)
-            ))
+                )
+            )
         }
     }
 
-    private fun analyseCommands(file: PsiFile, includedPackages: Collection<String>,
-                                descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
-                                isOntheFly: Boolean) {
+    private fun analyseCommands(
+        file: PsiFile, includedPackages: Collection<String>,
+        descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
+        isOntheFly: Boolean
+    ) {
         val commands = file.commandsInFile()
         commandLoop@ for (command in commands) {
             val name = command.commandToken.text.substring(1)
@@ -129,14 +135,16 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
                 val range = TextRange(0, latexCommands.minByOrNull { it.command.length }!!.command.length + 1)
                 val dependencyNames = dependencies.joinToString { it.name }.replaceAfterLast(", ", "or ${dependencies.last().name}")
                 val fixes = dependencies.map { ImportCommandFix(it) }.toTypedArray()
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         command,
                         range,
                         "Command requires $dependencyNames package",
                         ProblemHighlightType.ERROR,
                         isOntheFly,
                         *fixes
-                ))
+                    )
+                )
             }
         }
     }

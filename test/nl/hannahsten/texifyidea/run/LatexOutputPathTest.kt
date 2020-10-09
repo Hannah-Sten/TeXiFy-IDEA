@@ -8,12 +8,15 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 class LatexOutputPathTest : BasePlatformTestCase() {
 
     fun testOutputPathCreate() {
-        val mainFile = myFixture.addFileToProject("main.tex", """
+        val mainFile = myFixture.addFileToProject(
+            "main.tex",
+            """
             \documentclass{article}
             \begin{document}
                 main
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile
         runConfig.setMainFile("main.tex")

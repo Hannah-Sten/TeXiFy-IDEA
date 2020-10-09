@@ -42,32 +42,34 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         val groupedIncludes = mutableMapOf<String, MutableList<LatexCommands>>()
 
         LatexIncludesIndex.getItemsInFileSet(file).asSequence()
-                .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
-                .forEach { command ->
-                    for (fileName in command.getIncludedFiles(false).map { it.name }) {
-                        groupedIncludes.getOrPut(fileName) { mutableListOf() }.add(command)
-                    }
+            .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
+            .forEach { command ->
+                for (fileName in command.getIncludedFiles(false).map { it.name }) {
+                    groupedIncludes.getOrPut(fileName) { mutableListOf() }.add(command)
                 }
+            }
 
         groupedIncludes.asSequence()
-                .filter { (_, commands) -> commands.size > 1 }
-                .forEach { (fileName, commands) ->
-                    for (command in commands.distinct()) {
-                        if (command.containingFile != file) continue
+            .filter { (_, commands) -> commands.size > 1 }
+            .forEach { (fileName, commands) ->
+                for (command in commands.distinct()) {
+                    if (command.containingFile != file) continue
 
-                        val parameterIndex = command.requiredParameter(0)?.indexOf(fileName) ?: break
-                        if (parameterIndex < 0) break
+                    val parameterIndex = command.requiredParameter(0)?.indexOf(fileName) ?: break
+                    if (parameterIndex < 0) break
 
-                        descriptors.add(manager.createProblemDescriptor(
-                                command,
-                                TextRange(parameterIndex, parameterIndex + fileName.length).shiftRight(command.commandToken.textLength + 1),
-                                "Bibliography file '$fileName' is included multiple times",
-                                ProblemHighlightType.GENERIC_ERROR,
-                                isOntheFly,
-                                RemoveOtherCommandsFix(fileName, commands)
-                        ))
-                    }
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            command,
+                            TextRange(parameterIndex, parameterIndex + fileName.length).shiftRight(command.commandToken.textLength + 1),
+                            "Bibliography file '$fileName' is included multiple times",
+                            ProblemHighlightType.GENERIC_ERROR,
+                            isOntheFly,
+                            RemoveOtherCommandsFix(fileName, commands)
+                        )
+                    )
                 }
+            }
 
         return descriptors
     }
@@ -76,7 +78,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
      * @author Sten Wessel
      */
     class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<LatexCommands>) :
-            LocalQuickFix {
+        LocalQuickFix {
 
         override fun getFamilyName(): String {
             return "Remove other includes of $bibName"
@@ -99,9 +101,9 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                 else -1
 
                 val replacement = param.text.trimRange(1, 1).splitToSequence(',')
-                        // Parameter should stay if it is at firstBibIndex or some other bibliography file
-                        .filterIndexed { i, it -> i <= firstBibIndex || it.trim() != bibName }
-                        .joinToString(",", prefix = "{", postfix = "}")
+                    // Parameter should stay if it is at firstBibIndex or some other bibliography file
+                    .filterIndexed { i, it -> i <= firstBibIndex || it.trim() != bibName }
+                    .joinToString(",", prefix = "{", postfix = "}")
 
                 // When no arguments are left, just delete the command
                 if (replacement.trimRange(1, 1).isBlank()) {

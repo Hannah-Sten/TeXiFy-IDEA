@@ -17,14 +17,16 @@ import nl.hannahsten.texifyidea.lang.Package
 object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-        result.addAllElements(ContainerUtil.map2List(BibtexDefaultEntry.values()) {
-            LookupElementBuilder.create(it, it.token)
+        result.addAllElements(
+            ContainerUtil.map2List(BibtexDefaultEntry.values()) {
+                LookupElementBuilder.create(it, it.token)
                     .withPresentableText(it.token)
                     .bold()
                     .withIcon(PlatformIcons.ANNOTATION_TYPE_ICON)
                     .withTailText(" " + tags(it) + " " + packageName(it), true)
                     .withInsertHandler(TokenTypeInsertHandler)
-        })
+            }
+        )
     }
 
     private fun tags(entry: BibtexDefaultEntry): String {

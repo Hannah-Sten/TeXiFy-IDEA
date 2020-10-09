@@ -46,17 +46,19 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
         }
 
         file.commandsInFile().asSequence()
-                .filter { it.name == "\\include" }
-                .forEach {
-                    descriptors.add(manager.createProblemDescriptor(
-                            it,
-                            TextRange.allOf(it.text),
-                            "Includes cannot be nested",
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly,
-                            ConvertToInputFix
-                    ))
-                }
+            .filter { it.name == "\\include" }
+            .forEach {
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        it,
+                        TextRange.allOf(it.text),
+                        "Includes cannot be nested",
+                        ProblemHighlightType.GENERIC_ERROR,
+                        isOntheFly,
+                        ConvertToInputFix
+                    )
+                )
+            }
 
         return descriptors
     }

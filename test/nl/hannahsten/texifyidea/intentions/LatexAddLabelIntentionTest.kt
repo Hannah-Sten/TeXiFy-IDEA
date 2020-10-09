@@ -7,37 +7,45 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 class LatexAddLabelIntentionTest : BasePlatformTestCase() {
     fun testMissingChapterLabel() {
         myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
             \begin{document}
                 \chapter{Chapter<caret> without label}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
             intentions.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \begin{document}
                 \chapter{Chapter without label}\label{ch:chapter-without-label}<caret>
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun testMissingChapterLabelAtEnd() {
         myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
             \begin{document}
                 \chapter{Chapter without label}<caret>
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
             intentions.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \begin{document}
                 \chapter{Chapter without label}\label{ch:chapter-without-label}<caret>
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

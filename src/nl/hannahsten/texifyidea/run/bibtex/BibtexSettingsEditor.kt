@@ -101,12 +101,14 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             add(SeparatorComponent())
 
             // Main file
-            val mainFileField = TextFieldWithBrowseButton().apply { addBrowseFolderListener(
-                TextBrowseFolderListener(
-                    FileTypeDescriptor("Choose the main .tex file", ".tex")
-                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+            val mainFileField = TextFieldWithBrowseButton().apply {
+                addBrowseFolderListener(
+                    TextBrowseFolderListener(
+                        FileTypeDescriptor("Choose the main .tex file", ".tex")
+                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                    )
                 )
-            ) }
+            }
             mainFile = LabeledComponent.create(mainFileField, "Main file that includes bibliography")
             add(mainFile)
 
@@ -116,8 +118,10 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
                 TextBrowseFolderListener(
                     FileChooserDescriptor(false, true, false, false, false, false)
                         .withTitle("Choose the BibTeX working directory")
-                        .withRoots(*ProjectRootManager.getInstance(project)
-                            .contentRootsFromAllModules)
+                        .withRoots(
+                            *ProjectRootManager.getInstance(project)
+                                .contentRootsFromAllModules
+                        )
                 )
             )
             bibWorkingDir = LabeledComponent.create(workingDirField, "Working directory for bibtex")

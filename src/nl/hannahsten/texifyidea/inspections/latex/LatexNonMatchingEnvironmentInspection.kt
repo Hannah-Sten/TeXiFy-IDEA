@@ -41,22 +41,26 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
             }
 
             // Add descriptor to begin.
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     begin,
                     "DefaultEnvironment name does not match with the name in \\end.",
                     MatchBeginFix(beginEnvironment),
                     ProblemHighlightType.GENERIC_ERROR,
                     isOntheFly
-            ))
+                )
+            )
 
             // Add descriptor to end.
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     end,
                     "DefaultEnvironment name does not match with the name in \\begin.",
                     MatchEndFix(endEnvironment),
                     ProblemHighlightType.GENERIC_ERROR,
                     isOntheFly
-            ))
+                )
+            )
         }
 
         return descriptors

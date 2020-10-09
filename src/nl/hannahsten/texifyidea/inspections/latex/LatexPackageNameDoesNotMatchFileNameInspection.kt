@@ -16,7 +16,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =
-            "PackageNameDoesNotMatchFileName"
+        "PackageNameDoesNotMatchFileName"
 
     override fun getDisplayName(): String {
         return "Package name does not match file name"
@@ -26,19 +26,21 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\ProvidesPackage" }
+            .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
             val providesName = command.requiredParameters.first().split("/").last()
             val fileName = file.name.removeSuffix(".sty")
             if (fileName != providesName) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         command,
                         displayName,
                         PackageNameMatchFileNameQuickFix,
                         ProblemHighlightType.WARNING,
                         isOntheFly
-                ))
+                    )
+                )
             }
         }
 
@@ -52,10 +54,12 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val providesCommand = descriptor.psiElement as LatexCommands
-            val newCommandText = providesCommand.let { it.text.replace(
+            val newCommandText = providesCommand.let {
+                it.text.replace(
                     it.requiredParameters.first().split("/").last() + "}",
                     it.containingFile.name.removeSuffix(".sty") + "}"
-            ) }
+                )
+            }
             val newCommand = LatexPsiHelper(project).createFromText(newCommandText).firstChild
 
             val parent = providesCommand.parent

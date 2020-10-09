@@ -12,14 +12,14 @@ import java.util.regex.Pattern
  * @author Hannah Schellekens
  */
 open class LatexRedundantParInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Redundant use of \\par",
-        inspectionId = "RedundantPar",
-        errorMessage = { "Use of \\par is redundant here" },
-        pattern = Pattern.compile("((\\s*\\n\\s*\\n\\s*(\\\\par))|(\\n\\s*(\\\\par)\\s*\\n)|((\\\\par)\\s*\\n\\s*\\n))"),
-        replacement = { _, _ -> "" },
-        replacementRange = this::parRange,
-        quickFixName = { "Remove \\par" },
-        highlightRange = { parRange(it).toTextRange() }
+    inspectionDisplayName = "Redundant use of \\par",
+    inspectionId = "RedundantPar",
+    errorMessage = { "Use of \\par is redundant here" },
+    pattern = Pattern.compile("((\\s*\\n\\s*\\n\\s*(\\\\par))|(\\n\\s*(\\\\par)\\s*\\n)|((\\\\par)\\s*\\n\\s*\\n))"),
+    replacement = { _, _ -> "" },
+    replacementRange = this::parRange,
+    quickFixName = { "Remove \\par" },
+    highlightRange = { parRange(it).toTextRange() }
 ) {
 
     companion object {

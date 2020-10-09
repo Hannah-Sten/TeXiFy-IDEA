@@ -18,14 +18,16 @@ object LatexMagicCommentKeyProvider : CompletionProvider<CompletionParameters>()
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val keys = DefaultMagicKeys.values()
-        result.addAllElements(ContainerUtil.map2List(keys) {
-            LookupElementBuilder.create(it, it.displayKey)
+        result.addAllElements(
+            ContainerUtil.map2List(keys) {
+                LookupElementBuilder.create(it, it.displayKey)
                     .withCaseSensitivity(false)
                     .withPresentableText(it.key)
                     .bold()
                     .withIcon(PlatformIcons.PROTECTED_ICON)
                     .withInsertHandler(InsertHandler)
-        })
+            }
+        )
     }
 
     /**

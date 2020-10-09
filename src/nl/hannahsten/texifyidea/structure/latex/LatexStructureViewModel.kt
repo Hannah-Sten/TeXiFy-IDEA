@@ -12,19 +12,19 @@ import nl.hannahsten.texifyidea.structure.filter.*
  * @author Hannah Schellekens
  */
 class LatexStructureViewModel(
-        psiFile: PsiFile,
-        editor: Editor?
+    psiFile: PsiFile,
+    editor: Editor?
 ) : StructureViewModelBase(psiFile, editor, LatexStructureViewElement(psiFile)), ElementInfoProvider {
 
     companion object {
 
         private val sorterArray = arrayOf(Sorter.ALPHA_SORTER)
         private val filterArray = arrayOf(
-                IncludesFilter(),
-                SectionFilter(),
-                CommandDefinitionFilter(),
-                LabelFilter(),
-                BibitemFilter()
+            IncludesFilter(),
+            SectionFilter(),
+            CommandDefinitionFilter(),
+            LabelFilter(),
+            BibitemFilter()
         )
     }
 

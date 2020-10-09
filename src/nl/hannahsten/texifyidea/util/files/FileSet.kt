@@ -32,10 +32,10 @@ internal fun findReferencedFileSetWithoutCache(baseFile: PsiFile): Set<PsiFile> 
 
     // Find all root files.
     val roots = includes.asSequence()
-            .map { it.containingFile }
-            .distinct()
-            .filter { it.isRoot() }
-            .toSet()
+        .map { it.containingFile }
+        .distinct()
+        .filter { it.isRoot() }
+        .toSet()
 
     // Map root to all directly referenced files.
     val sets = HashMap<PsiFile, Set<PsiFile>>()
@@ -91,7 +91,7 @@ fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexComm
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItemsInFileSet(this)
-            .filter { it.isDefinition() }
+        .filter { it.isDefinition() }
 }
 
 /**

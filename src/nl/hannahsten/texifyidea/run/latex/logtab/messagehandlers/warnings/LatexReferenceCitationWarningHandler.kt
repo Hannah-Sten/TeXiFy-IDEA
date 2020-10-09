@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.REFERENCE_RE
  * Reference `<key>' on page <number> undefined (p927 LaTeX Companion).
  */
 object LatexReferenceCitationWarningHandler : LatexMessageHandler(
-        LatexLogMessageType.WARNING,
-        """^$LATEX_WARNING_REGEX (?<ref>Reference|Citation) $REFERENCE_REGEX on page \d+ undefined $LINE_REGEX$""".toRegex()
+    LatexLogMessageType.WARNING,
+    """^$LATEX_WARNING_REGEX (?<ref>Reference|Citation) $REFERENCE_REGEX on page \d+ undefined $LINE_REGEX$""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.first().find(text)?.apply {

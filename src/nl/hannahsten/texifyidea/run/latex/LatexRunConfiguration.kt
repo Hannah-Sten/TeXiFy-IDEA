@@ -43,9 +43,10 @@ import java.io.File
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexRunConfiguration constructor(project: Project,
-                                        factory: ConfigurationFactory,
-                                        name: String
+class LatexRunConfiguration constructor(
+    project: Project,
+    factory: ConfigurationFactory,
+    name: String
 ) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
@@ -148,8 +149,10 @@ class LatexRunConfiguration constructor(project: Project,
         return LatexSettingsEditor(project)
     }
 
-    override fun createAdditionalTabComponents(manager: AdditionalTabComponentManager,
-                                               startedProcess: ProcessHandler?) {
+    override fun createAdditionalTabComponents(
+        manager: AdditionalTabComponentManager,
+        startedProcess: ProcessHandler?
+    ) {
         super.createAdditionalTabComponents(manager, startedProcess)
 
         if (manager is LogConsoleManagerBase && startedProcess != null) {
@@ -161,7 +164,8 @@ class LatexRunConfiguration constructor(project: Project,
     override fun checkConfiguration() {
         if (compiler == null) {
             throw RuntimeConfigurationError(
-                    "Run configuration is invalid: no compiler selected")
+                "Run configuration is invalid: no compiler selected"
+            )
         }
         if (mainFile == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
@@ -169,13 +173,19 @@ class LatexRunConfiguration constructor(project: Project,
     }
 
     @Throws(ExecutionException::class)
-    override fun getState(executor: Executor,
-                          environment: ExecutionEnvironment): RunProfileState? {
-        val filter = RegexpFilter(environment.project,
-                "^\$FILE_PATH$:\$LINE$")
+    override fun getState(
+        executor: Executor,
+        environment: ExecutionEnvironment
+    ): RunProfileState? {
+        val filter = RegexpFilter(
+            environment.project,
+            "^\$FILE_PATH$:\$LINE$"
+        )
 
-        val state = LatexCommandLineState(environment,
-                this)
+        val state = LatexCommandLineState(
+            environment,
+            this
+        )
         state.addConsoleFilters(filter)
         return state
     }
@@ -325,8 +335,8 @@ class LatexRunConfiguration constructor(project: Project,
         val runManager = RunManagerImpl.getInstanceImpl(project)
 
         val bibSettings = runManager.createConfiguration(
-                "",
-                LatexConfigurationFactory(BibtexRunConfigurationType())
+            "",
+            LatexConfigurationFactory(BibtexRunConfigurationType())
         )
 
         val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
@@ -348,15 +358,15 @@ class LatexRunConfiguration constructor(project: Project,
         // Get a pair of Bib compiler and compiler arguments.
         val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
             val runCommand = psiFile?.allParentMagicComments()
-                    ?.value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
+                ?.value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
             val compilerString = if (runCommand.contains(' ')) {
                 runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim()
-                        .toString()
+                    .toString()
             }
             else runCommand
             val compiler = BibliographyCompiler.valueOf(compilerString.toUpperCase())
             val compilerArguments = runCommand.removePrefix(compilerString)
-                    .trim()
+                .trim()
             Pair(compiler, compilerArguments)
         }
 
@@ -388,22 +398,22 @@ class LatexRunConfiguration constructor(project: Project,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
             psiFile!!.allCommands()
-                    .filter { it.name == "\\include" }
-                    .flatMap { command -> command.requiredParameters }
-                    .forEach { filename ->
-                        // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                        val chapterMainFile = psiFile!!.findFile(filename)
-                                ?: return@forEach
+                .filter { it.name == "\\include" }
+                .flatMap { command -> command.requiredParameters }
+                .forEach { filename ->
+                    // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
+                    val chapterMainFile = psiFile!!.findFile(filename)
+                        ?: return@forEach
 
-                        val chapterFiles = chapterMainFile.referencedFileSet()
-                                .toMutableSet().apply { add(chapterMainFile) }
+                    val chapterFiles = chapterMainFile.referencedFileSet()
+                        .toMutableSet().apply { add(chapterMainFile) }
 
-                        val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
+                    val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
 
-                        if (chapterHasBibliography) {
-                            addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second)
-                        }
+                    if (chapterHasBibliography) {
+                        addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second)
                     }
+                }
         }
     }
 
@@ -475,8 +485,8 @@ class LatexRunConfiguration constructor(project: Project,
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath()
         return "${outputDir?.path}/" + mainFile!!
-                .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf" else outputFormat.toString()
-                .toLowerCase()
+            .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf" else outputFormat.toString()
+            .toLowerCase()
     }
 
     /**
@@ -534,10 +544,10 @@ class LatexRunConfiguration constructor(project: Project,
 
     override fun toString(): String {
         return "LatexRunConfiguration{" + "compiler=" + compiler +
-                ", compilerPath=" + compilerPath +
-                ", sumatraPath=" + sumatraPath +
-                ", mainFile=" + mainFile +
-                ", outputFormat=" + outputFormat +
-                '}'.toString()
+            ", compilerPath=" + compilerPath +
+            ", sumatraPath=" + sumatraPath +
+            ", mainFile=" + mainFile +
+            ", outputFormat=" + outputFormat +
+            '}'.toString()
     }
 }

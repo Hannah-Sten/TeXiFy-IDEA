@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
  * Warnings by the fix me package.
  */
 object LatexFixMeWarningMessageHandler : LatexMessageHandler(
-        LatexLogMessageType.WARNING,
-        fixMeWarning
+    LatexLogMessageType.WARNING,
+    fixMeWarning
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {

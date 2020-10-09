@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
  * Single-line errors, for which the l.<line number> appears in 'text' but should be excluded for the error message.
  */
 object LatexSingleLineErrorMessageHandler : LatexMessageHandler(
-        LatexLogMessageType.ERROR,
-        """^$FILE_LINE_REGEX (?<message>.+)\s*l\.\d+""".toRegex()
+    LatexLogMessageType.ERROR,
+    """^$FILE_LINE_REGEX (?<message>.+)\s*l\.\d+""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {

@@ -13,9 +13,9 @@ import nl.hannahsten.texifyidea.lang.OptionalArgument
  *   - [a]{b}{c}[d]
  */
 fun Set<Argument>.optionalPowerSet(): Set<Set<Argument>> = setOf(this) +
-        mapNotNull {
-            if (it is OptionalArgument) filter { e -> e != it }.toSet().optionalPowerSet()
-            else null
-        }.flatten()
-            .distinctBy { it.joinToString("") }
-            .toSet()
+    mapNotNull {
+        if (it is OptionalArgument) filter { e -> e != it }.toSet().optionalPowerSet()
+        else null
+    }.flatten()
+        .distinctBy { it.joinToString("") }
+        .toSet()

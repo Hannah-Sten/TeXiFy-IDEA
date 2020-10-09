@@ -24,11 +24,13 @@ class TexifyProjectConfigurable : SearchableConfigurable {
     override fun getDisplayName() = "Project Settings"
 
     override fun createComponent() = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-        add(JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        add(
+            JPanel().apply {
+                layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-            compilerCompatibility = addCompilerCompatibility()
-        })
+                compilerCompatibility = addCompilerCompatibility()
+            }
+        )
     }
 
     /**
@@ -37,10 +39,12 @@ class TexifyProjectConfigurable : SearchableConfigurable {
     private fun JPanel.addCompilerCompatibility(): ComboBox<LatexCompiler> {
         // Show available compilers
         val list = ComboBox(LatexCompiler.values())
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(JBLabel("Check for compatibility with compiler: "))
-            add(list)
-        })
+        add(
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(JBLabel("Check for compatibility with compiler: "))
+                add(list)
+            }
+        )
         return list
     }
 

@@ -29,9 +29,9 @@ open class BibtexAnnotator : Annotator {
      */
     private fun annotate(bracedString: BibtexBracedString, holder: AnnotationHolder) {
         holder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(bracedString)
-                .textAttributes(BibtexSyntaxHighlighter.VALUE)
-                .create()
+            .range(bracedString)
+            .textAttributes(BibtexSyntaxHighlighter.VALUE)
+            .create()
     }
 
     /**
@@ -39,9 +39,9 @@ open class BibtexAnnotator : Annotator {
      */
     private fun annotate(quotedString: BibtexQuotedString, holder: AnnotationHolder) {
         holder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(quotedString)
-                .textAttributes(BibtexSyntaxHighlighter.STRING)
-                .create()
+            .range(quotedString)
+            .textAttributes(BibtexSyntaxHighlighter.STRING)
+            .create()
     }
 
     /**
@@ -55,8 +55,8 @@ open class BibtexAnnotator : Annotator {
         }
 
         holder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(key)
-                .textAttributes(BibtexSyntaxHighlighter.KEY)
-                .create()
+            .range(key)
+            .textAttributes(BibtexSyntaxHighlighter.KEY)
+            .create()
     }
 }

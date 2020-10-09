@@ -14,10 +14,10 @@ object LatexmkRcFileFinder {
         // 1
         if (SystemInfo.isLinux) {
             listOf(
-                    "/opt/local/share/latexmk/LatexMk",
-                    "/usr/local/share/latexmk/LatexMk",
-                    "/usr/local/lib/latexmk/LatexMk",
-                    "/cygdrive/local/share/latexmk/LatexMk"
+                "/opt/local/share/latexmk/LatexMk",
+                "/usr/local/share/latexmk/LatexMk",
+                "/usr/local/lib/latexmk/LatexMk",
+                "/cygdrive/local/share/latexmk/LatexMk"
             ).forEach {
                 if (LocalFileSystem.getInstance().findFileByPath(it) != null) return@lazy true
                 if (LocalFileSystem.getInstance().findFileByPath(it.replace("LatexMk", "latexmkrc")) != null) return@lazy true
@@ -25,8 +25,8 @@ object LatexmkRcFileFinder {
         }
         else if (SystemInfo.isWindows) {
             listOf(
-                    "C:\\latexmk\\LatexMk",
-                    "C:\\latexmk\\latexmkrc"
+                "C:\\latexmk\\LatexMk",
+                "C:\\latexmk\\latexmkrc"
             ).forEach {
                 if (LocalFileSystem.getInstance().findFileByPath(it) != null) return@lazy true
             }
@@ -37,10 +37,10 @@ object LatexmkRcFileFinder {
 
         // 2
         listOf(
-                "${System.getenv("XDG_CONFIG_HOME")}/latexmk/latexmkrc",
-                "${System.getenv("HOME")}/.latexmkrc",
-                "${System.getenv("USERPROFILE")}/.latexmkrc",
-                "${System.getenv("HOME")}/.config/.latexmkrc"
+            "${System.getenv("XDG_CONFIG_HOME")}/latexmk/latexmkrc",
+            "${System.getenv("HOME")}/.latexmkrc",
+            "${System.getenv("USERPROFILE")}/.latexmkrc",
+            "${System.getenv("HOME")}/.config/.latexmkrc"
         ).forEach {
             if (LocalFileSystem.getInstance().findFileByPath(it) != null) return@lazy true
         }
@@ -52,8 +52,8 @@ object LatexmkRcFileFinder {
         // 3
         if (workingDir != null) {
             listOf(
-                    workingDir + File.separator + "latexmkrc",
-                    workingDir + File.separator + ".latexmkrc"
+                workingDir + File.separator + "latexmkrc",
+                workingDir + File.separator + ".latexmkrc"
             ).forEach {
                 if (LocalFileSystem.getInstance().findFileByPath(it) != null) return true
             }

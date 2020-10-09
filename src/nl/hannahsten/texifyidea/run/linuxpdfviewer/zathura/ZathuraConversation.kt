@@ -22,7 +22,8 @@ object ZathuraConversation : ViewerConversation() {
         if (pdfPathGuess != null) {
             val path = PathManager.getBinPath()
             val name = ApplicationNamesInfo.getInstance().scriptName
-            val command = """zathura --synctex-forward="$line:1:$sourceFilePath" --synctex-editor-command="$path/$name.sh --line %{line} $sourceFilePath" $pdfPathGuess"""
+            val command =
+                """zathura --synctex-forward="$line:1:$sourceFilePath" --synctex-editor-command="$path/$name.sh --line %{line} $sourceFilePath" $pdfPathGuess"""
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
         else {
@@ -57,10 +58,10 @@ object ZathuraConversation : ViewerConversation() {
      * Otherwise returns null.
      */
     private fun selectedRunConfig(project: Project): LatexRunConfiguration? = try {
-            (RunManagerImpl.getInstanceImpl(project) as RunManager)
-                    .selectedConfiguration
-                    ?.configuration
-                    as LatexRunConfiguration
+        (RunManagerImpl.getInstanceImpl(project) as RunManager)
+            .selectedConfiguration
+            ?.configuration
+            as LatexRunConfiguration
     }
     catch (e: ClassCastException) {
         null
@@ -71,8 +72,8 @@ object ZathuraConversation : ViewerConversation() {
      * the run configuration that has [virtualFile] as its main file.
      */
     private fun runConfigThatCompilesFile(virtualFile: VirtualFile, project: Project): LatexRunConfiguration? =
-            (RunManagerImpl.getInstanceImpl(project) as RunManager)
-                    .allConfigurationsList
-                    .filterIsInstance<LatexRunConfiguration>()
-                    .firstOrNull { it.mainFile == virtualFile }
+        (RunManagerImpl.getInstanceImpl(project) as RunManager)
+            .allConfigurationsList
+            .filterIsInstance<LatexRunConfiguration>()
+            .firstOrNull { it.mainFile == virtualFile }
 }

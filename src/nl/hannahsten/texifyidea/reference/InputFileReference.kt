@@ -65,20 +65,22 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
         val texInputPath = runManager.allConfigurationsList
-                .filterIsInstance<LatexRunConfiguration>()
-                .firstOrNull { it.mainFile == rootFile }
-                ?.environmentVariables
-                ?.envs
-                ?.getOrDefault("TEXINPUTS", null)
+            .filterIsInstance<LatexRunConfiguration>()
+            .firstOrNull { it.mainFile == rootFile }
+            ?.environmentVariables
+            ?.envs
+            ?.getOrDefault("TEXINPUTS", null)
         if (texInputPath != null) {
             val path = texInputPath.trimEnd(':')
             searchPaths.add(path.trimEnd('/'))
             // See the kpathsea manual, // expands to subdirs
             if (path.endsWith("//")) {
                 LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
-                    searchPaths.addAll(parent.allChildDirectories()
+                    searchPaths.addAll(
+                        parent.allChildDirectories()
                             .filter { it.isDirectory }
-                            .map { it.path })
+                            .map { it.path }
+                    )
                 }
             }
         }
@@ -109,9 +111,9 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         @Suppress("RemoveExplicitTypeArguments")
         if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
             targetFile = element.getFileNameWithExtensions(key)
-                    ?.map { LatexPackageLocationCache.getPackageLocation(it) }
-                    ?.map { getExternalFile(it ?: return null) }
-                    ?.firstOrNull { it != null }
+                ?.map { LatexPackageLocationCache.getPackageLocation(it) }
+                ?.map { getExternalFile(it ?: return null) }
+                ?.firstOrNull { it != null }
         }
 
         if (targetFile == null) return null

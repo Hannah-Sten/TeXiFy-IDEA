@@ -60,20 +60,20 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val fileNameBraces = sectionCommand.requiredParameter(0) ?: return
         // Remove the braces of the LaTeX command before creating a filename of it.
         val fileName = fileNameBraces.removeAll("{", "}")
-                .formatAsFileName()
+            .formatAsFileName()
         val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
         // Display a dialog to ask for the location and name of the new file.
         val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
-                .newFileFullPath ?: return
+            .newFileFullPath ?: return
 
         // Execute write actions.
         runWriteAction {
             val createdFile = createFile("$filePath.tex", text)
             document.deleteString(start, end)
             val fileNameRelativeToRoot = createdFile.absolutePath
-                    .replace(File.separator, "/")
-                    .replace("$root/", "")
+                .replace(File.separator, "/")
+                .replace("$root/", "")
             val indent = sectionCommand.findIndentation()
             document.insertString(start, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
         }

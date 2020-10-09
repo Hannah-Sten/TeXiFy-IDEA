@@ -13,16 +13,16 @@ import java.util.regex.Pattern
  * @author Hannah Schellekens
  */
 open class LatexPrimitiveEquationInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Discouraged use of primitive TeX display math",
-        inspectionId = "PrimitiveEquation",
-        errorMessage = { "Use '\\[..\\]' instead of primitive TeX display math." },
-        pattern = Pattern.compile("(\\\$\\\$)[^\$]*\\\$?[^\$]*(\\\$\\\$)"),
-        mathMode = false,
-        replacement = { _, _ -> "" },
-        replacementRange = this::replaceRange,
-        highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-        highlightRange = { replaceRange(it).toTextRange().grown(-1) },
-        quickFixName = { "Replace with '\\[..\\]'" }
+    inspectionDisplayName = "Discouraged use of primitive TeX display math",
+    inspectionId = "PrimitiveEquation",
+    errorMessage = { "Use '\\[..\\]' instead of primitive TeX display math." },
+    pattern = Pattern.compile("(\\\$\\\$)[^\$]*\\\$?[^\$]*(\\\$\\\$)"),
+    mathMode = false,
+    replacement = { _, _ -> "" },
+    replacementRange = this::replaceRange,
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    highlightRange = { replaceRange(it).toTextRange().grown(-1) },
+    quickFixName = { "Replace with '\\[..\\]'" }
 ) {
 
     companion object {

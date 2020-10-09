@@ -29,7 +29,7 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         val element: PsiElement = getElement(file, project, textEditor)
-                ?: return
+            ?: return
 
         // Make sure we're currently in a tikz environment.
         val tikzEnvironment = findTikzEnvironment(element) ?: return
@@ -59,7 +59,7 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
 
         // Find the first LatexEnvironment parent. If there are none, we aren't in tikz.
         var currElement = innerElement.parentOfType(LatexEnvironment::class)
-                ?: return null
+            ?: return null
 
         // Continue this process until we find a tikz environment or run out of parent environments.
         while (!currElement.isTikz() && currElement.hasParent(LatexEnvironment::class)) {
@@ -71,5 +71,5 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
     }
 
     private fun LatexEnvironment.isTikz() = beginCommand.environmentName()
-            ?.toLowerCase() == "tikzpicture"
+        ?.toLowerCase() == "tikzpicture"
 }

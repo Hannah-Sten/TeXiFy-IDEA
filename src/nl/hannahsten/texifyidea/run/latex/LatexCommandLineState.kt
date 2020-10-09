@@ -65,10 +65,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     private fun createHandler(mainFile: VirtualFile, compiler: LatexCompiler): KillableProcessHandler {
         // Make sure to create the command after generating the bib run config (which might change the output path)
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
-                ?: throw ExecutionException("Compile command could not be created.")
+            ?: throw ExecutionException("Compile command could not be created.")
 
         val commandLine = GeneralCommandLine(command).withWorkDirectory(mainFile.parent.path)
-                .withEnvironment(runConfig.environmentVariables.envs)
+            .withEnvironment(runConfig.environmentVariables.envs)
         val handler = KillableProcessHandler(commandLine)
 
         // Reports exit code to run output window when command is terminated
@@ -115,9 +115,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = runConfig.mainFile
-                    ?.psiFile(runConfig.project)
-                    ?.includedPackages()
-                    ?: setOf()
+                ?.psiFile(runConfig.project)
+                ?.includedPackages()
+                ?: setOf()
 
             isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 

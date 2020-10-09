@@ -13,15 +13,15 @@ class LatexInsertFormatterCommentsIntention : TexifyIntentionBase("Insert commen
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         val beginName = file?.findElementAt(editor?.caretOffset() ?: return false)
-                ?.parentOfType(LatexBeginCommand::class)
-                ?.environmentName()
-                ?: return false
+            ?.parentOfType(LatexBeginCommand::class)
+            ?.environmentName()
+            ?: return false
         return Magic.Environment.verbatim.any { it == beginName }
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         val beginCommand = file?.findElementAt(editor?.caretOffset() ?: return)
-                ?.parentOfType(LatexBeginCommand::class)
+            ?.parentOfType(LatexBeginCommand::class)
         val endCommand = beginCommand?.endCommand() ?: return
 
         val indent: String = editor?.document?.lineIndentationByOffset(beginCommand.textOffset) ?: return

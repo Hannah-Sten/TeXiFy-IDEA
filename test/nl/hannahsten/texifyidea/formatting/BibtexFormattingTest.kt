@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.formatting
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class BibtexFormattingTest : BasePlatformTestCase() {

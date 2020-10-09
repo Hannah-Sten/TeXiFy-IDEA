@@ -13,11 +13,11 @@ import java.util.HashMap
  * @author Hannah Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-        override vararg val arguments: Argument,
-        override val environmentName: String,
-        override val initialContents: String = "",
-        override val context: Context = Context.NORMAL,
-        override val dependency: Package = Package.DEFAULT
+    override vararg val arguments: Argument,
+    override val environmentName: String,
+    override val initialContents: String = "",
+    override val context: Context = Context.NORMAL,
+    override val dependency: Package = Package.DEFAULT
 ) : Environment {
 
     // Vanilla LaTeX

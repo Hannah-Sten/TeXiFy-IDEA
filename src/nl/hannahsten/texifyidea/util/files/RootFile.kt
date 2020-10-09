@@ -35,9 +35,9 @@ fun PsiFile.findRootFile(): PsiFile {
     inclusions.forEach { (file, _) ->
         // Function to avoid unnecessary evaluation
         fun usesSubFiles() = file.commandsInFile()
-                .find { it.name == "\\documentclass" }
-                ?.requiredParameters
-                ?.contains("subfiles") == true
+            .find { it.name == "\\documentclass" }
+            ?.requiredParameters
+            ?.contains("subfiles") == true
 
         // For each root, IsChildDFS until found.
         if (!file.isRoot() || usesSubFiles()) {
@@ -64,9 +64,9 @@ fun PsiFile.findRootFile(): PsiFile {
  */
 private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiFile>>): Boolean {
     return IsChildDFS(
-            this,
-            { mapping[it] ?: emptySet() },
-            { childMaybe == it }
+        this,
+        { mapping[it] ?: emptySet() },
+        { childMaybe == it }
     ).execute()
 }
 
@@ -94,7 +94,7 @@ private fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
 
         for (includedName in includedNames) {
             val referenced = declaredIn.findFile(includedName)
-                    ?: continue
+                ?: continue
 
             foundFile = true
 

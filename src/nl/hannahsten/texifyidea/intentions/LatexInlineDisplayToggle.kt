@@ -68,8 +68,8 @@ open class LatexInlineDisplayToggle : TexifyIntentionBase("Toggle inline/display
             val trailing = if (document.getText(TextRange.from(display.endOffset() + whitespace, 1)) != " ") " " else ""
 
             val result = "$leading${'$'}$text${'$'}$trailing"
-                    .replace("\n", " ")
-                    .replace(Regex("\\s+"), " ")
+                .replace("\n", " ")
+                .replace(Regex("\\s+"), " ")
             document.replaceString(display.textOffset - whitespace, display.endOffset() + whitespace, result)
         }
     }

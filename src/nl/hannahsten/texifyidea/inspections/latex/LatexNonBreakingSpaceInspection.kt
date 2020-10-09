@@ -33,7 +33,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
          * All commands that should not have a forced breaking space.
          */
         val IGNORED_COMMANDS = setOf(
-                "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\Cref", "\\cpageref", "\\autoref", "\\citeauthor", "\\textcite", "\\Textcite"
+            "\\citet", "\\citet*", "\\Citet", "\\Citet*", "\\cref", "\\Cref", "\\cpageref", "\\autoref", "\\citeauthor", "\\textcite", "\\Textcite"
         )
     }
 
@@ -61,13 +61,15 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
             // When sibling is whitespace, it's obviously bad news.
             if (sibling is PsiWhiteSpace) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         sibling,
                         "Reference without a non-breaking space",
                         WhitespaceReplacementFix(),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
-                ))
+                    )
+                )
                 continue
             }
         }

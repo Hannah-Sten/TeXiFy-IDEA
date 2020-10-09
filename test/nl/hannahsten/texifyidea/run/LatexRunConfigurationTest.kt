@@ -24,14 +24,17 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
     }
 
     fun testBibRunConfig() {
-        val mainFile = myFixture.addFileToProject("main.tex", """
+        val mainFile = myFixture.addFileToProject(
+            "main.tex",
+            """
             \documentclass{article}
             \begin{document}
                 When you are not looking at it, this sentences stops citing~\cite{knuth1990,goossens1993}.
                 \bibliography{references}
                 \bibliographystyle{plain}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile
         runConfig.setMainFile("main.tex")

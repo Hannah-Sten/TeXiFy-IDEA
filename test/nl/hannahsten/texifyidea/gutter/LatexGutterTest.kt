@@ -27,8 +27,8 @@ class LatexGutterTest : BasePlatformTestCase() {
             myFixture.configureByFile("$testName.tex")
             myFixture.doHighlighting()
             val lineMarkers = DaemonCodeAnalyzerImpl
-                    .getLineMarkers(myFixture.editor.document, myFixture.project)
-                    .filter { l -> l.separatorPlacement != null }
+                .getLineMarkers(myFixture.editor.document, myFixture.project)
+                .filter { l -> l.separatorPlacement != null }
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 1 })
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 4 })
         }

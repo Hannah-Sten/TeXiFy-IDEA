@@ -40,7 +40,8 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
         for (cmd in commands) {
             // Only consider \let and \def.
             if (cmd.name == "\\let" || cmd.name == "\\def") {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         cmd,
                         TextRange(0, cmd.textLength),
                         "The use of TeX primitive ${cmd.name} is discouraged",
@@ -48,7 +49,8 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
                         isOntheFly,
                         NewcommandFix(),
                         NewcommandFix("\\renewcommand")
-                ))
+                    )
+                )
             }
         }
 

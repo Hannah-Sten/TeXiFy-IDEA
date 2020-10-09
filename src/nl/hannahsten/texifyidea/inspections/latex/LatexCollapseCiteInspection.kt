@@ -46,13 +46,15 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
                 continue
             }
 
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     cmd,
                     "Citations can be collapsed",
                     InspectionFix(bundle),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
-            ))
+                )
+            )
         }
 
         return descriptors
@@ -127,8 +129,8 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             val offsetRange = sortedBundle.first().textOffset until sortedBundle.last().endOffset()
 
             val bundle = sortedBundle
-                    .flatMap { it.requiredParameters }
-                    .joinToString(",")
+                .flatMap { it.requiredParameters }
+                .joinToString(",")
 
             val first = citeBundle.first()
             val star = if (first.hasStar()) "*" else ""

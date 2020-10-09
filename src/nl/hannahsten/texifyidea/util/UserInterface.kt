@@ -20,10 +20,10 @@ import com.intellij.ui.awt.RelativePoint
 fun toast(project: Project, type: MessageType, htmlMessage: String) {
     val statusBar = WindowManager.getInstance().getStatusBar(project)
     JBPopupFactory.getInstance()
-            .createHtmlTextBalloonBuilder(htmlMessage, type, null)
-            .setFadeoutTime(7500)
-            .createBalloon()
-            .show(RelativePoint.getCenterOf(statusBar.component), Balloon.Position.above)
+        .createHtmlTextBalloonBuilder(htmlMessage, type, null)
+        .setFadeoutTime(7500)
+        .createBalloon()
+        .show(RelativePoint.getCenterOf(statusBar.component), Balloon.Position.above)
 }
 
 /**

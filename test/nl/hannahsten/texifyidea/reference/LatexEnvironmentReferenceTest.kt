@@ -6,26 +6,36 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 class LatexEnvironmentReferenceTest : BasePlatformTestCase() {
 
     fun testEnvironmentRename() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{document}
             \end{document<caret>}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.renameElementAtCaret("nodocument")
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \begin{nodocument}
             \end{nodocument<caret>}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun testEnvironmentRenameBegin() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{document<caret>}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.renameElementAtCaret("nodocument")
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \begin{nodocument<caret>}
             \end{nodocument}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

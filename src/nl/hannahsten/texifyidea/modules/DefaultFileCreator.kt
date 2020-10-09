@@ -11,10 +11,10 @@ import java.io.IOException
  * This class provides functionality to create default files from templates, which is useful for example when creating a new project.
  */
 class DefaultFileCreator(
-        /** The project to add the file to. */
-        val project: Project,
-        /** The directory path of the file (no seperator and no file name). */
-        val path: String
+    /** The project to add the file to. */
+    val project: Project,
+    /** The directory path of the file (no seperator and no file name). */
+    val path: String
 ) {
 
     /**

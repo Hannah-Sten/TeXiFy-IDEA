@@ -47,12 +47,14 @@ open class TextBasedMagicCommentParserTest {
 
     @Test
     fun `Multiple values per key`() {
-        ("%! param = zeroth param\n" +
+        (
+            "%! param = zeroth param\n" +
                 "%! param = first param\n" +
                 "%! optional = zeroth optional\n" +
                 "%! optional = first optional\n" +
                 "%! optional = second optional\n" +
-                "%! single = sadlife").parse().apply {
+                "%! single = sadlife"
+            ).parse().apply {
             assertValue("param", "first param", 1)
             assertValue("optional", "zeroth optional", 0)
             assertValue("param", "zeroth param", 0)
@@ -65,7 +67,7 @@ open class TextBasedMagicCommentParserTest {
     @Test
     fun `Continuation value`() {
         "%! info = Some text\n%!    TeX with overflow to\n%! new lines."
-                .assertValue("info", "Some text with overflow to new lines.")
+            .assertValue("info", "Some text with overflow to new lines.")
 
         "%! info = some\n%! broken\n%! up \n%! info\n%! eurovision = cool\n%!\n%! single\n".apply {
             assertValue("info", "some broken up info")

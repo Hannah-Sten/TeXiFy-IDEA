@@ -9,8 +9,10 @@ import com.intellij.util.ProcessingContext
 class LatexMagicCommentValueProvider(val values: HashSet<String>) : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-        result.addAllElements(values.map {
-            LookupElementBuilder.create(it)
-        })
+        result.addAllElements(
+            values.map {
+                LookupElementBuilder.create(it)
+            }
+        )
     }
 }

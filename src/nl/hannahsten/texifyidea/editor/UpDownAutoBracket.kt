@@ -29,7 +29,8 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         /**
          * Matches the suffix that denotes that braces may be inserted.
          */
-        private val insertOnly = """^[a-zA-Z0-9]$""".toRegex()
+        private val insertOnly =
+            """^[a-zA-Z0-9]$""".toRegex()
     }
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
@@ -79,7 +80,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                 return when (sibling) {
                     is LatexMathContent, is LatexEnvironmentContent -> {
                         sibling.lastChildOfType(LatexNoMathContent::class)
-                                ?.firstChildOfType(LatexNormalText::class)
+                            ?.firstChildOfType(LatexNormalText::class)
                     }
                     is LeafPsiElement -> {
                         sibling.parentOfType(LatexNormalText::class)

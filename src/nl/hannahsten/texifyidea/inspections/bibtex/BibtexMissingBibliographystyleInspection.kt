@@ -36,14 +36,16 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
         val commands = file.commandsInFileSet()
         val bibCmd = commands.find { it.containingFile == file && it.name == "\\bibliography" } ?: return descriptors
         if (commands.none { it.name == "\\bibliographystyle" }) {
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     bibCmd,
                     TextRange(0, bibCmd.commandToken.textLength),
                     "No \\bibliographystyle defined",
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     InsertStyleFix
-            ))
+                )
+            )
         }
 
         return descriptors

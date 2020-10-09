@@ -36,11 +36,11 @@ object EvinceInverseSearchListener {
         try {
             // Assumes version will be given in the format GNOME Document Viewer 3.34.2
             val majorVersion = "evince --version".runCommand()
-                    ?.split(" ")
-                    ?.lastOrNull()
-                    ?.split(".")
-                    ?.firstOrNull()
-                    ?.toInt()
+                ?.split(" ")
+                ?.lastOrNull()
+                ?.split(".")
+                ?.firstOrNull()
+                ?.toInt()
             if (majorVersion != null && majorVersion < 3) {
                 Notification("EvinceInverseSearchListener", "Old Evince version found", "Please update Evince to at least version 3 to use forward/backward search", NotificationType.ERROR).notify(project)
                 return

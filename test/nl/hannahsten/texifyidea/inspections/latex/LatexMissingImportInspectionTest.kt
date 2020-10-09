@@ -6,15 +6,19 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             <error descr="Command requires xcolor package">\color</error>{blue}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testQuickfix() {
-        myFixture.configureByText(LatexFileType,
-        """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \documentclass{article}
 
             \usepackage{amsmath}
@@ -22,7 +26,8 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             \begin{document}
                 \color{blue}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
@@ -30,7 +35,8 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \documentclass{article}
 
             \usepackage{amsmath}
@@ -39,6 +45,7 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             \begin{document}
                 \color{blue}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

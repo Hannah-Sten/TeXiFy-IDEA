@@ -10,10 +10,10 @@ import nl.hannahsten.texifyidea.psi.BibtexTypes
  * @author Hannah Schellekens
  */
 open class BibtexBlock(
-        node: ASTNode,
-        wrap: Wrap,
-        alignment: Alignment?,
-        private val spacingBuilder: TexSpacingBuilder
+    node: ASTNode,
+    wrap: Wrap,
+    alignment: Alignment?,
+    private val spacingBuilder: TexSpacingBuilder
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): MutableList<Block> {
@@ -23,10 +23,10 @@ open class BibtexBlock(
         while (child != null) {
             if (child.elementType != TokenType.WHITE_SPACE) {
                 val block = BibtexBlock(
-                        child,
-                        Wrap.createWrap(WrapType.NONE, false),
-                        null,
-                        spacingBuilder
+                    child,
+                    Wrap.createWrap(WrapType.NONE, false),
+                    null,
+                    spacingBuilder
                 )
                 blocks.add(block)
             }

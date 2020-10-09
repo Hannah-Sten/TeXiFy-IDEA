@@ -34,31 +34,34 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         file.commandsInFile().asSequence()
-                .filter { it.name in Magic.Command.illegalExtensions }
-                .filter { command ->
-                    Magic.Command.illegalExtensions[command.name]!!.any {
-                        extension -> command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == true }
-                    }
+            .filter { it.name in Magic.Command.illegalExtensions }
+            .filter { command ->
+                Magic.Command.illegalExtensions[command.name]!!.any {
+                    extension ->
+                    command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == true }
                 }
-                .forEach { command ->
-                    val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
-                    var offset = 0
-                    for (parameter in parameterList) {
-                        if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
-                            descriptors.add(manager.createProblemDescriptor(
-                                    command,
-                                    TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
-                                    "File argument should not include the extension",
-                                    ProblemHighlightType.GENERIC_ERROR,
-                                    isOntheFly,
-                                    RemoveExtensionFix
-                            ))
-                        }
+            }
+            .forEach { command ->
+                val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+                var offset = 0
+                for (parameter in parameterList) {
+                    if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
+                        descriptors.add(
+                            manager.createProblemDescriptor(
+                                command,
+                                TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
+                                "File argument should not include the extension",
+                                ProblemHighlightType.GENERIC_ERROR,
+                                isOntheFly,
+                                RemoveExtensionFix
+                            )
+                        )
+                    }
 
-                        // Assume all parameter are comma separated
-                        offset += parameter.length + ",".length
-                    }
+                    // Assume all parameter are comma separated
+                    offset += parameter.length + ",".length
                 }
+            }
 
         return descriptors
     }
@@ -80,8 +83,8 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
                 if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
                     val range = TextRange(offset, offset + parameter.length).shiftRight(command.parameterList.first { it.requiredParam != null }.textOffset + 1)
                     val replacement = Magic.Command.illegalExtensions[command.name]
-                            ?.find { parameter.endsWith(it) }
-                            ?.run { parameter.removeSuffix(this) } ?: break
+                        ?.find { parameter.endsWith(it) }
+                        ?.run { parameter.removeSuffix(this) } ?: break
                     document.replaceString(range, replacement)
 
                     // Maintain offset for any removed part

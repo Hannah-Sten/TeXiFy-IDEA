@@ -11,7 +11,7 @@ class TexLivePackageListInitializer : StartupActivity {
         if (LatexDistribution.isTexliveAvailable) {
             val result = "tlmgr list --only-installed".runCommand() ?: return
             TexLivePackages.packageList = Regex("i\\s(.*):").findAll(result)
-                    .map { it.groupValues.last() }.toMutableList()
+                .map { it.groupValues.last() }.toMutableList()
         }
     }
 }

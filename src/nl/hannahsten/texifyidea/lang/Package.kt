@@ -4,8 +4,8 @@ package nl.hannahsten.texifyidea.lang
  * @author Hannah Schellekens
  */
 open class Package @JvmOverloads constructor(
-        val name: String,
-        vararg val parameters: String = emptyArray()
+    val name: String,
+    vararg val parameters: String = emptyArray()
 ) {
 
     companion object {

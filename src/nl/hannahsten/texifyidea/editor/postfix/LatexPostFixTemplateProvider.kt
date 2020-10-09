@@ -8,26 +8,26 @@ import com.intellij.psi.PsiFile
 
 object LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContributor() {
     private val templates = mutableSetOf<PostfixTemplate>(
-            LatexWrapWithGroupPostfixTemplate,
-            LatexWrapWithOpenGroupPostfixTemplate,
-            LatexWrapWithInlineMathPostfixTemplate
+        LatexWrapWithGroupPostfixTemplate,
+        LatexWrapWithOpenGroupPostfixTemplate,
+        LatexWrapWithInlineMathPostfixTemplate
     )
 
     private val wrapWithTextCommandTemplates = mutableSetOf<PostfixTemplate>(
-            LatexWrapWithBoldFacePostfixTemplate,
-            LatexWrapWithItalicFacePostfixTemplate,
-            LatexWrapWithEmphPostfixTemplate,
-            LatexWrapWithTypewriterPostfixTemplate
+        LatexWrapWithBoldFacePostfixTemplate,
+        LatexWrapWithItalicFacePostfixTemplate,
+        LatexWrapWithEmphPostfixTemplate,
+        LatexWrapWithTypewriterPostfixTemplate
     )
 
     private val wrapWithMathCommandTemplates = mutableSetOf<PostfixTemplate>(
-            LatexWrapWithTildePostfixTemplate,
-            LatexWrapWithHatPostfixTemplate,
-            LatexWrapWithBarPostfixTemplate,
-            LatexWrapWithSquareRootPostfixTemplate,
-            LatexWrapWithOverlinePostfixTemplate,
-            LatexWrapWithUnderlinePostfixTemplate,
-            LatexWrapWithMathcalPostfixTemplate
+        LatexWrapWithTildePostfixTemplate,
+        LatexWrapWithHatPostfixTemplate,
+        LatexWrapWithBarPostfixTemplate,
+        LatexWrapWithSquareRootPostfixTemplate,
+        LatexWrapWithOverlinePostfixTemplate,
+        LatexWrapWithUnderlinePostfixTemplate,
+        LatexWrapWithMathcalPostfixTemplate
     )
 
     override fun getTemplates(): MutableSet<PostfixTemplate> = (templates + wrapWithTextCommandTemplates + wrapWithMathCommandTemplates) as MutableSet<PostfixTemplate>
@@ -37,7 +37,7 @@ object LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContrib
     override fun afterExpand(file: PsiFile, editor: Editor) {}
 
     override fun preCheck(copyFile: PsiFile, realEditor: Editor, currentOffset: Int): PsiFile =
-            copyFile
+        copyFile
 
     override fun preExpand(file: PsiFile, editor: Editor) {}
 }

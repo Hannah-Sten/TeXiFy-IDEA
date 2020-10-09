@@ -11,11 +11,11 @@ import java.util.ArrayList
  * @author Sten Wessel
  */
 class LatexBlock(
-        node: ASTNode,
-        wrap: Wrap?,
-        alignment: Alignment?,
-        private val spacingBuilder: TexSpacingBuilder,
-        private val wrappingStrategy: LatexWrappingStrategy
+    node: ASTNode,
+    wrap: Wrap?,
+    alignment: Alignment?,
+    private val spacingBuilder: TexSpacingBuilder,
+    private val wrappingStrategy: LatexWrappingStrategy
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {
@@ -25,11 +25,11 @@ class LatexBlock(
         while (child != null) {
             if (child.elementType !== TokenType.WHITE_SPACE) {
                 val block: Block = LatexBlock(
-                        child,
-                        wrappingStrategy.getWrap(),
-                        null,
-                        spacingBuilder,
-                        wrappingStrategy
+                    child,
+                    wrappingStrategy.getWrap(),
+                    null,
+                    spacingBuilder,
+                    wrappingStrategy
                 )
                 blocks.add(block)
             }
@@ -40,17 +40,19 @@ class LatexBlock(
 
     override fun getIndent(): Indent? {
         if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT ||
-                myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
-                // Fix for leading comments inside an environment, because
-                // somehow they are not placed inside environments.
-                myNode.elementType === LatexTypes.COMMENT_TOKEN &&
-                myNode.treeParent.elementType === LatexTypes.ENVIRONMENT) {
+            myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
+            // Fix for leading comments inside an environment, because
+            // somehow they are not placed inside environments.
+            myNode.elementType === LatexTypes.COMMENT_TOKEN &&
+            myNode.treeParent.elementType === LatexTypes.ENVIRONMENT
+        ) {
             return Indent.getNormalIndent(true)
         }
 
         // Display math
         return if ((myNode.elementType === LatexTypes.MATH_CONTENT || myNode.elementType === LatexTypes.COMMENT_TOKEN) &&
-                myNode.treeParent.elementType === LatexTypes.DISPLAY_MATH) {
+            myNode.treeParent.elementType === LatexTypes.DISPLAY_MATH
+        ) {
             Indent.getNormalIndent(true)
         }
         else Indent.getNoneIndent()

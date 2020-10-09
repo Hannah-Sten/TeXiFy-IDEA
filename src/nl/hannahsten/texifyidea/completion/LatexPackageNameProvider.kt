@@ -24,12 +24,14 @@ object LatexPackageNameProvider : CompletionProvider<CompletionParameters>() {
         val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", project, project.projectSearchScope)
         packageNames.addAll(customPackages.mapNotNull { it.requiredParameter(0)?.trim() })
 
-        result.addAllElements(ContainerUtil.map2List(packageNames) { name ->
-            LookupElementBuilder.create(name, name)
+        result.addAllElements(
+            ContainerUtil.map2List(packageNames) { name ->
+                LookupElementBuilder.create(name, name)
                     .withPresentableText(name)
                     .bold()
                     .withIcon(TexifyIcons.STYLE_FILE)
                     .withInsertHandler(MoveToEndOfCommandHandler)
-        })
+            }
+        )
     }
 }

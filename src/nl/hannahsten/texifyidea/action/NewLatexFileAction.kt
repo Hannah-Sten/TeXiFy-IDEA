@@ -93,8 +93,10 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
             val fileType = getFileType(fileName, option)
             val newFileName = getNewFileName(fileName, fileType)
             val templateName = getTemplateNameFromExtension(fileType.defaultExtension)
-            val file = createFromTemplate(directory, newFileName,
-                    templateName, fileType)
+            val file = createFromTemplate(
+                directory, newFileName,
+                templateName, fileType
+            )
             openFile(file.virtualFile)
             return file
         }

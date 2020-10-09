@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  * @author Hannah Schellekens
  */
 abstract class IndexCommandsUtilBase(
-        indexKey: StubIndexKey<String, LatexCommands>
+    indexKey: StubIndexKey<String, LatexCommands>
 ) : IndexUtilBase<LatexCommands>(LatexCommands::class.java, indexKey) {
 
     /**

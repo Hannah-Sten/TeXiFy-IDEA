@@ -34,10 +34,10 @@ class LatexOutputListener(
          */
         fun isLineEndOfMessage(secondLine: String, firstLine: String): Boolean {
             return firstLine.remove("\n").length < LINE_WIDTH - 1 &&
-                    // Indent of LaTeX Warning/Error messages
-                    !secondLine.startsWith("               ") &&
-                    // Package warning/error continuation.
-                    !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine)
+                // Indent of LaTeX Warning/Error messages
+                !secondLine.startsWith("               ") &&
+                // Package warning/error continuation.
+                !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine)
         }
     }
 

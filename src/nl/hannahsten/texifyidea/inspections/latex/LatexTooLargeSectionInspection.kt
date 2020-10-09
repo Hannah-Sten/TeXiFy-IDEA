@@ -92,7 +92,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-                .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
+            .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
 
         if (isAlreadySplit(commands)) {
             return descriptors
@@ -104,13 +104,13 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             }
 
             descriptors.add(
-                    manager.createProblemDescriptor(
-                            commands[i],
-                            "Section is long and may be moved to a separate file.",
-                            InspectionFix(),
-                            ProblemHighlightType.WEAK_WARNING,
-                            isOntheFly
-                    )
+                manager.createProblemDescriptor(
+                    commands[i],
+                    "Section is long and may be moved to a separate file.",
+                    InspectionFix(),
+                    ProblemHighlightType.WEAK_WARNING,
+                    isOntheFly
+                )
             )
         }
 
@@ -124,8 +124,8 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      */
     private fun isAlreadySplit(commands: Collection<LatexCommands>): Boolean {
         val smallestIndex = commands.asSequence()
-                .map { cmd -> SECTION_NAMES.indexOf(cmd.name) }
-                .minOrNull() ?: return false
+            .map { cmd -> SECTION_NAMES.indexOf(cmd.name) }
+            .minOrNull() ?: return false
 
         // Just check if \section or \chapter occur only once.
         for (name in SECTION_NAMES) {
@@ -201,20 +201,20 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
-                    .formatAsFileName()
+                .formatAsFileName()
             val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
-                    .newFileFullPath ?: return
+                .newFileFullPath ?: return
 
             runWriteAction {
                 val createdFile = createFile("$filePath.tex", text)
                 document.deleteString(startIndex, endIndex)
                 LocalFileSystem.getInstance().refresh(true)
                 val fileNameRelativeToRoot = createdFile.absolutePath
-                        .replace(File.separator, "/")
-                        .replace("$root/", "")
+                    .replace(File.separator, "/")
+                    .replace("$root/", "")
                 val indent = cmd.findIndentation()
                 document.insertString(startIndex, "\n$indent\\input{${fileNameRelativeToRoot.dropLast(4)}}\n\n")
             }

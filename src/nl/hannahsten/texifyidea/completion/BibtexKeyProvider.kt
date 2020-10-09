@@ -36,22 +36,24 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         fields.removeIf { it.fieldName in keys }
 
         // Add lookup elements.
-        result.addAllElements(ContainerUtil.map2List(fields) {
-            val (message, icon) = when (it) {
-                in required -> " required" and TexifyIcons.KEY_REQUIRED
-                in optional -> " optional" and PlatformIcons.PROTECTED_ICON
-                in userDefined -> " custom" and TexifyIcons.KEY_USER_DEFINED
-                else -> "" and PlatformIcons.PROTECTED_ICON
-            }
+        result.addAllElements(
+            ContainerUtil.map2List(fields) {
+                val (message, icon) = when (it) {
+                    in required -> " required" and TexifyIcons.KEY_REQUIRED
+                    in optional -> " optional" and PlatformIcons.PROTECTED_ICON
+                    in userDefined -> " custom" and TexifyIcons.KEY_USER_DEFINED
+                    else -> "" and PlatformIcons.PROTECTED_ICON
+                }
 
-            LookupElementBuilder.create(it, it.fieldName)
+                LookupElementBuilder.create(it, it.fieldName)
                     .withPresentableText(it.fieldName)
                     .bold()
                     .withTypeText(message, true)
                     .withIcon(icon)
                     .withTailText(packageName(it), true)
                     .withInsertHandler(TokenTypeInsertHandler)
-        })
+            }
+        )
     }
 
     /**
@@ -66,7 +68,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
     private fun findUserDefinedKeys(file: PsiFile, allFields: Collection<BibtexEntryField>): Set<BibtexEntryField> {
         val result = HashSet<BibtexEntryField>()
         val presentFieldSet: MutableSet<String> = allFields.map { it.fieldName }
-                .toMutableSet()
+            .toMutableSet()
 
         for (key in file.childrenOfType(BibtexKey::class)) {
             val name = key.text

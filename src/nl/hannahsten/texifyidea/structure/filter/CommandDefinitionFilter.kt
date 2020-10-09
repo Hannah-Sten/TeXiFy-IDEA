@@ -17,9 +17,11 @@ class CommandDefinitionFilter : Filter {
         return if (treeElement !is LatexStructureViewCommandElement) {
             true
         }
-        else !(treeElement.commandName == "\\newcommand" ||
+        else !(
+            treeElement.commandName == "\\newcommand" ||
                 treeElement.commandName in Magic.Command.mathCommandDefinitions ||
-                treeElement.presentation is LatexOtherCommandPresentation)
+                treeElement.presentation is LatexOtherCommandPresentation
+            )
     }
 
     override fun isReverted() = true

@@ -20,8 +20,9 @@ import org.jetbrains.concurrency.runAsync
 /**
  * @author Sten Wessel
  */
-class SumatraForwardSearchListener(val runConfig: LatexRunConfiguration,
-                                   private val executionEnvironment: ExecutionEnvironment
+class SumatraForwardSearchListener(
+    val runConfig: LatexRunConfiguration,
+    private val executionEnvironment: ExecutionEnvironment
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {

@@ -14,7 +14,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =
-            "PackageCouldNotBeFound"
+        "PackageCouldNotBeFound"
 
     override fun getDisplayName(): String {
         return "Package could not be found locally or on CTAN"
@@ -24,23 +24,25 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
         val descriptors = descriptorList()
         val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.toLowerCase() }
         val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project.projectSearchScope)
-                .map { it.requiredParameter(0) }
-                .map { it?.toLowerCase() }
+            .map { it.requiredParameter(0) }
+            .map { it?.toLowerCase() }
         val packages = ctanPackages + customPackages
 
         val commands = file.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
+            .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
         for (command in commands) {
             val `package` = command.requiredParameters.firstOrNull()?.toLowerCase()
             if (!packages.contains(`package`)) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         command,
                         displayName,
                         Magic.General.noQuickFix,
                         ProblemHighlightType.WARNING,
                         isOntheFly
-                ))
+                    )
+                )
             }
         }
 

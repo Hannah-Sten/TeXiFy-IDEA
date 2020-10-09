@@ -31,9 +31,9 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
 
         // Contains all the \bibitem commands in the file set.
         val bibitems = file.commandsInFileSet().asSequence().findLatexCommandsLabels(file.project)
-                .filter { it.name == "\\bibitem" }
-                .mapNotNull { it.requiredParameter(0) }
-                .toSet()
+            .filter { it.name == "\\bibitem" }
+            .mapNotNull { it.requiredParameter(0) }
+            .toSet()
 
         // All the ids that have been defined in the bibtex file. And next a list of all names.
         val bibtexIds = BibtexEntryIndex.getIndexedEntriesInFileSet(file)
@@ -46,26 +46,30 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
 
             // Check if defined as bibitem.
             if (bibtexEntry !in added && idName in bibitems) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         bibtexEntry,
                         TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
-                ))
+                    )
+                )
                 added += bibtexEntry
                 continue
             }
 
             // Check if defined in bibtex files.
             if (bibtexEntry !in added && strings.findAtLeast(2) { it == idName }) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         bibtexEntry,
                         TextRange(0, bibtexEntry.textLength - 1),
                         "Duplicate identifier '$idName'",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly
-                ))
+                    )
+                )
                 added += bibtexEntry
             }
         }

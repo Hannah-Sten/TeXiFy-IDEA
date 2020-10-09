@@ -125,8 +125,9 @@ class CommandManagerTest {
         )
         Assert.assertEquals(
             "Alias 3: only contains \\three",
-            true, method.apply("\\three").contains("\\three") &&
-                    method.apply("\\three").size == 1
+            true,
+            method.apply("\\three").contains("\\three") &&
+                method.apply("\\three").size == 1
         )
         Assert.assertEquals(
             "Alias 10: contains \\ten",
@@ -173,8 +174,9 @@ class CommandManagerTest {
         )
         Assert.assertEquals(
             "Alias 3: only contains three",
-            true, method.apply("three").contains("\\three") &&
-                    method.apply("three").size == 1
+            true,
+            method.apply("three").contains("\\three") &&
+                method.apply("three").size == 1
         )
         Assert.assertEquals(
             "Alias 10: contains ten",
@@ -247,11 +249,13 @@ class CommandManagerTest {
         manager!!.registerAlias("\\three", "\\tien")
         manager!!.registerAlias("\\ten", "\\tien")
         manager!!.registerAlias("\\tien", "\\dix")
-        checkDefaultAliases(Function { command: String? ->
-            manager!!.getAliases(
-                command!!
-            )
-        })
+        checkDefaultAliases(
+            Function { command: String? ->
+                manager!!.getAliases(
+                    command!!
+                )
+            }
+        )
     }
 
     @Test
@@ -271,33 +275,39 @@ class CommandManagerTest {
         manager!!.registerAliasNoSlash("three", "tien")
         manager!!.registerAliasNoSlash("ten", "tien")
         manager!!.registerAliasNoSlash("tien", "dix")
-        checkDefaultAliases(Function { command: String? ->
-            manager!!.getAliases(
-                command!!
-            )
-        })
+        checkDefaultAliases(
+            Function { command: String? ->
+                manager!!.getAliases(
+                    command!!
+                )
+            }
+        )
     }
 
     @Test
     @Throws(Exception::class)
     fun testGetAliases() {
         resetup(defaultAliasGroups)
-        checkDefaultAliases(Function { command: String? ->
-            manager!!.getAliases(
-                command!!
-            )
-        })
+        checkDefaultAliases(
+            Function { command: String? ->
+                manager!!.getAliases(
+                    command!!
+                )
+            }
+        )
     }
 
     @Test
     @Throws(Exception::class)
     fun testGetAliasesNoSlash() {
         resetup(defaultAliasGroups)
-        checkDefaultAliasesNoSlash(Function { commandNoSlash: String? ->
-            manager!!.getAliasesNoSlash(
-                commandNoSlash!!
-            )
-        })
+        checkDefaultAliasesNoSlash(
+            Function { commandNoSlash: String? ->
+                manager!!.getAliasesNoSlash(
+                    commandNoSlash!!
+                )
+            }
+        )
     }
 
     @Test
@@ -541,18 +551,26 @@ class CommandManagerTest {
 
         // The old 'varepsilon' should link to the nice epsilon, which is renamed to 'epsilon' with
         // 'goodepsilon' used in the process.
-        Assert.assertEquals("A", object : HashSet<String?>() {
-            init {
-                add("\\epsilon")
-                add("\\goodepsilon")
-            }
-        }, a)
+        Assert.assertEquals(
+            "A",
+            object : HashSet<String?>() {
+                init {
+                    add("\\epsilon")
+                    add("\\goodepsilon")
+                }
+            },
+            a
+        )
 
         // The old 'epsilon' should link to the ugly epsilon, which is put into 'varepsilon'.
-        Assert.assertEquals("B", object : HashSet<String?>() {
-            init {
-                add("\\varepsilon")
-            }
-        }, b)
+        Assert.assertEquals(
+            "B",
+            object : HashSet<String?>() {
+                init {
+                    add("\\varepsilon")
+                }
+            },
+            b
+        )
     }
 }

@@ -36,10 +36,10 @@ interface Diacritic {
     else param
 
     enum class Normal(
-            override val unicode: String,
-            override val command: String,
-            override val needsSpace: Boolean,
-            override val isTypeable: Boolean = false
+        override val unicode: String,
+        override val command: String,
+        override val needsSpace: Boolean,
+        override val isTypeable: Boolean = false
     ) : Diacritic {
 
         GRAVE("\u0300", "\\`", false, isTypeable = true),
@@ -64,12 +64,12 @@ interface Diacritic {
 
             fun fromUnicode(unicode: String): Normal? {
                 return values()
-                        .find { it.unicode == unicode }
+                    .find { it.unicode == unicode }
             }
 
             fun fromCommand(command: String): Normal? {
                 return values()
-                        .find { it.command == command }
+                    .find { it.command == command }
             }
         }
 
@@ -82,8 +82,10 @@ interface Diacritic {
         }
     }
 
-    enum class Math(override val unicode: String, override val command: String, override val needsSpace: Boolean,
-                    override val isTypeable: Boolean = false) : Diacritic {
+    enum class Math(
+        override val unicode: String, override val command: String, override val needsSpace: Boolean,
+        override val isTypeable: Boolean = false
+    ) : Diacritic {
 
         HAT("\u0302", "\\hat", true),
         DOUBLE_HAT("\u1DCD", "\\widehat", true),
@@ -102,12 +104,12 @@ interface Diacritic {
 
             fun fromUnicode(unicode: String): Math? {
                 return values()
-                        .find { it.unicode == unicode }
+                    .find { it.unicode == unicode }
             }
 
             fun fromCommand(command: String): Math? {
                 return values()
-                        .find { it.command == command }
+                    .find { it.command == command }
             }
         }
 

@@ -16,12 +16,13 @@ class LatexQuickRunLogParserTest : BasePlatformTestCase() {
     }
 
     fun testFileStack() {
-        val text = """
+        val text =
+            """
 (main.toc
 Underfull \vbox (badness 3449) has occurred while \output is active []
 
  [25
-    """.trimIndent()
+            """.trimIndent()
 
         runLogParser(text).forEach {
             println(it)

@@ -29,8 +29,8 @@ class LatexMoveElementLeftRightHandlerTest : BasePlatformTestCase() {
 
     private fun commandWithSubElements(command: String, vararg expectedSubElements: String) {
         val subElements = LatexMoveElementLeftRightHandler()
-                .getMovableSubElements(command.toPsi().firstChildOfType(LatexCommands::class) as PsiElement)
-                .map { it.text }
+            .getMovableSubElements(command.toPsi().firstChildOfType(LatexCommands::class) as PsiElement)
+            .map { it.text }
         assertEquals(expectedSubElements.toList(), subElements)
     }
 

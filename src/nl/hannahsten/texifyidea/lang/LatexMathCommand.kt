@@ -12,11 +12,11 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.LATEXSYMB
  */
 @Suppress("unused")
 enum class LatexMathCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: Package = DEFAULT,
-        override val display: String? = null,
-        val collapse: Boolean = false
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: Package = DEFAULT,
+    override val display: String? = null,
+    val collapse: Boolean = false
 ) : LatexCommand {
 
     /*

@@ -21,18 +21,20 @@ import java.util.regex.Pattern
  * @author Hannah Schellekens
  */
 open class LatexDiacriticIJInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Dotless versions of i and j should be used with diacritics",
-        inspectionId = "DiacriticIJ",
-        highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-        errorMessage = { "Diacritic must be placed upon a dotless ${letter(it)}" },
-        pattern = Pattern.compile("(${Diacritic.allValues().joinToString("|") {
+    inspectionDisplayName = "Dotless versions of i and j should be used with diacritics",
+    inspectionId = "DiacriticIJ",
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    errorMessage = { "Diacritic must be placed upon a dotless ${letter(it)}" },
+    pattern = Pattern.compile(
+        "(${Diacritic.allValues().joinToString("|") {
             it.command.replace("\\", "\\\\")
-                    .replace("^", "\\^")
-                    .replace(".", "\\.")
-        }})\\{?([ij])}?"),
-        replacement = this::replacement,
-        replacementRange = this::replaceRange,
-        quickFixName = { "Change to dotless ${letter(it)}" }
+                .replace("^", "\\^")
+                .replace(".", "\\.")
+        }})\\{?([ij])}?"
+    ),
+    replacement = this::replacement,
+    replacementRange = this::replaceRange,
+    quickFixName = { "Change to dotless ${letter(it)}" }
 ) {
 
     companion object {

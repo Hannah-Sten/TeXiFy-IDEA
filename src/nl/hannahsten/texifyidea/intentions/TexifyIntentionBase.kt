@@ -8,15 +8,15 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
  */
 abstract class TexifyIntentionBase(
 
-        /**
-         * The name of the intention that shows up in the intention overview.
-         */
-        val name: String,
+    /**
+     * The name of the intention that shows up in the intention overview.
+     */
+    val name: String,
 
-        /**
-         * The group to which the intention belongs (duh).
-         */
-        val insightGroup: InsightGroup = InsightGroup.LATEX
+    /**
+     * The group to which the intention belongs (duh).
+     */
+    val insightGroup: InsightGroup = InsightGroup.LATEX
 
 ) : IntentionAction {
 

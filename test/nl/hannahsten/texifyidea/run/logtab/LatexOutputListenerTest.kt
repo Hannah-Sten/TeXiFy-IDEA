@@ -14,7 +14,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
  * For messages over at most two lines, see [LatexMessageExtractorTest].
  */
 class LatexOutputListenerTest : BasePlatformTestCase() {
-    private val logTextLatexmk = """
+    private val logTextLatexmk =
+        """
         latexmk -pdf -file-line-error -interaction=nonstopmode -synctex=1 -output-format=pdf -output-directory=/home/abby/Documents/texify-test/out main.tex
         Latexmk: applying rule 'pdflatex'...
         This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex)
@@ -210,7 +211,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         Latexmk: Errors, so I did not complete making targets
 
         Process finished with exit code 12
-    """.trimIndent()
+        """.trimIndent()
 
     override fun getTestDataPath(): String {
         return "test/resources/run"
@@ -234,36 +235,37 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
     fun testFullLog() {
         val expectedMessages = setOf(
-                LatexLogMessage("Label `mylabel' multiply defined.", "/home/abby/Documents/texify-test/out/main.aux", -1, WARNING),
-                LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR),
-                LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
-                LatexLogMessage("No file main.bbl.", "./main.tex", -1, WARNING),
-                LatexLogMessage("Encoding scheme `15' unknown.", "./main.tex", 5, ERROR),
-                LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "./main.tex", -1, ERROR),
-                LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "./main.tex", 7, WARNING),
-                LatexLogMessage("Environment align undefined.", "./math.tex", 7, ERROR),
-                LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "./math.tex", 5, WARNING),
-                LatexLogMessage("\\begin{document} ended by \\end{align}.", "./math.tex", 9, ERROR),
-                LatexLogMessage("Reference `fig:bla' undefined", "./math.tex", 10, WARNING),
-                LatexLogMessage("Environment align undefined.", "./main.tex", 9, ERROR),
-                LatexLogMessage("Missing $ inserted.", "./main.tex", 10, ERROR),
-                LatexLogMessage("\\begin{document} ended by \\end{align}.", "./main.tex", 11, ERROR),
-                LatexLogMessage("Missing $ inserted.", "./main.tex", 11, ERROR),
-                LatexLogMessage("Reference `test' undefined", "./lipsum.tex", 4, WARNING),
-                LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR),
-                LatexLogMessage("Environment lstlisting undefined.", "./lipsum.tex", 11, ERROR),
-                LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "./lipsum.tex", 13, ERROR),
-                LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12", "./main.tex", 9, WARNING),
-                LatexLogMessage("There were undefined references.", "./main.tex", -1, WARNING),
-                LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "./main.tex", -1, WARNING),
-                LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./main.tex", -1, WARNING)
+            LatexLogMessage("Label `mylabel' multiply defined.", "/home/abby/Documents/texify-test/out/main.aux", -1, WARNING),
+            LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR),
+            LatexLogMessage("Font T1/cmr/m/n/10=ecrm1000 at 10.0pt not loadable: Metric (TFM) file not found.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 105, ERROR),
+            LatexLogMessage("No file main.bbl.", "./main.tex", -1, WARNING),
+            LatexLogMessage("Encoding scheme `15' unknown.", "./main.tex", 5, ERROR),
+            LatexLogMessage("Cannot determine size of graphic in figures/background-black-cat.jpg (no BoundingBox).", "./main.tex", -1, ERROR),
+            LatexLogMessage("Citation 'DBLP.books.daglib.0076726' undefined", "./main.tex", 7, WARNING),
+            LatexLogMessage("Environment align undefined.", "./math.tex", 7, ERROR),
+            LatexLogMessage("Overfull \\hbox (252.50682pt too wide) in paragraph at lines 5--6", "./math.tex", 5, WARNING),
+            LatexLogMessage("\\begin{document} ended by \\end{align}.", "./math.tex", 9, ERROR),
+            LatexLogMessage("Reference `fig:bla' undefined", "./math.tex", 10, WARNING),
+            LatexLogMessage("Environment align undefined.", "./main.tex", 9, ERROR),
+            LatexLogMessage("Missing $ inserted.", "./main.tex", 10, ERROR),
+            LatexLogMessage("\\begin{document} ended by \\end{align}.", "./main.tex", 11, ERROR),
+            LatexLogMessage("Missing $ inserted.", "./main.tex", 11, ERROR),
+            LatexLogMessage("Reference `test' undefined", "./lipsum.tex", 4, WARNING),
+            LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR),
+            LatexLogMessage("Environment lstlisting undefined.", "./lipsum.tex", 11, ERROR),
+            LatexLogMessage("\\begin{document} ended by \\end{lstlisting}.", "./lipsum.tex", 13, ERROR),
+            LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12", "./main.tex", 9, WARNING),
+            LatexLogMessage("There were undefined references.", "./main.tex", -1, WARNING),
+            LatexLogMessage("Label(s) may have changed. Rerun to get cross-references right.", "./main.tex", -1, WARNING),
+            LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./main.tex", -1, WARNING)
         )
 
         testLog(logTextLatexmk, expectedMessages)
     }
 
     fun `test You have requested, on line n, version d of m`() {
-        val log = """
+        val log =
+            """
             
             LaTeX Warning: You have requested, on input line 5, version
                            `9999/99/99' of package test998,
@@ -272,7 +274,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                            is available.
             
             [1{/home/thomas/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]               
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("You have requested, on input line 5, version `9999/99/99' of package test998, but only version `2020/04/08' is available.", null, 5, WARNING)
@@ -282,7 +284,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test usepackage before documentclass`() {
-        val log = """
+        val log =
+            """
             LaTeX2e <2019-10-01> patch level 3
             
             ./errors.tex:1: LaTeX Error: \usepackage before \documentclass.
@@ -290,7 +293,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             See the LaTeX manual or LaTeX Companion for explanation.
             Type  H <return>  for immediate help.
              ...            
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("\\usepackage before \\documentclass.", "./errors.tex", 1, ERROR)
@@ -300,7 +303,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test fontenc encoding file not found`() {
-        val log = """
+        val log =
+            """
                     
         (/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty
         /home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty:104: Package font
@@ -312,7 +316,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         No file main.bbl.
         
         
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("fontenc: Encoding file `15enc.def' not found. You might have misspelt the name of the encoding.", "/home/abby/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty", 104, ERROR),
@@ -324,7 +328,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test biblatex warning`() {
-        val log = """
+        val log =
+            """
         (./math.tex
         
 
@@ -334,7 +339,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
 
          )
         (see the transcript file for additional information)</home/abby/texlive/2019/te
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("biblatex: Please (re)run Biber on the file: main and rerun LaTeX afterwards.", "./math.tex", -1, WARNING)
@@ -344,7 +349,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test fontspec errors`() {
-        val log = """
+        val log =
+            """
             ./errors.tex:10: Improper `at' size (0.0pt), replaced by 10pt.
             <to be read again> 
             relax 
@@ -362,7 +368,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             lua_now:e #1->__lua_now:n {#1}
                                           
             l.10   
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("Improper `at' size (0.0pt), replaced by 10pt.", "./errors.tex", 10, ERROR)
@@ -372,7 +378,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test latexmk bibtex warning`() {
-        val log = """
+        val log =
+            """
             Latexmk: applying rule 'bibtex bibtex-mwe'...
             For rule 'bibtex bibtex-mwe', running '&run_bibtex(  )' ...
             This is BibTeX, Version 0.99d (TeX Live 2020)
@@ -385,7 +392,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             Latexmk: All targets (/home/thomas/GitRepos/random-tex/src/bibtex-mwe.pdf) are up-to-date
             
             Process finished with exit code 0
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("I'm ignoring knuth1990's extra \"author\" field", "references.bib", 5, BibtexLogMessageType.WARNING)
@@ -395,7 +402,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test datetime2 language module not installed`() {
-        val log = """
+        val log =
+            """
             (/home/thomas/texlive/2018/texmf-dist/tex/latex/datetime2/datetime2.sty
             (/home/thomas/texlive/2018/texmf-dist/tex/latex/tracklang/tracklang.sty
             (/home/thomas/texlive/2018/texmf-dist/tex/generic/tracklang/tracklang.tex))
@@ -405,7 +413,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             
             ) (/home/thomas/texmf/tex/latex/zref/zref-savepos.sty
             (/home/thomas/texmf/tex/latex/zref/zref-base.sty
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("datetime2: Date-Time Language Module `british' not installed", "/home/thomas/texlive/2018/texmf-dist/tex/latex/datetime2/datetime2.sty", 1913, WARNING)
@@ -415,7 +423,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test overfull hbox`() {
-        val log = """
+        val log =
+            """
             (./development-workflow.tex
             
 
@@ -430,7 +439,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             134.
 
             
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("Overfull \\hbox (2.5471pt too wide) in paragraph at lines 122--126", "./development-workflow.tex", 122, WARNING),
@@ -441,14 +450,15 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test Font shape undefined`() {
-        val log = """
+        val log =
+            """
             (/home/thomas/GitRepos/thisisatestfile-this-isatestfile-/out/UMD00000000000000_
             test-file-test-file-t.toc
             
             LaTeX Font Warning: Font shape `T1/phv/m/scit' undefined
             (Font)              using `T1/phv/m/it' instead on input line 43.
 
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("Font shape `T1/phv/m/scit' undefined, using `T1/phv/m/it' instead", "/home/thomas/GitRepos/thisisatestfile-this-isatestfile-/out/UMD00000000000000_test-file-test-file-t.toc", 43, WARNING)
@@ -458,7 +468,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test Encoding file not found`() {
-        val log = """
+        val log =
+            """
             (/home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty
             
             /home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty:111: Package fo
@@ -471,7 +482,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                                                               
             l.111 \ProcessOptions*
 
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("fontenc: Encoding file `ly1enc.def' not found. You might have misspelt the name of the encoding.", "/home/thomas/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty", 111, ERROR)
@@ -481,7 +492,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test No file`() {
-        val log = """
+        val log =
+            """
             (./main.tex
             
             (/home/thomas/GitRepos/random-tex/out/main.aux
@@ -493,7 +505,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             Transcript written on /home/thomas/GitRepos/random-tex/out/main.log.
             
             Process finished with exit code 0
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("No file notexists.tex.", "./main.tex", -1, WARNING),
@@ -504,14 +516,15 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test directlua unexpected symbol`() {
-        val log = """
+        val log =
+            """
             (./main.tex
             
             (/home/thomas/texlive/2018/texmf-dist/tex/latex/base/ts1cmr.fd)[\directlua]:1: 
             unexpected symbol near '3'.
             l.4     \directlua{3 = x}
 
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             // todo possible improvement: detecting line 4
@@ -522,7 +535,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test FiXme notes`() {
-        val log = """
+        val log =
+            """
             (./main.tex
             
 
@@ -540,7 +554,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             (FiXme)        Number of errors: 1,
             (FiXme)        Number of fatal errors: 1,
             (FiXme)        Total: 4.
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("FiXme: this is a warning", "./main.tex", 7, WARNING),
@@ -552,7 +566,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test Unknown option babel`() {
-        val log = """
+        val log =
+            """
             
             /home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty:1036: Package 
             babel Error: Unknown option `brazil'. Either you misspelled it
@@ -565,7 +580,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                                                               
             l.1036 \ProcessOptions*
                      
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("babel: Unknown option `brazil'. Either you misspelled it or the language definition file brazil.ldf was not found.", "/home/thomas/texlive/2018/texmf-dist/tex/generic/babel/babel.sty", 1036, ERROR)
@@ -575,7 +590,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test Fatal error occurred`() {
-        val log = """
+        val log =
+            """
             <inserted text> 
             \fi 
             <*> main.tex
@@ -592,7 +608,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             
             Process finished with exit code 1
                      
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("Emergency stop.", null, -1, ERROR),
@@ -603,7 +619,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test pdfTeX warning`() {
-        val log = """
+        val log =
+            """
             (./main.tex
             
             (/home/thomas/GitRepos/random-tex/out/main.out) [1{/home/thomas/texlive/2020/te
@@ -615,7 +632,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             Output written on /home/thomas/GitRepos/random-tex/out/main.pdf (1 page, 12113 
             bytes).
                      
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("name{summary} has been referenced but does not exist, replaced by a fixed one", null, -1, WARNING)
@@ -625,7 +642,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test babel unknown language`() {
-        val log = """
+        val log =
+            """
             s
             (C:/Users/thoscho/GitRepos/test/latex-templates/auxil\test.aux
             
@@ -647,7 +665,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
             *geometry* detected driver: pdftex
 
                      
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("babel: Unknown language `english'. Very likely you requested it in a previous run. Expect some wrong results in this run, which should vanish in the next one.", "C:/Users/thoscho/GitRepos/test/latex-templates/auxil\\test.aux", 21, WARNING),
@@ -658,7 +676,8 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test no file`() {
-        val log = """
+        val log =
+            """
             (./main.tex
             (/home/thomas/texlive/2020/texmf-dist/tex/latex/base/size10.clo)
 (/home/thomas/texlive/2020/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
@@ -667,7 +686,7 @@ No file synctest.aux.
 [1{/home/thomas/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2] [3] (/home/thomas/GitRepos/random-tex/out/synctest.aux) )</home/thomas/texl
 ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             LatexLogMessage("No file synctest.aux.", "./main.tex", -1, WARNING)
@@ -677,7 +696,8 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
     }
 
     fun `test glossaries-extra warning`() {
-        val log = """
+        val log =
+            """
             (/home/thomas/texlive/2020/texmf-dist/tex/latex/glossaries/styles/glossary-tree
             .sty)
             (/home/thomas/texlive/2020/texmf-dist/tex/latex/glossaries-extra/glossaries-ext
@@ -689,10 +709,10 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
             
             (/home/thomas/texlive/2020/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
             ) (/home/thomas/GitRepos/random-tex/out/glossaries-option4-bib2gls.aux)
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
-                LatexLogMessage("glossaries-extra: No file `glossaries-option4-bib2gls.glstex'", null, 17, WARNING)
+            LatexLogMessage("glossaries-extra: No file `glossaries-option4-bib2gls.glstex'", null, 17, WARNING)
         )
 
         testLog(log, expectedMessages)

@@ -18,9 +18,9 @@ import javax.swing.SwingUtilities
  * @author Sten Wessel
  */
 class RunConfigurationSelectionDialog(
-        private val project: Project,
-        private val settings: List<RunnerAndConfigurationSettings>,
-        selected: List<RunnerAndConfigurationSettings> = emptyList()
+    private val project: Project,
+    private val settings: List<RunnerAndConfigurationSettings>,
+    selected: List<RunnerAndConfigurationSettings> = emptyList()
 ) : DialogWrapper(project) {
 
     private lateinit var list: JBList<RunnerAndConfigurationSettings>
@@ -46,8 +46,10 @@ class RunConfigurationSelectionDialog(
             val fontMetrics = list.getFontMetrics(list.font)
 
             // Icon and gap (= 24) + max size of the configuration names
-            val maxWidth = 24 + (settings.asSequence().map { fontMetrics.stringWidth(it.configuration.name) }.maxOrNull()
-                    ?: fontMetrics.stringWidth("m") * 30)
+            val maxWidth = 24 + (
+                settings.asSequence().map { fontMetrics.stringWidth(it.configuration.name) }.maxOrNull()
+                    ?: fontMetrics.stringWidth("m") * 30
+                )
 
             minimumSize = Dimension(maxWidth, preferredSize.height)
         }

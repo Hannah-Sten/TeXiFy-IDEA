@@ -33,7 +33,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =
-            "PackageNotInstalled"
+        "PackageNotInstalled"
 
     override fun getDisplayName(): String {
         return "Package is not installed"
@@ -48,28 +48,34 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
         if (LatexDistribution.isTexliveAvailable && SystemEnvironment.isTlmgrInstalled) {
             val installedPackages = TexLivePackages.packageList
-            val customPackages = LatexDefinitionIndex.getCommandsByName("\\ProvidesPackage", file.project, file.project
-                            .projectSearchScope)
-                    .map { it.requiredParameter(0) }
-                    .mapNotNull { it?.toLowerCase() }
+            val customPackages = LatexDefinitionIndex.getCommandsByName(
+                "\\ProvidesPackage", file.project,
+                file.project
+                    .projectSearchScope
+            )
+                .map { it.requiredParameter(0) }
+                .mapNotNull { it?.toLowerCase() }
             val packages = installedPackages + customPackages
 
             val commands = file.childrenOfType(LatexCommands::class)
-                    .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
+                .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
             for (command in commands) {
                 val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
                 if (`package` !in packages) {
                     // Use the cache or manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
                     if (knownNotInstalledPackages.contains(`package`) || "tlmgr search --file /$`package`.sty".runCommand()
-                                    ?.isEmpty() == true) {
-                        descriptors.add(manager.createProblemDescriptor(
+                        ?.isEmpty() == true
+                    ) {
+                        descriptors.add(
+                            manager.createProblemDescriptor(
                                 command,
                                 "Package is not installed or \\ProvidesPackage is missing",
                                 InstallPackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), `package`, knownNotInstalledPackages),
                                 ProblemHighlightType.WARNING,
                                 isOntheFly
-                        ))
+                            )
+                        )
                         knownNotInstalledPackages.add(`package`)
                     }
                     else {
@@ -94,40 +100,42 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             // with one fix, but it's not a bad idea to clear cache once in a while
             knownNotInstalledPackages.clear()
             ProgressManager.getInstance()
-                    .run(object : Task.Backgroundable(project, "Installing $packageName...") {
-                        override fun run(indicator: ProgressIndicator) {
-                            val tlname = TexLivePackages.findTexLiveName(this, packageName)
+                .run(object : Task.Backgroundable(project, "Installing $packageName...") {
+                    override fun run(indicator: ProgressIndicator) {
+                        val tlname = TexLivePackages.findTexLiveName(this, packageName)
 
-                            if (tlname == null) {
-                                Notification(
-                                        "Package Not Installed",
-                                        "Package $packageName not installed",
-                                        "Package $packageName was not installed because tlmgr could not find $packageName.sty anywhere. Try to install the package manually.",
-                                        NotificationType.ERROR
-                                ).notify(project)
+                        if (tlname == null) {
+                            Notification(
+                                "Package Not Installed",
+                                "Package $packageName not installed",
+                                "Package $packageName was not installed because tlmgr could not find $packageName.sty anywhere. Try to install the package manually.",
+                                NotificationType.ERROR
+                            ).notify(project)
 
-                                indicator.cancel()
-                            }
+                            indicator.cancel()
+                        }
 
+                        title = "Installing $packageName..."
+                        val output = "tlmgr install $tlname".runCommand()
+                        val update = "tlmgr update --self"
+                        if (output?.contains(update) == true) {
+                            title = "Updating tlmgr..."
+                            update.runCommand()
                             title = "Installing $packageName..."
-                            val output = "tlmgr install $tlname".runCommand()
-                            val update = "tlmgr update --self"
-                            if (output?.contains(update) == true) {
-                                title = "Updating tlmgr..."
-                                update.runCommand()
-                                title = "Installing $packageName..."
-                                "tlmgr install $tlname".runCommand()
-                            }
+                            "tlmgr install $tlname".runCommand()
                         }
+                    }
 
-                        override fun onSuccess() {
-                            TexLivePackages.packageList.add(packageName)
-                            // Rerun inspections
-                            DaemonCodeAnalyzer.getInstance(project)
-                                    .restart(filePointer.containingFile
-                                            ?: return)
-                        }
-                    })
+                    override fun onSuccess() {
+                        TexLivePackages.packageList.add(packageName)
+                        // Rerun inspections
+                        DaemonCodeAnalyzer.getInstance(project)
+                            .restart(
+                                filePointer.containingFile
+                                    ?: return
+                            )
+                    }
+                })
         }
     }
 }

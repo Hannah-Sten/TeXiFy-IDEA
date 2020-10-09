@@ -29,9 +29,9 @@ abstract class TexifyLineOptionsInspection(val title: String) : TexifyInspection
      */
     protected val lines: List<String>
         get() = txtaOptions.text.trim().split("\n").asSequence()
-                .map { it.trim() }
-                .filter { !it.isBlank() }
-                .toList()
+            .map { it.trim() }
+            .filter { !it.isBlank() }
+            .toList()
 
     override fun createOptionsPanel(): JComponent {
         val panel = JPanel()

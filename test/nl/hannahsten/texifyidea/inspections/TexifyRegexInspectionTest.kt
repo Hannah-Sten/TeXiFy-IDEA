@@ -9,10 +9,10 @@ class TexifyRegexInspectionTest {
 
     // Implement a mock inspection to test inherited methods.
     class MockRegexInspection : TexifyRegexInspection(
-            inspectionDisplayName = "",
-            inspectionId = "",
-            errorMessage = { "" },
-            pattern = Pattern.compile("bl.b")
+        inspectionDisplayName = "",
+        inspectionId = "",
+        errorMessage = { "" },
+        pattern = Pattern.compile("bl.b")
     ) {
         // Provide dummy document contents
         var dummyDocument = ""
@@ -35,11 +35,12 @@ class TexifyRegexInspectionTest {
             }
 
             return RegexFixes(
-                    quickFixName(matcher),
-                    replacements,
-                    replacementRanges,
-                    groups,
-                    this::applyFixes)
+                quickFixName(matcher),
+                replacements,
+                replacementRanges,
+                groups,
+                this::applyFixes
+            )
         }
 
         // Remove the ProblemDescriptor part of the applyfix functionality to avoid trying to replace things in a non-existing file
@@ -59,7 +60,8 @@ class TexifyRegexInspectionTest {
 
         val fixes = dummy.mockInspectFile()
         val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
-            dummy.mockApplyFix(replacementRange, replacement) }
+            dummy.mockApplyFix(replacementRange, replacement)
+        }
 
         dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
 
@@ -76,7 +78,8 @@ class TexifyRegexInspectionTest {
 
         val fixes = dummy.mockInspectFile("r")
         val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
-            dummy.mockApplyFix(replacementRange, replacement) }
+            dummy.mockApplyFix(replacementRange, replacement)
+        }
 
         dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
 
@@ -93,7 +96,8 @@ class TexifyRegexInspectionTest {
 
         val fixes = dummy.mockInspectFile()
         val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
-            dummy.mockApplyFix(replacementRange, replacement) }
+            dummy.mockApplyFix(replacementRange, replacement)
+        }
 
         dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
 
@@ -110,7 +114,8 @@ class TexifyRegexInspectionTest {
 
         val fixes = dummy.mockInspectFile("blob")
         val fixFunction = { replacementRange: IntRange, replacement: String, _: List<String> ->
-            dummy.mockApplyFix(replacementRange, replacement) }
+            dummy.mockApplyFix(replacementRange, replacement)
+        }
 
         dummy.applyFixes(fixFunction, fixes.replacementRanges, fixes.replacements, fixes.groups)
 

@@ -11,15 +11,15 @@ import com.intellij.psi.PsiFile
 class LatexFormattingModelBuilder : FormattingModelBuilder {
     override fun createModel(context: FormattingContext): FormattingModel {
         return FormattingModelProvider.createFormattingModelForPsiFile(
-                context.containingFile,
-                LatexBlock(
-                        context.node,
-                        Wrap.createWrap(WrapType.NONE, false),
-                        Alignment.createAlignment(),
-                        createSpacingBuilder(context.codeStyleSettings),
-                        LatexWrappingStrategy()
-                ),
-                context.codeStyleSettings
+            context.containingFile,
+            LatexBlock(
+                context.node,
+                Wrap.createWrap(WrapType.NONE, false),
+                Alignment.createAlignment(),
+                createSpacingBuilder(context.codeStyleSettings),
+                LatexWrappingStrategy()
+            ),
+            context.codeStyleSettings
         )
     }
 

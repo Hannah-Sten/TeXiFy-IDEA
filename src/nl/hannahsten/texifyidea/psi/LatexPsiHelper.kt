@@ -10,16 +10,18 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 class LatexPsiHelper(private val project: Project) {
 
     private fun createEnvironmentContent(): LatexEnvironmentContent {
-        val environment = createFromText("\\begin{figure}\n" +
+        val environment = createFromText(
+            "\\begin{figure}\n" +
                 "        Placeholder\n" +
-                "    \\end{figure}").firstChildOfType(LatexEnvironment::class)!!
+                "    \\end{figure}"
+        ).firstChildOfType(LatexEnvironment::class)!!
         environment.environmentContent!!.firstChild.delete()
         return environment.environmentContent!!
     }
 
     private fun createLatexOptionalParam(): LatexParameter {
         return createFromText("\\usepackage[]{package}")
-                .findFirstChild { c -> c is LatexParameter && c.optionalParam != null }!!
+            .findFirstChild { c -> c is LatexParameter && c.optionalParam != null }!!
     }
 
     /**
@@ -39,7 +41,7 @@ class LatexPsiHelper(private val project: Project) {
     }
 
     fun createFromText(text: String): PsiElement =
-            PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
+        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage.INSTANCE, text, false, true)
 
     /**
      * Adds the supplied element to the content of the environment.
@@ -118,7 +120,7 @@ class LatexPsiHelper(private val project: Project) {
         }
 
         val optionalParam = command.parameterList
-                .first { p -> p.optionalParam != null }.optionalParam!!
+            .first { p -> p.optionalParam != null }.optionalParam!!
 
         var parameterText = if (value != null) {
             "$name={$value}"

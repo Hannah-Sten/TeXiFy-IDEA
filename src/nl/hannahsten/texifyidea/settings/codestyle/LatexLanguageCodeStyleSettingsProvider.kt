@@ -39,29 +39,33 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
     }
 
     private fun customizeWrappingAndBracesSettings(consumer: CodeStyleSettingsCustomizable) {
-        consumer.showStandardOptions(*arrayOf(
+        consumer.showStandardOptions(
+            *arrayOf(
                 RIGHT_MARGIN,
                 WRAP_ON_TYPING,
                 WRAP_LONG_LINES,
                 KEEP_FIRST_COLUMN_COMMENT
-        ).map { it.toString() }.toTypedArray())
+            ).map { it.toString() }.toTypedArray()
+        )
     }
 
     private fun customizeBlankLinesSettings(consumer: CodeStyleSettingsCustomizable) {
         LatexCodeStyleSettings.blankLinesOptions.forEach {
             consumer.showCustomOption(
-                    LatexCodeStyleSettings::class.java,
-                    it.key.name,
-                    it.value,
-                    ApplicationBundle.message("title.minimum.blank.lines")
+                LatexCodeStyleSettings::class.java,
+                it.key.name,
+                it.value,
+                ApplicationBundle.message("title.minimum.blank.lines")
             )
         }
     }
 
     private fun customizeCodeGenerationSettings(consumer: CodeStyleSettingsCustomizable) {
-        consumer.showStandardOptions(*arrayOf(
+        consumer.showStandardOptions(
+            *arrayOf(
                 LINE_COMMENT_AT_FIRST_COLUMN,
                 LINE_COMMENT_ADD_SPACE
-        ).map { it.toString() }.toTypedArray())
+            ).map { it.toString() }.toTypedArray()
+        )
     }
 }

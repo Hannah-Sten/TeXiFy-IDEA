@@ -28,8 +28,8 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
     override fun submit(events: Array<out IdeaLoggingEvent>?, additionalInfo: String?, parentComponent: Component, consumer: Consumer<in SubmittedReportInfo>): Boolean {
         val event = events?.firstOrNull()
         val title = event?.throwableText?.lineSequence()?.first()
-                ?: event?.message
-                ?: "Crash Report: <Fill in title>"
+            ?: event?.message
+            ?: "Crash Report: <Fill in title>"
         val body = event?.throwableText ?: "Please paste the full stacktrace from the IDEA error popup."
 
         val builder = StringBuilder(URL)
@@ -38,28 +38,37 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             builder.append("&body=")
 
             builder.append(URLEncoder.encode("### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version\n\n", ENCODING))
-            builder.append(URLEncoder.encode("### Operating System \n" +
-                    "<!-- Windows, Ubuntu, Arch Linux, MacOS, etc. -->\n\n", ENCODING))
+            builder.append(
+                URLEncoder.encode(
+                    "### Operating System \n" +
+                        "<!-- Windows, Ubuntu, Arch Linux, MacOS, etc. -->\n\n",
+                    ENCODING
+                )
+            )
             builder.append(URLEncoder.encode("### TeXiFy IDEA version\n\n", ENCODING))
             builder.append(URLEncoder.encode("### Description\n", ENCODING))
             builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
             builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${body.take(7000)}\n```", ENCODING))
         }
         catch (e: UnsupportedEncodingException) {
-            consumer.consume(SubmittedReportInfo(
+            consumer.consume(
+                SubmittedReportInfo(
                     null,
                     null,
                     SubmittedReportInfo.SubmissionStatus.FAILED
-            ))
+                )
+            )
             return false
         }
 
         BrowserUtil.browse(builder.toString())
-        consumer.consume(SubmittedReportInfo(
+        consumer.consume(
+            SubmittedReportInfo(
                 null,
                 "GitHub issue",
                 SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
-        ))
+            )
+        )
         return true
     }
 }

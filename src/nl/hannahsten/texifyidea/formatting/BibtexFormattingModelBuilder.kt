@@ -11,14 +11,14 @@ import com.intellij.psi.PsiFile
 open class BibtexFormattingModelBuilder : FormattingModelBuilder {
 
     override fun createModel(context: FormattingContext) = FormattingModelProvider.createFormattingModelForPsiFile(
-            context.containingFile,
-            BibtexBlock(
-                    context.node,
-                    Wrap.createWrap(WrapType.NONE, false),
-                    Alignment.createAlignment(),
-                    createBibtexSpacingBuilder(context.codeStyleSettings)
-            ),
-            context.codeStyleSettings
+        context.containingFile,
+        BibtexBlock(
+            context.node,
+            Wrap.createWrap(WrapType.NONE, false),
+            Alignment.createAlignment(),
+            createBibtexSpacingBuilder(context.codeStyleSettings)
+        ),
+        context.codeStyleSettings
     )!!
 
     override fun getRangeAffectingIndent(file: PsiFile?, offset: Int, elementAtOffset: ASTNode?): TextRange? = null

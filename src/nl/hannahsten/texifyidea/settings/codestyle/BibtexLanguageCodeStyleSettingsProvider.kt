@@ -27,11 +27,13 @@ class BibtexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvide
     }
 
     private fun customizeWrappingAndBracesSettings(consumer: CodeStyleSettingsCustomizable) {
-        consumer.showStandardOptions(*arrayOf(
+        consumer.showStandardOptions(
+            *arrayOf(
                 Value.VAR_KIND.RIGHT_MARGIN,
                 CodeStyleSettingsCustomizable.WrappingOrBraceOption.WRAP_ON_TYPING,
                 CodeStyleSettingsCustomizable.WrappingOrBraceOption.WRAP_LONG_LINES,
                 CodeStyleSettingsCustomizable.WrappingOrBraceOption.KEEP_FIRST_COLUMN_COMMENT
-        ).map { it.toString() }.toTypedArray())
+            ).map { it.toString() }.toTypedArray()
+        )
     }
 }

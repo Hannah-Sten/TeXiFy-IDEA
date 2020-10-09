@@ -44,17 +44,19 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
         // Duplicates!
         file.commandsInFile().asSequence()
-                .filter { it.name == "\\usepackage" && it.requiredParameter(0) in duplicates }
-                .forEach {
-                    val parameter = it.firstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
-                    descriptors.add(manager.createProblemDescriptor(
-                            it,
-                            TextRange.from(parameter.textOffset + 1 - it.textOffset, parameter.textLength - 2),
-                            "Package has already been included",
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly
-                    ))
-                }
+            .filter { it.name == "\\usepackage" && it.requiredParameter(0) in duplicates }
+            .forEach {
+                val parameter = it.firstChildOfType(LatexRequiredParam::class) ?: error("There must be a required parameter.")
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        it,
+                        TextRange.from(parameter.textOffset + 1 - it.textOffset, parameter.textLength - 2),
+                        "Package has already been included",
+                        ProblemHighlightType.GENERIC_ERROR,
+                        isOntheFly
+                    )
+                )
+            }
 
         return descriptors
     }

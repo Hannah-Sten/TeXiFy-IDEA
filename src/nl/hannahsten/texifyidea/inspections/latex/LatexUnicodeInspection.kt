@@ -102,7 +102,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                     continue
                 }
 
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         text,
                         TextRange(matcher.start(), matcher.end()),
                         "Unsupported non-ASCII character",
@@ -116,7 +117,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                             InsertUnicodePackageFix()
                         },
                         ChangeCompilerCompatibilityFix()
-                ))
+                    )
+                )
             }
         }
 
@@ -241,12 +243,14 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val mods = n.substring(matcher.end()).split("".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
             val diacritics = (mods.indices)
-                    // Modifiers in reversed order
-                    .map { mods[mods.size - 1 - it] }
-                    .map { if (inMathMode)
+                // Modifiers in reversed order
+                .map { mods[mods.size - 1 - it] }
+                .map {
+                    if (inMathMode)
                         Diacritic.Math.fromUnicode(it) as Diacritic
                     else
-                        Diacritic.Normal.fromUnicode(it) }
+                        Diacritic.Normal.fromUnicode(it)
+                }
 
             return Diacritic.buildChain(base, diacritics)
         }

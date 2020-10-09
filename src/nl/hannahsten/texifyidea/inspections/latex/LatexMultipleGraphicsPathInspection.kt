@@ -31,14 +31,16 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
         // Throw error on multiple definition of \graphicspath.
         if (paths.size > 1) {
             for (i in paths) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         i,
                         TextRange(0, i.text.length),
                         "\\graphicspath is already used elsewhere",
                         ProblemHighlightType.GENERIC_ERROR,
                         isOntheFly,
                         RemoveFix()
-                ))
+                    )
+                )
             }
         }
 

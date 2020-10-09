@@ -25,13 +25,13 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
 
     companion object {
         val blankLinesOptions = mapOf(
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_PART to "\\part",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_CHAPTER to "\\chapter",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SECTION to "\\section",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSECTION to "\\subsection",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSUBSECTION to "\\subsubsection",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_PARAGRAPH to "\\paragraph",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBPARAGRAPH to "\\subparagraph"
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_PART to "\\part",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_CHAPTER to "\\chapter",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SECTION to "\\section",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSECTION to "\\subsection",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSUBSECTION to "\\subsubsection",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_PARAGRAPH to "\\paragraph",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBPARAGRAPH to "\\subparagraph"
         )
     }
 }

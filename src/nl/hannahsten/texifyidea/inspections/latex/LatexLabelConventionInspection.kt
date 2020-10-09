@@ -30,9 +30,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             return when (label) {
                 is LatexCommands -> {
                     if (label.inDirectEnvironmentMatching {
-                                Magic.Environment.labeled.containsKey(it.environmentName) &&
-                                        !Magic.Environment.labelAsParameter.contains(it.environmentName)
-                            }) {
+                        Magic.Environment.labeled.containsKey(it.environmentName) &&
+                            !Magic.Environment.labelAsParameter.contains(it.environmentName)
+                    }
+                    ) {
                         label.parentOfType(LatexEnvironment::class)
                     }
                     else {
@@ -78,20 +79,24 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private fun checkLabels(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
-                            descriptors: MutableList<ProblemDescriptor>) {
+    private fun checkLabels(
+        file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
+        descriptors: MutableList<ProblemDescriptor>
+    ) {
         file.findLatexLabelPsiElementsInFileAsSequence().forEach { label ->
             val labeledCommand = getLabeledCommand(label) ?: return@forEach
             val expectedPrefix = getLabelPrefix(labeledCommand)
             val labelName = label.extractLabelName()
             if (!expectedPrefix.isNullOrBlank() && !labelName.startsWith("$expectedPrefix:")) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         label,
                         "Unconventional label prefix",
                         LabelPreFix(),
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly
-                ))
+                    )
+                )
             }
         }
     }

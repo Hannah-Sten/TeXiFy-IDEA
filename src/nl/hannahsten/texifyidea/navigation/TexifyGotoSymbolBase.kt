@@ -29,13 +29,13 @@ abstract class TexifyGotoSymbolBase<T> : ChooseByNameContributor {
     override fun getItemsByName(name: String?, pattern: String?, project: Project?, includeNonProjectItems: Boolean): Array<NavigationItem> {
         val elements = project?.findElements() ?: return emptyArray()
         return elements.asSequence()
-                .map { it to it.extractName() }
-                .filter { (_, definedName) ->
-                    definedName == name || (pattern != null && (definedName ?: "").contains(pattern, ignoreCase = true))
-                }
-                .mapNotNull { (psi, _) -> psi.createNavigationItem() }
-                .toList()
-                .toTypedArray()
+            .map { it to it.extractName() }
+            .filter { (_, definedName) ->
+                definedName == name || (pattern != null && (definedName ?: "").contains(pattern, ignoreCase = true))
+            }
+            .mapNotNull { (psi, _) -> psi.createNavigationItem() }
+            .toList()
+            .toTypedArray()
     }
 
     override fun getNames(project: Project?, includeNonProjectItems: Boolean): Array<String> {

@@ -10,13 +10,13 @@ import java.util.regex.Pattern
  * @author Hannah Schellekens
  */
 open class LatexMakeatletterInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Discouraged use of \\makeatletter in tex sources",
-        inspectionId = "Makeatletter",
-        highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-        errorMessage = { "${it.group(1)} shouldn't be used in tex sources" },
-        pattern = Pattern.compile("(\\\\makeatletter|\\\\makeatother)"),
-        replacement = { _, _ -> "" },
-        quickFixName = { "Remove command" }
+    inspectionDisplayName = "Discouraged use of \\makeatletter in tex sources",
+    inspectionId = "Makeatletter",
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    errorMessage = { "${it.group(1)} shouldn't be used in tex sources" },
+    pattern = Pattern.compile("(\\\\makeatletter|\\\\makeatother)"),
+    replacement = { _, _ -> "" },
+    quickFixName = { "Remove command" }
 ) {
 
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
