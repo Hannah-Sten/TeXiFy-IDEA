@@ -109,12 +109,6 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
-    fun testIncompleteUndefinedControlSequence() {
-        val text = "./nested/lipsum-one.tex:9: Undefined control sequence."
-        val expected = null
-        testMessageExtractor(text, expected, text)
-    }
-
     fun testReferenceOnLine() {
         val text = "LaTeX Warning: Reference `fig:bla' on page 1 undefined on input line 10."
         val expected = LatexLogMessage("Reference `fig:bla' undefined", currentFile, 10, WARNING)

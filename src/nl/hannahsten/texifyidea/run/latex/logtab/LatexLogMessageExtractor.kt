@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexErrorHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors.LatexFixMeErrorMessageHandler
@@ -45,19 +46,20 @@ object LatexLogMessageExtractor {
             LatexFixMeWarningMessageHandler,
             LatexPdftexWarningMessageHandler
         )
+        // Problem: if we just joined the two lines together, we wouldn't know if the first line actually is part of (for example)
+        // the filepath, and we might match on things like /home/.../package.sty\n/home/.../otherpackage.sty:42: Error Message
+        // Proposal: only join the lines if the first line was broken by line length
+        // Note that if it wasn't, we match the first line (not the second) because we will encounter the second line in the next iteration
+        val textToMatch = if (text.removeSuffix(newText).length < LINE_WIDTH - 1) text.removeSuffix(newText) else text
 
         // Look for errors that need special treatment.
         specialErrorHandlersList.forEach { handler ->
-            if (handler.regex.any { it.containsMatchIn(text) }) {
+            if (handler.regex.any { it.containsMatchIn(textToMatch) }) {
                 return handler.findMessage(text, newText, currentFile)
             }
         }
 
-        // Handles all other file line errors. Only check the first line,
-        // because other errors might need the two lines, and would be
-        // (partly) duplicated in the log if we allow the fallback to inspect
-        // the two lines (or just the first).
-        if (LatexErrorHandler.regex.any { it.containsMatchIn(text.removeSuffix(newText)) }) {
+        if (LatexErrorHandler.regex.any { it.containsMatchIn(textToMatch) }) {
             return LatexErrorHandler.findMessage(text, newText, currentFile)
         }
 

@@ -8,7 +8,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 
 object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
     LatexLogMessageType.ERROR,
-    """^$FILE_LINE_REGEX (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)$""".toRegex(),
+    // The last part (with line number and command) is optional because it may appear on the next line
+    """^$FILE_LINE_REGEX (?<message>Undefined control sequence.)(\s*l.\d+\s*(?<command>\\\w+)$)?""".toRegex(),
     """^$LATEX_ERROR_REGEX (?<message>Undefined control sequence.)\s*l.\d+\s*(?<command>\\\w+)$""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
@@ -21,7 +22,7 @@ object LatexUndefinedControlSequenceHandler : LatexMessageHandler(
                     Pair(null, currentFile)
                 }
 
-                val message = "${groups["message"]?.value} ${groups["command"]?.value}"
+                val message = "${groups["message"]?.value} ${groups["command"]?.value ?: ""}"
                 return LatexLogMessage(message, fileName, line ?: 1, messageType)
             }
         }

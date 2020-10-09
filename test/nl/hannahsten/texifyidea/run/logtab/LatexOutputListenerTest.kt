@@ -717,4 +717,54 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         testLog(log, expectedMessages)
     }
+
+    fun `test long file names`() {
+        val log = """
+            (C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.
+            aux
+            C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.a
+            ux:21: Undefined control sequence.
+            l.21 \pgfsyspdfmark
+                                {pgfid1}{2046862}{52519048}
+            
+            C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.a
+            ux:21: LaTeX Error: Missing \begin{document}.
+            
+            See the LaTeX manual or LaTeX Companion for explanation.
+            Type  H <return>  for immediate help.
+             ...                                              
+                                                              
+            l.21 \pgfsyspdfmark {p
+                                  gfid1}{2046862}{52519048}
+            
+
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+                LatexLogMessage("Undefined control sequence \\pgfsyspdfmark {pgfid1}{2046862}{52519048}", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR),
+                LatexLogMessage("Missing \\begin{document}.", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
+
+    fun `test undefined control sequence`() {
+        val log = """
+
+
+        (./nested/lipsum-one.tex
+        ./nested/lipsum-one.tex:9: Undefined control sequence.
+        l.9 \bloop
+                  
+        ) [1{/home/abby/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+
+
+        """.trimIndent()
+
+        val expectedMessages = setOf(
+                LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }

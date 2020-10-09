@@ -37,7 +37,9 @@ class LatexOutputListener(
                 // Indent of LaTeX Warning/Error messages
                 !secondLine.startsWith("               ") &&
                 // Package warning/error continuation.
-                !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine)
+                !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine) &&
+                // Assume the undefined control sequence always continues on the next line
+                !firstLine.trim().endsWith("Undefined control sequence.")
         }
     }
 
@@ -190,6 +192,7 @@ class LatexOutputListener(
             var newMessage = (message.message + newTextTrimmed).replace("LaTeX Warning: ", "")
                 .replace(PACKAGE_WARNING_CONTINUATION.toRegex(), "")
                 .replace(DUPLICATE_WHITESPACE.toRegex(), " ")
+                .replace(""". l.\d+ """.toRegex(), " ") // Continuation of Undefined control sequence
 
             // The 'on input line <line>' may be a lot of lines after the 'LaTeX Warning:', thus the original regex may
             // not have caught it. Try to catch the line number here.
