@@ -719,7 +719,8 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
     }
 
     fun `test long file names`() {
-        val log = """
+        val log =
+            """
             (C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.
             aux
             C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\xxxXxxxXxxxRxx.a
@@ -738,18 +739,19 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
                                   gfid1}{2046862}{52519048}
             
 
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
-                LatexLogMessage("Undefined control sequence \\pgfsyspdfmark {pgfid1}{2046862}{52519048}", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR),
-                LatexLogMessage("Missing \\begin{document}.", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR)
+            LatexLogMessage("Undefined control sequence \\pgfsyspdfmark {pgfid1}{2046862}{52519048}", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR),
+            LatexLogMessage("Missing \\begin{document}.", "C:/Users/thoscho/GitRepos/asdfasdf/asdfasdfasdfasdfasdfasdfasd\\xxxXxxxXxxxRxx.aux", 21, ERROR)
         )
 
         testLog(log, expectedMessages)
     }
 
     fun `test undefined control sequence`() {
-        val log = """
+        val log =
+            """
 
 
         (./nested/lipsum-one.tex
@@ -759,10 +761,10 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
         ) [1{/home/abby/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 
 
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
-                LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR)
+            LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR)
         )
 
         testLog(log, expectedMessages)
