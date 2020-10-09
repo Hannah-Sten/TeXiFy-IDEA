@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.insight
 
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.lang.parameterInfo.*
+import com.intellij.lang.parameterInfo.CreateParameterInfoContext
+import com.intellij.lang.parameterInfo.ParameterInfoHandler
+import com.intellij.lang.parameterInfo.ParameterInfoUIContext
+import com.intellij.lang.parameterInfo.UpdateParameterInfoContext
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.ArrayUtil
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
@@ -16,12 +17,6 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LatexRegul
     private fun findLatexCommand(file: PsiFile, offset: Int): LatexCommands? {
         val element = file.findElementAt(offset)
         return PsiTreeUtil.getParentOfType(element, LatexCommands::class.java)
-    }
-
-    override fun couldShowInLookup() = true
-
-    override fun getParametersForLookup(item: LookupElement, context: ParameterInfoContext): Array<Any>? {
-        return ArrayUtil.EMPTY_OBJECT_ARRAY
     }
 
     override fun findElementForParameterInfo(context: CreateParameterInfoContext): LatexCommands? {

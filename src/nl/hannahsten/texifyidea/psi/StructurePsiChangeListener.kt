@@ -4,19 +4,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiTreeChangeEvent
 import com.intellij.psi.PsiTreeChangeListener
-import com.intellij.psi.impl.PsiModificationTrackerImpl
 
 /**
  * @author Hannah Schellekens
  */
-class StructurePsiChangeListener(project: Project) : PsiTreeChangeListener {
-
-    private val psiModificationTracker = PsiManager
-            .getInstance(project)
-            .modificationTracker as PsiModificationTrackerImpl
+class StructurePsiChangeListener(val project: Project) : PsiTreeChangeListener {
 
     private fun updateTracker() {
-        psiModificationTracker.incOutOfCodeBlockModificationCounter()
+        PsiManager.getInstance(project).dropPsiCaches()
     }
 
     override fun beforeChildAddition(psiTreeChangeEvent: PsiTreeChangeEvent) {
