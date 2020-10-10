@@ -292,7 +292,9 @@ class LatexRunConfiguration constructor(
 
         // Read makeindex run configurations
         val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
-        this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
+        if (makeindexRunConfigElt != null) {
+            this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
+        }
     }
 
     @Throws(WriteExternalException::class)
