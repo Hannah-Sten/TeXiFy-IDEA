@@ -770,7 +770,7 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         val expectedMessages = setOf(
             LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR),
-            LatexLogMessage("Undefined control sequence. ...ut uncovering any other vertex in \${'\$'}S \\cupt T${'$'}).", "./hw5.tex", 79, ERROR)
+            LatexLogMessage("Undefined control sequence. \\cupt", "./hw5.tex", 79, ERROR)
         )
 
         testLog(log, expectedMessages)

@@ -89,6 +89,10 @@ class LatexFileStack(
         while (result != null) {
             // If the regex matches an open par (with filename), register file
             if (linePart[result.range.first] == '(') {
+                // Count all open pars that are before the found opening par.
+                if (linePart.indexOfFirst { it == '(' } in 0..result.range.first) {
+                    notClosedNonFileOpenParentheses += linePart.substring(0, result.range.first).count { it == '(' }
+                }
                 val file = result.groups["file"]?.value?.trim() ?: break
 
                 // Check if file spans multiple lines
