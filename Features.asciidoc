@@ -322,6 +322,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * Start sentences on a new line
 * Collapse cite commands
 * link:LaTeX-recommendations#ins:eqref[Use `\eqref{...}` instead of `(\ref{...})`]
+* link:LaTeX-recommendations#ins:documentclass[File that contains a document environment should contain a `\documentclass` command]
 
 ==== Writing organisation recommendations
 * Might break TeXiFy functionality

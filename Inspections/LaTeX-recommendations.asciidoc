@@ -17,3 +17,15 @@ _Since b0.6.6_
 
 Equations should be referenced using `\eqref{...}` rather than `(\ref{...})` to ensure that all your equation references
 are formatted in the same way. This inspection is only triggered when the corresponding label was defined in a math environment.
+
+== [[ins:documentclass]] File that contains a document environment should contain a `\documentclass` command
+_Since b0.7.1_
+
+When separating the preamble from the root LaTeX file, keep the `\documentclass` command in the root file.
+To quote The LaTeX Companion:
+
+> Commands placed between `\documentclass` and `\begin{document}` are in the so-called _document preamble_.
+
+This implies that the `\documentclass` command itself is **not** part of the preamble.
+When extracting the preamble, put it in a `personal.sty` (package) file, and include it in the root document with `\usepackage{personal}`.
+When the need arises to specify the document class in the personal package, transform the package to a document class `personal.cls` and include it with `\documentclass{personal}`.
