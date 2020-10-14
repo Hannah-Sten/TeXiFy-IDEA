@@ -1,6 +1,6 @@
 [*.{kt,kts}]
-disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,import-ordering,keyword-spacing
-indent_size = unset  # Temporary fix to overcome ktlint's new lack of support for continuation indent (https://github.com/pinterest/ktlint/issues/816)
+# Enable indent once ktlint supports continuation indent again.
+disabled_rules = final-newline,no-wildcard-imports,parameter-list-wrapping,import-ordering,keyword-spacing,indent
 insert_final_newline = false
 
 ij_kotlin_else_on_new_line = true
