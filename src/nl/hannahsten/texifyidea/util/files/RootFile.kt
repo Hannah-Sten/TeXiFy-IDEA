@@ -10,7 +10,9 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.firstChildOfType
 import java.util.HashMap
 
 /**
@@ -132,15 +134,18 @@ fun PsiFile.isRoot(): Boolean {
     // Function to avoid unnecessary evaluation
     fun documentClass() = this.commandsInFile().find { it.commandToken.text == "\\documentclass" }
 
+    fun documentEnvironment() = this.firstChildOfType(LatexEnvironment::class)?.environmentName == "document"
+
     // Whether the document makes use of the subfiles class, in which case it is not a root file
     fun usesSubFiles() = documentClass()?.requiredParameters?.contains("subfiles") == true
+    if (usesSubFiles()) return false
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
 
-    return isMainFileInAnyConfiguration || documentClass() != null && !usesSubFiles()
+    return isMainFileInAnyConfiguration || documentEnvironment()
 }
 
 /**
