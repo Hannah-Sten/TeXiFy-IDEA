@@ -34,7 +34,7 @@ A LaTeX root file has the following structure:
 \end{document}
 ----
 
-Note that the preamble does not contain the `\documentclass` command.
+Note that the preamble does **not** contain the `\documentclass` command.
 To quote The LaTeX Companion:
 
 > Commands placed between `\documentclass` and `\begin{document}` are in the so-called _document preamble_.
