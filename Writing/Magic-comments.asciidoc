@@ -5,7 +5,9 @@ See link:Compilers#using-magic-comments-to-specify-the-compiler-for-new-run-conf
 
 == Root file
 
-If TeXiFy does not guess your root file correctly, for example you have your `\documentclass` not in the main file, you can override this by specifying a `root` magic comment at the top of a file, for example `%! root = main.tex`.
+If TeXiFy does not guess your root file(s) correctly, you can help TeXiFy by using the `root` magic comment to point TeXiFy to a root file.
+For example, use `%! root = main.tex` in a file that is included by `main.tex`, when TeXiFy cannot figure out that `main.tex` is a root file of this file.
+
 
 == Language injection
 
