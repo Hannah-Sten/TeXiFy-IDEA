@@ -1,7 +1,7 @@
 # Beta 0.7.1
 
 # Additions
-* Support paths relative to main file or project dir in run configuration template. (#1553)
+* Support paths relative to main file or project dir in run configuration template. (#1553, #1601)
 * Add support for the Zathura pdf viewer. (#1551)
 * Add support for the glossaries package. (#1572)
 * Add action to shift arguments. (#1585)
@@ -17,7 +17,10 @@
 * Fix file inclusion loop triggered incorrectly. (#1570)
 * Fix a concurrency issue with the fileset cache. (#1567)
 * Fix bibtex autocompletion not working with multiple comma-separated keys. (#1566)
-* Other bug fixes and improvements. (#1576)
+* Fix incorrect insertion of spaces around braces in bibtex. (#1609)
+* Fix some log parsing issues with long filenames and improve log parsing in some other cases. (#1604, #1613)
+* Fix sync from source for structure view. (#1613)
+* Other bug fixes and improvements. (#1576, #1603)
 
 Thanks to Felix Berlakovich ([@
 fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
