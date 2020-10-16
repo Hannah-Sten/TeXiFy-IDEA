@@ -22,6 +22,22 @@ class LatexDocumentclassNotInRootInspectionTest : TexifyInspectionTestBase(Latex
         myFixture.checkHighlighting()
     }
 
+    fun `test no warning with environment in preamble`() {
+        myFixture.configureByText(LatexFileType,
+        """
+            \documentclass{article}
+            
+            \begin{filecontents}{a}
+                bla
+            \end
+            
+            \begin{document}
+                contents
+            \end{document}
+        """.trimIndent())
+        myFixture.checkHighlighting()
+    }
+
     fun testWarning() {
         myFixture.configureByFiles("preamble.sty", "main.tex")
         myFixture.checkHighlighting()
