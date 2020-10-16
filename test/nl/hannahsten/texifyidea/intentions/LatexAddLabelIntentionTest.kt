@@ -51,7 +51,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
 
     fun testMissingSectionLabelWithComma() {
         myFixture.configureByText(
-                LatexFileType,
+            LatexFileType,
             """
             \begin{document}
                 \section{Section about A, B and C}<caret>
