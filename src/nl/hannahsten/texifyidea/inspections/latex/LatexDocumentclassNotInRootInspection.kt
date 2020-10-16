@@ -17,7 +17,7 @@ class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
 
     @Nls
     override fun getDisplayName(): String {
-        return "File that contains a document environment should contain a \\documentclass command"
+        return "Documentclass command should be in the same file as the document environment"
     }
 
     override val inspectionId: String

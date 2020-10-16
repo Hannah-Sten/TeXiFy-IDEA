@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.firstChildOfType
-import java.util.HashMap
+import java.util.*
 
 /**
  * Scans all file inclusions and finds the files that are at the base of all inclusions.
@@ -66,7 +66,6 @@ fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
  * Note: LaTeX Files can have more than one * root file, so using [findRootFiles] and explicitly handling the cases of
  * multiple root files is preferred over using [findRootFile].
  */
-@Deprecated("LaTeX files can actually have more than one root file.", replaceWith = ReplaceWith("PsiFile.findRootFiles()"))
 fun PsiFile.findRootFile(): PsiFile = findRootFiles().firstOrNull() ?: this
 
 /**
