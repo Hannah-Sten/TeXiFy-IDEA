@@ -562,7 +562,7 @@ object Magic {
          * Extensions that should only be scanned for the provided include commands.
          */
         @JvmField
-        val includeOnlyExtensions: Map<String, HashSet<String>> = mapOf(
+        val includeOnlyExtensions: Map<String, Set<String>> = mapOf(
             "\\include" to hashSetOf("tex"),
             "\\includeonly" to hashSetOf("tex"),
             "\\subfile" to hashSetOf("tex"),

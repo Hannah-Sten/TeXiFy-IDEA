@@ -107,13 +107,12 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             }
         }
 
-        // Look for packages elsewhere using the kpsewhich command.
-        @Suppress("RemoveExplicitTypeArguments")
-        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
+        // Look for packages/files elsewhere using the kpsewhich command.
+        if (targetFile == null && lookForInstalledPackages) {
             targetFile = element.getFileNameWithExtensions(key)
-                ?.map { LatexPackageLocationCache.getPackageLocation(it) }
-                ?.map { getExternalFile(it ?: return null) }
-                ?.firstOrNull { it != null }
+                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it) }
+                .mapNotNull { getExternalFile(it) }
+                .firstOrNull()
         }
 
         if (targetFile == null) return null
@@ -164,8 +163,8 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
      * Create a set possible complete file names (including extension), based on
      * the command that includes a file, and the name of the file.
      */
-    private fun LatexCommands.getFileNameWithExtensions(fileName: String): HashSet<String>? {
-        val extension: HashSet<String>? = Magic.Command.includeOnlyExtensions[this.commandToken.text]
-        return extension?.map { "$fileName.$it" }?.toHashSet()
+    private fun LatexCommands.getFileNameWithExtensions(fileName: String): Set<String> {
+        val extension = Magic.Command.includeOnlyExtensions[this.commandToken.text] ?: emptySet()
+        return extension.map { "$fileName.$it" }.toSet() + setOf(fileName)
     }
 }
