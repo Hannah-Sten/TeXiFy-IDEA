@@ -174,7 +174,7 @@ fun String.formatAsFilePath(): String {
  */
 fun String.formatAsLabel(): String {
     return replace(" ", "-")
-        .removeAll("%", "~", "#", "\\")
+        .removeAll("%", "~", "#", "\\", ",")
         .toLowerCase()
 }
 

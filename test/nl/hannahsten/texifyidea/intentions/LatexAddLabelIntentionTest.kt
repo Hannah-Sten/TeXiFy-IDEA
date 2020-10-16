@@ -48,4 +48,26 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testMissingSectionLabelWithComma() {
+        myFixture.configureByText(
+                LatexFileType,
+            """
+            \begin{document}
+                \section{Section about A, B and C}<caret>
+            \end{document}
+            """.trimIndent()
+        )
+        val intentions = myFixture.availableIntentions
+        writeCommand(myFixture.project) {
+            intentions.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+        }
+        myFixture.checkResult(
+            """
+            \begin{document}
+                \section{Section about A, B and C}\label{sec:section-about-a-b-and-c}<caret>
+            \end{document}
+            """.trimIndent()
+        )
+    }
 }
