@@ -196,4 +196,31 @@ ef) )))
         }
         assertTrue(stack.isEmpty())
     }
+
+    fun testOverfullHboxWithPar() {
+        val log =
+            """
+                
+(/home/thomas/GitRepos/2mmc10-homework/out/homework6.sagetex.scmd
+consecutive:
+)
+Overfull \hbox (31.54913pt too wide) in paragraph at lines 50--50
+ []                         \OT1/lmtt/m/n/10 mod((x_1 * y_2 + y_1 * x_2)/(1 - 5
+ * x_1 * x_2 * y_1 * y_2), p),[] 
+
+Overfull \hbox (26.29915pt too wide) in paragraph at lines 51--51
+ []                         \OT1/lmtt/m/n/10 mod((y_1 * y_2 - x_1 * x_2)/(1 - 5
+ * x_1 * x_2 * y_1 * y_2), p)[] 
+(/home/thomas/GitRepos/2mmc10-homework/out/homework6.sagetex.scmd
+consecutive:
+) (/home/thomas/GitRepos/2mmc10-homework/out/homework6.sagetex.scmd
+consecutive:
+)
+            """.trimIndent()
+        var stack = LatexFileStack()
+        log.split('\n').forEach {
+            stack = stack.update(it + "\n")
+        }
+        assertTrue(stack.isEmpty())
+    }
 }
