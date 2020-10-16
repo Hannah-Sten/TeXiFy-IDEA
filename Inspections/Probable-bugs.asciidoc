@@ -127,6 +127,8 @@ For some common commands TeXiFy knows which package is needed to use them.
 A quickfix is available to add the missing `\usepackage` or `\RequirePackage` command.
 For more information, see link:Automatic-package-importing[Automagically import packages of common commands].
 
+Note that if TeXiFy complains incorrectly that you did not import the package, you may need to tell TeXiFy which file is your root file, see link:Magic-comments[Magic comments].
+
 == Unescaped `#`, `&` and `_` symbol
 _Since b0.6.10_
 
