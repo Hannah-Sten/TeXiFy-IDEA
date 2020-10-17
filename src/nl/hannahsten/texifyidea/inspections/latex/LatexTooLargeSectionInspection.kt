@@ -93,10 +93,6 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         val commands = file.commandsInFile()
             .filter { cmd -> SECTION_NAMES.contains(cmd.name) }
 
-        if (isAlreadySplit(commands)) {
-            return descriptors
-        }
-
         for (i in commands.indices) {
             if (!isTooLong(commands[i], findNextSection(commands[i]))) {
                 continue
