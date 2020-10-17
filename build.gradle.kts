@@ -4,28 +4,28 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.4.22"
-    kotlin("jvm") version("1.3.72")
+    id("org.jetbrains.intellij") version "0.5.0"
+    kotlin("jvm") version("1.4.10")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.28.0"
+    id("com.github.ben-manes.versions") version "0.33.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
-    id("se.patrikerdes.use-latest-versions") version "0.2.14"
+    id("se.patrikerdes.use-latest-versions") version "0.2.15"
 
     // Used to debug in a different IDE
     maven
-    id("de.undercouch.download") version "4.0.4"
+    id("de.undercouch.download") version "4.1.1"
 
     // Test coverage
     jacoco
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
 group = "nl.hannahsten"
-version = "0.7.1-alpha.4"
+version = "0.7.1-alpha.8"
 
 repositories {
     mavenCentral()
@@ -78,26 +78,26 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java:3.2.1")
+    implementation("com.github.hypfvieh:dbus-java:3.2.3")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
 
     // Test dependencies
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13-rc-2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.7.0-M1")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.7.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0-M1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.7.0-M1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.7.0")
 
     // just in case
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    implementation("org.jetbrains.kotlin:kotlin-script-runtime:1.3.72")
+    implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
     testImplementation("io.mockk:mockk:1.10.0")
 
@@ -118,7 +118,7 @@ intellij {
     pluginName = "TeXiFy-IDEA"
 
     // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    setPlugins("tanvd.grazi:202.6397.21", "java")
+    setPlugins("tanvd.grazi:203.4449.8", "java")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -128,7 +128,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "2020.2"
+    version = "203.4449.2-EAP-SNAPSHOT"
 
     // Example to use a different, locally installed, IDE
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above

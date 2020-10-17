@@ -16,8 +16,8 @@ class LatexParserUtil : GeneratedParserUtilBase() {
         @JvmStatic fun injection_env_content(builder: PsiBuilder, level: Int, rawText: Parser): Boolean {
             // This might be optimized by handling the tokens incrementally
             val beginText = builder.originalText.subSequence(
-                    builder.latestDoneMarker?.startOffset ?: return true,
-                    builder.latestDoneMarker?.endOffset ?: return true
+                builder.latestDoneMarker?.startOffset ?: return true,
+                builder.latestDoneMarker?.endOffset ?: return true
             )
             val nameStart = beginText.indexOf('{') + 1
             val nameEnd = beginText.indexOf('}')
@@ -41,7 +41,8 @@ class LatexParserUtil : GeneratedParserUtilBase() {
             // \end is remapped because the lexer only knows afterwards whether it ended the environment or not, and whitespace is remapped because this allows keeping the last whitespace for the formatter
             builder.setTokenTypeRemapper { token, start, end, _ ->
                 if (startIndex <= start && end <= endIndex &&
-                        (token == LatexTypes.END_TOKEN || token == LatexTypes.BEGIN_TOKEN || token == LatexTypes.OPEN_BRACE || token == LatexTypes.OPEN_BRACE || token == com.intellij.psi.TokenType.WHITE_SPACE)) {
+                    (token == LatexTypes.END_TOKEN || token == LatexTypes.BEGIN_TOKEN || token == LatexTypes.OPEN_BRACE || token == LatexTypes.OPEN_BRACE || token == com.intellij.psi.TokenType.WHITE_SPACE)
+                ) {
                     LatexTypes.RAW_TEXT_TOKEN
                 }
                 else {

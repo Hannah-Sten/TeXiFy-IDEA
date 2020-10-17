@@ -21,10 +21,10 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
  * @author Sten Wessel
  */
 enum class LatexRegularCommand(
-        override val command: String,
-        override vararg val arguments: Argument = emptyArray(),
-        override val dependency: Package = DEFAULT,
-        override val display: String? = null
+    override val command: String,
+    override vararg val arguments: Argument = emptyArray(),
+    override val dependency: Package = DEFAULT,
+    override val display: String? = null
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),

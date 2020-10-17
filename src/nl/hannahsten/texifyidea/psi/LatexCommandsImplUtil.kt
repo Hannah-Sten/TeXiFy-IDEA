@@ -107,23 +107,27 @@ fun extractLabelReferences(element: LatexCommands, firstParam: LatexRequiredPara
     val subParamRanges = extractSubParameterRanges(firstParam)
     val references: MutableList<PsiReference> = ArrayList()
     for (range in subParamRanges) {
-        references.add(LatexLabelReference(
+        references.add(
+            LatexLabelReference(
                 element, range.shiftRight(firstParam.textOffset - element.textOffset)
-        ))
+            )
+        )
     }
     return references
 }
 
 fun readFirstParam(element: LatexCommands): LatexRequiredParam? {
-    return ApplicationManager.getApplication().runReadAction(Computable {
-        val params: List<LatexRequiredParam> = element.requiredParameters()
-        if (params.isEmpty()) null else params[0]
-    })
+    return ApplicationManager.getApplication().runReadAction(
+        Computable {
+            val params: List<LatexRequiredParam> = element.requiredParameters()
+            if (params.isEmpty()) null else params[0]
+        }
+    )
 }
 
 fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
     return splitToRanges(stripGroup(param.text), Magic.Pattern.parameterSplit)
-            .map { r: TextRange -> r.shiftRight(1) }
+        .map { r: TextRange -> r.shiftRight(1) }
 }
 
 fun splitToRanges(text: String, pattern: Pattern): List<TextRange> {
@@ -166,8 +170,8 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
                 if (content.group == null) return@mapNotNull null
                 content.group!!.contentList.joinToString { it.text }
             }
-            // Join different content types (like name= and {value}) together without separator
-            .joinToString("")
+                // Join different content types (like name= and {value}) together without separator
+                .joinToString("")
         }
         // Join different parameters (like [param1][param2]) together with separator
         .joinToString(",")
@@ -183,15 +187,15 @@ fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<Strin
 
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
     return parameters.mapNotNull { it.requiredParam }
-            .map { param ->
-                param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
-            }
+        .map { param ->
+            param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
+        }
 }
 
 fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
-        extractSubParameterRanges(firstParam)
-                .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
-                .toArray(emptyArray())
+    extractSubParameterRanges(firstParam)
+        .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
+        .toArray(emptyArray())
 
 /**
  * Checks if the command is followed by a label.

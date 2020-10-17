@@ -23,8 +23,10 @@ import nl.hannahsten.texifyidea.util.*
  */
 class InsertEnumerationItem : EnterHandlerDelegate {
 
-    override fun postProcessEnter(file: PsiFile, editor: Editor,
-                                  context: DataContext): Result {
+    override fun postProcessEnter(
+        file: PsiFile, editor: Editor,
+        context: DataContext
+    ): Result {
         if (file.fileType != LatexFileType) {
             return Result.Continue
         }
@@ -52,9 +54,11 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         return Result.Continue
     }
 
-    override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>,
-                                 context: DataContext,
-                                 p5: EditorActionHandler?): Result {
+    override fun preprocessEnter(
+        file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>,
+        context: DataContext,
+        p5: EditorActionHandler?
+    ): Result {
         return Result.Continue
     }
 

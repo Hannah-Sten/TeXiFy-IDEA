@@ -44,17 +44,19 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
 
         if (commands.findAtLeast(2) { it.name == "\\bibliographystyle" }) {
             file.commandsInFile().asSequence()
-                    .filter { it.name == "\\bibliographystyle" }
-                    .forEach {
-                        descriptors.add(manager.createProblemDescriptor(
-                                it,
-                                TextRange(0, it.commandToken.textLength),
-                                "\\bibliographystyle is already used elsewhere",
-                                ProblemHighlightType.GENERIC_ERROR,
-                                isOntheFly,
-                                RemoveOtherCommandsFix
-                        ))
-                    }
+                .filter { it.name == "\\bibliographystyle" }
+                .forEach {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            it,
+                            TextRange(0, it.commandToken.textLength),
+                            "\\bibliographystyle is already used elsewhere",
+                            ProblemHighlightType.GENERIC_ERROR,
+                            isOntheFly,
+                            RemoveOtherCommandsFix
+                        )
+                    )
+                }
         }
 
         return descriptors
@@ -74,10 +76,10 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
             val file = command.containingFile
 
             file.commandsInFileSet().asSequence()
-                    .filter { it.name == "\\bibliographystyle" && it != command }
-                    .forEach {
-                        it.delete()
-                    }
+                .filter { it.name == "\\bibliographystyle" && it != command }
+                .forEach {
+                    it.delete()
+                }
         }
     }
 }

@@ -14,81 +14,98 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
 
     @Test
     fun `test document missing subsection warning`() {
-        testInsertMissingParentCommandQuickFix("""
+        testInsertMissingParentCommandQuickFix(
+            """
             \begin{document}
                 \section{}
                 \subsubsection{}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \section{}
                 \subsection{<caret>}
                 \subsubsection{}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test
     fun `test subsection after chapter warning`() {
-        testInsertMissingParentCommandQuickFix("""
+        testInsertMissingParentCommandQuickFix(
+            """
             \begin{document}
                 \chapter{}
                 \subsection{}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \chapter{}
                 \section{<caret>}
                 \subsection{}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test
     fun `test change subsubsection to subsection quick fix`() {
-        testChangeToParentCommandQuickFix("""
+        testChangeToParentCommandQuickFix(
+            """
             \begin{document}
                 \section{}
                 \subsubsection{}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \section{}
                 \subsection{}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test
     fun `test subparagraph after section warning`() {
-        testInsertMissingParentCommandQuickFix("""
+        testInsertMissingParentCommandQuickFix(
+            """
             \begin{document}
                 \section{}
                 \subparagraph{}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \section{}
                 \paragraph{<caret>}
                 \subparagraph{}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test
     fun `test missing parent command warning`() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
              \begin{document}
                 \section{}
                 <weak_warning descr="Incorrect nesting">\subsubsection{}</weak_warning>
              \end{document}
-         """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(false, false, true, false)
     }
 
     @Test
     fun `test no warning on correct nesting`() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
              \begin{document}
                 \part{}
                 \part{}
@@ -104,7 +121,8 @@ internal class LatexIncorrectSectionNestingInspectionTest : BasePlatformTestCase
                 \subparagraph{}
                 \subparagraph{}
              \end{document}
-         """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(false, false, true, false)
     }
 

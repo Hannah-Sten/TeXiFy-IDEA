@@ -28,7 +28,8 @@ class ContinuousPreviewHandler : TypedHandlerDelegate() {
             val element = file.findElementAt(editor.caretModel.offset) ?: return@run
 
             val textEditor = if (editor is TextEditor) {
-                editor }
+                editor
+            }
             else {
                 ShowEquationPreview().getTextEditor(project, null) ?: return@run
             }

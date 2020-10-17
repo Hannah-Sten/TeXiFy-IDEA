@@ -76,9 +76,9 @@ abstract class EditorAction(val name: String, icon: Icon?) : AnAction(name, null
 
         val editors = FileEditorManager.getInstance(project).selectedEditors
         return Arrays.stream(editors)
-                .filter { e -> e is TextEditor }
-                .map { e -> e as TextEditor }
-                .findFirst()
-                .orElse(null)
+            .filter { e -> e is TextEditor }
+            .map { e -> e as TextEditor }
+            .findFirst()
+            .orElse(null)
     }
 }

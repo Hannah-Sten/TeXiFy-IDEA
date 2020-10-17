@@ -11,18 +11,18 @@ import java.util.regex.Pattern
  * @author Hannah Schellekens
  */
 open class LatexGroupedSubSupScriptInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Grouped superscript and subscript",
-        inspectionId = "GroupedSubSupScript",
-        errorMessage = {
-            val subSup = if (it.group(1) == "_") "Sub" else "Super"
-            "${subSup}script is not grouped"
-        },
-        pattern = Pattern.compile("((?<!(\\\\)|(\\\\string))[_^])([a-zA-Z0-9][a-zA-Z0-9]+)"),
-        mathMode = true,
-        highlightRange = { TextRange(it.start() - 1, it.end()) },
-        replacement = { it, _ -> "{${it.group(4)}}" },
-        replacementRange = { it.groupRange(4) },
-        quickFixName = { "Insert curly braces" }
+    inspectionDisplayName = "Grouped superscript and subscript",
+    inspectionId = "GroupedSubSupScript",
+    errorMessage = {
+        val subSup = if (it.group(1) == "_") "Sub" else "Super"
+        "${subSup}script is not grouped"
+    },
+    pattern = Pattern.compile("((?<!(\\\\)|(\\\\string))[_^])([a-zA-Z0-9][a-zA-Z0-9]+)"),
+    mathMode = true,
+    highlightRange = { TextRange(it.start() - 1, it.end()) },
+    replacement = { it, _ -> "{${it.group(4)}}" },
+    replacementRange = { it.groupRange(4) },
+    quickFixName = { "Insert curly braces" }
 ) {
 
     override fun checkContext(element: PsiElement): Boolean {

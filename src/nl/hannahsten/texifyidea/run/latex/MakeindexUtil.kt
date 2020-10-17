@@ -68,9 +68,9 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         // Find index package options
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-                .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
-                .filter { command -> command.requiredParameters.any { it in Magic.Package.index || it in Magic.Package.glossary } }
-                .flatMap { it.optionalParameters.keys }
+            .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
+            .filter { command -> command.requiredParameters.any { it in Magic.Package.index || it in Magic.Package.glossary } }
+            .flatMap { it.optionalParameters.keys }
     }
 }
 
@@ -82,10 +82,10 @@ fun getMakeindexOptions(mainFile: VirtualFile?, project: @NotNull Project): Hash
         val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
         val makeindexOptions = HashMap<String, String>()
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
-                .filter { it.commandToken.text == "\\makeindex" }
-                .forEach {
-                    makeindexOptions.putAll(it.optionalParameters)
-                }
+            .filter { it.commandToken.text == "\\makeindex" }
+            .forEach {
+                makeindexOptions.putAll(it.optionalParameters)
+            }
         makeindexOptions
     }
 }

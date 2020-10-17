@@ -57,14 +57,16 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                     continue
                 }
 
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         text,
                         TextRange(matchRange.last - 2, matchRange.last),
                         "Abbreviation should be followed by a normal space",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
                         NormalSpaceFix(matchRange)
-                ))
+                    )
+                )
             }
         }
 

@@ -18,22 +18,24 @@ class ClearGeneratedFiles : AnAction() {
         // Delete generated files only in these folders
         for (folder in setOf("src", "auxil", "out")) {
             File(basePath, folder).walk().maxDepth(1)
-                    .filter { it.isFile }
-                    .filter { it.extension in Magic.File.generatedFileTypes }
-                    .forEach { it.delete() }
+                .filter { it.isFile }
+                .filter { it.extension in Magic.File.generatedFileTypes }
+                .forEach { it.delete() }
         }
 
         // Generated minted files
         File(basePath, "src").walk().maxDepth(1)
-                .filter { it.name.startsWith("_minted") }
-                .forEach { it.deleteRecursively() }
+            .filter { it.name.startsWith("_minted") }
+            .forEach { it.deleteRecursively() }
 
-        showOkCancelDialog("Clear auxiliary and generated files",
-                "Delete all LaTeX auxiliary and generated files? \n" +
-                        "All auxiliary and generated files in src/, auxil/ and out/ will be deleted, \n" +
-                        "including for example pdf and log files. \n" +
-                        "You might not be able to fully undo this operation!",
-                "Delete")
+        showOkCancelDialog(
+            "Clear auxiliary and generated files",
+            "Delete all LaTeX auxiliary and generated files? \n" +
+                "All auxiliary and generated files in src/, auxil/ and out/ will be deleted, \n" +
+                "including for example pdf and log files. \n" +
+                "You might not be able to fully undo this operation!",
+            "Delete"
+        )
         LocalFileSystem.getInstance().refresh(true)
     }
 }

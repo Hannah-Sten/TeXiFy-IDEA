@@ -29,16 +29,19 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
 
         return LatexCommandsIndex.getCommandsByNames(file, *sectioningCommands())
-                .sortedBy { it.textOffset }
-                .zipWithNext()
-                .filter { (first, second) -> first.commandName() in commandToForbiddenPredecessors[second.commandName()] ?: error("Unexpected command") }
-                .map { manager.createProblemDescriptor(it.second,
-                            "Incorrect nesting",
-                            arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
-                            ProblemHighlightType.WEAK_WARNING,
-                            isOntheFly,
-                            false)
-                }
+            .sortedBy { it.textOffset }
+            .zipWithNext()
+            .filter { (first, second) -> first.commandName() in commandToForbiddenPredecessors[second.commandName()] ?: error("Unexpected command") }
+            .map {
+                manager.createProblemDescriptor(
+                    it.second,
+                    "Incorrect nesting",
+                    arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
+                    ProblemHighlightType.WEAK_WARNING,
+                    isOntheFly,
+                    false
+                )
+            }
     }
 
     private fun sectioningCommands() = commandToForbiddenPredecessors.keys.toTypedArray()
@@ -78,13 +81,13 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
     companion object {
 
         val commandToForbiddenPredecessors = mapOf(
-                """\part""" to emptyList(),
-                """\chapter""" to emptyList(),
-                """\section""" to emptyList(),
-                """\subsection""" to listOf("""\part""", """\chapter"""),
-                """\subsubsection""" to listOf("""\part""", """\chapter""", """\section"""),
-                """\paragraph""" to emptyList(),
-                """\subparagraph""" to listOf("""\part""", """\chapter""", """\section""", """\subsection""", """\subsubsection""")
+            """\part""" to emptyList(),
+            """\chapter""" to emptyList(),
+            """\section""" to emptyList(),
+            """\subsection""" to listOf("""\part""", """\chapter"""),
+            """\subsubsection""" to listOf("""\part""", """\chapter""", """\section"""),
+            """\paragraph""" to emptyList(),
+            """\subparagraph""" to listOf("""\part""", """\chapter""", """\section""", """\subsection""", """\subsubsection""")
         )
     }
 }

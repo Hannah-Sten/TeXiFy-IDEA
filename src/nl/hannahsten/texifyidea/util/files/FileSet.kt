@@ -25,25 +25,25 @@ import nl.hannahsten.texifyidea.util.isDefinition
  * @return All the files that are cross referenced between each other.
  */
 // Internal because only ReferencedFileSetCache should call this
-internal fun findReferencedFileSetWithoutCache(baseFile: PsiFile): Set<PsiFile> {
+internal fun PsiFile.findReferencedFileSetWithoutCache(): Set<PsiFile> {
     // Setup.
-    val project = baseFile.project
+    val project = this.project
     val includes = LatexIncludesIndex.getItems(project)
 
     // Find all root files.
     val roots = includes.asSequence()
-            .map { it.containingFile }
-            .distinct()
-            .filter { it.isRoot() }
-            .toSet()
+        .map { it.containingFile }
+        .distinct()
+        .filter { it.isRoot() }
+        .toSet()
 
     // Map root to all directly referenced files.
     val sets = HashMap<PsiFile, Set<PsiFile>>()
     for (root in roots) {
         val referenced = root.referencedFiles(root.virtualFile) + root
 
-        if (referenced.contains(baseFile)) {
-            return referenced + baseFile
+        if (referenced.contains(this)) {
+            return referenced + this
         }
 
         sets[root] = referenced
@@ -51,12 +51,12 @@ internal fun findReferencedFileSetWithoutCache(baseFile: PsiFile): Set<PsiFile> 
 
     // Look for matching root.
     for (referenced in sets.values) {
-        if (referenced.contains(baseFile)) {
-            return referenced + baseFile
+        if (referenced.contains(this)) {
+            return referenced + this
         }
     }
 
-    return setOf(baseFile)
+    return setOf(this)
 }
 
 /**
@@ -91,7 +91,7 @@ fun PsiFile.commandsAndFilesInFileSet(): List<Pair<PsiFile, Collection<LatexComm
  */
 fun PsiFile.definitionsInFileSet(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItemsInFileSet(this)
-            .filter { it.isDefinition() }
+        .filter { it.isDefinition() }
 }
 
 /**

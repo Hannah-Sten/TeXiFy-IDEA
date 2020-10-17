@@ -40,7 +40,7 @@ open class BibtexStructureViewEntriesElement(val file: PsiFile) : StructureViewT
     override fun getChildren(): Array<TreeElement> {
         val entries = file.childrenOfType(BibtexEntry::class)
         return entries
-                .map { BibtexStructureViewEntryElement(it) }
-                .toTypedArray()
+            .map { BibtexStructureViewEntryElement(it) }
+            .toTypedArray()
     }
 }

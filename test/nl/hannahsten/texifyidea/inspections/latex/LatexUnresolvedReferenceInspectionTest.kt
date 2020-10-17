@@ -11,39 +11,51 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     }
 
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \ref{<warning descr="Unresolved reference 'alsonot'">alsonot</warning>}
             \cite{<warning descr="Unresolved reference 'nope'">nope</warning>}
             
             \newcommand*{\citewithauthor}[1]{\citeauthor{#1}~\cite{#1}}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testNoWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \label{alabel}
             \ref{alabel}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testNoWarningCustomCommand() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\mylabel}[1]{\label{#1}}
             \section{some sec}\mylabel{some-sec}
             ~\ref{some-sec}
-        """.trimIndent())
+            """.trimIndent()
+        )
         CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting()
     }
 
     fun testNoWarningCustomCommandWithPrefix() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\mylabel}[1]{\label{sec:#1}}
             \section{some sec}\mylabel{some-sec}
             ~\ref{sec:some-sec}
-        """.trimIndent())
+            """.trimIndent()
+        )
         CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting()
     }
@@ -60,7 +72,9 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     // }
 
     fun testFigureReferencedCustomCommandOptionalParameter() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\includenamedimage}[3][]{
             \begin{figure}
                 \centering
@@ -75,7 +89,8 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         
             some text~\ref{fig:test.png} more text.
             some text~\ref{fig:test2.png} more text.
-        """.trimIndent())
+            """.trimIndent()
+        )
         CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting()
     }

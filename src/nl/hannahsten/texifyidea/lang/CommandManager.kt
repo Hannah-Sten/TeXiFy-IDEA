@@ -561,7 +561,7 @@ object CommandManager : Iterable<String?>, Serializable {
 
     override fun toString(): String {
         return "CommandManager{" + "aliases=" + aliases +
-                ", original=" + original +
-                '}'
+            ", original=" + original +
+            '}'
     }
 }

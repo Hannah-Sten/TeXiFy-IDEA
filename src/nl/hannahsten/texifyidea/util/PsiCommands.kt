@@ -41,7 +41,7 @@ fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Magi
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
-        (this.name in Magic.Command.redefinitions || this.name in Magic.Command.redefinitions)
+    (this.name in Magic.Command.redefinitions || this.name in Magic.Command.redefinitions)
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
@@ -49,7 +49,7 @@ fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
  * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
  */
 fun LatexCommands?.isCommandDefinition(): Boolean =
-        this != null && (name in Magic.Command.regularCommandDefinitions || name in Magic.Command.mathCommandDefinitions)
+    this != null && (name in Magic.Command.regularCommandDefinitions || name in Magic.Command.mathCommandDefinitions)
 
 /**
  * Checks whether the given LaTeX commands is an environment definition or not.
@@ -57,8 +57,10 @@ fun LatexCommands?.isCommandDefinition(): Boolean =
  * @return `true` if the command is an environment definition, `false` when the command is `null` or otherwise.
  */
 fun LatexCommands?.isEnvironmentDefinition(): Boolean {
-    return this != null && ("\\newenvironment" == name ||
-            "\\renewenvironment" == name)
+    return this != null && (
+        "\\newenvironment" == name ||
+            "\\renewenvironment" == name
+        )
 }
 
 /**
@@ -81,7 +83,7 @@ fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
 fun LatexCommands.nextCommand(): LatexCommands? {
     val content = parentOfType(LatexContent::class) ?: return null
     val next = content.nextSiblingIgnoreWhitespace() as? LatexContent
-            ?: return null
+        ?: return null
     return next.firstChildOfType(LatexCommands::class)
 }
 
@@ -93,7 +95,7 @@ fun LatexCommands.nextCommand(): LatexCommands? {
 fun LatexCommands.previousCommand(): LatexCommands? {
     val content = parentOfType(LatexContent::class) ?: return null
     val previous = content.previousSiblingIgnoreWhitespace() as? LatexContent
-            ?: return null
+        ?: return null
     return previous.firstChildOfType(LatexCommands::class)
 }
 
@@ -110,13 +112,15 @@ fun LatexCommands.definedCommandName() = when (name) {
  */
 fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
     // Find all pre-defined commands that define `this` command.
-    val requiredArgIndices = LatexRegularCommand[name?.substring(1)
-        ?: return null]
-            // Find the index of their required parameter named [argument].
-            ?.map {
-                it.arguments.filterIsInstance<RequiredArgument>()
-                        .indexOfFirst { arg -> arg.name == argument }
-            }
+    val requiredArgIndices = LatexRegularCommand[
+        name?.substring(1)
+            ?: return null
+    ]
+        // Find the index of their required parameter named [argument].
+        ?.map {
+            it.arguments.filterIsInstance<RequiredArgument>()
+                .indexOfFirst { arg -> arg.name == argument }
+        }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
     else requiredParameters.getOrNull(min(requiredArgIndices.first(), requiredParameters.size - 1))
 }
@@ -164,7 +168,7 @@ fun LatexCommands.findIndentation(): String {
  */
 fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
     return references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(includeInstalledPackages) }
+        .mapNotNull { it.resolve(includeInstalledPackages) }
 }
 
 /**
@@ -173,9 +177,9 @@ fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiF
  * @return A list of all required parameters.
  */
 fun LatexCommands.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
-        .filter { it.requiredParam != null }
-        .mapNotNull(LatexParameter::getRequiredParam)
-        .toList()
+    .filter { it.requiredParam != null }
+    .mapNotNull(LatexParameter::getRequiredParam)
+    .toList()
 
 /**
  * Returns the forced first required parameter of a command as a command.

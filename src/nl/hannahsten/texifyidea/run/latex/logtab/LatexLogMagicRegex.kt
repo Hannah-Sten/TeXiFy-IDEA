@@ -9,56 +9,67 @@ object LatexLogMagicRegex {
 
     // Match filename:linenumber: as this probably denotes an error, but not if it appears in a stacktrace
     // and starts with ...
-    const val FILE_LINE_REGEX: String = """(?!\s*\.\.\.)(?<file>.+\.\w+):(?<line>\d+):""" // error
-    val REPORTED_ON_LINE_REGEX = """( Reported| Found)? on input line (?<line>\d+).""".toRegex()
-    const val LINE_REGEX: String = """on input line (?<line>\d+).""" // meestal warning
+    const val FILE_LINE_REGEX: String =
+        """(?!\s*\.\.\.)(?<file>.+\.\w+):(?<line>\d+):""" // error
+    val REPORTED_ON_LINE_REGEX =
+        """( Reported| Found)? on input line (?<line>\d+).""".toRegex()
+    const val LINE_REGEX: String =
+        """on input line (?<line>\d+).""" // meestal warning
     const val LATEX_ERROR_REGEX: String = "!" // error
     const val PDFTEX_ERROR_REGEX: String = "!pdfTeX error:"
     const val LATEX_WARNING_REGEX: String = "LaTeX( Font)? Warning:" // warning
-    const val PACKAGE_REGEX: String = """(?<package>[\d\w-\.]+)""" // package error/warning?
-    const val REFERENCE_REGEX: String = """(?<label>(`|').+')""" // reference warning
+    const val PACKAGE_REGEX: String =
+        """(?<package>[\d\w-\.]+)""" // package error/warning?
+    const val REFERENCE_REGEX: String =
+        """(?<label>(`|').+')""" // reference warning
     const val PACKAGE_WARNING_CONTINUATION = "\\(\\w+\\) {${"Package warning:".length}}"
-    const val DUPLICATE_WHITESPACE = """\s{2,}"""
+    const val DUPLICATE_WHITESPACE =
+        """\s{2,}"""
 
-    val lineNumber = """^l.\d+ """.toRegex()
+    val lineNumber =
+        """^l.\d+ """.toRegex()
 
     /*
      * Errors
      */
 
     /** A variation on [FILE_LINE_REGEX] by lualatex (?) */
-    val directLuaError = """^\((?!\s*\.\.\.)(.+\.\w+)\)(\[.+])?:(?<line>\d+): (?<message>.*)""".toRegex()
-    val fixMeError = """FiXme (Fatal )?Error: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
+    val directLuaError =
+        """^\((?!\s*\.\.\.)(.+\.\w+)\)(\[.+])?:(?<line>\d+): (?<message>.*)""".toRegex()
+    val fixMeError =
+        """FiXme (Fatal )?Error: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
 
     /*
      * Warnings
      */
-    val fixMeWarning = """FiXme Warning: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
-    val pdfTeXWarning = """pdfTeX warning(.+)?: (?<message>.+)""".toRegex()
+    val fixMeWarning =
+        """FiXme Warning: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
+    val pdfTeXWarning =
+        """pdfTeX warning(.+)?: (?<message>.+)""".toRegex()
 
     val TEX_MISC_WARNINGS = listOf(
-            "LaTeX Warning: ",
-            "LaTeX Font Warning: ",
-            "AVAIL list clobbered at",
-            "Citation",
-            "Double-AVAIL list clobbered at",
-            "Doubly free location at",
-            "Bad flag at",
-            "Runaway definition",
-            "Runaway argument",
-            "Runaway text",
-            "Missing character: There is no",
-            "No auxiliary output files.",
-            "No file ",
-            "No pages of output.",
-            "Underfull \\hbox",
-            "Overfull \\hbox",
-            "Loose \\hbox",
-            "Tight \\hbox",
-            "Underfull \\vbox",
-            "Overfull \\vbox",
-            "Loose \\vbox",
-            "Tight \\vbox",
-            "(\\end occurred"
+        "LaTeX Warning: ",
+        "LaTeX Font Warning: ",
+        "AVAIL list clobbered at",
+        "Citation",
+        "Double-AVAIL list clobbered at",
+        "Doubly free location at",
+        "Bad flag at",
+        "Runaway definition",
+        "Runaway argument",
+        "Runaway text",
+        "Missing character: There is no",
+        "No auxiliary output files.",
+        "No file ",
+        "No pages of output.",
+        "Underfull \\hbox",
+        "Overfull \\hbox",
+        "Loose \\hbox",
+        "Tight \\hbox",
+        "Underfull \\vbox",
+        "Overfull \\vbox",
+        "Loose \\vbox",
+        "Tight \\vbox",
+        "(\\end occurred"
     )
 }

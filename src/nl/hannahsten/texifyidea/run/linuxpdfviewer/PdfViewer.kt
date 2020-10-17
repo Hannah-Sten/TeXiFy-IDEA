@@ -14,9 +14,11 @@ import nl.hannahsten.texifyidea.util.runCommand
  * @param viewerCommand The command to call the viewer from the command line.
  * @param conversation The conversation class needed/used to talk to this viewer.
  */
-enum class PdfViewer(private val viewerCommand: String,
-                     val displayName: String,
-                     val conversation: ViewerConversation?) {
+enum class PdfViewer(
+    private val viewerCommand: String,
+    val displayName: String,
+    val conversation: ViewerConversation?
+) {
     EVINCE("evince", "Evince", EvinceConversation),
     OKULAR("okular", "Okular", OkularConversation),
     ZATHURA("zathura", "Zathura", ZathuraConversation),

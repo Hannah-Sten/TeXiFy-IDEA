@@ -28,7 +28,7 @@ open class LatexMathToggle : TexifyIntentionBase("Convert to other math environm
         }
 
         val element = file.findElementAt(editor.caretModel.offset)
-                ?: return false
+            ?: return false
         return element.inMathContext() || element.hasParent(LatexInlineMath::class)
     }
 
@@ -46,7 +46,7 @@ open class LatexMathToggle : TexifyIntentionBase("Convert to other math environm
             }
             element.hasParent(LatexDisplayMath::class) -> {
                 element = element.parentOfType(LatexDisplayMath::class)
-                        ?: return
+                    ?: return
                 "display"
             }
             else -> {
@@ -56,27 +56,27 @@ open class LatexMathToggle : TexifyIntentionBase("Convert to other math environm
         } ?: return
 
         val availableEnvironments: List<String> = arrayOf(
-                DefaultEnvironment.values()
-                        .filter { it.context == Environment.Context.MATH }
-                        .map { it.environmentName }
-                        .toTypedArray(),
-                // Add the inline and display environments.
-                arrayOf("inline", "display")
+            DefaultEnvironment.values()
+                .filter { it.context == Environment.Context.MATH }
+                .map { it.environmentName }
+                .toTypedArray(),
+            // Add the inline and display environments.
+            arrayOf("inline", "display")
         )
-                .flatten()
-                // Remove equation*/displaymath, split/cases, and current environments.
-                .filter { it != "split" && it != "cases" && it != "equation*" && it != "displaymath" && it != environmentName }
-                .sorted()
+            .flatten()
+            // Remove equation*/displaymath, split/cases, and current environments.
+            .filter { it != "split" && it != "cases" && it != "equation*" && it != "displaymath" && it != environmentName }
+            .sorted()
 
         // Ask for the new environment name.
         JBPopupFactory.getInstance()
-                .createPopupChooserBuilder(availableEnvironments)
-                .setTitle("Math Environments")
-                .setItemChosenCallback {
-                    // Apply the chosen environment.
-                    MathEnvironmentEditor(environmentName, it, editor, element).apply()
-                }
-                .setRenderer(PopupChooserCellRenderer())
-                .createPopup().showInBestPositionFor(editor)
+            .createPopupChooserBuilder(availableEnvironments)
+            .setTitle("Math Environments")
+            .setItemChosenCallback {
+                // Apply the chosen environment.
+                MathEnvironmentEditor(environmentName, it, editor, element).apply()
+            }
+            .setRenderer(PopupChooserCellRenderer())
+            .createPopup().showInBestPositionFor(editor)
     }
 }

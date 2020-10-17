@@ -49,7 +49,8 @@ object Magic {
         )
 
         @JvmField
-        val latexDemoText = """
+        val latexDemoText =
+            """
                 |%
                 |% An amazing example for LaTeX.
                 |%
@@ -140,7 +141,8 @@ object Magic {
 
         @Language("Bibtex")
         @JvmField
-        val bibtexDemoText = """
+        val bibtexDemoText =
+            """
                 % I am a BibTeX comment.
                 @article{greenwade1993,
                     author  = "George D. Greenwade",
@@ -160,7 +162,7 @@ object Magic {
                     publisher = "Addison-Wesley",
                     address   = "Reading, Massachusetts"
                 }
-        """.trimIndent()
+            """.trimIndent()
     }
 
     /**
@@ -173,26 +175,26 @@ object Magic {
          */
         @JvmField
         val braceOpposites = mapOfVarargs(
-                "(", ")",
-                "[", "]",
-                "\\{", "\\}",
-                "<", ">",
-                "|", "|",
-                "\\|", "\\|"
+            "(", ")",
+            "[", "]",
+            "\\{", "\\}",
+            "<", ">",
+            "|", "|",
+            "\\|", "\\|"
         )
 
         /**
          * Algorithmicx pairs (also hardcoded in lexer).
          */
         val pseudoCodeBeginEndOpposites = mapOf(
-                "If" to "EndIf",
-                "For" to "EndFor",
-                "ForAll" to "EndFor",
-                "While" to "EndWhile",
-                "Repeat" to "Until",
-                "Loop" to "EndLoop",
-                "Function" to "EndFunction",
-                "Procedure" to "EndProcedure"
+            "If" to "EndIf",
+            "For" to "EndFor",
+            "ForAll" to "EndFor",
+            "While" to "EndWhile",
+            "Repeat" to "Until",
+            "Loop" to "EndLoop",
+            "Function" to "EndFunction",
+            "Procedure" to "EndProcedure"
         )
     }
 
@@ -214,12 +216,12 @@ object Magic {
          */
         @JvmField
         val labeled = mapOfVarargs(
-                "figure", "fig",
-                "table", "tab",
-                "equation", "eq",
-                "algorithm", "alg",
-                "lstlisting", "lst",
-                "Verbatim", "verb"
+            "figure", "fig",
+            "table", "tab",
+            "equation", "eq",
+            "algorithm", "alg",
+            "lstlisting", "lst",
+            "Verbatim", "verb"
         )
 
         /**
@@ -235,7 +237,7 @@ object Magic {
         val figures = hashSetOf("figure")
 
         @JvmField
-        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*", "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample")
+        val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*", "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted")
 
         @JvmField
         val algorithmEnvironments = setOf("algorithmic")
@@ -245,22 +247,22 @@ object Magic {
          */
         @JvmField
         val matrixEnvironments = setOf(
-                "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
-                "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
-                "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
-                "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
-                "gmatrix", "tikz-cd"
+            "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
+            "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
+            "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
+            "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
+            "gmatrix", "tikz-cd"
         )
 
         @JvmField
         val alignableEnvironments = setOf(
-                "eqnarray", "eqnarray*",
-                "split",
-                "align", "align*",
-                "alignat", "alignat*",
-                "flalign", "flalign*",
-                "aligned", "alignedat",
-                "cases", "dcases"
+            "eqnarray", "eqnarray*",
+            "split",
+            "align", "align*",
+            "alignat", "alignat*",
+            "flalign", "flalign*",
+            "aligned", "alignedat",
+            "cases", "dcases"
         ) + matrixEnvironments
     }
 
@@ -283,8 +285,8 @@ object Magic {
          */
         @JvmField
         val high = hashSetOf(
-                "\\frac", "\\dfrac", "\\sqrt", "\\sum", "\\int", "\\iint", "\\iiint", "\\iiiint",
-                "\\prod", "\\bigcup", "\\bigcap", "\\bigsqcup", "\\bigsqcap"
+            "\\frac", "\\dfrac", "\\sqrt", "\\sum", "\\int", "\\iint", "\\iiint", "\\iiiint",
+            "\\prod", "\\bigcup", "\\bigcap", "\\bigsqcup", "\\bigsqcap"
         )
 
         /**
@@ -292,11 +294,11 @@ object Magic {
          */
         @JvmField
         val labeledPrefixes = mapOf(
-                "\\" + CHAPTER.command to "ch",
-                "\\" + SECTION.command to "sec",
-                "\\" + SUBSECTION.command to "subsec",
-                "\\" + SUBSUBSECTION.command to "subsubsec",
-                "\\" + ITEM.command to "itm"
+            "\\" + CHAPTER.command to "ch",
+            "\\" + SECTION.command to "sec",
+            "\\" + SUBSECTION.command to "subsec",
+            "\\" + SUBSUBSECTION.command to "subsubsec",
+            "\\" + ITEM.command to "itm"
         )
 
         /**
@@ -346,9 +348,9 @@ object Magic {
          */
         @JvmField
         val labelReferenceWithoutCustomCommands = hashSetOf(
-                "\\ref", "\\eqref", "\\nameref", "\\autoref",
-                "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
-                "\\labelcref", "\\cpageref"
+            "\\ref", "\\eqref", "\\nameref", "\\autoref",
+            "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
+            "\\labelcref", "\\cpageref"
         )
 
         /**
@@ -365,17 +367,17 @@ object Magic {
          */
         @JvmField
         val bibliographyReference = hashSetOf(
-                "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
-                "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
-                "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
-                "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar", "\\parencite", "\\Parencite",
-                "\\footcite", "\\footcitetext", "\\textcite", "\\Textcite", "\\smartcite", "\\Smartcite",
-                "\\cite*", "\\parencite*", "\\supercite", "\\autocite", "\\Autocite", "\\autocite*",
-                "\\Autocite*", "\\citetitle", "\\citetitle*", "\\citeyear*", "\\citedate", "\\citedate*",
-                "\\citeurl", "\\volcite", "\\Volcite", "\\pvolcite", "\\Pvolcite", "\\fvolcite",
-                "\\Fvolcite", "\\ftvolcite", "\\svolcite", "\\Svolcite", "\\tvolcite", "\\Tvolcite",
-                "\\avolcite", "\\Avolcite", "\\fullcite", "\\footfullcite", "\\notecite", "\\Notecite",
-                "\\pnotecite", "\\fnotecite"
+            "\\cite", "\\nocite", "\\citep", "\\citep*", "\\citet", "\\citet*", "\\Citep",
+            "\\Citep*", "\\Citet", "\\Citet*", "\\citealp", "\\citealp*", "\\citealt", "\\citealt*",
+            "\\Citealp", "\\Citealp*", "\\Citealt", "\\Citealt*", "\\citeauthor", "\\citeauthor*",
+            "\\Citeauthor", "\\Citeauthor*", "\\citeyear", "\\citeyearpar", "\\parencite", "\\Parencite",
+            "\\footcite", "\\footcitetext", "\\textcite", "\\Textcite", "\\smartcite", "\\Smartcite",
+            "\\cite*", "\\parencite*", "\\supercite", "\\autocite", "\\Autocite", "\\autocite*",
+            "\\Autocite*", "\\citetitle", "\\citetitle*", "\\citeyear*", "\\citedate", "\\citedate*",
+            "\\citeurl", "\\volcite", "\\Volcite", "\\pvolcite", "\\Pvolcite", "\\fvolcite",
+            "\\Fvolcite", "\\ftvolcite", "\\svolcite", "\\Svolcite", "\\tvolcite", "\\Tvolcite",
+            "\\avolcite", "\\Avolcite", "\\fullcite", "\\footfullcite", "\\notecite", "\\Notecite",
+            "\\pnotecite", "\\fnotecite"
         )
 
         /**
@@ -435,19 +437,19 @@ object Magic {
          */
         @JvmField
         val slashlessMathOperators = hashSetOf(
-                "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
-                "deg", "det", "dim", "exp", "gcd", "hom", "inf", "ker", "lg", "lim", "liminf", "limsup",
-                "ln", "log", "max", "min", "Pr", "sec", "sin", "sinh", "sup", "tan", "tanh"
+            "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
+            "deg", "det", "dim", "exp", "gcd", "hom", "inf", "ker", "lg", "lim", "liminf", "limsup",
+            "ln", "log", "max", "min", "Pr", "sec", "sin", "sinh", "sup", "tan", "tanh"
         )
 
         /**
          * All commands that define regular commands, and that require that the command is not already defined.
          */
         val regularStrictCommandDefinitions = hashSetOf(
-                "\\" + NEWCOMMAND.command,
-                "\\" + NEWCOMMAND_STAR.command,
-                "\\" + NEWIF.command,
-                "\\" + NEWDOCUMENTCOMMAND.command
+            "\\" + NEWCOMMAND.command,
+            "\\" + NEWCOMMAND_STAR.command,
+            "\\" + NEWIF.command,
+            "\\" + NEWDOCUMENTCOMMAND.command
         )
 
         /**
@@ -455,15 +457,15 @@ object Magic {
          */
         @JvmField
         val redefinitions = hashSetOf(
-                RENEWCOMMAND,
-                RENEWCOMMAND_STAR,
-                PROVIDECOMMAND, // Does nothing if command exists
-                PROVIDECOMMAND_STAR,
-                PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
-                DECLAREDOCUMENTCOMMAND,
-                DEF,
-                LET,
-                RENEWENVIRONMENT
+            RENEWCOMMAND,
+            RENEWCOMMAND_STAR,
+            PROVIDECOMMAND, // Does nothing if command exists
+            PROVIDECOMMAND_STAR,
+            PROVIDEDOCUMENTCOMMAND, // Does nothing if command exists
+            DECLAREDOCUMENTCOMMAND,
+            DEF,
+            LET,
+            RENEWENVIRONMENT
         ).map { "\\" + it.command }
 
         /**
@@ -477,10 +479,10 @@ object Magic {
          */
         @JvmField
         val mathCommandDefinitions = hashSetOf(
-                "\\" + DECLARE_MATH_OPERATOR.command,
-                "\\" + DECLARE_PAIRED_DELIMITER.command,
-                "\\" + DECLARE_PAIRED_DELIMITER_X.command,
-                "\\" + DECLARE_PAIRED_DELIMITER_XPP.command
+            "\\" + DECLARE_MATH_OPERATOR.command,
+            "\\" + DECLARE_PAIRED_DELIMITER.command,
+            "\\" + DECLARE_PAIRED_DELIMITER_X.command,
+            "\\" + DECLARE_PAIRED_DELIMITER_XPP.command
         )
 
         /**
@@ -524,18 +526,18 @@ object Magic {
          */
         @JvmField
         val fragile = hashSetOf(
-                "\\addtocounter", "\\begin", "\\chapter", "\\def", "\\documentclass", "\\end",
-                "\\include", "\\includeonly", "\\input", "\\label", "\\let", "\\newcommand",
-                "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
-                "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
-                "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
-                "\\newenvironment", "\\bibitem",
-                "\\NewDocumentCommand",
-                "\\ProvideDocumentCommand",
-                "\\DeclareDocumentCommand",
-                "\\NewDocumentEnvironment",
-                "\\ProvideDocumentEnvironment",
-                "\\DeclareDocumentEnvironment"
+            "\\addtocounter", "\\begin", "\\chapter", "\\def", "\\documentclass", "\\end",
+            "\\include", "\\includeonly", "\\input", "\\label", "\\let", "\\newcommand",
+            "\\overline", "\\paragraph", "\\part", "\\renewcommand", "\\section", "\\setcounter",
+            "\\sout", "\\subparagraph", "\\subsection", "\\subsubsection", "\\textbf",
+            "\\textit", "\\textsc", "\\textsl", "\\texttt", "\\underline", "\\[", "\\]",
+            "\\newenvironment", "\\bibitem",
+            "\\NewDocumentCommand",
+            "\\ProvideDocumentCommand",
+            "\\DeclareDocumentCommand",
+            "\\NewDocumentEnvironment",
+            "\\ProvideDocumentEnvironment",
+            "\\DeclareDocumentEnvironment"
         )
 
         /**
@@ -543,9 +545,9 @@ object Magic {
          */
         @JvmField
         val illegalExtensions = mapOf(
-                "\\" + INCLUDE.command to listOf(".tex"),
-                "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
-                "\\" + BIBLIOGRAPHY.command to listOf(".bib")
+            "\\" + INCLUDE.command to listOf(".tex"),
+            "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
+            "\\" + BIBLIOGRAPHY.command to listOf(".bib")
         )
 
         /**
@@ -553,24 +555,24 @@ object Magic {
          */
         @JvmField
         val requiredExtensions = mapOf(
-                "\\" + ADDBIBRESOURCE.command to listOf("bib")
+            "\\" + ADDBIBRESOURCE.command to listOf("bib")
         )
 
         /**
          * Extensions that should only be scanned for the provided include commands.
          */
         @JvmField
-        val includeOnlyExtensions: Map<String, HashSet<String>> = mapOf(
-                "\\include" to hashSetOf("tex"),
-                "\\includeonly" to hashSetOf("tex"),
-                "\\subfile" to hashSetOf("tex"),
-                "\\subfileinclude" to hashSetOf("tex"),
-                "\\bibliography" to hashSetOf("bib"),
-                "\\addbibresource" to hashSetOf("bib"),
-                "\\RequirePackage" to hashSetOf("sty"),
-                "\\usepackage" to hashSetOf("sty"),
-                "\\documentclass" to hashSetOf("cls"),
-                "\\" + EXTERNALDOCUMENT.command to hashSetOf("tex") // Not completely true, as it only includes labels
+        val includeOnlyExtensions: Map<String, Set<String>> = mapOf(
+            "\\include" to hashSetOf("tex"),
+            "\\includeonly" to hashSetOf("tex"),
+            "\\subfile" to hashSetOf("tex"),
+            "\\subfileinclude" to hashSetOf("tex"),
+            "\\bibliography" to hashSetOf("bib"),
+            "\\addbibresource" to hashSetOf("bib"),
+            "\\RequirePackage" to hashSetOf("sty"),
+            "\\usepackage" to hashSetOf("sty"),
+            "\\documentclass" to hashSetOf("cls"),
+            "\\" + EXTERNALDOCUMENT.command to hashSetOf("tex") // Not completely true, as it only includes labels
         )
 
         val includeCommands = includeOnlyExtensions.keys
@@ -592,7 +594,7 @@ object Magic {
          */
         @JvmField
         val stylePrimitives = listOf(
-                "\\rm", "\\sf", "\\tt", "\\it", "\\sl", "\\sc", "\\bf"
+            "\\rm", "\\sf", "\\tt", "\\it", "\\sl", "\\sc", "\\bf"
         )
 
         /**
@@ -600,8 +602,8 @@ object Magic {
          */
         @JvmField
         val stylePrimitveReplacements = listOf(
-                "\\textrm{%s}", "\\textsf{%s}", "\\texttt{%s}", "\\textit{%s}",
-                "\\textsl{%s}", "\\textsc{%s}", "\\textbf{%s}"
+            "\\textrm{%s}", "\\textsf{%s}", "\\texttt{%s}", "\\textit{%s}",
+            "\\textsl{%s}", "\\textsc{%s}", "\\textbf{%s}"
         )
 
         /**
@@ -609,9 +611,9 @@ object Magic {
          */
         @JvmField
         val textStyles = setOf(
-                "\\textrm", "\\textsf", "\\texttt", "\\textit",
-                "\\textsl", "\\textsc", "\\textbf", "\\emph",
-                "\\textup", "\\textmd"
+            "\\textrm", "\\textsf", "\\texttt", "\\textit",
+            "\\textsl", "\\textsc", "\\textbf", "\\emph",
+            "\\textup", "\\textmd"
         )
 
         /**
@@ -758,10 +760,12 @@ object Magic {
          * Matches the begin and end commands of the cases and split environments.
          */
         @JvmField
-        val casesOrSplitCommands = Regex("((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
+        val casesOrSplitCommands = Regex(
+            "((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
                 "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
                 "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
-                "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))")
+                "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))"
+        )
     }
 
     /**
@@ -776,8 +780,8 @@ object Magic {
         val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
 
         val automaticExtensions = mapOf(
-                "\\include" to LatexFileType.defaultExtension,
-                "\\bibliography" to BibtexFileType.defaultExtension
+            "\\include" to LatexFileType.defaultExtension,
+            "\\bibliography" to BibtexFileType.defaultExtension
         )
 
         /**
@@ -785,11 +789,11 @@ object Magic {
          */
         @JvmField
         val fileTypes = setOf(
-                LatexFileType,
-                StyleFileType,
-                ClassFileType,
-                BibtexFileType,
-                TikzFileType
+            LatexFileType,
+            StyleFileType,
+            ClassFileType,
+            BibtexFileType,
+            TikzFileType
         )
 
         /**
@@ -834,15 +838,15 @@ object Magic {
          */
         @JvmField
         val unicode = hashSetOf(
-                LatexPackage.INPUTENC.with("utf8"),
-                LatexPackage.FONTENC.with("T1")
+            LatexPackage.INPUTENC.with("utf8"),
+            LatexPackage.FONTENC.with("T1")
         )
 
         /**
          * All known packages which provide an index.
          */
         val index = hashSetOf(
-                "makeidx", "multind", "index", "splitidx", "splitindex", "imakeidx", "hvindex", "idxlayout", "repeatindex", "indextools"
+            "makeidx", "multind", "index", "splitidx", "splitindex", "imakeidx", "hvindex", "idxlayout", "repeatindex", "indextools"
         )
 
         /**
@@ -854,17 +858,17 @@ object Magic {
          * Known conflicting packages.
          */
         val conflictingPackages = listOf(
-                setOf(BIBLATEX, NATBIB)
+            setOf(BIBLATEX, NATBIB)
         )
 
         /**
          * Maps packages to the packages it loads.
          */
         val packagesLoadingOtherPackages = mapOf(
-                AMSSYMB to setOf(AMSFONTS),
-                MATHTOOLS to setOf(AMSMATH),
-                GRAPHICX to setOf(GRAPHICS),
-                XCOLOR to setOf(COLOR)
+            AMSSYMB to setOf(AMSFONTS),
+            MATHTOOLS to setOf(AMSMATH),
+            GRAPHICX to setOf(GRAPHICS),
+            XCOLOR to setOf(COLOR)
         )
 
         /**
@@ -872,19 +876,19 @@ object Magic {
          * optional (false).
          */
         val xparseParamSpecifiers = mapOf(
-                'm' to true,
-                'r' to true,
-                'R' to true,
-                'v' to true,
-                'b' to true,
-                'o' to false,
-                'd' to false,
-                'O' to false,
-                'D' to false,
-                's' to false,
-                't' to false,
-                'e' to false,
-                'E' to false
+            'm' to true,
+            'r' to true,
+            'R' to true,
+            'v' to true,
+            'b' to true,
+            'o' to false,
+            'd' to false,
+            'O' to false,
+            'D' to false,
+            's' to false,
+            't' to false,
+            'e' to false,
+            'E' to false
         )
     }
 
@@ -898,16 +902,16 @@ object Magic {
          */
         @JvmField
         val fileIcons = mapOf(
-                "pdf" to TexifyIcons.PDF_FILE,
-                "dvi" to TexifyIcons.DVI_FILE,
-                "synctex.gz" to TexifyIcons.SYNCTEX_FILE,
-                "bbl" to TexifyIcons.BBL_FILE,
-                "aux" to TexifyIcons.AUX_FILE,
-                "tmp" to TexifyIcons.TEMP_FILE,
-                "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
-                "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
-                "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
-                "tikz" to TexifyIcons.TIKZ_FILE
+            "pdf" to TexifyIcons.PDF_FILE,
+            "dvi" to TexifyIcons.DVI_FILE,
+            "synctex.gz" to TexifyIcons.SYNCTEX_FILE,
+            "bbl" to TexifyIcons.BBL_FILE,
+            "aux" to TexifyIcons.AUX_FILE,
+            "tmp" to TexifyIcons.TEMP_FILE,
+            "dtx" to TexifyIcons.DOCUMENTED_LATEX_SOURCE,
+            "bib" to TexifyIcons.BIBLIOGRAPHY_FILE,
+            "toc" to TexifyIcons.TABLE_OF_CONTENTS_FILE,
+            "tikz" to TexifyIcons.TIKZ_FILE
         )
     }
 
@@ -917,43 +921,43 @@ object Magic {
          */
         @JvmField
         val takeColorCommands = values()
-                .filter {
-                    it.arguments.map { it.name }.contains("color")
-                }
-                .map { it.command }
+            .filter {
+                it.arguments.map { it.name }.contains("color")
+            }
+            .map { it.command }
 
         /**
          * All commands that define a new color.
          */
         @JvmField
         val colorDefinitions = values()
-                .filter { it.dependency == XCOLOR }
-                .filter { it.arguments.map { it.name }.contains("name") }
+            .filter { it.dependency == XCOLOR }
+            .filter { it.arguments.map { it.name }.contains("name") }
 
         @JvmField
         val colorCommands = takeColorCommands + colorDefinitions.map { it.command }
 
         @JvmField
         val defaultXcolors = mapOf(
-                "red" to 0xff0000,
-                "green" to 0x00ff00,
-                "blue" to 0x0000ff,
-                "cyan" to 0x00ffff,
-                "magenta" to 0xff00ff,
-                "yellow" to 0xffff00,
-                "black" to 0x000000,
-                "gray" to 0x808080,
-                "white" to 0xffffff,
-                "darkgray" to 0x404040,
-                "lightgray" to 0xbfbfbf,
-                "brown" to 0xfb8040,
-                "lime" to 0xbfff00,
-                "olive" to 0x808000,
-                "orange" to 0xff8000,
-                "pink" to 0xffbfbf,
-                "purple" to 0xbf0040,
-                "teal" to 0x008080,
-                "violet" to 0x800080
+            "red" to 0xff0000,
+            "green" to 0x00ff00,
+            "blue" to 0x0000ff,
+            "cyan" to 0x00ffff,
+            "magenta" to 0xff00ff,
+            "yellow" to 0xffff00,
+            "black" to 0x000000,
+            "gray" to 0x808080,
+            "white" to 0xffffff,
+            "darkgray" to 0x404040,
+            "lightgray" to 0xbfbfbf,
+            "brown" to 0xfb8040,
+            "lime" to 0xbfff00,
+            "olive" to 0x808000,
+            "orange" to 0xff8000,
+            "pink" to 0xffbfbf,
+            "purple" to 0xbf0040,
+            "teal" to 0x008080,
+            "violet" to 0x800080
         )
     }
 }

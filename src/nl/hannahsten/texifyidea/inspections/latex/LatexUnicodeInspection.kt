@@ -102,7 +102,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                     continue
                 }
 
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         text,
                         TextRange(matcher.start(), matcher.end()),
                         "Unsupported non-ASCII character",
@@ -116,7 +117,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                             InsertUnicodePackageFix()
                         },
                         ChangeCompilerCompatibilityFix()
-                ))
+                    )
+                )
             }
         }
 

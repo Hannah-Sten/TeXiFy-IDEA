@@ -6,24 +6,32 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexNoExtensionInspectionTest : TexifyInspectionTestBase(LatexNoExtensionInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \bibliography{<error descr="File argument should not include the extension">test.bib</error>}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testNoWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \bibliography{test}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testQuickfix() {
-        myFixture.configureByText(LatexFileType,
-        """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \bibliography{test.bib}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
@@ -31,8 +39,10 @@ class LatexNoExtensionInspectionTest : TexifyInspectionTestBase(LatexNoExtension
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \bibliography{test}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

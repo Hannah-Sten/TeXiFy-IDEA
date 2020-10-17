@@ -16,8 +16,8 @@ class ClearAuxFiles : AnAction() {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
         File(basePath).walk().filter { it.isFile }
-                .filter { it.extension in Magic.File.auxiliaryFileTypes }
-                .forEach { it.delete() }
+            .filter { it.extension in Magic.File.auxiliaryFileTypes }
+            .forEach { it.delete() }
         LocalFileSystem.getInstance().refresh(true)
     }
 }

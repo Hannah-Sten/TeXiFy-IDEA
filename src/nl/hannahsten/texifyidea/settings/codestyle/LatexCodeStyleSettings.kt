@@ -14,6 +14,7 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
     /**
      * The number of blank lines to use before a sectioning command.
      */
+    // JvmField is required to avoid NoSuchFieldException when referring to the field name in LatexLanguageCodeStyleSettingsProvider
     @JvmField var BLANK_LINES_BEFORE_PART: Int = 2
     @JvmField var BLANK_LINES_BEFORE_CHAPTER: Int = 2
     @JvmField var BLANK_LINES_BEFORE_SECTION: Int = 2
@@ -24,13 +25,13 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
 
     companion object {
         val blankLinesOptions = mapOf(
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_PART to "\\part",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_CHAPTER to "\\chapter",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SECTION to "\\section",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSECTION to "\\subsection",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSUBSECTION to "\\subsubsection",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_PARAGRAPH to "\\paragraph",
-                LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBPARAGRAPH to "\\subparagraph"
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_PART to "\\part",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_CHAPTER to "\\chapter",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SECTION to "\\section",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSECTION to "\\subsection",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSUBSECTION to "\\subsubsection",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_PARAGRAPH to "\\paragraph",
+            LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBPARAGRAPH to "\\subparagraph"
         )
     }
 }

@@ -15,13 +15,13 @@ import java.util.regex.Pattern
  * @author Johannes Berger
  */
 class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Unescaped _ character",
-        inspectionId = "EscapeUnderscore",
-        errorMessage = { """Escape character \ expected""" },
-        highlight = ProblemHighlightType.WARNING,
-        pattern = Pattern.compile("""(?<!\\)_"""),
-        replacement = { _, _ -> """\_""" },
-        quickFixName = { """Change to \_""" }
+    inspectionDisplayName = "Unescaped _ character",
+    inspectionId = "EscapeUnderscore",
+    errorMessage = { """Escape character \ expected""" },
+    highlight = ProblemHighlightType.WARNING,
+    pattern = Pattern.compile("""(?<!\\)_"""),
+    replacement = { _, _ -> """\_""" },
+    quickFixName = { """Change to \_""" }
 ) {
 
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {

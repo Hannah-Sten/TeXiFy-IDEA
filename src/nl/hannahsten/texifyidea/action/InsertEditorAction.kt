@@ -12,22 +12,23 @@ import javax.swing.Icon
  */
 @Suppress("ComponentNotRegistered")
 open class InsertEditorAction(
-        /**
-         * The name of the action.
-         */
-        name: String,
-        /**
-         * The icon of the action.
-         */
-        icon: Icon?,
-        /**
-         * The text to insert before the selection.
-         */
-        before: String?,
-        /**
-         * The text to insert after the selection.
-         */
-        after: String?) : EditorAction(name, icon) {
+    /**
+     * The name of the action.
+     */
+    name: String,
+    /**
+     * The icon of the action.
+     */
+    icon: Icon?,
+    /**
+     * The text to insert before the selection.
+     */
+    before: String?,
+    /**
+     * The text to insert after the selection.
+     */
+    after: String?
+) : EditorAction(name, icon) {
 
     /**
      * What to insert before the selection.

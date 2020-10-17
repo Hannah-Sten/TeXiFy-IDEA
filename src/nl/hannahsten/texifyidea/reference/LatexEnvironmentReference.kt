@@ -27,8 +27,8 @@ class LatexEnvironmentReference(element: LatexParameterText) : PsiReferenceBase<
     override fun resolve(): PsiElement? {
         // Navigate from the current text in \end, to the text in \begin
         return element.firstParentOfType(LatexEnvironment::class)
-                ?.firstChildOfType(LatexBeginCommand::class)
-                ?.firstChildOfType(LatexParameterText::class)
+            ?.firstChildOfType(LatexBeginCommand::class)
+            ?.firstChildOfType(LatexParameterText::class)
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {

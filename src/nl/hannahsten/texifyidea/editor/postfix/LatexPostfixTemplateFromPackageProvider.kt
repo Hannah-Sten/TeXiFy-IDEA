@@ -17,7 +17,7 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: Package
     }
 
     override fun preCheck(copyFile: PsiFile, realEditor: Editor, currentOffset: Int): PsiFile =
-            copyFile
+        copyFile
 
     override fun preExpand(file: PsiFile, editor: Editor) {}
 
@@ -35,18 +35,18 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: Package
 
 object LatexPostfixTemplateFromAmsMathProvider : LatexPostfixTemplateFromPackageProvider(Package.AMSMATH) {
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
-            LatexWrapWithTextPostfixTemplate
+        LatexWrapWithTextPostfixTemplate
     )
 }
 
 object LatexPostfixTemplateFromAmsFontsProvider : LatexPostfixTemplateFromPackageProvider(Package.AMSFONTS) {
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
-            LatexWrapWithMathbbPostfixTemplate
+        LatexWrapWithMathbbPostfixTemplate
     )
 }
 
 object LatexPostfixTemplateFromBmProvider : LatexPostfixTemplateFromPackageProvider(Package.BM) {
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
-            LatexWrapWithBmPostfixTemplate
+        LatexWrapWithBmPostfixTemplate
     )
 }

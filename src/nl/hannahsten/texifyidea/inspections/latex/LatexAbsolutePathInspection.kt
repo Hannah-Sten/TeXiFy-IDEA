@@ -48,13 +48,15 @@ class LatexAbsolutePathInspection : TexifyInspectionBase() {
                 val range = TextRange(0, command.requiredParameters[i].length).shiftRight(offset)
 
                 if (File(range.substring(command.text)).isAbsolute && !fileArgument.isAbsolutePathSupported) {
-                    descriptors.add(manager.createProblemDescriptor(
+                    descriptors.add(
+                        manager.createProblemDescriptor(
                             command,
                             range,
                             "No absolute path allowed here",
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly
-                    ))
+                        )
+                    )
                 }
             }
         }

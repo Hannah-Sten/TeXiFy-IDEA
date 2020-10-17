@@ -104,9 +104,9 @@ fun List<String>.removeIndents(): List<String> {
 
     val list = ArrayList<String>(size)
     val (maxIndent, _) = asSequence()
-            .filter { !it.isBlank() }
-            .map { Pair(it.getIndent().length, it) }
-            .minBy { it.first } ?: return this
+        .filter { !it.isBlank() }
+        .map { Pair(it.getIndent().length, it) }
+        .minByOrNull { it.first } ?: return this
 
     var noContentYet = true
     for (originalLine in this) {
@@ -134,9 +134,9 @@ fun List<String>.removeIndents(): List<String> {
  * @return All lines with shared indents removed.
  */
 fun String.removeIndents() = Magic.Pattern.newline.split(this)
-        .toList()
-        .removeIndents()
-        .joinToString("\n")
+    .toList()
+    .removeIndents()
+    .joinToString("\n")
 
 /**
  * Remove all appearances of all given strings.
@@ -162,8 +162,8 @@ fun String.formatAsFileName(): String = this.formatAsFilePath().removeAll("/", "
  */
 fun String.formatAsFilePath(): String {
     val formatted = this.replace(" ", "-")
-            .removeAll("<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
-            .toLowerCase()
+        .removeAll("<", ">", "\"", "|", "?", "*", ":") // Mostly just a problem on Windows
+        .toLowerCase()
 
     // If there are no valid characters left, use a default name.
     return if (formatted.isEmpty()) "myfile" else formatted
@@ -174,8 +174,8 @@ fun String.formatAsFilePath(): String {
  */
 fun String.formatAsLabel(): String {
     return replace(" ", "-")
-            .removeAll("%", "~", "#", "\\")
-            .toLowerCase()
+        .removeAll("%", "~", "#", "\\", ",")
+        .toLowerCase()
 }
 
 /**
@@ -201,9 +201,9 @@ fun String.runCommand(): String? {
     return try {
         val parts = this.split("\\s".toRegex())
         val proc = ProcessBuilder(*parts.toTypedArray())
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .start()
 
         // Timeout value
         proc.waitFor(10, TimeUnit.SECONDS)

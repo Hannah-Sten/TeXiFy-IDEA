@@ -15,11 +15,11 @@ import nl.hannahsten.texifyidea.util.appendExtension
  * Run makeindex.
  */
 class MakeindexCommandLineState(
-        environment: ExecutionEnvironment,
-        private val mainFile: VirtualFile?,
-        private val workingDirectory: VirtualFile?,
-        private val makeindexOptions: HashMap<String, String>,
-        private val indexProgram: MakeindexProgram
+    environment: ExecutionEnvironment,
+    private val mainFile: VirtualFile?,
+    private val workingDirectory: VirtualFile?,
+    private val makeindexOptions: HashMap<String, String>,
+    private val indexProgram: MakeindexProgram
 ) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)

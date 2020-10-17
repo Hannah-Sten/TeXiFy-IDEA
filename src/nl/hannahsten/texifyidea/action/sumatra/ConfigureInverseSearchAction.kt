@@ -19,21 +19,23 @@ import javax.swing.SwingConstants
  * @since b0.4
  */
 open class ConfigureInverseSearchAction : AnAction(
-        "_Configure Inverse Search",
-        "Setup inverse search integration with SumatraPDF and TeXiFy IDEA.",
-        null
+    "_Configure Inverse Search",
+    "Setup inverse search integration with SumatraPDF and TeXiFy IDEA.",
+    null
 ) {
 
     override fun actionPerformed(e: AnActionEvent) {
         DialogBuilder().apply {
             setTitle("Configure inverse search")
-            setCenterPanel(JLabel(
+            setCenterPanel(
+                JLabel(
                     "<html>To enable inverse search (from PDF to source file), the inverse search setting in SumatraPDF must be changed.<br/>" +
-                    "By clicking OK, this change will automatically be applied and SumatraPDF will be restarted.<br/><br/>" +
-                    "Warning: this will permanently overwrite the previous inverse search setting in SumatraPDF.</html>",
+                        "By clicking OK, this change will automatically be applied and SumatraPDF will be restarted.<br/><br/>" +
+                        "Warning: this will permanently overwrite the previous inverse search setting in SumatraPDF.</html>",
                     AllIcons.General.WarningDialog,
                     SwingConstants.LEADING
-            ))
+                )
+            )
 
             addOkAction()
             addCancelAction()

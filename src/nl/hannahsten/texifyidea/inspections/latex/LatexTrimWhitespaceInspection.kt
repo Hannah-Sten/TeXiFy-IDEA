@@ -48,14 +48,16 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
             }
 
             val name = command.name ?: command.commandToken.text
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     command,
                     TextRange.from(name.length + 1, sectionName.length),
                     "Unnecessary whitespace",
                     ProblemHighlightType.WEAK_WARNING,
                     isOntheFly,
                     TrimFix()
-            ))
+                )
+            )
         }
 
         return descriptors

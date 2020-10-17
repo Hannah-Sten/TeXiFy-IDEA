@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
  */
 @State(name = "TexifyProjectSettings", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 data class TexifyProjectSettings(
-        var compilerCompatibility: LatexCompiler = LatexCompiler.PDFLATEX
+    var compilerCompatibility: LatexCompiler = LatexCompiler.PDFLATEX
 ) : PersistentStateComponent<TexifyProjectSettings> {
 
     companion object {

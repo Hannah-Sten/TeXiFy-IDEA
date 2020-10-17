@@ -25,15 +25,16 @@ import java.io.File
  *
  * @author Thomas Schouten
  */
-class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
-        CustomStepProjectGenerator<TexifySettings> {
+class LatexProjectGenerator :
+    DirectoryProjectGeneratorBase<TexifySettings>(),
+    CustomStepProjectGenerator<TexifySettings> {
 
     /** Keep a reference to the peer to get the value of the settings chosen by the user during project creation. */
     private var peer: LatexProjectGeneratorPeer? = null
 
     override fun createStep(
-            projectGenerator: DirectoryProjectGenerator<TexifySettings>,
-            callback: AbstractNewProjectStep.AbstractCallback<TexifySettings>
+        projectGenerator: DirectoryProjectGenerator<TexifySettings>,
+        callback: AbstractNewProjectStep.AbstractCallback<TexifySettings>
     ) = ProjectSettingsStepBase(projectGenerator, AbstractNewProjectStep.AbstractCallback<TexifySettings>())
 
     override fun getName() = "LaTeX"
@@ -54,7 +55,7 @@ class LatexProjectGenerator : DirectoryProjectGeneratorBase<TexifySettings>(),
 
         /** Create a directory in a base directory unless it already exists. */
         fun findOrCreate(baseDir: VirtualFile, dir: String, module: Module) =
-                baseDir.findChild(dir) ?: baseDir.createChildDirectory(module, dir)
+            baseDir.findChild(dir) ?: baseDir.createChildDirectory(module, dir)
 
         // We can only write to disk in a runWriteAction
         ApplicationManager.getApplication().runWriteAction {

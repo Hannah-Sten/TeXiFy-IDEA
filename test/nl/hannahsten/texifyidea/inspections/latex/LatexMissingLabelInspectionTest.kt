@@ -24,7 +24,9 @@ class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
     }
 
     fun testMissingFigureLabelWarnings() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{document}
                 % figure without label
                 <weak_warning descr="Missing label">\begin{figure}
@@ -40,57 +42,69 @@ class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
                     \caption{Some text \label{fig:figure-caption-label}}
                 \end{figure}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(false, false, true, false)
     }
 
     fun testMissingSectionLabelWarnings() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\mylabels}[2]{\section{#1}\label{sec:#2}}
             \newcommand{\mylabel}[1]{\label{sec:#1}}
 
             \section{some sec}\mylabel{sec:some-sec}
-        """.trimIndent())
+            """.trimIndent()
+        )
         CommandManager.updateAliases(setOf("\\label"), project)
 
         myFixture.checkHighlighting(false, false, true, false)
     }
 
     fun testMissingFigureLabelQuickFixWithCaption() {
-        testQuickFix("""
+        testQuickFix(
+            """
             \begin{document}
                 \begin{figure}
                     \caption{Some Caption}
                 \end{figure}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \begin{figure}
                     \caption{Some Caption}\label{fig:figure}<caret>
                 \end{figure}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun testMissingFigureLabelQuickFix() {
-        testQuickFix("""
+        testQuickFix(
+            """
             \begin{document}
                 \begin{figure}
             
                 \end{figure}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \begin{figure}
                     \label{fig:figure}<caret>
             
                 \end{figure}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun testMissingListingLabelWarnings() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \usepackage{listings}
             \begin{document}
                 <weak_warning descr="Missing label">\begin{lstlisting}
@@ -102,12 +116,15 @@ class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
                 \begin{lstlisting}[label={label with spaces}]
                 \end{lstlisting}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(false, false, true, false)
     }
 
     fun testListingLabelIsNotMissingWarnings() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \usepackage{listings}
             \begin{document}
                 \begin{lstlisting}[language=Python, label=somelabel]
@@ -116,55 +133,65 @@ class LatexMissingLabelInspectionTest : BasePlatformTestCase() {
                 \begin{lstlisting}[label={label with spaces}]
                 \end{lstlisting}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting(false, false, true, false)
     }
 
     @Test
     fun testMissingListingLabelQuickFixNoParameters() {
-        testQuickFix("""
+        testQuickFix(
+            """
             \begin{document}
                 \begin{lstlisting}
                 \end{lstlisting}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \begin{lstlisting}[label={lst:lstlisting}<caret>]
                 \end{lstlisting}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test
     fun testMissingListingLabelQuickFixExistingLabel() {
-        testQuickFix("""
+        testQuickFix(
+            """
             \begin{document}
                 \label{lst:lstlisting}
                 \begin{lstlisting}
                 \end{lstlisting}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \label{lst:lstlisting}
                 \begin{lstlisting}[label={lst:lstlisting2}<caret>]
                 \end{lstlisting}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     @Test
     fun testMissingListingLabelQuickFixExistingParameters() {
-        testQuickFix("""
+        testQuickFix(
+            """
             \begin{document}
                 \begin{lstlisting}[someoption,otheroption={with value}]
                 \end{lstlisting}
             \end{document}
-        """.trimIndent(), """
+            """.trimIndent(),
+            """
             \begin{document}
                 \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}<caret>]
                 \end{lstlisting}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     private fun testQuickFix(before: String, after: String) {

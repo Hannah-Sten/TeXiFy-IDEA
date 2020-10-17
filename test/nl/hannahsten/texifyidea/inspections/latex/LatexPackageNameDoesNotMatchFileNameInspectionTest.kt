@@ -11,8 +11,8 @@ class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase(
     override fun setUp() {
         super.setUp()
         myFixture.enableInspections(
-                LatexPackageNameDoesNotMatchFileNameInspection(),
-                LatexPackageSubdirectoryInspection()
+            LatexPackageNameDoesNotMatchFileNameInspection(),
+            LatexPackageSubdirectoryInspection()
         )
     }
 
@@ -34,10 +34,12 @@ class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase(
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \NeedsTeXFormat{LaTeX2e}
             \ProvidesPackage{mypackage}[My Package]
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     fun testNoWarnings() {

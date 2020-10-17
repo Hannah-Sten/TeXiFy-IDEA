@@ -32,24 +32,26 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
 
         // Only proof environments
         val displayMaths = file.childrenOfType(LatexEnvironment::class).asSequence()
-                .filter { it.name()?.text == "proof" }
-                // With no \qedhere command already present
-                .filterNot { it.childrenOfType(LatexCommands::class).any { cmd -> cmd.name == "\\qedhere" } }
-                // Ending in a displaymath environment
-                .mapNotNull { it.environmentContent?.lastChild?.firstChild?.firstChild as? LatexDisplayMath }
+            .filter { it.name()?.text == "proof" }
+            // With no \qedhere command already present
+            .filterNot { it.childrenOfType(LatexCommands::class).any { cmd -> cmd.name == "\\qedhere" } }
+            // Ending in a displaymath environment
+            .mapNotNull { it.environmentContent?.lastChild?.firstChild?.firstChild as? LatexDisplayMath }
 
         for (displayMath in displayMaths) {
             val mathContent = displayMath.mathContent ?: continue
             val offset = mathContent.startOffsetInParent + mathContent.textLength - 1
 
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     displayMath,
                     TextRange(offset, offset + 1),
                     "Missing \\qedhere in trailing displaymath environment",
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     InsertQedHereFix()
-            ))
+                )
+            )
         }
 
         return descriptors

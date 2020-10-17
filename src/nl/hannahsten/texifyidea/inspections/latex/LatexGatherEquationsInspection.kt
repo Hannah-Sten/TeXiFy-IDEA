@@ -28,20 +28,22 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         file.childrenOfType(LatexContent::class).asSequence()
-                .filter { it.isDisplayMath() }
-                .map { Pair(it, it.nextSiblingIgnoreWhitespace()) }
-                .filter { (_, next) -> next != null && next is LatexContent && next.isDisplayMath() }
-                .flatMap { sequenceOf(it.first, it.second) }
-                .distinct()
-                .forEach {
-                    descriptors.add(manager.createProblemDescriptor(
-                            it ?: return@forEach,
-                            "Equations can be gathered",
-                            GatherEnvironments(),
-                            ProblemHighlightType.WEAK_WARNING,
-                            isOntheFly
-                    ))
-                }
+            .filter { it.isDisplayMath() }
+            .map { Pair(it, it.nextSiblingIgnoreWhitespace()) }
+            .filter { (_, next) -> next != null && next is LatexContent && next.isDisplayMath() }
+            .flatMap { sequenceOf(it.first, it.second) }
+            .distinct()
+            .forEach {
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        it ?: return@forEach,
+                        "Equations can be gathered",
+                        GatherEnvironments(),
+                        ProblemHighlightType.WEAK_WARNING,
+                        isOntheFly
+                    )
+                )
+            }
 
         return descriptors
     }
@@ -68,13 +70,13 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
                 append("\\begin{gather*}\n")
 
                 equations.asSequence()
-                        .map { trimEquation(it) }
-                        .forEach {
-                            append(indent)
-                            append("    ")
-                            append(it)
-                            append("\\\\\n")
-                        }
+                    .map { trimEquation(it) }
+                    .forEach {
+                        append(indent)
+                        append("    ")
+                        append(it)
+                        append("\\\\\n")
+                    }
 
                 append(indent)
                 append("\\end{gather*}")
@@ -92,10 +94,10 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
          *          The equation to trim, must be display math, will not be checked by this method.
          */
         private fun trimEquation(equation: LatexContent) = equation.text
-                // Remove \[ and \]
-                .trimRange(2, 2)
-                // Remove whitespace
-                .trim()
+            // Remove \[ and \]
+            .trimRange(2, 2)
+            // Remove whitespace
+            .trim()
 
         /**
          * Finds all adjacent equations.

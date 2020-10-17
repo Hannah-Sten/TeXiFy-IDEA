@@ -6,10 +6,13 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class NonAsciiCharactersInspectionTest : TexifyInspectionTestBase(NonAsciiCharactersInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \textbf{erhöhen}
             \label{<warning descr="Non-ASCII characters in an identifier"><warning descr="Symbols from different languages found: [LATIN, CYRILLIC]">sec:Название</warning></warning>}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 }

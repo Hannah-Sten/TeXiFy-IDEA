@@ -11,7 +11,8 @@ class LatexDistributionTest {
 
     @Test
     fun testTexlive() {
-        val output = """
+        val output =
+            """
             pdfTeX 3.14159265-2.6-1.40.20 (TeX Live 2019)
             kpathsea version 6.3.1
             Copyright 2019 Han The Thanh (pdfTeX) et al.
@@ -24,14 +25,15 @@ class LatexDistributionTest {
             Compiled with libpng 1.6.36; using libpng 1.6.36
             Compiled with zlib 1.2.11; using zlib 1.2.11
             Compiled with xpdf version 4.01
-        """.trimIndent()
+            """.trimIndent()
 
         assertEquals("TeX Live 2019", LatexDistribution.parsePdflatexOutput(output))
     }
 
     @Test
     fun testMiktex() {
-        val output = """
+        val output =
+            """
             MiKTeX-pdfTeX 2.9.6870 (1.40.19) (MiKTeX 2.9.6880 64-bit)
             Copyright (C) 1982 D. E. Knuth, (C) 1996-2018 Han The Thanh
             TeX is a trademark of the American Mathematical Society.
@@ -49,7 +51,7 @@ class LatexDistributionTest {
             compiled with poppler version 0.60.1
             compiled with uriparser version 0.8.6
             compiled with zlib version 1.2.11; using 1.2.11
-        """.trimIndent()
+            """.trimIndent()
 
         assertEquals("MiKTeX 2.9.6880 64-bit", LatexDistribution.parsePdflatexOutput(output))
     }

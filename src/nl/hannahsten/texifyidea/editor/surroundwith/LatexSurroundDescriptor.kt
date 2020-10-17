@@ -19,7 +19,7 @@ class LatexSurroundDescriptor : SurroundDescriptor {
     override fun isExclusive(): Boolean = false
 
     override fun getSurrounders(): Array<Surrounder> = arrayOf(
-            DoubleQuotesSurrounder(),
-            SingleQuotesSurrounder()
+        DoubleQuotesSurrounder(),
+        SingleQuotesSurrounder()
     )
 }

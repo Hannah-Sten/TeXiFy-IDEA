@@ -50,22 +50,26 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
             add(makeindexProgram)
 
             // Main file
-            val mainFileField = TextFieldWithBrowseButton().apply { addBrowseFolderListener(
+            val mainFileField = TextFieldWithBrowseButton().apply {
+                addBrowseFolderListener(
                     TextBrowseFolderListener(
-                            FileTypeDescriptor("Choose the main .tex file", ".tex")
-                                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                        FileTypeDescriptor("Choose the main .tex file", ".tex")
+                            .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
                     )
-            ) }
+                )
+            }
             mainFile = LabeledComponent.create(mainFileField, "Main file which uses an index")
             add(mainFile)
 
             // Working directory
-            val workDirField = TextFieldWithBrowseButton().apply { addBrowseFolderListener(
+            val workDirField = TextFieldWithBrowseButton().apply {
+                addBrowseFolderListener(
                     TextBrowseFolderListener(
-                            FileChooserDescriptor(false, true, false, false, false, false)
-                                    .withTitle("Choose the directory where the index (.idx) file will be generated")
+                        FileChooserDescriptor(false, true, false, false, false, false)
+                            .withTitle("Choose the directory where the index (.idx) file will be generated")
                     )
-            ) }
+                )
+            }
             workingDirectory = LabeledComponent.create(workDirField, "Working directory for the index program")
             add(workingDirectory)
         }

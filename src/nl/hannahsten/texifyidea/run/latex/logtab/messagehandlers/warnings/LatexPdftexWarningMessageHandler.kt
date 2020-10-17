@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
  * pdfTeX warning messages (do not necessarily start on a new line)
  */
 object LatexPdftexWarningMessageHandler : LatexMessageHandler(
-        LatexLogMessageType.WARNING,
-        pdfTeXWarning
+    LatexLogMessageType.WARNING,
+    pdfTeXWarning
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {

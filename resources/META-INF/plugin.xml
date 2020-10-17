@@ -33,7 +33,7 @@
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="202.5103.13"/>
+    <idea-version since-build="203.4449.2"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
@@ -643,6 +643,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexEscapeAmpersandInspection"
                          groupName="LaTeX" displayName="Unescaped &amp; character"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
+                         groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
                          enabledByDefault="true"/>
 
         <!-- Element manipulator -->

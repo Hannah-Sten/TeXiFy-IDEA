@@ -17,16 +17,18 @@ import kotlin.math.min
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-                    ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments) return null
+        ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments
+    ) return null
 
     if (left.node?.text?.endsWith("&") == false) return null
 
     return createSpacing(
-            minSpaces = 1,
-            maxSpaces = 1,
-            minLineFeeds = 0,
-            keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
-            keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+        minSpaces = 1,
+        maxSpaces = 1,
+        minLineFeeds = 0,
+        keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
+        keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE
+    )
 }
 
 /**
@@ -42,8 +44,8 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
 
     val content = contentElement?.text ?: return null
     val contentLines = content.split(tableLineSeparator)
-            .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
-            .toMutableList()
+        .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
+        .toMutableList()
     if (contentLines.size < 2) return null
     val indent = content.split("\n").map { "\n" + it }.getOrNull(1)?.getIndent() ?: return null
 
@@ -55,14 +57,15 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
     val contentWithoutRules = removeRules(content, tableLineSeparator)
 
     val spaces = getNumberOfSpaces(contentWithoutRules, tableLineSeparator, right, absoluteAmpersandIndicesPerLine, indent)
-            ?: return null
+        ?: return null
 
     return createSpacing(
-            minSpaces = spaces,
-            maxSpaces = spaces,
-            minLineFeeds = 0,
-            keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
-            keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+        minSpaces = spaces,
+        maxSpaces = spaces,
+        minLineFeeds = 0,
+        keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
+        keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE
+    )
 }
 
 /**
@@ -103,8 +106,8 @@ fun removeRules(content: String, tableLineSeparator: String): String {
 fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, indent: String): Int? {
 
     val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator)
-            .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
-            .toMutableList()
+        .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
+        .toMutableList()
     if (contentLinesWithoutRules.isEmpty()) return null
     contentLinesWithoutRules[0] = indent + contentLinesWithoutRules.first()
 
@@ -157,7 +160,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  * Indexed by line, then by level.
  */
 private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
-    val nrLevels = relativeIndices.map { it.size }.max() ?: 0
+    val nrLevels = relativeIndices.map { it.size }.maxOrNull() ?: 0
 
     // If we are on a on a table line that is split over multiple `physical' lines,
     // ignore this line in all computations.
@@ -180,7 +183,7 @@ private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWitho
 
     // Take the maximum width of each i-th cell over all lines.
     val cellWidths = cellWidthsPerLine.first().indices.map { level ->
-        cellWidthsPerLine.map { it[level] }.max() ?: return mutableListOf()
+        cellWidthsPerLine.map { it[level] }.maxOrNull() ?: return mutableListOf()
     }
 
     // The number of spaces that has to be added to this cell is the

@@ -40,17 +40,17 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     override fun getState(): TexifySettingsState? {
         return TexifySettingsState(
-                automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
-                automaticUpDownBracket = automaticUpDownBracket,
-                automaticItemInItemize = automaticItemInItemize,
-                automaticDependencyCheck = automaticDependencyCheck,
-                autoCompile = autoCompile,
-                continuousPreview = continuousPreview,
-                includeBackslashInSelection = includeBackslashInSelection,
-                showPackagesInStructureView = showPackagesInStructureView,
-                automaticQuoteReplacement = automaticQuoteReplacement,
-                missingLabelMinimumLevel = missingLabelMinimumLevel,
-                pdfViewer = pdfViewer
+            automaticSecondInlineMathSymbol = automaticSecondInlineMathSymbol,
+            automaticUpDownBracket = automaticUpDownBracket,
+            automaticItemInItemize = automaticItemInItemize,
+            automaticDependencyCheck = automaticDependencyCheck,
+            autoCompile = autoCompile,
+            continuousPreview = continuousPreview,
+            includeBackslashInSelection = includeBackslashInSelection,
+            showPackagesInStructureView = showPackagesInStructureView,
+            automaticQuoteReplacement = automaticQuoteReplacement,
+            missingLabelMinimumLevel = missingLabelMinimumLevel,
+            pdfViewer = pdfViewer
         )
     }
 

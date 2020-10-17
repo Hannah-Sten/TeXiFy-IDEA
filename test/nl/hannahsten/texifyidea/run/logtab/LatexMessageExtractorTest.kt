@@ -30,20 +30,23 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun testUndefinedControlSequence() {
-        val text = """./nested/lipsum-one.tex:9: Undefined control sequence.
+        val text =
+            """./nested/lipsum-one.tex:9: Undefined control sequence.
         l.9 \bloop"""
         val expected = LatexLogMessage("Undefined control sequence. \\bloop", "./nested/lipsum-one.tex", 9, ERROR)
         testMessageExtractor(text, expected)
     }
 
     fun testPackageError() {
-        val text = """./errors.tex:8: Package amsmath Error: \begin{split} won't work here."""
+        val text =
+            """./errors.tex:8: Package amsmath Error: \begin{split} won't work here."""
         val expected = LatexLogMessage("amsmath: \\begin{split} won't work here.", "./errors.tex", 8, ERROR)
         testMessageExtractor(text, expected)
     }
 
     fun `test Missing $ inserted`() {
-        val text = """./main.tex:10: Missing ${'$'} inserted.<inserted text>"""
+        val text =
+            """./main.tex:10: Missing ${'$'} inserted.<inserted text>"""
         val expected = LatexLogMessage("Missing ${'$'} inserted.", "./main.tex", 10, ERROR)
         testMessageExtractor(text, expected)
     }
@@ -78,7 +81,7 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun `test Message with newlines`() {
         val text = "./main.tex:3: Missing \\endcsname inserted.\n" +
-                "<to be read again> \n"
+            "<to be read again> \n"
         val newText = "<to be read again> \n"
         val expected = LatexLogMessage("Missing \\endcsname inserted.", "./main.tex", 3, ERROR)
         testMessageExtractor(text, expected, newText)
@@ -106,12 +109,6 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
         testMessageExtractor(text, expected)
     }
 
-    fun testIncompleteUndefinedControlSequence() {
-        val text = "./nested/lipsum-one.tex:9: Undefined control sequence."
-        val expected = null
-        testMessageExtractor(text, expected, text)
-    }
-
     fun testReferenceOnLine() {
         val text = "LaTeX Warning: Reference `fig:bla' on page 1 undefined on input line 10."
         val expected = LatexLogMessage("Reference `fig:bla' undefined", currentFile, 10, WARNING)
@@ -125,8 +122,10 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun testLooseHbox() {
-        val text = """Loose \hbox (badness 0) in paragraph at lines 9--12
-        \OT1/cmr/m/n/10 The badness of this line is 1000.""".trimIndent()
+        val text =
+            """Loose \hbox (badness 0) in paragraph at lines 9--12
+        \OT1/cmr/m/n/10 The badness of this line is 1000.
+            """.trimIndent()
         val expected = LatexLogMessage("Loose \\hbox (badness 0) in paragraph at lines 9--12", currentFile, 9, WARNING)
         testMessageExtractor(text, expected)
     }

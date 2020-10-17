@@ -83,7 +83,7 @@ fun String.getFileExtension(): String = if (this.contains(".")) FileUtil.FILE_BO
  */
 fun Module.createExcludedDir(path: String) {
     ModuleRootManager.getInstance(this).modifiableModel.addContentEntry(path)
-            .addExcludeFolder(path)
+        .addExcludeFolder(path)
 }
 
 /**
@@ -128,4 +128,4 @@ fun createFile(fileName: String, contents: String): File {
  * Get a(n external) file by its absolute path.
  */
 fun getExternalFile(path: String): VirtualFile? =
-        LocalFileSystem.getInstance().findFileByPath(path)
+    LocalFileSystem.getInstance().findFileByPath(path)

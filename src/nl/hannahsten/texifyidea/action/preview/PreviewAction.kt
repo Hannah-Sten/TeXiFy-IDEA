@@ -78,9 +78,9 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
         if (!replaced) {
             val previewToolWindow = EquationPreviewToolWindow()
             val newContent = contentFactory.createContent(
-                    previewToolWindow.content,
-                    displayName,
-                    true
+                previewToolWindow.content,
+                displayName,
+                true
             )
             toolWindow.contentManager.addContent(newContent)
             val updater = PreviewFormUpdater(previewToolWindow.form)
@@ -96,8 +96,10 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
 
     fun findPreamblesFromMagicComments(psiFile: PsiFile, name: String): String {
         val fileset = psiFile.referencedFileSet()
-        val preambleRegex = """%! preview preamble\s*=\s*$name""".toRegex(EnumSet.of(RegexOption.IGNORE_CASE))
-        val preambleRegexBeginEnd = """
+        val preambleRegex =
+            """%! preview preamble\s*=\s*$name""".toRegex(EnumSet.of(RegexOption.IGNORE_CASE))
+        val preambleRegexBeginEnd =
+            """
                 %! begin preamble\s*=\s*$name(?<content>(\n.*)*\n)%! end preamble\s*=\s*$name
             """.trimIndent().toRegex(EnumSet.of(RegexOption.IGNORE_CASE))
 
@@ -110,7 +112,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             else {
                 preambleRegexBeginEnd.findAll(f.text).forEach {
                     preamble += it.groups["content"]?.value?.trim()
-                            ?: return@forEach
+                        ?: return@forEach
                 }
             }
         }

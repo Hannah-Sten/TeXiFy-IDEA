@@ -6,17 +6,22 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEncloseWithLeftRightInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             ${'$'} <weak_warning descr="Parentheses pair could be replaced by \left(..\right)">(</weak_warning>\frac 1 2<weak_warning descr="Parentheses pair could be replaced by \left(..\right)">)</weak_warning>${'$'}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testQuickfix() {
-        myFixture.configureByText(LatexFileType,
-        """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             ${'$'} (\frac 1 2)${'$'}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(2, quickFixes.size)
@@ -24,8 +29,10 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             ${'$'} \left(\frac 1 2\right)${'$'}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

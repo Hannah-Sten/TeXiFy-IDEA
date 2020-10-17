@@ -13,19 +13,19 @@ import nl.hannahsten.texifyidea.util.inMathContext
  * @author Abby Berkers
  */
 open class LatexContext(
-        id: String,
-        name: String,
-        baseContextType: Class<out TemplateContextType>
+    id: String,
+    name: String,
+    baseContextType: Class<out TemplateContextType>
 ) : TemplateContextType(id, name, baseContextType) {
 
     override fun isInContext(context: TemplateActionContext): Boolean =
-            context.file is LatexFile
+        context.file is LatexFile
 
     class Generic : LatexContext("LATEX", "LaTeX", EverywhereContextType::class.java)
 
     open class LatexMathContext : LatexContext("LATEX_MATH", "Math", Generic::class.java) {
 
         override fun isInContext(context: TemplateActionContext): Boolean =
-                context.file is LatexFile && context.file.findElementAt(context.startOffset)?.inMathContext() == true
+            context.file is LatexFile && context.file.findElementAt(context.startOffset)?.inMathContext() == true
     }
 }

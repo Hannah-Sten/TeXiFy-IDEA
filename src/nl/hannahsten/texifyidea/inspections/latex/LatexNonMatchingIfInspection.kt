@@ -35,13 +35,15 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
             if (command.name in Magic.Command.endIfs) {
                 // Non-opened fi.
                 if (stack.isEmpty()) {
-                    descriptors.add(manager.createProblemDescriptor(
+                    descriptors.add(
+                        manager.createProblemDescriptor(
                             command,
                             "No matching \\if-command found",
                             Magic.General.noQuickFix,
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly
-                    ))
+                        )
+                    )
                     continue
                 }
 
@@ -54,13 +56,15 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
         // Mark unclosed ifs.
         for (cmd in stack) {
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     cmd,
                     "If statement is not closed",
                     Magic.General.noQuickFix,
                     ProblemHighlightType.GENERIC_ERROR,
                     isOntheFly
-            ))
+                )
+            )
         }
 
         return descriptors

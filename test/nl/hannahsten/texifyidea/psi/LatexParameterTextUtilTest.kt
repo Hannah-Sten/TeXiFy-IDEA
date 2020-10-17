@@ -7,14 +7,19 @@ import nl.hannahsten.texifyidea.lang.CommandManager
 class LatexParameterTextUtilTest : BasePlatformTestCase() {
 
     fun testLabelRename() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
                 \label{mylabel<caret>}{I redefined \label}
-        """.trimIndent())
+            """.trimIndent()
+        )
         CommandManager.updateAliases(setOf("\\label"), project)
 
         myFixture.renameElementAtCaret("nolabel")
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \label{nolabel<caret>}{I redefined \label}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

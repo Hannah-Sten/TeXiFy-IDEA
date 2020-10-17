@@ -302,13 +302,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         "docker volume create --name miktex".runCommand()
 
         val parameterList = mutableListOf(
-                "docker",
-                "run",
-                "--rm",
-                "-v",
-                "miktex:/miktex/.miktex",
-                "-v",
-                "${mainFile.parent.path}:/miktex/work"
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            "miktex:/miktex/.miktex",
+            "-v",
+            "${mainFile.parent.path}:/miktex/work"
         )
 
         // Avoid mounting the mainfile parent also to /miktex/work/out,

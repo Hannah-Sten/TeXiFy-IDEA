@@ -10,7 +10,8 @@ import kotlin.test.assertTrue
  */
 class MagicCommentTest {
 
-    private val debugCommentString: MagicComment<String, String> = """
+    private val debugCommentString: MagicComment<String, String> =
+        """
             %! single
             %! info = Some text
             %!    TeX with overflow to
@@ -20,8 +21,8 @@ class MagicCommentTest {
             %! year = 2019
             %! param = third value
         """.trimIndent().trim().run {
-        TextBasedMagicCommentParser(this.split("\n")).parse()
-    }
+            TextBasedMagicCommentParser(this.split("\n")).parse()
+        }
 
     @Test
     fun `Merge regular`() {
@@ -73,13 +74,15 @@ fun MagicComment<String, String>.assertValue(key: String, expectedValue: String?
     val values = values(magicKey)
     if (expectedValue != null) {
         assertNotNull(values, "<$magicKey> is not present as key in comment <$this>.")
-        assertTrue(index < values.size,
-                "Index <$index> is not present in value list <$values> of comment <$this>."
+        assertTrue(
+            index < values.size,
+            "Index <$index> is not present in value list <$values> of comment <$this>."
         )
     }
 
     val actualValue = values?.getOrNull(index)
-    assertEquals(expectedValue, actualValue,
-            "Check if the key has the right first value at index <$index> of comment <$this>."
+    assertEquals(
+        expectedValue, actualValue,
+        "Check if the key has the right first value at index <$index> of comment <$this>."
     )
 }

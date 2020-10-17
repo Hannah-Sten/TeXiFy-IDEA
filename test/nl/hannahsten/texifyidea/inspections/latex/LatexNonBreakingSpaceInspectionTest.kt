@@ -7,16 +7,18 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBreakingSpaceInspection()) {
     fun testWarning() {
         myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
             Reference<warning descr="Reference without a non-breaking space"> </warning>\ref{fig}
-        """.trimIndent()
+            """.trimIndent()
         )
         myFixture.checkHighlighting()
     }
 
     fun testNoWarning() {
         myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
                 Reference~\ref{fig}
             """.trimIndent()
         )
@@ -25,18 +27,21 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
 
     fun `test no warning when reference in required parameter`() {
         myFixture.configureByText(
-            LatexFileType, """
+            LatexFileType,
+            """
             abc \dummy{Reference~\ref{fig}}
-        """.trimIndent()
+            """.trimIndent()
         )
         myFixture.checkHighlighting()
     }
 
     fun testQuickFix() {
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             Reference \ref{fig}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
@@ -44,8 +49,10 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             Reference~\ref{fig}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

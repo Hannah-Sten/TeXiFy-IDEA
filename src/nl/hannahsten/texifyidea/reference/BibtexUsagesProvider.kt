@@ -11,18 +11,20 @@ import nl.hannahsten.texifyidea.psi.BibtexTypes
 
 class BibtexUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? {
-        return DefaultWordsScanner(BibtexLexerAdapter(),
-                // Identifiers.
-                TokenSet.create(BibtexTypes.ID, BibtexTypes.IDENTIFIER
-                ),
-                // Comments.
-                TokenSet.create(BibtexTypes.COMMENT, BibtexTypes.COMMENT_TOKEN),
-                // Literals.
-                TokenSet.create(
-                        BibtexTypes.STRING, BibtexTypes.BRACED_STRING,
-                        BibtexTypes.QUOTED_STRING, BibtexTypes.DEFINED_STRING,
-                        BibtexTypes.NORMAL_TEXT_WORD, BibtexTypes.NORMAL_TEXT
-                )
+        return DefaultWordsScanner(
+            BibtexLexerAdapter(),
+            // Identifiers.
+            TokenSet.create(
+                BibtexTypes.ID, BibtexTypes.IDENTIFIER
+            ),
+            // Comments.
+            TokenSet.create(BibtexTypes.COMMENT, BibtexTypes.COMMENT_TOKEN),
+            // Literals.
+            TokenSet.create(
+                BibtexTypes.STRING, BibtexTypes.BRACED_STRING,
+                BibtexTypes.QUOTED_STRING, BibtexTypes.DEFINED_STRING,
+                BibtexTypes.NORMAL_TEXT_WORD, BibtexTypes.NORMAL_TEXT
+            )
         )
     }
 

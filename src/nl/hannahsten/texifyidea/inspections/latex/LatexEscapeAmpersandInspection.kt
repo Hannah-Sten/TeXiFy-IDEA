@@ -12,13 +12,13 @@ import java.util.regex.Pattern
  * @author Johannes Berger
  */
 class LatexEscapeAmpersandInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Unescaped & character",
-        inspectionId = "EscapeAmpersand",
-        errorMessage = { """Escape character \ expected""" },
-        highlight = ProblemHighlightType.WARNING,
-        pattern = Pattern.compile("""(?<!\\)&"""),
-        replacement = { _, _ -> """\&""" },
-        quickFixName = { """Change to \&""" }
+    inspectionDisplayName = "Unescaped & character",
+    inspectionId = "EscapeAmpersand",
+    errorMessage = { """Escape character \ expected""" },
+    highlight = ProblemHighlightType.WARNING,
+    pattern = Pattern.compile("""(?<!\\)&"""),
+    replacement = { _, _ -> """\&""" },
+    quickFixName = { """Change to \&""" }
 ) {
 
     override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {

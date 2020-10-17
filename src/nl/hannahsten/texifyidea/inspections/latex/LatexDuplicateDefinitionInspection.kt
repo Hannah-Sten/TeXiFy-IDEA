@@ -36,19 +36,21 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
 
         // Go monkeys.
         file.definitions()
-                .filter { it.name in Magic.Command.regularStrictCommandDefinitions }
-                .forEach {
-                    val definedCmd = it.definedCommandName() ?: return@forEach
-                    if (defined.count(definedCmd) > 1) {
-                        descriptors.add(manager.createProblemDescriptor(
-                                it,
-                                "Command '$definedCmd' is defined multiple times",
-                                true,
-                                ProblemHighlightType.GENERIC_ERROR,
-                                isOntheFly
-                        ))
-                    }
+            .filter { it.name in Magic.Command.regularStrictCommandDefinitions }
+            .forEach {
+                val definedCmd = it.definedCommandName() ?: return@forEach
+                if (defined.count(definedCmd) > 1) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            it,
+                            "Command '$definedCmd' is defined multiple times",
+                            true,
+                            ProblemHighlightType.GENERIC_ERROR,
+                            isOntheFly
+                        )
+                    )
                 }
+            }
 
         return descriptors
     }

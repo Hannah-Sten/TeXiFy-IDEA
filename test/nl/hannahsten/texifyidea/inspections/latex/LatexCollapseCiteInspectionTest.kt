@@ -6,17 +6,22 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCiteInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             <warning descr="Citations can be collapsed">\cite{knuth1990}</warning><warning descr="Citations can be collapsed">\cite{goossens1993}</warning>
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testQuickfix() {
-        myFixture.configureByText(LatexFileType,
-        """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \cite{knuth1990}\cite{goossens1993}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(2, quickFixes.size)
@@ -24,8 +29,10 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \cite{knuth1990,goossens1993}
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

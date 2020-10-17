@@ -20,8 +20,8 @@ import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
  * @since b0.4
  */
 open class ForwardSearchAction : EditorAction(
-        "_Forward Search",
-        TexifyIcons.RIGHT
+    "_Forward Search",
+    TexifyIcons.RIGHT
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {

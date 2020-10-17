@@ -27,10 +27,10 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
     override val inspectionId = "CommandAlreadyDefined"
 
     override val ignoredSuppressionScopes = EnumSet.of(
-            MagicCommentScope.ENVIRONMENT,
-            MagicCommentScope.MATH_ENVIRONMENT,
-            MagicCommentScope.COMMAND,
-            MagicCommentScope.GROUP
+        MagicCommentScope.ENVIRONMENT,
+        MagicCommentScope.MATH_ENVIRONMENT,
+        MagicCommentScope.COMMAND,
+        MagicCommentScope.GROUP
     )!!
 
     override fun getDisplayName() = "Command is already defined"
@@ -46,13 +46,15 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
 
                 if (newCommand.isKnown()) {
-                    descriptors.add(manager.createProblemDescriptor(
+                    descriptors.add(
+                        manager.createProblemDescriptor(
                             command,
                             "Command is already defined",
                             true,
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly, RenewCommandFix
-                    ))
+                        )
+                    )
                 }
             }
             // Warning when a builtin command gets overridden
@@ -60,13 +62,15 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand() ?: continue
 
                 if (newCommand.isKnown()) {
-                    descriptors.add(manager.createProblemDescriptor(
+                    descriptors.add(
+                        manager.createProblemDescriptor(
                             command,
                             "Command is already defined",
                             true,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
-                    ))
+                        )
+                    )
                 }
             }
         }

@@ -27,10 +27,13 @@ class LatexCompletionTest : BasePlatformTestCase() {
     @Test
     fun testCompleteCustomCommandReferences() {
         // given
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\hi}{hi}
             \h<caret>
-            """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)
@@ -40,10 +43,13 @@ class LatexCompletionTest : BasePlatformTestCase() {
     }
 
     fun testCompleteCustomColorDefinitions() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \colorlet{fadedred}{red!70!}
             \color{r<caret>}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -51,10 +57,13 @@ class LatexCompletionTest : BasePlatformTestCase() {
     }
 
     fun testCompletionInCustomArgument() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\hello}[1]{hello #1}
             \hello{\te<caret>}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -105,14 +114,17 @@ class LatexCompletionTest : BasePlatformTestCase() {
     // }
 
     fun testCustomLabelAliasCompletion() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\mylabel}[1]{\label{#1}}
 
             \mylabel{label1}
             \label{label2}
 
             ~\ref{la<caret>}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val result = myFixture.complete(CompletionType.BASIC)
 

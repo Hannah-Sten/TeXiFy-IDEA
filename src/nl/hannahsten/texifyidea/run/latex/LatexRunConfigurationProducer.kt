@@ -23,9 +23,9 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
     }
 
     override fun setupConfigurationFromContext(
-            runConfiguration: LatexRunConfiguration,
-            context: ConfigurationContext,
-            sourceElement: Ref<PsiElement>
+        runConfiguration: LatexRunConfiguration,
+        context: ConfigurationContext,
+        sourceElement: Ref<PsiElement>
     ): Boolean {
         val location = context.location ?: return false
         val container = getEntryPointContainer(location) ?: return false
@@ -67,8 +67,10 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         return locationElement.containingFile
     }
 
-    override fun isConfigurationFromContext(runConfiguration: LatexRunConfiguration,
-                                            context: ConfigurationContext): Boolean {
+    override fun isConfigurationFromContext(
+        runConfiguration: LatexRunConfiguration,
+        context: ConfigurationContext
+    ): Boolean {
         val mainFile = runConfiguration.mainFile
         val psiFile = context.dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
         val currentFile = psiFile.virtualFile ?: return false

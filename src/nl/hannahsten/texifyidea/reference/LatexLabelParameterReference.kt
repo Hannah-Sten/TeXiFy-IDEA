@@ -33,16 +33,16 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         // Find the label definition
         return myElement.containingFile.findLatexLabelPsiElementsInFileSetAsSequence()
-                .filter { it.extractLabelName() == myElement.name }
-                .mapNotNull {
-                    // Find the normal text in the label command.
-                    // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
-                    // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
-                    // but only the label text itself will have the correct name for that.
-                    PsiElementResolveResult(it.extractLabelElement() ?: return@mapNotNull null)
-                }
-                .toList()
-                .toArray(emptyArray())
+            .filter { it.extractLabelName() == myElement.name }
+            .mapNotNull {
+                // Find the normal text in the label command.
+                // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
+                // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
+                // but only the label text itself will have the correct name for that.
+                PsiElementResolveResult(it.extractLabelElement() ?: return@mapNotNull null)
+            }
+            .toList()
+            .toArray(emptyArray())
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {

@@ -56,7 +56,8 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
         !Magic.Command.labelDefinitionsWithoutCustomCommands.contains(name) &&
         !Magic.Command.bibliographyReference.contains(name) &&
         element.firstParentOfType(LatexEndCommand::class) == null &&
-        element.firstParentOfType(LatexBeginCommand::class) == null) {
+        element.firstParentOfType(LatexBeginCommand::class) == null
+    ) {
         return null
     }
     return element

@@ -17,7 +17,7 @@ class LatexLanguageFormattingRestriction : LanguageFormattingRestriction {
         return if (context.containingFile is LatexFile) {
             Magic.Environment.verbatim.any {
                 context.node.text.startsWith("\\begin{$it}") &&
-                        context.node.text.endsWith("\\end{$it}")
+                    context.node.text.endsWith("\\end{$it}")
             }
         }
         else false

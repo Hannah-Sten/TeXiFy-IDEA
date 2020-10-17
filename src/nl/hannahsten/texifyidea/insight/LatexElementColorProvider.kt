@@ -45,8 +45,11 @@ object LatexElementColorProvider : ElementColorProvider {
 
         return if (defaultHex != null) Color(defaultHex)
         else {
-            val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(file, *Magic.Colors.colorDefinitions.map { "\\${it.command}" }
-                    .toTypedArray())
+            val colorDefiningCommands = LatexCommandsIndex.getCommandsByNames(
+                file,
+                *Magic.Colors.colorDefinitions.map { "\\${it.command}" }
+                    .toTypedArray()
+            )
             // If this color is a single color (not a mix, and thus does not contain a !)
             // and we did not find it in the default colors (above), it should be in the
             // first parameter of a color definition command. If not, we can not find the
@@ -60,8 +63,8 @@ object LatexElementColorProvider : ElementColorProvider {
                     }
                     LatexRegularCommand.DEFINECOLOR.command, LatexRegularCommand.PROVIDECOLOR.command -> {
                         getColorFromDefineColor(
-                                colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
-                                colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
+                            colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
+                            colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
                         )
                     }
                     else -> getColorFromColorParameter(file, colorName)
@@ -78,14 +81,14 @@ object LatexElementColorProvider : ElementColorProvider {
         definitionText ?: return null
         val colorParts = definitionText.split("!").filter { it.isNotBlank() }
         val colors = colorParts.filter { it.all { c -> c.isLetter() } }
-                .map { findColor(it, file) ?: return null }
+            .map { findColor(it, file) ?: return null }
         if (colors.isEmpty()) return null
         val numbers = colorParts.filter { it.all { c -> c.isDigit() } }
-                .map { it.toInt() }
+            .map { it.toInt() }
         var currentColor = colors.first()
         for ((i, color) in colors.withIndex()) {
             if (i > 0 && i - 1 in numbers.indices) currentColor = mix(currentColor, color, numbers[i - 1])
-                    ?: return null
+                ?: return null
         }
         return currentColor
     }
@@ -130,9 +133,11 @@ object LatexElementColorProvider : ElementColorProvider {
      */
     private fun mix(a: Color, b: Color, percent: Int): Color? {
         return (percent / 100.0).let {
-            Color((a.red * it + b.red * (1.0 - it)).toInt(),
-                    (a.green * it + b.green * (1.0 - it)).toInt(),
-                    (a.blue * it + b.blue * (1.0 - it)).toInt())
+            Color(
+                (a.red * it + b.red * (1.0 - it)).toInt(),
+                (a.green * it + b.green * (1.0 - it)).toInt(),
+                (a.blue * it + b.blue * (1.0 - it)).toInt()
+            )
         }
     }
 
@@ -149,15 +154,15 @@ object LatexElementColorProvider : ElementColorProvider {
     private fun fromHsbString(hsbText: String): Color {
         val hsb = hsbText.split(",").map { it.trim() }
         return hsb.map { it.toFloat() }
-                .let { Color.getHSBColor(it[0], it[1], it[2]) }
+            .let { Color.getHSBColor(it[0], it[1], it[2]) }
     }
 
     private fun fromCmykString(cmykText: String): Color {
         val cmyk = cmykText.split(",").map { it.trim() }
-                .map { it.toFloat() }
+            .map { it.toFloat() }
         return cmyk.take(3)
-                .map { (255 * (1 - cmyk.last()) * (1 - it)).toInt() }
-                .let { Color(it[0], it[1], it[2]) }
+            .map { (255 * (1 - cmyk.last()) * (1 - it)).toInt() }
+            .let { Color(it[0], it[1], it[2]) }
     }
 
     private fun fromCmyString(cmyText: String): Color {

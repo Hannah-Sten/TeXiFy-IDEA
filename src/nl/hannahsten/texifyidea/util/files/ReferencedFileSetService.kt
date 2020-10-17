@@ -22,6 +22,8 @@ interface ReferencedFileSetService {
      */
     fun referencedFileSetOf(psiFile: PsiFile): Set<PsiFile>
 
+    fun rootFilesOf(psiFile: PsiFile): Set<PsiFile>
+
     /**
      * Invalidates the caches for the given file.
      */

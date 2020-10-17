@@ -17,9 +17,11 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         return "test/resources/psi"
     }
 
-    private val optionalParameters = """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""
+    private val optionalParameters =
+        """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""
 
-    private val requiredParameters = """\bibliography{library1,library2}"""
+    private val requiredParameters =
+        """\bibliography{library1,library2}"""
 
     @Test
     fun testRequiredParameterSplitting() {
@@ -28,11 +30,11 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
         // when
         val requiredParameters = PsiDocumentManager.getInstance(myFixture.project)
-                .getPsiFile(myFixture.editor.document)!!
-                .children
-                .first()
-                .firstChildOfType(LatexCommands::class)!!
-                .requiredParameters
+            .getPsiFile(myFixture.editor.document)!!
+            .children
+            .first()
+            .firstChildOfType(LatexCommands::class)!!
+            .requiredParameters
 
         // then
         assertEquals("library1,library2", requiredParameters[0])
@@ -93,15 +95,15 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         val hrefElement = psiFile.lastChildOfType(LatexCommands::class)!!
 
         UsefulTestCase.assertContainsElements(
-                urlElement.extractUrlReferences(urlElement.requiredParameters().first())
-                        .map { (it as WebReference).url },
-                url
+            urlElement.extractUrlReferences(urlElement.requiredParameters().first())
+                .map { (it as WebReference).url },
+            url
         )
 
         UsefulTestCase.assertContainsElements(
-                hrefElement.extractUrlReferences(hrefElement.requiredParameters().first())
-                        .map { (it as WebReference).url },
-                url
+            hrefElement.extractUrlReferences(hrefElement.requiredParameters().first())
+                .map { (it as WebReference).url },
+            url
         )
     }
 
@@ -139,11 +141,14 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
     @Test
     fun testDefaultOptionalParameter() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             % Second optional parameter of \newcommand makes the first parameter of \lvec optional with as default value 'n' (see LaTeX Companion page 845)
             \newcommand{\lvec}[2][n]{\ensuremath{#2_1+\cdots + #2_{#1}}}
             For the series \lvec{x} we have \[ \lvec{x} = \sum_{k=1}^{n} G_{\lvec[k]{y}} \]
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val psiFile = PsiDocumentManager.getInstance(myFixture.project).getPsiFile(myFixture.editor.document)!!
         val element = psiFile.firstChildOfType(LatexCommands::class)!!

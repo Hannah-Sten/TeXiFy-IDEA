@@ -95,9 +95,11 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
 
         for (includingCommand in includingCommands) {
             // Stop searching when absolute path is found
-            checkForAbsolutePath(includingCommand)?.let { baseDir -> return listOf(baseDir) + relativeSearchPaths.mapNotNull {
-                baseDir.findFileByRelativePath(it)
-            } }
+            checkForAbsolutePath(includingCommand)?.let { baseDir ->
+                return listOf(baseDir) + relativeSearchPaths.mapNotNull {
+                    baseDir.findFileByRelativePath(it)
+                }
+            }
 
             // Each of the search paths gets prepended by one of the new relative paths found
             for (oldPath in relativeSearchPaths) {

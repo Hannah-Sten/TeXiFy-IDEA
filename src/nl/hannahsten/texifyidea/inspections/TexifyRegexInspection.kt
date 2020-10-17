@@ -20,70 +20,70 @@ import java.util.regex.Pattern
  */
 abstract class TexifyRegexInspection(
 
-        /**
-         * The display name of the inspection.
-         */
-        val inspectionDisplayName: String,
+    /**
+     * The display name of the inspection.
+     */
+    val inspectionDisplayName: String,
 
-        /**
-         * The short name of the inspection (same name as the html info file).
-         */
-        override val inspectionId: String,
+    /**
+     * The short name of the inspection (same name as the html info file).
+     */
+    override val inspectionId: String,
 
-        /**
-         * The regex pattern that targets the text for the inspection.
-         */
-        val pattern: Pattern,
+    /**
+     * The regex pattern that targets the text for the inspection.
+     */
+    val pattern: Pattern,
 
-        /**
-         * The error message that shows up when you hover over the problem descriptor.
-         */
-        val errorMessage: (Matcher) -> String,
+    /**
+     * The error message that shows up when you hover over the problem descriptor.
+     */
+    val errorMessage: (Matcher) -> String,
 
-        /**
-         * What to replace in the document.
-         */
-        val replacement: (Matcher, PsiFile) -> String = { _, _ -> "" },
+    /**
+     * What to replace in the document.
+     */
+    val replacement: (Matcher, PsiFile) -> String = { _, _ -> "" },
 
-        /**
-         * Fetches different groups from a matcher.
-         */
-        val groupFetcher: (Matcher) -> List<String> = { listOf() },
+    /**
+     * Fetches different groups from a matcher.
+     */
+    val groupFetcher: (Matcher) -> List<String> = { listOf() },
 
-        /**
-         * The range in the found pattern that must be replaced.
-         */
-        val replacementRange: (Matcher) -> IntRange = { it.start()..it.end() },
+    /**
+     * The range in the found pattern that must be replaced.
+     */
+    val replacementRange: (Matcher) -> IntRange = { it.start()..it.end() },
 
-        /**
-         * The highlight level of the problem, WEAK_WARNING by default.
-         */
-        val highlight: ProblemHighlightType = ProblemHighlightType.WEAK_WARNING,
+    /**
+     * The highlight level of the problem, WEAK_WARNING by default.
+     */
+    val highlight: ProblemHighlightType = ProblemHighlightType.WEAK_WARNING,
 
-        /**
-         * Name of the quick fix.
-         */
-        val quickFixName: (Matcher) -> String = { "Do fix pls" },
+    /**
+     * Name of the quick fix.
+     */
+    val quickFixName: (Matcher) -> String = { "Do fix pls" },
 
-        /**
-         * `true` when the inspection is in mathmode, `false` (default) when not in math mode.
-         */
-        val mathMode: Boolean = false,
+    /**
+     * `true` when the inspection is in mathmode, `false` (default) when not in math mode.
+     */
+    val mathMode: Boolean = false,
 
-        /**
-         * Predicate that if `true`, cancels the inspection.
-         */
-        val cancelIf: (Matcher, PsiFile) -> Boolean = { _, _ -> false },
+    /**
+     * Predicate that if `true`, cancels the inspection.
+     */
+    val cancelIf: (Matcher, PsiFile) -> Boolean = { _, _ -> false },
 
-        /**
-         * Provides the text ranges that mark the squiggly warning thingies.
-         */
-        val highlightRange: (Matcher) -> TextRange = { TextRange(it.start(), it.end()) },
+    /**
+     * Provides the text ranges that mark the squiggly warning thingies.
+     */
+    val highlightRange: (Matcher) -> TextRange = { TextRange(it.start(), it.end()) },
 
-        /**
-         * In which inspection inspectionGroup the inspection lies.
-         */
-        override val inspectionGroup: InsightGroup = InsightGroup.LATEX
+    /**
+     * In which inspection inspectionGroup the inspection lies.
+     */
+    override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
 ) : TexifyInspectionBase() {
 
@@ -172,18 +172,18 @@ abstract class TexifyRegexInspection(
             // We cannot give one TextRange because there are multiple,
             // but it does not matter since the user won't see this anyway.
             val problemDescriptor = manager.createProblemDescriptor(
-                    file,
-                    null as TextRange?,
-                    errorMessage,
-                    highlight,
-                    false,
-                    RegexFixes(
-                            quickFixName,
-                            replacements,
-                            replacementRanges,
-                            groups,
-                            this::applyFixes
-                    )
+                file,
+                null as TextRange?,
+                errorMessage,
+                highlight,
+                false,
+                RegexFixes(
+                    quickFixName,
+                    replacements,
+                    replacementRanges,
+                    groups,
+                    this::applyFixes
+                )
             )
 
             return mutableListOf(problemDescriptor)
@@ -218,20 +218,22 @@ abstract class TexifyRegexInspection(
                 continue
             }
 
-            descriptors.add(manager.createProblemDescriptor(
+            descriptors.add(
+                manager.createProblemDescriptor(
                     file,
                     textRange,
                     error,
                     highlight,
                     true,
                     RegexFixes(
-                            quickFix,
-                            arrayListOf(replacementContent),
-                            arrayListOf(range),
-                            arrayListOf(groups),
-                            this::applyFixes
+                        quickFix,
+                        arrayListOf(replacementContent),
+                        arrayListOf(range),
+                        arrayListOf(groups),
+                        this::applyFixes
                     )
-            ))
+                )
+            )
         }
 
         return descriptors
@@ -286,10 +288,10 @@ abstract class TexifyRegexInspection(
      * @param replacementRanges These replacement ranges have to be ordered increasingly and have to be non-overlapping.
      */
     open fun applyFixes(
-            descriptor: ProblemDescriptor,
-            replacementRanges: List<IntRange>,
-            replacements: List<String>,
-            groups: List<List<String>>
+        descriptor: ProblemDescriptor,
+        replacementRanges: List<IntRange>,
+        replacements: List<String>,
+        groups: List<List<String>>
     ) {
         val fixFunction = { replacementRange: IntRange, replacement: String, group: List<String> -> applyFix(descriptor, replacementRange, replacement, group) }
         applyFixes(fixFunction, replacementRanges, replacements, groups)
@@ -299,10 +301,10 @@ abstract class TexifyRegexInspection(
      * See [applyFixes].
      */
     open fun applyFixes(
-            fixFunction: (IntRange, String, List<String>) -> Int,
-            replacementRanges: List<IntRange>,
-            replacements: List<String>,
-            groups: List<List<String>>
+        fixFunction: (IntRange, String, List<String>) -> Int,
+        replacementRanges: List<IntRange>,
+        replacements: List<String>,
+        groups: List<List<String>>
     ) {
         require(replacementRanges.size == replacements.size) { "The number of replacement values has to equal the number of ranges of those replacements." }
 
@@ -327,11 +329,11 @@ abstract class TexifyRegexInspection(
      * @author Hannah Schellekens
      */
     open class RegexFixes(
-            private val fixName: String,
-            val replacements: List<String>,
-            val replacementRanges: List<IntRange>,
-            val groups: List<List<String>>,
-            val fixFunction: (ProblemDescriptor, List<IntRange>, List<String>, List<List<String>>) -> Unit
+        private val fixName: String,
+        val replacements: List<String>,
+        val replacementRanges: List<IntRange>,
+        val groups: List<List<String>>,
+        val fixFunction: (ProblemDescriptor, List<IntRange>, List<String>, List<List<String>>) -> Unit
     ) : LocalQuickFix {
 
         override fun getFamilyName(): String = fixName

@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
  * Errors by the fix me package.
  */
 object LatexFixMeErrorMessageHandler : LatexMessageHandler(
-        LatexLogMessageType.ERROR,
-        fixMeError
+    LatexLogMessageType.ERROR,
+    fixMeError
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {

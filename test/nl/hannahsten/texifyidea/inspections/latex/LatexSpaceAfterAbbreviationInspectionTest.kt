@@ -6,31 +6,42 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexSpaceAfterAbbreviationInspectionTest : TexifyInspectionTestBase(LatexSpaceAfterAbbreviationInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             e.g<weak_warning descr="Abbreviation should be followed by a normal space">. </weak_warning>text
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testNoWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             e.g.\ text and a. also end of sentence. But.
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testNoWarningNonBreakingSpace() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             e.g.~text
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testQuickfix() {
-        myFixture.configureByText(LatexFileType,
-        """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             e.g. test
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
@@ -38,8 +49,10 @@ class LatexSpaceAfterAbbreviationInspectionTest : TexifyInspectionTestBase(Latex
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             e.g.\ test
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

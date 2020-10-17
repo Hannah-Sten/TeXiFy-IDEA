@@ -83,14 +83,16 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             reference.defaultExtension
         }
 
-        descriptors.add(manager.createProblemDescriptor(
+        descriptors.add(
+            manager.createProblemDescriptor(
                 reference.element,
                 reference.rangeInElement,
                 "File '${fileName.appendExtension(extension)}' not found",
                 ProblemHighlightType.GENERIC_ERROR,
                 isOntheFly,
                 *(fixes.toTypedArray())
-        ))
+            )
+        )
     }
 
     /**
@@ -111,15 +113,15 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
             // Display a dialog to ask for the location and name of the new file.
             val newFilePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, filePath.formatAsFilePath())
-                    .newFileFullPath ?: return
+                .newFileFullPath ?: return
 
             runWriteAction {
                 val createdFile = createFile("$newFilePath.$extension", "")
 
                 // Update LaTeX command parameter with chosen filename
                 var fileNameRelativeToRoot = createdFile.absolutePath
-                        .replace(File.separator, "/")
-                        .replace("$root/", "")
+                    .replace(File.separator, "/")
+                    .replace("$root/", "")
 
                 val command = (cmd as? LatexCommands)?.name
                 if (command in illegalExtensions) {

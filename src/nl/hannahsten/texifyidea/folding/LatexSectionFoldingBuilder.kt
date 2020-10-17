@@ -21,10 +21,10 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     companion object {
         private val sectionCommands = arrayOf(
-                "\\part", "\\chapter",
-                "\\section", "\\subsection", "\\subsubsection",
-                "\\paragraph", "\\subparagraph"
-            )
+            "\\part", "\\chapter",
+            "\\section", "\\subsection", "\\subsubsection",
+            "\\paragraph", "\\subparagraph"
+        )
     }
 
     override fun isCollapsedByDefault(node: ASTNode) = false
@@ -34,7 +34,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val commands = LatexCommandsIndex.getCommandsByNames(root.containingFile, *sectionCommands).toList()
-                .sortedBy { it.textOffset }
+            .sortedBy { it.textOffset }
         if (commands.isEmpty()) {
             return descriptors.toTypedArray()
         }
@@ -60,7 +60,7 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
                     // Get the location of the next folding command
                     val end = nextFoldingCommand.parentOfType(LatexContent::class)?.previousSiblingIgnoreWhitespace()
-                            ?: break
+                        ?: break
 
                     // Get the text range between the current and the next folding command
                     if (end.textOffset + end.textLength - currentFoldingCommand.textOffset > 0) {
@@ -90,8 +90,8 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
                 }
                 if (previousContent.textOffset + previousContent.textLength - currentFoldingCommand.textOffset > 0) {
                     val foldingRange = TextRange(
-                            currentFoldingCommand.textOffset,
-                            previousContent.textOffset + previousContent.textLength
+                        currentFoldingCommand.textOffset,
+                        previousContent.textOffset + previousContent.textLength
                     )
                     descriptors.add(FoldingDescriptor(currentFoldingCommand, foldingRange))
                 }

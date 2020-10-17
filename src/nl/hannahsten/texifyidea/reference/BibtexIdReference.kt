@@ -25,14 +25,14 @@ class BibtexIdReference(element: LatexParameterText) : PsiReferenceBase<LatexPar
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         return BibtexEntryIndex.getIndexedEntriesInFileSet(myElement.containingFile)
-                .filter { it.extractLabelName() == myElement.name }
-                .mapNotNull {
-                    // Resolve to the id, similarly as why we resolve to the label text for latex labels
-                    val id = it.firstChildOfType(BibtexId::class) ?: return@mapNotNull null
-                    PsiElementResolveResult(id)
-                }
-                .toList()
-                .toArray(emptyArray())
+            .filter { it.extractLabelName() == myElement.name }
+            .mapNotNull {
+                // Resolve to the id, similarly as why we resolve to the label text for latex labels
+                val id = it.firstChildOfType(BibtexId::class) ?: return@mapNotNull null
+                PsiElementResolveResult(id)
+            }
+            .toList()
+            .toArray(emptyArray())
     }
 
     override fun isReferenceTo(element: PsiElement): Boolean {

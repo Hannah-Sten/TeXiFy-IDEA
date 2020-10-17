@@ -18,9 +18,9 @@ import org.jdom.Element
  * @author Sten Wessel
  */
 class BibtexRunConfiguration(
-        project: Project,
-        factory: ConfigurationFactory,
-        name: String
+    project: Project,
+    factory: ConfigurationFactory,
+    name: String
 ) : RunConfigurationBase<BibtexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {

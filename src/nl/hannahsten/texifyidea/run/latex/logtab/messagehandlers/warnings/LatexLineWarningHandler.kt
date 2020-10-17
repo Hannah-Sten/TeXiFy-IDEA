@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
  * Warnings of the form LaTeX Warning: ... on input line l
  */
 object LatexLineWarningHandler : LatexMessageHandler(
-        WARNING,
-        """${LatexLogMagicRegex.LATEX_WARNING_REGEX}(?<message>.+)${LatexLogMagicRegex.LINE_REGEX}""".toRegex()
+    WARNING,
+    """${LatexLogMagicRegex.LATEX_WARNING_REGEX}(?<message>.+)${LatexLogMagicRegex.LINE_REGEX}""".toRegex()
 ) {
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         LatexLineWarningHandler.regex.forEach {

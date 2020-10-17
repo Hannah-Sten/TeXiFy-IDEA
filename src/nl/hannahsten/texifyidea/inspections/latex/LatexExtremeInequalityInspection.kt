@@ -11,14 +11,14 @@ import java.util.regex.Pattern
  * @author Hannah Schellekens
  */
 open class LatexExtremeInequalityInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Use the matching amssymb symbol for inequalities",
-        inspectionId = "ExtremeInequality",
-        errorMessage = { "Use the amssymb symbol instead." },
-        pattern = Pattern.compile("(<\\s*<(?!\\s*<))|(<\\s*<\\s*<)|(>\\s*>(?!\\s*>))|(>\\s*>\\s*>)"),
-        mathMode = true,
-        replacement = { it, _ -> replacement(it) },
-        replacementRange = this::replaceRange,
-        quickFixName = { "Insert amssymb symbol." }
+    inspectionDisplayName = "Use the matching amssymb symbol for inequalities",
+    inspectionId = "ExtremeInequality",
+    errorMessage = { "Use the amssymb symbol instead." },
+    pattern = Pattern.compile("(<\\s*<(?!\\s*<))|(<\\s*<\\s*<)|(>\\s*>(?!\\s*>))|(>\\s*>\\s*>)"),
+    mathMode = true,
+    replacement = { it, _ -> replacement(it) },
+    replacementRange = this::replaceRange,
+    quickFixName = { "Insert amssymb symbol." }
 ) {
 
     companion object {

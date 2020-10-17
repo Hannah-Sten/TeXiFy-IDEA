@@ -21,7 +21,8 @@ val isSumatraAvailable: Boolean by lazy {
     }
     catch (e: UnsatisfiedLinkError) {
         Log.logf("Native library DLLs could not be found.")
-        return@lazy false }
+        return@lazy false
+    }
     catch (e: NoClassDefFoundError) {
         Log.logf("Native library DLLs could not be found.")
         return@lazy false
@@ -33,7 +34,7 @@ val isSumatraAvailable: Boolean by lazy {
 private fun isSumatraInstalled(): Boolean {
     // Look up SumatraPDF registry key
     val process = Runtime.getRuntime().exec(
-            "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
+        "reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SumatraPDF.exe\" /ve"
     )
 
     val br = process.inputStream.bufferedReader()

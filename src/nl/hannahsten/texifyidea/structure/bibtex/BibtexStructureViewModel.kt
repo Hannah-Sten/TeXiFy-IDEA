@@ -14,8 +14,8 @@ import nl.hannahsten.texifyidea.structure.filter.StringFilter
  * @author Hannah Schellekens
  */
 open class BibtexStructureViewModel(
-        val file: PsiFile,
-        theEditor: Editor?
+    val file: PsiFile,
+    theEditor: Editor?
 ) : StructureViewModelBase(file, theEditor, BibtexStructureViewElement(file)), ElementInfoProvider {
 
     companion object {

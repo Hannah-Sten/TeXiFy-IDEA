@@ -31,6 +31,8 @@ class ReferencedFileSetCache {
      */
     private val fileSetCache = ConcurrentHashMap<VirtualFile, Set<PsiFile>>()
 
+    private val rootFilesCache = ConcurrentHashMap<VirtualFile, Set<PsiFile>>()
+
     /**
      * The number of includes in the include index at the time the cache was last filled.
      * This is used to check if any includes were added or deleted since the last cache fill, and thus if the cache
@@ -46,6 +48,31 @@ class ReferencedFileSetCache {
      */
     @Synchronized
     fun fileSetFor(file: PsiFile): Set<PsiFile> {
+        return getSetFromCache(file, fileSetCache) {
+            findReferencedFileSetWithoutCache()
+        }
+    }
+
+    fun rootFilesFor(file: PsiFile): Set<PsiFile> {
+        return getSetFromCache(file, rootFilesCache) {
+            findRootFilesWithoutCache()
+        }
+    }
+
+    /**
+     * Clears the cache for base file `file`.
+     */
+    fun dropCaches(file: VirtualFile) {
+        fileSetCache.remove(file)
+        rootFilesCache.remove(file)
+    }
+
+    fun dropAllCaches() {
+        fileSetCache.keys.forEach { fileSetCache.remove(it) }
+        rootFilesCache.keys.forEach { rootFilesCache.remove(it) }
+    }
+
+    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<PsiFile>>, updateFunction: PsiFile.() -> Set<PsiFile>): Set<PsiFile> {
         return if (file.virtualFile != null) {
             // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
             val numberOfIncludesChanged = if (LatexIncludesIndex.getItems(file.project).size != numberOfIncludes) {
@@ -62,28 +89,17 @@ class ReferencedFileSetCache {
             // Hence we use a mutex to make sure the expensive findReferencedFileSet function is only executed when needed
             runBlocking {
                 mutex.withLock {
-                    if (!fileSetCache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
+                    if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                         runReadAction {
-                            fileSetCache[file.virtualFile] = findReferencedFileSetWithoutCache(file)
+                            cache[file.virtualFile] = file.updateFunction()
                         }
                     }
                 }
             }
-            fileSetCache[file.virtualFile] ?: setOf(file)
+            cache[file.virtualFile] ?: setOf(file)
         }
         else {
             setOf(file)
         }
-    }
-
-    /**
-     * Clears the cache for base file `file`.
-     */
-    fun dropCaches(file: VirtualFile) {
-        fileSetCache.remove(file)
-    }
-
-    fun dropAllCaches() {
-        fileSetCache.keys.forEach { fileSetCache.remove(it) }
     }
 }

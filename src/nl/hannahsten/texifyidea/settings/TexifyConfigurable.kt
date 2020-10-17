@@ -37,21 +37,23 @@ class TexifyConfigurable : SearchableConfigurable {
 
     override fun createComponent(): JComponent? {
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(JPanel().apply {
-                layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            add(
+                JPanel().apply {
+                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-                automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
-                automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
-                automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
-                automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
-                autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
-                continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
-                includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
-                showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
-                automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
-                missingLabelMinimumLevel = addMissingLabelMinimumLevel()
-                pdfViewer = addPdfViewerOptions()
-            })
+                    automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
+                    automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
+                    automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
+                    automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
+                    autoCompile = addCheckbox("Automatic compilation (warning: can cause high CPU usage)")
+                    continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
+                    includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
+                    showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
+                    automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
+                    missingLabelMinimumLevel = addMissingLabelMinimumLevel()
+                    pdfViewer = addPdfViewerOptions()
+                }
+            )
         }
     }
 
@@ -60,19 +62,23 @@ class TexifyConfigurable : SearchableConfigurable {
      */
     private fun JPanel.addSmartQuotesOptions(vararg values: String): ComboBox<String> {
         val list = ComboBox(values)
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(JBLabel("Smart quote substitution: "))
-            add(list)
-        })
+        add(
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(JBLabel("Smart quote substitution: "))
+                add(list)
+            }
+        )
         return list
     }
 
     private fun JPanel.addMissingLabelMinimumLevel(): ComboBox<LatexRegularCommand> {
         val list = ComboBox(Magic.Command.labeledLevels.keys.toTypedArray())
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(JBLabel("Minimum sectioning level which should trigger the missing label inspection: "))
-            add(list)
-        })
+        add(
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(JBLabel("Minimum sectioning level which should trigger the missing label inspection: "))
+                add(list)
+            }
+        )
         list.renderer = object : DefaultListCellRenderer() {
             override fun getListCellRendererComponent(list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, celHasFocus: Boolean): Component {
                 val item = (value as? LatexRegularCommand)?.command ?: value
@@ -83,35 +89,39 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     private fun JPanel.addPdfViewerOptions(): ComboBox<String> {
-            val availableViewers = PdfViewer.availableSubset().map { it.displayName }.toTypedArray()
-            val list = ComboBox(availableViewers)
-            add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+        val availableViewers = PdfViewer.availableSubset().map { it.displayName }.toTypedArray()
+        val list = ComboBox(availableViewers)
+        add(
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
                 add(JBLabel("PDF viewer: "))
                 add(list)
-            })
-            return list
+            }
+        )
+        return list
     }
 
     private fun JPanel.addCheckbox(message: String): JBCheckBox {
         val checkBox = JBCheckBox(message)
-        add(JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(checkBox)
-        })
+        add(
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(checkBox)
+            }
+        )
         return checkBox
     }
 
     override fun isModified(): Boolean {
         return automaticSecondInlineMathSymbol.isSelected != settings.automaticSecondInlineMathSymbol ||
-                automaticUpDownBracket.isSelected != settings.automaticUpDownBracket ||
-                automaticItemInItemize.isSelected != settings.automaticItemInItemize ||
-                automaticDependencyCheck.isSelected != settings.automaticDependencyCheck ||
-                autoCompile.isSelected != settings.autoCompile ||
-                continuousPreview.isSelected != settings.continuousPreview ||
-                includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
-                showPackagesInStructureView.isSelected != settings.showPackagesInStructureView ||
-                automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-                missingLabelMinimumLevel.selectedItem != settings.missingLabelMinimumLevel ||
-                pdfViewer.selectedIndex != settings.pdfViewer.ordinal
+            automaticUpDownBracket.isSelected != settings.automaticUpDownBracket ||
+            automaticItemInItemize.isSelected != settings.automaticItemInItemize ||
+            automaticDependencyCheck.isSelected != settings.automaticDependencyCheck ||
+            autoCompile.isSelected != settings.autoCompile ||
+            continuousPreview.isSelected != settings.continuousPreview ||
+            includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
+            showPackagesInStructureView.isSelected != settings.showPackagesInStructureView ||
+            automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
+            missingLabelMinimumLevel.selectedItem != settings.missingLabelMinimumLevel ||
+            pdfViewer.selectedIndex != settings.pdfViewer.ordinal
     }
 
     override fun apply() {

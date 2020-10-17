@@ -6,17 +6,22 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiveStyleInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             {<warning descr="Use of TeX primitive \bf is discouraged">\bf</warning> is bold}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testQuickfix() {
-        myFixture.configureByText(LatexFileType,
-        """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             {\it is italic}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
@@ -24,8 +29,10 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             {\textit{is italic} }
-        """.trimIndent())
+            """.trimIndent()
+        )
     }
 }

@@ -38,9 +38,9 @@ object BibtexEntryIndex : StringStubIndexExtension<BibtexEntry>() {
     fun getIndexedEntriesInFileSet(baseFile: PsiFile): Collection<BibtexEntry> {
         val project = baseFile.project
         val searchFiles: MutableSet<VirtualFile> = baseFile.referencedFileSet()
-                .asSequence()
-                .mapNotNull(PsiFile::getVirtualFile)
-                .toMutableSet()
+            .asSequence()
+            .mapNotNull(PsiFile::getVirtualFile)
+            .toMutableSet()
         if (baseFile.virtualFile != null) {
             searchFiles.add(baseFile.virtualFile)
         }

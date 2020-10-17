@@ -51,13 +51,15 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                     inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
 
                     if (declaredIn == file && inclusions.getOrDefault(referenced, mutableSetOf()).contains(declaredIn)) {
-                        descriptors.add(manager.createProblemDescriptor(
+                        descriptors.add(
+                            manager.createProblemDescriptor(
                                 command,
                                 TextRange(0, command.textLength - 1),
                                 "File inclusion loop found for files ${referenced.name} and ${declaredIn.name}.",
                                 ProblemHighlightType.GENERIC_ERROR,
                                 isOntheFly
-                        ))
+                            )
+                        )
                     }
                 }
             }

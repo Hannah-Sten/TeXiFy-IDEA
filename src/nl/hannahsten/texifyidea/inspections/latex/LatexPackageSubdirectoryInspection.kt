@@ -25,12 +25,12 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
     }
 
     override fun getDisplayName(): String =
-            "Package name does not have the correct directory"
+        "Package name does not have the correct directory"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val commands = file.childrenOfType(LatexCommands::class)
-                .filter { it.name == "\\ProvidesPackage" }
+            .filter { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
             val parameter = command.requiredParameters.firstOrNull() ?: continue
@@ -40,13 +40,15 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
             val dir = file.containingDirectory ?: continue
             val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
             if (subDir != providedDir) {
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         command,
                         displayName,
                         FixSubdirectoryQuickFix(providedDir, if (providedDir.isEmpty()) "$subDir/" else subDir),
                         ProblemHighlightType.WARNING,
                         isOntheFly
-                ))
+                    )
+                )
             }
         }
         return descriptors
@@ -54,12 +56,12 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
 
     inner class FixSubdirectoryQuickFix(private val oldDir: String, private val newDir: String) : LocalQuickFix {
         override fun getFamilyName(): String =
-                "Change LaTeX command to match directory structure"
+            "Change LaTeX command to match directory structure"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val providesCommand = descriptor.psiElement as LatexCommands
             val newCommandText = providesCommand.text.replace(
-                    "{$oldDir", "{$newDir"
+                "{$oldDir", "{$newDir"
             )
             val newCommand = LatexPsiHelper(project).createFromText(newCommandText).firstChild
 

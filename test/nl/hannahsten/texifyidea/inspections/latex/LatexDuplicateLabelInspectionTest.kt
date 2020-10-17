@@ -6,15 +6,20 @@ import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicateLabelInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \label{<error descr="Duplicate label 'some-label'">some-label</error>}
             \label{<error descr="Duplicate label 'some-label'">some-label</error>}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testFigureReferencedCustomCommandOptionalParameter() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \newcommand{\includenamedimage}[3][]{
             \begin{figure}
                 \centering
@@ -29,7 +34,8 @@ class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicat
         
             some text~\ref{fig:test.png} more text.
             some text~\ref{fig:test2.png} more text.
-        """.trimIndent())
+            """.trimIndent()
+        )
         CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting()
     }

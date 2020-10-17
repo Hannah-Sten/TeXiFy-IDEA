@@ -77,9 +77,9 @@ class LatexLanguageInjectionIntention : TexifyIntentionBase("Inject language") {
         }
 
         val popup = PopupChooserBuilder<Injectable>(list).setItemChoosenCallback { onChosen(list.selectedValue) }
-                .setFilteringEnabled { language -> (language as Injectable).displayName }
-                .setMinSize(dimension)
-                .createPopup()
+            .setFilteringEnabled { language -> (language as Injectable).displayName }
+            .setMinSize(dimension)
+            .createPopup()
 
         popup.showInBestPositionFor(editor)
     }

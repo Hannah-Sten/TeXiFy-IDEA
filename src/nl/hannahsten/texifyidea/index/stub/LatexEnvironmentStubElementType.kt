@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl
 import nl.hannahsten.texifyidea.util.Magic
 import java.io.IOException
 
-open class LatexEnvironmentStubElementType(private val debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage.INSTANCE) {
+open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage.INSTANCE) {
     override fun createPsi(stub: LatexEnvironmentStub): LatexEnvironment {
         return LatexEnvironmentImpl(stub, this)
     }
@@ -18,7 +18,7 @@ open class LatexEnvironmentStubElementType(private val debugName: String) : IStu
         return LatexEnvironmentStubImpl(parentStub, this, psi.environmentName, psi.label ?: "")
     }
 
-    override fun getExternalId() = debugName
+    override fun getExternalId() = "ENVIRONMENT"
 
     @Throws(IOException::class)
     override fun serialize(stub: LatexEnvironmentStub, dataStream: StubOutputStream) {

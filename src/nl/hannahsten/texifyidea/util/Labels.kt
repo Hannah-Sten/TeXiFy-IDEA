@@ -28,8 +28,10 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexL
  * @receiver The file to analyse the file set of.
  * @return The found label commands.
  */
-fun PsiFile.findLabelsInFileSetAsCollection(): List<PsiElement> = sequenceOf(findLabelingCommandsInFileSetAsSequence(),
-    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten().toList()
+fun PsiFile.findLabelsInFileSetAsCollection(): List<PsiElement> = sequenceOf(
+    findLabelingCommandsInFileSetAsSequence(),
+    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()
+).flatten().toList()
 
 /*
  * Sequences
@@ -47,14 +49,18 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
 /**
  * All labels in this file.
  */
-fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileAsSequence(),
-        LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence()).flatten()
+fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(
+    findLabelingCommandsInFileAsSequence(),
+    LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence()
+).flatten()
 
 /**
  * All labels in the fileset.
  */
-fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement> = sequenceOf(findLabelingCommandsInFileSetAsSequence(),
-        LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()).flatten()
+fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement> = sequenceOf(
+    findLabelingCommandsInFileSetAsSequence(),
+    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()
+).flatten()
 
 /**
  * Make a sequence of all commands in the file set that specify a label. This does not include commands which define a label via an
