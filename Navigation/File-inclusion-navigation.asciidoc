@@ -6,6 +6,8 @@ This includes commands like `\documentclass`, `\usepackage` and `\includegraphic
 
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Navigation/figures/go-to-file-inclusion.gif[]
 
+File reference resolving also uses `kpsewhich`, so you can for example include a LaTeX file located in `~/texmf/tex/latex/` and TeXiFy recognises it.
+
 == Import package
 
 _Since b0.6.9_
