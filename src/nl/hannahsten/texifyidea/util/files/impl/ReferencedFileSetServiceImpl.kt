@@ -14,6 +14,8 @@ class ReferencedFileSetServiceImpl : ReferencedFileSetService {
 
     override fun referencedFileSetOf(psiFile: PsiFile) = cache.fileSetFor(psiFile)
 
+    override fun rootFilesOf(psiFile: PsiFile): Set<PsiFile> = cache.rootFilesFor(psiFile)
+
     override fun dropCaches(file: VirtualFile) = cache.dropCaches(file)
 
     override fun dropAllCaches() = cache.dropAllCaches()

@@ -19,9 +19,9 @@ open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         val element = file?.findElementAt(offset) ?: return null
         // Also check one position back, because we want it to trigger in \section{a}<caret>
         return element as? LatexCommands ?: element.parentOfType(LatexCommands::class)
-        ?: file.findElementAt(max(0, offset - 1)) as? LatexCommands
-        ?: file.findElementAt(max(0, offset - 1))?.parentOfType(LatexCommands::class)
-        ?: return null
+            ?: file.findElementAt(max(0, offset - 1)) as? LatexCommands
+            ?: file.findElementAt(max(0, offset - 1))?.parentOfType(LatexCommands::class)
+            ?: return null
     }
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
@@ -47,8 +47,10 @@ open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
             return
         }
 
-        val createdLabel = getUniqueLabelName(required[0].formatAsLabel(),
-            Magic.Command.labeledPrefixes[command.name!!], command.containingFile)
+        val createdLabel = getUniqueLabelName(
+            required[0].formatAsLabel(),
+            Magic.Command.labeledPrefixes[command.name!!], command.containingFile
+        )
 
         val factory = LatexPsiHelper(project)
 

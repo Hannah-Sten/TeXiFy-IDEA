@@ -65,7 +65,8 @@ class LatexTypedHandler : TypedHandlerDelegate() {
                 val tokenType = getTypedTokenType(editor)
                 if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN && tokenType !== LatexTypes.INLINE_MATH_END) {
                     editor.document.insertString(
-                            editor.caretModel.offset, c.toString())
+                        editor.caretModel.offset, c.toString()
+                    )
                     return Result.STOP
                 }
             }

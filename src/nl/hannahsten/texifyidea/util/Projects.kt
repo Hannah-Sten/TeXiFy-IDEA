@@ -22,8 +22,8 @@ val Project.sourceSetSearchScope: GlobalSearchScope
     get() {
         val rootManager = ProjectRootManager.getInstance(this)
         val files = rootManager.contentSourceRoots.asSequence()
-                .flatMap { it.allChildFiles().asSequence() }
-                .toSet()
+            .flatMap { it.allChildFiles().asSequence() }
+            .toSet()
         return GlobalSearchScope.filesWithoutLibrariesScope(this, files)
     }
 
@@ -33,10 +33,10 @@ val Project.sourceSetSearchScope: GlobalSearchScope
 fun Project.findAvailableDocumentClasses(): Set<String> {
     val defines = LatexDefinitionIndex.getCommandsByName("ProvidesClass", this, sourceSetSearchScope)
     return defines.asSequence()
-            .map { it.requiredParameters }
-            .filter { it.isNotEmpty() }
-            .mapNotNull { it.firstOrNull() }
-            .toSet()
+        .map { it.requiredParameters }
+        .filter { it.isNotEmpty() }
+        .mapNotNull { it.firstOrNull() }
+        .toSet()
 }
 
 /**

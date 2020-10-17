@@ -11,16 +11,16 @@ import nl.hannahsten.texifyidea.util.insertUsepackage
 import java.util.regex.Pattern
 
 open class LatexEquationReferenceInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Use of (\\ref{...}) instead of \\eqref{...}",
-        inspectionId = "EquationReference",
-        errorMessage = { "Use \\eqref" },
-        pattern = Pattern.compile("(\\(\\\\ref\\{)([\\w:]+)(}\\))"),
-        quickFixName = { "Replace with \\eqref" },
-        groupFetcher = { listOf(it.group(2)) },
-        cancelIf = { matcher, psiFile ->
-            // Cancel if the label was defined outside a math environment.
-            psiFile.findLabelsInFileSetAsCollection().find { it.text == "\\label{${matcher.group(2)}}" }.findOuterMathEnvironment() == null
-        }
+    inspectionDisplayName = "Use of (\\ref{...}) instead of \\eqref{...}",
+    inspectionId = "EquationReference",
+    errorMessage = { "Use \\eqref" },
+    pattern = Pattern.compile("(\\(\\\\ref\\{)([\\w:]+)(}\\))"),
+    quickFixName = { "Replace with \\eqref" },
+    groupFetcher = { listOf(it.group(2)) },
+    cancelIf = { matcher, psiFile ->
+        // Cancel if the label was defined outside a math environment.
+        psiFile.findLabelsInFileSetAsCollection().find { it.text == "\\label{${matcher.group(2)}}" }.findOuterMathEnvironment() == null
+    }
 ) {
 
     override fun applyFix(descriptor: ProblemDescriptor, replacementRange: IntRange, replacement: String, groups: List<String>): Int {

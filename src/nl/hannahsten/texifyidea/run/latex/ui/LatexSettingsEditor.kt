@@ -94,7 +94,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         if (auxilPath != null) {
             val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
-            auxilPathTextField.text = runConfiguration.auxilPath?.path ?: ""
+            auxilPathTextField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
         }
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
@@ -263,11 +263,15 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // Main file selection
         val mainFileField = TextFieldWithBrowseButton()
-        mainFileField.addBrowseFolderListener(TextBrowseFolderListener(
+        mainFileField.addBrowseFolderListener(
+            TextBrowseFolderListener(
                 FileTypeDescriptor("Choose a file to compile", ".tex")
-                        .withRoots(*ProjectRootManager.getInstance(project!!)
-                                .contentRootsFromAllModules)
-        ))
+                    .withRoots(
+                        *ProjectRootManager.getInstance(project!!)
+                            .contentRootsFromAllModules
+                    )
+            )
+        )
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
         panel.add(mainFile)
 
@@ -285,6 +289,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         panel.add(outputFormat)
 
         // LaTeX distribution
+        @Suppress("DialogTitleCapitalization")
         latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isInstalled() }.toTypedArray()), "LaTeX Distribution")
         panel.add(latexDistribution)
 
@@ -304,12 +309,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
             val auxilPathField = TextFieldWithBrowseButton()
             auxilPathField.addBrowseFolderListener(
-                    TextBrowseFolderListener(
-                            FileChooserDescriptor(false, true, false, false, false, false)
-                                    .withTitle("Choose a directory for auxiliary files")
-                                    .withRoots(*ProjectRootManager.getInstance(project!!)
-                                            .contentRootsFromAllModules)
-                    )
+                TextBrowseFolderListener(
+                    FileChooserDescriptor(false, true, false, false, false, false)
+                        .withTitle("Auxiliary Files Directory")
+                        .withRoots(
+                            *ProjectRootManager.getInstance(project!!)
+                                .contentRootsFromAllModules
+                        )
+                )
             )
             auxilPath = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
             panel.add(auxilPath)
@@ -317,12 +324,14 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         val outputPathField = TextFieldWithBrowseButton()
         outputPathField.addBrowseFolderListener(
-                TextBrowseFolderListener(
-                        FileChooserDescriptor(false, true, false, false, false, false)
-                                .withTitle("Choose a directory for output files.")
-                                .withRoots(*ProjectRootManager.getInstance(project!!)
-                                        .contentRootsFromAllModules)
-                )
+            TextBrowseFolderListener(
+                FileChooserDescriptor(false, true, false, false, false, false)
+                    .withTitle("Output Files Directory")
+                    .withRoots(
+                        *ProjectRootManager.getInstance(project!!)
+                            .contentRootsFromAllModules
+                    )
+            )
         )
         outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX),\n or use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
         panel.add(outputPath)
@@ -343,9 +352,9 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         compilerPath = TextFieldWithBrowseButton()
         compilerPath.addBrowseFolderListener(
             TextBrowseFolderListener(
-                    FileChooserDescriptor(true, false, false, false, false, false)
-                            .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as LatexCompiler).executableName }
-                            .withTitle("Choose " + compilerField.selectedItem + " executable")
+                FileChooserDescriptor(true, false, false, false, false, false)
+                    .withFileFilter { virtualFile -> virtualFile.nameWithoutExtension == (compilerField.selectedItem as LatexCompiler).executableName }
+                    .withTitle("Choose " + compilerField.selectedItem + " executable")
             )
         )
         compilerPath.isEnabled = false
@@ -368,11 +377,12 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
             panel.add(enableSumatraPath)
 
             sumatraPath = TextFieldWithBrowseButton().apply {
+                @Suppress("DialogTitleCapitalization")
                 addBrowseFolderListener(
-                        TextBrowseFolderListener(
-                                FileChooserDescriptor(false, true, false, false, false, false)
-                                        .withTitle("Choose the folder which contains SumatraPDF.exe")
-                        )
+                    TextBrowseFolderListener(
+                        FileChooserDescriptor(false, true, false, false, false, false)
+                            .withTitle("SumatraPDF.exe Location")
+                    )
                 )
 
                 isEnabled = false

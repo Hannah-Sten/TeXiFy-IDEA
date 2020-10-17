@@ -24,10 +24,10 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
     override val inspectionId = "MissingDocumentclass"
 
     override val ignoredSuppressionScopes = EnumSet.of(
-            MagicCommentScope.ENVIRONMENT,
-            MagicCommentScope.MATH_ENVIRONMENT,
-            MagicCommentScope.COMMAND,
-            MagicCommentScope.GROUP
+        MagicCommentScope.ENVIRONMENT,
+        MagicCommentScope.MATH_ENVIRONMENT,
+        MagicCommentScope.COMMAND,
+        MagicCommentScope.GROUP
     )!!
 
     override fun getDisplayName() = "Missing documentclass"
@@ -41,18 +41,18 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
         }
 
         val hasDocumentclass = file.commandsInFileSet().asSequence()
-                .filter { cmd -> cmd.name == "\\documentclass" }
-                .count() > 0
+            .filter { cmd -> cmd.name == "\\documentclass" }
+            .count() > 0
 
         if (!hasDocumentclass) {
             descriptors.add(
-                    manager.createProblemDescriptor(
-                            file,
-                            "Document doesn't contain a \\documentclass command.",
-                            InspectionFix(),
-                            ProblemHighlightType.GENERIC_ERROR,
-                            isOntheFly
-                    )
+                manager.createProblemDescriptor(
+                    file,
+                    "Document doesn't contain a \\documentclass command.",
+                    InspectionFix(),
+                    ProblemHighlightType.GENERIC_ERROR,
+                    isOntheFly
+                )
             )
         }
 

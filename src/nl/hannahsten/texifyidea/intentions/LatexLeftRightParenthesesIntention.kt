@@ -20,9 +20,9 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
     companion object {
 
         private val brackets = mapOf(
-                "(" to ")",
-                "[" to "]",
-                "<" to ">"
+            "(" to ")",
+            "[" to "]",
+            "<" to ">"
         )
     }
 

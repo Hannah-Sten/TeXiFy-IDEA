@@ -13,10 +13,10 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
  * @author Sten Wessel
  */
 class RunBibtexListener(
-        private val bibtexSettings: RunnerAndConfigurationSettings,
-        private val latexConfiguration: LatexRunConfiguration,
-        private val environment: ExecutionEnvironment,
-        private val runLatexAfterwards: Boolean = true
+    private val bibtexSettings: RunnerAndConfigurationSettings,
+    private val latexConfiguration: LatexRunConfiguration,
+    private val environment: ExecutionEnvironment,
+    private val runLatexAfterwards: Boolean = true
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -34,7 +34,7 @@ class RunBibtexListener(
             latexConfiguration.isFirstRunConfig = false
             try {
                 val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration)
-                        ?: return
+                    ?: return
 
                 // Compile twice to fix references etc
                 // Mark the next latex run as not being the final one, to avoid for instance opening the pdf viewer too early (with possible multiple open pdfs as a result, or a second open would fail because of a write lock)

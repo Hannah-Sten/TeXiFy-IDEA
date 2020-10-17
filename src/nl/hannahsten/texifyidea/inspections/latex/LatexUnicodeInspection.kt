@@ -102,7 +102,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                     continue
                 }
 
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         text,
                         TextRange(matcher.start(), matcher.end()),
                         "Unsupported non-ASCII character",
@@ -116,7 +117,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                             InsertUnicodePackageFix()
                         },
                         ChangeCompilerCompatibilityFix()
-                ))
+                    )
+                )
             }
         }
 
@@ -151,7 +153,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     }
 
     /**
-     * Open the settings page so the user can change the compiler compability.
+     * Open the settings page so the user can change the compiler compatibility.
      */
     private class ChangeCompilerCompatibilityFix : LocalQuickFix {
         @Nls
@@ -172,7 +174,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
      *
      *
      * The following attempts are made, in order, to determine a suitable replacement:   1.  The
-     * character is matched against the *display* attribute of either [ ] or [LatexMathCommand] (where appropiate). When there is a match,
+     * character is matched against the *display* attribute of either [ ] or [LatexMathCommand] (where appropriate). When there is a match,
      * the corresponding command is used as replacement.   1.  The character is decomposed to
      * separate combining marks (see also [Unicode](http://unicode.org/reports/tr15/)).
      * An attempt is made to match the combining sequence against LaTeX character diacritical
@@ -243,10 +245,13 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val diacritics = (mods.indices)
                     // Modifiers in reversed order
                     .map { mods[mods.size - 1 - it] }
-                    .map { if (inMathMode)
-                        Diacritic.Math.fromUnicode(it) as Diacritic
-                    else
-                        Diacritic.Normal.fromUnicode(it) }
+                    .mapNotNull {
+                        @Suppress("USELESS_CAST")
+                        if (inMathMode)
+                            Diacritic.Math.fromUnicode(it) as? Diacritic
+                        else
+                            Diacritic.Normal.fromUnicode(it) as? Diacritic
+                    }
 
             return Diacritic.buildChain(base, diacritics)
         }

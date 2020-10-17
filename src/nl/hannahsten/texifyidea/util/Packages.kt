@@ -23,11 +23,11 @@ object PackageUtils {
      * This is a static list for now, will be made dynamic (index CTAN programmatically) in the future.
      */
     val CTAN_PACKAGE_NAMES: List<String> = javaClass
-            .getResourceAsStream("/nl/hannahsten/texifyidea/packages/package.list")
-            .bufferedReader()
-            .readLine()
-            .split(";")
-            .toList()
+        .getResourceAsStream("/nl/hannahsten/texifyidea/packages/package.list")
+        .bufferedReader()
+        .readLine()
+        .split(";")
+        .toList()
 
     /** Commands which can include packages in optional or required arguments. **/
     val PACKAGE_COMMANDS = setOf("\\usepackage", "\\RequirePackage", "\\documentclass")
@@ -75,11 +75,11 @@ object PackageUtils {
         // When there are no usepackage commands: insert below documentclass.
         if (last == null) {
             val classHuh = commands.asSequence()
-                    .filter { cmd ->
-                        "\\documentclass" == cmd.commandToken
-                                .text || "\\LoadClass" == cmd.commandToken.text
-                    }
-                    .firstOrNull()
+                .filter { cmd ->
+                    "\\documentclass" == cmd.commandToken
+                        .text || "\\LoadClass" == cmd.commandToken.text
+                }
+                .firstOrNull()
             if (classHuh != null) {
                 anchorAfter = classHuh
                 prependNewLine = true
@@ -147,8 +147,9 @@ object PackageUtils {
             for (conflicts in Magic.Package.conflictingPackages) {
                 // Assuming the package is not already included
                 if (conflicts.contains(pack) && file.includedPackages().toSet()
-                                .intersect(conflicts.map { it.name })
-                                .isNotEmpty()) {
+                    .intersect(conflicts.map { it.name })
+                    .isNotEmpty()
+                ) {
                     return false
                 }
             }
@@ -213,8 +214,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPackages(
-            commands: Collection<LatexCommands>,
-            result: T
+        commands: Collection<LatexCommands>,
+        result: T
     ) = getPackagesFromCommands(commands, PACKAGE_COMMANDS, result)
 
     /**
@@ -222,8 +223,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedTikzLibraries(
-            commands: Collection<LatexCommands>,
-            result: T
+        commands: Collection<LatexCommands>,
+        result: T
     ) = getPackagesFromCommands(commands, TIKZ_IMPORT_COMMANDS, result)
 
     /**
@@ -231,8 +232,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun <T : MutableCollection<String>> getIncludedPgfLibraries(
-            commands: Collection<LatexCommands>,
-            result: T
+        commands: Collection<LatexCommands>,
+        result: T
     ) = getPackagesFromCommands(commands, PGF_IMPORT_COMMANDS, result)
 
     /**
@@ -242,9 +243,9 @@ object PackageUtils {
      * Note that not all elements returned may be valid package names.
      */
     private fun <T : MutableCollection<String>> getPackagesFromCommands(
-            commands: Collection<LatexCommands>,
-            packageCommands: Set<String>,
-            initial: T
+        commands: Collection<LatexCommands>,
+        packageCommands: Set<String>,
+        initial: T
     ): T {
         for (cmd in commands) {
             if (cmd.commandToken.text !in packageCommands) {
@@ -260,13 +261,17 @@ object PackageUtils {
             // Assume packages can be included in both optional and required parameters
             // Except a class, because a class is not a package
             val packages = if (cmd.commandToken
-                            .text == "\\documentclass" || cmd.commandToken
-                            .text == "\\LoadClass") {
+                .text == "\\documentclass" || cmd.commandToken
+                    .text == "\\LoadClass"
+            ) {
                 setOf(cmd.optionalParameters.keys.toList())
             }
             else {
-                setOf(cmd.requiredParameters, cmd.optionalParameters.keys
-                        .toList())
+                setOf(
+                    cmd.requiredParameters,
+                    cmd.optionalParameters.keys
+                        .toList()
+                )
             }
 
             for (list in packages) {
@@ -279,8 +284,10 @@ object PackageUtils {
 
                 // Multiple includes.
                 if (packageName.contains(",")) {
-                    initial.addAll(packageName.split(",")
-                            .dropLastWhile(String::isNullOrEmpty))
+                    initial.addAll(
+                        packageName.split(",")
+                            .dropLastWhile(String::isNullOrEmpty)
+                    )
                 }
                 // Single include.
                 else {
@@ -294,6 +301,9 @@ object PackageUtils {
 }
 
 object TexLivePackages {
+    /**
+     * List of installed packages.
+     */
     var packageList: MutableList<String> = mutableListOf()
 
     /**
@@ -314,8 +324,9 @@ object TexLivePackages {
     fun findTexLiveName(task: Task.Backgroundable, packageName: String): String? {
         // Find the package name for tlmgr.
         task.title = "Searching for $packageName..."
+        // Assume that you can not use the bundle name in a \usepackage if it is different from the package name (otherwise this search won't work and we would need to use tlmgr search --global $packageName
         val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand()
-                ?: return null
+            ?: return null
 
         // Check if tlmgr needs to be updated first, and do so if needed.
         val tlmgrUpdateCommand = "tlmgr update --self"
@@ -328,14 +339,16 @@ object TexLivePackages {
     }
 
     fun extractRealPackageNameFromOutput(output: String): String? {
-        val tlFrozen = Regex("""
+        val tlFrozen = Regex(
+            """
             TeX Live \d{4} is frozen forever and will no
             longer be updated\.  This happens in preparation for a new release\.
 
             If you're interested in helping to pretest the new release \(when
             pretests are available\), please read https:\/\/tug\.org\/texlive\/pretest\.html\.
             Otherwise, just wait, and the new release will be ready in due time\.
-        """.trimIndent())
+            """.trimIndent()
+        )
         val lines = tlFrozen.replace(output, "").trim().split('\n')
         val tlmgrIndex = lines.indexOfFirst { it.startsWith("tlmgr:") }
         return try {

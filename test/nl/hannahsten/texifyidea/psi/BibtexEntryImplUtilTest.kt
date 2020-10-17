@@ -14,7 +14,8 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
     private val url = "https://github.com/hannah-sten/TeXiFy-IDEA"
 
     @Language("Bibtex")
-    private val entryText = """@article{texify,
+    private val entryText =
+        """@article{texify,
         author = {Hannah-Sten},
         title = {TeXiFy IDEA},
         journal = {GitHub},
@@ -25,8 +26,8 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
 
     private val entryElement by lazy {
         PsiDocumentManager.getInstance(myFixture.project)
-                .getPsiFile(myFixture.editor.document)!!
-                .firstChildOfType(BibtexEntry::class)!!
+            .getPsiFile(myFixture.editor.document)!!
+            .firstChildOfType(BibtexEntry::class)!!
     }
 
     override fun setUp() {

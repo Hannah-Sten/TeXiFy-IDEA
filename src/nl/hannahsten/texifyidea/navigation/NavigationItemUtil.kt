@@ -24,17 +24,19 @@ object NavigationItemUtil {
                 if (text == "") {
                     return null
                 }
-                return GoToSymbolProvider.BaseNavigationItem(psiElement,
-                        text,
-                        if (psiElement.name in Magic.Command.getLabelDefinitionCommands(psiElement.project)) {
-                            TexifyIcons.DOT_LABEL
-                        }
-                        else TexifyIcons.DOT_BIB
+                return GoToSymbolProvider.BaseNavigationItem(
+                    psiElement,
+                    text,
+                    if (psiElement.name in Magic.Command.getLabelDefinitionCommands(psiElement.project)) {
+                        TexifyIcons.DOT_LABEL
+                    }
+                    else TexifyIcons.DOT_BIB
                 )
             }
-            is BibtexEntry -> GoToSymbolProvider.BaseNavigationItem(psiElement,
-                    psiElement.name ?: return null,
-                    TexifyIcons.DOT_BIB
+            is BibtexEntry -> GoToSymbolProvider.BaseNavigationItem(
+                psiElement,
+                psiElement.name ?: return null,
+                TexifyIcons.DOT_BIB
             )
             else -> null
         }

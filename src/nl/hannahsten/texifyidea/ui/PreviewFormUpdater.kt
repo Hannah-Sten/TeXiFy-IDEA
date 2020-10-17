@@ -21,9 +21,10 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
      *
      * Unless you are going to set your own \pagestyle{}, simply append to this variable.
      */
-    private val defaultPreamble = """
+    private val defaultPreamble =
+        """
         \pagestyle{empty}
-    """.trimIndent()
+        """.trimIndent()
 
     /**
      * Modify this variable to include more packages.
@@ -61,7 +62,8 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
                 val tempBasename = Paths.get(tempDirectory.path.toString(), "temp").toString()
                 val writer = PrintWriter("$tempBasename.tex", "UTF-8")
 
-                val tmpContent = """\documentclass{article}
+                val tmpContent =
+                    """\documentclass{article}
 $preamble
 
 \begin{document}

@@ -74,13 +74,13 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val MATH_NESTED_TEXT = createKey("LATEX_MATH_NESTED_TEXT", DefaultLanguageHighlighterColors.IDENTIFIER)
 
         private val COMMAND_TOKENS = TokenSet.create(
-                LatexTypes.COMMAND_TOKEN,
-                LatexTypes.COMMAND_IFNEXTCHAR,
-                LatexTypes.BEGIN_TOKEN,
-                LatexTypes.END_TOKEN,
-                LatexTypes.BEGIN_PSEUDOCODE_BLOCK,
-                LatexTypes.MIDDLE_PSEUDOCODE_BLOCK,
-                LatexTypes.END_PSEUDOCODE_BLOCK
+            LatexTypes.COMMAND_TOKEN,
+            LatexTypes.COMMAND_IFNEXTCHAR,
+            LatexTypes.BEGIN_TOKEN,
+            LatexTypes.END_TOKEN,
+            LatexTypes.BEGIN_PSEUDOCODE_BLOCK,
+            LatexTypes.MIDDLE_PSEUDOCODE_BLOCK,
+            LatexTypes.END_PSEUDOCODE_BLOCK
         )
 
         /*

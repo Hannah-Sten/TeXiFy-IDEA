@@ -59,7 +59,8 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         myFixture.configureByText(LatexFileType, """
             \graphicspath{{$absoluteWorkingPath/test/resources/completion/path/}}
             \includegraphics{myPicture.png}
-            """.trimIndent())
+            """.trimIndent()
+        )
 
         myFixture.checkHighlighting()
     }

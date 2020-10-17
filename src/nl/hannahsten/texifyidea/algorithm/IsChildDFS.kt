@@ -10,20 +10,20 @@ import java.util.Deque
  */
 open class IsChildDFS<Node>(
 
-        /**
-         * The starting node.
-         */
-        val start: Node,
+    /**
+     * The starting node.
+     */
+    val start: Node,
 
-        /**
-         * Function that gets all the children of a certain node.
-         */
-        inline val children: (Node) -> Collection<Node>,
+    /**
+     * Function that gets all the children of a certain node.
+     */
+    inline val children: (Node) -> Collection<Node>,
 
-        /**
-         * Function that tests of the given node is the end node.
-         */
-        inline val isGoal: (Node) -> Boolean
+    /**
+     * Function that tests of the given node is the end node.
+     */
+    inline val isGoal: (Node) -> Boolean
 ) {
 
     open fun execute(): Boolean {

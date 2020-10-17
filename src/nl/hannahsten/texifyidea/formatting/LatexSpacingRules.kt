@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.inDirectEnvironment
 
 fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
-        Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
+    Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
 
 /**
  *
@@ -63,10 +63,10 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             // Insert a new line between the end of environment content and the end command.
             inPosition(parent = ENVIRONMENT, left = ENVIRONMENT_CONTENT, right = END_COMMAND).spacing(
-                    Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+                Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
             )
             inPosition(parent = PSEUDOCODE_BLOCK, left = PSEUDOCODE_BLOCK_CONTENT, right = END_PSEUDOCODE_BLOCK).spacing(
-                    Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
+                Spacing.createSpacing(0, Int.MAX_VALUE, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
             )
         }
 
@@ -91,11 +91,12 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
                     if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*\\}")) == true) {
                         return@customRule createSpacing(
-                                minSpaces = 0,
-                                maxSpaces = Int.MAX_VALUE,
-                                minLineFeeds = it.key.get(latexSettings) + 1,
-                                keepLineBreaks = false,
-                                keepBlankLines = 0)
+                            minSpaces = 0,
+                            maxSpaces = Int.MAX_VALUE,
+                            minLineFeeds = it.key.get(latexSettings) + 1,
+                            keepLineBreaks = false,
+                            keepBlankLines = 0
+                        )
                     }
                 }
                 return@customRule null

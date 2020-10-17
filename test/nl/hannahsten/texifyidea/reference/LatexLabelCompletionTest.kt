@@ -70,7 +70,9 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
     @Test
     fun testLabelReferenceCompletion() {
         // given
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \begin{document}
                 \begin{figure}
                     \label{fig:figure}
@@ -82,7 +84,8 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
                 \label{sec:some-section}
                 \ref{<caret>}
             \end{document}
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)

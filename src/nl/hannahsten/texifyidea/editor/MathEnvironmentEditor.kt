@@ -9,10 +9,10 @@ import nl.hannahsten.texifyidea.lang.Package
 import nl.hannahsten.texifyidea.util.*
 
 class MathEnvironmentEditor(
-        private val oldEnvironmentName: String,
-        private val newEnvironmentName: String,
-        val editor: Editor,
-        val environment: PsiElement
+    private val oldEnvironmentName: String,
+    private val newEnvironmentName: String,
+    val editor: Editor,
+    val environment: PsiElement
 ) {
     /**
      * Apply the conversion of a math environment.
@@ -50,7 +50,8 @@ class MathEnvironmentEditor(
             // Only add the indentation if the next line is indented by at least the same amount as the end command
             // of the old environment.
             val nextLineIndent = document.lineIndentation(
-                    document.getLineNumber(environment.endOffset()) + 1)
+                document.getLineNumber(environment.endOffset()) + 1
+            )
             if (nextLineIndent.length < indent.length) 0 else indent.length
         }
         else if (oldEnvironmentName == "inline") 1
@@ -59,8 +60,12 @@ class MathEnvironmentEditor(
         // Extra new line to be added at the end of the new environment if the old environment was inline.
         val extraNewLine = if (oldEnvironmentName == "inline") {
             // If the rest of the line is empty, add a new line without indentation.
-            val restOfLine = document.getText(TextRange(environment.endOffset(),
-                    document.getLineEndOffset(document.getLineNumber(environment.endOffset()))))
+            val restOfLine = document.getText(
+                TextRange(
+                    environment.endOffset(),
+                    document.getLineEndOffset(document.getLineNumber(environment.endOffset()))
+                )
+            )
             if (restOfLine.matches(Regex("^\\s*"))) "\n" else "\n$indent"
         }
         else ""
@@ -82,21 +87,22 @@ class MathEnvironmentEditor(
         }
 
         val newText = extraWhiteSpace + beginBlock(indent) +
-                body.replace("\n", "\n$indent    ") +
-                endBlock(indent) + extraNewLine
+            body.replace("\n", "\n$indent    ") +
+            endBlock(indent) + extraNewLine
 
         runUndoTransparentWriteAction {
             document.replaceString(
-                    environment.textOffset - whitespace,
-                    environment.endOffset() + extra,
-                    newText
+                environment.textOffset - whitespace,
+                environment.endOffset() + extra,
+                newText
             )
             // Place caret at the end of math content (works most of the time).
-            editor.caretModel.moveToOffset(environment.textOffset +
+            editor.caretModel.moveToOffset(
+                environment.textOffset +
                     newText.length - extra - extraWhiteSpace.length - extraNewLine.length - endBlock(indent).length
             )
             val file = environment.containingFile
-                    ?: return@runUndoTransparentWriteAction
+                ?: return@runUndoTransparentWriteAction
             if (isAmsMathEnvironment(newEnvironmentName) && Package.AMSMATH.name !in file.includedPackages()) {
                 file.insertUsepackage(Package.AMSMATH)
             }
@@ -105,9 +111,9 @@ class MathEnvironmentEditor(
 
     private fun isAmsMathEnvironment(environmentName: String): Boolean {
         val amsMathEnvironments: Array<String> = DefaultEnvironment.values()
-                .filter { it.dependency == Package.AMSMATH }
-                .map { it.environmentName }
-                .toTypedArray()
+            .filter { it.dependency == Package.AMSMATH }
+            .map { it.environmentName }
+            .toTypedArray()
         return amsMathEnvironments.contains(environmentName)
     }
 
@@ -156,10 +162,12 @@ class MathEnvironmentEditor(
         "display" -> environment.text.trimRange(2, 2).replace("$indent    ", "").trim()
         else -> {
             environment.text
-                    .trimRange("\\begin{}".length + oldEnvironmentName.length,
-                            "\\end{}".length + oldEnvironmentName.length)
-                    .replace("$indent    ", "")
-                    .trim()
+                .trimRange(
+                    "\\begin{}".length + oldEnvironmentName.length,
+                    "\\end{}".length + oldEnvironmentName.length
+                )
+                .replace("$indent    ", "")
+                .trim()
         }
     }
 }

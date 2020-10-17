@@ -392,9 +392,9 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  * @return A list of all required parameters.
  */
 fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
-        .filter { it.requiredParam != null }
-        .mapNotNull(LatexParameter::getRequiredParam)
-        .toList()
+    .filter { it.requiredParam != null }
+    .mapNotNull(LatexParameter::getRequiredParam)
+    .toList()
 
 /**
  * Checks if the given latex command marks a valid entry point for latex compilation.

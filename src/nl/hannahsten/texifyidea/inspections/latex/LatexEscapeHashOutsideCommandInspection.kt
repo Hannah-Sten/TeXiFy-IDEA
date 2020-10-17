@@ -8,12 +8,12 @@ import nl.hannahsten.texifyidea.util.parentsOfType
 import java.util.regex.Pattern
 
 class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
-        inspectionDisplayName = "Unescaped # outside of command definition",
-        inspectionId = "EscapeHashOutsideCommand",
-        pattern = Pattern.compile("""(?<!\\)#"""),
-        errorMessage = { "unescaped #" },
-        quickFixName = { "escape #" },
-        replacement = { _, _ -> """\#""" }
+    inspectionDisplayName = "Unescaped # outside of command definition",
+    inspectionId = "EscapeHashOutsideCommand",
+    pattern = Pattern.compile("""(?<!\\)#"""),
+    errorMessage = { "unescaped #" },
+    quickFixName = { "escape #" },
+    replacement = { _, _ -> """\#""" }
 ) {
     override fun checkContext(element: PsiElement): Boolean {
         return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isCommandDefinition() }

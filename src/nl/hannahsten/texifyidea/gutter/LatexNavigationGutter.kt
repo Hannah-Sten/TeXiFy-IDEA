@@ -21,8 +21,10 @@ import javax.swing.Icon
  */
 class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
-    override fun collectNavigationMarkers(element: PsiElement,
-                                          result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
+    override fun collectNavigationMarkers(
+        element: PsiElement,
+        result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
+    ) {
 
         // Gutters should only be used with leaf elements.
         // We assume gutter icons only have to be shown for elements in required parameters
@@ -55,11 +57,11 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val icon = TexifyIcons.getIconFromExtension(extension)
 
         val builder = NavigationGutterIconBuilder
-                .create(icon)
-                .setTargets(files)
-                .setPopupTitle("Navigate to Referenced File")
-                .setTooltipText("Go to referenced file")
-                .setCellRenderer(GotoFileCellRenderer(0))
+            .create(icon)
+            .setTargets(files)
+            .setPopupTitle("Navigate to Referenced File")
+            .setTooltipText("Go to referenced file")
+            .setCellRenderer(GotoFileCellRenderer(0))
 
         result.add(builder.createLineMarkerInfo(element))
     }

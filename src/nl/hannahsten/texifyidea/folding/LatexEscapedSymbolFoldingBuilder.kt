@@ -22,9 +22,9 @@ class LatexEscapedSymbolFoldingBuilder : FoldingBuilderEx() {
         val file = root.containingFile
 
         return file.commandsInFile()
-                .filter { it.commandToken.text in commandsToFold }
-                .map { FoldingDescriptor(it.node, it.textRange, group, it.commandToken.text.substringAfter("\\")) }
-                .toTypedArray()
+            .filter { it.commandToken.text in commandsToFold }
+            .map { FoldingDescriptor(it.node, it.textRange, group, it.commandToken.text.substringAfter("\\")) }
+            .toTypedArray()
     }
 
     companion object {

@@ -50,11 +50,14 @@ fun getReference(element: LatexParameterText): PsiReference? {
 fun getNameIdentifier(element: LatexParameterText): PsiElement? {
     // Because we do not want to trigger the NonAsciiCharactersInspection when the LatexParameterText is not an identifier
     // (think non-ASCII characters in a \section command), we return null here when the element is not an identifier
+    // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
     val name = element.firstParentOfType(LatexCommands::class)?.name
     if (!Magic.Command.labelReferenceWithoutCustomCommands.contains(name) &&
         !Magic.Command.labelDefinitionsWithoutCustomCommands.contains(name) &&
         !Magic.Command.bibliographyReference.contains(name) &&
-        element.firstParentOfType(LatexEndCommand::class) == null) {
+        element.firstParentOfType(LatexEndCommand::class) == null &&
+        element.firstParentOfType(LatexBeginCommand::class) == null
+    ) {
         return null
     }
     return element

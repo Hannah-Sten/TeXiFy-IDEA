@@ -26,10 +26,10 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
     override val inspectionId = "MissingDocumentEnvironment"
 
     override val ignoredSuppressionScopes = EnumSet.of(
-            MagicCommentScope.ENVIRONMENT,
-            MagicCommentScope.MATH_ENVIRONMENT,
-            MagicCommentScope.COMMAND,
-            MagicCommentScope.GROUP
+        MagicCommentScope.ENVIRONMENT,
+        MagicCommentScope.MATH_ENVIRONMENT,
+        MagicCommentScope.COMMAND,
+        MagicCommentScope.GROUP
     )!!
 
     override fun getDisplayName() = "Missing document environment"
@@ -50,13 +50,13 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
         }
 
         descriptors.add(
-                manager.createProblemDescriptor(
-                        file,
-                        "Document doesn't contain a document environment.",
-                        InspectionFix(),
-                        ProblemHighlightType.GENERIC_ERROR,
-                        isOntheFly
-                )
+            manager.createProblemDescriptor(
+                file,
+                "Document doesn't contain a document environment.",
+                InspectionFix(),
+                ProblemHighlightType.GENERIC_ERROR,
+                isOntheFly
+            )
         )
 
         return descriptors
@@ -74,11 +74,11 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
             val file = psiElement.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file)
 
-            document?.insertString(document.textLength, """
+            document?.insertString(
+                document.textLength,
+                """
                 |
                 |\begin{document}
-                |
-                |
                 |
                 |\end{document}""".trimMargin())
         }

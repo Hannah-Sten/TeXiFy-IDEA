@@ -75,20 +75,21 @@ open class LatexAnnotator : Annotator {
             annotateInlineMath(psiElement, annotationHolder)
         }
         else if (psiElement is LatexDisplayMath ||
-                (psiElement is LatexEnvironment && psiElement.isContext(Environment.Context.MATH))) {
+            (psiElement is LatexEnvironment && psiElement.isContext(Environment.Context.MATH))
+        ) {
             annotateDisplayMath(psiElement, annotationHolder)
 
             // Begin/End commands
             if (psiElement is LatexEnvironment) {
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                        .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
-                        .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
-                        .create()
+                    .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
+                    .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                    .create()
 
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                        .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4))
-                        .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
-                        .create()
+                    .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4))
+                    .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                    .create()
             }
         }
         // Optional parameters
@@ -108,15 +109,19 @@ open class LatexAnnotator : Annotator {
      * all commands that are contained in the math environment get styled with
      * [LatexSyntaxHighlighter.COMMAND_MATH_INLINE].
      */
-    private fun annotateInlineMath(inlineMathElement: LatexInlineMath,
-                                   annotationHolder: AnnotationHolder) {
+    private fun annotateInlineMath(
+        inlineMathElement: LatexInlineMath,
+        annotationHolder: AnnotationHolder
+    ) {
         annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(inlineMathElement)
-                .textAttributes(LatexSyntaxHighlighter.INLINE_MATH)
-                .create()
+            .range(inlineMathElement)
+            .textAttributes(LatexSyntaxHighlighter.INLINE_MATH)
+            .create()
 
-        annotateMathCommands(LatexPsiUtil.getAllChildren(inlineMathElement), annotationHolder,
-                LatexSyntaxHighlighter.COMMAND_MATH_INLINE)
+        annotateMathCommands(
+            LatexPsiUtil.getAllChildren(inlineMathElement), annotationHolder,
+            LatexSyntaxHighlighter.COMMAND_MATH_INLINE
+        )
     }
 
     /**
@@ -126,15 +131,19 @@ open class LatexAnnotator : Annotator {
      * all commands that are contained in the math environment get styled with
      * [LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY].
      */
-    private fun annotateDisplayMath(displayMathElement: PsiElement,
-                                    annotationHolder: AnnotationHolder) {
+    private fun annotateDisplayMath(
+        displayMathElement: PsiElement,
+        annotationHolder: AnnotationHolder
+    ) {
         annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(displayMathElement)
-                .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
-                .create()
+            .range(displayMathElement)
+            .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
+            .create()
 
-        annotateMathCommands(displayMathElement.childrenOfType(LatexCommands::class), annotationHolder,
-                LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+        annotateMathCommands(
+            displayMathElement.childrenOfType(LatexCommands::class), annotationHolder,
+            LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
+        )
     }
 
     /**
@@ -153,9 +162,9 @@ open class LatexAnnotator : Annotator {
         else LatexSyntaxHighlighter.COMMENT
 
         annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(comment)
-                .textAttributes(textAttributes)
-                .create()
+            .range(comment)
+            .textAttributes(textAttributes)
+            .create()
     }
 
     /**
@@ -166,9 +175,11 @@ open class LatexAnnotator : Annotator {
      * @param highlighter
      *              The attributes to apply to all command tokens.
      */
-    private fun annotateMathCommands(elements: Collection<PsiElement>,
-                                     annotationHolder: AnnotationHolder,
-                                     highlighter: TextAttributesKey) {
+    private fun annotateMathCommands(
+        elements: Collection<PsiElement>,
+        annotationHolder: AnnotationHolder,
+        highlighter: TextAttributesKey
+    ) {
         for (element in elements) {
             if (element !is LatexCommands) {
                 continue
@@ -177,15 +188,15 @@ open class LatexAnnotator : Annotator {
             val token = element.commandToken
 
             annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                    .range(token)
-                    .textAttributes(highlighter)
-                    .create()
+                .range(token)
+                .textAttributes(highlighter)
+                .create()
 
             if (element.name == "\\text" || element.name == "\\intertext") {
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                        .range(element.requiredParameters().firstOrNull() ?: continue)
-                        .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
-                        .create()
+                    .range(element.requiredParameters().firstOrNull() ?: continue)
+                    .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
+                    .create()
             }
         }
     }
@@ -193,9 +204,12 @@ open class LatexAnnotator : Annotator {
     /**
      * Annotates the given optional parameters of commands.
      */
-    private fun annotateOptionalParameters(optionalParamElement: LatexOptionalParam,
-                                           annotationHolder: AnnotationHolder) {
-        for (element in optionalParamElement.optionalParamContentList
+    private fun annotateOptionalParameters(
+        optionalParamElement: LatexOptionalParam,
+        annotationHolder: AnnotationHolder
+    ) {
+        for (
+            element in optionalParamElement.optionalParamContentList
         ) {
             if (element !is LatexOptionalParamContent) {
                 continue
@@ -204,9 +218,9 @@ open class LatexAnnotator : Annotator {
             val toStyle = element.parameterText ?: continue
 
             annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                    .range(toStyle)
-                    .textAttributes(LatexSyntaxHighlighter.OPTIONAL_PARAM)
-                    .create()
+                .range(toStyle)
+                .textAttributes(LatexSyntaxHighlighter.OPTIONAL_PARAM)
+                .create()
         }
     }
 
@@ -268,8 +282,8 @@ open class LatexAnnotator : Annotator {
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
         val content = parameter.firstChildOfType(LatexContent::class) ?: return
         this.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(content)
-                .textAttributes(style)
-                .create()
+            .range(content)
+            .textAttributes(style)
+            .create()
     }
 }

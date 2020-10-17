@@ -35,15 +35,15 @@ val PsiFile.fileSearchScope: GlobalSearchScope
  */
 fun PsiFile.findInclusions(): List<PsiFile> {
     return LatexIncludesIndex.getItems(this)
-            .flatMap { it.getIncludedFiles(false) }
-            .toList()
+        .flatMap { it.getIncludedFiles(false) }
+        .toList()
 }
 
 /**
  * Checks if the file has LaTeX syntax.
  */
 fun PsiFile.isLatexFile() = fileType == LatexFileType ||
-        fileType == StyleFileType || fileType == ClassFileType
+    fileType == StyleFileType || fileType == ClassFileType
 
 /**
  * Checks if the file has a `.sty` extention. This is a workaround for file type checking.
@@ -61,8 +61,8 @@ fun PsiFile.isClassFile() = virtualFile.extension == "cls"
  */
 fun PsiFile.documentClassFileInProject(): PsiFile? {
     val command = commandsInFile().asSequence()
-            .filter { it.name == "\\documentclass" }
-            .firstOrNull() ?: return null
+        .filter { it.name == "\\documentclass" }
+        .firstOrNull() ?: return null
     val argument = command.requiredParameter(0) ?: return null
     return findFile("$argument.cls")
 }
@@ -104,13 +104,13 @@ internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
     LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
         command.references.filterIsInstance<InputFileReference>()
-                .mapNotNull { it.resolve(false, rootFile) }
-                .forEach {
-                    // Do not re-add all referenced files if we already did that
-                    if (it in files) return@forEach
-                    files.add(it)
-                    it.referencedFiles(files, rootFile)
-                }
+            .mapNotNull { it.resolve(false, rootFile) }
+            .forEach {
+                // Do not re-add all referenced files if we already did that
+                if (it in files) return@forEach
+                files.add(it)
+                it.referencedFiles(files, rootFile)
+            }
     }
 }
 
@@ -124,13 +124,17 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile:
 fun PsiFile.findFile(path: String, extensions: Set<String>? = null): PsiFile? {
     val directory = containingDirectory?.virtualFile
 
-    val file = directory?.findFile(path, extensions
-            ?: Magic.File.includeExtensions)
-            ?: return scanRoots(path, extensions)
+    val file = directory?.findFile(
+        path,
+        extensions
+            ?: Magic.File.includeExtensions
+    )
+        ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile == null || LatexFileType != psiFile.fileType &&
-            StyleFileType != psiFile.fileType &&
-            BibtexFileType != psiFile.fileType) {
+        StyleFileType != psiFile.fileType &&
+        BibtexFileType != psiFile.fileType
+    ) {
         return scanRoots(path, extensions)
     }
 
@@ -168,8 +172,11 @@ fun PsiFile.findIncludedFile(command: LatexCommands): Set<PsiFile> {
 fun PsiFile.scanRoots(path: String, extensions: Set<String>? = null): PsiFile? {
     val rootManager = ProjectRootManager.getInstance(project)
     rootManager.contentSourceRoots.forEach { root ->
-        val file = root.findFile(path, extensions
-                ?: Magic.File.includeExtensions)
+        val file = root.findFile(
+            path,
+            extensions
+                ?: Magic.File.includeExtensions
+        )
         if (file != null) {
             return file.psiFile(project)
         }
@@ -203,7 +210,7 @@ fun PsiFile.openedEditor() = FileEditorManager.getInstance(project).selectedText
  */
 fun PsiFile.definitions(): Collection<LatexCommands> {
     return LatexDefinitionIndex.getItems(this)
-            .filter { it.isDefinition() }
+        .filter { it.isDefinition() }
 }
 
 /**

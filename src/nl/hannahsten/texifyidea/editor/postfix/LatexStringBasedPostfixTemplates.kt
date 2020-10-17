@@ -15,30 +15,31 @@ import nl.hannahsten.texifyidea.lang.Package
 
 /* General wrappers. */
 internal object LatexWrapWithInlineMathPostfixTemplate : ConstantStringBasedPostfixTemplate(
-        "math",
-        "\$expr\$",
-        "$$\$expr$$$\$END$",
-        textOnly = true
+    "math",
+    "\$expr\$",
+    "$$\$expr$$$\$END$",
+    textOnly = true
 )
 
 internal object LatexWrapWithGroupPostfixTemplate : ConstantStringBasedPostfixTemplate(
-        "braces",
-        "{expr}",
-        "{\$expr$}\$END$"
+    "braces",
+    "{expr}",
+    "{\$expr$}\$END$"
 )
 
 internal object LatexWrapWithOpenGroupPostfixTemplate : ConstantStringBasedPostfixTemplate(
-        "brackets",
-        "[expr]",
-        "[\$expr$]\$END$"
+    "brackets",
+    "[expr]",
+    "[\$expr$]\$END$"
 )
 
 internal object LatexWrapWithTextPostfixTemplate : ConstantStringBasedPostfixTemplate(
-        "text",
-        "\\text{expr}",
-        "\\text{\$expr$\$more$}\$END$",
-        mathOnly = true,
-        pack = Package.AMSMATH) {
+    "text",
+    "\\text{expr}",
+    "\\text{\$expr$\$more$}\$END$",
+    mathOnly = true,
+    pack = Package.AMSMATH
+) {
     override fun setVariables(template: Template, element: PsiElement) {
         template.addVariable("more", "", "", true)
     }
@@ -62,20 +63,20 @@ internal object LatexWrapWithBmPostfixTemplate : LatexWrapWithCommandPostfixTemp
 internal object LatexWrapWithMathcalPostfixTemplate : LatexWrapWithCommandPostfixTemplate("mathcal", name = "cal", mathOnly = true)
 
 internal open class LatexWrapWithCommandPostfixTemplate(commandName: String, name: String = commandName, mathOnly: Boolean = false, textOnly: Boolean = false, pack: Package? = null) : ConstantStringBasedPostfixTemplate(
-        name,
-        "\\$commandName{expr}",
-        "\\$commandName{\$expr$}\$END$",
-        mathOnly, textOnly, pack
+    name,
+    "\\$commandName{expr}",
+    "\\$commandName{\$expr$}\$END$",
+    mathOnly, textOnly, pack
 )
 
 internal abstract class ConstantStringBasedPostfixTemplate(
-        name: String,
-        desc: String,
-        private val template: String,
-        mathOnly: Boolean = false,
-        textOnly: Boolean = false,
-        pack: Package? = null,
-        provider: PostfixTemplateProvider = LatexPostfixTemplateFromPackageProvider.getProvider(pack)
+    name: String,
+    desc: String,
+    private val template: String,
+    mathOnly: Boolean = false,
+    textOnly: Boolean = false,
+    pack: Package? = null,
+    provider: PostfixTemplateProvider = LatexPostfixTemplateFromPackageProvider.getProvider(pack)
 ) : StringBasedPostfixTemplate(name, desc, LatexPostfixExpressionSelector(mathOnly, textOnly), provider) {
     override fun getTemplateString(element: PsiElement) = template
 

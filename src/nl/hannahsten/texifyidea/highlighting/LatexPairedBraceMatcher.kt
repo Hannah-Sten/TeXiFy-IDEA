@@ -14,13 +14,13 @@ class LatexPairedBraceMatcher : PairedBraceMatcher {
     companion object {
 
         private val bracePairs = arrayOf(
-                BracePair(LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END, true),
-                BracePair(LatexTypes.INLINE_MATH_START, LatexTypes.INLINE_MATH_END, true),
-                BracePair(LatexTypes.BEGIN_TOKEN, LatexTypes.END_TOKEN, false),
-                BracePair(LatexTypes.OPEN_PAREN, LatexTypes.CLOSE_PAREN, false),
-                BracePair(LatexTypes.OPEN_BRACE, LatexTypes.CLOSE_BRACE, false),
-                BracePair(LatexTypes.OPEN_BRACKET, LatexTypes.CLOSE_BRACKET, false),
-                BracePair(LatexTypes.BEGIN_PSEUDOCODE_BLOCK, LatexTypes.END_PSEUDOCODE_BLOCK, false)
+            BracePair(LatexTypes.DISPLAY_MATH_START, LatexTypes.DISPLAY_MATH_END, true),
+            BracePair(LatexTypes.INLINE_MATH_START, LatexTypes.INLINE_MATH_END, true),
+            BracePair(LatexTypes.BEGIN_TOKEN, LatexTypes.END_TOKEN, false),
+            BracePair(LatexTypes.OPEN_PAREN, LatexTypes.CLOSE_PAREN, false),
+            BracePair(LatexTypes.OPEN_BRACE, LatexTypes.CLOSE_BRACE, false),
+            BracePair(LatexTypes.OPEN_BRACKET, LatexTypes.CLOSE_BRACKET, false),
+            BracePair(LatexTypes.BEGIN_PSEUDOCODE_BLOCK, LatexTypes.END_PSEUDOCODE_BLOCK, false)
         )
     }
 

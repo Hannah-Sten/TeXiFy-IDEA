@@ -138,16 +138,16 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     private fun addFolderNavigations(baseDir: String) {
         // Add current directory.
         resultSet?.addElement(
-                LookupElementBuilder.create("$baseDir./")
-                        .withPresentableText(".")
-                        .withIcon(PlatformIcons.PACKAGE_ICON)
+            LookupElementBuilder.create("$baseDir./")
+                .withPresentableText(".")
+                .withIcon(PlatformIcons.PACKAGE_ICON)
         )
 
         // Add return directory.
         resultSet?.addElement(
-                LookupElementBuilder.create("$baseDir../")
-                        .withPresentableText("..")
-                        .withIcon(PlatformIcons.PACKAGE_ICON)
+            LookupElementBuilder.create("$baseDir../")
+                .withPresentableText("..")
+                .withIcon(PlatformIcons.PACKAGE_ICON)
         )
     }
 
@@ -156,9 +156,9 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      */
     private fun addDirectoryCompletion(baseDir: String, foundFile: VirtualFile) {
         resultSet?.addElement(
-                LookupElementBuilder.create(baseDir + foundFile.name + "/")
-                        .withPresentableText(foundFile.presentableName)
-                        .withIcon(PlatformIcons.PACKAGE_ICON)
+            LookupElementBuilder.create(baseDir + foundFile.name + "/")
+                .withPresentableText(foundFile.presentableName)
+                .withIcon(PlatformIcons.PACKAGE_ICON)
         )
     }
 
@@ -172,13 +172,15 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
 
         val icon = TexifyIcons.getIconFromExtension(foundFile.extension)
         resultSet?.addElement(
-                LookupElementBuilder.create(baseDir + foundFile.name)
-                        .withPresentableText(foundFile.presentableName)
-                        .withInsertHandler(CompositeHandler(
-                                LatexReferenceInsertHandler(),
-                                FileNameInsertionHandler()
-                        ))
-                        .withIcon(icon)
+            LookupElementBuilder.create(baseDir + foundFile.name)
+                .withPresentableText(foundFile.presentableName)
+                .withInsertHandler(
+                    CompositeHandler(
+                        LatexReferenceInsertHandler(),
+                        FileNameInsertionHandler()
+                    )
+                )
+                .withIcon(icon)
         )
     }
 
@@ -202,9 +204,9 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
 
             val rootManager = ProjectRootManager.getInstance(this.originalFile.project)
             rootManager.contentSourceRoots.asSequence()
-                    .filter { it != resultList.first() }
-                    .toSet()
-                    .forEach { resultList.add(it) }
+                .filter { it != resultList.first() }
+                .toSet()
+                .forEach { resultList.add(it) }
         }
 
         return resultList
@@ -239,7 +241,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         // autocompleteText so we split on commas and take the last one. If it is not the last
         // parameter, no commas will be present so the split will do nothing.
         result = result.replace("IntellijIdeaRulezzz", "")
-                .split(",").last()
+            .split(",").last()
 
         // Prevent double ./
         if (result.startsWith("./")) {

@@ -23,11 +23,10 @@ fun createBibtexSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         }
 
         custom {
-            // Only insert a space between two actual words, so when the left word
-            // is not a left brace, and the right word is not a right brace.
+            // Only insert a space between two actual words, and leave braces alone as they may appear as groups inside words
             customRule { _, left, right ->
                 return@customRule if (right.node?.elementType === NORMAL_TEXT_WORD && left.node?.elementType === NORMAL_TEXT_WORD) {
-                    if (left.node?.text == "{" || right.node?.text == "}") null
+                    if (left.node?.text in setOf("{", "}") || right.node?.text in setOf("}", "{")) null
                     else Spacing.createSpacing(1, 1, 0, bibtexCommonSettings.KEEP_LINE_BREAKS, bibtexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
                 }
                 else null

@@ -8,7 +8,8 @@ open class LatexMessageWithLineHandler(override val messageType: LatexLogMessage
         regex.first().find(text)?.apply {
             val message = this.value
             val line = groupValues.drop(1).dropLastWhile { it.isBlank() }.lastOrNull()?.toInt() ?: 1
-            return LatexLogMessage(message, currentFile, line,
+            return LatexLogMessage(
+                message, currentFile, line,
                 messageType
             )
         }

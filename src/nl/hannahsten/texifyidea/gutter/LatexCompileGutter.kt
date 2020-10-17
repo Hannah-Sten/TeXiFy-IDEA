@@ -35,10 +35,10 @@ class LatexCompileGutter : RunLineMarkerContributor() {
 
         // Create icon.
         return Info(
-                TexifyIcons.BUILD,
-                Function { "Compile document" },
-                actions[0],
-                editConfigs
+            TexifyIcons.BUILD,
+            Function { "Compile document" },
+            actions[0],
+            editConfigs
         )
     }
 }

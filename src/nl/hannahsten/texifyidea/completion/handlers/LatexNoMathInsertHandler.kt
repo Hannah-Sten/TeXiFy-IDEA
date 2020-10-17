@@ -42,8 +42,8 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
 
     private fun insertPseudocodeEnd(name: String, context: InsertionContext) {
         val numberRequiredArguments = LatexCommand.lookup(name)
-                ?.firstOrNull()?.arguments
-                ?.count { it is RequiredArgument } ?: 0
+            ?.firstOrNull()?.arguments
+            ?.count { it is RequiredArgument } ?: 0
 
         val templateText = List(numberRequiredArguments) {
             "{\$__Variable${it}\$}"
@@ -54,7 +54,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
         repeat(numberRequiredArguments) { parameterTemplate.addVariable(TextExpression(""), true) }
 
         TemplateManager.getInstance(context.project)
-                .startTemplate(context.editor, parameterTemplate)
+            .startTemplate(context.editor, parameterTemplate)
     }
 
     /**
@@ -68,7 +68,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
         template.addVariable(TextExpression(""), true)
 
         TemplateManager.getInstance(context.project)
-                .startTemplate(context.editor, template, EnvironmentInsertImports(context))
+            .startTemplate(context.editor, template, EnvironmentInsertImports(context))
     }
 
     /**
@@ -77,7 +77,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
      */
     private fun insertRequiredArguments(environment: Environment?, context: InsertionContext) {
         val numberRequiredArguments = environment?.arguments
-                ?.count { it is RequiredArgument } ?: 0
+            ?.count { it is RequiredArgument } ?: 0
 
         val templateText = List(numberRequiredArguments) { "{\$__Variable${it}\$}" }.joinToString("") + "\n\$END\$"
         val parameterTemplate = object : TemplateImpl("", templateText, "") {
@@ -86,7 +86,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
         repeat(numberRequiredArguments) { parameterTemplate.addVariable(TextExpression(""), true) }
 
         TemplateManager.getInstance(context.project)
-                .startTemplate(context.editor, parameterTemplate)
+            .startTemplate(context.editor, parameterTemplate)
     }
 
     /**
@@ -107,9 +107,9 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
             val file = context.file
             val editor = context.editor
             val envDefinitions = file.definitionsAndRedefinitionsInFileSet().asSequence()
-                    .filter { it.isEnvironmentDefinition() }
-                    .mapNotNull { it.requiredParameter(0) }
-                    .toSet()
+                .filter { it.isEnvironmentDefinition() }
+                .mapNotNull { it.requiredParameter(0) }
+                .toSet()
 
             // Include packages.
             if (!file.includedPackages().contains(pack.name) && envName !in envDefinitions) {

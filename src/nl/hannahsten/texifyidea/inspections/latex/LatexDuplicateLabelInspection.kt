@@ -94,21 +94,21 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
         }
         val toIgnore = parameterStrings.indexOf("{$searched}")
         return parameterStrings.subList(0, max(0, toIgnore)).map { it.length }
-                .sum()
+            .sum()
     }
 
     /**
      * make the mapping from command etc. to ProblemDescriptor
      */
     private fun createProblemDescriptor(cmd: LatexCommands, label: String, isOntheFly: Boolean, manager: InspectionManager):
-            ProblemDescriptor {
-        val offset = cmd.commandToken.textLength + skippedParametersLength(cmd.parameterList, label) + 1
-        return manager.createProblemDescriptor(
+        ProblemDescriptor {
+            val offset = cmd.commandToken.textLength + skippedParametersLength(cmd.parameterList, label) + 1
+            return manager.createProblemDescriptor(
                 cmd,
                 TextRange.from(offset, label.length),
                 "Duplicate label '$label'",
                 ProblemHighlightType.GENERIC_ERROR,
                 isOntheFly
-        )
-    }
+            )
+        }
 }

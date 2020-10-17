@@ -8,6 +8,7 @@ import java.io.InputStreamReader
 /**
  * Cache locations of LaTeX packages in memory, because especially on Windows they can be expensive to retrieve
  * (requires a run of kpsewhich).
+ * Can also be used for tex/bib files and whatever can be used with kpsewhich.
  */
 object LatexPackageLocationCache {
 

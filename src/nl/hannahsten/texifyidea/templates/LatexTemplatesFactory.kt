@@ -32,8 +32,10 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
         const val fileTemplateTikz = "TikZ Picture.tikz"
 
         @JvmStatic
-        fun createFromTemplate(directory: PsiDirectory, fileName: String,
-                               templateName: String, fileType: FileType): PsiFile {
+        fun createFromTemplate(
+            directory: PsiDirectory, fileName: String,
+            templateName: String, fileType: FileType
+        ): PsiFile {
             val project = directory.project
             val templateText = getTemplateText(project, templateName)
 
@@ -74,8 +76,8 @@ open class LatexTemplatesFactory : FileTemplateGroupDescriptorFactory {
 
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {
         val descriptor = FileTemplateGroupDescriptor(
-                descriptor,
-                TexifyIcons.LATEX_FILE
+            descriptor,
+            TexifyIcons.LATEX_FILE
         )
 
         descriptor.addTemplate(FileTemplateDescriptor(fileTemplateTex, TexifyIcons.LATEX_FILE))

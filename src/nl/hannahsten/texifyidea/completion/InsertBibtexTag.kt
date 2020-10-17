@@ -94,8 +94,10 @@ open class InsertBibtexTag : EnterHandlerDelegate {
         }
 
         // Check when no prior tags existed in the entry.
-        val noTags = (previous is LeafPsiElement && next is LeafPsiElement &&
-                        previous.elementType == BibtexTypes.SEPARATOR && next.elementType == BibtexTypes.CLOSE_BRACE)
+        val noTags = (
+            previous is LeafPsiElement && next is LeafPsiElement &&
+                previous.elementType == BibtexTypes.SEPARATOR && next.elementType == BibtexTypes.CLOSE_BRACE
+            )
         if (!noTags) {
             return false
         }

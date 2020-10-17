@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.run
+package nl.hannahsten.texifyidea.run.logtab
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
@@ -32,7 +32,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
      */
 
     fun `test I couldn't open Database file`() {
-        val log = """
+        val log =
+            """
             This is BibTeX, Version 0.99d (TeX Live 2020)
             The top-level auxiliary file: bibtex-mwe.aux
             I couldn't open database file references34.bib
@@ -46,7 +47,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             (There were 2 error messages)
 
             Process finished with exit code 2
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("I couldn't open database file references34.bib", "bibtex-mwe.aux", 3, ERROR),
@@ -58,12 +59,13 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test Sorry---you've exceeded BibTeX's`() {
-        val log = """
+        val log =
+            """
             Database file #3: crypto.bib
             Sorry---you've exceeded BibTeX's hash size 100000
             Aborted at line 291526 of file crypto.bib
             (That was a fatal error)
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("Sorry---you've exceeded BibTeX's hash size 100000", "crypto.bib", 291526, ERROR)
@@ -73,14 +75,15 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test Illegal, another bibdata command`() {
-        val log = """
+        val log =
+            """
             A level-1 auxiliary file: chapter2.aux
             Illegal, another \bibdata command---line 4 of file chapter2.aux
              : \bibdata
              :         {references}
             I'm skipping whatever remains of this command
             Database file #1: references.bib
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("Illegal, another \\bibdata command", "chapter2.aux", 4, ERROR)
@@ -90,9 +93,10 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test I found no type while reading file`() {
-        val log = """
+        val log =
+            """
             I found no \bibdata command---while reading file bibtex-mwe.aux
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("I found no \\bibdata command", "bibtex-mwe.aux", null, ERROR)
@@ -102,7 +106,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test A bad cross reference refers to entry`() {
-        val log = """
+        val log =
+            """
             Database file #1: references.bib
             A bad cross reference---entry "knuth1990"
             refers to entry "nothing", which doesn't exist
@@ -110,7 +115,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             (There was 1 error message)
             
             Process finished with exit code 2
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("A bad cross reference---entry \"knuth1990\" refers to entry \"nothing\", which doesn't exist", "references.bib", null, ERROR),
@@ -121,11 +126,12 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test Too many commas in name`() {
-        val log = """
+        val log =
+            """
             Database file #1: references.bib
             Too many commas in name 1 of "D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth" for entry knuth1990
             while executing---line 1049 of file plain.bst
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("Too many commas in name 1 of \"D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth, D.E. Knuth\" for entry knuth1990", "references.bib", null, ERROR)
@@ -139,12 +145,13 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
      */
 
     fun `test I'm ignoring extra field`() {
-        val log = """
+        val log =
+            """
             Database file #1: references.bib
             Warning--I'm ignoring knuth1990's extra "author" field
             --line 5 of file references.bib
             (There was 1 warning)
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("I'm ignoring knuth1990's extra \"author\" field", "references.bib", 5, WARNING)
@@ -154,13 +161,14 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test I didn't find a database entry`() {
-        val log = """
+        val log =
+            """
             Database file #1: references.bib
             Warning--I didn't find a database entry for "knuth19902"
             (There was 1 warning)
 
             Process finished with exit code 2
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("I didn't find a database entry for \"knuth19902\"", "references.bib", null, WARNING)
@@ -170,13 +178,14 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test isn't a brace-balanced string for entry`() {
-        val log = """
+        val log =
+            """
             Database file #1: mybib.bib
             Warning--"{" isn't a brace-balanced string for entry BTRAF
             while executing--line 939 of file prsty.bst
             
             Process finished with exit code 2
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("\"{\" isn't a brace-balanced string for entry BTRAF", "mybib.bib", null, WARNING)
@@ -186,13 +195,14 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test I didn't find any fields`() {
-        val log = """
+        val log =
+            """
             The style file: style.bst
             Warning--I didn't find any fields--line 1 of file style.bst
             (There was 1 warning)
             
             Process finished with exit code 0
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("I didn't find any fields", "style.bst", 1, WARNING)
@@ -202,7 +212,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test You've nested cross references`() {
-        val log = """
+        val log =
+            """
             Database file #1: references.bib
             Warning--you've nested cross references--entry "knuth1990"
             refers to entry "greenwade1993", which also refers to something
@@ -210,7 +221,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             (There were 2 warnings)
             
             Process finished with exit code 0
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("you've nested cross references--entry \"knuth1990\" refers to entry \"greenwade1993\", which also refers to something", "references.bib", null, WARNING),
@@ -225,12 +236,13 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
      */
 
     fun `test cannot find file`() {
-        val log = """
+        val log =
+            """
             INFO - Globbed data source 'references2.bib' to references2.bib
             INFO - Looking for bibtex format file 'references2.bib' for section 0
             ERROR - Cannot find 'references2.bib'!
             INFO - ERRORS: 1
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("Cannot find 'references2.bib'!", "", null, ERROR)
@@ -240,7 +252,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test syntax error`() {
-        val log = """
+        val log =
+            """
             INFO - Looking for bibtex format file 'references.bib' for section 0
             INFO - LaTeX decoding ...
             INFO - Found BibTeX data source '/home/thomas/stuffs/src/references.bib'
@@ -250,7 +263,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             INFO - ERRORS: 1
             
             Process finished with exit code 2
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("possible runaway string started at line 11", "/home/thomas/stuffs/src/references.bib", 12, WARNING),
@@ -261,10 +274,11 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test warning in file`() {
-        val log = """
+        val log =
+            """
             INFO - Found BibTeX data source 'references.bib'
             WARN - Invalid or undefined BibTeX entry key in file '/tmp/biber_tmp_lucp/references.bib_402841.utf8', skipping ...
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("Invalid or undefined BibTeX entry key", "references.bib", null, WARNING)
@@ -274,7 +288,8 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
     }
 
     fun `test long biber warning`() {
-        val log = """
+        val log =
+            """
             INFO - Globbed data source 'references.bib' to references.bib
             INFO - Looking for bibtex format file 'references.bib' for section 0
             INFO - LaTeX decoding ...
@@ -284,7 +299,7 @@ class BibtexOutputListenerTest : BasePlatformTestCase() {
             INFO - Overriding locale 'en-GB' defaults 'variable = shifted' with 'variable = non-ignorable'
             INFO - Overriding locale 'en-GB' defaults 'normalization = NFD' with 'normalization = prenormalized'
             INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'en-GB'
-        """.trimIndent()
+            """.trimIndent()
 
         val expectedMessages = setOf(
             BibtexLogMessage("Possible typo (case mismatch) between citation and datasource keys: 'blablablaS' and 'blablablas' in file 'references.bib'", "references.bib", null, WARNING),

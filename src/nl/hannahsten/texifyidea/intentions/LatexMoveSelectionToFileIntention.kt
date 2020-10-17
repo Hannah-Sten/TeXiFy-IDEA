@@ -45,7 +45,7 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
 
         // Display a dialog to ask for the location and name of the new file.
         val filePath = CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, "")
-                .newFileFullPath ?: return
+            .newFileFullPath ?: return
 
         // Find text.
         val text = StringBuilder()
@@ -71,14 +71,14 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
             // The path of the created file contains the system's file separators, whereas the path of the root
             // (virtual file) always contains '/' as file separators.
             val fileNameRelativeToRoot = createdFile.absolutePath
-                    .replace(File.separator, "/")
-                    .replace("$root/", "")
+                .replace(File.separator, "/")
+                .replace("$root/", "")
             document.insertString(offsets.first().first, "\\input{${fileNameRelativeToRoot.dropLast(4)}}")
         }
     }
 
     private fun selectionOffsets(editor: Editor): List<Pair<Int, Int>> {
         return editor.caretModel.allCarets
-                .map { Pair(it.selectionStart, it.selectionEnd) }
+            .map { Pair(it.selectionStart, it.selectionEnd) }
     }
 }

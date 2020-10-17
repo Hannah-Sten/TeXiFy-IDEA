@@ -17,9 +17,10 @@ import javax.swing.JPanel
  * @author Sten Wessel
  */
 class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
-        private val project: Project,
-        private val title: String,
-        private val runConfigurationType: Class<RunConfigurationType>) : JPanel(BorderLayout()) {
+    private val project: Project,
+    private val title: String,
+    private val runConfigurationType: Class<RunConfigurationType>
+) : JPanel(BorderLayout()) {
 
     private val contentPanel = JPanel(BorderLayout())
     private val hidePanel: HideableTitledPanel

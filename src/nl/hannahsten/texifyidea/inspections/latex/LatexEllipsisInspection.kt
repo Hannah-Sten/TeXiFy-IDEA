@@ -39,14 +39,16 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
                     continue
                 }
 
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         text,
                         match.range.toTextRange(),
                         "Ellipsis with ... instead of command",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         InsertEllipsisCommandFix(text.inMathContext())
-                ))
+                    )
+                )
             }
         }
 

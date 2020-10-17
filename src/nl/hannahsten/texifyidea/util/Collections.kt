@@ -65,9 +65,9 @@ fun <T> List<T>.randomElement(random: Random): T = this[random.nextInt(this.size
  */
 fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
     return entries.asSequence()
-            .filter { (_, v) -> v == value }
-            .map { it.key }
-            .toSet()
+        .filter { (_, v) -> v == value }
+        .map { it.key }
+        .toSet()
 }
 
 /**

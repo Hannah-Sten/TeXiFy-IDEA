@@ -40,33 +40,33 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
      * The rule is only matched when the condition holds.
      */
     private data class Condition(
-            val parent: IElementType? = null,
-            val left: IElementType? = null,
-            val right: IElementType? = null,
-            val parentSet: TokenSet? = null,
-            val leftSet: TokenSet? = null,
-            val rightSet: TokenSet? = null
+        val parent: IElementType? = null,
+        val left: IElementType? = null,
+        val right: IElementType? = null,
+        val parentSet: TokenSet? = null,
+        val leftSet: TokenSet? = null,
+        val rightSet: TokenSet? = null
     ) : (ASTBlock, ASTBlock, ASTBlock) -> Boolean {
 
         override fun invoke(p: ASTBlock, l: ASTBlock, r: ASTBlock): Boolean =
-                (parent == null || p.node!!.elementType == parent) &&
-                        (left == null || l.node!!.elementType == left) &&
-                        (right == null || r.node!!.elementType == right) &&
-                        (parentSet == null || p.node!!.elementType in parentSet) &&
-                        (leftSet == null || l.node!!.elementType in leftSet) &&
-                        (rightSet == null || r.node!!.elementType in rightSet)
+            (parent == null || p.node!!.elementType == parent) &&
+                (left == null || l.node!!.elementType == left) &&
+                (right == null || r.node!!.elementType == right) &&
+                (parentSet == null || p.node!!.elementType in parentSet) &&
+                (leftSet == null || l.node!!.elementType in leftSet) &&
+                (rightSet == null || r.node!!.elementType in rightSet)
     }
 
     /**
      * Rule that upon matching the conditions returns the spacing action.
      */
     private data class Rule(
-            val conditions: List<Condition>,
-            val action: (ASTBlock, ASTBlock, ASTBlock) -> Spacing?
+        val conditions: List<Condition>,
+        val action: (ASTBlock, ASTBlock, ASTBlock) -> Spacing?
     ) : (ASTBlock, ASTBlock, ASTBlock) -> Spacing? {
 
         override fun invoke(p: ASTBlock, l: ASTBlock, r: ASTBlock): Spacing? =
-                if (conditions.all { it(p, l, r) }) action(p, l, r) else null
+            if (conditions.all { it(p, l, r) }) action(p, l, r) else null
     }
 
     /**
@@ -84,12 +84,14 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
             return null
         }
 
-        fun inPosition(parent: IElementType? = null,
-                       left: IElementType? = null,
-                       right: IElementType? = null,
-                       parentSet: TokenSet? = null,
-                       leftSet: TokenSet? = null,
-                       rightSet: TokenSet? = null): CustomSpacingBuilder {
+        fun inPosition(
+            parent: IElementType? = null,
+            left: IElementType? = null,
+            right: IElementType? = null,
+            parentSet: TokenSet? = null,
+            leftSet: TokenSet? = null,
+            rightSet: TokenSet? = null
+        ): CustomSpacingBuilder {
             conditions.add(Condition(parent, left, right, parentSet, leftSet, rightSet))
             return this
         }

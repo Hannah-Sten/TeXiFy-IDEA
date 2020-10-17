@@ -34,9 +34,11 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
 
             // Add a listener to the browse button to browse a folder
             pathField.addBrowseFolderListener(
-                    TextBrowseFolderListener(
-                            FileChooserDescriptor(false, true, false, false, false, false)
-                                    .withTitle("Select folder of new file")))
+                TextBrowseFolderListener(
+                    FileChooserDescriptor(false, true, false, false, false, false)
+                        .withTitle("Select folder of new file")
+                )
+            )
 
             // Add the fields to the panel, with a useful label.
             panel.add(LabeledComponent.create(nameField, "File path (extension optional, relative to base directory)"))
@@ -67,7 +69,7 @@ class CreateFileDialog(private val currentFilePath: String?, private val newFile
                 File(path).mkdirs()
                 // Format the text from the name field as a file name (e.g. " " -> "-") and remove the (double) tex extension.
                 newFileFullPath = "$path/${nameField.text.substring(pathEndIndex + 1).formatAsFileName()}"
-                        .replace(Regex("(\\.tex)+$", RegexOption.IGNORE_CASE), "")
+                    .replace(Regex("(\\.tex)+$", RegexOption.IGNORE_CASE), "")
             }
         }
     }

@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.util.evaluate
  */
 fun getReferences(element: BibtexEntry): Array<PsiReference> {
     val urls = Magic.Command.bibUrls
-            .map { element.getTagContent(it) }
-            .filter { it.isNotBlank() }
+        .map { element.getTagContent(it) }
+        .filter { it.isNotBlank() }
 
     if (urls.isNotEmpty()) {
         // We cannot simply return urls.map { WebReference(element, it) } because

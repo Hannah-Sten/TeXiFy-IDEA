@@ -25,8 +25,11 @@ class LatexPostfixExpressionSelector(private val mathOnly: Boolean = false, priv
     override fun getExpressions(context: PsiElement, document: Document, offset: Int): MutableList<PsiElement> {
         return when (context.elementType) {
             LatexTypes.INLINE_MATH_END -> mutableListOf(context.firstParentOfType(LatexInlineMath::class) as PsiElement)
-            LatexTypes.CLOSE_BRACE -> mutableListOf(context.firstParentOfType(LatexCommands::class)
-                    ?: context.firstParentOfType(LatexGroup::class) as PsiElement)
+            LatexTypes.CLOSE_BRACE ->
+                mutableListOf(
+                    context.firstParentOfType(LatexCommands::class)
+                        ?: context.firstParentOfType(LatexGroup::class) as PsiElement
+                )
             LatexTypes.CLOSE_BRACKET -> mutableListOf(context.firstParentOfType(LatexOptionalParam::class) as PsiElement)
             LatexTypes.DISPLAY_MATH_END -> mutableListOf(context.firstParentOfType(LatexDisplayMath::class) as PsiElement)
             else -> mutableListOf(context)

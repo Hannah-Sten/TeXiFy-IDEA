@@ -58,20 +58,22 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Check environment variables
         val runManager = RunManagerImpl.getInstanceImpl(element.project) as RunManager
         val texInputPath = runManager.allConfigurationsList
-                .filterIsInstance<LatexRunConfiguration>()
-                .firstOrNull { it.mainFile == rootFile }
-                ?.environmentVariables
-                ?.envs
-                ?.getOrDefault("TEXINPUTS", null)
+            .filterIsInstance<LatexRunConfiguration>()
+            .firstOrNull { it.mainFile == rootFile }
+            ?.environmentVariables
+            ?.envs
+            ?.getOrDefault("TEXINPUTS", null)
         if (texInputPath != null) {
             val path = texInputPath.trimEnd(':')
             searchPaths.add(path.trimEnd('/'))
             // See the kpathsea manual, // expands to subdirs
             if (path.endsWith("//")) {
                 LocalFileSystem.getInstance().findFileByPath(path.trimEnd('/'))?.let { parent ->
-                    searchPaths.addAll(parent.allChildDirectories()
+                    searchPaths.addAll(
+                        parent.allChildDirectories()
                             .filter { it.isDirectory }
-                            .map { it.path })
+                            .map { it.path }
+                    )
                 }
             }
         }
@@ -102,12 +104,12 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
             }
         }
 
-        @Suppress("RemoveExplicitTypeArguments")
-        if (targetFile == null && lookForInstalledPackages && Magic.Command.includeOnlyExtensions.getOrDefault(element.name, emptySet<String>()).intersect(setOf("sty", "cls")).isNotEmpty()) {
+        // Look for packages/files elsewhere using the kpsewhich command.
+        if (targetFile == null && lookForInstalledPackages) {
             targetFile = element.getFileNameWithExtensions(processedKey)
-                    ?.map { LatexPackageLocationCache.getPackageLocation(it) }
-                    ?.map { getExternalFile(it ?: return null) }
-                    ?.firstOrNull { it != null }
+                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it) }
+                .mapNotNull { getExternalFile(it) }
+                .firstOrNull()
         }
 
         if (targetFile == null) targetFile = searchFileByImportPaths(element)?.virtualFile
@@ -159,8 +161,8 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
      * Create a set possible complete file names (including extension), based on
      * the command that includes a file, and the name of the file.
      */
-    private fun LatexCommands.getFileNameWithExtensions(fileName: String): HashSet<String>? {
-        val extension: HashSet<String>? = Magic.Command.includeOnlyExtensions[this.commandToken.text]
-        return extension?.map { "$fileName.$it" }?.toHashSet()
+    private fun LatexCommands.getFileNameWithExtensions(fileName: String): Set<String> {
+        val extension = Magic.Command.includeOnlyExtensions[this.commandToken.text] ?: emptySet()
+        return extension.map { "$fileName.$it" }.toSet() + setOf(fileName)
     }
 }

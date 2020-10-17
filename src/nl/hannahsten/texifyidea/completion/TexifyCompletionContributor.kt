@@ -40,147 +40,149 @@ open class TexifyCompletionContributor : CompletionContributor() {
     private fun registerLatexCompletion() {
         // Math mode
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-                        .inside(LatexMathEnvironment::class.java)
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexCommandProvider(LatexMode.MATH)
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
+                .inside(LatexMathEnvironment::class.java)
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexCommandProvider(LatexMode.MATH)
         )
 
         // Math mode inside environments
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-                        .with(object : PatternCondition<PsiElement>(null) {
-                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                return psiElement.inMathContext()
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexCommandProvider(LatexMode.MATH)
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
+                .with(object : PatternCondition<PsiElement>(null) {
+                    override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                        return psiElement.inMathContext()
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexCommandProvider(LatexMode.MATH)
         )
 
         // Normal
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-                        .andNot(PlatformPatterns.psiElement()
-                                .inside(LatexMathEnvironment::class.java))
-                        .with(object : PatternCondition<PsiElement>(null) {
-                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                return !psiElement.inMathContext()
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexCommandProvider(LatexMode.NORMAL)
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
+                .andNot(
+                    PlatformPatterns.psiElement()
+                        .inside(LatexMathEnvironment::class.java)
+                )
+                .with(object : PatternCondition<PsiElement>(null) {
+                    override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                        return !psiElement.inMathContext()
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexCommandProvider(LatexMode.NORMAL)
         )
 
         // DefaultEnvironment names
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement()
-                        .inside(LatexRequiredParam::class.java)
-                        .inside(LatexBeginCommand::class.java)
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement()
+                .inside(LatexRequiredParam::class.java)
+                .inside(LatexBeginCommand::class.java)
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexCommandProvider(LatexMode.ENVIRONMENT_NAME)
         )
 
         // File names
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
-                        .inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>("File name completion pattern") {
-                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
-                                        ?: return false
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
+                .inside(LatexRequiredParam::class.java)
+                .with(object : PatternCondition<PsiElement>("File name completion pattern") {
+                    override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                            ?: return false
 
-                                val name = command.commandToken.text
-                                val cmd = LatexRegularCommand[name.substring(1)] ?: return false
+                        val name = command.commandToken.text
+                        val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
-                                val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
-                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+                        val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
+                        if (args.isNotEmpty()) processingContext.put("type", args.first())
 
-                                return args.isNotEmpty()
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexFileProvider()
+                        return args.isNotEmpty()
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexFileProvider()
         )
 
         // Folder names
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement()
-                        .inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
-                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
-                                        ?: return false
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement()
+                .inside(LatexRequiredParam::class.java)
+                .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
+                    override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                            ?: return false
 
-                                val name = command.commandToken.text
-                                val cmd = LatexRegularCommand[name.substring(1)] ?: return false
+                        val name = command.commandToken.text
+                        val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
-                                val args = cmd.first().getArgumentsOf(RequiredFolderArgument::class)
-                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+                        val args = cmd.first().getArgumentsOf(RequiredFolderArgument::class)
+                        if (args.isNotEmpty()) processingContext.put("type", args.first())
 
-                                return args.isNotEmpty()
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexFolderProvider()
+                        return args.isNotEmpty()
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexFolderProvider()
         )
 
         // Graphics paths
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
-                        .inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
-                            override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
-                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
-                                        ?: return false
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
+                .inside(LatexRequiredParam::class.java)
+                .with(object : PatternCondition<PsiElement>("Folder name completion pattern") {
+                    override fun accepts(psiElement: PsiElement, processingContext: ProcessingContext): Boolean {
+                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                            ?: return false
 
-                                val name = command.commandToken.text
-                                val cmd = LatexRegularCommand[name.substring(1)] ?: return false
+                        val name = command.commandToken.text
+                        val cmd = LatexRegularCommand[name.substring(1)] ?: return false
 
-                                val args = cmd.first().getArgumentsOf(RequiredPicturePathArgument::class)
-                                if (args.isNotEmpty()) processingContext.put("type", args.first())
+                        val args = cmd.first().getArgumentsOf(RequiredPicturePathArgument::class)
+                        if (args.isNotEmpty()) processingContext.put("type", args.first())
 
-                                return args.isNotEmpty()
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexGraphicsPathProvider()
+                        return args.isNotEmpty()
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexGraphicsPathProvider()
         )
 
         // Colors from xcolor
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>("xcolor color completion patter") {
-                            override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
-                                val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
-                                        ?: return false
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement().inside(LatexRequiredParam::class.java)
+                .with(object : PatternCondition<PsiElement>("xcolor color completion patter") {
+                    override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
+                        val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
+                            ?: return false
 
-                                val name = command.commandToken.text
-                                return name.substring(1) in Magic.Colors.takeColorCommands
-                            }
-                        }),
-                LatexXColorProvider
+                        val name = command.commandToken.text
+                        return name.substring(1) in Magic.Colors.takeColorCommands
+                    }
+                }),
+            LatexXColorProvider
         )
 
         // Magic comments keys.
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(PsiComment::class.java)
-                        .with(object : PatternCondition<PsiElement>("Magic comment completion pattern") {
-                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
-                                return comment.isMagicComment() && comment.text.contains('=').not()
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                LatexMagicCommentKeyProvider
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement().inside(PsiComment::class.java)
+                .with(object : PatternCondition<PsiElement>("Magic comment completion pattern") {
+                    override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
+                        return comment.isMagicComment() && comment.text.contains('=').not()
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            LatexMagicCommentKeyProvider
         )
 
         extendLatexCommands(LatexBibliographyReferenceProvider, Magic.Command.bibliographyReference)
@@ -204,8 +206,9 @@ open class TexifyCompletionContributor : CompletionContributor() {
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
 
         // Documentclasses
-        extendLatexCommands(LatexDocumentclassProvider,
-                "\\documentclass", "\\LoadClass", "\\LoadClassWithOptions"
+        extendLatexCommands(
+            LatexDocumentclassProvider,
+            "\\documentclass", "\\LoadClass", "\\LoadClassWithOptions"
         )
 
         // Bibliography styles
@@ -215,41 +218,41 @@ open class TexifyCompletionContributor : CompletionContributor() {
     private fun registerBibtexCompletion() {
         // Outer scope: types.
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(BibtexTypes.TYPE_TOKEN)
-                        .andNot(PlatformPatterns.psiElement().inside(BibtexEntry::class.java))
-                        .withLanguage(BibtexLanguage),
-                BibtexTypeTokenProvider
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(BibtexTypes.TYPE_TOKEN)
+                .andNot(PlatformPatterns.psiElement().inside(BibtexEntry::class.java))
+                .withLanguage(BibtexLanguage),
+            BibtexTypeTokenProvider
         )
 
         // Keys
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(BibtexTypes.IDENTIFIER)
-                        .inside(BibtexEntry::class.java)
-                        .with(object : PatternCondition<PsiElement>(null) {
-                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
-                                val entry = psiElement.parentOfType(BibtexEntry::class)
-                                val type = entry?.firstChildOfType(BibtexType::class)
-                                if (type?.text?.toLowerCase() == "@string") {
-                                    return false
-                                }
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(BibtexTypes.IDENTIFIER)
+                .inside(BibtexEntry::class.java)
+                .with(object : PatternCondition<PsiElement>(null) {
+                    override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
+                        val entry = psiElement.parentOfType(BibtexEntry::class)
+                        val type = entry?.firstChildOfType(BibtexType::class)
+                        if (type?.text?.toLowerCase() == "@string") {
+                            return false
+                        }
 
-                                return psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class)
-                            }
-                        })
-                        .withLanguage(BibtexLanguage),
-                BibtexKeyProvider
+                        return psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class)
+                    }
+                })
+                .withLanguage(BibtexLanguage),
+            BibtexKeyProvider
         )
 
         // Strings
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement(BibtexTypes.IDENTIFIER)
-                        .inside(BibtexEntry::class.java)
-                        .inside(BibtexContent::class.java)
-                        .withLanguage(BibtexLanguage),
-                BibtexStringProvider
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(BibtexTypes.IDENTIFIER)
+                .inside(BibtexEntry::class.java)
+                .inside(BibtexContent::class.java)
+                .withLanguage(BibtexLanguage),
+            BibtexStringProvider
         )
     }
 
@@ -272,22 +275,22 @@ open class TexifyCompletionContributor : CompletionContributor() {
      */
     private fun extendLatexCommands(provider: CompletionProvider<CompletionParameters>, commandNamesWithSlash: Set<String>) {
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
-                        .inside(LatexRequiredParam::class.java)
-                        .with(object : PatternCondition<PsiElement>(null) {
-                            override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
-                                val command = psiElement.parentOfType(LatexCommands::class) ?: return false
-                                if (command.commandToken.text in commandNamesWithSlash) {
-                                    return true
-                                }
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement().inside(LatexParameterText::class.java)
+                .inside(LatexRequiredParam::class.java)
+                .with(object : PatternCondition<PsiElement>(null) {
+                    override fun accepts(psiElement: PsiElement, context: ProcessingContext): Boolean {
+                        val command = psiElement.parentOfType(LatexCommands::class) ?: return false
+                        if (command.commandToken.text in commandNamesWithSlash) {
+                            return true
+                        }
 
-                                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
-                                return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                provider
+                        CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
+                        return CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            provider
         )
     }
 
@@ -296,15 +299,15 @@ open class TexifyCompletionContributor : CompletionContributor() {
      */
     private fun extendMagicCommentValues(commentName: String, regex: Regex, completionProvider: CompletionProvider<CompletionParameters>) {
         extend(
-                CompletionType.BASIC,
-                PlatformPatterns.psiElement().inside(PsiComment::class.java)
-                        .with(object : PatternCondition<PsiElement>("Magic comment $commentName pattern") {
-                            override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
-                                return comment.isMagicComment() && comment.text.contains(regex)
-                            }
-                        })
-                        .withLanguage(LatexLanguage.INSTANCE),
-                completionProvider
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement().inside(PsiComment::class.java)
+                .with(object : PatternCondition<PsiElement>("Magic comment $commentName pattern") {
+                    override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
+                        return comment.isMagicComment() && comment.text.contains(regex)
+                    }
+                })
+                .withLanguage(LatexLanguage.INSTANCE),
+            completionProvider
         )
     }
 }

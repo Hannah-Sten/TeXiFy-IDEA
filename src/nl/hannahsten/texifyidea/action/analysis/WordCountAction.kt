@@ -21,9 +21,9 @@ import javax.swing.SwingConstants
  * @author Hannah Schellekens
  */
 open class WordCountAction : AnAction(
-        "_Word Count",
-        "Estimate the word count of the currently active .tex file and inclusions.",
-        TexifyIcons.WORD_COUNT
+    "_Word Count",
+    "Estimate the word count of the currently active .tex file and inclusions.",
+    TexifyIcons.WORD_COUNT
 ) {
 
     companion object {
@@ -32,24 +32,24 @@ open class WordCountAction : AnAction(
          * Commands that should be ignored by the word counter.
          */
         private val IGNORE_COMMANDS = setOf(
-                "\\usepackage", "\\documentclass", "\\label", "\\linespread", "\\ref", "\\cite", "\\eqref", "\\nameref",
-                "\\autoref", "\\fullref", "\\pageref", "\\newcounter", "\\newcommand", "\\renewcommand",
-                "\\setcounter", "\\resizebox", "\\includegraphics", "\\include", "\\input", "\\refstepcounter",
-                "\\counterwithins", "\\RequirePackage", "\\bibliography", "\\bibliographystyle"
+            "\\usepackage", "\\documentclass", "\\label", "\\linespread", "\\ref", "\\cite", "\\eqref", "\\nameref",
+            "\\autoref", "\\fullref", "\\pageref", "\\newcounter", "\\newcommand", "\\renewcommand",
+            "\\setcounter", "\\resizebox", "\\includegraphics", "\\include", "\\input", "\\refstepcounter",
+            "\\counterwithins", "\\RequirePackage", "\\bibliography", "\\bibliographystyle"
         )
 
         /**
          * List of all environments that must be ignored.
          */
         private val IGNORE_ENVIRONMENTS = setOf(
-                "tikzpicture", "thebibliography"
+            "tikzpicture", "thebibliography"
         )
 
         /**
          * Words that are contractions when `'s` is appended.
          */
         private val CONTRACTION_S = listOf(
-                "that", "it", "there", "she", "he"
+            "that", "it", "there", "she", "he"
         )
 
         /**
@@ -81,7 +81,8 @@ open class WordCountAction : AnAction(
         return DialogBuilder().apply {
             setTitle("Word count")
 
-            setCenterPanel(JLabel(
+            setCenterPanel(
+                JLabel(
                     """|<html>
                         |<p>Analysis of <i>${baseFile.name}</i> (and inclusions):</p>
                         |<table cellpadding=1 style='margin-top:4px'>
@@ -91,7 +92,8 @@ open class WordCountAction : AnAction(
                         |</html>""".trimMargin(),
                     AllIcons.General.InformationDialog,
                     SwingConstants.LEADING
-            ))
+                )
+            )
 
             addOkAction()
             setOkOperation {
@@ -105,23 +107,23 @@ open class WordCountAction : AnAction(
      */
     private fun countWords(baseFile: PsiFile): Pair<Int, Int> {
         val fileSet = baseFile.referencedFileSet()
-                .filter { it.name.endsWith(".tex", ignoreCase = true) }
+            .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
-                .filter {
-                    val children = it.childrenOfType(LatexBeginCommand::class)
-                    if (children.isEmpty()) {
-                        return@filter false
-                    }
-
-                    val parameters = children.first().parameterList
-                    if (parameters.isEmpty()) {
-                        return@filter false
-                    }
-
-                    return@filter parameters[0].text == "{thebibliography}"
+            .filter {
+                val children = it.childrenOfType(LatexBeginCommand::class)
+                if (children.isEmpty()) {
+                    return@filter false
                 }
+
+                val parameters = children.first().parameterList
+                if (parameters.isEmpty()) {
+                    return@filter false
+                }
+
+                return@filter parameters[0].text == "{thebibliography}"
+            }
         val bibliography = bibliographies.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val (wordsNormal, charsNormal) = countWords(allNormalText)
@@ -173,7 +175,8 @@ open class WordCountAction : AnAction(
 
         for (word in words) {
             if (isWrongCommand(word) || isOptionalParameter(word) || isEnvironmentMarker(word) || isPunctuation(word) ||
-                    isInWrongEnvironment(word) || isInMath(word)) {
+                isInWrongEnvironment(word) || isInMath(word)
+            ) {
                 continue
             }
 

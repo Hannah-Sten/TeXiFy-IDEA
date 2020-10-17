@@ -5,22 +5,28 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexMultipleIncludesInspectionTest : TexifyInspectionTestBase(LatexMultipleIncludesInspection()) {
     fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \usepackage{<error descr="Package has already been included">rubikrotation</error>}
             \usepackage{<error descr="Package has already been included">rubikrotation</error>}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 
     fun testConditionalInclude() {
-        myFixture.configureByText(LatexFileType, """
+        myFixture.configureByText(
+            LatexFileType,
+            """
             \documentclass{article}
             
             \onlyifstandalone{
             \usepackage{amsmath}
             }
             \usepackage{amsmath}
-        """.trimIndent())
+            """.trimIndent()
+        )
         myFixture.checkHighlighting()
     }
 }

@@ -27,10 +27,10 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
 
     private fun addDefaultColors(result: CompletionResultSet) {
         result.addAllElements(
-                Magic.Colors.defaultXcolors.map {
-                    LookupElementBuilder.create(it.key)
-                            .withIcon(ColorIcon(12, Color(it.value)))
-                }
+            Magic.Colors.defaultXcolors.map {
+                LookupElementBuilder.create(it.key)
+                    .withIcon(ColorIcon(12, Color(it.value)))
+            }
         )
     }
 
@@ -39,8 +39,8 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
         val file = parameters.originalFile
         val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
         val searchFiles = files.stream()
-                .map { obj: PsiFile -> obj.virtualFile }
-                .collect(Collectors.toSet())
+            .map { obj: PsiFile -> obj.virtualFile }
+            .collect(Collectors.toSet())
         searchFiles.add(file.virtualFile)
         val scope = GlobalSearchScope.filesScope(project, searchFiles)
         val cmds = LatexCommandsIndex.getItems(project, scope)

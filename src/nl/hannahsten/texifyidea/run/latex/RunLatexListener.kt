@@ -13,8 +13,8 @@ import com.intellij.openapi.util.Key
  * @author Thomas Schouten
  */
 class RunLatexListener(
-        private val runConfig: LatexRunConfiguration,
-        private val environment: ExecutionEnvironment
+    private val runConfig: LatexRunConfiguration,
+    private val environment: ExecutionEnvironment
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -23,7 +23,7 @@ class RunLatexListener(
         }
 
         val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(runConfig)
-                    ?: return
+            ?: return
         runConfig.isLastRunConfig = true
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
         runConfig.isLastRunConfig = false

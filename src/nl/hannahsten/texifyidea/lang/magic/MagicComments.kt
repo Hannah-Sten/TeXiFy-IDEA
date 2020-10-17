@@ -113,9 +113,9 @@ fun <Key, Value> PsiElement.addMagicCommentToPsiElement(magicComment: MagicComme
  * @return The parsed magic comment.
  */
 fun PsiElement.magicCommentLookup(
-        initial: PsiElement.() -> PsiElement?,
-        next: PsiElement.() -> PsiElement?,
-        reversed: Boolean = false
+    initial: PsiElement.() -> PsiElement?,
+    next: PsiElement.() -> PsiElement?,
+    reversed: Boolean = false
 ): MagicComment<String, String> {
 
     val commentLines = LinkedList<String>()
@@ -150,9 +150,9 @@ fun PsiElement.magicCommentLookup(
  *          Fetches the first candidate comment.
  */
 fun PsiElement.forwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?) = magicCommentLookup(
-        initial,
-        PsiElement::nextSiblingIgnoreWhitespace,
-        reversed = false
+    initial,
+    PsiElement::nextSiblingIgnoreWhitespace,
+    reversed = false
 )
 
 /**
@@ -162,9 +162,9 @@ fun PsiElement.forwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?) 
  *          Fetches the first candidate comment.
  */
 fun PsiElement.backwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?) = magicCommentLookup(
-        initial,
-        PsiElement::previousSiblingIgnoreWhitespace,
-        reversed = true
+    initial,
+    PsiElement::previousSiblingIgnoreWhitespace,
+    reversed = true
 )
 
 /**

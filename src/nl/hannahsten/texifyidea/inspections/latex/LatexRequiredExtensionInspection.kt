@@ -35,31 +35,34 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         file.commandsInFile().asSequence()
-                .filter { it.name in Magic.Command.requiredExtensions }
-                .filter { command ->
-                    Magic.Command.requiredExtensions[command.name]!!.any {
-                        extension -> command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == false }
-                    }
+            .filter { it.name in Magic.Command.requiredExtensions }
+            .filter { command ->
+                Magic.Command.requiredExtensions[command.name]!!.any {
+                    extension ->
+                    command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == false }
                 }
-                .forEach { command ->
-                    val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
-                    var offset = 0
-                    for (parameter in parameterList) {
-                        if (Magic.Command.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
-                            descriptors.add(manager.createProblemDescriptor(
-                                    command,
-                                    TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
-                                    "File argument should include the extension",
-                                    ProblemHighlightType.GENERIC_ERROR,
-                                    isOntheFly,
-                                    AddExtensionFix
-                            ))
-                        }
+            }
+            .forEach { command ->
+                val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
+                var offset = 0
+                for (parameter in parameterList) {
+                    if (Magic.Command.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
+                        descriptors.add(
+                            manager.createProblemDescriptor(
+                                command,
+                                TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
+                                "File argument should include the extension",
+                                ProblemHighlightType.GENERIC_ERROR,
+                                isOntheFly,
+                                AddExtensionFix
+                            )
+                        )
+                    }
 
-                        // Assume all parameter are comma separated
-                        offset += parameter.length + ",".length
-                    }
+                    // Assume all parameter are comma separated
+                    offset += parameter.length + ",".length
                 }
+            }
 
         return descriptors
     }
@@ -81,8 +84,8 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
                 if (Magic.Command.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
                     val range = TextRange(offset, offset + parameter.length).shiftRight(command.parameterList.first { it.requiredParam != null }.textOffset + 1)
                     val replacement = Magic.Command.requiredExtensions[command.name]
-                            ?.find { !parameter.endsWith(it) }
-                            ?.run { parameter.appendExtension(this) } ?: break
+                        ?.find { !parameter.endsWith(it) }
+                        ?.run { parameter.appendExtension(this) } ?: break
                     document.replaceString(range, replacement)
 
                     // Maintain offset for any added part

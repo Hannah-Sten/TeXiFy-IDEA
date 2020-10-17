@@ -3,9 +3,9 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.util.extractLabelElement
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.findLatexLabelPsiElementsInFileSetAsSequence
-import nl.hannahsten.texifyidea.util.firstChildOfType
 
 /**
  * The difference with [LatexLabelReference] is that this reference works on parameter text, i.e. the actual label parameters.
@@ -33,17 +33,16 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         // Find the label definition
         return myElement.containingFile.findLatexLabelPsiElementsInFileSetAsSequence()
-                .filter { it.extractLabelName() == myElement.name }
-                .mapNotNull {
-                    // Find the normal text in the label command.
-                    // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
-                    // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
-                    // but only the label text itself will have the correct name for that.
-                    val labelText = it.firstChildOfType(LatexParameterText::class) ?: return@mapNotNull null
-                    PsiElementResolveResult(labelText)
-                }
-                .toList()
-                .toArray(emptyArray())
+            .filter { it.extractLabelName() == myElement.name }
+            .mapNotNull {
+                // Find the normal text in the label command.
+                // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
+                // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
+                // but only the label text itself will have the correct name for that.
+                PsiElementResolveResult(it.extractLabelElement() ?: return@mapNotNull null)
+            }
+            .toList()
+            .toArray(emptyArray())
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {

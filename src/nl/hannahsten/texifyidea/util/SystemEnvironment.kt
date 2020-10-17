@@ -12,9 +12,9 @@ class SystemEnvironment {
 
         val inkscapeMajorVersion: Int by lazy {
             "inkscape --version".runCommand()
-                    ?.split(" ")?.getOrNull(1)
-                    ?.split(".")?.firstOrNull()
-                    ?.toInt() ?: 0
+                ?.split(" ")?.getOrNull(1)
+                ?.split(".")?.firstOrNull()
+                ?.toInt() ?: 0
         }
 
         val isInkscapeInstalledAsSnap: Boolean by lazy {
@@ -35,9 +35,9 @@ fun runCommand(vararg commands: String): String {
     try {
         val command = arrayListOf(*commands)
         val proc = ProcessBuilder(command)
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .start()
 
         // Timeout value
         proc.waitFor(3, TimeUnit.SECONDS)

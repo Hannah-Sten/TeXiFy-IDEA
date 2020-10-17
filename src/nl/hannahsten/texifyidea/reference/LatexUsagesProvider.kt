@@ -11,24 +11,26 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 
 class LatexUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? {
-        return DefaultWordsScanner(LatexLexerAdapter(),
-                // Identifiers.
-                TokenSet.create(LatexTypes.COMMAND_TOKEN, LatexTypes.COMMANDS,
-                        LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
-                        LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
-                        LatexTypes.PARAMETER_TEXT, LatexTypes.PARAMETER,
-                        LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM
-                ),
-                // Comments.
-                TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),
-                // Literals.
-                TokenSet.create(
-                        LatexTypes.ENVIRONMENT_CONTENT, LatexTypes.CONTENT,
-                        LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
-                        LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH,
-                        LatexTypes.INLINE_MATH, LatexTypes.NO_MATH_CONTENT,
-                        LatexTypes.GROUP, LatexTypes.OPTIONAL_PARAM
-                )
+        return DefaultWordsScanner(
+            LatexLexerAdapter(),
+            // Identifiers.
+            TokenSet.create(
+                LatexTypes.COMMAND_TOKEN, LatexTypes.COMMANDS,
+                LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
+                LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
+                LatexTypes.PARAMETER_TEXT, LatexTypes.PARAMETER,
+                LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM
+            ),
+            // Comments.
+            TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),
+            // Literals.
+            TokenSet.create(
+                LatexTypes.ENVIRONMENT_CONTENT, LatexTypes.CONTENT,
+                LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
+                LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH,
+                LatexTypes.INLINE_MATH, LatexTypes.NO_MATH_CONTENT,
+                LatexTypes.GROUP, LatexTypes.OPTIONAL_PARAM
+            )
         )
     }
 

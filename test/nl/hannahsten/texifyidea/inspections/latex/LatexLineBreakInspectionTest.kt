@@ -1,34 +1,35 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexLineBreakInspectionTest : TexifyInspectionTestBase(LatexLineBreakInspection()) {
-    fun testWarning() {
-        myFixture.configureByText(LatexFileType, """
+    fun testWarning() = testHighlighting("""
             Not this, b<weak_warning descr="Sentence does not start on a new line">ut. This starts a new line.</weak_warning>
 This e<weak_warning descr="Sentence does not start on a new line">tc. is missing a normal space, but i.e. this etc.</weak_warning>\ is not.
             % not. in. comments
         """.trimIndent())
-        myFixture.checkHighlighting()
-    }
 
-    fun testQuickfix() {
-        myFixture.configureByText(LatexFileType,
-        """
-            I end. a sentence.
+    fun testNoWarning() = testHighlighting("""
+            First sentence.
+            Second sentence.
         """.trimIndent())
 
-        val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
-        writeCommand(myFixture.project) {
-            quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
-        }
-
-        myFixture.checkResult("""
-            I end.
-            a sentence.
+    fun `test no warning in comment`() = testHighlighting("""
+            This is an abbreviation (ABC). % commemt
+            More text here.
         """.trimIndent())
-    }
+
+    fun `test no warning in math mode`() = testHighlighting("""\[ Why. would. you. do. this. \]""")
+
+    fun `test no warning in magic comment on own line`() = testHighlighting("""%! suppress = CiteBeforePeriod""")
+
+    fun `test no warning in magic comment on line with text`() = testHighlighting("""This is a sentence. %! suppress = CiteBeforePeriod""")
+
+    fun `test quick fix`() = testQuickFix(
+            before = """I end. a sentence.""",
+            after = """
+                I end.
+                a sentence.
+            """.trimIndent()
+    )
 }

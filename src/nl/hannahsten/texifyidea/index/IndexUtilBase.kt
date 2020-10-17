@@ -18,15 +18,15 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
  */
 abstract class IndexUtilBase<T : PsiElement>(
 
-        /**
-         * The class of the elements that are stored in the index.
-         */
-        private val elementClass: Class<T>,
+    /**
+     * The class of the elements that are stored in the index.
+     */
+    private val elementClass: Class<T>,
 
-        /**
-         * The key of the index.
-         */
-        private val indexKey: StubIndexKey<String, T>
+    /**
+     * The key of the index.
+     */
+    private val indexKey: StubIndexKey<String, T>
 ) {
 
     /**
@@ -40,8 +40,8 @@ abstract class IndexUtilBase<T : PsiElement>(
         // Setup search set.
         val project = baseFile.project
         val searchFiles = baseFile.referencedFileSet().asSequence()
-                .map { it.virtualFile }
-                .toMutableSet()
+            .map { it.virtualFile }
+            .toMutableSet()
         searchFiles.add(baseFile.virtualFile)
 
         // Add document class.
@@ -50,7 +50,7 @@ abstract class IndexUtilBase<T : PsiElement>(
         if (documentClass != null) {
             searchFiles.add(documentClass.virtualFile)
             documentClass.referencedFileSet().asSequence()
-                    .forEach { searchFiles.add(it.virtualFile) }
+                .forEach { searchFiles.add(it.virtualFile) }
         }
 
         // Search index.
@@ -85,6 +85,8 @@ abstract class IndexUtilBase<T : PsiElement>(
 
     /**
      * Get all the items in the index that are in the given file.
+     *
+     * NOTE: this does not preserve the order of the commands.
      */
     fun getItems(file: PsiFile) = getItems(file.project, GlobalSearchScope.fileScope(file))
 

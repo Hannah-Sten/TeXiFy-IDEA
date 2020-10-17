@@ -12,8 +12,8 @@ import com.intellij.execution.runners.ExecutionEnvironment
  * @author Sten Wessel
  */
 open class BibtexCommandLineState(
-        environment: ExecutionEnvironment,
-        private val runConfig: BibtexRunConfiguration
+    environment: ExecutionEnvironment,
+    private val runConfig: BibtexRunConfiguration
 ) : CommandLineState(environment) {
 
     @Throws(ExecutionException::class)

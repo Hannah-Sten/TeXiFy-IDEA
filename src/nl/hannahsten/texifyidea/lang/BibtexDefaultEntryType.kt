@@ -7,9 +7,9 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
  * @author Hannah Schellekens
  */
 enum class BibtexDefaultEntryType(
-        override val fieldName: String,
-        override val description: String,
-        override val dependency: Package = DEFAULT
+    override val fieldName: String,
+    override val description: String,
+    override val dependency: Package = DEFAULT
 ) : BibtexEntryField {
 
     ADDRESS("address", "Publisher's address (usually just the city, but can be the full address for lesser-known publishers)"),

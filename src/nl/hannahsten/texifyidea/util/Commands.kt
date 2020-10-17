@@ -26,9 +26,9 @@ fun Project.findCommandDefinitions(): Collection<LatexCommands> {
  */
 fun getIncludeCommands(): Set<String> {
     return LatexRegularCommand.values()
-            .filter { command -> command.arguments.any { it is RequiredFileArgument || it is RequiredPicturePathArgument } }
-            .map { "\\" + it.command }
-            .toSet()
+        .filter { command -> command.arguments.any { it is RequiredFileArgument || it is RequiredPicturePathArgument } }
+        .map { "\\" + it.command }
+        .toSet()
 }
 
 /**

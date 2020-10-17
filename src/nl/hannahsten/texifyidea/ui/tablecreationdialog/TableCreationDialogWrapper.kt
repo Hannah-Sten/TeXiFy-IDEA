@@ -35,13 +35,15 @@ import javax.swing.border.EmptyBorder
  *
  * @author Abby Berkers
  */
-class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
-                                 private val tableModel: TableCreationTableModel = TableCreationTableModel(),
-                                 var tableInformation: TableInformation = TableInformation(tableModel, columnTypes, "", ""),
-        // Components that have to be validated when clicking the OK button.
-                                 private val table: JTable = JBTable(tableModel),
-                                 private val caption: JBTextField = JBTextField(),
-                                 private val reference: JBTextField = JBTextField("tab:")) :
+class TableCreationDialogWrapper(
+    private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
+    private val tableModel: TableCreationTableModel = TableCreationTableModel(),
+    var tableInformation: TableInformation = TableInformation(tableModel, columnTypes, "", ""),
+    // Components that have to be validated when clicking the OK button.
+    private val table: JTable = JBTable(tableModel),
+    private val caption: JBTextField = JBTextField(),
+    private val reference: JBTextField = JBTextField("tab:")
+) :
     DialogWrapper(true) {
 
     init {
@@ -87,10 +89,11 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
         override fun actionPerformed(e: AnActionEvent) {
             if (table.selectedColumn >= 0) {
                 TableCreationEditColumnDialog(
-                        editColumnFun,
-                        table.selectedColumn,
-                        table.getColumnName(table.selectedColumn),
-                        columnTypes[table.selectedColumn])
+                    editColumnFun,
+                    table.selectedColumn,
+                    table.getColumnName(table.selectedColumn),
+                    columnTypes[table.selectedColumn]
+                )
             }
         }
     }
@@ -126,16 +129,16 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
 
         // Decorator that contains the add/remove/edit buttons.
         val decorator = ToolbarDecorator.createDecorator(table)
-                .setAddAction {
-                    TableCreationEditColumnDialog(addColumnFun, tableModel.columnCount)
-                }
-                .setAddActionName("Add Column")
-                .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
-                .addExtraAction(getRemoveColumnActionButton())
-                .addExtraAction(getEditColumnActionButton())
-                .addExtraAction(getAddRowActionButton())
-                .addExtraAction(getRemoveRowActionButton().apply { shortcut = ShortcutSet { arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null)) } })
-                .createPanel()
+            .setAddAction {
+                TableCreationEditColumnDialog(addColumnFun, tableModel.columnCount)
+            }
+            .setAddActionName("Add Column")
+            .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
+            .addExtraAction(getRemoveColumnActionButton())
+            .addExtraAction(getEditColumnActionButton())
+            .addExtraAction(getAddRowActionButton())
+            .addExtraAction(getRemoveRowActionButton().apply { shortcut = ShortcutSet { arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null)) } })
+            .createPanel()
 
         table.addTabCreatesNewRowAction()
         table.addEnterCreatesNewRowAction()
@@ -247,7 +250,8 @@ class TableCreationDialogWrapper(private val columnTypes: MutableList<ColumnType
                 val table = this@addTabCreatesNewRowAction
                 // When we're in the last column of the last row, add a new row before calling the usual action.
                 if (table.selectionModel.leadSelectionIndex == table.rowCount - 1 &&
-                        table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1) {
+                    table.columnModel.selectionModel.leadSelectionIndex == table.columnCount - 1
+                ) {
                     tableModel.addEmptyRow()
                 }
                 // Perform the usual action.

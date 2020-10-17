@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nls
 import java.util.*
 
 /**
- * Currently only works for Chapters, Sections and Subsections.
+ * Check for commands which should have a label but don't.
  *
  * @author Hannah Schellekens
  */
@@ -61,39 +61,47 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
      *
      * @return `true` when a descriptor was added, or `false` when no descriptor was added.
      */
-    private fun addCommandDescriptor(command: LatexCommands, descriptors: MutableList<ProblemDescriptor>,
-                                     manager: InspectionManager, isOntheFly: Boolean): Boolean {
+    private fun addCommandDescriptor(
+        command: LatexCommands, descriptors: MutableList<ProblemDescriptor>,
+        manager: InspectionManager, isOntheFly: Boolean
+    ): Boolean {
         if (command.hasLabel()) {
             return false
         }
 
         // For adding the label, see LatexAddLabelIntention
-        descriptors.add(manager.createProblemDescriptor(
+        descriptors.add(
+            manager.createProblemDescriptor(
                 command,
                 "Missing label",
                 arrayOf(InsertLabelAfterCommandFix(), ChangeMinimumLabelLevelFix()),
                 ProblemHighlightType.WEAK_WARNING,
                 isOntheFly,
                 false
-        ))
+            )
+        )
 
         return true
     }
 
-    private fun addEnvironmentDescriptor(environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>,
-                                         manager: InspectionManager, isOntheFly: Boolean): Boolean {
+    private fun addEnvironmentDescriptor(
+        environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>,
+        manager: InspectionManager, isOntheFly: Boolean
+    ): Boolean {
         if (environment.label != null) {
             return false
         }
 
-        descriptors.add(manager.createProblemDescriptor(
+        descriptors.add(
+            manager.createProblemDescriptor(
                 environment,
                 "Missing label",
                 arrayOf(InsertLabelInEnvironmentFix()),
                 ProblemHighlightType.WEAK_WARNING,
                 isOntheFly,
                 false
-        ))
+            )
+        )
 
         return true
     }
@@ -158,8 +166,10 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexEnvironment
             val helper = LatexPsiHelper(project)
             // Determine label name.
-            val createdLabel = getUniqueLabelName(command.environmentName.formatAsLabel(),
-                    Magic.Environment.labeled[command.environmentName], command.containingFile)
+            val createdLabel = getUniqueLabelName(
+                command.environmentName.formatAsLabel(),
+                Magic.Environment.labeled[command.environmentName], command.containingFile
+            )
 
             val moveCaretAfter: PsiElement
             moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
@@ -168,9 +178,11 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             }
             else {
                 // in a float environment the label must be inserted after a caption
-                val labelCommand = helper.addToContent(command, helper.createLabelCommand(createdLabel),
-                        command.environmentContent?.childrenOfType<LatexCommands>()
-                                ?.findLast { c -> c.name == "\\caption" })
+                val labelCommand = helper.addToContent(
+                    command, helper.createLabelCommand(createdLabel),
+                    command.environmentContent?.childrenOfType<LatexCommands>()
+                        ?.findLast { c -> c.name == "\\caption" }
+                )
                 labelCommand
             }
 

@@ -23,9 +23,9 @@ import java.io.IOException
  * Run makeindex and then latex again (twice).
  */
 class RunMakeindexListener(
-        private val latexRunConfig: LatexRunConfiguration,
-        private val environment: ExecutionEnvironment,
-        private val filesToCleanUp: MutableList<File>
+    private val latexRunConfig: LatexRunConfiguration,
+    private val environment: ExecutionEnvironment,
+    private val filesToCleanUp: MutableList<File>
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -33,12 +33,12 @@ class RunMakeindexListener(
 
             // Only create new one if there is none yet
             val runConfigSettingsList =
-                    if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
-                        generateIndexConfigs()
-                    }
-                    else {
-                        latexRunConfig.makeindexRunConfigs
-                    }
+                if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
+                    generateIndexConfigs()
+                }
+                else {
+                    latexRunConfig.makeindexRunConfigs
+                }
 
             // Run all run configurations
             for (runConfigSettings in runConfigSettingsList) {
@@ -93,7 +93,7 @@ class RunMakeindexListener(
             // LaTeX twice
             latexRunConfig.isFirstRunConfig = false
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
-                    ?: return
+                ?: return
             latexRunConfig.isLastRunConfig = false
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             latexRunConfig.isLastRunConfig = true
@@ -109,8 +109,8 @@ class RunMakeindexListener(
 
         for (indexProgram in indexPrograms) {
             val makeindexRunConfigSettings = runManager.createConfiguration(
-                    "",
-                    LatexConfigurationFactory(MakeindexRunConfigurationType())
+                "",
+                LatexConfigurationFactory(MakeindexRunConfigurationType())
             )
 
             val runConfig = makeindexRunConfigSettings.configuration as MakeindexRunConfiguration

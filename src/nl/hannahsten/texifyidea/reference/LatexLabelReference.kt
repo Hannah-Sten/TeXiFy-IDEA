@@ -31,41 +31,49 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
         // add bibreferences to autocompletion for \cite-style commands
         if (Magic.Command.bibliographyReference.contains(command)) {
             return file.findBibtexItems().stream()
-                    .map { bibtexEntry: PsiElement? ->
-                        if (bibtexEntry != null) {
-                            val containing = bibtexEntry.containingFile
-                            if (bibtexEntry is LatexCommands) {
-                                val parameters = bibtexEntry.requiredParameters
-                                return@map LookupElementBuilder.create(parameters[0])
-                                        .bold()
-                                        .withInsertHandler(LatexReferenceInsertHandler())
-                                        .withTypeText(containing.name + ": " +
-                                                (1 + StringUtil.offsetToLineNumber(containing.text, bibtexEntry.getTextOffset())),
-                                                true)
-                                        .withIcon(TexifyIcons.DOT_BIB)
-                            }
-                            else {
-                                return@map null
-                            }
+                .map { bibtexEntry: PsiElement? ->
+                    if (bibtexEntry != null) {
+                        val containing = bibtexEntry.containingFile
+                        if (bibtexEntry is LatexCommands) {
+                            val parameters = bibtexEntry.requiredParameters
+                            return@map LookupElementBuilder.create(parameters[0])
+                                .bold()
+                                .withInsertHandler(LatexReferenceInsertHandler())
+                                .withTypeText(
+                                    containing.name + ": " +
+                                        (1 + StringUtil.offsetToLineNumber(containing.text, bibtexEntry.getTextOffset())),
+                                    true
+                                )
+                                .withIcon(TexifyIcons.DOT_BIB)
                         }
-                        null
-                    }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
+                        else {
+                            return@map null
+                        }
+                    }
+                    null
+                }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
         }
         else if (Magic.Command.getLabelReferenceCommands(element.project).contains(command)) {
             return file.findLabelsInFileSetAsCollection()
-                    .stream()
-                    .filter { it.extractLabelName().isNotBlank() }
-                    .map { labelingCommand: PsiElement ->
-                        LookupElementBuilder
-                                .create(labelingCommand.extractLabelName())
-                                .bold()
-                                .withInsertHandler(LatexReferenceInsertHandler())
-                                .withTypeText(labelingCommand.containingFile.name + ":" +
-                                        (1 + StringUtil.offsetToLineNumber(
+                .stream()
+                .filter { it.extractLabelName().isNotBlank() }
+                .map { labelingCommand: PsiElement ->
+                    LookupElementBuilder
+                        .create(labelingCommand.extractLabelName())
+                        .bold()
+                        .withInsertHandler(LatexReferenceInsertHandler())
+                        .withTypeText(
+                            labelingCommand.containingFile.name + ":" +
+                                (
+                                    1 + StringUtil.offsetToLineNumber(
                                         labelingCommand.containingFile.text,
-                                        labelingCommand.textOffset)), true)
-                                .withIcon(TexifyIcons.DOT_LABEL)
-                    }.toArray()
+                                        labelingCommand.textOffset
+                                    )
+                                    ),
+                            true
+                        )
+                        .withIcon(TexifyIcons.DOT_LABEL)
+                }.toArray()
         }
         // if command isn't ref or cite-styled return empty array
         return arrayOf()

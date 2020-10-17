@@ -8,7 +8,8 @@ class LatexBracketParsingTest : BasePlatformTestCase() {
 
     fun testBrackets() {
         @Language("Latex")
-        val text = """
+        val text =
+            """
             \documentclass{article}
 
             \begin{document}
@@ -48,7 +49,7 @@ class LatexBracketParsingTest : BasePlatformTestCase() {
             %[0,2)
                 ${'$'}[0,2)${'$'}
             \end{document}
-        """.trimIndent()
+            """.trimIndent()
 
         myFixture.configureByText(LatexFileType, text)
         myFixture.checkHighlighting()

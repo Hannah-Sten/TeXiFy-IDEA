@@ -27,8 +27,8 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
     companion object {
 
         private val brackets = mapOf(
-                "(" to ")",
-                "[" to "]"
+            "(" to ")",
+            "[" to "]"
         )
     }
 
@@ -61,23 +61,27 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                 val openElement = file.findElementAt(openOffset) ?: continue
                 val closeElement = file.findElementAt(closeOffset) ?: continue
 
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         openElement,
                         TextRange.from(0, 1),
                         "Parentheses pair could be replaced by \\left(..\\right)",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
                         InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
-                ))
+                    )
+                )
 
-                descriptors.add(manager.createProblemDescriptor(
+                descriptors.add(
+                    manager.createProblemDescriptor(
                         closeElement,
                         TextRange.from(0, 1),
                         "Parentheses pair could be replaced by \\left(..\\right)",
                         ProblemHighlightType.WEAK_WARNING,
                         isOntheFly,
                         InsertLeftRightFix(openOffset, closeOffset, document[openOffset])
-                ))
+                    )
+                )
             }
         }
 

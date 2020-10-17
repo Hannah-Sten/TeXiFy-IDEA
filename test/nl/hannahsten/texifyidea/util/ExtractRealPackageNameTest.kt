@@ -5,7 +5,8 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 class ExtractRealPackageNameTest : BasePlatformTestCase() {
 
     fun testTexLiveFrozenDifferentYearEmpty() {
-        val output = """
+        val output =
+            """
             TeX Live 2020 is frozen forever and will no
             longer be updated.  This happens in preparation for a new release.
             
@@ -13,13 +14,14 @@ class ExtractRealPackageNameTest : BasePlatformTestCase() {
             pretests are available), please read https://tug.org/texlive/pretest.html.
             Otherwise, just wait, and the new release will be ready in due time.
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
-        """.trimIndent()
+            """.trimIndent()
 
         testPackage(output, null)
     }
 
     fun testTexLiveFrozenDifferentYearEmptyReverse() {
-        val output = """
+        val output =
+            """
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
             TeX Live 2020 is frozen forever and will no
             longer be updated.  This happens in preparation for a new release.
@@ -27,14 +29,15 @@ class ExtractRealPackageNameTest : BasePlatformTestCase() {
             If you're interested in helping to pretest the new release (when
             pretests are available), please read https://tug.org/texlive/pretest.html.
             Otherwise, just wait, and the new release will be ready in due time.
-        """.trimIndent()
+            """.trimIndent()
 
         println(TexLivePackages.extractRealPackageNameFromOutput(output))
         testPackage(output, null)
     }
 
     fun testTexLiveFrozenEmpty() {
-        val output = """
+        val output =
+            """
             TeX Live 2019 is frozen forever and will no
             longer be updated.  This happens in preparation for a new release.
             
@@ -42,13 +45,14 @@ class ExtractRealPackageNameTest : BasePlatformTestCase() {
             pretests are available), please read https://tug.org/texlive/pretest.html.
             Otherwise, just wait, and the new release will be ready in due time.
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
-        """.trimIndent()
+            """.trimIndent()
 
         testPackage(output, null)
     }
 
     fun testTexLiveFrozenEmptyReverse() {
-        val output = """
+        val output =
+            """
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
             TeX Live 2019 is frozen forever and will no
             longer be updated.  This happens in preparation for a new release.
@@ -56,14 +60,15 @@ class ExtractRealPackageNameTest : BasePlatformTestCase() {
             If you're interested in helping to pretest the new release (when
             pretests are available), please read https://tug.org/texlive/pretest.html.
             Otherwise, just wait, and the new release will be ready in due time.
-        """.trimIndent()
+            """.trimIndent()
 
         println(TexLivePackages.extractRealPackageNameFromOutput(output))
         testPackage(output, null)
     }
 
     fun testTexLiveFrozen() {
-        val output = """
+        val output =
+            """
             TeX Live 2019 is frozen forever and will no
             longer be updated.  This happens in preparation for a new release.
 
@@ -73,13 +78,14 @@ class ExtractRealPackageNameTest : BasePlatformTestCase() {
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
             rubik:
                     texmf-dist/tex/latex/rubik/rubikrotation.sty
-        """.trimIndent()
+            """.trimIndent()
 
         testPackage(output, "rubik")
     }
 
     fun testTexLiveFrozenReverse() {
-        val output = """
+        val output =
+            """
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
             rubik:
                     texmf-dist/tex/latex/rubik/rubikrotation.sty
@@ -89,25 +95,27 @@ class ExtractRealPackageNameTest : BasePlatformTestCase() {
             If you're interested in helping to pretest the new release (when
             pretests are available), please read https://tug.org/texlive/pretest.html.
             Otherwise, just wait, and the new release will be ready in due time.
-        """.trimIndent()
+            """.trimIndent()
 
         testPackage(output, "rubik")
     }
 
     fun testPackageFound() {
-        val output = """
+        val output =
+            """
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
             rubik:
                     texmf-dist/tex/latex/rubik/rubikrotation.sty
-        """.trimIndent()
+            """.trimIndent()
 
         testPackage(output, "rubik")
     }
 
     fun testNoPackageFound() {
-        val output = """
+        val output =
+            """
             tlmgr: package repository http://ctan.math.utah.edu/ctan/tex-archive/systems/texlive/tlnet (verified)
-        """.trimIndent()
+            """.trimIndent()
 
         testPackage(output, null)
     }

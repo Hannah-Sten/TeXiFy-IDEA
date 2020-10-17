@@ -18,13 +18,15 @@ object LatexInspectionIdProvider : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val file = parameters.originalFile
         val inspectionIds = InsightGroup.byFileType(file.fileType)
-                .flatMap { ALL_TEXIFY_INSPECTIONS[it] ?: emptyList() }
+            .flatMap { ALL_TEXIFY_INSPECTIONS[it] ?: emptyList() }
 
-        result.addAllElements(ContainerUtil.map2List(inspectionIds) {
-            LookupElementBuilder.create(it, it)
+        result.addAllElements(
+            ContainerUtil.map2List(inspectionIds) {
+                LookupElementBuilder.create(it, it)
                     .withPresentableText(it)
                     .bold()
                     .withIcon(AllIcons.General.InspectionsEye)
-        })
+            }
+        )
     }
 }
