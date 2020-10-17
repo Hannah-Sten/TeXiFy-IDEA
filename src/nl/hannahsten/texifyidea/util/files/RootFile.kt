@@ -10,23 +10,28 @@ import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import java.util.HashMap
+import nl.hannahsten.texifyidea.util.childrenOfType
+import java.util.*
 
 /**
- * Scans all file inclusions and finds the file that is at the base of all inclusions.
+ * Scans all file inclusions and finds the files that are at the base of all inclusions.
+ * Note that this can be multiple files.
  *
  * When no file is included, `this` file will be returned.
  */
-fun PsiFile.findRootFile(): PsiFile {
+fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
     val magicComment = magicComment()
+    val roots = mutableSetOf<PsiFile>()
+
     if (magicComment.contains(DefaultMagicKeys.ROOT)) {
         val path = magicComment.value(DefaultMagicKeys.ROOT) ?: ""
-        this.findFile(path)?.let { return it }
+        this.findFile(path)?.let { roots.add(it) }
     }
 
     if (this.isRoot()) {
-        return this
+        roots.add(this)
     }
 
     // We need to scan all file inclusions in the project, because any file could include the current file
@@ -46,12 +51,27 @@ fun PsiFile.findRootFile(): PsiFile {
 
         // If the root file contains this, we have found the root file
         if (file.contains(this, inclusions)) {
-            return file
+            roots.add(file)
         }
     }
 
-    return this
+    return if (roots.isEmpty()) setOf(this) else roots
 }
+
+/**
+ * Gets the first file from the root files found by [findRootFilesWithoutCache] which is stored in the cache.
+ *
+ * As a best guess, get the first of the root files returned by [findRootFiles].
+ *
+ * Note: LaTeX Files can have more than one * root file, so using [findRootFiles] and explicitly handling the cases of
+ * multiple root files is preferred over using [findRootFile].
+ */
+fun PsiFile.findRootFile(): PsiFile = findRootFiles().firstOrNull() ?: this
+
+/**
+ * Gets the set of files that are the root files of `this` file.
+ */
+fun PsiFile.findRootFiles(): Set<PsiFile> = ReferencedFileSetService.getInstance().rootFilesOf(this)
 
 /**
  * Checks if the given file is included by `this` file.
@@ -132,6 +152,8 @@ fun PsiFile.isRoot(): Boolean {
     // Function to avoid unnecessary evaluation
     fun documentClass() = this.commandsInFile().find { it.commandToken.text == "\\documentclass" }
 
+    fun documentEnvironment() = this.childrenOfType(LatexEnvironment::class).any { it.environmentName == "document" }
+
     // Whether the document makes use of the subfiles class, in which case it is not a root file
     fun usesSubFiles() = documentClass()?.requiredParameters?.contains("subfiles") == true
 
@@ -140,7 +162,7 @@ fun PsiFile.isRoot(): Boolean {
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val isMainFileInAnyConfiguration = runManager.allConfigurationsList.filterIsInstance<LatexRunConfiguration>().any { it.mainFile == this.virtualFile }
 
-    return isMainFileInAnyConfiguration || documentClass() != null && !usesSubFiles()
+    return (isMainFileInAnyConfiguration || documentEnvironment()) && !usesSubFiles()
 }
 
 /**
