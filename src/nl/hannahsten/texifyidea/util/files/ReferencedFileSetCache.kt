@@ -53,6 +53,7 @@ class ReferencedFileSetCache {
         }
     }
 
+    @Synchronized
     fun rootFilesFor(file: PsiFile): Set<PsiFile> {
         return getSetFromCache(file, rootFilesCache) {
             findRootFilesWithoutCache()

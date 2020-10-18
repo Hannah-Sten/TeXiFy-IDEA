@@ -12,8 +12,34 @@ import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.childrenOfType
 import java.util.*
+
+/**
+ * Fill the root file cache, so for each file in the project cache the root file.
+ * It is important to do this in one go, because this is really expensive for large projects.
+ * It will be recalculated when the fileset cache is dropped.
+ *
+ * @param currentFile File for which we want to know the root file, i.e. the file that triggers the filling of the cache.
+ *
+ * @return Root files for [currentFile].
+ */
+fun fillRootFileCache(currentFile: PsiFile): Set<PsiFile> {
+    // We have to do this search top-down from the root files,
+    // because in order to resolve a certain inclusion deep in the file tree
+    // we need to know the root of that file (as the path is relative to the root).
+
+    // Start by finding root files in the project
+    val project = currentFile.project
+    val rootFiles = project.allFiles(LatexFileType)
+            .filter { it.psiFile(project)?.isRoot() == true }
+    for (rootFile in rootFiles) {
+        val rootPsiFile = rootFile.psiFile(project) ?: continue
+        val includes = LatexIncludesIndex.getItems(rootPsiFile)
+
+    }
+}
 
 /**
  * Scans all file inclusions and finds the files that are at the base of all inclusions.
@@ -22,6 +48,10 @@ import java.util.*
  * When no file is included, `this` file will be returned.
  */
 fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
+    // todo refactor such that we do DFS from all roots only once, and while doing that fill the cache which maps each
+    //     file to its root file - instead of now, where we go through all file inclusions again for every new file opened
+
+
     val magicComment = magicComment()
     val roots = mutableSetOf<PsiFile>()
 
@@ -91,13 +121,13 @@ private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiF
 }
 
 /**
- * Looks up all the files that include each other.
+ * Looks up all include commands, and map each file to all the files it directly includes.
  * This may be an expensive function when a lot of include commands and files are present.
  *
  * @return A map that maps each file to a set of all files that get included by said file. E.g.
  * when `A`↦{`B`,`C`}. Then the files `B` and `C` get included by `A`.
  */
-fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
+internal fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
     val allIncludeCommands = LatexIncludesIndex.getItems(this)
 
     // Maps every file to all the files it includes.
@@ -113,6 +143,7 @@ fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
         var foundFile = false
 
         for (includedName in includedNames) {
+            // todo this doesn't work deep in the file tree, because we have to resolve relative to the root file
             val referenced = declaredIn.findFile(includedName)
                 ?: continue
 
