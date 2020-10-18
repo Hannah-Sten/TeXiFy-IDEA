@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.refactoring.extractMethod.newImpl.ExtractMethodHelper.addSiblingAfter
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -84,7 +83,8 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
             val psiReplacement = LatexPsiHelper(project).createFromText("\\frac{$before}{$after}").firstChild
 
             // Add the replacement in the psi tree.
-            (next ?: content).addSiblingAfter(psiReplacement)
+            val bla = next ?: content
+            bla.parent.addAfter(psiReplacement, bla)
             // Remove the old fraction (numerator\over denominator), including a possible space between \over and the
             // denominator. Remove this space before removing the \over command so content still exists when removing
             // its next sibling. If there is no space after \over, this will remove the denominator (next) and removing
