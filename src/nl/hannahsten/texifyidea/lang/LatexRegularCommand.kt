@@ -56,7 +56,7 @@ enum class LatexRegularCommand(
     CITE("cite", "extratext".asOptional(), "keys".asRequired()),
     CLEARDOUBLEPAGE("cleardoublepage"),
     CLEARPAGE("clearpage"),
-    COLOR("color", "color".asRequired(), dependency = XCOLOR),
+    COLOR("color", "color".asRequired(), dependency = Package.COLOR),
     COLOR2("color", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
     COLORBOX2("colorbox", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
