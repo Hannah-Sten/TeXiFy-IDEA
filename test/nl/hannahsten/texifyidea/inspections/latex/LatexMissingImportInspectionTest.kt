@@ -20,7 +20,7 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         myFixture.configureByText(
             LatexFileType,
             """
-            <error descr="Command requires xcolor package">\color</error>{blue}
+            <error descr="Command requires color, or xcolor package">\color</error>{blue}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -41,9 +41,9 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         )
 
         val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
+        assertEquals(2, quickFixes.size)
         writeCommand(myFixture.project) {
-            quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+            quickFixes.last().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
         myFixture.checkResult(
