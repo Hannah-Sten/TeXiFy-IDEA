@@ -12,46 +12,14 @@ import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.allFiles
 import nl.hannahsten.texifyidea.util.childrenOfType
 import java.util.*
 
 /**
- * Fill the root file cache, so for each file in the project cache the root file.
- * It is important to do this in one go, because this is really expensive for large projects.
- * It will be recalculated when the fileset cache is dropped.
- *
- * @param currentFile File for which we want to know the root file, i.e. the file that triggers the filling of the cache.
- *
- * @return Root files for [currentFile].
+ * Uses the fileset cache to find all root files in the fileset.
+ * Note that each root file induces a fileset, so a file could be in multiple filesets.
  */
-fun fillRootFileCache(currentFile: PsiFile): Set<PsiFile> {
-    // We have to do this search top-down from the root files,
-    // because in order to resolve a certain inclusion deep in the file tree
-    // we need to know the root of that file (as the path is relative to the root).
-
-    // Start by finding root files in the project
-    val project = currentFile.project
-    val rootFiles = project.allFiles(LatexFileType)
-            .filter { it.psiFile(project)?.isRoot() == true }
-    for (rootFile in rootFiles) {
-        val rootPsiFile = rootFile.psiFile(project) ?: continue
-        val includes = LatexIncludesIndex.getItems(rootPsiFile)
-
-    }
-}
-
-/**
- * Scans all file inclusions and finds the files that are at the base of all inclusions.
- * Note that this can be multiple files.
- *
- * When no file is included, `this` file will be returned.
- */
-fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
-    // todo refactor such that we do DFS from all roots only once, and while doing that fill the cache which maps each
-    //     file to its root file - instead of now, where we go through all file inclusions again for every new file opened
-
-
+fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
     val magicComment = magicComment()
     val roots = mutableSetOf<PsiFile>()
 
@@ -64,23 +32,16 @@ fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
         roots.add(this)
     }
 
-    // We need to scan all file inclusions in the project, because any file could include the current file
-    val inclusions = project.allFileInclusions()
-
-    inclusions.forEach { (file, _) ->
+    // Go through the fileset of this file to find out the root files
+    for (file in fileset) {
         // Function to avoid unnecessary evaluation
         fun usesSubFiles() = file.commandsInFile()
             .find { it.name == "\\documentclass" }
             ?.requiredParameters
             ?.contains("subfiles") == true
 
-        // For each root, IsChildDFS until found.
-        if (!file.isRoot() || usesSubFiles()) {
-            return@forEach
-        }
-
-        // If the root file contains this, we have found the root file
-        if (file.contains(this, inclusions)) {
+        // Theoretically, we might now add a root file which is included by [this], but in that case we got the root file incorrect anyway
+        if (file.isRoot() && !usesSubFiles()) {
             roots.add(file)
         }
     }

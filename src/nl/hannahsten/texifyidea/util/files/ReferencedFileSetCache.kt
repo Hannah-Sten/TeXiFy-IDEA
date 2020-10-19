@@ -48,16 +48,12 @@ class ReferencedFileSetCache {
      */
     @Synchronized
     fun fileSetFor(file: PsiFile): Set<PsiFile> {
-        return getSetFromCache(file, fileSetCache) {
-            findReferencedFileSetWithoutCache()
-        }
+        return getSetFromCache(file, fileSetCache)
     }
 
     @Synchronized
     fun rootFilesFor(file: PsiFile): Set<PsiFile> {
-        return getSetFromCache(file, rootFilesCache) {
-            findRootFilesWithoutCache()
-        }
+        return getSetFromCache(file, rootFilesCache)
     }
 
     /**
@@ -73,7 +69,26 @@ class ReferencedFileSetCache {
         rootFilesCache.keys.forEach { rootFilesCache.remove(it) }
     }
 
-    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<PsiFile>>, updateFunction: PsiFile.() -> Set<PsiFile>): Set<PsiFile> {
+    /**
+     * Since we have to calculate the fileset to fill the root file or fileset cache, we make sure to only do that
+     * once and then fill both caches with all the information we have.
+     */
+    private fun updateCachesFor(requestedFile: PsiFile) {
+        val fileset = requestedFile.findReferencedFileSetWithoutCache()
+        for (file in fileset) {
+            fileSetCache[file.virtualFile] = fileset
+        }
+
+        val rootfiles = requestedFile.findRootFilesWithoutCache(fileset)
+        for (file in fileset) {
+            rootFilesCache[file.virtualFile] = rootfiles
+        }
+    }
+
+    /**
+     * In a thread-safe way, get the value from the cache and if needed refresh the cache first.
+     */
+    private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<PsiFile>>): Set<PsiFile> {
         return if (file.virtualFile != null) {
             // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
             val numberOfIncludesChanged = if (LatexIncludesIndex.getItems(file.project).size != numberOfIncludes) {
@@ -92,7 +107,7 @@ class ReferencedFileSetCache {
                 mutex.withLock {
                     if (!cache.containsKey(file.virtualFile) || numberOfIncludesChanged) {
                         runReadAction {
-                            cache[file.virtualFile] = file.updateFunction()
+                            updateCachesFor(file)
                         }
                     }
                 }
