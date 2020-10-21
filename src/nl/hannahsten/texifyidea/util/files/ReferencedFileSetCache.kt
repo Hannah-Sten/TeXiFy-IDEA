@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import kotlinx.coroutines.runBlocking
@@ -37,8 +38,10 @@ class ReferencedFileSetCache {
      * The number of includes in the include index at the time the cache was last filled.
      * This is used to check if any includes were added or deleted since the last cache fill, and thus if the cache
      * needs to be refreshed.
+     *
+     * Note that this class is global, so multiple projects can be open.
      */
-    private var numberOfIncludes = 0
+    private var numberOfIncludes = mutableMapOf<Project, Int>()
 
     private val mutex = Mutex()
 
@@ -91,8 +94,8 @@ class ReferencedFileSetCache {
     private fun getSetFromCache(file: PsiFile, cache: ConcurrentHashMap<VirtualFile, Set<PsiFile>>): Set<PsiFile> {
         return if (file.virtualFile != null) {
             // Use the keys of the whole project, because suppose a new include includes the current file, it could be anywhere in the project
-            val numberOfIncludesChanged = if (LatexIncludesIndex.getItems(file.project).size != numberOfIncludes) {
-                numberOfIncludes = LatexIncludesIndex.getItems(file.project).size
+            val numberOfIncludesChanged = if (LatexIncludesIndex.getItems(file.project).size != numberOfIncludes[file.project]) {
+                numberOfIncludes[file.project] = LatexIncludesIndex.getItems(file.project).size
                 dropAllCaches()
                 true
             }
