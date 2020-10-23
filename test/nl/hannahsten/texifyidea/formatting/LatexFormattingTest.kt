@@ -36,6 +36,105 @@ class LatexFormattingTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    /**
+     * This may not be what we want (though personally I've gotten used to it and think it's actually quite nice),
+     * but having a test we at least notice when we (accidentally) change it.
+     */
+    fun `test labeled equation`() {
+        """
+            \begin{equation}\label{eq:xy}
+                x = y
+            \end{equation}
+        """.trimIndent() `should be reformatted to` """
+            \begin{equation}
+                \label{eq:xy}
+                x = y
+            \end{equation}
+        """.trimIndent()
+    }
+
+    fun `test leading comment in environment`() {
+        """
+            \begin{document}
+                % This is a comment.
+                This is real text.
+            \end{document}
+        """.trimIndent() `should be reformatted to` """
+            \begin{document}
+                % This is a comment.
+                This is real text.
+            \end{document}
+        """.trimIndent()
+    }
+
+    fun `test indentation in parameter`() {
+        """
+            \documentclass[
+            12pt, a4
+            ]{article}
+            
+            \newcommand{\bla}{%
+            test
+            }
+            
+            \tikzset{
+            mystyle/.style={
+            draw,
+            circle,
+            label={[fill=yellow]0:#1}
+            }
+            }
+            
+            {
+            kaassoufflé
+            }
+        """.trimIndent() `should be reformatted to` """
+            \documentclass[
+                12pt, a4
+            ]{article}
+            
+            \newcommand{\bla}{%
+                test
+            }
+            
+            \tikzset{
+                mystyle/.style={
+                    draw,
+                    circle,
+                    label={[fill=yellow]0:#1}
+                }
+            }
+            
+            {
+                kaassoufflé
+            }
+        """.trimIndent()
+    }
+
+    fun `test formatter off and on comments`() {
+        """
+% @formatter:off
+\begin{lstlisting}[language=Kotlin]
+fun Int?.ifPositiveAddTwo(): Int =
+        this?.let {
+            if (this >= 0) this + 2
+            else this
+        } ?: 0
+\end{lstlisting}
+% @formatter:on
+        """.trimIndent() `should be reformatted to` """
+% @formatter:off
+\begin{lstlisting}[language=Kotlin]
+fun Int?.ifPositiveAddTwo(): Int =
+        this?.let {
+            if (this >= 0) this + 2
+            else this
+        } ?: 0
+\end{lstlisting}
+% @formatter:on
+        """.trimIndent()
+    }
+
     fun testAlgorithmicx() {
         """
             \begin{algorithm} \begin{algorithmic} \State begin 

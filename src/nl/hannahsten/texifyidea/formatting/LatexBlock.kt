@@ -39,14 +39,28 @@ class LatexBlock(
     }
 
     override fun getIndent(): Indent? {
+        if (myNode.elementType === LatexTypes.COMMENT_TOKEN) {
+            println(myNode.treeParent.elementType)
+        }
+
         if (myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT ||
             myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
-            // Fix for leading comments inside an environment, because
-            // somehow they are not placed inside environments.
-            myNode.elementType === LatexTypes.COMMENT_TOKEN &&
-            myNode.treeParent.elementType === LatexTypes.ENVIRONMENT
+            // Fix for leading comments inside an environment, because somehow they are not placed inside environments.
+            // Note that this does not help to insert the indentation, but at least the indent is not removed
+            // when formatting.
+            (myNode.elementType === LatexTypes.COMMENT_TOKEN &&
+                myNode.treeParent.elementType === LatexTypes.ENVIRONMENT)
         ) {
             return Indent.getNormalIndent(true)
+        }
+
+        // Indentation in groups and parameters.
+        if (myNode.elementType === LatexTypes.REQUIRED_PARAM_CONTENT ||
+            myNode.elementType === LatexTypes.OPTIONAL_PARAM_CONTENT ||
+            (myNode.treeParent.elementType === LatexTypes.GROUP &&
+                    myNode.elementType !== LatexTypes.CLOSE_BRACE)
+        ) {
+            return Indent.getNormalIndent(false)
         }
 
         // Display math
