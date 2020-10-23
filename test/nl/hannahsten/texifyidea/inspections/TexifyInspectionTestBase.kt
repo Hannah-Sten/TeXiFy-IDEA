@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections
 
+import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -37,6 +38,19 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         writeCommand(myFixture.project) {
             selectedFix?.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
+
+        myFixture.checkResult(after)
+    }
+
+    protected fun testQuickFixAll(before: String, after: String, quickFixName: String, numberOfFixes: Int) {
+        myFixture.configureByText(LatexFileType, before)
+        assertEquals("Expected number of quick fixes:", numberOfFixes, myFixture.getAllQuickFixes().size)
+
+        // Find the fix all problems in this file intention for this inspection.
+        val fixAllIntention = myFixture.getAvailableIntention(
+                InspectionsBundle.message("fix.all.inspection.problems.in.file", quickFixName)
+        ) ?: return
+        myFixture.launchAction(fixAllIntention)
 
         myFixture.checkResult(after)
     }
