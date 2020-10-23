@@ -254,11 +254,13 @@ abstract class TexifyRegexInspection(
         return mathMode == element.inMathContext() && checkContext(element)
     }
 
+    /**
+     * We assume the quickfix of this inspection replaces text (like <<) by
+     * content with a different length (like \ll), so we have to make
+     * sure it is run for the whole file at once.
+     * It can be disabled by overriding this method.
+     */
     override fun runForWholeFile(): Boolean {
-        // We assume the quickfix of this inspection replaces text (like <<) by
-        // content with a different length (like \ll), so we have to make
-        // sure it is run for the whole file at once.
-        // It can be disabled by overriding this method.
         return true
     }
 

@@ -2,15 +2,14 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention
 import nl.hannahsten.texifyidea.lang.CommandManager
-import org.junit.Test
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missinglabel"
     }
 
-    @Test
     fun `test missing label warnings`() {
         myFixture.configureByFile("MissingLabelWarnings.tex")
         myFixture.checkHighlighting(false, false, true, false)
@@ -115,7 +114,6 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """.trimIndent()
         )
 
-    @Test
     fun `test quick fix in listings with no other parameters`() = testQuickFix(
         before = """
         \begin{document}
@@ -131,7 +129,6 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent()
     )
 
-    @Test
     fun `test quick fix in listings when label already exists`() = testQuickFix(
         before = """
         \begin{document}
@@ -149,7 +146,6 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent()
     )
 
-    @Test
     fun `test quick fix in listings with other parameters`() = testQuickFix(
         before = """
         \begin{document}

@@ -8,6 +8,7 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention
@@ -155,7 +156,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            LatexAddLabelIntention().invoke(project, command.containingFile.openedEditor(), command.containingFile)
+            LatexAddLabelIntention(command.createSmartPointer()).invoke(project, command.containingFile.openedEditor(), command.containingFile)
         }
     }
 
