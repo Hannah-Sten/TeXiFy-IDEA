@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention
 import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
@@ -159,5 +158,20 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             \end{lstlisting}
         \end{document}
         """.trimIndent()
+    )
+
+    fun `test fix all missing label problems in this file`() = testQuickFixAll(
+            before = """
+                \section{one}
+                \section{two}
+            """.trimIndent(),
+            after = """
+                \section{one}\label{sec:one}
+                
+                
+                \section{two}\label{sec:two}
+            """.trimIndent(),
+            quickFixName = "Add label for this command",
+            numberOfFixes = 4
     )
 }
