@@ -15,7 +15,7 @@ class LatexDistribution {
         }
 
         private val dockerImagesText: String by lazy {
-            runCommand("docker", "image", "ls")
+            runCommand("docker", "image", "ls") ?: ""
         }
 
         /**
@@ -51,7 +51,7 @@ class LatexDistribution {
         }
 
         private val isWslTexliveAvailable: Boolean by lazy {
-            SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version").contains("pdfTeX")
+            SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version")?.contains("pdfTeX") == true
         }
 
         /**
@@ -87,11 +87,14 @@ class LatexDistribution {
             }
         }
 
+        // todo use LaTeX sdk location if pdflatex not in path
+        //      and check other usages of pdflatex
+
         /**
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
         private fun getDistribution(): String {
-            return parsePdflatexOutput(runCommand("pdflatex", "--version"))
+            return parsePdflatexOutput(runCommand("pdflatex", "--version") ?: "")
         }
 
         /**

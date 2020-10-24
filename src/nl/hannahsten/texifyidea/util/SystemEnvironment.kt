@@ -31,8 +31,13 @@ class SystemEnvironment {
     }
 }
 
-fun runCommand(vararg commands: String): String {
-    try {
+/**
+ * Run a command in the terminal.
+ *
+ * @return The output of the command or null if an exception was thrown.
+ */
+fun runCommand(vararg commands: String): String? {
+    return try {
         val command = arrayListOf(*commands)
         val proc = ProcessBuilder(command)
             .redirectOutput(ProcessBuilder.Redirect.PIPE)
@@ -41,10 +46,9 @@ fun runCommand(vararg commands: String): String {
 
         // Timeout value
         proc.waitFor(3, TimeUnit.SECONDS)
-        return proc.inputStream.bufferedReader().readText()
+        proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
     }
     catch (e: IOException) {
-        // Don't print the stacktrace because that is confusing.
+        null // Don't print the stacktrace because that is confusing.
     }
-    return ""
 }

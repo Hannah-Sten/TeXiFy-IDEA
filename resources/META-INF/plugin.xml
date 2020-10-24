@@ -352,6 +352,7 @@
         <projectService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
         <projectService serviceImplementation="nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexErrorTreeViewConfiguration"/>
         <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.LatexSdk" />
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
