@@ -1,7 +1,10 @@
 package nl.hannahsten.texifyidea.run.latex
 
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import nl.hannahsten.texifyidea.util.runCommand
+import java.io.File
 
 /**
  * Represents the LaTeX Distribution of the user, e.g. MikTeX or TeX Live.
@@ -9,6 +12,8 @@ import nl.hannahsten.texifyidea.util.runCommand
 class LatexDistribution {
 
     companion object {
+
+        private val isPdflatexInPath = "pdflatex --version".runCommand()?.contains("pdfTeX") == true
 
         private val pdflatexVersionText: String by lazy {
             getDistribution()
@@ -91,9 +96,32 @@ class LatexDistribution {
         //      and check other usages of pdflatex
 
         /**
+         * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
+         * and if needed (if not in path) prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
+         *
+         * @param executable Name of a program, e.g. pdflatex
+         */
+        fun getLatexExecutableName(executable: String, project: Project): String {
+            if (isPdflatexInPath) {
+                return executable
+            }
+            // Get base path of LaTeX distribution
+            val home = ProjectRootManager.getInstance(project).projectSdk?.homePath ?: return executable
+            val basePath = getPdflatexParentPath(home)
+            return "$basePath/$executable"
+        }
+
+        /**
+         * Given the path to the LaTeX home, find the parent path of the executables, e.g. /bin/x86_64-linux/
+         */
+        fun getPdflatexParentPath(homePath: String) = File("$homePath/bin").listFiles()?.firstOrNull()?.path
+
+
+        /**
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */
         private fun getDistribution(): String {
+            // Could be improved by using the (project-level) LaTeX SDK if pdflatex is not in PATH
             return parsePdflatexOutput(runCommand("pdflatex", "--version") ?: "")
         }
 

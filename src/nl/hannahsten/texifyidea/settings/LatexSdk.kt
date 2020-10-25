@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.settings
 
 import com.intellij.openapi.projectRoots.*
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
-import java.io.File
 
 
 /**
@@ -24,19 +24,25 @@ class LatexSdk : SdkType("LaTeX SDK") {
     override fun suggestHomePaths(): MutableCollection<String> {
         // todo miktex?
         val results = mutableSetOf<String>()
-        "which pdflatex".runCommand()?.let { path ->
+        val path = "which pdflatex".runCommand()
+        if (path != null) {
             // Let's just assume that there is only one /bin/ in this path
             val index = path.findLastAnyOf(setOf("/bin/"))?.first ?: path.length - 1
             results.add(path.substring(0, index))
+        }
+        else {
+            results.add("~/texlive/")
         }
         return results
     }
 
     override fun isValidSdkHome(path: String?): Boolean {
+        if (path == null) return false
+
         // We expect the location of the LaTeX installation, for example ~/texlive/2020
 
         // If this is a valid LaTeX installation, pdflatex should be present in a subfolder in bin, e.g. $path/bin/x86_64-linux/pdflatex
-        val parent = File("$path/bin").listFiles()?.firstOrNull()?.path
+        val parent = LatexDistribution.getPdflatexParentPath(path)
         return "$parent/pdflatex --version".runCommand()?.contains("pdfTeX") == true
     }
 

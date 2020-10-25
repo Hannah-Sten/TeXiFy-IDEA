@@ -107,7 +107,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Look for packages/files elsewhere using the kpsewhich command.
         if (targetFile == null && lookForInstalledPackages) {
             targetFile = element.getFileNameWithExtensions(processedKey)
-                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it) }
+                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
                 .mapNotNull { getExternalFile(it) }
                 .firstOrNull()
         }
