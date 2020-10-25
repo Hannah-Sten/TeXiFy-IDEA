@@ -92,9 +92,6 @@ class LatexDistribution {
             }
         }
 
-        // todo use LaTeX sdk location if pdflatex not in path
-        //      and check other usages of pdflatex
-
         /**
          * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
          * and if needed (if not in path) prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
