@@ -113,7 +113,6 @@ class LatexDistribution {
          */
         fun getPdflatexParentPath(homePath: String) = File("$homePath/bin").listFiles()?.firstOrNull()?.path
 
-
         /**
          * Find the full name of the distribution in use, e.g. TeX Live 2019.
          */

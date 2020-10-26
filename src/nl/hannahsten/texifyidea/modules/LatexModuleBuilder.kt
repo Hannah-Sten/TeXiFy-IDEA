@@ -1,14 +1,16 @@
 package nl.hannahsten.texifyidea.modules
 
-import com.intellij.ide.util.projectWizard.ModuleBuilder
-import com.intellij.ide.util.projectWizard.WizardContext
+import com.intellij.ide.util.projectWizard.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.roots.CompilerModuleExtension
 import com.intellij.openapi.roots.ModifiableRootModel
+import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import java.io.File
 import java.util.*
 
@@ -32,6 +34,11 @@ class LatexModuleBuilder : ModuleBuilder() {
     override fun getModuleType() = LatexModuleType.INSTANCE
 
     override fun getCustomOptionsStep(context: WizardContext?, parentDisposable: Disposable?) = LatexModuleWizardStep(this)
+
+    override fun modifyProjectTypeStep(settingsStep: SettingsStep): ModuleWizardStep {
+        val filter = Condition { id: SdkTypeId -> id.name == "LaTeX SDK" }
+        return SdkSettingsStep(settingsStep, this, filter)
+    }
 
     @Throws(ConfigurationException::class)
     override fun setupRootModel(rootModel: ModifiableRootModel) {
@@ -80,12 +87,14 @@ class LatexModuleBuilder : ModuleBuilder() {
             contentEntry.addExcludeFolder(outRoot)
         }
 
-        // Create auxiliary directory.
-        path = contentEntryPath + File.separator + "auxil"
-        File(path).mkdirs()
-        val auxRoot = fileSystem.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path))
-        if (auxRoot != null) {
-            contentEntry.addExcludeFolder(auxRoot)
+        if (LatexDistribution.isMiktexAvailable) {
+            // Create auxiliary directory.
+            path = contentEntryPath + File.separator + "auxil"
+            File(path).mkdirs()
+            val auxRoot = fileSystem.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path))
+            if (auxRoot != null) {
+                contentEntry.addExcludeFolder(auxRoot)
+            }
         }
     }
 }

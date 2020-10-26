@@ -5,7 +5,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
 
-
 /**
  * todo customstepprojectgenerator
  * todo quickfix for setting up sdk (e.g. on package/class not found)
@@ -69,6 +68,6 @@ class LatexSdk : SdkType("LaTeX SDK") {
     }
 
     override fun getVersionString(sdkHome: String?): String? {
-        return "2020"
+        return "2020" // todo
     }
 }
