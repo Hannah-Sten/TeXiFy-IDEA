@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.intentions
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
@@ -12,7 +13,7 @@ import kotlin.math.max
 /**
  * @author Hannah Schellekens
  */
-open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
+open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexCommands>? = null) : TexifyIntentionBase("Add label") {
 
     private fun findCommand(editor: Editor?, file: PsiFile?): LatexCommands? {
         val offset = editor?.caretModel?.offset ?: return null
@@ -21,7 +22,6 @@ open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         return element as? LatexCommands ?: element.parentOfType(LatexCommands::class)
             ?: file.findElementAt(max(0, offset - 1)) as? LatexCommands
             ?: file.findElementAt(max(0, offset - 1))?.parentOfType(LatexCommands::class)
-            ?: return null
     }
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
@@ -39,7 +39,10 @@ open class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
             return
         }
 
-        val command = findCommand(editor, file) ?: return
+        // When no this.command is provided, use the command at the caret as the best guess.
+        val command: LatexCommands = this.command?.element
+                ?: findCommand(editor, file)
+                ?: return
 
         // Determine label name.
         val required = command.requiredParameters
