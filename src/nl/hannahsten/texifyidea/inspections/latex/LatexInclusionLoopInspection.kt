@@ -28,8 +28,6 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        // See Project.allFileInclusions()
-
         val allIncludeCommands = LatexIncludesIndex.getItems(file.project)
 
         // Maps every file to all the files it includes.

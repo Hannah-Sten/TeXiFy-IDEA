@@ -16,8 +16,7 @@ import nl.hannahsten.texifyidea.util.isDefinition
  * Be careful when using this function directly over something like [ReferencedFileSetService] where the result
  * values are cached.
  *
- * @param baseFile
- *         The file to find the reference set of.
+ * @receiver The file to find the reference set of.
  * @return All the files that are cross referenced between each other.
  */
 // Internal because only ReferencedFileSetCache should call this
