@@ -1,3 +1,14 @@
+# Beta 0.7.2
+
+# Additions
+
+# Changes
+* Improve efficiency of fileset cache. (#1622)
+
+# Bug fixes
+* Fix formatting indentation inside parameters. (#1627)
+
+
 # Beta 0.7.1
 
 # Additions
@@ -24,7 +35,7 @@
 * Fix some log parsing issues with long filenames and improve log parsing in some other cases. (#1604, #1613)
 * Fix sync from source for structure view. (#1613)
 * Fix kpsewhich not being used for other files except sty/cls. (#1620)
-* Other bug fixes and improvements. (#1576, #1603, #1587)
+* Other bug fixes and improvements. (#1576, #1603, #1587, #1626)
 
 Thanks to Felix Berlakovich ([@
 fberlakovich](https://github.com/fberlakovich)) and Johannes Berger ([@Xaaris](https://github.com/xaaris)) for contributing to this release.
