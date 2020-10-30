@@ -10,7 +10,7 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
         """.trimIndent()
     )
 
-    fun `test if not closed`() = testHighlighting("<error descr=\"If statement is not closed\">\\if</error>")
+    fun `test if not closed`() = testHighlighting("<warning descr=\"If statement should probably be closed with \\fi\">\\if</warning>")
 
     fun `test fi not opened`() = testHighlighting("<error descr=\"No matching \\if-command found\">\\fi</error>")
 
@@ -25,7 +25,7 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
     fun `test newif not closed`() = testHighlighting(
         """
         \newif\ifpaper
-        <error descr="If statement is not closed">\ifpaper</error>
+        <warning descr="If statement should probably be closed with \fi">\ifpaper</warning>
         """.trimIndent()
     )
 
@@ -35,4 +35,11 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
         <error descr="No matching \if-command found">\fi</error>
         """.trimIndent()
     )
+
+//    fun `test fake custom if-like command`() = testHighlighting(
+//        """
+//        \newcommand{\iflam}{if something}
+//        \iflam
+//        """.trimIndent()
+//    )
 }

@@ -513,7 +513,7 @@ enum class LatexRegularCommand(
     FOR("For", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     FORALL("ForAll", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ENDFOR("EndFor", dependency = ALGPSEUDOCODE),
-    IF("If", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    IF_ALGPSEUDOCODE("If", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ELSIF("ElsIf", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ENDIF("EndIf", dependency = ALGPSEUDOCODE),
     WHILE("While", "condition".asRequired(), dependency = ALGPSEUDOCODE),
@@ -531,6 +531,7 @@ enum class LatexRegularCommand(
      * If- commands
      * Source: http://mirrors.ctan.org/info/texbytopic/TeXbyTopic.pdf chapter Conditionals
      */
+    IF("if"),
     IFCAT("ifcat"),
     IFX("ifx"),
     IFCASE("ifcase"),
