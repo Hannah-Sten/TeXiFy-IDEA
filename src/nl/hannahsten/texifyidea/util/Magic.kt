@@ -576,6 +576,15 @@ object Magic {
             "\\" + EXTERNALDOCUMENT.command to hashSetOf("tex") // Not completely true, as it only includes labels
         )
 
+        val startIfs = hashSetOf(
+            IF, IFCAT, IFX,
+            IFCASE, IFNUM, IFODD,
+            IFHMODE, IFVMODE, IFMMODE,
+            IFINNER, IFDIM, IFVOID,
+            IFHBOX, IFVBOX, IFEOF,
+            IFTRUE, IFFALSE
+        ).map { "\\" + it.command }
+
         /**
          * All commands that end if.
          */

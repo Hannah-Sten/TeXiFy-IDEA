@@ -525,7 +525,31 @@ enum class LatexRegularCommand(
     FUNCTION("Function", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
     ENDFUNCTION("EndFunction", dependency = ALGPSEUDOCODE),
     PROCEDURE("Procedure", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
-    ENDPROCEDURE("EndProcedure", dependency = ALGPSEUDOCODE);
+    ENDPROCEDURE("EndProcedure", dependency = ALGPSEUDOCODE),
+
+    /*
+     * If- commands
+     * Source: http://mirrors.ctan.org/info/texbytopic/TeXbyTopic.pdf chapter Conditionals
+     */
+    IFCAT("ifcat"),
+    IFX("ifx"),
+    IFCASE("ifcase"),
+    IFNUM("ifnum"),
+    IFODD("ifodd"),
+    IFHMODE("ifhmode"),
+    IFVMODE("ifvmode"),
+    IFMMODE("ifmmode"),
+    IFINNER("ifinner"),
+    IFDIM("ifdim"),
+    IFVOID("ifvoid"),
+    IFHBOX("ifhbox"),
+    IFVBOX("ifvbox"),
+    IFEOF("ifeof"),
+    IFTRUE("iftrue"),
+    IFFALSE("iffalse"),
+    FI("fi"),
+    ELSE("else"),
+    OR("or");
 
     companion object {
 

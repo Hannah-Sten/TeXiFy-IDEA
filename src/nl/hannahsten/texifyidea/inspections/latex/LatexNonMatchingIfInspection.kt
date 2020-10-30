@@ -49,7 +49,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
                 stack.pop()
             }
-            else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs && command.previousCommand()?.name != "\\newif") {
+            else if (Magic.Pattern.ifCommand.matches(name) && name in Magic.Command.startIfs && command.previousCommand()?.name != "\\newif") {
                 stack.push(command)
             }
         }
@@ -59,7 +59,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     cmd,
-                    "If statement is not closed",
+                    "If statement may not be closed with \\fi",
                     Magic.General.noQuickFix,
                     ProblemHighlightType.GENERIC_ERROR,
                     isOntheFly
