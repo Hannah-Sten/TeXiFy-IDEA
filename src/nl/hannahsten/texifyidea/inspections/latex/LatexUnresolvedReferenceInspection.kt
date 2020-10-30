@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
 import nl.hannahsten.texifyidea.util.firstParentOfType
+import java.lang.Integer.max
 import java.util.*
 
 /**
@@ -70,7 +71,7 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            TextRange.from(offset, part.length),
+                            TextRange.from(max(offset, 0), part.length),
                             "Unresolved reference '$part'",
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
