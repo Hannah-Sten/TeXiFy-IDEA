@@ -1,18 +1,16 @@
 - [ ] Run 'Usage of IntelliJ API not available in older IDEs' inspection (ctrl+alt+shift+i)
 - [ ] Increase stub version in LatexParserDefinition
-- [ ] Document compiles and pdf viewer is opened
+- [ ] Gradle clean, create new empty project and check that document compiles and pdf viewer is opened
 - [ ] Delete aux files and run configs, then test that makeindex, bibtex and biber configs are generated automatically when needed
 - [ ] Forward/backward search
-- [ ] Autocomplete (bibtex, latex)
 - [ ] Does it work in PyCharm?
-- [ ] Run Gradle 'check' task
 - [ ] Run ctan.py
 
 - [ ] Copy changelog to plugin.xml
 - [ ] runIDE and check the changelog is formatted correctly
 - [ ] Update version in plugin.xml and build.gradle
-- [ ] Update feature list in readme if needed
-- [ ] buildPlugin and release on GitHub (on the right branch), using the markdown changelog (then remove it from Changelog.md)
+- [ ] Update feature list in readme/plugin.xml if needed
+- [ ] buildPlugin and release on GitHub (on the right branch), using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
 - [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
 - [ ] Close the milestone
 
@@ -23,7 +21,7 @@ Regexes to replace markdown by html:
 <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/$1">#$1</a>
 
 \*(.*)\n
-<li>$1</li>\n
+            <li>$1</li>\n
 ```
 
 ```html
