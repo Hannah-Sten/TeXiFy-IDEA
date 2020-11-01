@@ -20,7 +20,7 @@ class OpenCustomPdfViewerListener(val command: Array<String>, val failSilently: 
             catch (e: IOException) {
                 if (!failSilently) {
                     // Probably user error
-                    Notification("OpenCustomPdfViewerListener", "Could not open pdf file", "An error occured when trying to open the pdf using ${command.joinToString(" ")} with message ${e.message}", NotificationType.ERROR).notify(runConfig.project)
+                    Notification("LaTeX", "Could not open pdf file", "An error occured when trying to open the pdf using ${command.joinToString(" ")} with message ${e.message}", NotificationType.ERROR).notify(runConfig.project)
                 }
             }
         }

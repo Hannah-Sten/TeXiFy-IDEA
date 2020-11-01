@@ -106,7 +106,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
                         if (tlname == null) {
                             Notification(
-                                "Package Not Installed",
+                                "LaTeX",
                                 "Package $packageName not installed",
                                 "Package $packageName was not installed because tlmgr could not find $packageName.sty anywhere. Try to install the package manually.",
                                 NotificationType.ERROR

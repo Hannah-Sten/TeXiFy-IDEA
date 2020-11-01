@@ -27,7 +27,7 @@ object ZathuraConversation : ViewerConversation() {
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
         else {
-            Notification("ZathuraConversation", "Could not execute forward search", "Please make sure you have compiled the document first.", NotificationType.ERROR).notify(project)
+            Notification("LaTeX", "Could not execute forward search", "Please make sure you have compiled the document first.", NotificationType.ERROR).notify(project)
         }
     }
 

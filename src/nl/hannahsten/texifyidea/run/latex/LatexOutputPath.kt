@@ -58,8 +58,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     }
 
     private fun getPath(): VirtualFile? {
-        // When the user modifies the run configuration template, then this variable will magically be replaced with the
-        // path to the /bin folder of IntelliJ, without the setter being called.
+        // When we previously made the mistake of calling findRelativePath with an empty string, the output path will be set to thee /bin folder of IntelliJ. Fix that here, to be sure
         if (virtualFile?.path?.endsWith("/bin") == true) {
             virtualFile = null
         }
@@ -69,7 +68,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         }
         else {
             val pathString = if (pathString.contains(projectDirString)) {
-                if (contentRoot == null) return null
+                if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
                 pathString.replace(projectDirString, contentRoot?.path ?: "")
             }
             else {
@@ -85,7 +84,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
                 createOutputPath(pathString)?.let { return it }
             }
             // Path is invalid (perhaps the user provided an invalid path)
-            Notification("LatexOutputPath", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
+            Notification("LaTeX", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
 
             // Create and return default path
             if (contentRoot != null) {

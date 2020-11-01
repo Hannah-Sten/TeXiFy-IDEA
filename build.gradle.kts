@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.1-rc2"
+version = "0.7.1"
 
 repositories {
     mavenCentral()
@@ -133,7 +133,7 @@ intellij {
     // Example to use a different, locally installed, IDE
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
     // Also disable "version" above
-//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/Goland/ch-0/201.7846.93/"
+//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-1/203.5419.8/"
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task

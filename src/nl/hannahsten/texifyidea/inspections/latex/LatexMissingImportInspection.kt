@@ -161,7 +161,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
             val file = command.containingFile
 
             if (!PackageUtils.insertUsepackage(file, pack)) {
-                Notification("LatexMissingImportInspection", "Conflicting package detected", "The package ${pack.name} was not inserted because a conflicting package was detected.", NotificationType.INFORMATION).notify(project)
+                Notification("LaTeX", "Conflicting package detected", "The package ${pack.name} was not inserted because a conflicting package was detected.", NotificationType.INFORMATION).notify(project)
             }
         }
     }
