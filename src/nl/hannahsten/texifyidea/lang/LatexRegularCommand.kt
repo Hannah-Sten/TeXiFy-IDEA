@@ -56,7 +56,7 @@ enum class LatexRegularCommand(
     CITE("cite", "extratext".asOptional(), "keys".asRequired()),
     CLEARDOUBLEPAGE("cleardoublepage"),
     CLEARPAGE("clearpage"),
-    COLOR("color", "color".asRequired(), dependency = XCOLOR),
+    COLOR("color", "color".asRequired(), dependency = Package.COLOR),
     COLOR2("color", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
     COLORBOX2("colorbox", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
@@ -513,7 +513,7 @@ enum class LatexRegularCommand(
     FOR("For", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     FORALL("ForAll", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ENDFOR("EndFor", dependency = ALGPSEUDOCODE),
-    IF("If", "condition".asRequired(), dependency = ALGPSEUDOCODE),
+    IF_ALGPSEUDOCODE("If", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ELSIF("ElsIf", "condition".asRequired(), dependency = ALGPSEUDOCODE),
     ENDIF("EndIf", dependency = ALGPSEUDOCODE),
     WHILE("While", "condition".asRequired(), dependency = ALGPSEUDOCODE),
@@ -525,7 +525,32 @@ enum class LatexRegularCommand(
     FUNCTION("Function", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
     ENDFUNCTION("EndFunction", dependency = ALGPSEUDOCODE),
     PROCEDURE("Procedure", "name".asRequired(), "params".asRequired(), dependency = ALGPSEUDOCODE),
-    ENDPROCEDURE("EndProcedure", dependency = ALGPSEUDOCODE);
+    ENDPROCEDURE("EndProcedure", dependency = ALGPSEUDOCODE),
+
+    /*
+     * If- commands
+     * Source: http://mirrors.ctan.org/info/texbytopic/TeXbyTopic.pdf chapter Conditionals
+     */
+    IF("if"),
+    IFCAT("ifcat"),
+    IFX("ifx"),
+    IFCASE("ifcase"),
+    IFNUM("ifnum"),
+    IFODD("ifodd"),
+    IFHMODE("ifhmode"),
+    IFVMODE("ifvmode"),
+    IFMMODE("ifmmode"),
+    IFINNER("ifinner"),
+    IFDIM("ifdim"),
+    IFVOID("ifvoid"),
+    IFHBOX("ifhbox"),
+    IFVBOX("ifvbox"),
+    IFEOF("ifeof"),
+    IFTRUE("iftrue"),
+    IFFALSE("iffalse"),
+    FI("fi"),
+    ELSE("else"),
+    OR("or");
 
     companion object {
 

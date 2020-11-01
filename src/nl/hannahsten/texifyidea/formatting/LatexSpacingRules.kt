@@ -82,11 +82,8 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         }
 
         custom {
-            // Make sure the number of new lines before a sectioning command is
-            // as much as the user specified in the settings.
-            // BUG? Does not work for a command that immediately follows
-            // \begin{document}. But no one should start their document like
-            // that anyway.
+            // Make sure the number of new lines before a sectioning command is as much as the user specified in the settings.
+            // BUG OR FEATURE? Does not work for a command that immediately follows \begin{document}.
             customRule { _, _, right ->
                 LatexCodeStyleSettings.blankLinesOptions.forEach {
                     if (right.node?.text?.matches(Regex("\\" + "${it.value}\\{.*\\}")) == true) {
@@ -103,8 +100,9 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             }
         }
 
-        // Align & in tables
-        // Unfortunately we have to do this manually because Alignment only aligns characters if they are the first non-whitespace in a line of code
+        // Align & in tables.
+        // Unfortunately we have to do this manually because Alignment only aligns characters if they are the first
+        // non-whitespace in a line of code
         custom {
             customRule { parent, _, right ->
                 return@customRule leftTableSpaceAlign(latexCommonSettings, parent, right)

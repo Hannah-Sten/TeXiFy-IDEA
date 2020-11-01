@@ -80,7 +80,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
             val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
             var offset = 0
             for (parameter in parameterList) {
-                if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
+                if (Magic.Command.illegalExtensions.getOrDefault(command.name, null)?.any { parameter.endsWith(it) } == true) {
                     val range = TextRange(offset, offset + parameter.length).shiftRight(command.parameterList.first { it.requiredParam != null }.textOffset + 1)
                     val replacement = Magic.Command.illegalExtensions[command.name]
                         ?.find { parameter.endsWith(it) }

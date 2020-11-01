@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICS
 import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.Package.Companion.PDFCOMMENT
 import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
 import org.intellij.lang.annotations.Language
 import java.awt.Color
@@ -575,7 +576,14 @@ object Magic {
             "\\" + EXTERNALDOCUMENT.command to hashSetOf("tex") // Not completely true, as it only includes labels
         )
 
-        val includeCommands = includeOnlyExtensions.keys
+        val startIfs = hashSetOf(
+            IF, IFCAT, IFX,
+            IFCASE, IFNUM, IFODD,
+            IFHMODE, IFVMODE, IFMMODE,
+            IFINNER, IFDIM, IFVOID,
+            IFHBOX, IFVBOX, IFEOF,
+            IFTRUE, IFFALSE
+        ).map { "\\" + it.command }
 
         /**
          * All commands that end if.
@@ -864,11 +872,12 @@ object Magic {
         /**
          * Maps packages to the packages it loads.
          */
-        val packagesLoadingOtherPackages = mapOf(
+        val packagesLoadingOtherPackages: Map<LatexPackage, Set<LatexPackage>> = mapOf(
             AMSSYMB to setOf(AMSFONTS),
             MATHTOOLS to setOf(AMSMATH),
             GRAPHICX to setOf(GRAPHICS),
-            XCOLOR to setOf(COLOR)
+            XCOLOR to setOf(LatexPackage.COLOR),
+            PDFCOMMENT to setOf(LatexPackage.HYPERREF)
         )
 
         /**

@@ -2,26 +2,20 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.algorithm.IsChildDFS
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.childrenOfType
-import java.util.*
 
 /**
- * Scans all file inclusions and finds the files that are at the base of all inclusions.
- * Note that this can be multiple files.
- *
- * When no file is included, `this` file will be returned.
+ * Uses the fileset cache to find all root files in the fileset.
+ * Note that each root file induces a fileset, so a file could be in multiple filesets.
  */
-fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
+fun PsiFile.findRootFilesWithoutCache(fileset: Set<PsiFile>): Set<PsiFile> {
     val magicComment = magicComment()
     val roots = mutableSetOf<PsiFile>()
 
@@ -34,23 +28,16 @@ fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
         roots.add(this)
     }
 
-    // We need to scan all file inclusions in the project, because any file could include the current file
-    val inclusions = project.allFileInclusions()
-
-    inclusions.forEach { (file, _) ->
+    // Go through the fileset of this file to find out the root files
+    for (file in fileset) {
         // Function to avoid unnecessary evaluation
         fun usesSubFiles() = file.commandsInFile()
             .find { it.name == "\\documentclass" }
             ?.requiredParameters
             ?.contains("subfiles") == true
 
-        // For each root, IsChildDFS until found.
-        if (!file.isRoot() || usesSubFiles()) {
-            return@forEach
-        }
-
-        // If the root file contains this, we have found the root file
-        if (file.contains(this, inclusions)) {
+        // Theoretically, we might now add a root file which is included by [this], but in that case we got the root file incorrect anyway
+        if (file.isRoot() && !usesSubFiles()) {
             roots.add(file)
         }
     }
@@ -72,70 +59,6 @@ fun PsiFile.findRootFile(): PsiFile = findRootFiles().firstOrNull() ?: this
  * Gets the set of files that are the root files of `this` file.
  */
 fun PsiFile.findRootFiles(): Set<PsiFile> = ReferencedFileSetService.getInstance().rootFilesOf(this)
-
-/**
- * Checks if the given file is included by `this` file.
- *
- * @param childMaybe
- *              The file to check for if it is a child of this file.
- * @param mapping
- *              Map that maps each psi file to all the files that get included by said file.
- * @return `true` when `childMaybe` is a child of `this` file, `false` otherwise.
- */
-private fun PsiFile.contains(childMaybe: PsiFile, mapping: Map<PsiFile, Set<PsiFile>>): Boolean {
-    return IsChildDFS(
-        this,
-        { mapping[it] ?: emptySet() },
-        { childMaybe == it }
-    ).execute()
-}
-
-/**
- * Looks up all the files that include each other.
- * This may be an expensive function when a lot of include commands and files are present.
- *
- * @return A map that maps each file to a set of all files that get included by said file. E.g.
- * when `A`↦{`B`,`C`}. Then the files `B` and `C` get included by `A`.
- */
-fun Project.allFileInclusions(): Map<PsiFile, Set<PsiFile>> {
-    val allIncludeCommands = LatexIncludesIndex.getItems(this)
-
-    // Maps every file to all the files it includes.
-    val inclusions: MutableMap<PsiFile, MutableSet<PsiFile>> = HashMap()
-
-    // Find all related files.
-    for (command in allIncludeCommands) {
-        // Find included files
-        val declaredIn = command.containingFile
-
-        val includedNames = command.getAllRequiredArguments() ?: continue
-
-        var foundFile = false
-
-        for (includedName in includedNames) {
-            val referenced = declaredIn.findFile(includedName)
-                ?: continue
-
-            foundFile = true
-
-            // When it looks like a file includes itself, we skip it
-            if (declaredIn.viewProvider.virtualFile.nameWithoutExtension == includedName) {
-                continue
-            }
-
-            inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(referenced)
-        }
-
-        if (!foundFile) {
-            // Check if import package is used
-            searchFileByImportPaths(command)?.let {
-                inclusions.getOrPut(declaredIn) { mutableSetOf() }.add(it)
-            }
-        }
-    }
-
-    return inclusions
-}
 
 /**
  * Checks whether the psi file is a tex document root or not.
