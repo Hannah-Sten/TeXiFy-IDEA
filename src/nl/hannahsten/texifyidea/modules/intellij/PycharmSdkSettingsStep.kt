@@ -5,9 +5,6 @@ import com.intellij.CommonBundle
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.ide.util.projectWizard.ModuleBuilder
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
-import com.intellij.ide.util.projectWizard.SettingsStep
-import com.intellij.ide.util.projectWizard.WizardContext
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -16,13 +13,12 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Condition
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.util.NlsContexts.DialogMessage
 import com.intellij.util.ui.JBUI
-import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox
 import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox.ActualJdkComboBoxItem
 import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox.ProjectJdkComboBoxItem
 import java.awt.GridBagConstraints
@@ -32,45 +28,34 @@ import javax.swing.JPanel
 
 /**
  * @author Dmitry Avdeev
+ *
+ * todo [SdkSettingsStep] for non-IJ IDE
+ * because the project generator peer does not have a WizardContext/SettingsStep/Project at that moment
  */
-class SdkSettingsStep(
-    context: WizardContext,
+class PycharmSdkSettingsStep(
     moduleBuilder: ModuleBuilder,
     sdkTypeIdFilter: Condition<in SdkTypeId?>,
     sdkFilter: Condition<in Sdk?>?
 ) : ModuleWizardStep() {
-    private val myJdkComboBox: JdkComboBox
-    private val myWizardContext: WizardContext
+    private val myComboBox: ComboBox<Sdk>
     private val myModel: ProjectSdksModel
     private val myModuleBuilder: ModuleBuilder
     val myJdkPanel: JPanel
 
-    @JvmOverloads
-    constructor(
-        settingsStep: SettingsStep,
-        moduleBuilder: ModuleBuilder,
-        sdkTypeIdFilter: Condition<in SdkTypeId?>,
-        sdkFilter: Condition<in Sdk?>? = null
-    ) : this(settingsStep.context, moduleBuilder, sdkTypeIdFilter, sdkFilter) {
-        if (!isEmpty) {
-            settingsStep.addSettingsField(getSdkFieldLabel(settingsStep.context.project), myJdkPanel)
-        }
-    }
-
     private fun preselectSdk(project: Project?, lastUsedSdk: String?, sdkFilter: Condition<in SdkTypeId?>) {
-        myJdkComboBox.reloadModel()
+//        myComboBox.reloadModel()
         if (project != null) {
             val sdk = ProjectRootManager.getInstance(project).projectSdk
             if (sdk != null && myModuleBuilder.isSuitableSdkType(sdk.sdkType)) {
                 // use project SDK
-                myJdkComboBox.setSelectedItem(myJdkComboBox.showProjectSdkItem())
+//                myComboBox.setSelectedItem(myComboBox.showProjectSdkItem())
                 return
             }
         }
         if (lastUsedSdk != null) {
             val sdk = ProjectJdkTable.getInstance().findJdk(lastUsedSdk)
             if (sdk != null && myModuleBuilder.isSuitableSdkType(sdk.sdkType)) {
-                myJdkComboBox.selectedJdk = sdk
+//                myComboBox.selectedJdk = sdk
                 return
             }
         }
@@ -79,11 +64,11 @@ class SdkSettingsStep(
         val defaultProject = ProjectManager.getInstance().defaultProject
         val selected = ProjectRootManager.getInstance(defaultProject).projectSdk
         if (selected != null && sdkFilter.value(selected.sdkType)) {
-            myJdkComboBox.selectedJdk = selected
+//            myComboBox.selectedJdk = selected
             return
         }
         var best: Sdk? = null
-        val model = myJdkComboBox.model
+        val model = myComboBox.model
         for (i in 0 until model.size) {
             val item = model.getElementAt(i) as? ActualJdkComboBoxItem ?: continue
             val jdk = item.jdk ?: continue
@@ -100,10 +85,10 @@ class SdkSettingsStep(
             }
         }
         if (best != null) {
-            myJdkComboBox.selectedJdk = best
+//            myComboBox.selectedJdk = best
         }
         else {
-            myJdkComboBox.setSelectedItem(myJdkComboBox.showNoneSdkItem())
+//            myComboBox.setSelectedItem(myComboBox.showNoneSdkItem())
         }
     }
 
@@ -120,21 +105,10 @@ class SdkSettingsStep(
         return myJdkPanel
     }
 
-    override fun updateDataModel() {
-        val project = myWizardContext.project
-        val jdk = myJdkComboBox.selectedJdk
-        if (project == null) {
-            myWizardContext.projectJdk = jdk
-        }
-        else {
-            myModuleBuilder.moduleJdk = jdk
-        }
-    }
-
     @Throws(ConfigurationException::class)
     override fun validate(): Boolean {
-        val item = myJdkComboBox.selectedItem
-        if (myJdkComboBox.selectedJdk == null && item !is ProjectJdkComboBoxItem) {
+        val item = myComboBox.selectedItem
+        if (myComboBox.selectedItem == null && item !is ProjectJdkComboBoxItem) {
             if (Messages.showDialog(
                     noSdkMessage,
                     "title.no.jdk.specified",
@@ -172,36 +146,27 @@ class SdkSettingsStep(
     init {
         var sdkFilter = sdkFilter
         myModuleBuilder = moduleBuilder
-        myWizardContext = context
         myModel = ProjectSdksModel()
-        val project = myWizardContext.project
-        myModel.reset(project)
-        val disposable = context.disposable
-        if (disposable != null) {
-            val stepDisposable = Disposable { myModel.disposeUIResources() }
-            Disposer.register(disposable, stepDisposable)
-        }
         if (sdkFilter == null) {
             sdkFilter = JdkComboBox.getSdkFilter(sdkTypeIdFilter)
         }
-        myJdkComboBox = JdkComboBox(myWizardContext.project, myModel, sdkTypeIdFilter, sdkFilter, sdkTypeIdFilter, null)
+        myComboBox = ComboBox<Sdk>()
         myJdkPanel = JPanel(GridBagLayout())
         myJdkPanel.isFocusable = false
-        myJdkComboBox.accessibleContext.accessibleName = myJdkPanel.accessibleContext.accessibleName
-        val component =
-            if (project == null) PropertiesComponent.getInstance() else PropertiesComponent.getInstance(project)
+        myComboBox.accessibleContext.accessibleName = myJdkPanel.accessibleContext.accessibleName
+        val component = PropertiesComponent.getInstance()
         val moduleType = moduleBuilder.moduleType
         val selectedJdkProperty = "jdk.selected." + (moduleType?.id ?: "")
-        myJdkComboBox.addActionListener {
-            val jdk = myJdkComboBox.selectedJdk
+        myComboBox.addActionListener {
+            val jdk = myComboBox.selectedItem
             if (jdk != null) {
                 component.setValue(selectedJdkProperty, jdk.name)
             }
             onSdkSelected(jdk)
         }
-        preselectSdk(project, component.getValue(selectedJdkProperty), sdkTypeIdFilter)
+        preselectSdk(component.getValue(selectedJdkProperty), sdkTypeIdFilter)
         myJdkPanel.add(
-            myJdkComboBox,
+            myComboBox,
             GridBagConstraints(
                 0,
                 0,
