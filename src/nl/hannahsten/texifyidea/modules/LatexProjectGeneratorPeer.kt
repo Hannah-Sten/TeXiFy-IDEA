@@ -35,6 +35,7 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
 
     override fun getComponent(): JComponent {
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+            // todo add sdk stuffs?
             bibtexEnabled = JBCheckBox("Configure with BibTeX support")
             add(bibtexEnabled)
         }

@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.5.0"
+    id("org.jetbrains.intellij") version "0.6.1"
     kotlin("jvm") version("1.4.10")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
@@ -118,7 +118,8 @@ intellij {
     pluginName = "TeXiFy-IDEA"
 
     // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    setPlugins("tanvd.grazi:203.4449.8", "java")
+//    setPlugins("tanvd.grazi:203.4449.8", "java")
+    setPlugins("tanvd.grazi:203.5419.8")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -128,12 +129,15 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "203.4449.2-EAP-SNAPSHOT"
+//    version = "203.4449.2-EAP-SNAPSHOT"
+    version = "PY-203.5419.8-EAP-SNAPSHOT"
+//    type = "PY"
 
     // Example to use a different, locally installed, IDE
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
     // Also disable "version" above
-//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/Goland/ch-0/201.7846.93/"
+    // If it doesn't work (Could not resolve all files for configuration ':detachedConfiguration4'.), specify 'version' instead
+//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-1/203.5419.8/"
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task
