@@ -38,6 +38,9 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
    * Also keep track of brackets of verbatim environment optional arguments.
    */
   private int verbatimOptionalArgumentBracketsCount = 0;
+
+  // todo
+  private String verbatim_delimiter = "";
 %}
 
 %public
@@ -87,7 +90,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %states INLINE_VERBATIM_START
-%xstates INLINE_VERBATIM_PIPE INLINE_VERBATIM_EXCL_MARK INLINE_VERBATIM_QUOTES INLINE_VERBATIM_EQUALS
+%xstates INLINE_VERBATIM
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
@@ -107,31 +110,14 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 \\lstinline             { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
 
 <INLINE_VERBATIM_START> {
-    "|"                 { yypopState(); yypushState(INLINE_VERBATIM_PIPE); return OPEN_BRACE; }
-    "!"                 { yypopState(); yypushState(INLINE_VERBATIM_EXCL_MARK); return OPEN_BRACE; }
-    "\""                { yypopState(); yypushState(INLINE_VERBATIM_QUOTES); return OPEN_BRACE; }
-    "="                 { yypopState(); yypushState(INLINE_VERBATIM_EQUALS); return OPEN_BRACE; }
+    // Experimental syntax of \lstinline: \lstinline{verbatim}
+    {OPEN_BRACE}        { yypopState(); verbatim_delimiter = "}"; yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
+    {ANY_CHAR}          { yypopState(); verbatim_delimiter = yytext().toString(); yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
 }
 
-<INLINE_VERBATIM_PIPE> {
-    "|"                 { yypopState(); return CLOSE_BRACE; }
-}
-
-<INLINE_VERBATIM_EXCL_MARK> {
-    "!"                 { yypopState(); return CLOSE_BRACE; }
-}
-
-<INLINE_VERBATIM_QUOTES> {
-    "\""                { yypopState(); return CLOSE_BRACE; }
-}
-
-<INLINE_VERBATIM_EQUALS> {
-    "="                 { yypopState(); return CLOSE_BRACE; }
-}
-
-<INLINE_VERBATIM_PIPE, INLINE_VERBATIM_EXCL_MARK, INLINE_VERBATIM_QUOTES, INLINE_VERBATIM_EQUALS> {
-    {ANY_CHAR}          { return RAW_TEXT_TOKEN; }
-    // Because the states are exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
+<INLINE_VERBATIM> {
+    {ANY_CHAR}          { if(yytext().toString().equals(verbatim_delimiter)) { yypopState(); return CLOSE_BRACE; } else { return RAW_TEXT_TOKEN; } }
+    // Because the state is exclusive, we have to handle bad characters here as well (in case of an open \verb|... for example)
     [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 

@@ -93,7 +93,9 @@ class LatexParserTest : BasePlatformTestCase() {
             \verb"}$"
             \verb|%md|
             \verb*|$|
+            \verb$|$
             \lstinline|$|
+            \lstinline{$}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
