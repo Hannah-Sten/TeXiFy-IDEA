@@ -39,7 +39,9 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
    */
   private int verbatimOptionalArgumentBracketsCount = 0;
 
-  // todo
+  /**
+   * Remember the delimiter that inline verbatim started with, to check when to end it.
+   */
   private String verbatim_delimiter = "";
 %}
 
