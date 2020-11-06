@@ -153,4 +153,27 @@ class LatexParserTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
+
+    fun testAlgorithm2e() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \documentclass[11pt]{article}
+            \usepackage{algorithm2e}
+            \begin{document}
+                \begin{algorithm*}
+                    \uIf{condition}{
+                        \If{condition}{
+                            continue
+                        }
+                    }
+                    \Else{
+                        continue
+                    }
+                \end{algorithm*}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

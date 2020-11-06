@@ -76,7 +76,9 @@ ANY_CHAR=[^]
 
 // Algorithmicx
 // Currently we just use the begin..end structure for formatting, so there is no need to disinguish between separate constructs
-BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | "\\Loop" | "\\Function" | "\\Procedure"
+BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | "\\Loop" | "\\Function" | "\\Procedure" |
+    // Algorithm2e
+    "\\uIf" | "\\eIf" | "\\lIf" | "\\leIf"
 MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
