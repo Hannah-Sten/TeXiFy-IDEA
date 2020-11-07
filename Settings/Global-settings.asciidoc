@@ -131,8 +131,4 @@ Similar for other settings.
 == Option to select default PDF viewer
 _Since b0.6.7_
 
-This lists all supported pdf viewers that are installed on your system, which you can select as the default pdf viewer.
-Selecting a supported viewer as default means that you get forward and inverse search, and that the selected pdf viewer is the viewer that will open when compilation is done.
-
-The supported pdf viewers are link:SumatraPDF-support[Sumatra] for Windows, and link:Evince-support[Evince] and link:Okular-support[Okular] for linux.
-You can use any other pdf viewer by selecting the option Custom PDF Viewer.
+Note: As of _b0.7.2_ this setting has been moved to link:Run-configurations#Choose-pdf-viewer[Choose pdf viewer]

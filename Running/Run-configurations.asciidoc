@@ -58,6 +58,15 @@ For more information about paths resolving, see https://www.tug.org/texinfohtml/
 
 See link:Running/SumatraPDF-support#Portable-SumatraPDF[(Windows) Choose a custom path to SumatraPDF]
 
+=== Choose pdf viewer
+_Since b0.7.2_
+
+This lists all supported pdf viewers that are installed on your system, which you can select as the default pdf viewer.
+Selecting a supported viewer as default means that you get forward and inverse search, and that the selected pdf viewer is the viewer that will open when compilation is done.
+
+The supported pdf viewers are link:SumatraPDF-support[Sumatra] for Windows, and link:Evince-support[Evince] and link:Okular-support[Okular] for linux, or no pdf viewer at all.
+You can use any other pdf viewer by selecting the option Custom PDF Viewer.
+
 === Custom pdf viewer
 
 In the Custom pdf viewer field you can specify the command for your favourite pdf viewer, so for example if the command is `okular somefile.pdf` then you can fill in `okular`  here.

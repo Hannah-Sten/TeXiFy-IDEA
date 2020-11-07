@@ -182,6 +182,7 @@ See link:Run-configurations#Run-configuration-settings[Run configurations settin
 * Custom compiler arguments
 * Custom environment variables
 * (Windows) Choose a custom path to SumatraPDF
+* Choose pdf viewer
 * Custom pdf viewer
 * Choose LaTeX source file to compile
 * (MiKTeX only) Set a custom path for auxiliary files
