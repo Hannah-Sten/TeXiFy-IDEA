@@ -131,4 +131,4 @@ Similar for other settings.
 == Option to select default PDF viewer
 _Since b0.6.7_
 
-Note: As of _b0.7.2_ this setting has been moved to link:Run-configurations#Choose-pdf-viewer[Choose pdf viewer]
+Note: As of _b0.7.2_ this setting has been moved to the link:Run-configurations#Choose-pdf-viewer[run configuration (template) settings].
