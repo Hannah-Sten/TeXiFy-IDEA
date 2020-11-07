@@ -6,10 +6,8 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileState
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.TexifySettings
 
 open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
     name = "_ForwardSearch",
