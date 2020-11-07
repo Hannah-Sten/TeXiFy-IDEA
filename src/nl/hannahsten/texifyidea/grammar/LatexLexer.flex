@@ -65,7 +65,7 @@ SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
-COMMAND_TOKEN=\\([a-zA-Z@]+|.|\r)
+COMMAND_TOKEN=\\([a-zA-Z@_:]+|.|\r) // _ and : are technically only LaTeX3 syntax
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 
 // Comments
