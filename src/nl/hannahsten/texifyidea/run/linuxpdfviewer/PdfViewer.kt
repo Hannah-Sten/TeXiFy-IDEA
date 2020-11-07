@@ -27,10 +27,12 @@ enum class PdfViewer(
     OTHER("other", "Custom PDF viewer", null),
     NONE("none", "No PDF viewer", null);
 
+    fun isAvailable(): Boolean = availability[this] ?: false
+
     /**
      * Check if the viewer is installed and available from the path.
      */
-    fun isAvailable(): Boolean {
+    fun checkAvailability(): Boolean {
         // Using a custom PDF viewer should always be an option.
         return if (this == OTHER) {
             true
@@ -58,6 +60,12 @@ enum class PdfViewer(
     override fun toString(): String = displayName
 
     companion object {
+        private val availability: Map<PdfViewer, Boolean> by lazy {
+            values().associateWith {
+                it.checkAvailability()
+            }
+        }
+
         fun availableSubset(): List<PdfViewer> = values().filter { it.isAvailable() }
         fun firstAvailable(): PdfViewer = availableSubset().first()
     }
