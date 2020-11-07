@@ -223,7 +223,8 @@ class LatexRunConfiguration constructor(
             this.pdfViewer = PdfViewer.valueOf(viewerName ?: "")
         }
         catch (e: IllegalArgumentException) {
-            this.pdfViewer = PdfViewer.NONE
+            // Try to recover from old settings (when the pdf viewer was set in the TeXiFy settings instead of the run config).
+            this.pdfViewer = TexifySettings.getInstance().pdfViewer
         }
 
         // Read custom pdf viewer command
