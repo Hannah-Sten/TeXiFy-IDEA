@@ -36,6 +36,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var showPackagesInStructureView = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
     var missingLabelMinimumLevel = LatexRegularCommand.SUBSECTION
+    @Deprecated("Setting moved to run configuration")
     var pdfViewer = PdfViewer.values().first { it.isAvailable() }
 
     override fun getState(): TexifySettingsState? {

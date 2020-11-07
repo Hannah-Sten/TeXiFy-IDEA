@@ -18,6 +18,6 @@ class ConfigureInverseSearchAction : AnAction() {
      * Hide this option when Skim is not available.
      */
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = TexifySettings.getInstance().pdfViewer == PdfViewer.SKIM
+        e.presentation.isEnabledAndVisible = PdfViewer.SKIM.isAvailable()
     }
 }

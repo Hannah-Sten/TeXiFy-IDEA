@@ -30,6 +30,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -76,7 +77,7 @@ class LatexRunConfiguration constructor(
     var compiler: LatexCompiler? = null
     var compilerPath: String? = null
     var sumatraPath: String? = null
-    var pdfViewer: PdfViewer = PdfViewer.firstAvailable()
+    var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
     var compilerArguments: String? = null
@@ -328,7 +329,7 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
-        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer.displayName })
+        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.displayName ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)
@@ -459,6 +460,10 @@ class LatexRunConfiguration constructor(
 
     fun setDefaultCompiler() {
         compiler = LatexCompiler.PDFLATEX
+    }
+
+    fun setDefaultPdfViewer() {
+        pdfViewer = PdfViewer.firstAvailable()
     }
 
     fun setDefaultOutputFormat() {
