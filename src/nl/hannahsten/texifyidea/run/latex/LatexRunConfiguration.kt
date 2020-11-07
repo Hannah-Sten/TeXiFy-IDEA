@@ -29,6 +29,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -54,6 +55,7 @@ class LatexRunConfiguration constructor(
         private const val COMPILER = "compiler"
         private const val COMPILER_PATH = "compiler-path"
         private const val SUMATRA_PATH = "sumatra-path"
+        private const val PDF_VIEWER = "pdf-viewer"
         private const val VIEWER_COMMAND = "viewer-command"
         private const val COMPILER_ARGUMENTS = "compiler-arguments"
         private const val MAIN_FILE = "main-file"
@@ -74,6 +76,7 @@ class LatexRunConfiguration constructor(
     var compiler: LatexCompiler? = null
     var compilerPath: String? = null
     var sumatraPath: String? = null
+    var pdfViewer: PdfViewer = PdfViewer.firstAvailable()
     var viewerCommand: String? = null
 
     var compilerArguments: String? = null
@@ -213,6 +216,15 @@ class LatexRunConfiguration constructor(
         val sumatraPathRead = parent.getChildText(SUMATRA_PATH)
         this.sumatraPath = if (sumatraPathRead.isNullOrEmpty()) null else sumatraPathRead
 
+        // Read pdf viewer.
+        val viewerName = parent.getChildText(PDF_VIEWER)
+        try {
+            this.pdfViewer = PdfViewer.valueOf(viewerName ?: "")
+        }
+        catch (e: IllegalArgumentException) {
+            this.pdfViewer = PdfViewer.NONE
+        }
+
         // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
         this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
@@ -316,6 +328,7 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
+        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer.displayName })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)

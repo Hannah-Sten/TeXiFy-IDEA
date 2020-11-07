@@ -24,7 +24,8 @@ enum class PdfViewer(
     ZATHURA("zathura", "Zathura", ZathuraConversation),
     SKIM("skim", "Skim", SkimConversation),
     SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
-    OTHER("other", "Custom PDF viewer", null);
+    OTHER("other", "Custom PDF viewer", null),
+    NONE("none", "No PDF viewer", null);
 
     /**
      * Check if the viewer is installed and available from the path.
@@ -53,6 +54,8 @@ enum class PdfViewer(
             false
         }
     }
+
+    override fun toString(): String = displayName
 
     companion object {
         fun availableSubset(): List<PdfViewer> = values().filter { it.isAvailable() }
