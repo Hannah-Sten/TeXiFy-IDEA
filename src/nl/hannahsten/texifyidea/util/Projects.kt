@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.execution.RunManager
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -7,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 
 /**
@@ -45,4 +47,11 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
 fun Project.allFiles(type: FileType): Collection<VirtualFile> {
     val scope = GlobalSearchScope.projectScope(this)
     return FileTypeIndex.getFiles(type, scope)
+}
+
+/**
+ * Get the run configuration that is currently selected.
+ */
+fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
+    RunManager.getInstance(it).selectedConfiguration?.configuration as? LatexRunConfiguration
 }

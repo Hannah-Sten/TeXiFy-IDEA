@@ -1,13 +1,12 @@
 package nl.hannahsten.texifyidea.action
 
-import com.intellij.execution.RunManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
     name = "_ForwardSearch",
@@ -25,9 +24,6 @@ open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
     }
 
     override fun update(e: AnActionEvent) {
-        val runConfig = e.project?.let {
-            RunManager.getInstance(it).selectedConfiguration
-        }
-        e.presentation.isEnabledAndVisible = (runConfig?.configuration as? LatexRunConfiguration)?.pdfViewer == viewer
+        e.presentation.isEnabledAndVisible = e.project?.selectedRunConfig()?.pdfViewer == viewer
     }
 }

@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 object ZathuraConversation : ViewerConversation() {
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
@@ -41,7 +42,7 @@ object ZathuraConversation : ViewerConversation() {
 
         // First check if the file in the editor (sourceFilePath) is in the file set of the main file of the latest run run configuration.
         // If so, guess the main file (pdf) of that run config as the pdf.
-        val runConfig = selectedRunConfig(project) ?: return null
+        val runConfig = project.selectedRunConfig() ?: return null
         return if (runConfig.mainFile?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
             // outputFilePath contains the file name and pdf extension (already). We don't have to add it.
             runConfig.outputFilePath
@@ -51,20 +52,6 @@ object ZathuraConversation : ViewerConversation() {
         else {
             runConfigThatCompilesFile(sourceVirtualFile, project)?.outputFilePath ?: return null
         }
-    }
-
-    /**
-     * Get the currently selected run configuration, IF it is a [LatexRunConfiguration].
-     * Otherwise returns null.
-     */
-    private fun selectedRunConfig(project: Project): LatexRunConfiguration? = try {
-        (RunManagerImpl.getInstanceImpl(project) as RunManager)
-            .selectedConfiguration
-            ?.configuration
-            as LatexRunConfiguration
-    }
-    catch (e: ClassCastException) {
-        null
     }
 
     /**

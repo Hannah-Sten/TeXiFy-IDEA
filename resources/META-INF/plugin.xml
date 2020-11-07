@@ -397,9 +397,7 @@
         <langCodeStyleSettingsProvider implementation="nl.hannahsten.texifyidea.settings.codestyle.BibtexLanguageCodeStyleSettingsProvider"/>
 
         <!-- Project settings -->
-        <projectService serviceImplementation="nl.hannahsten.texifyidea.settings.TexifyProjectSettings"/>
         <projectService serviceImplementation="nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexErrorTreeViewConfiguration"/>
-        <projectConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable" groupId="TexifyConfigurable" id="TexifyProjectConfigurable" />
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
