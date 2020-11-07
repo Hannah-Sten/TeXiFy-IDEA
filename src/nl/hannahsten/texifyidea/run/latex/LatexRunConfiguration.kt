@@ -329,7 +329,7 @@ class LatexRunConfiguration constructor(
         parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
         parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
         parent.addContent(Element(SUMATRA_PATH).also { it.text = sumatraPath ?: "" })
-        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.displayName ?: "" })
+        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
         parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
         parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
         this.environmentVariables.writeExternal(parent)

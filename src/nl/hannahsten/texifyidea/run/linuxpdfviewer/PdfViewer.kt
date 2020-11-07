@@ -24,8 +24,7 @@ enum class PdfViewer(
     ZATHURA("zathura", "Zathura", ZathuraConversation),
     SKIM("skim", "Skim", SkimConversation),
     SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
-    OTHER("other", "Custom PDF viewer", null),
-    NONE("none", "No PDF viewer", null);
+    NONE("", "No PDF viewer", null);
 
     fun isAvailable(): Boolean = availability[this] ?: false
 
@@ -33,8 +32,8 @@ enum class PdfViewer(
      * Check if the viewer is installed and available from the path.
      */
     fun checkAvailability(): Boolean {
-        // Using a custom PDF viewer should always be an option.
-        return if (this == OTHER) {
+        // Using no PDF viewer should always be an option.
+        return if (this == NONE) {
             true
         }
         else if (SystemInfo.isWindows && this == SUMATRA) {

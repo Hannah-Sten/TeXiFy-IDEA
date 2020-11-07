@@ -190,7 +190,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      */
     private fun addOpenViewerListener(handler: ProcessHandler, focusAllowed: Boolean = true) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
-
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
             // Split user command on spaces, then replace {pdf} if needed
@@ -216,6 +215,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
         }
+        // Do nothing if the user selected that they do not want a viewer to open.
+        else if (runConfig.pdfViewer == PdfViewer.NONE) return
         else if (runConfig.sumatraPath != null || isSumatraAvailable) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
