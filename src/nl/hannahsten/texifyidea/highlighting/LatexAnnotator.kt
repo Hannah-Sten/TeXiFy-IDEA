@@ -87,7 +87,7 @@ open class LatexAnnotator : Annotator {
                     .create()
 
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                    .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.endOffset(), 4))
+                    .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.textOffset, 4))
                     .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
                     .create()
             }
