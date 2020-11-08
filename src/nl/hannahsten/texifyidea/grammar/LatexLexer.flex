@@ -91,8 +91,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
-%states INLINE_VERBATIM_START
-%xstates INLINE_VERBATIM
+%xstates INLINE_VERBATIM_START INLINE_VERBATIM
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
@@ -115,6 +114,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
     // Experimental syntax of \lstinline: \lstinline{verbatim}
     {OPEN_BRACE}        { yypopState(); verbatim_delimiter = "}"; yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
     {ANY_CHAR}          { yypopState(); verbatim_delimiter = yytext().toString(); yypushState(INLINE_VERBATIM); return OPEN_BRACE; }
+    [^]                 { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
 
 <INLINE_VERBATIM> {
