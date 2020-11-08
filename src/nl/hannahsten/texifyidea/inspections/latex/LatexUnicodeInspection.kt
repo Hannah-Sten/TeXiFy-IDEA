@@ -66,7 +66,6 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
-//            val compilerCompat = TexifyProjectSettings.getInstance(file.project).compilerCompatibility
             val compilerCompat = file.project.selectedRunConfig()?.compiler ?: return false
             if (compilerCompat == LatexCompiler.LUALATEX || compilerCompat == LatexCompiler.XELATEX || LatexDistribution.texliveVersion >= 2018) {
                 return true
