@@ -90,8 +90,7 @@ class TexifyConfigurable : SearchableConfigurable {
         val oldPdfViewer = TexifySettings.getInstance().pdfViewer
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JLabel("<html>Note: This setting has been moved to the run configuration (template). See the wiki for details.<br/>Old PDF viewer: $oldPdfViewer</html>"))
-                add(JLabel("Old PDF viewer: $oldPdfViewer"))
+                add(JLabel("<html>PDF viewer: This setting has been moved to the run configuration (template). See the wiki for details.<br/>Old PDF viewer: $oldPdfViewer <br/> See for example (IntelliJ) File > New Projects Settings > Run Configuration Templates, or Edit Configurations > Templates > LaTeX for the current project.</html>"))
             }
         )
     }
