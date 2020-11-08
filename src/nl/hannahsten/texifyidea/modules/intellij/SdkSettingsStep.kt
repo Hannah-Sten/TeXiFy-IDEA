@@ -20,9 +20,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsContexts
-import com.intellij.openapi.util.NlsContexts.DialogMessage
 import com.intellij.util.ui.JBUI
-import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox
 import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox.ActualJdkComboBoxItem
 import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox.ProjectJdkComboBoxItem
 import java.awt.GridBagConstraints
@@ -86,7 +84,7 @@ class SdkSettingsStep(
         val model = myJdkComboBox.model
         for (i in 0 until model.size) {
             val item = model.getElementAt(i) as? ActualJdkComboBoxItem ?: continue
-            val jdk = item.jdk ?: continue
+            val jdk = item.jdk
             val jdkType = jdk.sdkType
             if (!sdkFilter.value(jdkType)) continue
             if (best == null) {
@@ -107,13 +105,14 @@ class SdkSettingsStep(
         }
     }
 
-    protected fun onSdkSelected(sdk: Sdk?) {}
+    private fun onSdkSelected(sdk: Sdk?) {}
+
     val isEmpty: Boolean
         get() = myJdkPanel.componentCount == 0
 
-    protected fun getSdkFieldLabel(project: Project?): @NlsContexts.Label String {
+    private fun getSdkFieldLabel(project: Project?): @NlsContexts.Label String {
 //    return JavaUiBundle.message("sdk.setting.step.label", project == null ? 0 : 1);
-        return "Sdk.setting.step.label" // todo
+        return project.toString()
     }
 
     override fun getComponent(): JComponent {
@@ -152,7 +151,7 @@ class SdkSettingsStep(
         catch (e: ConfigurationException) {
             //IDEA-98382 We should allow Next step if user has wrong SDK
             if (Messages.showDialog(
-                    "dialog.message.0.do.you.want.to.proceed" + e.message,  // todo
+                    e.message + "\n\nDo you want to proceed?",
                     e.title,
                     arrayOf(CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()),
                     1,
@@ -165,12 +164,11 @@ class SdkSettingsStep(
         return true
     }
 
-    // todo
-    protected val noSdkMessage: @DialogMessage String?
-        protected get() = "prompt.confirm.project.no.jdk" // todo
+    private val noSdkMessage: String?
+        private get() = "Do you want to create a project with no SDK assigned?\nAn SDK is required for compiling and resolving installed packages."
 
     init {
-        var sdkFilter = sdkFilter
+        var mySdkFilter = sdkFilter
         myModuleBuilder = moduleBuilder
         myWizardContext = context
         myModel = ProjectSdksModel()
@@ -181,10 +179,10 @@ class SdkSettingsStep(
             val stepDisposable = Disposable { myModel.disposeUIResources() }
             Disposer.register(disposable, stepDisposable)
         }
-        if (sdkFilter == null) {
-            sdkFilter = JdkComboBox.getSdkFilter(sdkTypeIdFilter)
+        if (mySdkFilter == null) {
+            mySdkFilter = JdkComboBox.getSdkFilter(sdkTypeIdFilter)
         }
-        myJdkComboBox = JdkComboBox(myWizardContext.project, myModel, sdkTypeIdFilter, sdkFilter, sdkTypeIdFilter, null)
+        myJdkComboBox = JdkComboBox(myWizardContext.project, myModel, sdkTypeIdFilter, mySdkFilter, sdkTypeIdFilter, null)
         myJdkPanel = JPanel(GridBagLayout())
         myJdkPanel.isFocusable = false
         myJdkComboBox.accessibleContext.accessibleName = myJdkPanel.accessibleContext.accessibleName

@@ -4,10 +4,10 @@ import com.intellij.openapi.projectRoots.*
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
+import java.nio.file.Paths
 
 /**
- * todo customstepprojectgenerator
- * todo quickfix for setting up sdk (e.g. on package/class not found)
+ * Represents the location of the LaTeX installation.
  *
  * @author Thomas
  */
@@ -68,6 +68,11 @@ class LatexSdk : SdkType("LaTeX SDK") {
     }
 
     override fun getVersionString(sdkHome: String?): String? {
-        return "2020" // todo
+        return sdkHome?.split("/")?.lastOrNull { it.isNotBlank() }
+    }
+
+    override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
+        if (sdk.homePath == null) return null
+        return Paths.get(sdk.homePath!!, "index.html").toString()
     }
 }

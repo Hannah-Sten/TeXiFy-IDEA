@@ -4,11 +4,11 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.6.1"
-    kotlin("jvm") version("1.4.10")
+    id("org.jetbrains.intellij") version "0.6.2"
+    kotlin("jvm") version("1.4.20-RC")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.33.0"
+    id("com.github.ben-manes.versions") version "0.35.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.15"
@@ -84,7 +84,7 @@ dependencies {
     // Test dependencies
 
     // Also implementation junit 4, just in case
-    testImplementation("junit:junit:4.13-rc-2")
+    testImplementation("junit:junit:4.13.1")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.7.0")
 
     // Use junit 5 for test cases
@@ -99,7 +99,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.10.0")
+    testImplementation("io.mockk:mockk:1.10.2")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.1.jar"))
@@ -118,7 +118,7 @@ intellij {
     pluginName = "TeXiFy-IDEA"
 
     // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    setPlugins("tanvd.grazi:203.4449.8", "java")
+    setPlugins("tanvd.grazi:203.5600.13", "java")
 //    setPlugins("tanvd.grazi:203.5419.8")
 
     // Use the since build number from plugin.xml
@@ -129,7 +129,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "203.4449.2-EAP-SNAPSHOT"
+    version = "203.5600.34-EAP-SNAPSHOT"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 

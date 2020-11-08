@@ -8,6 +8,8 @@ import java.io.File
 
 /**
  * Represents the LaTeX Distribution of the user, e.g. MikTeX or TeX Live.
+ *
+ * todo merge with LatexSdk?
  */
 class LatexDistribution {
 
