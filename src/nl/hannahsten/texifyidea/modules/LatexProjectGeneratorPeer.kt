@@ -1,11 +1,8 @@
 package nl.hannahsten.texifyidea.modules
 
 import com.intellij.ide.util.projectWizard.SettingsStep
-import com.intellij.openapi.projectRoots.SdkTypeId
-import com.intellij.openapi.util.Condition
 import com.intellij.platform.ProjectGeneratorPeer
 import com.intellij.ui.components.JBCheckBox
-import nl.hannahsten.texifyidea.modules.intellij.SdkSettingsStep
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.awt.FlowLayout
 import javax.swing.JComponent
@@ -38,10 +35,6 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
 
     override fun getComponent(): JComponent {
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            // todo add sdk stuffs?
-            val filter = Condition { id: SdkTypeId -> id.name == "LaTeX SDK" }
-            val step = SdkSettingsStep(proj, LatexModuleBuilder(), filter)
-            add(step.component)
             bibtexEnabled = JBCheckBox("Configure with BibTeX support")
             add(bibtexEnabled)
         }
