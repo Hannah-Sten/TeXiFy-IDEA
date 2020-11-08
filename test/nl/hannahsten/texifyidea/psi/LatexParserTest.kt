@@ -94,6 +94,7 @@ class LatexParserTest : BasePlatformTestCase() {
             \verb|%md|
             \verb*|$|
             \verb$|$
+            \verb-afdsa$-
             \lstinline|$|
             \lstinline{$}
             """.trimIndent()
