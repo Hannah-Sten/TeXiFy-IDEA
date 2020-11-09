@@ -14,7 +14,7 @@ import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.modules.intellij.SdkSettingsStep
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.settings.LatexSdk
 import java.io.File
 import java.util.*
 
@@ -92,7 +92,7 @@ class LatexModuleBuilder : ModuleBuilder() {
             contentEntry.addExcludeFolder(outRoot)
         }
 
-        if (LatexDistribution.isMiktexAvailable) {
+        if (LatexSdk.isMiktexAvailable) {
             // Create auxiliary directory.
             path = contentEntryPath + File.separator + "auxil"
             File(path).mkdirs()

@@ -1,7 +1,9 @@
 package nl.hannahsten.texifyidea.run.latex
 
+import nl.hannahsten.texifyidea.settings.LatexSdk
+
 /**
- * See [LatexDistribution].
+ * See [LatexSdk].
  */
 enum class LatexDistributionType(val displayName: String) {
     TEXLIVE("TeX Live"),
@@ -13,13 +15,13 @@ enum class LatexDistributionType(val displayName: String) {
 
     fun isTexlive() = this == TEXLIVE || this == WSL_TEXLIVE
 
-    fun isInstalled() = LatexDistribution.isInstalled(this)
+    fun isInstalled() = LatexSdk.isInstalled(this)
 
     override fun toString() = displayName
 
     companion object {
         fun valueOfIgnoreCase(value: String?): LatexDistributionType {
-            return values().firstOrNull { it.name.equals(value, true) } ?: LatexDistribution.defaultLatexDistribution
+            return values().firstOrNull { it.name.equals(value, true) } ?: LatexSdk.defaultLatexDistribution
         }
     }
 }

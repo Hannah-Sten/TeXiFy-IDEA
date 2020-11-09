@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution.Companion.getLatexExecutableName
+import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdk.Companion.getLatexExecutableName
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -29,7 +29,7 @@ object LatexPackageLocationCache {
     }
 
     private fun runKpsewhich(arg: String, project: Project): String? = try {
-        val command = if (LatexDistribution.isMiktexAvailable) {
+        val command = if (LatexSdk.isMiktexAvailable) {
             // Don't install the package if not present
             "miktex-kpsewhich --miktex-disable-installer $arg"
         }

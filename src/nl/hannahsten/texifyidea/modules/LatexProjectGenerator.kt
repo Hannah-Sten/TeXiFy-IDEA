@@ -14,7 +14,7 @@ import com.intellij.platform.DirectoryProjectGenerator
 import com.intellij.platform.DirectoryProjectGeneratorBase
 import com.intellij.platform.ProjectGeneratorPeer
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.settings.LatexSdk
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.io.File
 
@@ -65,7 +65,7 @@ class LatexProjectGenerator :
             rootModel.contentEntries.firstOrNull()?.apply {
                 addSourceFolder(findOrCreate(baseDir, "src", module), false)
                 // TeX Live cannot handle an auxil/ folder
-                if (LatexDistribution.isMiktexAvailable) {
+                if (LatexSdk.isMiktexAvailable) {
                     addExcludeFolder(findOrCreate(baseDir, "auxil", module))
                 }
                 addExcludeFolder(findOrCreate(baseDir, "out", module))

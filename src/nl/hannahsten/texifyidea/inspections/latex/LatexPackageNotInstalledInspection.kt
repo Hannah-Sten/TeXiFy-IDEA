@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.settings.LatexSdk
 import nl.hannahsten.texifyidea.util.*
 
 /**
@@ -40,13 +40,13 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     }
 
     override fun isEnabledByDefault(): Boolean {
-        return LatexDistribution.isTexliveAvailable
+        return LatexSdk.isTexliveAvailable
     }
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
-        if (LatexDistribution.isTexliveAvailable && SystemEnvironment.isTlmgrInstalled) {
+        if (LatexSdk.isTexliveAvailable && SystemEnvironment.isTlmgrInstalled) {
             val installedPackages = TexLivePackages.packageList
             val customPackages = LatexDefinitionIndex.getCommandsByName(
                 "\\ProvidesPackage", file.project,

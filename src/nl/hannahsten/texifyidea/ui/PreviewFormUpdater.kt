@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution.Companion.getLatexExecutableName
+import nl.hannahsten.texifyidea.settings.LatexSdk.Companion.getLatexExecutableName
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.File
 import java.io.IOException
