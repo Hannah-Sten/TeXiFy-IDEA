@@ -4,9 +4,11 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
-import nl.hannahsten.texifyidea.settings.TexifyProjectSettings
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 /**
  * Execute the given action as write command.
@@ -22,16 +24,19 @@ fun <T> writeCommand(project: Project, action: () -> T) {
 }
 
 /**
- * Set the TeXiFy Project Settings and the Latex Distribution in a way to ensure either unicode support, or no unicode support.
+ * Set the selected compiler in the selected run configuration and the Latex Distribution in a way to ensure either unicode
+ * support, or no unicode support.
  */
 fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
+    mockkStatic("nl.hannahsten.texifyidea.util.ProjectsKt")
     if (enabled) {
+        mockkStatic(LatexRunConfiguration::class)
         // Unicode is always supported in lualatex.
-        TexifyProjectSettings.getInstance(project).compilerCompatibility = LatexCompiler.LUALATEX
+        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.LUALATEX
     }
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
-        TexifyProjectSettings.getInstance(project).compilerCompatibility = LatexCompiler.PDFLATEX
+        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.PDFLATEX
         mockkObject(LatexDistribution)
         every { LatexDistribution.texliveVersion } returns 2017
     }

@@ -42,7 +42,7 @@ object EvinceInverseSearchListener {
                 ?.firstOrNull()
                 ?.toInt()
             if (majorVersion != null && majorVersion < 3) {
-                Notification("EvinceInverseSearchListener", "Old Evince version found", "Please update Evince to at least version 3 to use forward/backward search", NotificationType.ERROR).notify(project)
+                Notification("LaTeX", "Old Evince version found", "Please update Evince to at least version 3 to use forward/backward search", NotificationType.ERROR).notify(project)
                 return
             }
         }

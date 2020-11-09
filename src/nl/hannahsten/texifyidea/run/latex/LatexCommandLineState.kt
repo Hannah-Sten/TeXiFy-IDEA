@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Magic.Package
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -190,7 +189,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      */
     private fun addOpenViewerListener(handler: ProcessHandler, focusAllowed: Boolean = true) {
         // First check if the user specified a custom viewer, if not then try other supported viewers
-
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
 
             // Split user command on spaces, then replace {pdf} if needed
@@ -216,12 +214,14 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
         }
+        // Do nothing if the user selected that they do not want a viewer to open.
+        else if (runConfig.pdfViewer == PdfViewer.NONE) return
         else if (runConfig.sumatraPath != null || isSumatraAvailable) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }
-        else if (TexifySettings.getInstance().pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR, PdfViewer.ZATHURA, PdfViewer.SKIM)) {
-            ViewerForwardSearch(TexifySettings.getInstance().pdfViewer).execute(handler, runConfig, environment, focusAllowed)
+        else if (runConfig.pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR, PdfViewer.ZATHURA, PdfViewer.SKIM)) {
+            ViewerForwardSearch(runConfig.pdfViewer ?: PdfViewer.NONE).execute(handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

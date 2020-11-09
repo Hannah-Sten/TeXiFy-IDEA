@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
-import java.io.File
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -137,7 +136,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
         // Recall that \ is a file separator on Windows
         val newText = if (elementNameIsJustFilename) {
-            oldNode?.text?.trimStart('\\')?.replaceAfterLast(File.separator, "$newElementName}", default.trimStart('\\'))
+            oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newElementName}", default.trimStart('\\'))
                 ?.let { "\\" + it } ?: default
         }
         else {

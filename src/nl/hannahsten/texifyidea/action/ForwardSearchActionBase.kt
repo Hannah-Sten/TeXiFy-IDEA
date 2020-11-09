@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
     name = "_ForwardSearch",
@@ -24,6 +24,6 @@ open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = TexifySettings.getInstance().pdfViewer == viewer
+        e.presentation.isEnabledAndVisible = e.project?.selectedRunConfig()?.pdfViewer == viewer
     }
 }

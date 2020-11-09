@@ -5,7 +5,6 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.Magic
 import java.awt.Component
 import java.awt.FlowLayout
@@ -29,7 +28,6 @@ class TexifyConfigurable : SearchableConfigurable {
     private lateinit var showPackagesInStructureView: JBCheckBox
     private lateinit var automaticQuoteReplacement: ComboBox<String>
     private lateinit var missingLabelMinimumLevel: ComboBox<LatexRegularCommand>
-    private lateinit var pdfViewer: ComboBox<String>
 
     override fun getId() = "TexifyConfigurable"
 
@@ -51,7 +49,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
                     automaticQuoteReplacement = addSmartQuotesOptions("Off", "TeX ligatures", "TeX commands", "csquotes")
                     missingLabelMinimumLevel = addMissingLabelMinimumLevel()
-                    pdfViewer = addPdfViewerOptions()
+                    addPdfViewerText()
                 }
             )
         }
@@ -88,16 +86,13 @@ class TexifyConfigurable : SearchableConfigurable {
         return list
     }
 
-    private fun JPanel.addPdfViewerOptions(): ComboBox<String> {
-        val availableViewers = PdfViewer.availableSubset().map { it.displayName }.toTypedArray()
-        val list = ComboBox(availableViewers)
+    private fun JPanel.addPdfViewerText() {
+        val oldPdfViewer = TexifySettings.getInstance().pdfViewer
         add(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(JBLabel("PDF viewer: "))
-                add(list)
+                add(JLabel("<html>PDF viewer: This setting has been moved to the run configuration (template). See the wiki for details.<br/>Old PDF viewer: $oldPdfViewer <br/> See for example (IntelliJ) File > New Projects Settings > Run Configuration Templates, or Edit Configurations > Templates > LaTeX for the current project.</html>"))
             }
         )
-        return list
     }
 
     private fun JPanel.addCheckbox(message: String): JBCheckBox {
@@ -120,8 +115,7 @@ class TexifyConfigurable : SearchableConfigurable {
             includeBackslashInSelection.isSelected != settings.includeBackslashInSelection ||
             showPackagesInStructureView.isSelected != settings.showPackagesInStructureView ||
             automaticQuoteReplacement.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-            missingLabelMinimumLevel.selectedItem != settings.missingLabelMinimumLevel ||
-            pdfViewer.selectedIndex != settings.pdfViewer.ordinal
+            missingLabelMinimumLevel.selectedItem != settings.missingLabelMinimumLevel
     }
 
     override fun apply() {
@@ -135,7 +129,6 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.showPackagesInStructureView = showPackagesInStructureView.isSelected
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement.selectedIndex]
         settings.missingLabelMinimumLevel = missingLabelMinimumLevel.selectedItem as LatexRegularCommand
-        settings.pdfViewer = PdfViewer.availableSubset()[pdfViewer.selectedIndex]
     }
 
     override fun reset() {
@@ -149,6 +142,5 @@ class TexifyConfigurable : SearchableConfigurable {
         showPackagesInStructureView.isSelected = settings.showPackagesInStructureView
         automaticQuoteReplacement.selectedIndex = settings.automaticQuoteReplacement.ordinal
         missingLabelMinimumLevel.selectedItem = settings.missingLabelMinimumLevel
-        pdfViewer.selectedIndex = PdfViewer.availableSubset().indexOf(settings.pdfViewer)
     }
 }

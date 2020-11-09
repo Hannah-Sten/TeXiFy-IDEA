@@ -23,12 +23,12 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable
-import nl.hannahsten.texifyidea.settings.TexifyProjectSettings
 import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
 import java.util.regex.Pattern
@@ -66,7 +66,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
          */
         internal fun unicodeEnabled(file: PsiFile): Boolean {
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
-            val compilerCompat = TexifyProjectSettings.getInstance(file.project).compilerCompatibility
+            val compilerCompat = file.project.selectedRunConfig()?.compiler ?: return false
             if (compilerCompat == LatexCompiler.LUALATEX || compilerCompat == LatexCompiler.XELATEX || LatexDistribution.texliveVersion >= 2018) {
                 return true
             }

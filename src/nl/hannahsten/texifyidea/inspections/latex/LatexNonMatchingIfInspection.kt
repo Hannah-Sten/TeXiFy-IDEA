@@ -59,9 +59,9 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     cmd,
-                    "If statement is not closed",
+                    "If statement should probably be closed with \\fi",
                     Magic.General.noQuickFix,
-                    ProblemHighlightType.GENERIC_ERROR,
+                    ProblemHighlightType.WARNING,
                     isOntheFly
                 )
             )

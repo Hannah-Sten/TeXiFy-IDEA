@@ -24,14 +24,16 @@ enum class PdfViewer(
     ZATHURA("zathura", "Zathura", ZathuraConversation),
     SKIM("skim", "Skim", SkimConversation),
     SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
-    OTHER("other", "Custom PDF viewer", null);
+    NONE("", "No PDF viewer", null);
+
+    fun isAvailable(): Boolean = availability[this] ?: false
 
     /**
      * Check if the viewer is installed and available from the path.
      */
-    fun isAvailable(): Boolean {
-        // Using a custom PDF viewer should always be an option.
-        return if (this == OTHER) {
+    fun checkAvailability(): Boolean {
+        // Using no PDF viewer should always be an option.
+        return if (this == NONE) {
             true
         }
         else if (SystemInfo.isWindows && this == SUMATRA) {
@@ -54,7 +56,15 @@ enum class PdfViewer(
         }
     }
 
+    override fun toString(): String = displayName
+
     companion object {
+        private val availability: Map<PdfViewer, Boolean> by lazy {
+            values().associateWith {
+                it.checkAvailability()
+            }
+        }
+
         fun availableSubset(): List<PdfViewer> = values().filter { it.isAvailable() }
         fun firstAvailable(): PdfViewer = availableSubset().first()
     }

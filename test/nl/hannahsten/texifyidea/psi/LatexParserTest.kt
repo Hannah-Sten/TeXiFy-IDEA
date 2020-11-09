@@ -93,7 +93,10 @@ class LatexParserTest : BasePlatformTestCase() {
             \verb"}$"
             \verb|%md|
             \verb*|$|
+            \verb$|$
+            \verb-afdsa$-
             \lstinline|$|
+            \lstinline{$}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -149,6 +152,29 @@ class LatexParserTest : BasePlatformTestCase() {
             \begin{lstlisting}[language={[x86masm]Assembler},label={lst:lstlisting}]
                 push   %rbp
             \end{lstlisting}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testAlgorithm2e() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \documentclass[11pt]{article}
+            \usepackage{algorithm2e}
+            \begin{document}
+                \begin{algorithm*}
+                    \uIf{condition}{
+                        \If{condition}{
+                            continue
+                        }
+                    }
+                    \Else{
+                        continue
+                    }
+                \end{algorithm*}
+            \end{document}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

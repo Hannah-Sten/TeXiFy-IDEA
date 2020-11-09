@@ -59,7 +59,7 @@ object AutoCompileState {
     private fun scheduleCompilation() {
 
         if (project == null) {
-            Notification("AutoCompileState", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
+            Notification("LaTeX", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
 
             return
         }
@@ -72,7 +72,7 @@ object AutoCompileState {
         val runConfigSettings = RunManager.getInstance(project!!).selectedConfiguration
 
         if (runConfigSettings?.configuration !is LatexRunConfiguration) {
-            Notification("AutoCompileState", "Could not auto-compile", "Please make sure you have a valid LaTeX run configuration selected.", NotificationType.WARNING).notify(null)
+            Notification("LaTeX", "Could not auto-compile", "Please make sure you have a valid LaTeX run configuration selected.", NotificationType.WARNING).notify(null)
             return
         }
 
