@@ -92,7 +92,7 @@ class SdkSettingsStep(
                 continue
             }
             val bestType = best.sdkType
-            //it is in theory possible to have several SDK types here, let's just pick the first lucky type for now
+            // it is in theory possible to have several SDK types here, let's just pick the first lucky type for now
             if (bestType === jdkType && bestType.versionComparator().compare(best, jdk) < 0) {
                 best = jdk
             }
@@ -149,7 +149,7 @@ class SdkSettingsStep(
             myModel.apply(null, true)
         }
         catch (e: ConfigurationException) {
-            //IDEA-98382 We should allow Next step if user has wrong SDK
+            // IDEA-98382 We should allow Next step if user has wrong SDK
             if (Messages.showDialog(
                     e.message + "\n\nDo you want to proceed?",
                     e.title,
