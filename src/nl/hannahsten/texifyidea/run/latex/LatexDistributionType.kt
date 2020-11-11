@@ -3,13 +3,15 @@ package nl.hannahsten.texifyidea.run.latex
 import nl.hannahsten.texifyidea.settings.LatexSdk
 
 /**
+ * Options for the run configuration.
  * See [LatexSdk].
  */
 enum class LatexDistributionType(val displayName: String) {
     TEXLIVE("TeX Live"),
     MIKTEX("MiKTeX"),
     WSL_TEXLIVE("TeX Live using WSL"),
-    DOCKER_MIKTEX("Dockerized MiKTeX");
+    DOCKER_MIKTEX("Dockerized MiKTeX"),
+    PROJECT_SDK("Use project SDK");
 
     fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
 

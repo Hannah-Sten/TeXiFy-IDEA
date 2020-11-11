@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import nl.hannahsten.texifyidea.settings.LatexSdk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

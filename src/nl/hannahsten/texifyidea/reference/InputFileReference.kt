@@ -44,6 +44,9 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
+        // todo debug
+        LatexSdk.getProjectSDK(element.project)
+
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = mutableListOf<String>()
 

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings
 
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.roots.ProjectRootManager
@@ -34,6 +35,50 @@ sealed class LatexSdk(name: String) : SdkType(name) {
     // todo refactor to use sdk
     companion object {
 
+        /**
+         * If a LaTeX SDK is selected as project SDK, return that one.
+         * If no project SDK is set, set a LaTeX SDK.
+         * If a different SDK is selected, leave it alone and return null.
+         */
+        fun getProjectSDK(project: Project): LatexSdk? {
+            val sdk = ProjectRootManager.getInstance(project).projectSdk
+            if (sdk == null) {
+                // If a LaTeX SDK is available, select it
+                getDefaultSDK(project)
+            }
+            return null
+        }
+
+        /**
+         * Assuming that no LaTeX project SDK is known, from the available LaTeX SDK's, select the default one.
+         * Creating an SDK in the background seems to be problematic so we don't do that.
+         *
+         * @return null if no LaTeX SDK could be found.
+         */
+        private fun getDefaultSDK(project: Project): LatexSdk? {
+            val latexSdks = ProjectJdkTable.getInstance().allJdks.filterIsInstance<LatexSdk>().toMutableList()
+            if (latexSdks.isEmpty()) {
+                // todo check what happens if pdflatex not in path
+                val sdk = ProjectJdkTable.getInstance().createSdk(defaultLatexSdkType.name, defaultLatexSdkType)
+                sdk.sdkModificator.homePath = defaultLatexSdkType.suggestHomePaths().firstOrNull()
+                if (ProjectRootManager.getInstance(project).projectSdk == null) {
+//                    runInEdt {
+                        ProjectRootManager.getInstance(project).projectSdk = sdk
+//                    }
+                }
+//                latexSdks.add( as LatexSdk)
+                // We don't create other available SDKs for now, as they are suggested by the UI ('detected SDKs') anyway
+            }
+            if (latexSdks.size <= 1) {
+                return latexSdks.firstOrNull()
+            }
+            // Order by default preference
+            val orderedList = latexSdks.filterIsInstance<MiktexSdk>() +
+                    latexSdks.filterIsInstance<TexliveSdk>() +
+                    latexSdks.filterIsInstance<DockerSdk>()
+            return orderedList.firstOrNull()
+        }
+
         private val isPdflatexInPath = "pdflatex --version".runCommand()?.contains("pdfTeX") == true
 
         private val pdflatexVersionText: String by lazy {
@@ -53,6 +98,18 @@ sealed class LatexSdk(name: String) : SdkType(name) {
                 isTexliveAvailable -> LatexDistributionType.TEXLIVE
                 defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
                 else -> LatexDistributionType.TEXLIVE
+            }
+        }
+
+        /**
+         * Guess the LaTeX sdk type that the user probably is using / wants to use as default.
+         */
+        private val defaultLatexSdkType: LatexSdk by lazy {
+            when {
+//                isMiktexAvailable -> LatexDistributionType.MIKTEX
+                isTexliveAvailable -> TexliveSdk()
+//                defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
+                else -> TexliveSdk()
             }
         }
 
@@ -146,7 +203,7 @@ sealed class LatexSdk(name: String) : SdkType(name) {
          * Parse the output of pdflatex --version and return the distribution.
          * Assumes the distribution name is in brackets at the end of the first line.
          */
-        private fun parsePdflatexOutput(output: String): String {
+        fun parsePdflatexOutput(output: String): String {
             val firstLine = output.split("\n")[0]
             val splitLine = firstLine.split("(", ")")
 
@@ -236,5 +293,15 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
             ?.filter { it.isNotBlank() }
             ?.get(1)
         return "Docker MiKTeX ($tag)"
+    }
+}
+
+class MiktexSdk : LatexSdk("MiKTeX SDK") {
+    override fun suggestHomePath(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun isValidSdkHome(path: String?): Boolean {
+        TODO("Not yet implemented")
     }
 }

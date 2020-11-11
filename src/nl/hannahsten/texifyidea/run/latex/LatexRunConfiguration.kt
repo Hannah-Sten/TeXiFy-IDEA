@@ -110,7 +110,7 @@ class LatexRunConfiguration constructor(
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
-    var latexDistribution: LatexDistributionType = LatexDistributionType.TEXLIVE
+    var latexDistribution = LatexDistributionType.PROJECT_SDK // todo disallow selecting 'use project sdk' if a non-latex project sdk is selected
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
