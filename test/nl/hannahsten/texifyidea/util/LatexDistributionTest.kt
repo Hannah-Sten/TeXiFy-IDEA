@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -27,7 +28,7 @@ class LatexDistributionTest {
             Compiled with xpdf version 4.01
             """.trimIndent()
 
-        assertEquals("TeX Live 2019", LatexSdk.parsePdflatexOutput(output))
+        assertEquals("TeX Live 2019", LatexSdkUtil.parsePdflatexOutput(output))
     }
 
     @Test
@@ -53,6 +54,6 @@ class LatexDistributionTest {
             compiled with zlib version 1.2.11; using 1.2.11
             """.trimIndent()
 
-        assertEquals("MiKTeX 2.9.6880 64-bit", LatexSdk.parsePdflatexOutput(output))
+        assertEquals("MiKTeX 2.9.6880 64-bit", LatexSdkUtil.parsePdflatexOutput(output))
     }
 }

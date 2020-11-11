@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.compiler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 
 /**
  * @author Sten Wessel
@@ -24,7 +24,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
             runConfig.compilerArguments?.let { addAll(it.split("""\s+""".toRegex())) }
 
             // Include files from auxiliary directory on Windows
-            if (LatexSdk.isMiktexAvailable) {
+            if (LatexSdkUtil.isMiktexAvailable) {
                 add("-include-directory=${runConfig.mainFile?.parent?.path ?: ""}")
                 addAll(moduleRoots.map { "-include-directory=${it.path}" })
             }

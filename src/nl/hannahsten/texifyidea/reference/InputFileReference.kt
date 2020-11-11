@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvi
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
@@ -43,9 +43,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
      */
     fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
-
-        // todo debug
-        LatexSdk.getProjectSDK(element.project)
 
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
         val searchPaths = mutableListOf<String>()
@@ -88,7 +85,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         }
 
         // Try content roots
-        if (targetFile == null && LatexSdk.isMiktexAvailable) {
+        if (targetFile == null && LatexSdkUtil.isMiktexAvailable) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
                 targetFile = moduleRoot.findFile(processedKey, extensions)
                 if (targetFile != null) break

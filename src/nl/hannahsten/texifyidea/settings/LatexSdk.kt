@@ -1,14 +1,9 @@
 package nl.hannahsten.texifyidea.settings
 
-import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.*
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.SystemInfo
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil.getPdflatexParentPath
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
-import java.io.File
 
 /**
  * Represents the location of the LaTeX installation.
@@ -30,191 +25,6 @@ sealed class LatexSdk(name: String) : SdkType(name) {
         val modificator = sdk.sdkModificator
         modificator.versionString = getVersionString(sdk)
         modificator.commitChanges() // save
-    }
-
-    // todo refactor to use sdk
-    companion object {
-
-        /**
-         * If a LaTeX SDK is selected as project SDK, return that one.
-         * If no project SDK is set, set a LaTeX SDK.
-         * If a different SDK is selected, leave it alone and return null.
-         */
-        fun getProjectSDK(project: Project): LatexSdk? {
-            val sdk = ProjectRootManager.getInstance(project).projectSdk
-            if (sdk == null) {
-                // If a LaTeX SDK is available, select it
-                getDefaultSDK(project)
-            }
-            return null
-        }
-
-        /**
-         * Assuming that no LaTeX project SDK is known, from the available LaTeX SDK's, select the default one.
-         * Creating an SDK in the background seems to be problematic so we don't do that.
-         *
-         * @return null if no LaTeX SDK could be found.
-         */
-        private fun getDefaultSDK(project: Project): LatexSdk? {
-            val latexSdks = ProjectJdkTable.getInstance().allJdks.filterIsInstance<LatexSdk>().toMutableList()
-            if (latexSdks.isEmpty()) {
-                // todo check what happens if pdflatex not in path
-                val sdk = ProjectJdkTable.getInstance().createSdk(defaultLatexSdkType.name, defaultLatexSdkType)
-                sdk.sdkModificator.homePath = defaultLatexSdkType.suggestHomePaths().firstOrNull()
-                if (ProjectRootManager.getInstance(project).projectSdk == null) {
-//                    runInEdt {
-                        ProjectRootManager.getInstance(project).projectSdk = sdk
-//                    }
-                }
-//                latexSdks.add( as LatexSdk)
-                // We don't create other available SDKs for now, as they are suggested by the UI ('detected SDKs') anyway
-            }
-            if (latexSdks.size <= 1) {
-                return latexSdks.firstOrNull()
-            }
-            // Order by default preference
-            val orderedList = latexSdks.filterIsInstance<MiktexSdk>() +
-                    latexSdks.filterIsInstance<TexliveSdk>() +
-                    latexSdks.filterIsInstance<DockerSdk>()
-            return orderedList.firstOrNull()
-        }
-
-        private val isPdflatexInPath = "pdflatex --version".runCommand()?.contains("pdfTeX") == true
-
-        private val pdflatexVersionText: String by lazy {
-            getDistribution()
-        }
-
-        private val dockerImagesText: String by lazy {
-            runCommand("docker", "image", "ls") ?: ""
-        }
-
-        /**
-         * Guess the LaTeX distribution that the user probably is using / wants to use.
-         */
-        val defaultLatexDistribution: LatexDistributionType by lazy {
-            when {
-                isMiktexAvailable -> LatexDistributionType.MIKTEX
-                isTexliveAvailable -> LatexDistributionType.TEXLIVE
-                defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
-                else -> LatexDistributionType.TEXLIVE
-            }
-        }
-
-        /**
-         * Guess the LaTeX sdk type that the user probably is using / wants to use as default.
-         */
-        private val defaultLatexSdkType: LatexSdk by lazy {
-            when {
-//                isMiktexAvailable -> LatexDistributionType.MIKTEX
-                isTexliveAvailable -> TexliveSdk()
-//                defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
-                else -> TexliveSdk()
-            }
-        }
-
-        /**
-         * Whether the user is using MikTeX or not.
-         * This value is lazy, so only computed when first accessed, because it is unlikely that the user will change LaTeX distribution while using IntelliJ.
-         */
-        val isMiktexAvailable: Boolean by lazy {
-            pdflatexVersionText.contains("MiKTeX")
-        }
-
-        /**
-         * Whether the user is using TeX Live or not.
-         * This value is only computed once.
-         */
-        val isTexliveAvailable: Boolean by lazy {
-            pdflatexVersionText.contains("TeX Live")
-        }
-
-        private val isDockerMiktexAvailable: Boolean by lazy {
-            dockerImagesText.contains("miktex")
-        }
-
-        private val isWslTexliveAvailable: Boolean by lazy {
-            SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version")?.contains("pdfTeX") == true
-        }
-
-        /**
-         * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
-         * In this case we assume the user wants to use Dockerized MiKTeX.
-         */
-        private fun defaultIsDockerMiktex() = (!isMiktexAvailable && !isTexliveAvailable && dockerImagesText.contains("miktex"))
-
-        fun isInstalled(type: LatexDistributionType): Boolean {
-            if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
-            if (type == LatexDistributionType.TEXLIVE && isTexliveAvailable) return true
-            if (type == LatexDistributionType.DOCKER_MIKTEX && isDockerMiktexAvailable) return true
-            if (type == LatexDistributionType.WSL_TEXLIVE && isWslTexliveAvailable) return true
-            return false
-        }
-
-        /**
-         * Returns year of texlive installation, 0 if it is not texlive.
-         * Assumes the pdflatex version output contains something like (TeX Live 2019).
-         */
-        val texliveVersion: Int by lazy {
-            if (!isTexliveAvailable) {
-                0
-            }
-            else {
-                val startIndex = pdflatexVersionText.indexOf("TeX Live")
-                try {
-                    pdflatexVersionText.substring(startIndex + "TeX Live ".length, startIndex + "TeX Live ".length + "2019".length).toInt()
-                }
-                catch (e: NumberFormatException) {
-                    0
-                }
-            }
-        }
-
-        /**
-         * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
-         * and if needed (if not in path) prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
-         *
-         * @param executable Name of a program, e.g. pdflatex
-         */
-        fun getLatexExecutableName(executable: String, project: Project): String {
-            if (isPdflatexInPath) {
-                return executable
-            }
-            // Get base path of LaTeX distribution
-            val home = ProjectRootManager.getInstance(project).projectSdk?.homePath ?: return executable
-            val basePath = getPdflatexParentPath(home)
-            return "$basePath/$executable"
-        }
-
-        /**
-         * Given the path to the LaTeX home, find the parent path of the executables, e.g. /bin/x86_64-linux/
-         */
-        fun getPdflatexParentPath(homePath: String) = File("$homePath/bin").listFiles()?.firstOrNull()?.path
-
-        /**
-         * Find the full name of the distribution in use, e.g. TeX Live 2019.
-         */
-        private fun getDistribution(): String {
-            // Could be improved by using the (project-level) LaTeX SDK if pdflatex is not in PATH
-            return parsePdflatexOutput(runCommand("pdflatex", "--version") ?: "")
-        }
-
-        /**
-         * Parse the output of pdflatex --version and return the distribution.
-         * Assumes the distribution name is in brackets at the end of the first line.
-         */
-        fun parsePdflatexOutput(output: String): String {
-            val firstLine = output.split("\n")[0]
-            val splitLine = firstLine.split("(", ")")
-
-            // Get one-to-last entry, as the last one will be empty after the closing )
-            return if (splitLine.size >= 2) {
-                splitLine[splitLine.size - 2]
-            }
-            else {
-                ""
-            }
-        }
     }
 }
 
@@ -283,7 +93,7 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         return "$path/docker image ls".runCommand()?.contains("miktex") ?: false
     }
 
-    override fun getVersionString(sdkHome: String?): String? {
+    override fun getVersionString(sdkHome: String?): String {
         // todo use cached output
         // Get the tag of the first docker image with 'miktex' in the name
         val tag = "$sdkHome/docker image ls".runCommand()

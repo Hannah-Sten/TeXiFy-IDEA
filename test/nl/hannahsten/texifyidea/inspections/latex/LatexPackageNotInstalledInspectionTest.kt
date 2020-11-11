@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.TexLivePackages
 import nl.hannahsten.texifyidea.util.runCommand
@@ -45,8 +45,8 @@ class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPac
     }
 
     private fun texliveWithTlmgr(texlive: Boolean = true, tlmgr: Boolean = true) {
-        mockkObject(LatexSdk)
-        every { LatexSdk.isTexliveAvailable } returns texlive
+        mockkObject(LatexSdkUtil)
+        every { LatexSdkUtil.isTexliveAvailable } returns texlive
 
         mockkObject(SystemEnvironment)
         every { SystemEnvironment.isTlmgrInstalled } returns tlmgr

@@ -30,7 +30,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -472,8 +472,8 @@ class LatexRunConfiguration constructor(
         outputFormat = Format.PDF
     }
 
-    fun setDefaultDistribution() {
-        latexDistribution = LatexSdk.defaultLatexDistribution
+    fun setDefaultDistribution(project: Project) {
+        latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
     }
 
     /**

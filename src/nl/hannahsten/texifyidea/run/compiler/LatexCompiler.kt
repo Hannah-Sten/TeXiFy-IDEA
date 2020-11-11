@@ -4,9 +4,9 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.settings.LatexSdk.Companion.getLatexExecutableName
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil.getLatexExecutableName
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
