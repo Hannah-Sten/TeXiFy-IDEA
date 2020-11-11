@@ -28,7 +28,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         sourceElement: Ref<PsiElement>
     ): Boolean {
         val location = context.location ?: return false
-        val container = getEntryPointContainer(location) ?: return false
+        val container = location.psiElement.containingFile ?: return false
         val mainFile = container.virtualFile ?: return false
 
         // Only activate on .tex files.
@@ -56,15 +56,6 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
         runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
         return true
-    }
-
-    private fun getEntryPointContainer(location: Location<*>?): PsiFile? {
-        if (location == null) {
-            return null
-        }
-
-        val locationElement = location.psiElement
-        return locationElement.containingFile
     }
 
     override fun isConfigurationFromContext(
