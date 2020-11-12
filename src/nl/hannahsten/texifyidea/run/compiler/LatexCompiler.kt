@@ -36,12 +36,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-directory=$outputPath")
 
             // -aux-directory only exists on MiKTeX
-            if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
             }
 
             // Prepend root paths to the input search path
-            if (runConfig.latexDistribution.isMiktex()) {
+            if (runConfig.getLatexDistributionType().isMiktex()) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -111,7 +111,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("-output-directory=$outputPath")
 
-            if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
             }
 
@@ -145,12 +145,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("-output-directory=$outputPath")
 
-            if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
             }
 
             // Prepend root paths to the input search path
-            if (runConfig.latexDistribution.isMiktex()) {
+            if (runConfig.getLatexDistributionType().isMiktex()) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -220,7 +220,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      * Convert Windows paths to WSL paths.
      */
     private fun String.toPath(runConfig: LatexRunConfiguration): String =
-        if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
             "wsl wslpath -a '$this'".runCommand() ?: this
         }
         else this
@@ -240,7 +240,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
-        val moduleRoots = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+        val moduleRoots = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
             rootManager.contentSourceRoots
         }
         else {
@@ -250,14 +250,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         // If we used /miktex/work/out, an out directory would appear in the src folder on the host system
         val dockerOutputDir = "/miktex/out"
         val dockerAuxilDir = "/miktex/auxil"
-        val outputPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+        val outputPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
             runConfig.outputPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
         else {
             dockerOutputDir
         }
 
-        val auxilPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+        val auxilPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
             runConfig.auxilPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
         else {
@@ -272,11 +272,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots
         )
 
-        if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
             command = mutableListOf("bash", "-ic", GeneralCommandLine(command).commandLineString)
         }
 
-        if (runConfig.latexDistribution == LatexDistributionType.DOCKER_MIKTEX) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
             createDockerCommand(runConfig, dockerAuxilDir, dockerOutputDir, mainFile, command)
         }
 
@@ -287,7 +287,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 .forEach { command.add(it) }
         }
 
-        if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
             command[command.size - 1] = command.last() + " ${mainFile.path.toPath(runConfig)}"
         }
         else {
@@ -303,7 +303,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         "docker volume create --name miktex".runCommand()
 
         val parameterList = mutableListOf(
-            "docker",
+            "docker", // todo get executable name
             "run",
             "--rm",
             "-v",

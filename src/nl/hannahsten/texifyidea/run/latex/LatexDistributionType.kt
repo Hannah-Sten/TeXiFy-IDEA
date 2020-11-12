@@ -7,6 +7,8 @@ import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 /**
  * Options for the run configuration.
  * See [LatexSdk].
+ * This enum is still required, for example to support non-IntelliJ IDEs, but also to allow overriding the distribution type
+ * when for example a different project SDK needs to be selected for a different language to work.
  */
 enum class LatexDistributionType(val displayName: String) {
     TEXLIVE("TeX Live"),

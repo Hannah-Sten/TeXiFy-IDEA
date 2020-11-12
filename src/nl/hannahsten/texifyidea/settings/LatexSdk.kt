@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.settings
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.*
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.LatexSdkUtil.getPdflatexParentPath
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
@@ -26,12 +28,28 @@ sealed class LatexSdk(name: String) : SdkType(name) {
         modificator.versionString = getVersionString(sdk)
         modificator.commitChanges() // save
     }
+
+    /**
+     * Interface between this and [LatexDistributionType], which is used in the run configuration.
+     */
+    abstract fun getLatexDistributionType(): LatexDistributionType
+
+    /**
+     * If the executable is not in PATH, use the home path of the SDK to find it and return the full path to the executable.
+     */
+    abstract fun getExecutableName(executable: String, project: Project): String
 }
 
 /**
  * TeX Live.
  */
 class TexliveSdk : LatexSdk("TeX Live SDK") {
+
+    companion object {
+        private val isPdflatexInPath: Boolean by lazy {
+            "pdflatex --version".runCommand()?.contains("pdfTeX") == true
+        }
+    }
 
     override fun suggestHomePath(): String {
         // This method should work fast and allow running from the EDT thread.
@@ -64,6 +82,8 @@ class TexliveSdk : LatexSdk("TeX Live SDK") {
         return "$parent/pdflatex --version".runCommand()?.contains("pdfTeX") == true
     }
 
+    override fun getLatexDistributionType() = LatexDistributionType.TEXLIVE
+
     override fun getVersionString(sdkHome: String?): String {
         return "TeX Live " + sdkHome?.split("/")?.lastOrNull { it.isNotBlank() }
     }
@@ -72,9 +92,39 @@ class TexliveSdk : LatexSdk("TeX Live SDK") {
         if (sdk.homePath == null) return null
         return sdk.homePath + ""
     }
+
+    /**
+     * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
+     * and if needed (if not in path) prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
+     *
+     * @param executable Name of a program, e.g. pdflatex
+     */
+    override fun getExecutableName(executable: String, project: Project): String {
+        if (isPdflatexInPath) {
+            return executable
+        }
+        // Get base path of LaTeX distribution
+        val home = LatexSdkUtil.getLatexProjectSdk(project)?.homePath ?: return executable
+        val basePath = getPdflatexParentPath(home)
+        return "$basePath/$executable"
+    }
 }
 
 class DockerSdk : LatexSdk("LaTeX Docker SDK") {
+
+    companion object {
+        val isInPath: Boolean by lazy {
+            "docker --version".runCommand()?.contains("Docker version") == true
+        }
+
+        private val dockerImagesText: String by lazy {
+            runCommand("docker", "image", "ls") ?: ""
+        }
+
+        val isAvailable: Boolean by lazy {
+            dockerImagesText.contains("miktex")
+        }
+    }
 
     override fun suggestHomePath(): String {
         return "/usr/bin"
@@ -93,6 +143,8 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         return "$path/docker image ls".runCommand()?.contains("miktex") ?: false
     }
 
+    override fun getLatexDistributionType() = LatexDistributionType.DOCKER_MIKTEX
+
     override fun getVersionString(sdkHome: String?): String {
         // todo use cached output
         // Get the tag of the first docker image with 'miktex' in the name
@@ -104,9 +156,19 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
             ?.get(1)
         return "Docker MiKTeX ($tag)"
     }
+
+    override fun getExecutableName(executable: String, project: Project): String {
+        TODO("Not yet implemented")
+    }
 }
 
 class MiktexSdk : LatexSdk("MiKTeX SDK") {
+    override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
+
+    override fun getExecutableName(executable: String, project: Project): String {
+        TODO("Not yet implemented")
+    }
+
     override fun suggestHomePath(): String? {
         TODO("Not yet implemented")
     }

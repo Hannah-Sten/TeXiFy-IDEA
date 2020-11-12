@@ -10,14 +10,8 @@ import java.io.File
 
 object LatexSdkUtil {
 
-    private val isPdflatexInPath = "pdflatex --version".runCommand()?.contains("pdfTeX") == true
-
     private val pdflatexVersionText: String by lazy {
         getDistribution()
-    }
-
-    private val dockerImagesText: String by lazy {
-        runCommand("docker", "image", "ls") ?: ""
     }
 
     /**
@@ -36,10 +30,6 @@ object LatexSdkUtil {
         pdflatexVersionText.contains("TeX Live")
     }
 
-    private val isDockerMiktexAvailable: Boolean by lazy {
-        dockerImagesText.contains("miktex")
-    }
-
     private val isWslTexliveAvailable: Boolean by lazy {
         SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version")?.contains("pdfTeX") == true
     }
@@ -49,13 +39,13 @@ object LatexSdkUtil {
      * In this case we assume the user wants to use Dockerized MiKTeX.
      */
     private fun defaultIsDockerMiktex() =
-        (!isMiktexAvailable && !isTexliveAvailable && dockerImagesText.contains("miktex"))
+        (!isMiktexAvailable && !isTexliveAvailable && DockerSdk.isAvailable)
 
     fun isAvailable(type: LatexDistributionType, project: Project): Boolean {
-        if (type == LatexDistributionType.PROJECT_SDK && getLatexProjectSDK(project) != null) return true
+        if (type == LatexDistributionType.PROJECT_SDK && getLatexProjectSdk(project) != null) return true
         if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
         if (type == LatexDistributionType.TEXLIVE && isTexliveAvailable) return true
-        if (type == LatexDistributionType.DOCKER_MIKTEX && isDockerMiktexAvailable) return true
+        if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.isAvailable) return true
         if (type == LatexDistributionType.WSL_TEXLIVE && isWslTexliveAvailable) return true
         return false
     }
@@ -80,22 +70,6 @@ object LatexSdkUtil {
                 0
             }
         }
-    }
-
-    /**
-     * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
-     * and if needed (if not in path) prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
-     *
-     * @param executable Name of a program, e.g. pdflatex
-     */
-    fun getLatexExecutableName(executable: String, project: Project): String {
-        if (isPdflatexInPath) {
-            return executable
-        }
-        // Get base path of LaTeX distribution
-        val home = getLatexProjectSDK(project)?.homePath ?: return executable
-        val basePath = getPdflatexParentPath(home)
-        return "$basePath/$executable"
     }
 
     /**
@@ -133,7 +107,7 @@ object LatexSdkUtil {
      */
     fun getDefaultLatexDistributionType(project: Project): LatexDistributionType {
         return when {
-            getLatexProjectSDK(project) != null -> LatexDistributionType.PROJECT_SDK
+            getLatexProjectSdk(project) != null -> LatexDistributionType.PROJECT_SDK
             isMiktexAvailable -> LatexDistributionType.MIKTEX
             isTexliveAvailable -> LatexDistributionType.TEXLIVE
             defaultIsDockerMiktex() -> LatexDistributionType.DOCKER_MIKTEX
@@ -144,11 +118,18 @@ object LatexSdkUtil {
     /**
      * If a LaTeX SDK is selected as project SDK, return it, otherwise return null.
      */
-    fun getLatexProjectSDK(project: Project): Sdk? {
+    fun getLatexProjectSdk(project: Project): Sdk? {
         val sdk = ProjectRootManager.getInstance(project).projectSdk
         if (sdk?.sdkType is LatexSdk) {
             return sdk
         }
         return null
+    }
+
+    /**
+     * Get type of project SDK. If null or not a LaTeX sdk, return null.
+     */
+    fun getLatexProjectSdkType(project: Project): LatexSdk? {
+        return getLatexProjectSdk(project) as? LatexSdk
     }
 }

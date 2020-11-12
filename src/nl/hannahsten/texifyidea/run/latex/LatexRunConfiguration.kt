@@ -110,7 +110,11 @@ class LatexRunConfiguration constructor(
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
-    var latexDistribution = LatexDistributionType.PROJECT_SDK // todo disallow selecting 'use project sdk' if a non-latex project sdk is selected
+
+    /**
+     * Use [getLatexDistributionType] to take the Project SDK into account.
+     */
+    internal var latexDistribution = LatexDistributionType.PROJECT_SDK
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -474,6 +478,18 @@ class LatexRunConfiguration constructor(
 
     fun setDefaultDistribution(project: Project) {
         latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
+    }
+
+    /**
+     * Get LaTeX distribution type, when 'Use project SDK' is selected map it to a [LatexDistributionType].
+     */
+    fun getLatexDistributionType(): LatexDistributionType {
+        return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
+            latexDistribution
+        }
+        else {
+            LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType() ?: LatexDistributionType.TEXLIVE
+        }
     }
 
     /**
