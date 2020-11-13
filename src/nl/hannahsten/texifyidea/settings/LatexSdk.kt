@@ -35,7 +35,7 @@ sealed class LatexSdk(name: String) : SdkType(name) {
     abstract fun getLatexDistributionType(): LatexDistributionType
 
     /**
-     * If the executable is not in PATH, use the home path of the SDK to find it and return the full path to the executable.
+     * If the executable (pdflatex, kpsewhich, etc.) is not in PATH, use the home path of the SDK to find it and return the full path to the executable.
      */
     abstract fun getExecutableName(executable: String, project: Project): String
 }

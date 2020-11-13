@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.settings.LatexSdkUtil
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil.getLatexExecutableName
+import nl.hannahsten.texifyidea.settings.TexliveSdk
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -34,7 +34,8 @@ object LatexPackageLocationCache {
             "miktex-kpsewhich --miktex-disable-installer $arg"
         }
         else {
-            "${getLatexExecutableName("kpsewhich", project)} $arg"
+            // todo similar as in previewformupdater
+            "${TexliveSdk().getExecutableName("kpsewhich", project)} $arg"
         }
         BufferedReader(
             InputStreamReader(Runtime.getRuntime().exec(command).inputStream)
