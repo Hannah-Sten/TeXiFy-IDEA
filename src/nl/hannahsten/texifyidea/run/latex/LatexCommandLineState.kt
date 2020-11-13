@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
@@ -51,9 +52,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
+        val isAnyExternalToolNeeded = runExternalToolsIfNeeded(handler, mainFile)
         runConfig.hasBeenRun = true
 
-        if (!isLastCompile(isMakeindexNeeded, handler)) return handler
+        if (!isLastCompile(isMakeindexNeeded, isAnyExternalToolNeeded, handler)) return handler
         scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
         scheduleFileCleanup(runConfig.filesToCleanUp, handler)
@@ -97,6 +99,16 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
     }
 
+    private fun runExternalToolsIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile): Boolean {
+        val isAnyExternalToolNeeded = true // todo
+
+        if (runConfig.isFirstRunConfig && (runConfig.externalToolRunConfigs.isNotEmpty() || isAnyExternalToolNeeded)) {
+            handler.addProcessListener(RunExternalToolListener(runConfig, environment))
+        }
+
+        return isAnyExternalToolNeeded
+    }
+
     private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile, filesToCleanUp: MutableList<File>): Boolean {
         var isMakeindexNeeded = false
 
@@ -135,9 +147,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         return isMakeindexNeeded
     }
 
-    private fun isLastCompile(isMakeindexNeeded: Boolean, handler: KillableProcessHandler): Boolean {
+    private fun isLastCompile(isMakeindexNeeded: Boolean, isAnyExternalToolNeeded: Boolean, handler: KillableProcessHandler): Boolean {
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
-        if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded) {
+        if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && !isAnyExternalToolNeeded) {
             if (!runConfig.compileTwice) {
                 runConfig.isLastRunConfig = true
             }

@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
-import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
-import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 
 /**
  * @author Hannah Schellekens
@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
 enum class BibtexDefaultEntryType(
     override val fieldName: String,
     override val description: String,
-    override val dependency: Package = DEFAULT
+    override val dependency: LatexPackage = DEFAULT
 ) : BibtexEntryField {
 
     ADDRESS("address", "Publisher's address (usually just the city, but can be the full address for lesser-known publishers)"),

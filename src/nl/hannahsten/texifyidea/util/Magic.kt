@@ -7,24 +7,24 @@ import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
-import nl.hannahsten.texifyidea.lang.Package
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
-import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
-import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIES
-import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIESEXTRA
-import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICS
-import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
-import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
-import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
-import nl.hannahsten.texifyidea.lang.Package.Companion.PDFCOMMENT
-import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSFONTS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIESEXTRA
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.PDFCOMMENT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 import org.intellij.lang.annotations.Language
 import java.awt.Color
 import java.util.regex.Pattern
 
-typealias LatexPackage = Package
+typealias LatexPackage = LatexPackage
 typealias RegexPattern = Pattern
 
 /**
