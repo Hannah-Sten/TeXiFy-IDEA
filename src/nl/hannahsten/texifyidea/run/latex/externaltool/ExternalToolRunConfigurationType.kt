@@ -17,7 +17,7 @@ class ExternalToolRunConfigurationType : ConfigurationType {
 
     override fun getId() = "EXTERNAL_TOOL_RUN_CONFIGURATION"
 
-    override fun getDisplayName() = "External Tool"
+    override fun getDisplayName() = "External LaTeX Tool"
 
     override fun getConfigurationFactories(): Array<ConfigurationFactory> = arrayOf(LatexConfigurationFactory(this))
 }

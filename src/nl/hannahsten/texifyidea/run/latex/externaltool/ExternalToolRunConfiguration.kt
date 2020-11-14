@@ -91,7 +91,7 @@ class ExternalToolRunConfiguration(
 
     override fun isGeneratedName() = name == suggestedName()
 
-    override fun suggestedName() = mainFile?.nameWithoutExtension + " " + this.program.name.toLowerCase()
+    override fun suggestedName() = if (mainFile != null) { mainFile?.nameWithoutExtension + " " } else { "" } + this.program.name.toLowerCase()
 
     fun setSuggestedName() {
         name = suggestedName()

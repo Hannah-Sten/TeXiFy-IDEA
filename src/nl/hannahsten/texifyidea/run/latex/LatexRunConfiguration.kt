@@ -192,7 +192,7 @@ class LatexRunConfiguration constructor(
     override fun getState(
         executor: Executor,
         environment: ExecutionEnvironment
-    ): RunProfileState? {
+    ): RunProfileState {
         val filter = RegexpFilter(
             environment.project,
             "^\$FILE_PATH$:\$LINE$"
@@ -444,6 +444,13 @@ class LatexRunConfiguration constructor(
                     }
                 }
         }
+    }
+
+    /**
+     * All run configs in the chain except the LaTeX ones.
+     */
+    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> {
+        return bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
     }
 
     /**

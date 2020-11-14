@@ -85,8 +85,7 @@ class RunExternalToolListener(
             runConfig.mainFile = latexRunConfig.mainFile
             runConfig.program = tool
             runConfig.setSuggestedName()
-
-            // If any external tool needs a different working directory, it can be changed here
+            runConfig.workingDirectory = latexRunConfig.getAuxilDirectory()
 
             runManager.addConfiguration(runConfigSettings)
             runConfigs.add(runConfigSettings)
