@@ -46,8 +46,34 @@ sealed class LatexSdk(name: String) : SdkType(name) {
 class TexliveSdk : LatexSdk("TeX Live SDK") {
 
     companion object {
-        private val isPdflatexInPath: Boolean by lazy {
-            "pdflatex --version".runCommand()?.contains("pdfTeX") == true
+        /**
+         * Returns year of texlive installation, 0 if it is not texlive.
+         * Assumes the pdflatex version output contains something like (TeX Live 2019).
+         */
+        val version: Int by lazy {
+            if (!isAvailable) {
+                0
+            }
+            else {
+                val startIndex = LatexSdkUtil.pdflatexVersionText.indexOf("TeX Live")
+                try {
+                    LatexSdkUtil.pdflatexVersionText.substring(
+                        startIndex + "TeX Live ".length,
+                        startIndex + "TeX Live ".length + "2019".length
+                    ).toInt()
+                }
+                catch (e: NumberFormatException) {
+                    0
+                }
+            }
+        }
+
+        /**
+         * Whether the user is using TeX Live or not.
+         * This value is only computed once.
+         */
+        val isAvailable: Boolean by lazy {
+            LatexSdkUtil.pdflatexVersionText.contains("TeX Live")
         }
     }
 
@@ -100,7 +126,7 @@ class TexliveSdk : LatexSdk("TeX Live SDK") {
      * @param executable Name of a program, e.g. pdflatex
      */
     override fun getExecutableName(executable: String, project: Project): String {
-        if (isPdflatexInPath) {
+        if (LatexSdkUtil.isPdflatexInPath) {
             return executable
         }
         // Get base path of LaTeX distribution
@@ -146,11 +172,11 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
     override fun getLatexDistributionType() = LatexDistributionType.DOCKER_MIKTEX
 
     override fun getVersionString(sdkHome: String?): String {
-        // todo use cached output
+        val imagesText = if (isInPath) dockerImagesText else "$sdkHome/docker image ls".runCommand() ?: ""
         // Get the tag of the first docker image with 'miktex' in the name
-        val tag = "$sdkHome/docker image ls".runCommand()
-            ?.split("\n")
-            ?.firstOrNull { it.contains("miktex") }
+        val tag = imagesText
+            .split("\n")
+            .firstOrNull { it.contains("miktex") }
             ?.split(" ")
             ?.filter { it.isNotBlank() }
             ?.get(1)

@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.TexliveSdk
 import nl.hannahsten.texifyidea.util.parentsOfType
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException
@@ -119,7 +120,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         val stream: InputStream
         try {
             // -M to avoid texdoc asking to choose from the list
-            val command = if (LatexSdkUtil.isTexliveAvailable) {
+            val command = if (TexliveSdk.isAvailable) {
                 "texdoc -l -M $name"
             }
             else {
@@ -138,7 +139,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             emptyList()
         }
         else {
-            if (LatexSdkUtil.isTexliveAvailable) {
+            if (TexliveSdk.isAvailable) {
                 lines.map {
                     // Line consists of: name version path optional file description
                     it.split("\t")[2]

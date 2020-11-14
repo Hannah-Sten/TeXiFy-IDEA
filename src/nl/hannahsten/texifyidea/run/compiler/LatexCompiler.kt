@@ -303,7 +303,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         "docker volume create --name miktex".runCommand()
 
         val parameterList = mutableListOf(
-            "docker", // todo get executable name
+            "docker", // Could be improved by getting executable name based on SDK
             "run",
             "--rm",
             "-v",

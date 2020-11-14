@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import nl.hannahsten.texifyidea.settings.TexliveSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.File
 import java.io.IOException
@@ -77,8 +77,7 @@ $previewCode
                 writer.close()
 
                 val latexStdoutText = runCommand(
-                    // todo support other SDKs if texlive not available (consider all SDKs in order of preference, and if there is none then default to assuming pdflatex is in path)
-                    TexliveSdk().getExecutableName("pdflatex", project),
+                    LatexSdkUtil.getExecutableName("pdflatex", project),
                     arrayOf(
                         "-interaction=nonstopmode",
                         "-halt-on-error",
