@@ -26,7 +26,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: TexliveSdk().getExecutableName(executableName, runConfig.project))
+            // For now only support custom executable for TeX Live
+            // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
+            val executable = if (runConfig.getLatexDistributionType() == LatexDistributionType.TEXLIVE) TexliveSdk().getExecutableName(executableName, runConfig.project) else executableName
+            val command = mutableListOf(runConfig.compilerPath ?: executable)
 
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
