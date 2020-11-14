@@ -52,6 +52,12 @@ public class LatexOptionalParamContentImpl extends ASTWrapperPsiElement implemen
 
   @Override
   @Nullable
+  public LatexMagicComment getMagicComment() {
+    return PsiTreeUtil.getChildOfType(this, LatexMagicComment.class);
+  }
+
+  @Override
+  @Nullable
   public LatexMathEnvironment getMathEnvironment() {
     return PsiTreeUtil.getChildOfType(this, LatexMathEnvironment.class);
   }

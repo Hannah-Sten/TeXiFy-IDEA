@@ -20,6 +20,7 @@ public interface LatexTypes {
   IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
+  IElementType MAGIC_COMMENT = new LatexElementType("MAGIC_COMMENT");
   IElementType MATH_CONTENT = new LatexElementType("MATH_CONTENT");
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
   IElementType NORMAL_TEXT = new LatexElementType("NORMAL_TEXT");
@@ -49,6 +50,9 @@ public interface LatexTypes {
   IElementType END_TOKEN = new LatexTokenType("\\end");
   IElementType INLINE_MATH_END = new LatexTokenType("INLINE_MATH_END");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
+  IElementType MAGIC_COMMENT_KEY_VALUE_SEPARATOR = new LatexTokenType("=");
+  IElementType MAGIC_COMMENT_TOKEN = new LatexTokenType("%!");
+  IElementType MAGIC_COMMENT_VALUE = new LatexTokenType("MAGIC_COMMENT_VALUE");
   IElementType MIDDLE_PSEUDOCODE_BLOCK = new LatexTokenType("MIDDLE_PSEUDOCODE_BLOCK");
   IElementType NORMAL_TEXT_CHAR = new LatexTokenType("NORMAL_TEXT_CHAR");
   IElementType NORMAL_TEXT_WORD = new LatexTokenType("NORMAL_TEXT_WORD");
@@ -90,6 +94,9 @@ public interface LatexTypes {
       }
       else if (type == INLINE_MATH) {
         return new LatexInlineMathImpl(node);
+      }
+      else if (type == MAGIC_COMMENT) {
+        return new LatexMagicCommentImpl(node);
       }
       else if (type == MATH_CONTENT) {
         return new LatexMathContentImpl(node);

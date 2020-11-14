@@ -290,6 +290,32 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // MAGIC_COMMENT_TOKEN normal_text* MAGIC_COMMENT_KEY_VALUE_SEPARATOR MAGIC_COMMENT_VALUE
+  public static boolean magic_comment(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "magic_comment")) return false;
+    if (!nextTokenIs(b, MAGIC_COMMENT_TOKEN)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, MAGIC_COMMENT, null);
+    r = consumeToken(b, MAGIC_COMMENT_TOKEN);
+    p = r; // pin = 1
+    r = r && report_error_(b, magic_comment_1(b, l + 1));
+    r = p && report_error_(b, consumeTokens(b, -1, MAGIC_COMMENT_KEY_VALUE_SEPARATOR, MAGIC_COMMENT_VALUE)) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // normal_text*
+  private static boolean magic_comment_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "magic_comment_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!normal_text(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "magic_comment_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
   // no_math_content+
   public static boolean math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "math_content")) return false;
@@ -319,13 +345,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
   //     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NO_MATH_CONTENT, "<no math content>");
     r = raw_text(b, l + 1);
+    if (!r) r = magic_comment(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = pseudocode_block(b, l + 1);
@@ -395,12 +422,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
   public static boolean optional_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, OPTIONAL_PARAM_CONTENT, "<optional param content>");
     r = raw_text(b, l + 1);
+    if (!r) r = magic_comment(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = pseudocode_block(b, l + 1);
@@ -602,12 +630,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
   public static boolean required_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, REQUIRED_PARAM_CONTENT, "<required param content>");
     r = raw_text(b, l + 1);
+    if (!r) r = magic_comment(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = pseudocode_block(b, l + 1);
