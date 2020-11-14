@@ -1,0 +1,35 @@
+:experimental:
+
+_Since b0.7.2_
+
+The run configuration External LaTeX Tool can be used to run other auxiliary tools which need to run inbetween LaTeX runs.
+Please raise an issue on GitHub if your favourite tool is missing here.
+Currently, the following tools are supported.
+
+== Pythontex
+
+Pythontex is a LaTeX package which can, among other things, run Python code which you included in your LaTeX file and nicely format the code and the output as well.
+
+[source,latex]
+----
+\documentclass[11pt]{article}
+\usepackage{pythontex}
+\begin{document}
+
+    %! language = python
+    \begin{pyconsole}
+def primes_sieve2(limit):
+    a = [True] * limit                          # Initialize the primality list
+    a[0] = a[1] = False
+    for (i, isprime) in enumerate(a):
+        if isprime:
+            yield i
+            for n in range(i*i, limit, i):     # Mark factors non-prime
+                a[n] = False
+    return [i for i in a if a[i]==True]
+
+list(primes_sieve2(60))
+    \end{pyconsole}
+
+\end{document}
+----
