@@ -7,6 +7,7 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
@@ -52,7 +53,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
-        val isAnyExternalToolNeeded = runExternalToolsIfNeeded(handler, mainFile)
+        val isAnyExternalToolNeeded = runExternalToolsIfNeeded(handler, mainFile, runConfig.project)
         runConfig.hasBeenRun = true
 
         if (!isLastCompile(isMakeindexNeeded, isAnyExternalToolNeeded, handler)) return handler
@@ -99,8 +100,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
     }
 
-    private fun runExternalToolsIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile): Boolean {
-        val isAnyExternalToolNeeded = true // todo
+    private fun runExternalToolsIfNeeded(
+        handler: KillableProcessHandler,
+        mainFile: VirtualFile,
+        project: Project
+    ): Boolean {
+        val isAnyExternalToolNeeded = RunExternalToolListener.getRequiredExternalTools(mainFile, project).isNotEmpty()
 
         if (runConfig.isFirstRunConfig && (runConfig.externalToolRunConfigs.isNotEmpty() || isAnyExternalToolNeeded)) {
             handler.addProcessListener(RunExternalToolListener(runConfig, environment))

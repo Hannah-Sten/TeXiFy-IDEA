@@ -25,11 +25,29 @@ class RunExternalToolListener(
     private val environment: ExecutionEnvironment,
 ) : ProcessListener {
 
+    companion object {
+        /**
+         * Check the contents of the LaTeX fileset to find out if any external tools are needed.
+         */
+        fun getRequiredExternalTools(mainFile: VirtualFile?, project: Project): Set<ExternalTool> {
+            val usedPackages = runReadAction {
+                mainFile?.psiFile(project)?.includedPackages() ?: emptySet()
+            }
+
+            val externalTools = mutableSetOf<ExternalTool>()
+
+            if (LatexPackage.PYTHONTEX.name in usedPackages) {
+                externalTools.add(ExternalTool.PYTHONTEX)
+            }
+
+            return externalTools
+        }
+    }
+
     override fun processTerminated(event: ProcessEvent) {
         try {
 
             // Only create new one if there is none yet
-            // todo isn't it expensive to check this every time?
             val runConfigSettingsList =
                 if (latexRunConfig.externalToolRunConfigs.isEmpty()) {
                     generateExternalToolConfigs()
@@ -93,23 +111,6 @@ class RunExternalToolListener(
 
         latexRunConfig.externalToolRunConfigs = runConfigs
         return runConfigs
-    }
-
-    /**
-     * Check the contents of the LaTeX fileset to find out if any external tools are needed.
-     */
-    private fun getRequiredExternalTools(mainFile: VirtualFile?, project: Project): Set<ExternalTool> {
-        val usedPackages = runReadAction {
-            mainFile?.psiFile(project)?.includedPackages() ?: emptySet()
-        }
-
-        val externalTools = mutableSetOf<ExternalTool>()
-
-        if (LatexPackage.PYTHONTEX.name in usedPackages) {
-            externalTools.add(ExternalTool.PYTHONTEX)
-        }
-
-        return externalTools
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {}
