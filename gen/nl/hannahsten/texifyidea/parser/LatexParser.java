@@ -290,29 +290,15 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // MAGIC_COMMENT_TOKEN normal_text* MAGIC_COMMENT_KEY_VALUE_SEPARATOR MAGIC_COMMENT_VALUE
+  // MAGIC_COMMENT_TOKEN
   public static boolean magic_comment(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "magic_comment")) return false;
     if (!nextTokenIs(b, MAGIC_COMMENT_TOKEN)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, MAGIC_COMMENT, null);
+    boolean r;
+    Marker m = enter_section_(b);
     r = consumeToken(b, MAGIC_COMMENT_TOKEN);
-    p = r; // pin = 1
-    r = r && report_error_(b, magic_comment_1(b, l + 1));
-    r = p && report_error_(b, consumeTokens(b, -1, MAGIC_COMMENT_KEY_VALUE_SEPARATOR, MAGIC_COMMENT_VALUE)) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  // normal_text*
-  private static boolean magic_comment_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "magic_comment_1")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!normal_text(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "magic_comment_1", c)) break;
-    }
-    return true;
+    exit_section_(b, m, MAGIC_COMMENT, r);
+    return r;
   }
 
   /* ********************************************************** */

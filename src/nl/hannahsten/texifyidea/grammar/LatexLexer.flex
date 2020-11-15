@@ -3,7 +3,8 @@ package nl.hannahsten.texifyidea.grammar;
 import java.util.*;
 
 import com.intellij.lexer.FlexLexer;
-import com.intellij.psi.TokenType;import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.TokenType;
+import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.util.Magic;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
@@ -62,20 +63,20 @@ OPEN_PAREN="("
 CLOSE_PAREN=")"
 
 SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
-WHITE_SPACE=[ \t\n\x0B\f\r]+
+WHITE_SPACE={SINGLE_WHITE_SPACE}+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@_:]+|.|\r) // _ and : are technically only LaTeX3 syntax
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 
 // Comments
-MAGIC_COMMENT_TOKEN="%!"
-MAGIC_COMMENT_KEY_VALUE_SEPARATOR==
-MAGIC_COMMENT_VALUE=[^\r\n]*
-MAGIC_COMMENT_LEXER_SWITCH="%" {WHITE_SPACE}? "!" {WHITE_SPACE}? (TeX)? {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
+MAGIC_COMMENT_PREFIX=("!"|" !"[tT][eE][xX])
+COMMENT_TOKEN=%[^\r\n]*
+MAGIC_COMMENT_TOKEN="%"{MAGIC_COMMENT_PREFIX}[^\r\n]*
+
+MAGIC_COMMENT_LEXER_SWITCH="%"{MAGIC_COMMENT_PREFIX} {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
 LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
-COMMENT_TOKEN=%[^!][^\r\n]*
 
 NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&<>]+
 // Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
@@ -92,7 +93,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PREAMBLE_OPTION
 %states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END
-%states MAGIC_COMMENT_KEY MAGIC_COMMENT_VALUE_STATE
 // Every inline verbatim delimiter gets a separate state, to avoid quitting the state too early due to delimiter confusion
 // States are exclusive to avoid matching expressions with an empty set of associated states, i.e. to avoid matching normal LaTeX expressions
 %xstates INLINE_VERBATIM_START INLINE_VERBATIM
@@ -105,18 +105,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 %%
 {WHITE_SPACE}           { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
-/*
- * Magic comment
- */
-{MAGIC_COMMENT_TOKEN}   { yypushState(MAGIC_COMMENT_KEY); return MAGIC_COMMENT_TOKEN; }
-
-<MAGIC_COMMENT_KEY> {
-    {MAGIC_COMMENT_KEY_VALUE_SEPARATOR} { yypopState(); yypushState(MAGIC_COMMENT_VALUE_STATE); return MAGIC_COMMENT_KEY_VALUE_SEPARATOR; }
-}
-
-<MAGIC_COMMENT_VALUE_STATE> {
-    {MAGIC_COMMENT_VALUE} { yypopState(); return MAGIC_COMMENT_VALUE; }
-}
 /*
  * Inline verbatim
  */
@@ -337,12 +325,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {MIDDLE_PSEUDOCODE_BLOCK} { return MIDDLE_PSEUDOCODE_BLOCK; }
 {END_PSEUDOCODE_BLOCK}  { return END_PSEUDOCODE_BLOCK; }
 
-{WHITE_SPACE}           { return WHITE_SPACE; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
 {LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
+{MAGIC_COMMENT_TOKEN}   { return MAGIC_COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
 {NORMAL_TEXT_CHAR}      { return NORMAL_TEXT_CHAR; }

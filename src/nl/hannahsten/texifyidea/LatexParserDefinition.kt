@@ -45,12 +45,12 @@ class LatexParserDefinition : ParserDefinition {
 
     companion object {
         val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
-        val COMMENTS = TokenSet.create(LatexTypes.COMMENT_TOKEN)
+        val COMMENTS = TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.MAGIC_COMMENT_TOKEN)
         val NORMAL_TEXT = TokenSet.create(LatexTypes.NORMAL_TEXT)
         val FILE: IStubFileElementType<*> = object : IStubFileElementType<LatexFileStub>(
             Language.findInstance(LatexLanguage::class.java)
         ) {
-            override fun getStubVersion(): Int = 10
+            override fun getStubVersion(): Int = 11
         }
     }
 

@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface LatexMagicComment extends PsiElement {
 
   @NotNull
-  List<LatexNormalText> getNormalTextList();
-
-  @Nullable
-  PsiElement getMagicCommentValue();
+  PsiElement getMagicCommentToken();
 
 }
