@@ -20,6 +20,7 @@
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
     implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
 
+    extends("magic_comment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub>"
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
     implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
@@ -122,7 +123,10 @@ group ::= OPEN_BRACE content* CLOSE_BRACE { pin=1 }
 
 comment ::= COMMENT_TOKEN
 
-magic_comment ::= MAGIC_COMMENT_TOKEN
+magic_comment ::= MAGIC_COMMENT_TOKEN {
+    elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType"
+    stubClass="nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub"
+}
 
 math_environment ::= inline_math | display_math
 

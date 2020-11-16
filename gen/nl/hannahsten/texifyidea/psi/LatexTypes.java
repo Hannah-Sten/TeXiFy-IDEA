@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
+import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType;
 import nl.hannahsten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
@@ -20,7 +21,7 @@ public interface LatexTypes {
   IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
-  IElementType MAGIC_COMMENT = new LatexElementType("MAGIC_COMMENT");
+  IElementType MAGIC_COMMENT = new LatexMagicCommentStubElementType("MAGIC_COMMENT");
   IElementType MATH_CONTENT = new LatexElementType("MATH_CONTENT");
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
   IElementType NORMAL_TEXT = new LatexElementType("NORMAL_TEXT");

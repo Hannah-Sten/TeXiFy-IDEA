@@ -5,7 +5,6 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.Environment
@@ -63,13 +62,6 @@ open class LatexAnnotator : Annotator {
     }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
-        // Comments
-//        if (psiElement is PsiComment) {
-//            annotateComment(psiElement, annotationHolder)
-//        }
-//        else if (psiElement.inDirectEnvironmentContext(Environment.Context.COMMENT)) {
-//            annotateComment(psiElement, annotationHolder)
-//        }
         // Math display
         if (psiElement is LatexInlineMath) {
             annotateInlineMath(psiElement, annotationHolder)
@@ -145,27 +137,6 @@ open class LatexAnnotator : Annotator {
             LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
         )
     }
-
-    /**
-     * Annotates the given comment.
-     */
-//    private fun annotateComment(comment: PsiElement, annotationHolder: AnnotationHolder) {
-//        val file = comment.containingFile
-//        val hasDefinition = file.definitionCache().any { it.requiredParameter(0) == "comment" }
-//        if (hasDefinition) {
-//            return
-//        }
-//
-//        val textAttributes = if (comment.isMagicComment()) {
-//            LatexSyntaxHighlighter.MAGIC_COMMENT
-//        }
-//        else LatexSyntaxHighlighter.COMMENT
-
-//        annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-//            .range(comment)
-//            .textAttributes(textAttributes)
-//            .create()
-//    }
 
     /**
      * Annotates all command tokens of the commands that are included in the `elements`.
