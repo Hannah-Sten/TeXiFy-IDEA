@@ -28,7 +28,6 @@ public interface LatexEnvironment extends PsiLanguageInjectionHost, StubBasedPsi
 
   PsiLanguageInjectionHost updateText(@NotNull String text);
 
-  @NotNull
-  LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper();
+  @NotNull LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper();
 
 }

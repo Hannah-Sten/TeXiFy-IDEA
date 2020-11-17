@@ -208,7 +208,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "environment_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENVIRONMENT_CONTENT, "<environment content>");
-    r = injection_env_content(b, l + 1, raw_text_parser_);
+    r = injection_env_content(b, l + 1, LatexParser::raw_text);
     if (!r) r = environment_content_1(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -457,7 +457,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)? (END_PSEUDOCODE_BLOCK parameter*)?
+  // BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)? (END_PSEUDOCODE_BLOCK parameter*)
   public static boolean pseudocode_block(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pseudocode_block")) return false;
     if (!nextTokenIs(b, BEGIN_PSEUDOCODE_BLOCK)) return false;
@@ -515,31 +515,24 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (END_PSEUDOCODE_BLOCK parameter*)?
+  // END_PSEUDOCODE_BLOCK parameter*
   private static boolean pseudocode_block_4(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pseudocode_block_4")) return false;
-    pseudocode_block_4_0(b, l + 1);
-    return true;
-  }
-
-  // END_PSEUDOCODE_BLOCK parameter*
-  private static boolean pseudocode_block_4_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "pseudocode_block_4_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, END_PSEUDOCODE_BLOCK);
-    r = r && pseudocode_block_4_0_1(b, l + 1);
+    r = r && pseudocode_block_4_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // parameter*
-  private static boolean pseudocode_block_4_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "pseudocode_block_4_0_1")) return false;
+  private static boolean pseudocode_block_4_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pseudocode_block_4_1")) return false;
     while (true) {
       int c = current_position_(b);
       if (!parameter(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "pseudocode_block_4_0_1", c)) break;
+      if (!empty_element_parsed_guard_(b, "pseudocode_block_4_1", c)) break;
     }
     return true;
   }
@@ -623,9 +616,4 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  static final Parser raw_text_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return raw_text(b, l + 1);
-    }
-  };
 }
