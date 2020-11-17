@@ -21,8 +21,13 @@ open class TextBasedMagicCommentParserTest {
     @Test
     fun `Single key`() {
         "%! somename".assertValue("somename")
-        "% !TeX some Name".assertValue("some")
+        "% !TeX some Name".assertValue("some", "Name")
         "%!\n%! test".assertValue("test", null, 0)
+    }
+
+    @Test
+    fun `Single key without =`() {
+        "%! some name is bloop".assertValue("some", "name is bloop")
     }
 
     @Test
