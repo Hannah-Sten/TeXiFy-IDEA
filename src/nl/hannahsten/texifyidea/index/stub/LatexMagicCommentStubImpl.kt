@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.index.stub
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubBase
 import com.intellij.psi.stubs.StubElement
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 
 class LatexMagicCommentStubImpl(

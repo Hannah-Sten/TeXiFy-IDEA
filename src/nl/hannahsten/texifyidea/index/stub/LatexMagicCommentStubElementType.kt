@@ -3,10 +3,6 @@ package nl.hannahsten.texifyidea.index.stub
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.index.LatexMagicCommentIndex
-import nl.hannahsten.texifyidea.lang.magic.CustomMagicKey
-import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
-import nl.hannahsten.texifyidea.lang.magic.MagicKey
-import nl.hannahsten.texifyidea.lang.magic.textBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.psi.impl.LatexMagicCommentImpl
 import nl.hannahsten.texifyidea.psi.key

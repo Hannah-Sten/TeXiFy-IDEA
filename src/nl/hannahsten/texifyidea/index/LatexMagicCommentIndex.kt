@@ -10,5 +10,4 @@ class LatexMagicCommentIndex : StringStubIndexExtension<LatexMagicComment>() {
 
     @Suppress("RedundantCompanionReference")
     override fun getKey(): StubIndexKey<String, LatexMagicComment> = Companion.key()
-
 }

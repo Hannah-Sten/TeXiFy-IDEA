@@ -48,9 +48,11 @@ open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
         /**
          * Get the name/section value from a [LatexCommands] or a [LatexMagicComment].
          */
-        fun PsiElement.name() = when(this) {
+        fun PsiElement.name() = when (this) {
             is LatexCommands -> name
-            is LatexMagicComment -> value()
+            // Take the first word of the value because the fake section can have a 'Title',
+            // e.g. %! fake subsection Introduction.
+            is LatexMagicComment -> value()?.trim()?.split(" ")?.firstOrNull()
             else -> null
         }
 
