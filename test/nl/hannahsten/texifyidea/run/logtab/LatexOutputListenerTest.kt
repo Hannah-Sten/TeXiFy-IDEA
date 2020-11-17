@@ -775,4 +775,33 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         testLog(log, expectedMessages)
     }
+
+    fun `test luatex errors`() {
+        val log =
+            """
+ (/home/nobody/GitRepos/read-csv-luatex-example/out/main.aux)
+(/home/nobody/texlive/2020/texmf-dist/tex/latex/base/ts1cmr.fd)./csvreader.lua:
+18: attempt to index a nil value (local 'file')
+stack traceback:
+	./csvreader.lua:18: in function 'dataToTable'
+	[\directlua]:1: in main chunk.
+\luacode@dbg@exec ...code@maybe@printdbg {#1} #1 }
+                                                
+l.20         }
+             \\
+./csvreader.lua:58: attempt to get length of a nil value (local 'array')
+stack traceback:
+	./csvreader.lua:58: in function 'tableToTeX'
+	[\directlua]:1: in main chunk.
+\luacode@dbg@exec ...code@maybe@printdbg {#1} #1 }
+                                                  
+            """.trimIndent()
+
+        val expectedMessages = setOf(
+            LatexLogMessage("attempt to index a nil value (local 'file')", "./csvreader.lua", 18, ERROR),
+            LatexLogMessage("attempt to get length of a nil value (local 'array')", "../csvreader.lua", 58, ERROR)
+        )
+
+        testLog(log, expectedMessages)
+    }
 }
