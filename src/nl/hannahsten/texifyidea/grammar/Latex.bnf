@@ -69,9 +69,7 @@ environment ::= begin_command environment_content? end_command {
 
 environment_content ::= <<injection_env_content raw_text>> | content+
 
-// In order to avoid a parse error on a single begin_pseudocode_block token in no_math_content (so, if the token should have been a commands token)
-// we make the end_pseudocode_block optional. This problem arises because the lexer is not aware whether we are in a algorithmic environment or not
-pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)? (END_PSEUDOCODE_BLOCK parameter*)? { pin=5 }
+pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)? (END_PSEUDOCODE_BLOCK parameter*) { pin=5 }
 
 pseudocode_block_content ::= no_math_content*
 
