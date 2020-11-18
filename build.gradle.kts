@@ -117,7 +117,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("java")
+    setPlugins("tanvd.grazi", "java")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
