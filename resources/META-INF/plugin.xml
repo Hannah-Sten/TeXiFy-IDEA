@@ -400,6 +400,7 @@
         <projectService serviceImplementation="nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexErrorTreeViewConfiguration"/>
         <sdkType implementation="nl.hannahsten.texifyidea.settings.TexliveSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.DockerSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.MiktexSdk" />
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>

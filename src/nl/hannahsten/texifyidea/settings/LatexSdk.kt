@@ -4,8 +4,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.*
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.LatexSdkUtil.getPdflatexParentPath
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil.isPdflatexInPath
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
+import java.nio.file.Paths
 
 /**
  * Represents the location of the LaTeX installation.
@@ -126,7 +128,7 @@ class TexliveSdk : LatexSdk("TeX Live SDK") {
      * @param executable Name of a program, e.g. pdflatex
      */
     override fun getExecutableName(executable: String, project: Project): String {
-        if (LatexSdkUtil.isPdflatexInPath) {
+        if (isPdflatexInPath) {
             return executable
         }
         // Get base path of LaTeX distribution
@@ -184,22 +186,66 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
     }
 
     override fun getExecutableName(executable: String, project: Project): String {
-        TODO("Not yet implemented")
+        // Could be improved by prefixing docker command here, but needs to be in sync with LatexCompiler
+        return executable
     }
 }
 
 class MiktexSdk : LatexSdk("MiKTeX SDK") {
+
+    // Cache version
+    var version: String? = null
+
     override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
 
     override fun getExecutableName(executable: String, project: Project): String {
-        TODO("Not yet implemented")
+        return getExecutableName(executable, LatexSdkUtil.getLatexProjectSdk(project)?.homePath)
     }
 
-    override fun suggestHomePath(): String? {
-        TODO("Not yet implemented")
+    private fun getExecutableName(executable: String, homePath: String?): String {
+        return if (isPdflatexInPath || homePath == null) {
+            executable
+        }
+        else {
+            val path = getPdflatexParentPath(Paths.get(homePath, "miktex").toString()) ?: return executable
+            return Paths.get(path, executable).toString()
+        }
+    }
+
+    override fun suggestHomePath(): String {
+        return Paths.get(System.getProperty("user.home"), "AppData", "Local", "Programs", "MiKTeX 2.9").toString()
+    }
+
+    override fun suggestHomePaths(): MutableCollection<String> {
+        val results = mutableSetOf<String>()
+        val path = "where pdflatex".runCommand()
+        if (path != null) {
+            val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: path.length - 1
+            results.add(path.substring(0, index))
+        }
+        else {
+            results.add(suggestHomePath())
+        }
+        return results
     }
 
     override fun isValidSdkHome(path: String?): Boolean {
-        TODO("Not yet implemented")
+        // We want the MiKTeX 2.9 folder to be selected
+        // Assume path is of the form C:\Users\username\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\pdflatex.exe
+        if (path == null) {
+            return false
+        }
+        val parent = getPdflatexParentPath(Paths.get(path, "miktex").toString())
+        return "\"$parent\\pdflatex\" --version".runCommand()?.contains("pdfTeX") == true
+    }
+
+    override fun getVersionString(sdk: Sdk): String? {
+        version?.let { return version }
+
+        val executable = getExecutableName("pdflatex", sdk.homePath)
+        val output = "$executable --version".runCommand() ?: ""
+        version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
+
+        return version
     }
 }

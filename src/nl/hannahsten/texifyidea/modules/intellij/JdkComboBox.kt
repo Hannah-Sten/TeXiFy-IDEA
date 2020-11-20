@@ -23,6 +23,7 @@ import javax.swing.ListModel
 
 /**
  * @author Eugene Zhuravlev
+ * @author Thomas
  *
  * JavaUiBundle messages: https://github.com/JetBrains/intellij-community/blob/0781974c1104d2e7766522e48eff34dfe29483ba/java/idea-ui/resources/messages/JavaUiBundle.properties#L1
  */
