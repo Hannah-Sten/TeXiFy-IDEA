@@ -76,10 +76,18 @@ class RunExternalToolListener(
             latexRunConfig.isFirstRunConfig = false
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
                 ?: return
+
+            // Terrible hack to avoid running the before run tasks repeatedly
+            // At least I think this is the intended behaviour, but not sure so first testing it here
+            val beforeRunTasks = latexSettings.configuration.beforeRunTasks
+            latexSettings.configuration.beforeRunTasks = mutableListOf()
+
             latexRunConfig.isLastRunConfig = false
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             latexRunConfig.isLastRunConfig = true
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+
+            latexSettings.configuration.beforeRunTasks = beforeRunTasks
         }
     }
 
