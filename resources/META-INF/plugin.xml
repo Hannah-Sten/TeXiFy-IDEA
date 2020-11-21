@@ -401,6 +401,7 @@
         <sdkType implementation="nl.hannahsten.texifyidea.settings.TexliveSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.DockerSdk" />
         <sdkType implementation="nl.hannahsten.texifyidea.settings.MiktexSdk" />
+        <projectSdkSetupValidator implementation="nl.hannahsten.texifyidea.project.LatexProjectSdkSetupValidator" />
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>

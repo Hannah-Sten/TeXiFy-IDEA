@@ -92,7 +92,7 @@ class JdkComboBox(
     override fun onModelUpdated(model: SdkListModel) {
         val previousSelection: Any? = selectedItem
         val newModel: ComboBoxModel<JdkComboBoxItem?> = JdkComboBoxModel(model)
-        newModel.selectedItem = previousSelection!!
+        newModel.selectedItem = previousSelection ?: return
         setModel(newModel)
     }
 
@@ -130,7 +130,7 @@ class JdkComboBox(
     }
 
     override fun getSelectedItem(): JdkComboBoxItem? {
-        return super.getSelectedItem() as JdkComboBoxItem
+        return super.getSelectedItem() as? JdkComboBoxItem
     }
 
     var selectedJdk: Sdk?

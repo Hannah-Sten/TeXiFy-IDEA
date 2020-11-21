@@ -11,7 +11,7 @@ class LatexModuleType : ModuleType<LatexModuleBuilder>(ID) {
 
     companion object {
 
-        private const val ID = "LATEX_MODULE_TYPE"
+        const val ID = "LATEX_MODULE_TYPE"
 
         val INSTANCE: LatexModuleType
             get() = ModuleTypeManager.getInstance().findByID(ID) as LatexModuleType
