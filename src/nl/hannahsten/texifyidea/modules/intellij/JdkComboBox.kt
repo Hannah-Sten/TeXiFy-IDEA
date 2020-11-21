@@ -4,7 +4,6 @@ package nl.hannahsten.texifyidea.modules.intellij
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.projectRoots.SdkType
 import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.projectRoots.SimpleJavaSdkType
 import com.intellij.openapi.roots.ui.configuration.*
@@ -18,7 +17,6 @@ import com.intellij.util.Consumer
 import java.util.*
 import javax.swing.AbstractListModel
 import javax.swing.ComboBoxModel
-import javax.swing.JButton
 import javax.swing.ListModel
 
 /**
@@ -26,6 +24,14 @@ import javax.swing.ListModel
  * @author Thomas
  *
  * JavaUiBundle messages: https://github.com/JetBrains/intellij-community/blob/0781974c1104d2e7766522e48eff34dfe29483ba/java/idea-ui/resources/messages/JavaUiBundle.properties#L1
+ *
+ * Creates new Sdk selector combobox
+ * @param project current project (if any)
+ * @param sdkModel the sdks model
+ * @param sdkTypeFilter sdk types filter predicate to show
+ * @param sdkFilter filters Sdk instances that are listed, it implicitly includes the {@param sdkTypeFilter}
+ * @param creationFilter a filter of SdkType that allowed to create a new Sdk with that control
+ * @param onNewSdkAdded a callback that is executed once a new Sdk is added to the list
  */
 class JdkComboBox(
     project: Project?,
@@ -43,90 +49,13 @@ class JdkComboBox(
         sdkFilter
     )
 ) {
-    private val myOnNewSdkAdded: Consumer<Sdk>
-
-    @get:Deprecated(
-        """the popup shown by the SetUp button is now included
-      directly into the popup, you may remove the button from your UI,
-      see {@link #setSetupButton(JButton, Project, ProjectSdksModel, JdkComboBoxItem, Condition, boolean)}
-      for more details"""
-    )
-    var setUpButton: JButton? = null
-        private set
-
-    @Deprecated(
-        """since {@link #setSetupButton} methods are deprecated, use the
-      more specific constructor to pass all parameters"""
-    )
-    constructor(jdkModel: ProjectSdksModel) : this(jdkModel, null) {
-    }
-
-    @Deprecated(
-        """since {@link #setSetupButton} methods are deprecated, use the
-      more specific constructor to pass all parameters"""
-    )
-    constructor(
-        jdkModel: ProjectSdksModel,
-        filter: Condition<in SdkTypeId?>?
-    ) : this(jdkModel, filter, getSdkFilter(filter), filter, false) {
-    }
-
-    @Deprecated(
-        """since {@link #setSetupButton} methods are deprecated, use the
-      more specific constructor to pass all parameters
-     
-      The {@param addSuggestedItems} is ignored (it was not actively used) and
-      it is no longer possible to have {@link SuggestedJdkItem} as a selected
-      item of that ComboBox. The implementation will take care about turning a
-      suggested SDKs into {@link Sdk}s"""
-    )
-    constructor(
-        jdkModel: ProjectSdksModel,
-        sdkTypeFilter: Condition<in SdkTypeId?>?,
-        filter: Condition<in Sdk?>?,
-        creationFilter: Condition<in SdkTypeId?>?,
-        addSuggestedItems: Boolean
-    ) : this(null, jdkModel, sdkTypeFilter, filter, creationFilter, null) {
-    }
+    private val myOnNewSdkAdded: Consumer<Sdk> = Consumer { sdk: Sdk? -> onNewSdkAdded?.consume(sdk) }
 
     override fun onModelUpdated(model: SdkListModel) {
         val previousSelection: Any? = selectedItem
         val newModel: ComboBoxModel<JdkComboBoxItem?> = JdkComboBoxModel(model)
         newModel.selectedItem = previousSelection ?: return
         setModel(newModel)
-    }
-
-    @Deprecated(
-        """Use the overloaded constructor to pass these parameters directly to
-      that class. The {@param setUpButton} is no longer used, the JdkComboBox shows
-      all the needed actions in the popup. The button will be made invisible."""
-    )
-    fun setSetupButton(
-        setUpButton: JButton?,
-        project: Project?,
-        jdksModel: ProjectSdksModel?,
-        firstItem: JdkComboBoxItem?,
-        additionalSetup: Condition<in Sdk?>?,
-        moduleJdkSetup: Boolean
-    ) {
-        setSetupButton(setUpButton, project, jdksModel, firstItem, additionalSetup, "")
-    }
-
-    @Deprecated(
-        """Use the overloaded constructor to pass these parameters directly to
-      that class. The {@param setUpButton} is no longer used, the JdkComboBox shows
-      all the needed actions in the popup. The button will be made invisible."""
-    )
-    fun setSetupButton(
-        setUpButton: JButton?,
-        project: Project?,
-        jdksModel: ProjectSdksModel?,
-        firstItem: JdkComboBoxItem?,
-        additionalSetup: Condition<in Sdk?>?,
-        actionGroupTitle: String?
-    ) {
-        this.setUpButton = setUpButton
-        setUpButton!!.isVisible = false
     }
 
     override fun getSelectedItem(): JdkComboBoxItem? {
@@ -141,27 +70,6 @@ class JdkComboBox(
         set(jdk) {
             setSelectedItem(jdk)
         }
-
-    @Deprecated(
-        """use {@link #reloadModel()}, you may also need to call
-      {@link #showNoneSdkItem()} or {@link #showProjectSdkItem()} once"""
-    )
-    fun reloadModel(firstItem: JdkComboBoxItem?, project: Project?) {
-        processFirstItem(firstItem)
-        reloadModel()
-    }
-
-    private fun processFirstItem(firstItem: JdkComboBoxItem?) {
-        if (firstItem is ProjectJdkComboBoxItem) {
-            myModel.showProjectSdkItem()
-        }
-        else if (firstItem is NoneJdkComboBoxItem) {
-            myModel.showNoneSdkItem()
-        }
-        else if (firstItem is ActualJdkComboBoxItem) {
-            selectedJdk = firstItem.jdk
-        }
-    }
 
     override fun firePopupMenuWillBecomeVisible() {
         resolveSuggestionsIfNeeded()
@@ -187,10 +95,10 @@ class JdkComboBox(
             return
         }
         if (anObject == null) {
-            val innerModel = (model as JdkComboBoxModel).myInnerModel
-            var candidate = innerModel.findProjectSdkItem()
+            val innerModel = (model as? JdkComboBoxModel)?.myInnerModel
+            var candidate = innerModel?.findProjectSdkItem()
             if (candidate == null) {
-                candidate = innerModel.findNoneSdkItem()
+                candidate = innerModel?.findNoneSdkItem()
             }
             if (candidate == null) {
                 candidate = myModel.showProjectSdkItem()
@@ -202,7 +110,7 @@ class JdkComboBox(
             // it is a chance we have a cloned SDK instance from the model here, or an original one
             // reload model is needed to make sure we see all instances
             myModel.reloadSdks()
-            (model as JdkComboBoxModel).trySelectSdk(anObject)
+            (model as? JdkComboBoxModel)?.trySelectSdk(anObject)
             return
         }
         if (anObject is InnerComboBoxItem) {
@@ -219,7 +127,7 @@ class JdkComboBox(
         }
     }
 
-    private class JdkComboBoxModel internal constructor(val myInnerModel: SdkListModel) :
+    private class JdkComboBoxModel(val myInnerModel: SdkListModel) :
         AbstractListModel<JdkComboBoxItem>(), ComboBoxPopupState<JdkComboBoxItem>, ComboBoxModel<JdkComboBoxItem?> {
         private var mySelectedItem: JdkComboBoxItem? = null
         override fun getSize(): Int {
@@ -232,7 +140,7 @@ class JdkComboBox(
 
         override fun onChosen(selectedValue: JdkComboBoxItem): ListModel<JdkComboBoxItem?>? {
             if (selectedValue is InnerComboBoxItem) {
-                val inner = myInnerModel.onChosen((selectedValue as InnerComboBoxItem).item)
+                val inner = myInnerModel.onChosen((selectedValue as? InnerComboBoxItem)?.item)
                 return if (inner == null) null else JdkComboBoxModel(inner)
             }
             return null
@@ -277,10 +185,10 @@ class JdkComboBox(
     }
 
     private class InnerJdkComboBoxItem(override val item: SdkListItem) : JdkComboBoxItem(), InnerComboBoxItem {
-        override fun equals(o: Any?): Boolean {
-            if (this === o) return true
-            if (o == null || javaClass != o.javaClass) return false
-            val item = o as InnerJdkComboBoxItem
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            val item = other as InnerJdkComboBoxItem
             return this.item == item.item
         }
 
@@ -304,10 +212,10 @@ class JdkComboBox(
         override val sdkName: String?
             get() = jdk.name
 
-        override fun equals(o: Any?): Boolean {
-            if (this === o) return true
-            if (o == null || javaClass != o.javaClass) return false
-            val item = o as ActualJdkComboBoxItem
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            val item = other as ActualJdkComboBoxItem
             return jdk == item.jdk
         }
 
@@ -324,8 +232,8 @@ class JdkComboBox(
             return 42
         }
 
-        override fun equals(obj: Any?): Boolean {
-            return obj is ProjectJdkComboBoxItem
+        override fun equals(other: Any?): Boolean {
+            return other is ProjectJdkComboBoxItem
         }
     }
 
@@ -341,27 +249,9 @@ class JdkComboBox(
             return 42
         }
 
-        override fun equals(obj: Any?): Boolean {
-            return obj is NoneJdkComboBoxItem
+        override fun equals(other: Any?): Boolean {
+            return other is NoneJdkComboBoxItem
         }
-    }
-
-    @Deprecated(
-        """this type is never visible from the {@link #getSelectedItem()} method,
-      it is kept here for binary compatibility"""
-    )
-    class SuggestedJdkItem internal constructor(val sdkType: SdkType, val path: String) : JdkComboBoxItem() {
-        override fun toString(): String {
-            return path
-        }
-    }
-
-    @Deprecated(
-        """Use the {@link JdkComboBox} API to manage shown items,
-      this call is ignored"""
-    )
-    override fun insertItemAt(item: JdkComboBoxItem?, index: Int) {
-        super.insertItemAt(item, index)
     }
 
     companion object {
@@ -369,8 +259,8 @@ class JdkComboBox(
             JdkComboBox::class.java
         )
 
-        private fun unwrapItem(item: JdkComboBoxItem?): SdkListItem {
-            var item = item
+        private fun unwrapItem(givenItem: JdkComboBoxItem?): SdkListItem {
+            var item = givenItem
             if (item == null) item = ProjectJdkComboBoxItem()
             if (item is InnerComboBoxItem) {
                 return (item as InnerComboBoxItem).item
@@ -396,18 +286,9 @@ class JdkComboBox(
         }
     }
 
-    /**
-     * Creates new Sdk selector combobox
-     * @param project current project (if any)
-     * @param sdkModel the sdks model
-     * @param sdkTypeFilter sdk types filter predicate to show
-     * @param sdkFilter filters Sdk instances that are listed, it implicitly includes the {@param sdkTypeFilter}
-     * @param creationFilter a filter of SdkType that allowed to create a new Sdk with that control
-     * @param onNewSdkAdded a callback that is executed once a new Sdk is added to the list
-     */
+
     init {
-        myOnNewSdkAdded = Consumer { sdk: Sdk? -> onNewSdkAdded?.consume(sdk) }
-        setRenderer(SdkListPresenter { (this.model as JdkComboBoxModel).myInnerModel }.forType { item: JdkComboBoxItem? ->
+        setRenderer(SdkListPresenter { (this.model as? JdkComboBoxModel)?.myInnerModel }.forType { item: JdkComboBoxItem? ->
             unwrapItem(
                 item
             )
