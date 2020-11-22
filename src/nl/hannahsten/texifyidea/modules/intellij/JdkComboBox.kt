@@ -52,9 +52,8 @@ class JdkComboBox(
     private val myOnNewSdkAdded: Consumer<Sdk> = Consumer { sdk: Sdk? -> onNewSdkAdded?.consume(sdk) }
 
     override fun onModelUpdated(model: SdkListModel) {
-        val previousSelection: Any? = selectedItem
         val newModel: ComboBoxModel<JdkComboBoxItem?> = JdkComboBoxModel(model)
-        newModel.selectedItem = previousSelection ?: return
+        selectedItem?.let { newModel.selectedItem = it }
         setModel(newModel)
     }
 
@@ -95,10 +94,10 @@ class JdkComboBox(
             return
         }
         if (anObject == null) {
-            val innerModel = (model as? JdkComboBoxModel)?.myInnerModel
-            var candidate = innerModel?.findProjectSdkItem()
+            val innerModel = (model as JdkComboBoxModel).myInnerModel
+            var candidate = innerModel.findProjectSdkItem()
             if (candidate == null) {
-                candidate = innerModel?.findNoneSdkItem()
+                candidate = innerModel.findNoneSdkItem()
             }
             if (candidate == null) {
                 candidate = myModel.showProjectSdkItem()
@@ -110,7 +109,7 @@ class JdkComboBox(
             // it is a chance we have a cloned SDK instance from the model here, or an original one
             // reload model is needed to make sure we see all instances
             myModel.reloadSdks()
-            (model as? JdkComboBoxModel)?.trySelectSdk(anObject)
+            (model as JdkComboBoxModel)?.trySelectSdk(anObject)
             return
         }
         if (anObject is InnerComboBoxItem) {
@@ -140,7 +139,7 @@ class JdkComboBox(
 
         override fun onChosen(selectedValue: JdkComboBoxItem): ListModel<JdkComboBoxItem?>? {
             if (selectedValue is InnerComboBoxItem) {
-                val inner = myInnerModel.onChosen((selectedValue as? InnerComboBoxItem)?.item)
+                val inner = myInnerModel.onChosen((selectedValue as InnerComboBoxItem)?.item)
                 return if (inner == null) null else JdkComboBoxModel(inner)
             }
             return null
@@ -162,13 +161,13 @@ class JdkComboBox(
             fireContentsChanged(this, -1, -1)
         }
 
-        override fun getSelectedItem(): Any {
-            return mySelectedItem!!
+        override fun getSelectedItem(): Any? {
+            return mySelectedItem
         }
 
         fun trySelectSdk(sdk: Sdk) {
             val item = myInnerModel.findSdkItem(sdk) ?: return
-            selectedItem = wrapItem(item)
+            setSelectedItem(wrapItem(item))
         }
     }
 
@@ -288,7 +287,7 @@ class JdkComboBox(
 
 
     init {
-        setRenderer(SdkListPresenter { (this.model as? JdkComboBoxModel)?.myInnerModel }.forType { item: JdkComboBoxItem? ->
+        setRenderer(SdkListPresenter { (this.model as JdkComboBoxModel).myInnerModel }.forType { item: JdkComboBoxItem? ->
             unwrapItem(
                 item
             )
