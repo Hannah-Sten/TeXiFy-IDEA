@@ -6,7 +6,6 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.BibtexLanguage
@@ -175,7 +174,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         // Magic comments keys.
         extend(
             CompletionType.BASIC,
-            PlatformPatterns.psiElement().inside(PsiComment::class.java)
+            PlatformPatterns.psiElement().inside(LatexMagicComment::class.java)
                 .with(object : PatternCondition<PsiElement>("Magic comment completion pattern") {
                     override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
                         return comment.isMagicComment() && comment.text.contains('=').not()
@@ -201,6 +200,9 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
         extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(BibliographyCompiler.values().map { it.executableName }.toHashSet()))
+
+        val fakeRegex = Regex("""fake\s*[=\s*]?""", EnumSet.of(RegexOption.IGNORE_CASE))
+        extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(Magic.Comment.fakeSectionValues))
 
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
@@ -300,7 +302,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
     private fun extendMagicCommentValues(commentName: String, regex: Regex, completionProvider: CompletionProvider<CompletionParameters>) {
         extend(
             CompletionType.BASIC,
-            PlatformPatterns.psiElement().inside(PsiComment::class.java)
+            PlatformPatterns.psiElement().inside(LatexMagicComment::class.java)
                 .with(object : PatternCondition<PsiElement>("Magic comment $commentName pattern") {
                     override fun accepts(comment: PsiElement, context: ProcessingContext?): Boolean {
                         return comment.isMagicComment() && comment.text.contains(regex)

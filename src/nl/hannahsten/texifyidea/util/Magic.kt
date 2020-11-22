@@ -274,6 +274,9 @@ object Magic {
 
         @JvmField
         val preambleValues = hashSetOf("tikz", "math")
+
+        @JvmField
+        val fakeSectionValues = hashSetOf("part", "chapter", "section", "subsection", "subsubsection", "paragraph", "subparagraph")
     }
 
     /**
