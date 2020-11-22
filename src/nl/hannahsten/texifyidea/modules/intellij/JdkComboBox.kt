@@ -109,7 +109,7 @@ class JdkComboBox(
             // it is a chance we have a cloned SDK instance from the model here, or an original one
             // reload model is needed to make sure we see all instances
             myModel.reloadSdks()
-            (model as JdkComboBoxModel)?.trySelectSdk(anObject)
+            (model as JdkComboBoxModel).trySelectSdk(anObject)
             return
         }
         if (anObject is InnerComboBoxItem) {
@@ -139,7 +139,7 @@ class JdkComboBox(
 
         override fun onChosen(selectedValue: JdkComboBoxItem): ListModel<JdkComboBoxItem?>? {
             if (selectedValue is InnerComboBoxItem) {
-                val inner = myInnerModel.onChosen((selectedValue as InnerComboBoxItem)?.item)
+                val inner = myInnerModel.onChosen((selectedValue as InnerComboBoxItem).item)
                 return if (inner == null) null else JdkComboBoxModel(inner)
             }
             return null
@@ -284,7 +284,6 @@ class JdkComboBox(
             return if (filter == null) Conditions.alwaysTrue() else Condition { sdk: Sdk? -> filter.value(sdk?.sdkType) }
         }
     }
-
 
     init {
         setRenderer(SdkListPresenter { (this.model as JdkComboBoxModel).myInnerModel }.forType { item: JdkComboBoxItem? ->

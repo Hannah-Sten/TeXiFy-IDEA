@@ -19,7 +19,6 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox.ActualJdkComboBoxItem
 import nl.hannahsten.texifyidea.modules.intellij.JdkComboBox.ProjectJdkComboBoxItem
@@ -41,7 +40,7 @@ class SdkSettingsStep(
     private val myWizardContext: WizardContext
     private val myModel: ProjectSdksModel
     private val myModuleBuilder: ModuleBuilder
-    val myJdkPanel: JPanel
+    private val myJdkPanel: JPanel
 
     @JvmOverloads
     constructor(
@@ -105,14 +104,11 @@ class SdkSettingsStep(
         }
     }
 
-    private fun onSdkSelected(sdk: Sdk?) {}
-
     val isEmpty: Boolean
         get() = myJdkPanel.componentCount == 0
 
-    private fun getSdkFieldLabel(project: Project?): @NlsContexts.Label String {
-//    return JavaUiBundle.message("sdk.setting.step.label", project == null ? 0 : 1);
-        return project.toString()
+    private fun getSdkFieldLabel(project: Project?): String {
+        return if (project == null) "Project SDK:" else "Module SDK:"
     }
 
     override fun getComponent(): JComponent {
@@ -136,7 +132,7 @@ class SdkSettingsStep(
         if (myJdkComboBox.selectedJdk == null && item !is ProjectJdkComboBoxItem) {
             if (Messages.showDialog(
                     noSdkMessage,
-                    "title.no.jdk.specified",
+                    "No SDK Specified",
                     arrayOf(CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()),
                     1,
                     Messages.getWarningIcon()
@@ -164,8 +160,7 @@ class SdkSettingsStep(
         return true
     }
 
-    private val noSdkMessage: String?
-        private get() = "Do you want to create a project with no SDK assigned?\nAn SDK is required for compiling and resolving installed packages."
+    private val noSdkMessage = "Do you want to create a project with no SDK assigned?\nAn SDK is required for compiling and resolving installed packages."
 
     init {
         var mySdkFilter = sdkFilter
@@ -195,7 +190,6 @@ class SdkSettingsStep(
             if (jdk != null) {
                 component.setValue(selectedJdkProperty, jdk.name)
             }
-            onSdkSelected(jdk)
         }
         preselectSdk(project, component.getValue(selectedJdkProperty), sdkTypeIdFilter)
         myJdkPanel.add(

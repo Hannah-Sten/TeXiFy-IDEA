@@ -14,6 +14,7 @@ import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.modules.intellij.SdkSettingsStep
+import nl.hannahsten.texifyidea.settings.LatexSdk
 import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import java.io.File
 import java.util.*
@@ -39,8 +40,8 @@ class LatexModuleBuilder : ModuleBuilder() {
 
     override fun getCustomOptionsStep(context: WizardContext?, parentDisposable: Disposable?) = LatexModuleWizardStep(this)
 
-    override fun modifyProjectTypeStep(settingsStep: SettingsStep): ModuleWizardStep? {
-        val filter = Condition { id: SdkTypeId -> id.name == "LaTeX SDK" }
+    override fun modifyProjectTypeStep(settingsStep: SettingsStep): ModuleWizardStep {
+        val filter = Condition { id: SdkTypeId -> id is LatexSdk }
         // SdkSettingsStep is not available in non-IntelliJ IDEs, so we simply copy those classes to TeXiFy.
         return SdkSettingsStep(settingsStep, this, filter)
     }

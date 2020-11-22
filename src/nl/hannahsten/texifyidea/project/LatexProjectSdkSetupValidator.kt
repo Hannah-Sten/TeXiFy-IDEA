@@ -6,6 +6,7 @@ import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
@@ -14,6 +15,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 
 /**
  * https://jetbrains.org/intellij/sdk/docs/reference_guide/project_model/sdk.html#assisting-in-setting-up-an-sdk
@@ -30,15 +32,15 @@ class LatexProjectSdkSetupValidator : ProjectSdkSetupValidator {
     override fun getErrorMessage(project: Project, file: VirtualFile): String? {
         // Based on https://github.com/rikvdkleij/intellij-haskell/blob/895a214b174b69f661d4f7d4230633058fca8f1e/src/main/scala/intellij/haskell/notification/HaskellProjectSdkSetupValidator.scala#L24
         // Nothing to do if we don't need an SDK
-//        if (LatexSdkUtil.isPdflatexInPath) return null
+        if (LatexSdkUtil.isPdflatexInPath) return null
         val module = ModuleUtilCore.findModuleForFile(file, project) ?: return null
-        if (ModuleRootManager.getInstance(module).sdk?.sdkType is LatexSdk) return null
-        return "No LaTeX installation could be found. Please add it to PATH or set up a LaTeX SDK."
+        if (ModuleRootManager.getInstance(module).sdk?.sdkType is LatexSdk || ProjectRootManager.getInstance(project).projectSdk?.sdkType is LatexSdk) return null
+        return "No LaTeX installation could be found. Please add it to PATH or set up a LaTeX SDK (and reopen this file)."
     }
 
     override fun getFixHandler(project: Project, file: VirtualFile): EditorNotificationPanel.ActionHandler {
         return SdkPopupFactory.newBuilder().withProject(project)
-            .withSdkTypeFilter { id: SdkTypeId -> id.name == "LaTeX SDK" }
+            .withSdkTypeFilter { id: SdkTypeId -> id is LatexSdk }
             .updateProjectSdkFromSelection()
             .buildEditorNotificationPanelHandler()
     }
