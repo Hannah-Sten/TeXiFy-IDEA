@@ -113,3 +113,6 @@ The following commands are supported.
 * `\Procedure{<name>}{<params>} <body> \EndProcedure`
 
 Commands defined using `\algblock` or `\algloop` are currently not recognized by the formatter.
+
+
+Formatting for algorithms written with `algorithm2e` instead of `algorithmicx` is also supported.

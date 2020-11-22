@@ -1,0 +1,16 @@
+:experimental:
+
+In IntelliJ you can use the SDK settings editor to specify a custom LaTeX SDK, in order to let TeXiFy know where your LaTeX installation is.
+This is of course only necessary if it is not in your PATH already, but in some cases (like with a Flatpak installation) it is not possible to modify your PATH.
+
+You can find these settings in menu:File[Project Structure].
+Under SDKs you can see all the configured SDKs.
+If you click the plus button there, you can see the different types of SDKs you can add but it also shows automatically detected SDKs.
+
+Once you have created an SDK (which is a global setting), you can select it as Project SDK under the Project menu.
+Then you can in your run configuration under LaTeX Distribution select Use project SDK.
+It is probably a good idea to do that for your link:Run-configurations[run configuration template] as well if you want to use it every time.
+
+If you don't have `pdflatex` in your PATH, TeXiFy will show a warning that you won't be able to compile.
+
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Settings/figures/set-up-sdk.png[]
