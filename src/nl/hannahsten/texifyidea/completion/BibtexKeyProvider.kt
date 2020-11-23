@@ -11,6 +11,7 @@ import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.TokenTypeInsertHandler
 import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.util.*
@@ -83,7 +84,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
 
     private fun packageName(dependend: Dependend): String {
         return when (val dependency = dependend.dependency) {
-            Package.DEFAULT -> ""
+            LatexPackage.DEFAULT -> ""
             else -> "  (${dependency.name})"
         }
     }

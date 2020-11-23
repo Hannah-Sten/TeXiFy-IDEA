@@ -481,6 +481,7 @@
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->
