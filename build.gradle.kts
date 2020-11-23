@@ -133,7 +133,7 @@ intellij {
     // Example to use a different, locally installed, IDE
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
     // Also disable "version" above
-//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-1/203.5419.8/"
+//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/MPS/ch-0/203.4818.546/"
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task
