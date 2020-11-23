@@ -22,6 +22,7 @@ public class LatexParameterTextImpl extends ASTWrapperPsiElement implements Late
     visitor.visitParameterText(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);

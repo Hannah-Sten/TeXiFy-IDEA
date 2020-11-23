@@ -21,6 +21,7 @@ public class LatexPseudocodeBlockImpl extends ASTWrapperPsiElement implements La
     visitor.visitPseudocodeBlock(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);

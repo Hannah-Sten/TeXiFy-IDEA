@@ -8,6 +8,8 @@ import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSFONTS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
@@ -877,7 +879,8 @@ object Magic {
             MATHTOOLS to setOf(AMSMATH),
             GRAPHICX to setOf(GRAPHICS),
             XCOLOR to setOf(LatexPackage.COLOR),
-            PDFCOMMENT to setOf(LatexPackage.HYPERREF)
+            PDFCOMMENT to setOf(LatexPackage.HYPERREF),
+            ALGORITHM2E to setOf(ALGPSEUDOCODE), // This is not true, but loading any of these two (incompatible) packages is sufficient as they provide the same commands (roughly)
         )
 
         /**

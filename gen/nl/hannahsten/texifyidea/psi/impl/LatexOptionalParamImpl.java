@@ -21,6 +21,7 @@ public class LatexOptionalParamImpl extends ASTWrapperPsiElement implements Late
     visitor.visitOptionalParam(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);
