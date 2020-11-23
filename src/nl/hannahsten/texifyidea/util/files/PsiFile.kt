@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
-import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.reference.InputFileReference
@@ -84,7 +84,7 @@ fun PsiFile.isUsed(packageName: String) = PackageUtils.getIncludedPackages(this)
  * @return `true` when there is a package `package` included in the file set, `false` otherwise.
  */
 @Suppress("unused")
-fun PsiFile.isUsed(`package`: Package) = isUsed(`package`.name)
+fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
 
 /**
  * Scans the whole document (recursively) for all referenced/included files, except installed LaTeX packages.

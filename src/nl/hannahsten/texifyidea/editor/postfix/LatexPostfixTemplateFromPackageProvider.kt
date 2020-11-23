@@ -4,10 +4,10 @@ import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.insertUsepackage
 
-abstract class LatexPostfixTemplateFromPackageProvider(private val pack: Package) : PostfixTemplateProvider {
+abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexPackage) : PostfixTemplateProvider {
     abstract override fun getTemplates(): MutableSet<PostfixTemplate>
 
     override fun isTerminalSymbol(currentChar: Char): Boolean = (currentChar == '.' || currentChar == ',')
@@ -22,30 +22,30 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: Package
     override fun preExpand(file: PsiFile, editor: Editor) {}
 
     companion object {
-        fun getProvider(pack: Package?): PostfixTemplateProvider {
+        fun getProvider(pack: LatexPackage?): PostfixTemplateProvider {
             return when (pack) {
-                Package.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider
-                Package.AMSFONTS -> LatexPostfixTemplateFromAmsFontsProvider
-                Package.BM -> LatexPostfixTemplateFromBmProvider
+                LatexPackage.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider
+                LatexPackage.AMSFONTS -> LatexPostfixTemplateFromAmsFontsProvider
+                LatexPackage.BM -> LatexPostfixTemplateFromBmProvider
                 else -> LatexPostFixTemplateProvider
             }
         }
     }
 }
 
-object LatexPostfixTemplateFromAmsMathProvider : LatexPostfixTemplateFromPackageProvider(Package.AMSMATH) {
+object LatexPostfixTemplateFromAmsMathProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.AMSMATH) {
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithTextPostfixTemplate
     )
 }
 
-object LatexPostfixTemplateFromAmsFontsProvider : LatexPostfixTemplateFromPackageProvider(Package.AMSFONTS) {
+object LatexPostfixTemplateFromAmsFontsProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.AMSFONTS) {
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithMathbbPostfixTemplate
     )
 }
 
-object LatexPostfixTemplateFromBmProvider : LatexPostfixTemplateFromPackageProvider(Package.BM) {
+object LatexPostfixTemplateFromBmProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.BM) {
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithBmPostfixTemplate
     )

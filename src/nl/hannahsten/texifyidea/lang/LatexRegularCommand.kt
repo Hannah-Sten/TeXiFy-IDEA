@@ -1,21 +1,21 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Argument.Type
-import nl.hannahsten.texifyidea.lang.Package.Companion.ALGPSEUDOCODE
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
-import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
-import nl.hannahsten.texifyidea.lang.Package.Companion.CLEVEREF
-import nl.hannahsten.texifyidea.lang.Package.Companion.CSQUOTES
-import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
-import nl.hannahsten.texifyidea.lang.Package.Companion.FONTENC
-import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIES
-import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
-import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
-import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
-import nl.hannahsten.texifyidea.lang.Package.Companion.SIUNITX
-import nl.hannahsten.texifyidea.lang.Package.Companion.SUBFILES
-import nl.hannahsten.texifyidea.lang.Package.Companion.ULEM
-import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SIUNITX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 
 /**
  * @author Sten Wessel
@@ -23,7 +23,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
 enum class LatexRegularCommand(
     override val command: String,
     override vararg val arguments: Argument = emptyArray(),
-    override val dependency: Package = DEFAULT,
+    override val dependency: LatexPackage = DEFAULT,
     override val display: String? = null
 ) : LatexCommand {
 
@@ -35,7 +35,7 @@ enum class LatexRegularCommand(
     CAPITAL_AE("AE", display = "Æ"),
     APPENDIX("appendix"),
     AUTHOR("author", "name".asRequired(Type.TEXT)),
-    AUTOREF("autoref", "label".asRequired(Type.TEXT), dependency = Package.HYPERREF),
+    AUTOREF("autoref", "label".asRequired(Type.TEXT), dependency = LatexPackage.HYPERREF),
     BEGIN("begin", "environment".asRequired()),
     END("end", "environment".asRequired()),
     ENSUREMATH("ensuremath", "text".asRequired()),
@@ -56,7 +56,7 @@ enum class LatexRegularCommand(
     CITE("cite", "extratext".asOptional(), "keys".asRequired()),
     CLEARDOUBLEPAGE("cleardoublepage"),
     CLEARPAGE("clearpage"),
-    COLOR("color", "color".asRequired(), dependency = Package.COLOR),
+    COLOR("color", "color".asRequired(), dependency = LatexPackage.COLOR),
     COLOR2("color", "model-list".asOptional(), "spec-list".asRequired(), dependency = XCOLOR),
     COLORBOX("colorbox", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
     COLORBOX2("colorbox", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
@@ -111,7 +111,7 @@ enum class LatexRegularCommand(
     FRAME("frame", "text".asRequired(Type.TEXT)),
     FRQ("frq", display = "›"),
     FRQQ("frqq", display = "»"),
-    FULLREF("fullref", "label".asRequired(Type.TEXT), dependency = Package.HYPERREF),
+    FULLREF("fullref", "label".asRequired(Type.TEXT), dependency = LatexPackage.HYPERREF),
     GLOSSARYENTRY("glossaryentry", "text".asRequired(Type.TEXT), "pagenum".asRequired()),
     GLOSSARY("glossary", "text".asRequired(Type.TEXT)),
     GLQ("glq", display = ","),
@@ -123,7 +123,7 @@ enum class LatexRegularCommand(
     GUILLEMOTRIGHT("guillemotright", dependency = FONTENC.with("T1"), display = "»"),
     HFILL("hfill"),
     HIDEROWCOLORS("hiderowcolors", dependency = XCOLOR),
-    HREF("href", "url".asRequired(), "text".asRequired(), dependency = Package.HYPERREF),
+    HREF("href", "url".asRequired(), "text".asRequired(), dependency = LatexPackage.HYPERREF),
     HRULE("hrule"),
     HRULEFILL("hrulefill"),
     HSPACE("hspace", "length".asRequired()),
@@ -131,14 +131,14 @@ enum class LatexRegularCommand(
     HSS("hss"),
     HUGE("huge"),
     CAPITAL_HUGE("Huge"),
-    HYPERREF("hyperref", "options".asOptional(), "label".asRequired(Type.TEXT), dependency = Package.HYPERREF),
+    HYPERREF("hyperref", "options".asOptional(), "label".asRequired(Type.TEXT), dependency = LatexPackage.HYPERREF),
     HYPHENATION("hyphenation", "words".asRequired(Type.TEXT)),
     I("i", display = "i (dotless)"),
-    IMPORT("import", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    IMPORT("import", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INCLUDE("include", RequiredFileArgument("sourcefile", false, false, "tex")),
-    INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    INCLUDEFROM("includefrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INPUT("input", RequiredFileArgument("sourcefile", true, false, "tex")),
-    INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    INPUTFROM("inputfrom", RequiredFolderArgument("absolute path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     INCLUDEGRAPHICS("includegraphics", "key-val-list".asOptional(), RequiredPicturePathArgument("imagefile", true, false, "pdf", "png", "jpg", "eps", "tikz"), dependency = GRAPHICX),
     INCLUDEONLY("includeonly", RequiredFileArgument("sourcefile", false, false, "tex")),
     INDEXNAME("indexname", "name".asRequired()),
@@ -181,7 +181,7 @@ enum class LatexRegularCommand(
     MDSERIES("mdseries"),
     MEDSKIP("medskip"),
     MULTICOLUMN("multicolumn", "cols".asRequired(), "pos".asRequired(), "text".asRequired(Type.TEXT)),
-    NAMEREF("nameref", "label".asRequired(Type.TEXT), dependency = Package.HYPERREF),
+    NAMEREF("nameref", "label".asRequired(Type.TEXT), dependency = LatexPackage.HYPERREF),
     NEWLABEL("newlabel"),
     NEWLENGTH("newlength", "length".asRequired()),
     NEWLINE("newline"),
@@ -270,8 +270,8 @@ enum class LatexRegularCommand(
     STRETCH("stretch", "factor".asRequired()),
     SUBFILE("subfile", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = SUBFILES),
     SUBFILEINCLUDE("subfileinclude", RequiredFileArgument("sourcefile", true, false, "tex"), dependency = SUBFILES),
-    SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
-    SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = Package.IMPORT),
+    SUBIMPORT("subimport", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
+    SUBINCLUDEFROM("subincludefrom", RequiredFolderArgument("relative path"), RequiredFileArgument("filename", false, false, "tex"), dependency = LatexPackage.IMPORT),
     SUBITEM("subitem"),
     SUBPARAGRAPH("subparagraph", "shorttitle".asOptional(Type.TEXT), "title".asRequired(Type.TEXT)),
     SUBPARAGRAPH_STAR("subparagraph*", "title".asRequired(Type.TEXT)),
@@ -355,7 +355,7 @@ enum class LatexRegularCommand(
     UNITLENGTH("unitlength"),
     UPPERCASE("uppercase", "text".asRequired(Type.TEXT)),
     UPSHAPE("upshape"),
-    URL("url", "url".asRequired(), dependency = Package.HYPERREF),
+    URL("url", "url".asRequired(), dependency = LatexPackage.HYPERREF),
     USEPACKAGE("usepackage", "options".asOptional(), RequiredFileArgument("package", true, true, "sty")),
     VDOTS("vdots", display = "⋮"),
     VLINE("vline"),
@@ -402,14 +402,14 @@ enum class LatexRegularCommand(
     /**
      * Xparse definitions
      */
-    NEWDOCUMENTCOMMAND("NewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
-    RENEWDOCUMENTCOMMAND("RenewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
-    PROVIDEDOCUMENTCOMMAND("ProvideDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
-    DECLAREDOCUMENTCOMMAND("DeclareDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = Package.XPARSE),
-    NEWDOCUMENTENVIRONMENT("NewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
-    RENEWDOCUMENTENVIRONMENT("RenewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
-    PROVIDEDOCUMENTENVIRONMENT("ProvideDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
-    DECLAREDOCUMENTENVIRONMENT("DeclareDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = Package.XPARSE),
+    NEWDOCUMENTCOMMAND("NewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = LatexPackage.XPARSE),
+    RENEWDOCUMENTCOMMAND("RenewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = LatexPackage.XPARSE),
+    PROVIDEDOCUMENTCOMMAND("ProvideDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = LatexPackage.XPARSE),
+    DECLAREDOCUMENTCOMMAND("DeclareDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = LatexPackage.XPARSE),
+    NEWDOCUMENTENVIRONMENT("NewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = LatexPackage.XPARSE),
+    RENEWDOCUMENTENVIRONMENT("RenewDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = LatexPackage.XPARSE),
+    PROVIDEDOCUMENTENVIRONMENT("ProvideDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = LatexPackage.XPARSE),
+    DECLAREDOCUMENTENVIRONMENT("DeclareDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = LatexPackage.XPARSE),
 
     /**
      * Natbib citations

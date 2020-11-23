@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
 
 class MathEnvironmentEditor(
@@ -103,15 +103,15 @@ class MathEnvironmentEditor(
             )
             val file = environment.containingFile
                 ?: return@runUndoTransparentWriteAction
-            if (isAmsMathEnvironment(newEnvironmentName) && Package.AMSMATH.name !in file.includedPackages()) {
-                file.insertUsepackage(Package.AMSMATH)
+            if (isAmsMathEnvironment(newEnvironmentName) && LatexPackage.AMSMATH.name !in file.includedPackages()) {
+                file.insertUsepackage(LatexPackage.AMSMATH)
             }
         }
     }
 
     private fun isAmsMathEnvironment(environmentName: String): Boolean {
         val amsMathEnvironments: Array<String> = DefaultEnvironment.values()
-            .filter { it.dependency == Package.AMSMATH }
+            .filter { it.dependency == LatexPackage.AMSMATH }
             .map { it.environmentName }
             .toTypedArray()
         return amsMathEnvironments.contains(environmentName)
