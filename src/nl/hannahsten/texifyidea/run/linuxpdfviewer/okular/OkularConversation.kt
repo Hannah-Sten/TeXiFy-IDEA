@@ -22,19 +22,13 @@ object OkularConversation : ViewerConversation() {
      * @param line Line number in the source file to navigate to in the pdf.
      */
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-
-        // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Okular
-        if (!focusAllowed) {
-            return
-        }
-
         if (pdfPath != null) {
             pdfFilePath = pdfPath
         }
 
         if (pdfFilePath != null) {
             // This okular command opens the pdf file using the destination coming from the line in the tex file.
-            val command = "okular --unique '$pdfFilePath#src:$line $sourceFilePath'"
+            val command = "okular --noraise --unique '$pdfFilePath#src:$line $sourceFilePath'"
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
         }
         else {
