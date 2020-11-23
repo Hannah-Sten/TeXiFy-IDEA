@@ -117,8 +117,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    setPlugins("tanvd.grazi:203.4449.8", "java")
+    setPlugins("tanvd.grazi", "java")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false

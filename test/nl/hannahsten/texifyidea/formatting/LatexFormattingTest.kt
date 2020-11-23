@@ -158,6 +158,34 @@ fun Int?.ifPositiveAddTwo(): Int =
         """.trimIndent()
     }
 
+    fun testAlgorithm2e() {
+        """
+            \begin{algorithm} 
+                 \While{While condition}{
+        instructions\;
+        \eIf{condition}{
+            instructions1\;
+            instructions2\;
+        }{
+            instructions3\;
+        }
+            }
+             \end{algorithm}
+        """.trimIndent() `should be reformatted to` """
+            \begin{algorithm}
+                \While{While condition}{
+                    instructions\;
+                    \eIf{condition}{
+                        instructions1\;
+                        instructions2\;
+                    }{
+                        instructions3\;
+                    }
+                }
+            \end{algorithm}
+        """.trimIndent()
+    }
+
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
         writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }

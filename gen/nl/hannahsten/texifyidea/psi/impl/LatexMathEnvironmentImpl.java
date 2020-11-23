@@ -21,6 +21,7 @@ public class LatexMathEnvironmentImpl extends ASTWrapperPsiElement implements La
     visitor.visitMathEnvironment(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);

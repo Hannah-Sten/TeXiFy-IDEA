@@ -21,6 +21,7 @@ public class LatexMathContentImpl extends ASTWrapperPsiElement implements LatexM
     visitor.visitMathContent(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);

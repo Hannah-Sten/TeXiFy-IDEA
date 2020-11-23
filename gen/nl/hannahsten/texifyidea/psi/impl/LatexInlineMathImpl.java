@@ -21,6 +21,7 @@ public class LatexInlineMathImpl extends ASTWrapperPsiElement implements LatexIn
     visitor.visitInlineMath(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);
