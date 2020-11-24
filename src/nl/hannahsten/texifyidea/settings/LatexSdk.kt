@@ -89,7 +89,7 @@ class TexliveSdk : LatexSdk("TeX Live SDK") {
         // Note that suggested paths appear under "Detected SDK's" when adding an SDK
         val results = mutableSetOf<String>()
         val path = "which pdflatex".runCommand()
-        if (path != null) {
+        if (!path.isNullOrEmpty()) {
             // Let's just assume that there is only one /bin/ in this path
             val index = path.findLastAnyOf(setOf("/bin/"))?.first ?: path.length - 1
             results.add(path.substring(0, index))
