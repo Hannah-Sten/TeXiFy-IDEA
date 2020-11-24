@@ -30,7 +30,8 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
 
         // Allow Material design plugins to take over the icons
         // For file types registered in plugin.xml this happens automatically
-        if (PluginManager.getLoadedPlugins().none { it.name.contains("Material") }) {
+        val keywords = setOf("Icon", "Material", "Theme")
+        if (PluginManager.getLoadedPlugins().none { plugin -> keywords.any { plugin.name.contains(it) } }) {
             val icon = Magic.Icon.fileIcons[extension.toLowerCase()] ?: return
             presentationData.setIcon(icon)
         }
