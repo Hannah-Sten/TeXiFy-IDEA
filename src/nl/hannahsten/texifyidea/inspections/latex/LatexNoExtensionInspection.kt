@@ -43,13 +43,13 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
             }
             .forEach { command ->
                 val parameterList = command.requiredParameters.map { it.split(",") }.flatten()
-                var offset = 0
+                var offset = command.parameterList.first { it.requiredParam != null }.textOffset - command.textOffset + 1
                 for (parameter in parameterList) {
                     if (Magic.Command.illegalExtensions[command.name]!!.any { parameter.endsWith(it) }) {
                         descriptors.add(
                             manager.createProblemDescriptor(
                                 command,
-                                TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
+                                TextRange(offset, offset + parameter.length),
                                 "File argument should not include the extension",
                                 ProblemHighlightType.GENERIC_ERROR,
                                 isOntheFly,

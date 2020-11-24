@@ -10,6 +10,7 @@ class LatexNoExtensionInspectionTest : TexifyInspectionTestBase(LatexNoExtension
             LatexFileType,
             """
             \bibliography{<error descr="File argument should not include the extension">test.bib</error>}
+            \includegraphics[lots of options here]{<error descr="File argument should not include the extension">folder/file.png</error>}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
