@@ -550,7 +550,8 @@ object Magic {
         val illegalExtensions = mapOf(
             "\\" + INCLUDE.command to listOf(".tex"),
             "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
-            "\\" + BIBLIOGRAPHY.command to listOf(".bib")
+            "\\" + BIBLIOGRAPHY.command to listOf(".bib"),
+            "\\" + INCLUDEGRAPHICS.command to listOf(".eps", ".pdf", ".png", ".jpeg", ".jbig2", ".jp2"), // https://tex.stackexchange.com/a/1075/98850
         )
 
         /**
