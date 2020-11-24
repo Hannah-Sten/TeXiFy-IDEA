@@ -34,7 +34,7 @@ interface BibtexEntryType : Described, Dependend {
     }
 
     fun bibPackage(): String = when (dependency) {
-        Package.BIBLATEX -> "BIBLATEX"
+        LatexPackage.BIBLATEX -> "BIBLATEX"
         else -> "BIBTEX"
     }
 

@@ -1,10 +1,10 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Environment.Context
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
-import nl.hannahsten.texifyidea.lang.Package.Companion.GAUSS
-import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
-import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GAUSS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.name
 import java.util.*
@@ -17,7 +17,7 @@ enum class DefaultEnvironment(
     override val environmentName: String,
     override val initialContents: String = "",
     override val context: Context = Context.NORMAL,
-    override val dependency: Package = Package.DEFAULT
+    override val dependency: LatexPackage = LatexPackage.DEFAULT
 ) : Environment {
 
     // Vanilla LaTeX
@@ -120,16 +120,16 @@ enum class DefaultEnvironment(
     GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
 
     // comment
-    COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = Package.COMMENT),
+    COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = LatexPackage.COMMENT),
 
     // lualatex
-    LUACODE(environmentName = "luacode", dependency = Package.LUACODE),
+    LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
 
     // listings
-    LISTINGS(environmentName = "lstlisting", dependency = Package.LISTINGS),
+    LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),
 
     // tikz
-    TIKZPICTURE(environmentName = "tikzpicture", dependency = Package.TIKZ),
+    TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
 
     // xcolor
     TESTCOLORS(environmentName = "testcolors", arguments = arrayOf(OptionalArgument("num models")), dependency = XCOLOR);

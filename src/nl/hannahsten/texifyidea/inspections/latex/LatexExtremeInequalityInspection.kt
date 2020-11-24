@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 
 import com.intellij.codeInspection.ProblemDescriptor
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import java.util.regex.Matcher
 import java.util.regex.Pattern

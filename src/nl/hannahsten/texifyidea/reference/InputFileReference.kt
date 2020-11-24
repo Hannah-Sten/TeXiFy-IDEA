@@ -130,13 +130,21 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Since the parameter content may be a path, but we are just given a filename, just replace the filename
         // We guess the filename is after the last occurrence of /
         val oldNode = myElement?.node
-        val defaultNewText = "${myElement?.name}{$newElementName}"
+
+        val newName = if ((oldNode?.psi as? LatexCommands)?.name in Magic.Command.illegalExtensions.keys) {
+            newElementName.removeFileExtension()
+        }
+        else {
+            newElementName
+        }
+
+        val defaultNewText = "${myElement?.name}{$newName}"
         // Assumes that it is the last parameter, but at least leaves the options intact
-        val default = oldNode?.text?.replaceAfterLast('{', "$newElementName}", defaultNewText) ?: defaultNewText
+        val default = oldNode?.text?.replaceAfterLast('{', "$newName}", defaultNewText) ?: defaultNewText
 
         // Recall that \ is a file separator on Windows
         val newText = if (elementNameIsJustFilename) {
-            oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newElementName}", default.trimStart('\\'))
+            oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
                 ?.let { "\\" + it } ?: default
         }
         else {

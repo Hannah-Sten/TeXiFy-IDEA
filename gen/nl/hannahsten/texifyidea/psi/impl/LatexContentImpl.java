@@ -21,6 +21,7 @@ public class LatexContentImpl extends ASTWrapperPsiElement implements LatexConte
     visitor.visitContent(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);

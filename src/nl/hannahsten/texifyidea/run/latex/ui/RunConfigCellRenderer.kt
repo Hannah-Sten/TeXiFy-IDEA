@@ -23,5 +23,6 @@ class RunConfigCellRenderer(private val project: Project) : ColoredListCellRende
             if (settings.isTemporary) SimpleTextAttributes.GRAY_ATTRIBUTES
             else SimpleTextAttributes.REGULAR_ATTRIBUTES
         )
+        append(" " + settings.configuration.type.displayName, SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
     }
 }

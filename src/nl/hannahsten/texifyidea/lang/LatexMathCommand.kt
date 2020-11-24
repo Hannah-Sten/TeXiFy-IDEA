@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Argument.Type
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
-import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
-import nl.hannahsten.texifyidea.lang.Package.Companion.LATEXSYMB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSFONTS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LATEXSYMB
 
 /**
  * @author Sten Wessel
@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.Package.Companion.LATEXSYMB
 enum class LatexMathCommand(
     override val command: String,
     override vararg val arguments: Argument = emptyArray(),
-    override val dependency: Package = DEFAULT,
+    override val dependency: LatexPackage = DEFAULT,
     override val display: String? = null,
     val collapse: Boolean = false
 ) : LatexCommand {
@@ -259,7 +259,7 @@ enum class LatexMathCommand(
      */
     MATHBB("mathbb", "text".asRequired(Type.TEXT), dependency = AMSFONTS),
     MATHBF("mathbf", "text".asRequired()),
-    BM("bm", "text".asRequired(Type.TEXT), dependency = Package.BM),
+    BM("bm", "text".asRequired(Type.TEXT), dependency = LatexPackage.BM),
     MATHCAL("mathcal", "text".asRequired()),
     MATHDS("mathds", "mathds".asRequired()),
     MATHELLIPSIS("mathellipsis"),

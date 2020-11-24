@@ -5,6 +5,8 @@ import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
+import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 
@@ -27,6 +29,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")
+        is ExternalToolRunConfigurationType -> ExternalToolRunConfiguration(project, this, "External LaTeX tool")
         else -> throw IllegalArgumentException("No TeXiFy run configuration type, but ${type.id} was received instead.")
     }
 

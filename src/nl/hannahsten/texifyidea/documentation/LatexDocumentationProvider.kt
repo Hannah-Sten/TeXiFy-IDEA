@@ -5,8 +5,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.Package
-import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -46,7 +46,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         // Special case for package inclusion commands
         if (command.first().command in PACKAGE_COMMANDS) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
-            return runTexdoc(Package(pkg))
+            return runTexdoc(LatexPackage(pkg))
         }
 
         return runTexdoc(command.first().dependency)
@@ -113,7 +113,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         psiElement: PsiElement?
     ): PsiElement? = null
 
-    private fun runTexdoc(pkg: Package): List<String> {
+    private fun runTexdoc(pkg: LatexPackage): List<String> {
         val name = if (pkg == DEFAULT) "source2e" else pkg.name
 
         val stream: InputStream

@@ -20,7 +20,7 @@ class AnalyzeMenuRegistration : StartupActivity, DumbAware {
         // Get the group which should be added to either the Analyze menu or something else
         val latexAnalyzeMenuGroup = ActionManager.getInstance().getAction("texify.LatexMenuAnalyze") as DefaultActionGroup
 
-        val analyzeGroup = getAnalyzeGroup()
+        val analyzeGroup = getAnalyzeGroup() ?: return
 
         // Add the group which contains the LaTeX actions to the Analyze menu
         // First remove it, to avoid adding it twice
@@ -32,22 +32,22 @@ class AnalyzeMenuRegistration : StartupActivity, DumbAware {
      * The Analyze menu group is not present in PyCharm and probably also not in other IDEs, so we will only use it in IntelliJ.
      * In PyCharm (and others) we will use the Code group.
      */
-    private fun getAnalyzeGroup(): DefaultActionGroup {
+    private fun getAnalyzeGroup(): DefaultActionGroup? {
         val applicationName = ApplicationNamesInfo.getInstance().scriptName
 
         return if (applicationName == "idea") {
             // Get an instance of the Analyze action group by ID
-            ActionManager.getInstance().getAction(IdeActions.GROUP_ANALYZE) as DefaultActionGroup
+            ActionManager.getInstance().getAction(IdeActions.GROUP_ANALYZE) as? DefaultActionGroup
         }
         else {
             // Get an instance of the Code action group by ID
-            ActionManager.getInstance().getAction("CodeMenu") as DefaultActionGroup
+            ActionManager.getInstance().getAction("CodeMenu") as? DefaultActionGroup
         }
     }
 
     fun unload() {
         val latexAnalyzeMenuGroup = ActionManager.getInstance().getAction("texify.LatexMenuAnalyze") as DefaultActionGroup
-        val analyzeGroup = getAnalyzeGroup()
+        val analyzeGroup = getAnalyzeGroup() ?: return
         analyzeGroup.remove(latexAnalyzeMenuGroup)
     }
 }

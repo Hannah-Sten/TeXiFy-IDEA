@@ -35,7 +35,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     }
 
     fun clone(): LatexOutputPath {
-        return LatexOutputPath(variant, contentRoot, mainFile, project).apply { this.pathString = this@LatexOutputPath.pathString }
+        return LatexOutputPath(variant, contentRoot, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
     }
 
     // Acts as a sort of cache
@@ -50,6 +50,11 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
         // No auxil directory should be present/created when there's no MiKTeX around, assuming that TeX Live does not support this
         if (!LatexSdkUtil.isMiktexAvailable && variant == "auxil") {
             return null
+        }
+
+        // Just to be sure, avoid using jetbrains /bin path as output
+        if (pathString.isBlank()) {
+            pathString = "$projectDirString/$variant"
         }
 
         // Caching of the result
