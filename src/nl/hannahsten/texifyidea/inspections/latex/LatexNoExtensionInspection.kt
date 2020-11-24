@@ -51,7 +51,7 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
                                 command,
                                 TextRange(offset, offset + parameter.length),
                                 "File argument should not include the extension",
-                                ProblemHighlightType.GENERIC_ERROR,
+                                ProblemHighlightType.WARNING,
                                 isOntheFly,
                                 RemoveExtensionFix
                             )
