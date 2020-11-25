@@ -21,10 +21,6 @@ class SystemEnvironment {
             "snap list".runCommand()?.contains("inkscape") == true
         }
 
-        val isTlmgrInstalled: Boolean by lazy {
-            "tlmgr --version".runCommand()?.contains("TeX Live") == true
-        }
-
         val isPerlInstalled: Boolean by lazy {
             "perl -v".runCommand()?.contains("This is perl") == true
         }

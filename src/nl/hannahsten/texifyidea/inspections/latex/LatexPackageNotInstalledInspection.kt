@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.settings.TexliveSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.*
 
 /**
@@ -39,14 +39,10 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         return "Package is not installed"
     }
 
-    override fun isEnabledByDefault(): Boolean {
-        return TexliveSdk.isAvailable
-    }
-
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         // We have to check whether tlmgr is installed, for those users who don't want to install TeX Live in the official way
-        if (TexliveSdk.isAvailable && SystemEnvironment.isTlmgrInstalled) {
+        if (LatexSdkUtil.isTlmgrAvailable(file.project)) {
             val installedPackages = TexLivePackages.packageList
             val customPackages = LatexDefinitionIndex.getCommandsByName(
                 "\\ProvidesPackage", file.project,
@@ -60,11 +56,12 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             val commands = file.childrenOfType(LatexCommands::class)
                 .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
+            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", file.project)
             for (command in commands) {
                 val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
                 if (`package` !in packages) {
                     // Use the cache or manually check if the package is installed (e.g. rubikrotation is listed as rubik, so we need to check it separately).
-                    if (knownNotInstalledPackages.contains(`package`) || "tlmgr search --file /$`package`.sty".runCommand()
+                    if (knownNotInstalledPackages.contains(`package`) || "$tlmgrExecutable search --file /$`package`.sty".runCommand()
                         ?.isEmpty() == true
                     ) {
                         descriptors.add(
@@ -99,10 +96,12 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             // I don't know if you actually could install multiple packages
             // with one fix, but it's not a bad idea to clear cache once in a while
             knownNotInstalledPackages.clear()
+            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
+
             ProgressManager.getInstance()
                 .run(object : Task.Backgroundable(project, "Installing $packageName...") {
                     override fun run(indicator: ProgressIndicator) {
-                        val tlname = TexLivePackages.findTexLiveName(this, packageName)
+                        val tlname = TexLivePackages.findTexLiveName(this, packageName, project)
 
                         if (tlname == null) {
                             Notification(
@@ -116,13 +115,12 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                         }
 
                         title = "Installing $packageName..."
-                        val output = "tlmgr install $tlname".runCommand()
-                        val update = "tlmgr update --self"
-                        if (output?.contains(update) == true) {
+                        val output = "$tlmgrExecutable install $tlname".runCommand()
+                        if (output?.contains("tlmgr update --self") == true) {
                             title = "Updating tlmgr..."
-                            update.runCommand()
+                            "$tlmgrExecutable update --self".runCommand()
                             title = "Installing $packageName..."
-                            "tlmgr install $tlname".runCommand()
+                            "$tlmgrExecutable install $tlname".runCommand()
                         }
                     }
 

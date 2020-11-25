@@ -34,6 +34,29 @@ object LatexSdkUtil {
         SystemInfo.isWindows && runCommand("bash", "-ic", "pdflatex --version")?.contains("pdfTeX") == true
     }
 
+    val isTlmgrInstalled: Boolean by lazy {
+        "tlmgr --version".runCommand()?.contains("TeX Live") == true
+    }
+
+    // Cache for below function
+    private var isTlgmrAvailable: Boolean? = null
+
+    /**
+     * Contrary to e.g. with pdflatex, we want to fail silently if tlmgr is not available.
+     * Therefore we check if it really is available after getting the executable name/path.
+     */
+    fun isTlmgrAvailable(project: Project): Boolean {
+        if (isTlmgrInstalled) {
+            isTlgmrAvailable = true
+            return true
+        }
+        isTlgmrAvailable?.let { return it }
+        // If not set, find out if it is available
+        val tlmgrExecutable = getExecutableName("tlmgr", project)
+        isTlgmrAvailable = "$tlmgrExecutable --version".runCommand()?.contains("TeX Live") == true
+        return isTlgmrAvailable!!
+    }
+
     /**
      * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
      * In this case we assume the user wants to use Dockerized MiKTeX.

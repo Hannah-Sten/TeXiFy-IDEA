@@ -1,14 +1,16 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
 
@@ -321,15 +323,16 @@ object TexLivePackages {
      * we search for the line that starts with tlmgr. Then the name of the package we are
      * looking for will be on the next line, if it exists.
      */
-    fun findTexLiveName(task: Task.Backgroundable, packageName: String): String? {
+    fun findTexLiveName(task: Task.Backgroundable, packageName: String, project: Project): String? {
         // Find the package name for tlmgr.
         task.title = "Searching for $packageName..."
+        val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
         // Assume that you can not use the bundle name in a \usepackage if it is different from the package name (otherwise this search won't work and we would need to use tlmgr search --global $packageName
-        val searchResult = "tlmgr search --file --global /$packageName.sty".runCommand()
+        val searchResult = "$tlmgrExecutable search --file --global /$packageName.sty".runCommand()
             ?: return null
 
         // Check if tlmgr needs to be updated first, and do so if needed.
-        val tlmgrUpdateCommand = "tlmgr update --self"
+        val tlmgrUpdateCommand = "$tlmgrExecutable update --self"
         if (searchResult.contains(tlmgrUpdateCommand)) {
             task.title = "Updating tlmgr..."
             tlmgrUpdateCommand.runCommand()
