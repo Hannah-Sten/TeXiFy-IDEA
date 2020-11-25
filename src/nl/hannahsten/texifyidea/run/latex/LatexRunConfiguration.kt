@@ -145,6 +145,18 @@ class LatexRunConfiguration constructor(
             }
         }
 
+    private var externalToolRunConfigIds = mutableSetOf<String>()
+    var externalToolRunConfigs: Set<RunnerAndConfigurationSettings>
+        get() = externalToolRunConfigIds.mapNotNull {
+            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
+        }.toSet()
+        set(externalToolRunConfigs) {
+            externalToolRunConfigIds = mutableSetOf()
+            externalToolRunConfigs.forEach {
+                externalToolRunConfigIds.add(it.uniqueID)
+            }
+        }
+
     // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
@@ -180,7 +192,7 @@ class LatexRunConfiguration constructor(
     override fun getState(
         executor: Executor,
         environment: ExecutionEnvironment
-    ): RunProfileState? {
+    ): RunProfileState {
         val filter = RegexpFilter(
             environment.project,
             "^\$FILE_PATH$:\$LINE$"
@@ -432,6 +444,13 @@ class LatexRunConfiguration constructor(
                     }
                 }
         }
+    }
+
+    /**
+     * All run configs in the chain except the LaTeX ones.
+     */
+    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> {
+        return bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
     }
 
     /**

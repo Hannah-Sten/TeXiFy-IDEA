@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntryType.*
-import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 
 /**
  * @author Hannah Schellekens
@@ -11,7 +11,7 @@ enum class BibtexDefaultEntry(
     override val description: String,
     override val required: Array<BibtexEntryField>,
     override val optional: Array<BibtexEntryField>,
-    override val dependency: Package = Package.DEFAULT
+    override val dependency: LatexPackage = LatexPackage.DEFAULT
 ) : BibtexEntryType {
 
     // Regular entry types.

@@ -34,6 +34,7 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
     visitor.visitEnvironment(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);
@@ -78,8 +79,7 @@ public class LatexEnvironmentImpl extends StubBasedPsiElementBase<LatexEnvironme
   }
 
   @Override
-  @NotNull
-  public LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
+  public @NotNull LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper() {
     return LatexPsiImplUtil.createLiteralTextEscaper(this);
   }
 

@@ -21,6 +21,7 @@ public class LatexRequiredParamContentImpl extends ASTWrapperPsiElement implemen
     visitor.visitRequiredParamContent(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);

@@ -21,6 +21,7 @@ public class LatexNormalTextImpl extends ASTWrapperPsiElement implements LatexNo
     visitor.visitNormalText(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);

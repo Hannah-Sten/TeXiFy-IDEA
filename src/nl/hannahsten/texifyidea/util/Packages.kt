@@ -6,7 +6,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -133,7 +133,7 @@ object PackageUtils {
      * @return false if the package was not inserted, because a conflicting package is already present.
      */
     @JvmStatic
-    fun insertUsepackage(file: PsiFile, pack: Package): Boolean {
+    fun insertUsepackage(file: PsiFile, pack: LatexPackage): Boolean {
         if (pack.isDefault) {
             return true
         }
@@ -363,7 +363,7 @@ object TexLivePackages {
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: Package) = PackageUtils.insertUsepackage(this, pack)
+fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
 
 /**
  * @see PackageUtils.getIncludedPackages

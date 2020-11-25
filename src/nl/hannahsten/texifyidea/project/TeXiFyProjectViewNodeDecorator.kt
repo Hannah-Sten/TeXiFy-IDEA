@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.project
 
+import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
@@ -27,9 +28,12 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
             }
         }
 
-        val icon = Magic.Icon.fileIcons[extension.toLowerCase()] ?: return
-
-        presentationData.setIcon(icon)
+        // Allow Material design plugins to take over the icons
+        // For file types registered in plugin.xml this happens automatically
+        if (PluginManager.getLoadedPlugins().none { it.name.contains("Material") }) {
+            val icon = Magic.Icon.fileIcons[extension.toLowerCase()] ?: return
+            presentationData.setIcon(icon)
+        }
     }
 
     override fun decorate(projectViewNode: ProjectViewNode<*>, presentationData: PresentationData) {

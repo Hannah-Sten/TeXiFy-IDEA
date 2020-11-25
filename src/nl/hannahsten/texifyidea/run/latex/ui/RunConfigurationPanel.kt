@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.RunnerAndConfigurationSettings
-import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.project.Project
@@ -9,6 +8,9 @@ import com.intellij.ui.HideableTitledPanel
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import com.intellij.util.ui.JBUI
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
+import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
+import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import java.awt.BorderLayout
 import javax.swing.DefaultListSelectionModel
 import javax.swing.JPanel
@@ -16,10 +18,9 @@ import javax.swing.JPanel
 /**
  * @author Sten Wessel
  */
-class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
+class RunConfigurationPanel(
     private val project: Project,
     private val title: String,
-    private val runConfigurationType: Class<RunConfigurationType>
 ) : JPanel(BorderLayout()) {
 
     private val contentPanel = JPanel(BorderLayout())
@@ -74,7 +75,8 @@ class RunConfigurationPanel<RunConfigurationType : ConfigurationType>(
     }
 
     private fun askRunConfigurations(): List<RunnerAndConfigurationSettings> {
-        val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type.javaClass == runConfigurationType }
+        val types = setOf(BibtexRunConfigurationType::class.java, MakeindexRunConfigurationType::class.java, ExternalToolRunConfigurationType::class.java)
+        val configurations = RunManagerImpl.getInstanceImpl(project).allSettings.filter { it.type.javaClass in types }
 
         val dialog = RunConfigurationSelectionDialog(project, configurations)
 

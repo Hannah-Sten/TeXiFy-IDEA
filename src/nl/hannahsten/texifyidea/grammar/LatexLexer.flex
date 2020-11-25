@@ -85,9 +85,7 @@ ANY_CHAR=[^]
 
 // Algorithmicx
 // Currently we just use the begin..end structure for formatting, so there is no need to disinguish between separate constructs
-BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | "\\Loop" | "\\Function" | "\\Procedure" |
-    // Algorithm2e
-    "\\uIf" | "\\eIf" | "\\lIf" | "\\leIf"
+BEGIN_PSEUDOCODE_BLOCK="\\For" | "\\ForAll" | "\\If" | "\\While" | "\\Repeat" | "\\Loop" | "\\Function" | "\\Procedure"
 MIDDLE_PSEUDOCODE_BLOCK="\\ElsIf" | "\\Else"
 END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndLoop" | "\\EndFunction" | "\\EndProcedure"
 
@@ -99,6 +97,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 %states POSSIBLE_VERBATIM_BEGIN VERBATIM_OPTIONAL_ARG VERBATIM_START VERBATIM_END
 %xstates VERBATIM POSSIBLE_VERBATIM_OPTIONAL_ARG POSSIBLE_VERBATIM_END
+
+// algorithmic environment
+%states PSEUDOCODE POSSIBLE_PSEUDOCODE_END
 
 %xstates OFF
 
@@ -139,6 +140,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
         // toString to fix comparisons of charsequence subsequences with string
         if (Magic.Environment.verbatim.contains(yytext().toString())) {
             yypushState(VERBATIM_START);
+        }
+        else if (yytext().toString().equals("algorithmic")) {
+            yypushState(PSEUDOCODE);
         }
         return NORMAL_TEXT_WORD;
     }
@@ -203,6 +207,33 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 }
 
 /*
+ * algorithmic environment
+ *
+ * The problem is that in an algorithmic environment, \while has to match with \endwhile
+ * but in general in an algorithm environment, algorithm2e could be used which matches \while{ with a closing }.
+ * To support algorithmic formatting, we therefore only match \while with \endwhile in an algorithmic environment (which also solves the problem of lexing a simple \while command outside of an algorithm-like environment like a pseudocode \while).
+ */
+
+<PSEUDOCODE> {
+
+    {BEGIN_PSEUDOCODE_BLOCK}  { return BEGIN_PSEUDOCODE_BLOCK; }
+    {MIDDLE_PSEUDOCODE_BLOCK} { return MIDDLE_PSEUDOCODE_BLOCK; }
+    {END_PSEUDOCODE_BLOCK}    { return END_PSEUDOCODE_BLOCK; }
+    {END_TOKEN}               { yypushState(POSSIBLE_PSEUDOCODE_END); return END_TOKEN; }
+}
+
+<POSSIBLE_PSEUDOCODE_END> {
+    {NORMAL_TEXT_WORD}       {
+        yypopState();
+        if (yytext().toString().equals("algorithmic")) {
+            // Pop pseudocode state
+            yypopState();
+        }
+        return NORMAL_TEXT_WORD;
+    }
+}
+
+/*
  * \newenvironment definitions
  */
 
@@ -263,7 +294,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 "\\["                   { yypushState(DISPLAY_MATH); return DISPLAY_MATH_START; }
 
-<YYINITIAL,DISPLAY_MATH> {
+// We have to explicitly specify in which states the $ starts an inline math,
+// because definitely not in all states this should be the case (like inline math)
+<YYINITIAL,DISPLAY_MATH,PSEUDOCODE> {
     "$"                             { yypushState(INLINE_MATH); return INLINE_MATH_START; }
     {ROBUST_INLINE_MATH_START}      { yypushState(INLINE_MATH_LATEX); return INLINE_MATH_START; }
 }

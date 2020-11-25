@@ -18,8 +18,7 @@ public interface LatexCommands extends PsiNameIdentifierOwner, StubBasedPsiEleme
   @NotNull
   PsiElement getCommandToken();
 
-  @NotNull
-  PsiReference[] getReferences();
+  @NotNull PsiReference[] getReferences();
 
   PsiReference getReference();
 

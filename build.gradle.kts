@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2-alpha.2"
+version = "0.7.2-alpha.3"
 
 repositories {
     mavenCentral()
@@ -117,8 +117,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    // https://plugins.jetbrains.com/plugin/12175-grazie/versions
-    setPlugins("tanvd.grazi:203.4449.8", "java")
+    setPlugins("tanvd.grazi", "java")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -133,7 +132,7 @@ intellij {
     // Example to use a different, locally installed, IDE
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
     // Also disable "version" above
-//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-1/203.5419.8/"
+//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/MPS/ch-0/203.4818.546/"
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task

@@ -148,7 +148,8 @@
         <!-- LaTeX Edit commands -->
         <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex edit actions" popup="true"
                class="nl.hannahsten.texifyidea.action.group.LatexEditMenuGroup">
-            <add-to-group group-id="EditSmartGroup" anchor="first"/>
+                <!-- MPS doesn't have the EditSmartGroup group, so we register directly in the Edit menu. -->
+            <add-to-group group-id="EditMenu" anchor="last"/>
 
             <!-- Table Creation Wizard-->
             <action class="nl.hannahsten.texifyidea.action.tablewizard.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
@@ -481,6 +482,7 @@
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->
