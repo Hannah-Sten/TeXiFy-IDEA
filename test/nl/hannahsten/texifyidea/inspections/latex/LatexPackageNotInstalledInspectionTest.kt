@@ -1,9 +1,12 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
@@ -31,21 +34,8 @@ class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPac
         testHighlighting("\\usepackage{amsmath}")
     }
 
-    fun `test warning when package is not installed`() {
-        texliveWithTlmgr()
-
-        mockkObject(TexLivePackages)
-        every { TexLivePackages.packageList } returns mutableListOf()
-
-        // The package is not installed locally.
-        mockkStatic("nl.hannahsten.texifyidea.util.StringsKt")
-        every { "tlmgr search --file /amsmath.sty".runCommand() } returns ""
-
-        testHighlighting("<warning descr=\"Package is not installed or \\ProvidesPackage is missing\">\\usepackage{amsmath}</warning>")
-    }
-
     private fun texliveWithTlmgr(texlive: Boolean = true, tlmgr: Boolean = true) {
-        mockkObject(LatexSdkUtil)
+        mockkObject(TexliveSdk)
         every { TexliveSdk.isAvailable } returns texlive
 
         mockkObject(LatexSdkUtil)

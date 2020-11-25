@@ -61,7 +61,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                 val `package` = command.requiredParameters.firstOrNull()?.toLowerCase() ?: continue
                 if (`package` !in packages) {
                     // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
-                    if(
+                    if (
                         knownNotInstalledPackages.contains(`package`) ||
                         command.references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }.isEmpty()
                     ) {
