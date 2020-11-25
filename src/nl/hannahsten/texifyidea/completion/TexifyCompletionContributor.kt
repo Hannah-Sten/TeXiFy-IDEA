@@ -208,7 +208,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
         extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(bibtexCompilerRegex, BibliographyCompiler.values().map { it.executableName }.toHashSet()))
 
-        val fakeRegex = Regex("""fake\s*[=\s*]?""", EnumSet.of(RegexOption.IGNORE_CASE))
+        val fakeRegex = Regex("""fake\s*(=\s*)?""", EnumSet.of(RegexOption.IGNORE_CASE))
         extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(fakeRegex, Magic.Comment.fakeSectionValues))
 
         // Package names
