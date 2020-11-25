@@ -503,9 +503,10 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>

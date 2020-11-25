@@ -123,13 +123,13 @@ fun PsiElement.magicCommentLookup(
     // Scan (backward) through all the magic comments preceding the element.
     var current: PsiElement? = initial() ?: return MagicComment.empty()
 
-    // Stop searching when a non PsiComment is found or null (the scan ends at the first non-comment).
-    while (current is PsiComment) {
+    // Stop searching when an element is found that is not a magic comment or that is null
+    // (the scan ends at the first element that is not a magic comment).
+    while (current.isMagicComment()) {
 
         // Only consider magic comments.
-        val commentText = current.text
+        val commentText = current?.text ?: continue
         current = current.next()
-        if (TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(commentText).not()) continue
 
         // Collect magic comment contents.
         if (reversed) {
@@ -238,23 +238,14 @@ fun LatexMathEnvironment.allMagicComments(): MagicComment<String, String> {
  * Get the magic comment that directly targets this command.
  */
 fun LatexCommands.magicComment(): MagicComment<String, String> {
-    // Because of current parser quirks, there are two scenarios to find the magic comments:
-    // 1. When the magic comments are the first elements in an environment, they are next siblings of
-    //    the LatexBeginCommand of the parent LatexEnvironment.
-    // 2. Otherwise they are previous siblings of the direct LatexContent parent of the LatexCommands.
-
     val directParentContent = parentOfType(LatexContent::class) ?: return MagicComment.empty()
     val parentContentPreviousSibling = directParentContent.previousSiblingIgnoreWhitespace()
 
-    // Case 2.
-    if (parentContentPreviousSibling is PsiComment) {
+    if (parentContentPreviousSibling.isMagicComment()) {
         return backwardMagicCommentLookup { parentContentPreviousSibling }
     }
 
-    // Case 1.
-    val parentEnvironment = parentOfType(LatexEnvironment::class) ?: return MagicComment.empty()
-    val beginCommand = parentEnvironment.firstChildIgnoringWhitespaceOrNull() ?: return MagicComment.empty()
-    return forwardMagicCommentLookup { beginCommand.nextSiblingIgnoreWhitespace() }
+    return MagicComment.empty()
 }
 
 /**

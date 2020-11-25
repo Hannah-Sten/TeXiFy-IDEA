@@ -57,27 +57,33 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
             val keyMatcher = KEY_ASSIGNMENT.toPattern().matcher(line)
 
             // A key has been found, so a new key is created.
-            if (keyMatcher.find()) {
-                // Register previous key/value pair.
-                if (key != null) {
-                    pushKeyValuePair()
+            when {
+                keyMatcher.find() -> {
+                    // Register previous key/value pair.
+                    if (key != null) {
+                        pushKeyValuePair()
+                    }
+
+                    key = keyMatcher.group(1).toLowerCase()
+
+                    val parts = line.split("=")
+                    val contents = parts.subList(1, parts.size).joinToString("=")
+                    contentBuffer.append(contents).append(' ')
                 }
-
-                key = keyMatcher.group(1).toLowerCase()
-
-                val parts = line.split("=")
-                val contents = parts.subList(1, parts.size).joinToString("=")
-                contentBuffer.append(contents).append(' ')
-            }
-            // There is no key assignment.
-            // Check if there is no previous key defined, because if there isn't, it will register an value-less key.
-            else if (key == null) {
-                addValue(line.split(" ").first().asKey(), null)
-            }
-            // Fill up contents of the existing key.
-            // Each newline is considered a space.
-            else {
-                contentBuffer.append(line.trim()).append(' ')
+                // There is no key assignment.
+                // Check if there is no previous key defined, because if there isn't, it will register an value-less key.
+                key == null -> {
+                    addValue(
+                        key = line.split(" ").first().asKey(),
+                        value = line.trim().split(" ").drop(1).joinToString(" ").let {
+                            if (it.isEmpty()) null else it
+                        })
+                }
+                // Fill up contents of the existing key.
+                // Each newline is considered a space.
+                else -> {
+                    contentBuffer.append(line.trim()).append(' ')
+                }
             }
         }
 

@@ -24,6 +24,9 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         else if (tokenType == LatexTypes.OPEN_BRACKET || tokenType == LatexTypes.CLOSE_BRACKET) {
             BRACKET_KEYS
         }
+        else if (tokenType == LatexTypes.MAGIC_COMMENT_TOKEN) {
+            MAGIC_COMMENT_KEYS
+        }
         else if (tokenType == LatexTypes.COMMENT_TOKEN) {
             COMMENT_KEYS
         }
@@ -90,6 +93,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         private val BRACKET_KEYS = keys(BRACKETS)
         private val COMMAND_KEYS = keys(COMMAND)
         private val COMMENT_KEYS = keys(COMMENT)
+        private val MAGIC_COMMENT_KEYS = keys(MAGIC_COMMENT)
         private val INLINE_MATH_KEYS = keys(INLINE_MATH)
         private val DISPLAY_MATH_KEYS = keys(DISPLAY_MATH)
         private val STAR_KEYS = keys(STAR)

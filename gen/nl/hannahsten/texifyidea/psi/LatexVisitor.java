@@ -49,6 +49,10 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitMagicComment(@NotNull LatexMagicComment o) {
+    visitPsiElement(o);
+  }
+
   public void visitMathContent(@NotNull LatexMathContent o) {
     visitPsiElement(o);
   }
