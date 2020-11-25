@@ -21,3 +21,9 @@ See link:Preview[Preview].
 
 If you want to temporarily switch off the parser for a part of your LaTeX, for example because there is a parse error which is causing other problems in your files, you can use the magic comments `%! parser = off` and `%! parser = on` to avoid parsing the text between these two comments.
 The syntax `% !TeX parser = off` is also supported.
+
+== Fake sections
+
+Use `%! fake section` to introduce a fake section which can be folded like any other section.
+Here, `section` can be one of `part`, `chapter`, `section`, `subsection`, `subsubsection`, `paragraph`, or `subparagraph`.
+Fake sections can also have a title, so `%! fake subsection Introduction part 1` is valid.
