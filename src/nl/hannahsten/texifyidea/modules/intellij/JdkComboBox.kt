@@ -9,7 +9,6 @@ import com.intellij.openapi.projectRoots.SimpleJavaSdkType
 import com.intellij.openapi.roots.ui.configuration.*
 import com.intellij.openapi.roots.ui.configuration.SdkListItem.*
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
-import com.intellij.openapi.ui.ComboBoxPopupState
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Conditions
@@ -17,7 +16,6 @@ import com.intellij.util.Consumer
 import java.util.*
 import javax.swing.AbstractListModel
 import javax.swing.ComboBoxModel
-import javax.swing.ListModel
 
 /**
  * @author Eugene Zhuravlev
@@ -90,6 +88,7 @@ class JdkComboBox(
 
     override fun setSelectedItem(anObject: Any?) {
         if (anObject is SdkListItem) {
+            @Suppress("RecursivePropertyAccessor")
             selectedItem = wrapItem(anObject)
             return
         }
@@ -127,7 +126,7 @@ class JdkComboBox(
     }
 
     private class JdkComboBoxModel(val myInnerModel: SdkListModel) :
-        AbstractListModel<JdkComboBoxItem>(), ComboBoxPopupState<JdkComboBoxItem>, ComboBoxModel<JdkComboBoxItem?> {
+        AbstractListModel<JdkComboBoxItem>(), ComboBoxModel<JdkComboBoxItem?> {
         private var mySelectedItem: JdkComboBoxItem? = null
         override fun getSize(): Int {
             return myInnerModel.items.size
@@ -135,21 +134,6 @@ class JdkComboBox(
 
         override fun getElementAt(index: Int): JdkComboBoxItem {
             return wrapItem(myInnerModel.items[index])
-        }
-
-        override fun onChosen(selectedValue: JdkComboBoxItem): ListModel<JdkComboBoxItem?>? {
-            if (selectedValue is InnerComboBoxItem) {
-                val inner = myInnerModel.onChosen((selectedValue as InnerComboBoxItem).item)
-                return if (inner == null) null else JdkComboBoxModel(inner)
-            }
-            return null
-        }
-
-        override fun hasSubstep(selectedValue: JdkComboBoxItem): Boolean {
-            return if (selectedValue is InnerComboBoxItem) {
-                myInnerModel.hasSubstep((selectedValue as InnerComboBoxItem).item)
-            }
-            else false
         }
 
         override fun setSelectedItem(anObject: Any) {
