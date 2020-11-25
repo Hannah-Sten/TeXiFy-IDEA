@@ -66,7 +66,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             if (!content.isPinned) {
                 val form = content.getUserData(key) ?: continue
                 form.config()
-                form.compilePreview(element.text)
+                form.compilePreview(element.text, project)
                 content.displayName = displayName
                 replaced = true
                 break
@@ -88,7 +88,7 @@ abstract class PreviewAction(name: String, val icon: Icon?) : EditorAction(name,
             updater.config()
 
             newContent.putUserData(key, updater)
-            updater.compilePreview(element.text)
+            updater.compilePreview(element.text, project)
         }
         // Show but not focus the window
         toolWindow.activate(null, false)

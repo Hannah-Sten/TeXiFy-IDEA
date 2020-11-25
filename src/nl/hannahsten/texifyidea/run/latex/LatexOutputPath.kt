@@ -10,6 +10,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -47,7 +48,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
      */
     fun getAndCreatePath(): VirtualFile? {
         // No auxil directory should be present/created when there's no MiKTeX around, assuming that TeX Live does not support this
-        if (!LatexDistribution.isMiktexAvailable && variant == "auxil") {
+        if (!LatexSdkUtil.isMiktexAvailable && variant == "auxil") {
             return null
         }
 

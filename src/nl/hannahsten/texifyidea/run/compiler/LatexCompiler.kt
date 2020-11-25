@@ -6,6 +6,8 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.MiktexSdk
+import nl.hannahsten.texifyidea.settings.TexliveSdk
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
@@ -25,7 +27,20 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: "pdflatex")
+            // For now only support custom executable for TeX Live
+            // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
+            val executable = when {
+                runConfig.getLatexDistributionType() == LatexDistributionType.TEXLIVE -> {
+                    TexliveSdk().getExecutableName(executableName, runConfig.project)
+                }
+                runConfig.getLatexDistributionType() == LatexDistributionType.MIKTEX -> {
+                    MiktexSdk().getExecutableName(executableName, runConfig.project)
+                }
+                else -> {
+                    executableName
+                }
+            }
+            val command = mutableListOf(runConfig.compilerPath ?: executable)
 
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
@@ -35,12 +50,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-output-directory=$outputPath")
 
             // -aux-directory only exists on MiKTeX
-            if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
             }
 
             // Prepend root paths to the input search path
-            if (runConfig.latexDistribution.isMiktex()) {
+            if (runConfig.getLatexDistributionType().isMiktex()) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -59,7 +74,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: "lualatex")
+            val command = mutableListOf(runConfig.compilerPath ?: TexliveSdk().getExecutableName(executableName, runConfig.project))
 
             // Some commands are the same as for pdflatex
             command.add("-file-line-error")
@@ -91,7 +106,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: "latexmk")
+            val command = mutableListOf(runConfig.compilerPath ?: TexliveSdk().getExecutableName(executableName, runConfig.project))
 
             val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
 
@@ -110,7 +125,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("-output-directory=$outputPath")
 
-            if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
             }
 
@@ -130,7 +145,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: "xelatex")
+            val command = mutableListOf(runConfig.compilerPath ?: TexliveSdk().getExecutableName(executableName, runConfig.project))
 
             // As usual, available command line options can be viewed with xelatex --help
             // On TeX Live, installing collection-xetex should be sufficient to get xelatex
@@ -144,12 +159,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             command.add("-output-directory=$outputPath")
 
-            if (auxilPath != null && runConfig.latexDistribution.isMiktex()) {
+            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex()) {
                 command.add("-aux-directory=$auxilPath")
             }
 
             // Prepend root paths to the input search path
-            if (runConfig.latexDistribution.isMiktex()) {
+            if (runConfig.getLatexDistributionType().isMiktex()) {
                 moduleRoots.forEach {
                     command.add("-include-directory=${it.path}")
                 }
@@ -170,7 +185,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: "texliveonfly")
+            val command = mutableListOf(runConfig.compilerPath ?: TexliveSdk().getExecutableName(executableName, runConfig.project))
 
             // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
             // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
@@ -201,7 +216,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
-            val command = mutableListOf(runConfig.compilerPath ?: "tectonic")
+            val command = mutableListOf(runConfig.compilerPath ?: TexliveSdk().getExecutableName(executableName, runConfig.project))
 
             command.add("--synctex")
 
@@ -219,7 +234,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      * Convert Windows paths to WSL paths.
      */
     private fun String.toPath(runConfig: LatexRunConfiguration): String =
-        if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
             "wsl wslpath -a '$this'".runCommand() ?: this
         }
         else this
@@ -239,7 +254,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         val moduleRoot = fileIndex.getContentRootForFile(mainFile)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
-        val moduleRoots = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+        val moduleRoots = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
             rootManager.contentSourceRoots
         }
         else {
@@ -249,14 +264,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         // If we used /miktex/work/out, an out directory would appear in the src folder on the host system
         val dockerOutputDir = "/miktex/out"
         val dockerAuxilDir = "/miktex/auxil"
-        val outputPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+        val outputPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
             runConfig.outputPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
         else {
             dockerOutputDir
         }
 
-        val auxilPath = if (runConfig.latexDistribution != LatexDistributionType.DOCKER_MIKTEX) {
+        val auxilPath = if (runConfig.getLatexDistributionType() != LatexDistributionType.DOCKER_MIKTEX) {
             runConfig.auxilPath.getAndCreatePath()?.path?.toPath(runConfig)
         }
         else {
@@ -271,11 +286,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots
         )
 
-        if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
             command = mutableListOf("bash", "-ic", GeneralCommandLine(command).commandLineString)
         }
 
-        if (runConfig.latexDistribution == LatexDistributionType.DOCKER_MIKTEX) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
             createDockerCommand(runConfig, dockerAuxilDir, dockerOutputDir, mainFile, command)
         }
 
@@ -286,7 +301,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 .forEach { command.add(it) }
         }
 
-        if (runConfig.latexDistribution == LatexDistributionType.WSL_TEXLIVE) {
+        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
             command[command.size - 1] = command.last() + " ${mainFile.path.toPath(runConfig)}"
         }
         else {
@@ -302,7 +317,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         "docker volume create --name miktex".runCommand()
 
         val parameterList = mutableListOf(
-            "docker",
+            "docker", // Could be improved by getting executable name based on SDK
             "run",
             "--rm",
             "-v",

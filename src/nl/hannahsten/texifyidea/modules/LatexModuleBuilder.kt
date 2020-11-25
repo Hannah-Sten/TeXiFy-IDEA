@@ -1,14 +1,21 @@
 package nl.hannahsten.texifyidea.modules
 
 import com.intellij.ide.util.projectWizard.ModuleBuilder
+import com.intellij.ide.util.projectWizard.ModuleWizardStep
+import com.intellij.ide.util.projectWizard.SettingsStep
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.roots.CompilerModuleExtension
 import com.intellij.openapi.roots.ModifiableRootModel
+import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.modules.intellij.SdkSettingsStep
+import nl.hannahsten.texifyidea.settings.LatexSdk
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import java.io.File
 import java.util.*
 
@@ -32,6 +39,12 @@ class LatexModuleBuilder : ModuleBuilder() {
     override fun getModuleType() = LatexModuleType.INSTANCE
 
     override fun getCustomOptionsStep(context: WizardContext?, parentDisposable: Disposable?) = LatexModuleWizardStep(this)
+
+    override fun modifyProjectTypeStep(settingsStep: SettingsStep): ModuleWizardStep {
+        val filter = Condition { id: SdkTypeId -> id is LatexSdk }
+        // SdkSettingsStep is not available in non-IntelliJ IDEs, so we simply copy those classes to TeXiFy.
+        return SdkSettingsStep(settingsStep, this, filter)
+    }
 
     @Throws(ConfigurationException::class)
     override fun setupRootModel(rootModel: ModifiableRootModel) {
@@ -80,12 +93,14 @@ class LatexModuleBuilder : ModuleBuilder() {
             contentEntry.addExcludeFolder(outRoot)
         }
 
-        // Create auxiliary directory.
-        path = contentEntryPath + File.separator + "auxil"
-        File(path).mkdirs()
-        val auxRoot = fileSystem.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path))
-        if (auxRoot != null) {
-            contentEntry.addExcludeFolder(auxRoot)
+        if (LatexSdkUtil.isMiktexAvailable) {
+            // Create auxiliary directory.
+            path = contentEntryPath + File.separator + "auxil"
+            File(path).mkdirs()
+            val auxRoot = fileSystem.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path))
+            if (auxRoot != null) {
+                contentEntry.addExcludeFolder(auxRoot)
+            }
         }
     }
 }

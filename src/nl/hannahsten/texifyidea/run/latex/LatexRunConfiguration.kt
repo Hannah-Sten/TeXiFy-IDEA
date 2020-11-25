@@ -30,6 +30,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
@@ -109,7 +110,11 @@ class LatexRunConfiguration constructor(
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
-    var latexDistribution: LatexDistributionType = LatexDistributionType.TEXLIVE
+
+    /**
+     * Use [getLatexDistributionType] to take the Project SDK into account.
+     */
+    internal var latexDistribution = LatexDistributionType.PROJECT_SDK
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -490,8 +495,20 @@ class LatexRunConfiguration constructor(
         outputFormat = Format.PDF
     }
 
-    fun setDefaultDistribution() {
-        latexDistribution = LatexDistribution.defaultLatexDistribution
+    fun setDefaultDistribution(project: Project) {
+        latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
+    }
+
+    /**
+     * Get LaTeX distribution type, when 'Use project SDK' is selected map it to a [LatexDistributionType].
+     */
+    fun getLatexDistributionType(): LatexDistributionType {
+        return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
+            latexDistribution
+        }
+        else {
+            LatexSdkUtil.getLatexProjectSdkType(project)?.getLatexDistributionType() ?: LatexDistributionType.TEXLIVE
+        }
     }
 
     /**

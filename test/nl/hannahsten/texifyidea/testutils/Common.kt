@@ -6,8 +6,8 @@ import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.TexliveSdk
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 /**
@@ -37,7 +37,7 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
         every { project.selectedRunConfig()?.compiler } returns LatexCompiler.PDFLATEX
-        mockkObject(LatexDistribution)
-        every { LatexDistribution.texliveVersion } returns 2017
+        mockkObject(TexliveSdk)
+        every { TexliveSdk.version } returns 2017
     }
 }
