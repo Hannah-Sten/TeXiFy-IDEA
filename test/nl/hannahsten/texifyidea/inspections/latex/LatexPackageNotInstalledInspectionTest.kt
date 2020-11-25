@@ -1,16 +1,11 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
-import nl.hannahsten.texifyidea.util.runCommand
 
 class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPackageNotInstalledInspection()) {
     fun `test no warnings when not using texlive`() {
