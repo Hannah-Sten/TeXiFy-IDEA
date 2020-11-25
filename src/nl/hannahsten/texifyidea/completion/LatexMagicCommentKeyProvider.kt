@@ -8,7 +8,6 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 
 /**

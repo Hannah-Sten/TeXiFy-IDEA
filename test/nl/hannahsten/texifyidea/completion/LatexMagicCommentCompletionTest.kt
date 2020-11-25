@@ -11,7 +11,7 @@ class LatexMagicCommentCompletionTest : BasePlatformTestCase() {
             Kaas
             """.trimIndent())
         val result = myFixture.complete(CompletionType.BASIC)
-        assert ( result.any { it.lookupString == "Compiler" } )
+        assert(result.any { it.lookupString == "Compiler" })
     }
 
     fun `test magic comment value completion`() {

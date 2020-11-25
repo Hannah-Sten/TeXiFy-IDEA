@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.icons.AllIcons
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
@@ -13,6 +14,9 @@ import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
+import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.insight.InsightGroup
+import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
@@ -188,21 +192,24 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         // Inspection list for magic comment suppress
         val suppressRegex = Regex("""suppress\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("suppress", suppressRegex, LatexInspectionIdProvider)
+        val inspectionIds = InsightGroup.byFileType(LatexFileType)
+            .flatMap { ALL_TEXIFY_INSPECTIONS[it] ?: emptyList() }
+            .toHashSet()
+        extendMagicCommentValues("suppress", suppressRegex, LatexMagicCommentValueProvider(suppressRegex, inspectionIds, AllIcons.General.InspectionsEye))
 
         // List containing tikz/math to autocomplete the begin/end/preamble values in magic comments
         val beginEndRegex = Regex("""(begin|end|preview) preamble\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("preamble", beginEndRegex, LatexMagicCommentValueProvider(Magic.Comment.preambleValues))
+        extendMagicCommentValues("preamble", beginEndRegex, LatexMagicCommentValueProvider(beginEndRegex, Magic.Comment.preambleValues))
 
         // List of LaTeX compilers
         val compilerRegex = Regex("""compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("compiler", compilerRegex, LatexMagicCommentValueProvider(LatexCompiler.values().map { it.executableName }.toHashSet()))
+        extendMagicCommentValues("compiler", compilerRegex, LatexMagicCommentValueProvider(compilerRegex, LatexCompiler.values().map { it.executableName }.toHashSet()))
 
         val bibtexCompilerRegex = Regex("""bibtex compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(BibliographyCompiler.values().map { it.executableName }.toHashSet()))
+        extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(bibtexCompilerRegex, BibliographyCompiler.values().map { it.executableName }.toHashSet()))
 
         val fakeRegex = Regex("""fake\s*[=\s*]?""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(Magic.Comment.fakeSectionValues))
+        extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(fakeRegex, Magic.Comment.fakeSectionValues))
 
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
