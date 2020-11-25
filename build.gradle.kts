@@ -4,11 +4,11 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.5.0"
-    kotlin("jvm") version("1.4.10")
+    id("org.jetbrains.intellij") version "0.6.4"
+    kotlin("jvm") version("1.4.20")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.33.0"
+    id("com.github.ben-manes.versions") version "0.35.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.15"
@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2-alpha.5.table"
+version = "0.7.2-alpha.5"
 
 repositories {
     mavenCentral()
@@ -84,7 +84,7 @@ dependencies {
     // Test dependencies
 
     // Also implementation junit 4, just in case
-    testImplementation("junit:junit:4.13-rc-2")
+    testImplementation("junit:junit:4.13.1")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.7.0")
 
     // Use junit 5 for test cases
@@ -99,7 +99,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime")
 
-    testImplementation("io.mockk:mockk:1.10.0")
+    testImplementation("io.mockk:mockk:1.10.2")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.1.jar"))
@@ -127,12 +127,15 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "203.4449.2-EAP-SNAPSHOT"
+    version = "203.5600.34-EAP-SNAPSHOT"
+//    version = "PY-203.5419.8-EAP-SNAPSHOT"
+//    type = "PY"
 
     // Example to use a different, locally installed, IDE
     // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
     // Also disable "version" above
-//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/MPS/ch-0/203.4818.546/"
+    // If it doesn't work (Could not resolve all files for configuration ':detachedConfiguration4'.), specify 'version' instead
+//    localPath = "/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-1/203.5419.8/"
 }
 
 // Allow publishing to the Jetbrains repo via a Gradle task

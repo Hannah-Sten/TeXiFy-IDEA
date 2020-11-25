@@ -18,13 +18,13 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -290,7 +290,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // LaTeX distribution
         @Suppress("DialogTitleCapitalization")
-        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isInstalled() }.toTypedArray()), "LaTeX Distribution")
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isAvailable(project!!) }.toTypedArray()), "LaTeX Distribution")
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
@@ -302,7 +302,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
     private fun addOutputPathField(panel: JPanel) {
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
-        if (LatexDistribution.isMiktexAvailable) {
+        if (LatexSdkUtil.isMiktexAvailable) {
 
             val auxilPathField = TextFieldWithBrowseButton()
             auxilPathField.addBrowseFolderListener(

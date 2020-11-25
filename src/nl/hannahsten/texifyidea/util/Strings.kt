@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.util.TextRange
 import org.intellij.lang.annotations.Language
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
 
@@ -197,22 +195,7 @@ fun String.removeHtmlTags() = this.replace(Magic.Pattern.htmlTag.toRegex(), "")
  *
  * @return The output of the command or null if an exception was thrown.
  */
-fun String.runCommand(): String? {
-    return try {
-        val parts = this.split("\\s".toRegex())
-        val proc = ProcessBuilder(*parts.toTypedArray())
-            .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .redirectError(ProcessBuilder.Redirect.PIPE)
-            .start()
-
-        // Timeout value
-        proc.waitFor(10, TimeUnit.SECONDS)
-        proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
-    }
-    catch (e: IOException) {
-        null
-    }
-}
+fun String.runCommand() = runCommand(*(this.split("\\s".toRegex())).toTypedArray())
 
 /**
  * Index of first occurrence of any of the given chars. Return last index if chars do not appear in the string.
