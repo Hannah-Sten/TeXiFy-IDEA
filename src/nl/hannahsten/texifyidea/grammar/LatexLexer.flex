@@ -354,10 +354,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
 
-{BEGIN_PSEUDOCODE_BLOCK} { return BEGIN_PSEUDOCODE_BLOCK; }
-{MIDDLE_PSEUDOCODE_BLOCK} { return MIDDLE_PSEUDOCODE_BLOCK; }
-{END_PSEUDOCODE_BLOCK}  { return END_PSEUDOCODE_BLOCK; }
-
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }

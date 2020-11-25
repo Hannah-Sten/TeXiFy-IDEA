@@ -32,6 +32,7 @@ public class LatexMagicCommentImpl extends StubBasedPsiElementBase<LatexMagicCom
     visitor.visitMagicComment(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);
