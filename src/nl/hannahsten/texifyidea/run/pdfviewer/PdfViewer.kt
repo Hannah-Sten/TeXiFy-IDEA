@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.util.string.printToString
 
 /**
  * Allow other plugins to define their own pdf viewers.
