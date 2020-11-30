@@ -1,3 +1,5 @@
 <idea-plugin>
-
+    <extensions defaultExtensionNs="nl.rubensten.texifyidea">
+        <pdfViewer implementation="nl.hannahsten.texifyidea.run.pdfviewer.IntelliJPdfViewer"/>
+    </extensions>
 </idea-plugin>

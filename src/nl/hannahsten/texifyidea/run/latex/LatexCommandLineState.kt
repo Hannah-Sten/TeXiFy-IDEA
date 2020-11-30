@@ -18,9 +18,10 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
-import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
+import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
 import nl.hannahsten.texifyidea.util.Magic.Package
@@ -232,13 +233,14 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
         }
         // Do nothing if the user selected that they do not want a viewer to open.
-        else if (runConfig.pdfViewer == PdfViewer.NONE) return
+        else if (runConfig.pdfViewer == InternalPdfViewer.NONE) return
+        else if (runConfig.pdfViewer is ExternalPdfViewer) return
         else if (runConfig.sumatraPath != null || isSumatraAvailable) {
             // Open Sumatra after compilation & execute inverse search.
             handler.addProcessListener(SumatraForwardSearchListener(runConfig, environment))
         }
-        else if (runConfig.pdfViewer in listOf(PdfViewer.EVINCE, PdfViewer.OKULAR, PdfViewer.ZATHURA, PdfViewer.SKIM)) {
-            ViewerForwardSearch(runConfig.pdfViewer ?: PdfViewer.NONE).execute(handler, runConfig, environment, focusAllowed)
+        else if (runConfig.pdfViewer in listOf(InternalPdfViewer.EVINCE, InternalPdfViewer.OKULAR, InternalPdfViewer.ZATHURA, InternalPdfViewer.SKIM)) {
+            ViewerForwardSearch(runConfig.pdfViewer ?: InternalPdfViewer.NONE).execute(handler, runConfig, environment, focusAllowed)
         }
         else if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

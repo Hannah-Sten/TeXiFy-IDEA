@@ -787,4 +787,10 @@
             <descriptionDirectoryName>LatexLanguageInjectionIntention</descriptionDirectoryName>
         </intentionAction>
     </extensions>
+
+    <extensionPoints>
+        <extensionPoint name="pdfViewer"
+                        interface="nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer"
+                        dynamic="true"/>
+    </extensionPoints>
 </idea-plugin>
