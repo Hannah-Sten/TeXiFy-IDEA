@@ -403,7 +403,10 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
      * Optional custom pdf viewer command text field.
      */
     private fun addPdfViewerCommandField(panel: JPanel) {
-        val viewers = InternalPdfViewer.availableSubset() + ExternalPdfViewers.getExternalPdfViewers()
+        val viewers = InternalPdfViewer.availableSubset().filter { it != InternalPdfViewer.NONE } +
+                ExternalPdfViewers.getExternalPdfViewers() +
+                listOf(InternalPdfViewer.NONE)
+
         val viewerField = ComboBox(viewers.toTypedArray())
         pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
         panel.add(pdfViewer)

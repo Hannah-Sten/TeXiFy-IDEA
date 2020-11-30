@@ -26,6 +26,9 @@ interface ExternalPdfViewer : PdfViewer {
     fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 }
 
+/**
+ * Define functions that handle all external pdf viewers one by one.
+ */
 object ExternalPdfViewers {
     fun getExternalPdfViewers(): List<ExternalPdfViewer> = EP_NAME.extensionList
 }
