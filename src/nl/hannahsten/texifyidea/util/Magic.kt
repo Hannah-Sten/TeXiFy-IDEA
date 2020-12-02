@@ -6,7 +6,6 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -22,6 +21,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.PDFCOMMENT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import org.intellij.lang.annotations.Language
 import java.awt.Color
 import java.util.regex.Pattern
@@ -634,7 +634,7 @@ object Magic {
          * All LaTeX commands that contain a url (in their first parameter).
          */
         @JvmField
-        val urls = hashSetOf("\\url", "\\href")
+        val urls = hashSetOf("\\" + URL.command, "\\" + HREF.command)
 
         /**
          * All BibTeX tags that take a url as their parameter.

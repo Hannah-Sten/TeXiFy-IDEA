@@ -3,7 +3,9 @@ package nl.hannahsten.texifyidea.inspections.latex
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.isCommandDefinition
+import nl.hannahsten.texifyidea.util.parentOfType
 import nl.hannahsten.texifyidea.util.parentsOfType
 import java.util.regex.Pattern
 
@@ -16,6 +18,6 @@ class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
     replacement = { _, _ -> """\#""" }
 ) {
     override fun checkContext(element: PsiElement): Boolean {
-        return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isCommandDefinition() }
+        return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isCommandDefinition() } && element.parentOfType(LatexCommands::class)?.name !in Magic.Command.urls
     }
 }
