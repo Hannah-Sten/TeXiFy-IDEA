@@ -113,6 +113,20 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             """.trimIndent()
         )
 
+    fun `test exam parts`() = testHighlighting(
+            """
+            \documentclass{exam}
+            \begin{document}
+                \begin{questions}
+                    \question
+                    \begin{parts}
+                        \part a
+                    \end{parts}
+                \end{questions}
+            \end{document}
+            """.trimIndent()
+        )
+
     fun `test quick fix in listings with no other parameters`() = testQuickFix(
         before = """
         \begin{document}
