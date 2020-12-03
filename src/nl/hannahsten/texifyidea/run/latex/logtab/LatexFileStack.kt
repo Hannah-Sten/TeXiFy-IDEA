@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.lineNumber
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.firstIndexOfAny
 import nl.hannahsten.texifyidea.util.remove
-import java.util.ArrayDeque
+import java.util.*
 
 class LatexFileStack(
     vararg val file: String,
@@ -116,10 +116,9 @@ class LatexFileStack(
                 if (notClosedNonFileOpenParentheses > 0) notClosedNonFileOpenParentheses--
                 else {
                     if (debug) logger.info("$line ---- Closing ${peek()}")
-                    if (isEmpty()) {
-                        throw TeXception("Extra closing parenthesis: could not close a file which was not opened. Please report the log output to the issue tracker. Line content: $line")
+                    if (!isEmpty()) {
+                        pop()
                     }
-                    pop()
                 }
             }
 
