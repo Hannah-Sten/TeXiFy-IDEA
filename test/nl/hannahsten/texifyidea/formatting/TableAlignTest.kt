@@ -345,6 +345,47 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testVeryWideTable() {
+        val start = """
+\documentclass[11pt]{article}
+\begin{document}
+    \begin{tabular}{ccccc}
+        Quisque euismod est eu auctor venenatis. Aenean pulvinar eu dolor vitae tempus. Fusce mattis magna et nulla euismod euismod. Proin tempor ligula non nibh consectetur egestas. & In pretium ante non mattis placerat. Proin elementum nisi ut purus pellentesque, ut laoreet velit lobortis. Sed commodo ut urna in ornare. Proin quis dui non dolor auctor condimentum. & Ut consectetur sem nec tempor hendrerit. Fusce eget erat pulvinar, sodales ipsum porttitor, mattis lacus. Curabitur & eget ipsum in sapien venenatis interdum. & Duis vestibulum sem at euismod placerat. Cras nulla nibh, accumsan nec interdum in, dapibus sit amet orci. \\
+        Nullam dapibus, lacus a & condimentum dignissim, turpis libero pretium magna, non maximus diam massa vitae ligula. & Vivamus a diam cursus, vehicula quam sit amet, condimentum metus. Sed venenatis pulvinar risus et condimentum. Integer pharetra ornare elit. & Maecenas placerat ut justo et mollis. Nullam in felis eu tellus varius semper. Nullam iaculis nulla & ligula, at sodales mi malesuada ac. \\
+        In & nec & mi & id magna & tempus lobortis ac ac elit. \\
+        In rutrum, & ligula & non & placerat & imperdiet. \\
+    \end{tabular}
+\end{document}
+        """.trimIndent()
+        val expected = """
+\documentclass[11pt]{article}
+\begin{document}
+    \begin{tabular}{ccccc}
+        Quisque euismod est eu auctor venenatis. Aenean pulvinar eu dolor vitae tempus. Fusce mattis magna et nulla euismod euismod. Proin tempor ligula non nibh consectetur egestas.
+        & In pretium ante non mattis placerat. Proin elementum nisi ut purus pellentesque, ut laoreet velit lobortis. Sed commodo ut urna in ornare. Proin quis dui non dolor auctor condimentum.
+        & Ut consectetur sem nec tempor hendrerit. Fusce eget erat pulvinar, sodales ipsum porttitor, mattis lacus. Curabitur
+        & eget ipsum in sapien venenatis interdum.
+        & Duis vestibulum sem at euismod placerat. Cras nulla nibh, accumsan nec interdum in, dapibus sit amet orci.
+        \\
+        Nullam dapibus, lacus a & condimentum dignissim, turpis libero pretium magna, non maximus diam massa vitae ligula.
+        & Vivamus a diam cursus, vehicula quam sit amet, condimentum metus. Sed venenatis pulvinar risus et condimentum. Integer pharetra ornare elit.
+        & Maecenas placerat ut justo et mollis. Nullam in felis eu tellus varius semper. Nullam iaculis nulla
+        & ligula, at sodales mi malesuada ac.
+        \\
+        In         & nec    & mi  & id magna & tempus lobortis ac ac elit. \\
+        In rutrum, & ligula & non & placerat & imperdiet.                  \\
+    \end{tabular}
+\end{document}
+        """.trimIndent()
+        myFixture.configureByText(LatexFileType, start)
+        writeCommand(project) {
+            // That's a bug.
+            CodeStyleManager.getInstance(project).reformat(myFixture.file)
+            CodeStyleManager.getInstance(project).reformat(myFixture.file)
+        }
+        myFixture.checkResult(expected)
+    }
+
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
         writeCommand(project) {

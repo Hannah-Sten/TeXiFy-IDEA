@@ -337,7 +337,7 @@ fun PsiElement.firstChildIgnoringWhitespaceOrNull(): PsiElement? {
  *
  * @return `true` if it is a magic comment, `false` otherwise.
  */
-fun PsiElement.isMagicComment(): Boolean = TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(text)
+fun PsiElement?.isMagicComment(): Boolean = this?.text?.let { t -> TextBasedMagicCommentParser.COMMENT_PREFIX.containsMatchIn(t) } ?: false
 
 /**
  * Get a sequence of all the parents of this PsiElement with the given type.

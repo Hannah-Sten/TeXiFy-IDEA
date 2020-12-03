@@ -5,7 +5,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
@@ -33,7 +33,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
         indexPrograms.add(makeindexProgram)
     }
 
-    if (Package.GLOSSARIES.name in usedPackages) {
+    if (LatexPackage.GLOSSARIES.name in usedPackages) {
         val glossaryProgram = if (SystemEnvironment.isPerlInstalled) {
             MakeindexProgram.MAKEGLOSSARIES
         }
@@ -42,7 +42,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project): Set<M
         }
         indexPrograms.add(glossaryProgram)
     }
-    else if (Package.GLOSSARIESEXTRA.name in usedPackages && "record" in indexPackageOptions) {
+    else if (LatexPackage.GLOSSARIESEXTRA.name in usedPackages && "record" in indexPackageOptions) {
         indexPrograms.add(MakeindexProgram.BIB2GLS)
     }
 

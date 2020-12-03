@@ -8,7 +8,6 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 
 /**
@@ -19,7 +18,7 @@ object LatexMagicCommentKeyProvider : CompletionProvider<CompletionParameters>()
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val keys = DefaultMagicKeys.values()
         result.addAllElements(
-            ContainerUtil.map2List(keys) {
+            keys.map {
                 LookupElementBuilder.create(it, it.displayKey)
                     .withCaseSensitivity(false)
                     .withPresentableText(it.key)
@@ -41,8 +40,10 @@ object LatexMagicCommentKeyProvider : CompletionProvider<CompletionParameters>()
             val caret = editor.caretModel
             val offset = caret.offset
 
-            document.insertString(offset, " = ")
-            caret.moveToOffset(offset + 3)
+            // Only add the "=" when we are not completing the "fake" magic comment.
+            val postFix = if (item.lookupString == DefaultMagicKeys.FAKE.displayKey) " " else " = "
+            document.insertString(offset, postFix)
+            caret.moveToOffset(offset + postFix.length)
         }
     }
 }

@@ -18,12 +18,13 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -48,8 +49,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
     private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionType>>
     private val extensionSeparator = TitledSeparator("Extensions")
-    private lateinit var bibliographyPanel: RunConfigurationPanel<BibtexRunConfigurationType>
-    private lateinit var makeindexPanel: RunConfigurationPanel<MakeindexRunConfigurationType>
+    private lateinit var externalToolsPanel: RunConfigurationPanel
 
     /** Whether to enable the sumatraPath text field. */
     private lateinit var enableSumatraPath: JBCheckBox
@@ -144,11 +144,8 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         // Reset project.
         project = runConfiguration.project
 
-        // Reset bibliography
-        bibliographyPanel.configurations = runConfiguration.bibRunConfigs.toMutableSet()
-
-        // Reset makeindex
-        makeindexPanel.configurations = if (runConfiguration.makeindexRunConfigs.isNotEmpty()) runConfiguration.makeindexRunConfigs.toMutableSet() else mutableSetOf()
+        // Reset run configs
+        externalToolsPanel.configurations = runConfiguration.getAllAuxiliaryRunConfigs().toMutableSet()
     }
 
     // Confirm the changes, i.e. copy current UI state into the target settings object.
@@ -159,26 +156,22 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         runConfiguration.compiler = chosenCompiler
 
         // Remove bibtex run config when switching to a compiler which includes running bibtex
-        if (runConfiguration.compiler?.includesBibtex == true) {
-            runConfiguration.bibRunConfigs = setOf()
-            bibliographyPanel.isVisible = false
+        val includesBibtex = runConfiguration.compiler?.includesBibtex == true
+        val includesMakeindex = runConfiguration.compiler?.includesMakeindex == true
+        if (includesBibtex || includesMakeindex) {
+            if (includesBibtex) {
+                runConfiguration.bibRunConfigs = setOf()
+            }
+            if (includesMakeindex) {
+                runConfiguration.makeindexRunConfigs = setOf()
+            }
+            // Panel remains visible, to allow adding ExternalToolRunConfiguration
         }
         else {
-            bibliographyPanel.isVisible = true
-
-            // Apply bibliography, only if not hidden
-            runConfiguration.bibRunConfigs = bibliographyPanel.configurations
-        }
-
-        if (runConfiguration.compiler?.includesMakeindex == true) {
-            runConfiguration.makeindexRunConfigs = emptySet()
-            makeindexPanel.isVisible = false
-        }
-        else {
-            makeindexPanel.isVisible = true
-
-            // Apply makeindex
-            runConfiguration.makeindexRunConfigs = makeindexPanel.configurations
+            // Update run config based on UI
+            runConfiguration.bibRunConfigs = externalToolsPanel.configurations.filter { it.type is BibtexRunConfigurationType }.toSet()
+            runConfiguration.makeindexRunConfigs = externalToolsPanel.configurations.filter { it.type is MakeindexRunConfigurationType }.toSet()
+            runConfiguration.externalToolRunConfigs = externalToolsPanel.configurations.filter { it.type is ExternalToolRunConfigurationType }.toSet()
         }
 
         // Apply custom compiler path if applicable
@@ -272,7 +265,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         val mainFileField = TextFieldWithBrowseButton()
         mainFileField.addBrowseFolderListener(
             TextBrowseFolderListener(
-                FileTypeDescriptor("Choose a file to compile", ".tex")
+                FileTypeDescriptor("Choose a File to Compile", ".tex")
                     .withRoots(
                         *ProjectRootManager.getInstance(project!!)
                             .contentRootsFromAllModules
@@ -297,22 +290,19 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
 
         // LaTeX distribution
         @Suppress("DialogTitleCapitalization")
-        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isInstalled() }.toTypedArray()), "LaTeX Distribution")
+        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.values().filter { it.isAvailable(project!!) }.toTypedArray()), "LaTeX Distribution")
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
 
-        // Extension panels
-        bibliographyPanel = RunConfigurationPanel(project!!, "Bibliography: ", BibtexRunConfigurationType::class.java)
-        panel.add(bibliographyPanel)
-
-        makeindexPanel = RunConfigurationPanel(project!!, "Makeindex: ", MakeindexRunConfigurationType::class.java)
-        panel.add(makeindexPanel)
+        // Extension panel
+        externalToolsPanel = RunConfigurationPanel(project!!, "External LaTeX programs: ")
+        panel.add(externalToolsPanel)
     }
 
     private fun addOutputPathField(panel: JPanel) {
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
-        if (LatexDistribution.isMiktexAvailable) {
+        if (LatexSdkUtil.isMiktexAvailable) {
 
             val auxilPathField = TextFieldWithBrowseButton()
             auxilPathField.addBrowseFolderListener(

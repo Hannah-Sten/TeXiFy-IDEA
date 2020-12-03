@@ -11,13 +11,16 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.getIndent
 import kotlin.math.min
 
+/** At this length, we put table cells on their own line. */
+const val LINE_LENGTH = 80
+
 /**
  * Align spaces to the right of &
  */
 fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, left: ASTBlock): Spacing? {
 
     if (parent.node?.psi?.firstParentOfType(LatexEnvironmentContent::class)
-        ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments
+            ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments
     ) return null
 
     if (left.node?.text?.endsWith("&") == false) return null
@@ -56,13 +59,21 @@ fun leftTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: AS
 
     val contentWithoutRules = removeRules(content, tableLineSeparator)
 
-    val spaces = getNumberOfSpaces(contentWithoutRules, tableLineSeparator, right, absoluteAmpersandIndicesPerLine, indent)
-        ?: return null
+    var spaces =
+        getNumberOfSpaces(contentWithoutRules, tableLineSeparator, right, absoluteAmpersandIndicesPerLine, indent)
+            ?: return null
+
+    // Convert a -1 return value to a line feed.
+    var lineFeeds = 0
+    if (spaces < 0) {
+        spaces = 0
+        lineFeeds = 1
+    }
 
     return createSpacing(
         minSpaces = spaces,
         maxSpaces = spaces,
-        minLineFeeds = 0,
+        minLineFeeds = lineFeeds,
         keepLineBreaks = latexCommonSettings.KEEP_LINE_BREAKS,
         keepBlankLines = latexCommonSettings.KEEP_BLANK_LINES_IN_CODE
     )
@@ -103,7 +114,13 @@ fun removeRules(content: String, tableLineSeparator: String): String {
     }.joinToString("\n")
 }
 
-fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, indent: String): Int? {
+fun getNumberOfSpaces(
+    contentWithoutRules: String,
+    tableLineSeparator: String,
+    right: ASTBlock,
+    absoluteAmpersandIndicesPerLine: List<List<Int>>,
+    indent: String
+): Int? {
 
     val contentLinesWithoutRules = contentWithoutRules.split(tableLineSeparator)
         .mapNotNull { if (it.isBlank()) null else it + tableLineSeparator }
@@ -115,7 +132,7 @@ fun getNumberOfSpaces(contentWithoutRules: String, tableLineSeparator: String, r
 
     val spacesPerCell = getSpacesPerCell(relativeIndices, contentLinesWithoutRules)
 
-    return getSpacesForRightBlock(right, absoluteAmpersandIndicesPerLine, spacesPerCell)
+    return getSpacesForRightBlock(right, absoluteAmpersandIndicesPerLine, spacesPerCell, relativeIndices)
 }
 
 /**
@@ -159,7 +176,10 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
  * 1 when we should do nothing, except the single required space.
  * Indexed by line, then by level.
  */
-private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
+private fun getSpacesPerCell(
+    relativeIndices: List<List<Int>>,
+    contentLinesWithoutRules: MutableList<String>
+): List<List<Int>> {
     val nrLevels = relativeIndices.map { it.size }.maxOrNull() ?: 0
 
     // If we are on a on a table line that is split over multiple `physical' lines,
@@ -199,15 +219,26 @@ private fun getSpacesPerCell(relativeIndices: List<List<Int>>, contentLinesWitho
 }
 
 /**
- * Find level of 'right' block (which is a & or \\)
+ * Find level of 'right' block (which is a & or \\).
+ *
+ * @return Number of spaces, -1 if a newline is required.
  */
-private fun getSpacesForRightBlock(right: ASTBlock, absoluteAmpersandIndicesPerLine: List<List<Int>>, spacesPerCell: List<List<Int>>): Int? {
+private fun getSpacesForRightBlock(
+    right: ASTBlock,
+    absoluteAmpersandIndicesPerLine: List<List<Int>>,
+    spacesPerCell: List<List<Int>>,
+    relativeIndices: List<List<Int>>
+): Int? {
     val rightElementOffset = right.node?.psi?.textOffset ?: return null
     // Current and desired index relative to line start, e.g. in case 'asdf__&` is desired, index 6
     for ((i, absoluteIndices) in absoluteAmpersandIndicesPerLine.withIndex()) {
         for (level in absoluteIndices.indices) {
             // Try to find the offset of the right & in the list of all & offsets
             if (absoluteIndices[level] == rightElementOffset) {
+                // For very long lines, it's a lot more readable to start & on a new line instead of inserting a whole bunch of spaces
+                // Make sure not to only put the \\ on a new line
+                val didPreviousCellGetNewline = if (level == 0) true else relativeIndices.getOrNull(i)?.getOrNull(level - 1) ?: 0 > LINE_LENGTH
+                if (relativeIndices.getOrNull(i)?.getOrNull(level) ?: 0 > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)) return -1
                 return spacesPerCell[min(i, spacesPerCell.size - 1)][level]
             }
         }

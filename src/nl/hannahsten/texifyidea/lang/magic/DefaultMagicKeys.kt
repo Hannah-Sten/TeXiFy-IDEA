@@ -171,6 +171,15 @@ enum class DefaultMagicKeys(
         These commands and environments are related to the documented command or environment.
         """.trimIndent().trim(),
         MagicCommentScope.COMMAND.singleScope()
+    ),
+
+    FAKE(
+        "fake",
+        "Fake",
+        """
+        A comment tdieksoe
+        """.trimIndent().trim(),
+        MagicCommentScope.COMMAND.singleScope()
     );
 
     override fun toString(): String = key

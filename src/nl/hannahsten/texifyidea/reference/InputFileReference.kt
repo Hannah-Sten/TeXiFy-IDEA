@@ -13,8 +13,8 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
@@ -85,7 +85,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         }
 
         // Try content roots
-        if (targetFile == null && LatexDistribution.isMiktexAvailable) {
+        if (targetFile == null && LatexSdkUtil.isMiktexAvailable) {
             for (moduleRoot in ProjectRootManager.getInstance(element.project).contentSourceRoots) {
                 targetFile = moduleRoot.findFile(processedKey, extensions)
                 if (targetFile != null) break
@@ -106,7 +106,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Look for packages/files elsewhere using the kpsewhich command.
         if (targetFile == null && lookForInstalledPackages) {
             targetFile = element.getFileNameWithExtensions(processedKey)
-                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it) }
+                .mapNotNull { LatexPackageLocationCache.getPackageLocation(it, element.project) }
                 .mapNotNull { getExternalFile(it) }
                 .firstOrNull()
         }
@@ -130,13 +130,21 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // Since the parameter content may be a path, but we are just given a filename, just replace the filename
         // We guess the filename is after the last occurrence of /
         val oldNode = myElement?.node
-        val defaultNewText = "${myElement?.name}{$newElementName}"
+
+        val newName = if ((oldNode?.psi as? LatexCommands)?.name in Magic.Command.illegalExtensions.keys) {
+            newElementName.removeFileExtension()
+        }
+        else {
+            newElementName
+        }
+
+        val defaultNewText = "${myElement?.name}{$newName}"
         // Assumes that it is the last parameter, but at least leaves the options intact
-        val default = oldNode?.text?.replaceAfterLast('{', "$newElementName}", defaultNewText) ?: defaultNewText
+        val default = oldNode?.text?.replaceAfterLast('{', "$newName}", defaultNewText) ?: defaultNewText
 
         // Recall that \ is a file separator on Windows
         val newText = if (elementNameIsJustFilename) {
-            oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newElementName}", default.trimStart('\\'))
+            oldNode?.text?.trimStart('\\')?.replaceAfterLast('/', "$newName}", default.trimStart('\\'))
                 ?.let { "\\" + it } ?: default
         }
         else {

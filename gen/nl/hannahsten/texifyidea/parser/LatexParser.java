@@ -290,6 +290,18 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // MAGIC_COMMENT_TOKEN
+  public static boolean magic_comment(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "magic_comment")) return false;
+    if (!nextTokenIs(b, MAGIC_COMMENT_TOKEN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, MAGIC_COMMENT_TOKEN);
+    exit_section_(b, m, MAGIC_COMMENT, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // no_math_content+
   public static boolean math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "math_content")) return false;
@@ -319,13 +331,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
   //     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
   public static boolean no_math_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "no_math_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NO_MATH_CONTENT, "<no math content>");
     r = raw_text(b, l + 1);
+    if (!r) r = magic_comment(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = pseudocode_block(b, l + 1);
@@ -395,12 +408,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
   public static boolean optional_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, OPTIONAL_PARAM_CONTENT, "<optional param content>");
     r = raw_text(b, l + 1);
+    if (!r) r = magic_comment(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = pseudocode_block(b, l + 1);
@@ -595,12 +609,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
   public static boolean required_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, REQUIRED_PARAM_CONTENT, "<required param content>");
     r = raw_text(b, l + 1);
+    if (!r) r = magic_comment(b, l + 1);
     if (!r) r = comment(b, l + 1);
     if (!r) r = environment(b, l + 1);
     if (!r) r = pseudocode_block(b, l + 1);

@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.grammar;
 import java.util.*;
 
 import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.util.Magic;
 
@@ -62,15 +63,18 @@ OPEN_PAREN="("
 CLOSE_PAREN=")"
 
 SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
-WHITE_SPACE=[ \t\n\x0B\f\r]+
+WHITE_SPACE={SINGLE_WHITE_SPACE}+
 BEGIN_TOKEN="\\begin"
 END_TOKEN="\\end"
 COMMAND_TOKEN=\\([a-zA-Z@_:]+|.|\r) // _ and : are technically only LaTeX3 syntax
 COMMAND_IFNEXTCHAR=\\@ifnextchar.
 
 // Comments
+MAGIC_COMMENT_PREFIX=("!"|" !"[tT][eE][xX])
 COMMENT_TOKEN=%[^\r\n]*
-MAGIC_COMMENT_LEXER_SWITCH="%" {WHITE_SPACE}? "!" {WHITE_SPACE}? (TeX)? {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
+MAGIC_COMMENT_TOKEN="%"{MAGIC_COMMENT_PREFIX}[^\r\n]*
+
+MAGIC_COMMENT_LEXER_SWITCH="%"{MAGIC_COMMENT_PREFIX} {WHITE_SPACE}? "parser" {WHITE_SPACE}? "=" {WHITE_SPACE}?
 LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
@@ -350,12 +354,12 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
 
-{WHITE_SPACE}           { return WHITE_SPACE; }
 {BEGIN_TOKEN}           { yypushState(POSSIBLE_VERBATIM_BEGIN); return BEGIN_TOKEN; }
 {END_TOKEN}             { return END_TOKEN; }
 {COMMAND_TOKEN}         { return COMMAND_TOKEN; }
 {COMMAND_IFNEXTCHAR}    { return COMMAND_IFNEXTCHAR; }
 {LEXER_OFF_TOKEN}       { yypushState(OFF); return COMMENT_TOKEN; }
+{MAGIC_COMMENT_TOKEN}   { return MAGIC_COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
 {NORMAL_TEXT_CHAR}      { return NORMAL_TEXT_CHAR; }

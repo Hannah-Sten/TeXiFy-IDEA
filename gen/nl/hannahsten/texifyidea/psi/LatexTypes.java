@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
+import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType;
 import nl.hannahsten.texifyidea.psi.impl.*;
 
 public interface LatexTypes {
@@ -20,6 +21,7 @@ public interface LatexTypes {
   IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
+  IElementType MAGIC_COMMENT = new LatexMagicCommentStubElementType("MAGIC_COMMENT");
   IElementType MATH_CONTENT = new LatexElementType("MATH_CONTENT");
   IElementType MATH_ENVIRONMENT = new LatexElementType("MATH_ENVIRONMENT");
   IElementType NORMAL_TEXT = new LatexElementType("NORMAL_TEXT");
@@ -49,6 +51,7 @@ public interface LatexTypes {
   IElementType END_TOKEN = new LatexTokenType("\\end");
   IElementType INLINE_MATH_END = new LatexTokenType("INLINE_MATH_END");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
+  IElementType MAGIC_COMMENT_TOKEN = new LatexTokenType("MAGIC_COMMENT_TOKEN");
   IElementType MIDDLE_PSEUDOCODE_BLOCK = new LatexTokenType("MIDDLE_PSEUDOCODE_BLOCK");
   IElementType NORMAL_TEXT_CHAR = new LatexTokenType("NORMAL_TEXT_CHAR");
   IElementType NORMAL_TEXT_WORD = new LatexTokenType("NORMAL_TEXT_WORD");
@@ -90,6 +93,9 @@ public interface LatexTypes {
       }
       else if (type == INLINE_MATH) {
         return new LatexInlineMathImpl(node);
+      }
+      else if (type == MAGIC_COMMENT) {
+        return new LatexMagicCommentImpl(node);
       }
       else if (type == MATH_CONTENT) {
         return new LatexMathContentImpl(node);

@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.ui
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import nl.hannahsten.texifyidea.settings.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.File
 import java.io.IOException
@@ -51,7 +53,7 @@ class PreviewFormUpdater(private val previewForm: PreviewForm) {
      * This function also starts the creation and compilation of the temporary preview document, and will then
      * either display the preview, or if something failed, the error produced.
      */
-    fun compilePreview(previewCode: String) {
+    fun compilePreview(previewCode: String, project: Project) {
         previewForm.setEquation(previewCode)
 
         // First define the function that actually does stuff in a temp folder. The usual temp directory might not be
@@ -75,7 +77,7 @@ $previewCode
                 writer.close()
 
                 val latexStdoutText = runCommand(
-                    "pdflatex",
+                    LatexSdkUtil.getExecutableName("pdflatex", project),
                     arrayOf(
                         "-interaction=nonstopmode",
                         "-halt-on-error",

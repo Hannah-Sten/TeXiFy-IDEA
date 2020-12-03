@@ -17,6 +17,9 @@ public interface LatexRequiredParamContent extends PsiElement {
   LatexGroup getGroup();
 
   @Nullable
+  LatexMagicComment getMagicComment();
+
+  @Nullable
   LatexMathEnvironment getMathEnvironment();
 
   @Nullable

@@ -7,26 +7,26 @@ import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
-import nl.hannahsten.texifyidea.lang.Package
-import nl.hannahsten.texifyidea.lang.Package.Companion.ALGORITHM2E
-import nl.hannahsten.texifyidea.lang.Package.Companion.ALGPSEUDOCODE
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSFONTS
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSMATH
-import nl.hannahsten.texifyidea.lang.Package.Companion.AMSSYMB
-import nl.hannahsten.texifyidea.lang.Package.Companion.BIBLATEX
-import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIES
-import nl.hannahsten.texifyidea.lang.Package.Companion.GLOSSARIESEXTRA
-import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICS
-import nl.hannahsten.texifyidea.lang.Package.Companion.GRAPHICX
-import nl.hannahsten.texifyidea.lang.Package.Companion.MATHTOOLS
-import nl.hannahsten.texifyidea.lang.Package.Companion.NATBIB
-import nl.hannahsten.texifyidea.lang.Package.Companion.PDFCOMMENT
-import nl.hannahsten.texifyidea.lang.Package.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSFONTS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIESEXTRA
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.PDFCOMMENT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 import org.intellij.lang.annotations.Language
 import java.awt.Color
 import java.util.regex.Pattern
 
-typealias LatexPackage = Package
+typealias LatexPackage = LatexPackage
 typealias RegexPattern = Pattern
 
 /**
@@ -276,6 +276,9 @@ object Magic {
 
         @JvmField
         val preambleValues = hashSetOf("tikz", "math")
+
+        @JvmField
+        val fakeSectionValues = hashSetOf("part", "chapter", "section", "subsection", "subsubsection", "paragraph", "subparagraph")
     }
 
     /**
@@ -550,7 +553,8 @@ object Magic {
         val illegalExtensions = mapOf(
             "\\" + INCLUDE.command to listOf(".tex"),
             "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
-            "\\" + BIBLIOGRAPHY.command to listOf(".bib")
+            "\\" + BIBLIOGRAPHY.command to listOf(".bib"),
+            "\\" + INCLUDEGRAPHICS.command to listOf(".eps", ".pdf", ".png", ".jpeg", ".jbig2", ".jp2"), // https://tex.stackexchange.com/a/1075/98850
         )
 
         /**

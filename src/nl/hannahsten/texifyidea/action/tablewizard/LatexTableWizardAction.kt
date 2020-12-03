@@ -7,7 +7,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import nl.hannahsten.texifyidea.action.insert.InsertTable
-import nl.hannahsten.texifyidea.lang.Package
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
 import nl.hannahsten.texifyidea.util.*
@@ -47,7 +47,7 @@ class LatexTableWizardAction : AnAction() {
                 project,
                 "Insert table",
                 "LaTeX",
-                Runnable { file.psiFile(project)!!.insertUsepackage(Package.BOOKTABS) },
+                Runnable { file.psiFile(project)!!.insertUsepackage(LatexPackage.BOOKTABS) },
                 file.psiFile(project)
             )
         }

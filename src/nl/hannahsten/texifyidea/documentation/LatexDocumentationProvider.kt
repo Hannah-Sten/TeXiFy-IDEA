@@ -5,12 +5,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.Package
-import nl.hannahsten.texifyidea.lang.Package.Companion.DEFAULT
+import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.run.latex.LatexDistribution
+import nl.hannahsten.texifyidea.settings.TexliveSdk
 import nl.hannahsten.texifyidea.util.parentsOfType
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException
@@ -46,7 +46,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         // Special case for package inclusion commands
         if (command.first().command in PACKAGE_COMMANDS) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
-            return runTexdoc(Package(pkg))
+            return runTexdoc(LatexPackage(pkg))
         }
 
         return runTexdoc(command.first().dependency)
@@ -113,13 +113,13 @@ class LatexDocumentationProvider : DocumentationProvider {
         psiElement: PsiElement?
     ): PsiElement? = null
 
-    private fun runTexdoc(pkg: Package): List<String> {
+    private fun runTexdoc(pkg: LatexPackage): List<String> {
         val name = if (pkg == DEFAULT) "source2e" else pkg.name
 
         val stream: InputStream
         try {
             // -M to avoid texdoc asking to choose from the list
-            val command = if (LatexDistribution.isTexliveAvailable) {
+            val command = if (TexliveSdk.isAvailable) {
                 "texdoc -l -M $name"
             }
             else {
@@ -138,7 +138,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             emptyList()
         }
         else {
-            if (LatexDistribution.isTexliveAvailable) {
+            if (TexliveSdk.isAvailable) {
                 lines.map {
                     // Line consists of: name version path optional file description
                     it.split("\t")[2]

@@ -148,7 +148,8 @@
         <!-- LaTeX Edit commands -->
         <group id="texify.LatexMenuEdit" text="_LaTeX" description="Latex edit actions" popup="true"
                class="nl.hannahsten.texifyidea.action.group.LatexEditMenuGroup">
-            <add-to-group group-id="EditSmartGroup" anchor="first"/>
+                <!-- MPS doesn't have the EditSmartGroup group, so we register directly in the Edit menu. -->
+            <add-to-group group-id="EditMenu" anchor="last"/>
 
             <!-- Table Creation Wizard-->
             <action class="nl.hannahsten.texifyidea.action.tablewizard.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
@@ -398,6 +399,10 @@
 
         <!-- Project settings -->
         <projectService serviceImplementation="nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexErrorTreeViewConfiguration"/>
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.TexliveSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.DockerSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.MiktexSdk" />
+        <projectSdkSetupValidator implementation="nl.hannahsten.texifyidea.project.LatexProjectSdkSetupValidator" />
 
         <!-- Languages -->
         <lang.parserDefinition language="Latex" implementationClass="nl.hannahsten.texifyidea.LatexParserDefinition"/>
@@ -481,6 +486,7 @@
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType"/>
+        <configurationType implementation="nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
 
         <!-- Annotators -->
@@ -497,9 +503,10 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
