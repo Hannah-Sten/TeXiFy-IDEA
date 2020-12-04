@@ -44,6 +44,8 @@ fun runCommand(vararg commands: String): String? {
             proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
         }
         else {
+            proc.destroy()
+            proc.waitFor()
             null
         }
     }
