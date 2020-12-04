@@ -14,6 +14,7 @@ import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMathContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.Magic
@@ -45,12 +46,23 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
         val pattern = PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT_WORD)
         val envs =
             PsiTreeUtil.findChildrenOfType(file, LatexMathContent::class.java)
+
         for (env in envs) {
             env.acceptChildren(object : PsiRecursiveElementVisitor() {
                 override fun visitElement(element: PsiElement) {
                     ProgressManager.checkCanceled()
                     if (pattern.accepts(element)) {
-                        if (Magic.Command.slashlessMathOperators.contains(element.text)) {
+                        fun hasMathParentBeforeTextParent() = PsiTreeUtil.collectParents(
+                            element,
+                            LatexMathContent::class.java,
+                            false
+                        ) { it is LatexCommands && it.name == "\\text" }.size > 0
+
+                        fun descriptorAlreadyExists() = descriptors.firstOrNull {
+                            it.psiElement == element && it.descriptionTemplate == "Non-escaped math operator"
+                        } != null
+
+                        if (Magic.Command.slashlessMathOperators.contains(element.text) && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
                             descriptors.add(
                                 manager.createProblemDescriptor(
                                     element,
