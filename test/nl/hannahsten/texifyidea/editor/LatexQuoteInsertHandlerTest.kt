@@ -35,4 +35,11 @@ class LatexQuoteInsertHandlerTest : BasePlatformTestCase() {
         myFixture.type("\"")
         myFixture.checkResult("""Typing \"""")
     }
+
+    fun `test no replacement of single quote in word`() {
+        myFixture.configureByText(LatexFileType, """Typing John<caret>""")
+        TexifySettings.getInstance().automaticQuoteReplacement = TexifySettings.QuoteReplacement.CSQUOTES
+        myFixture.type('\'')
+        myFixture.checkResult("""Typing John'""")
+    }
 }
