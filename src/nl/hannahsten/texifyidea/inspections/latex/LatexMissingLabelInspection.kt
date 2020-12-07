@@ -12,6 +12,7 @@ import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention
+import nl.hannahsten.texifyidea.lang.LatexDocumentClass
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -19,9 +20,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.environmentsInFile
-import nl.hannahsten.texifyidea.util.files.openedEditor
+import nl.hannahsten.texifyidea.util.files.*
 import org.jetbrains.annotations.Nls
 import java.util.*
 
@@ -46,7 +45,13 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         val minimumLevel = Magic.Command.labeledLevels[TexifySettings.getInstance().missingLabelMinimumLevel] ?: error("No valid minimum level given")
         val labeledCommands = Magic.Command.labeledLevels.keys.filter { command ->
             Magic.Command.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
-        }.map { "\\" + it.command }
+        }.map { "\\" + it.command }.toMutableList()
+
+        // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
+        if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
+            labeledCommands.remove("\\part")
+        }
+
         file.commandsInFile().filter {
             labeledCommands.contains(it.name) && it.name != "\\item" && !it.hasStar()
         }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
