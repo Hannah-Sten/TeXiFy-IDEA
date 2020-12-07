@@ -5,7 +5,7 @@ package nl.hannahsten.texifyidea.lang
  *
  * @author Thomas
  */
-open class LatexDocumentClass (
+open class LatexDocumentClass(
     val name: String,
     vararg val parameters: String = emptyArray()
 ) {
