@@ -24,7 +24,6 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return "/usr/bin"
     }
 
-
     override fun suggestHomePaths(): MutableCollection<String> {
         // Note that suggested paths appear under "Detected SDK's" when adding an SDK
         val results = mutableSetOf<String>()
