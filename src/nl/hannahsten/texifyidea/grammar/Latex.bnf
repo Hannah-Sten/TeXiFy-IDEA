@@ -78,7 +78,7 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName]
+    methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName setName]
 }
 
 

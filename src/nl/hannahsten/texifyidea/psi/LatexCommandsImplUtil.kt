@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.nextLeaf
@@ -203,4 +204,18 @@ fun hasLabel(element: LatexCommands): Boolean {
     // Next leaf is a command token, parent is LatexCommands
     val labelMaybe = element.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
+}
+
+fun setName(element: LatexCommands, newName: String): PsiElement {
+    val newText = element.text.replace(element.name ?: return element, newName)
+    val newElement = LatexPsiHelper(element.project).createFromText(newText).firstChild
+    val oldNode = element.node
+    val newNode = newElement.node
+    if (oldNode == null) {
+        element.parent?.node?.addChild(newNode)
+    }
+    else {
+        element.parent?.node?.replaceChild(oldNode, newNode)
+    }
+    return element
 }
