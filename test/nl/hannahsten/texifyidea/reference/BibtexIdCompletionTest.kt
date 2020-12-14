@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import junit.framework.TestCase
 import org.junit.Test
 
 class BibtexIdCompletionTest : BasePlatformTestCase() {
@@ -66,7 +65,6 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         val testName = getTestName(false)
         myFixture.testCompletion("${testName}_before.tex", "${testName}_after.tex", "$testName.bib")
     }
-
 
     @Test
     fun testBibtexEntryDocumentation() {
