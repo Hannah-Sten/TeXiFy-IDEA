@@ -4,7 +4,8 @@
 * Add support for pythontex. (#1656)
 * Add back support for algorithm2e formatting. (#1661)
 * Add fake section magic comments. (#1662)
-* Add support for custom LaTeX SDKs in IntelliJ. (#1629)
+* Add support for custom LaTeX SDKs in IntelliJ. (#1629, #1689)
+* Add rename element for commands. (#1689)
 
 # Changes
 * Improve efficiency of fileset cache. (#1622)
@@ -25,4 +26,8 @@
 * Fix freeze when WSL bash asks for user input. (#1681)
 * Only create subdirs in output dir for non-MiKTeX installations. (#1681)
 * \part is not a sectioning command when exam class is used. (#1681)
+* Support multiple middle pseudocode blocks. (#1689)
+* Fix bibtex documentation popup in autocompletion. (#1695)
 * Other small fixes and improvements. (#1651, #1652)
+
+Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
