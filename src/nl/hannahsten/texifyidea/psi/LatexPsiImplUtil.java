@@ -73,6 +73,10 @@ public class LatexPsiImplUtil {
         return element.getCommandToken().getText();
     }
 
+    public static PsiElement setName(@NotNull LatexCommands element, String name) {
+        return LatexCommandsImplUtilKt.setName(element, name);
+    }
+
     /**
      * Checks if the command is followed by a label.
      */

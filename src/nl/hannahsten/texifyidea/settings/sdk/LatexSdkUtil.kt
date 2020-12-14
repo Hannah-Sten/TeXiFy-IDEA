@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.settings
+package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable

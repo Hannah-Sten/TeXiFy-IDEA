@@ -161,7 +161,6 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            \documentclass[11pt]{article}
             \usepackage{algorithm2e}
             \begin{document}
                 \begin{algorithm*}
@@ -175,6 +174,25 @@ class LatexParserTest : BasePlatformTestCase() {
                     }
                 \end{algorithm*}
             \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testAlgorithmIfElseIf() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{algorithm}
+                \begin{algorithmic}
+                    \Procedure{Euclid}{a,b}
+                    \If{a<0 or b < 0}
+                    \ElsIf{a,b<0}
+                    \Else
+                    \EndIf
+                    \EndProcedure
+                \end{algorithmic}
+            \end{algorithm}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

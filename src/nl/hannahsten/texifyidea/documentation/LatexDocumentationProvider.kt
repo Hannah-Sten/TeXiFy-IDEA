@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.settings.TexliveSdk
+import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.parentsOfType
 import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import java.io.IOException

@@ -3,8 +3,8 @@ package nl.hannahsten.texifyidea.inspections.latex
 import io.mockk.every
 import io.mockk.mockkObject
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
-import nl.hannahsten.texifyidea.settings.TexliveSdk
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
 
 class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPackageNotInstalledInspection()) {

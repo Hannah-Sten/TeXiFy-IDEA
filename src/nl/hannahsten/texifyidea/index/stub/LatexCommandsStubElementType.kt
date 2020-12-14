@@ -22,14 +22,13 @@ class LatexCommandsStubElementType(debugName: String) :
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return object : LatexCommandsImpl(latexCommandsStub, this) {
             init {
-                setName(latexCommandsStub.name!!)
+                this.name = latexCommandsStub.name!!
             }
         }
     }
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
-        latexCommands.setName(commandToken)
         val requiredParameters = latexCommands.requiredParameters
         val optionalParameters: List<String> =
             LinkedList(latexCommands.optionalParameters.keys)

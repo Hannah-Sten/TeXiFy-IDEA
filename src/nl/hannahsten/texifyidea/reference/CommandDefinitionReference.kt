@@ -55,4 +55,9 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
     override fun isReferenceTo(element: PsiElement): Boolean {
         return multiResolve(false).any { it.element == element }
     }
+
+    override fun handleElementRename(newElementName: String): PsiElement {
+        myElement.setName(newElementName)
+        return myElement
+    }
 }

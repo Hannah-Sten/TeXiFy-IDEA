@@ -14,8 +14,8 @@ import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.modules.intellij.SdkSettingsStep
-import nl.hannahsten.texifyidea.settings.LatexSdk
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.io.File
 import java.util.*
 

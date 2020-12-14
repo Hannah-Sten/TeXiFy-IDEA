@@ -14,8 +14,8 @@ class LatexNamesValidator : NamesValidator {
 
     override fun isIdentifier(name: String, project: Project?): Boolean {
         // Unfortunately this is a global rule
-        // For now we assume the user is refactoring a label
         /** See [formatAsLabel] */
-        return name.toSet().intersect(setOf('%', '~', '#', '\\')).isEmpty()
+        // Exclude the first \ to allow renaming commands
+        return name.substring(1).toSet().intersect(setOf('%', '~', '#', '\\')).isEmpty()
     }
 }

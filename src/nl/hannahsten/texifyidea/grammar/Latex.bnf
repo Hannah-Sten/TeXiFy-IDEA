@@ -53,9 +53,7 @@
 
 latexFile ::= content*
 
-// Together with using pseudocode_block_content, this makes sure to exclude the end_pseudocode_block in pseudocode_block_content,
-// thus ensuring a single end_pseudocode_block token is not a parse error (if it should have been a commands token)
-content ::= no_math_content | END_PSEUDOCODE_BLOCK
+content ::= no_math_content
 
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
@@ -71,7 +69,7 @@ environment ::= begin_command environment_content? end_command {
 
 environment_content ::= <<injection_env_content raw_text>> | content+
 
-pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)? (END_PSEUDOCODE_BLOCK parameter*) { pin=5 }
+pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)* (END_PSEUDOCODE_BLOCK parameter*) { pin=5 }
 
 pseudocode_block_content ::= no_math_content*
 
@@ -80,7 +78,7 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName]
+    methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName setName]
 }
 
 

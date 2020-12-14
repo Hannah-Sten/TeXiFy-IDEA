@@ -6,8 +6,8 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.settings.MiktexSdk
-import nl.hannahsten.texifyidea.settings.TexliveSdk
+import nl.hannahsten.texifyidea.settings.sdk.MiktexSdk
+import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.splitWhitespace
