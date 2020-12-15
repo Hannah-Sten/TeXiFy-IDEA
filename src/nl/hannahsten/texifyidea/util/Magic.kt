@@ -202,6 +202,12 @@ object Magic {
     }
 
     /**
+     * Commands and environments that define their label via an optional parameter
+     */
+    @JvmField
+    val labelAsParameter = hashSetOf("lstlisting", "Verbatim", "lstinputlisting")
+
+    /**
      * @author Hannah Schellekens
      */
     object Environment {
@@ -226,12 +232,6 @@ object Magic {
             "lstlisting", "lst",
             "Verbatim", "verb"
         )
-
-        /**
-         * Environments that define their label via an optional parameter
-         */
-        @JvmField
-        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
 
         /**
          * Environments that introduce figures

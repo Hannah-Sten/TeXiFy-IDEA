@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.psi.*
@@ -30,7 +31,8 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexL
  */
 fun PsiFile.findLabelsInFileSetAsCollection(): List<PsiElement> = sequenceOf(
     findLabelingCommandsInFileSetAsSequence(),
-    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()
+    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence(),
+    LatexParameterLabeledCommandsIndex.getItemsInFileSet(this).asSequence()
 ).flatten().toList()
 
 /*
@@ -51,7 +53,8 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
  */
 fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(
     findLabelingCommandsInFileAsSequence(),
-    LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence()
+    LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence(),
+    LatexParameterLabeledCommandsIndex.getItemsInFileSet(this).asSequence()
 ).flatten()
 
 /**
@@ -59,7 +62,8 @@ fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = 
  */
 fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement> = sequenceOf(
     findLabelingCommandsInFileSetAsSequence(),
-    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()
+    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence(),
+    LatexParameterLabeledCommandsIndex.getItemsInFileSet(this).asSequence()
 ).flatten()
 
 /**
@@ -147,9 +151,11 @@ fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
     val commands = LatexCommandsIndex.getItems(this).findLatexCommandsLabels(this)
     val bibtexIds = BibtexEntryIndex.getIndexedEntries(this)
     val environments = LatexParameterLabeledEnvironmentsIndex.getItems(this)
+    val parameterLabeledCommands = LatexParameterLabeledCommandsIndex.getItems(this)
     val result = ArrayList<PsiElement>(commands)
     result.addAll(bibtexIds)
     result.addAll(environments)
+    result.addAll(parameterLabeledCommands)
     return result
 }
 
@@ -164,12 +170,16 @@ fun PsiElement.extractLabelName(): String {
     return when (this) {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
-            // For now just take the first label name (may be multiple for user defined commands)
-            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
-            val position = info?.positions?.firstOrNull() ?: 0
-            val prefix = info?.prefix ?: ""
-            // Skip optional parameters for now (also below and in
-            prefix + this.requiredParameter(position)
+            if (Magic.labelAsParameter.contains(commandToken.text.substring(1))) {
+                optionalParameters["label"]!!
+            } else {
+                // For now just take the first label name (may be multiple for user defined commands)
+                val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+                val position = info?.positions?.firstOrNull() ?: 0
+                val prefix = info?.prefix ?: ""
+                // Skip optional parameters for now (also below and in
+                prefix + this.requiredParameter(position)
+            }
         }
         is LatexEnvironment -> this.label ?: ""
         else -> text

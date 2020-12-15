@@ -36,4 +36,26 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { l -> l.lookupString == "lst:listing" })
         assertTrue(result.any { l -> l.lookupString == "sec:some-section" })
     }
+
+
+    @Test
+    fun testCommandParameterLabelReferenceCompletion() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \lstinputlisting[label={lst:inputlisting}]{some/file}
+                \ref{<caret>}
+            \end{document}
+            """.trimIndent()
+        )
+
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(1, result.size)
+        assertTrue(result.any { l -> l.lookupString == "lst:inputlisting" })
+    }
 }

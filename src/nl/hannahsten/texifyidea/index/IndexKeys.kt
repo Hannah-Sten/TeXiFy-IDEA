@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StubIndexKey
+import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
@@ -21,4 +22,7 @@ object IndexKeys {
         StubIndexKey.createIndexKey<String, LatexMagicComment>("nl.hannahsten.texifyidea.magiccomment")
     val LABELED_ENVIRONMENTS_KEY =
         StubIndexKey.createIndexKey<String, LatexEnvironment>("nl.hannahsten.texifyidea.parameterlabeledenvironments")
+    val LABELED_COMMANDS_KEY =
+        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.parameterlabeledcommands")
+
 }
