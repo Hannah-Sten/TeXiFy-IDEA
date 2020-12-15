@@ -212,4 +212,17 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             \end{document}
             """.trimIndent()
     )
+
+    fun `test quick fix in lstinputlistings with other parameters`() = testQuickFix(
+        before = """
+        \begin{document}
+                \lstinputlisting[someoption,otheroption={with value}]{some/file}
+        \end{document}
+        """.trimIndent(),
+        after = """
+        \begin{document}
+                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+        \end{document}
+        """.trimIndent()
+    )
 }

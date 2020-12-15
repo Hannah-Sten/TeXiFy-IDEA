@@ -15,10 +15,12 @@
     tokenTypeClass="nl.hannahsten.texifyidea.psi.LatexTokenType"
 
     extends("commands")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexCommandsStub>"
-    implements("commands")="com.intellij.psi.PsiNameIdentifierOwner"
+    implements("commands")= ["com.intellij.psi.PsiNameIdentifierOwner" "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"]
 
     extends("environment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub>"
     implements("environment")="com.intellij.psi.PsiLanguageInjectionHost"
+
+    implements("begin_command") = "nl.hannahsten.texifyidea.psi.LatexCommandWithParams"
 
     extends("magic_comment")="com.intellij.extapi.psi.StubBasedPsiElementBase<nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub>"
     // Make text have an identifier, to be able to Ctrl+B for \label parameters

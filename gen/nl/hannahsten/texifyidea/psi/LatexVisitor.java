@@ -10,11 +10,12 @@ import com.intellij.psi.PsiLanguageInjectionHost;
 public class LatexVisitor extends PsiElementVisitor {
 
   public void visitBeginCommand(@NotNull LatexBeginCommand o) {
-    visitPsiElement(o);
+    visitCommandWithParams(o);
   }
 
   public void visitCommands(@NotNull LatexCommands o) {
     visitPsiNameIdentifierOwner(o);
+    // visitCommandWithParams(o);
   }
 
   public void visitComment(@NotNull LatexComment o) {
@@ -111,6 +112,10 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitPsiNameIdentifierOwner(@NotNull PsiNameIdentifierOwner o) {
     visitElement(o);
+  }
+
+  public void visitCommandWithParams(@NotNull LatexCommandWithParams o) {
+    visitPsiElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {

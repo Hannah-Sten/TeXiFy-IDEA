@@ -113,7 +113,7 @@ class LatexPsiHelper(private val project: Project) {
      *
      * @return A list containing the newly inserted elements from left to right
      */
-    fun addOptionalParameter(command: LatexBeginCommand, name: String, value: String?): List<PsiElement> {
+    fun addOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): List<PsiElement> {
         val existingParameters = command.optionalParameters
         if (existingParameters.isEmpty()) {
             command.addAfter(createLatexOptionalParam(), command.parameterList[0])
