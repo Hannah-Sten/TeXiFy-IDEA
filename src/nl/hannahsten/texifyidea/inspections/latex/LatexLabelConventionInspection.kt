@@ -31,7 +31,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 is LatexCommands -> {
                     if (label.inDirectEnvironmentMatching {
                         Magic.Environment.labeled.containsKey(it.environmentName) &&
-                            !Magic.labelAsParameter.contains(it.environmentName)
+                            !Magic.Environment.labelAsParameter.contains(it.environmentName)
                     }
                     ) {
                         label.parentOfType(LatexEnvironment::class)

@@ -178,7 +178,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             )
 
             val moveCaretAfter: PsiElement
-            moveCaretAfter = if (Magic.labelAsParameter.contains(command.environmentName)) {
+            moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
                 val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
                 insertedElements.last()
             }

@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.Magic
 fun getLabel(element: LatexEnvironment): String? {
     val stub = element.stub
     if (stub != null) return stub.label
-    return if (Magic.labelAsParameter.contains(element.environmentName)) {
+    return if (Magic.Environment.labelAsParameter.contains(element.environmentName)) {
         // See if we can find a label option
         val optionalParameters = getOptionalParameters(element.beginCommand.parameterList)
         optionalParameters.getOrDefault("label", null)

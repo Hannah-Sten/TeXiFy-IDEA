@@ -202,12 +202,6 @@ object Magic {
     }
 
     /**
-     * Commands and environments that define their label via an optional parameter
-     */
-    @JvmField
-    val labelAsParameter = hashSetOf("lstlisting", "Verbatim", "lstinputlisting")
-
-    /**
      * @author Hannah Schellekens
      */
     object Environment {
@@ -267,6 +261,12 @@ object Magic {
             "aligned", "alignedat",
             "cases", "dcases"
         ) + matrixEnvironments
+
+        /**
+         * Environments that define their label via an optional parameter
+         */
+        @JvmField
+        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
     }
 
     /**
@@ -320,6 +320,12 @@ object Magic {
             PARAGRAPH to 4,
             SUBPARAGRAPH to 5
         )
+
+        /**
+         * Commands that define a label via an optional parameter
+         */
+        @JvmField
+        val labelAsParameter = hashSetOf("\\lstinputlisting")
 
         /**
          * All commands that mark some kind of section.

@@ -86,7 +86,7 @@ class LatexCommandsStubElementType(debugName: String) :
         if (Magic.Command.definitions.contains(token) || Magic.Command.redefinitions.contains(token)) {
             indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
-        if (Magic.labelAsParameter.contains(token.substring(1)) && latexCommandsStub.optionalParams.contains("label")) {
+        if (Magic.Command.labelAsParameter.contains(token) && latexCommandsStub.optionalParams.contains("label")) {
             val label = latexCommandsStub.optionalParams["label"]!!
             indexSink.occurrence(LatexParameterLabeledCommandsIndex.key(), label)
         }

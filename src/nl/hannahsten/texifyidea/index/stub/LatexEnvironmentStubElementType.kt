@@ -37,7 +37,7 @@ open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType
         sink.occurrence(LatexEnvironmentsIndex.key(), stub.environmentName)
 
         // only record environments with a label in the optional parameters
-        if (stub.label.isNotEmpty() && Magic.labelAsParameter.contains(stub.environmentName)) {
+        if (stub.label.isNotEmpty() && Magic.Environment.labelAsParameter.contains(stub.environmentName)) {
             sink.occurrence(LatexParameterLabeledEnvironmentsIndex.key(), stub.label)
         }
     }
