@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StringStubIndexExtension
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
 
 /**
  * This index contains commands that define a label in their  optional parameters.

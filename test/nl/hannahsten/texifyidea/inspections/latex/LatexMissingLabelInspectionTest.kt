@@ -188,4 +188,28 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             quickFixName = "Add label for this command",
             numberOfFixes = 4
     )
+
+    fun `test missing lstinputlistings label warnings`() = testHighlighting(
+        """
+            \usepackage{listings}
+            \begin{document}
+                <weak_warning descr="Missing label">\lstinputlisting{some/file}</weak_warning>
+                
+                \lstinputlisting[label={lst:inputlisting}]{some/file}
+                
+                \lstinputlisting[label={lst:inputlisting with spaces}]{some/file}
+            \end{document}
+            """.trimIndent()
+    )
+
+    fun `test lstinputlistings label no warnings`() = testHighlighting(
+        """
+            \usepackage{listings}
+            \begin{document}
+                \lstinputlisting[label={lst:inputlisting}]{some/file}
+                
+                \lstinputlisting[label={lst:inputlisting with spaces}]{some/file}
+            \end{document}
+            """.trimIndent()
+    )
 }

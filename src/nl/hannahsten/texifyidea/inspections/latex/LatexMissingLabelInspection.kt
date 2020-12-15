@@ -47,6 +47,8 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             Magic.Command.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
         }.map { "\\" + it.command }.toMutableList()
 
+        labeledCommands.addAll(Magic.Command.labelAsParameter)
+
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
         if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
             labeledCommands.remove("\\part")

@@ -201,6 +201,10 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
  * Checks if the command is followed by a label.
  */
 fun hasLabel(element: LatexCommands): Boolean {
+    if (Magic.Command.labelAsParameter.contains(element.commandToken.text)) {
+        return getOptionalParameters(element.parameterList).containsKey("label")
+    }
+
     // Next leaf is a command token, parent is LatexCommands
     val labelMaybe = element.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true

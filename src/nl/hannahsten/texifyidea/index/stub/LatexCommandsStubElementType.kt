@@ -4,7 +4,6 @@ import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.getOptionalParameters
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands

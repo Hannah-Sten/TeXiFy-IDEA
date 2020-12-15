@@ -37,7 +37,6 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { l -> l.lookupString == "sec:some-section" })
     }
 
-
     @Test
     fun testCommandParameterLabelReferenceCompletion() {
         // given

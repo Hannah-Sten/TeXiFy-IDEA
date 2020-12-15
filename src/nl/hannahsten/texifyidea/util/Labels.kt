@@ -21,7 +21,8 @@ import nl.hannahsten.texifyidea.util.files.commandsInFileSet
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
+fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> =
+    (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
 
 /**
  * Finds all defined labels within a given file.
@@ -172,7 +173,8 @@ fun PsiElement.extractLabelName(): String {
         is LatexCommands -> {
             if (Magic.Command.labelAsParameter.contains(commandToken.text)) {
                 optionalParameters["label"]!!
-            } else {
+            }
+            else {
                 // For now just take the first label name (may be multiple for user defined commands)
                 val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
                 val position = info?.positions?.firstOrNull() ?: 0
@@ -197,7 +199,8 @@ fun PsiElement.extractLabelElement(): PsiElement? {
             val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
             val position = info?.positions?.firstOrNull() ?: 0
             // Skip optional parameters for now
-            this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)?.firstChildOfType(LatexParameterText::class)
+            this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)
+                ?.firstChildOfType(LatexParameterText::class)
         }
         else -> null
     }
