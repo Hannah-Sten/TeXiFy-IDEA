@@ -79,7 +79,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         val fixes = mutableListOf<LocalQuickFix>()
         fixes.add(InsertLabelForCommandFix())
-        if (!Magic.Command.labelAsParameter.contains(command.commandToken.text)) {
+        if (!Magic.Command.labelAsParameter.contains(command.name)) {
             fixes.add(ChangeMinimumLabelLevelFix())
         }
 

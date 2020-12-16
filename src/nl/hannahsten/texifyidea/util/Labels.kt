@@ -171,7 +171,7 @@ fun PsiElement.extractLabelName(): String {
     return when (this) {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
-            if (Magic.Command.labelAsParameter.contains(commandToken.text)) {
+            if (Magic.Command.labelAsParameter.contains(name)) {
                 optionalParameters["label"]!!
             }
             else {
