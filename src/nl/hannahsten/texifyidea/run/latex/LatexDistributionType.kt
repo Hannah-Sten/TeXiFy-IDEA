@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.settings.LatexSdk
-import nl.hannahsten.texifyidea.settings.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 /**
  * Options for the run configuration.

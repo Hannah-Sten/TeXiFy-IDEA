@@ -40,9 +40,14 @@ fun runCommand(vararg commands: String): String? {
             .redirectError(ProcessBuilder.Redirect.PIPE)
             .start()
 
-        // Timeout value
-        proc.waitFor(3, TimeUnit.SECONDS)
-        proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+        if (proc.waitFor(3, TimeUnit.SECONDS)) {
+            proc.inputStream.bufferedReader().readText().trim() + proc.errorStream.bufferedReader().readText().trim()
+        }
+        else {
+            proc.destroy()
+            proc.waitFor()
+            null
+        }
     }
     catch (e: IOException) {
         null // Don't print the stacktrace because that is confusing.

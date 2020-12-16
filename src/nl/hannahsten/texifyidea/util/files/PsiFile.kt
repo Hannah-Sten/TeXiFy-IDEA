@@ -59,12 +59,16 @@ fun PsiFile.isClassFile() = virtualFile.extension == "cls"
  * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
  * Note this explicitly does not find files elsewhere on the system.
  */
-fun PsiFile.documentClassFileInProject(): PsiFile? {
-    val command = commandsInFile().asSequence()
+fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls")
+
+/**
+ * If the file has a \documentclass command, return the class name, null otherwise.
+ */
+fun PsiFile.documentClass(): String? {
+    return commandsInFile().asSequence()
         .filter { it.name == "\\documentclass" }
-        .firstOrNull() ?: return null
-    val argument = command.requiredParameter(0) ?: return null
-    return findFile("$argument.cls")
+        .firstOrNull()
+        ?.requiredParameter(0)
 }
 
 /**

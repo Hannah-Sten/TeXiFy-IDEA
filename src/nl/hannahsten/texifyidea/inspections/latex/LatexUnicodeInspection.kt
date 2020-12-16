@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable
-import nl.hannahsten.texifyidea.settings.TexliveSdk
+import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.insertUsepackage

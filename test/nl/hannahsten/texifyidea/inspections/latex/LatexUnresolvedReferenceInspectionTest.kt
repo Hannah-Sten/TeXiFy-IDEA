@@ -60,16 +60,11 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.checkHighlighting()
     }
 
-    // Test randomly fails
-    // fun testBibtexReference() {
-    //     myFixture.configureByFile("references.bib")
-    //     // Force indexing
-    //     myFixture.checkHighlighting()
-    //     val name = getTestName(false) + ".tex"
-    //     // For some reason we need to copy the .bib again
-    //     myFixture.configureByFiles(name, "references.bib")
-    //     myFixture.checkHighlighting()
-    // }
+     fun testBibtexReference() {
+         val name = getTestName(false) + ".tex"
+         myFixture.configureByFiles(name, "references.bib")
+         myFixture.checkHighlighting()
+     }
 
     fun testFigureReferencedCustomCommandOptionalParameter() {
         myFixture.configureByText(
@@ -97,6 +92,11 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
 
     fun testComma() {
         myFixture.configureByText(LatexFileType, """\input{name,with,.tex}""")
+        myFixture.checkHighlighting()
+    }
+
+    fun testNewcommand() {
+        myFixture.configureByText(LatexFileType, """\newcommand{\bla}[1]{\includegraphics{#1}}""")
         myFixture.checkHighlighting()
     }
 }

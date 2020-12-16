@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.startup
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
-import nl.hannahsten.texifyidea.settings.TexliveSdk
+import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
 import nl.hannahsten.texifyidea.util.runCommand
 

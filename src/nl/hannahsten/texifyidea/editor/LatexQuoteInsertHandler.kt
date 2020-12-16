@@ -69,10 +69,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             // Character before the cursor
             val previousChar = document.getText(TextRange.from(offset - 2, 1))
 
+            if ((previousChar.firstOrNull())?.isLetter() == true && char == '\'') return
+
             // Don't replace when trying to type an escaped quote \"
-            if (previousChar == "\\") {
-                return
-            }
+            if (previousChar == "\\") return
 
             // Assume that if the previous char is a space, we are not closing anything
             if (previousChar == " ") {

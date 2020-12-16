@@ -50,7 +50,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         firstRunSetup(compiler)
-        runConfig.outputPath.updateOutputSubDirs()
+        if (!runConfig.getLatexDistributionType().isMiktex()) {
+            runConfig.outputPath.updateOutputSubDirs()
+        }
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)

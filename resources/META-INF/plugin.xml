@@ -399,9 +399,10 @@
 
         <!-- Project settings -->
         <projectService serviceImplementation="nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexErrorTreeViewConfiguration"/>
-        <sdkType implementation="nl.hannahsten.texifyidea.settings.TexliveSdk" />
-        <sdkType implementation="nl.hannahsten.texifyidea.settings.DockerSdk" />
-        <sdkType implementation="nl.hannahsten.texifyidea.settings.MiktexSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.TexliveSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.DockerSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.MiktexSdk" />
+        <sdkType implementation="nl.hannahsten.texifyidea.settings.sdk.NativeTexliveSdk" />
         <projectSdkSetupValidator implementation="nl.hannahsten.texifyidea.project.LatexProjectSdkSetupValidator" />
 
         <!-- Languages -->

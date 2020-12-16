@@ -9,7 +9,7 @@ class LatexAvoidEqnarrayInspectionTest : TexifyInspectionTestBase(LatexAvoidEqna
         \end{eqnarray}
     """.trimIndent())
 
-    fun `test eqnarray* warning`() = testHighlighting("""
+    fun `test eqnarray star warning`() = testHighlighting("""
         \begin{<warning descr="Avoid using the 'eqnarray*' environment">eqnarray*</warning>}
             x
         \end{eqnarray*}
