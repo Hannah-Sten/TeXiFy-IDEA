@@ -305,7 +305,7 @@ object Magic {
             "\\" + SUBSECTION.command to "subsec",
             "\\" + SUBSUBSECTION.command to "subsubsec",
             "\\" + ITEM.command to "itm",
-            "\\lstinputlisting" to "lst"
+            "\\" + LSTINPUTLISTING.command to "lst"
         )
 
         /**
