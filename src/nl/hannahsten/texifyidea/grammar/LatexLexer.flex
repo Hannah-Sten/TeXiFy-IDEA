@@ -114,6 +114,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 \\verb                  |
 \\verb\*                |
 \\directlua             |
+\\luaexec               |
 \\lstinline             { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
 
 <INLINE_VERBATIM_START> {
