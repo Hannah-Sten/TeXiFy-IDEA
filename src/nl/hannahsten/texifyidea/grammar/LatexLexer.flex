@@ -113,6 +113,7 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 // Use a separate state to start verbatim, to be able to return a command token for \verb
 \\verb                  |
 \\verb\*                |
+\\directlua             |
 \\lstinline             { yypushState(INLINE_VERBATIM_START); return COMMAND_TOKEN; }
 
 <INLINE_VERBATIM_START> {

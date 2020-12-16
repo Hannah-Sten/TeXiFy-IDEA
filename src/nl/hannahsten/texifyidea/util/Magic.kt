@@ -242,6 +242,17 @@ object Magic {
         @JvmField
         val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*", "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted")
 
+        /**
+         * Environments that always contain a certain language.
+         *
+         * Maps the name of the environment to the registered Language id.
+         */
+        @JvmField
+        val languageInjections = hashMapOf(
+            "luacode" to "Lua",
+            "luacode*" to "Lua"
+        )
+
         @JvmField
         val algorithmEnvironments = setOf("algorithmic")
 
@@ -641,6 +652,17 @@ object Magic {
          */
         @JvmField
         val bibUrls = hashSetOf("url", "biburl")
+
+        /**
+         * Commands that always contain a certain language.
+         *
+         * Maps the name of the environment to the registered Language id.
+         */
+        @JvmField
+        val languageInjections = hashMapOf(
+            "directlua" to "Lua",
+            "luaexec" to "Lua"
+        )
     }
 
     /**
