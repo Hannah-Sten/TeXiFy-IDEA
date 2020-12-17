@@ -7,10 +7,8 @@ import com.intellij.psi.LanguageInjector
 import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
-import nl.hannahsten.texifyidea.BibtexLanguage
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
-import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.camelCase
 import nl.hannahsten.texifyidea.util.parentOfType
