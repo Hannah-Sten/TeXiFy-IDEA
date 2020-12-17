@@ -89,7 +89,9 @@ When using MiKTeX, this path will be passed to the `-aux-directory` flag for pdf
 
 This path will be passed to the `-output-directory` for pdflatex, and similar for other compilers which support an output directory.
 
-Make sure to _choose the directory of your main file when using BibTeX without MiKTeX_, otherwise bibtex won't be run correctly.
+If you are using pdflatex and bibtex under TeX Live, when your output directory is set to something different than the directory of your main file, then you need to provide the `BIBINPUTS` environment variable in the _bibtex_ run configuration.
+This should point to the directory your main file is in, e.g. `BIBINPUTS=../src`.
+TeXiFy will automatically do this for you if you create a run configuration from context (for example using the gutter icon next to `\begin{document}`).
 The exception to this is when you have changed your `openout_any` setting in TeX Live.
 
 _Since b0.7.1_
