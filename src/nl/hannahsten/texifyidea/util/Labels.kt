@@ -55,7 +55,7 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
 fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(
     findLabelingCommandsInFileAsSequence(),
     LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence(),
-    LatexParameterLabeledCommandsIndex.getItemsInFileSet(this).asSequence()
+    LatexParameterLabeledCommandsIndex.getItems(this).asSequence()
 ).flatten()
 
 /**
