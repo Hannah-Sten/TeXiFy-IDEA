@@ -63,8 +63,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
      */
     override fun getExecutableName(executable: String, project: Project): String {
         // Even though pdflatex is in path, it may be not the pdflatex we want, so we prefix the path to be sure.
-        // Get base path of LaTeX distribution
-        val home = LatexSdkUtil.getLatexProjectSdk(project)?.homePath ?: return executable
+        // Ideally we would get the home path of any SDK of this type.
         val basePath = "/usr/bin"
         return "$basePath/$executable"
     }
