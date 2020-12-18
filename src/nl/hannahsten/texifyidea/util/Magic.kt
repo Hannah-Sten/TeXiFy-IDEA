@@ -6,6 +6,12 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.ARRAY
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.LONGTABLE
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULARX
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR_STAR
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -210,7 +216,7 @@ object Magic {
         val listingEnvironments = hashSetOf("itemize", "enumerate", "description")
 
         @JvmField
-        val tableEnvironments = hashSetOf("tabular", "tabular*", "tabularx", "array", "longtable")
+        val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU).map { it.environmentName }
 
         /**
          * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
