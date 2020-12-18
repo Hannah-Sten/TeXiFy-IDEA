@@ -509,6 +509,8 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
 
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexPackageIndex" />
+
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
