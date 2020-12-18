@@ -216,7 +216,7 @@ object Magic {
         val listingEnvironments = hashSetOf("itemize", "enumerate", "description")
 
         @JvmField
-        val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU).map { it.name }
+        val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU).map { it.environmentName }
 
         /**
          * Map that maps all environments that are expected to have a label to the label prefix they have by convention.

@@ -385,7 +385,6 @@ class LatexRunConfiguration constructor(
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
                 bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path))
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BSTINPUT" to mainFile.parent.path))
             }
         }
 
