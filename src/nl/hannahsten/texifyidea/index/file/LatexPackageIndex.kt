@@ -16,7 +16,7 @@ class LatexPackageIndex : FileBasedIndexExtension<String, String>() {
     private val indexer = LatexPackageDataIndexer()
 
     override fun getName(): ID<String, String> {
-        return ID.create(" nl.hannahsten.texifyidea.LatexPackageIndex")
+        return ID.create("nl.hannahsten.texifyidea.LatexPackageIndex")
     }
 
     override fun getIndexer(): DataIndexer<String, String, FileContent> {
@@ -34,7 +34,9 @@ class LatexPackageIndex : FileBasedIndexExtension<String, String>() {
     override fun getVersion() = 0
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return DefaultFileTypeSpecificInputFilter(StyleFileType)
+        return FileBasedIndex.InputFilter {
+            it.fileType is StyleFileType
+        }
     }
 
     override fun dependsOnFileContent() = true

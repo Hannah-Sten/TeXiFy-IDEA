@@ -117,7 +117,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java")
+    setPlugins("tanvd.grazi", "java", "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
