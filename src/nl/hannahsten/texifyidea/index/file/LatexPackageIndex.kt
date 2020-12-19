@@ -4,7 +4,7 @@ import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
-import nl.hannahsten.texifyidea.file.StyleFileType
+import nl.hannahsten.texifyidea.file.SourceFileType
 
 /**
  * Index of source files of LaTeX packages.
@@ -35,7 +35,7 @@ class LatexPackageIndex : FileBasedIndexExtension<String, String>() {
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return FileBasedIndex.InputFilter {
-            it.fileType is StyleFileType
+            it.fileType is SourceFileType
         }
     }
 

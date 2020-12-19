@@ -354,6 +354,7 @@
         <fileType implementationClass="nl.hannahsten.texifyidea.file.ClassFileType" name="LaTeX class file" language="Latex" extensions="cls" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.BibtexFileType" name="BibTeX bibliography file" language="Bibtex" extensions="bib" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.TikzFileType" name="TikZ picture file" language="Latex" extensions="tikz" />
+        <fileType implementationClass="nl.hannahsten.texifyidea.file.SourceFileType" name="LaTeX source file (dtx)" language="Latex" extensions="dtx" />
 
         <!-- Register module type for new project creation in non-IntelliJ IDEs -->
         <directoryProjectGenerator implementation="nl.hannahsten.texifyidea.modules.LatexProjectGenerator"/>
@@ -510,6 +511,7 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
 
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexPackageIndex" />
+        <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor" />
 
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>

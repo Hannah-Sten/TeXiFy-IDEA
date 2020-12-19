@@ -5,6 +5,6 @@ import com.intellij.util.indexing.FileContent
 
 class LatexPackageDataIndexer : DataIndexer<String, String, FileContent> {
     override fun map(inputData: FileContent): MutableMap<String, String> {
-        return mutableMapOf(inputData.file.name to "test docs 3")
+        return mutableMapOf(inputData.file.name to inputData.contentAsText.subSequence(0, 20).toString())
     }
 }
