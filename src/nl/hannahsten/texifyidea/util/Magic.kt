@@ -398,6 +398,14 @@ object Magic {
         )
 
         /**
+         * All commands that represent a reference to a bib entry, including user defined commands.
+         */
+        fun getBibRefereneCommands(project: Project): Set<String> {
+            CommandManager.updateAliases(bibliographyReference, project)
+            return CommandManager.getAliases(bibliographyReference.first())
+        }
+
+        /**
          * All commands that represent some kind of reference (think \ref and \cite).
          */
         @JvmField

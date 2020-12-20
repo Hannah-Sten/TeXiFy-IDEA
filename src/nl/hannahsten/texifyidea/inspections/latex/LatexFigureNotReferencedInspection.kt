@@ -56,6 +56,9 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             ProblemHighlightType.WEAK_WARNING
         )
 
+    /**
+     * Find all commands in the file that label a figure.
+     */
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
         file.findLabelingCommandsInFileAsSequence()
             .filter(this::isFigureLabel)

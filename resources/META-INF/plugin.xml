@@ -720,6 +720,9 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
                          groupName="BibTeX" displayName="Same bibliography is included multiple times"
                          enabledByDefault="true"/>
+        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
+                         groupName="BibTeX" displayName="Unused bib entry"
+                         enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
