@@ -49,5 +49,22 @@
             <option name="LATEX_MATH" value="true"/>
         </context>
     </template>
+    
+    <template name="enq" value="\enquote{$QUOTE$} $END$" description="Enquote" toReformat="false" toShortenFQNames="true">
+        <variable name="QUOTE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
+    
+    <template name="fc" value="\footcite[$PAGE$]{$SOURCE$}$END$" description="footcite" toReformat="false" toShortenFQNames="true">
+        <variable name="PAGE" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="SOURCE" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="LATEX" value="true"/>
+            <option name="LATEX_MATH" value="false"/>
+        </context>
+    </template>
 </templateSet>
 
