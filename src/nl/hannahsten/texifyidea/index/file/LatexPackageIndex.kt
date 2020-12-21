@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.file.LatexSourceFileType
  * The paths that have to be indexed are given by [LatexIndexableSetContributor].
  * todo add commands from index to autocompletion
  *
- * Key: LaTeX command (without backslash).
+ * Key: LaTeX command (without backslash). todo packages in separate index?
  * Value: Documentation string.
  *
  * @author Thomas
