@@ -15,9 +15,7 @@ fun BibtexEntry.tokenName(): String? = tokenType()?.substring(1)
 /**
  * Get the identifier/label of the BibTeX entry (e.g. `someAuthor:23b`).
  */
-fun BibtexEntry.identifier(): String? {
-    return firstChildOfType(BibtexId::class)?.text
-}
+fun BibtexEntry.identifier(): String? = firstChildOfType(BibtexId::class)?.text
 
 /**
  * Get all the tags in the entry.
