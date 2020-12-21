@@ -4,10 +4,13 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
 
+/**
+ * Specify the paths that have to be indexed for the [LatexPackageIndex].
+ */
 class LatexIndexableSetContributor : IndexableSetContributor() {
     override fun getAdditionalRootsToIndex(): MutableSet<VirtualFile> {
-        // todo
-        val file = LocalFileSystem.getInstance().findFileByPath("/home/thomas/texlive/2020/texmf-dist/source/latex/algorithms")
+        // todo add all latex sources
+        val file = LocalFileSystem.getInstance().findFileByPath("/home/thomas/texlive/2020/texmf-dist/source/latex/siunitx")
         return mutableSetOf(file).filterNotNull().toMutableSet()
     }
 }

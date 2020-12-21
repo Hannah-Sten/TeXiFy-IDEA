@@ -7,9 +7,9 @@ import nl.hannahsten.texifyidea.TexifyIcons
 /**
  * @author Thomas
  */
-object SourceFileType : LanguageFileType(LatexLanguage.INSTANCE) {
+object LatexSourceFileType : LanguageFileType(LatexLanguage.INSTANCE) {
 
-    override fun getName() = "LaTeX source file"
+    override fun getName() = "LaTeX source file (dtx)"
 
     override fun getDescription() = "LaTeX source file"
 

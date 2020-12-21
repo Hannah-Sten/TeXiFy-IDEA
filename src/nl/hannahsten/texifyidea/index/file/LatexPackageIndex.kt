@@ -4,13 +4,18 @@ import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
-import nl.hannahsten.texifyidea.file.SourceFileType
+import nl.hannahsten.texifyidea.file.LatexSourceFileType
 
 /**
  * Index of source files of LaTeX packages.
+ * The actual indexing is done by [LatexPackageDataIndexer].
+ * The paths that have to be indexed are given by [LatexIndexableSetContributor].
+ * todo add commands from index to autocompletion
  *
  * Key: LaTeX command (without backslash).
  * Value: Documentation string.
+ *
+ * @author Thomas
  */
 class LatexPackageIndex : FileBasedIndexExtension<String, String>() {
     private val indexer = LatexPackageDataIndexer()
@@ -35,7 +40,7 @@ class LatexPackageIndex : FileBasedIndexExtension<String, String>() {
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return FileBasedIndex.InputFilter {
-            it.fileType is SourceFileType
+            it.fileType is LatexSourceFileType
         }
     }
 
