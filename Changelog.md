@@ -7,6 +7,7 @@
 * Add support for custom LaTeX SDKs in IntelliJ. (#1629, #1689)
 * Add rename element for commands. (#1689)
 * Add support for language injection on commands, and automatically inject Lua. (#1699)
+* Add support for using the out/ directory when using pdflatex and bibtex with TeX Live. (#1697)
 
 # Changes
 * Improve efficiency of fileset cache. (#1622)
