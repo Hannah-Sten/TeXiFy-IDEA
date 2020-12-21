@@ -21,6 +21,7 @@ public class BibtexStringImpl extends ASTWrapperPsiElement implements BibtexStri
     visitor.visitString(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);

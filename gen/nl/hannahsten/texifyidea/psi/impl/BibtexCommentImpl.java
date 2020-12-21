@@ -21,6 +21,7 @@ public class BibtexCommentImpl extends ASTWrapperPsiElement implements BibtexCom
     visitor.visitComment(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);

@@ -33,6 +33,7 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
     visitor.visitEntry(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);
@@ -120,7 +121,7 @@ public class BibtexEntryImpl extends StubBasedPsiElementBase<BibtexEntryStub> im
   }
 
   @Override
-  public PsiElement setName(@NotNull @NonNls String name) {
+  public PsiElement setName(@NonNls @NotNull String name) {
     return BibtexPsiImplUtil.setName(this, name);
   }
 

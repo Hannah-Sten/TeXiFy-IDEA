@@ -21,5 +21,6 @@ fun setName(element: BibtexId, name: String): PsiElement {
 
 fun getName(element: BibtexId): String {
     // Drop the , separator
-    return element.text.dropLast(1)
+//    return element.text.dropLast(1)
+    return element.text
 }

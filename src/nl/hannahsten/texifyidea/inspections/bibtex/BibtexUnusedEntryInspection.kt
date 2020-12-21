@@ -16,13 +16,15 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
     override val inspectionId: String = "UnusedEntry"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> =
-        file.childrenOfType(BibtexId::class).filter { ReferencesSearch.search(it).toList().isEmpty() }.map {
-            manager.createProblemDescriptor(
-                it,
-                "Bibtex entry is not used",
-                isOntheFly,
-                emptyArray(),
-                ProblemHighlightType.LIKE_UNUSED_SYMBOL
-            )
-        }
+        file.childrenOfType(BibtexId::class)
+            .filter { ReferencesSearch.search(it).toList().isEmpty() }
+            .map {
+                manager.createProblemDescriptor(
+                    it,
+                    "Bibtex entry is not used",
+                    isOntheFly,
+                    emptyArray(),
+                    ProblemHighlightType.LIKE_UNUSED_SYMBOL
+                )
+            }
 }
