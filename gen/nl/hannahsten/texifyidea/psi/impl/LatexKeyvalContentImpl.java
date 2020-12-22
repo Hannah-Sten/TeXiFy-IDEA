@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexGroupImpl extends ASTWrapperPsiElement implements LatexGroup {
+public class LatexKeyvalContentImpl extends ASTWrapperPsiElement implements LatexKeyvalContent {
 
-  public LatexGroupImpl(@NotNull ASTNode node) {
+  public LatexKeyvalContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitGroup(this);
+    visitor.visitKeyvalContent(this);
   }
 
   @Override
@@ -28,9 +28,15 @@ public class LatexGroupImpl extends ASTWrapperPsiElement implements LatexGroup {
   }
 
   @Override
-  @NotNull
-  public List<LatexGreedyContent> getContentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexGreedyContent.class);
+  @Nullable
+  public LatexGroup getGroup() {
+    return PsiTreeUtil.getChildOfType(this, LatexGroup.class);
+  }
+
+  @Override
+  @Nullable
+  public LatexParameterText getParameterText() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterText.class);
   }
 
 }

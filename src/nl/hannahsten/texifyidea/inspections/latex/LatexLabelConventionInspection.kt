@@ -134,7 +134,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             // Replace in command label definition
             if (command is LatexCommands) {
                 if (Magic.Command.labelAsParameter.contains(command.name)) {
-                    latexPsiHelper.replaceOptionalParameter(command.parameterList, "label", createdLabel)
+                    latexPsiHelper.setOptionalParameter(command, "label", "{$createdLabel}")
                 }
                 else {
                     val labelInfo = CommandManager.labelAliasesInfo.getOrDefault(command.name, null) ?: return
@@ -148,7 +148,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // Replace in environment
             if (command is LatexEnvironment) {
-                latexPsiHelper.replaceOptionalParameter(command.beginCommand.parameterList, "label", createdLabel)
+                latexPsiHelper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
             }
 
             // Replace in document.

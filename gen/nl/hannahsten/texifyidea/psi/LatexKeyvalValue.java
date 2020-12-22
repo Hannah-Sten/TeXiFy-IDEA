@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexGroup extends PsiElement {
+public interface LatexKeyvalValue extends PsiElement {
 
   @NotNull
-  List<LatexGreedyContent> getContentList();
+  List<LatexKeyvalContent> getKeyvalContentList();
 
 }

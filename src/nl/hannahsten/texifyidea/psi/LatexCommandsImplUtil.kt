@@ -153,36 +153,27 @@ fun stripGroup(text: String): String {
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
 fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
-    val parameterMap = LinkedHashMap<String, String>()
     // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
     // But within a parameter, there can be different content like [name={value in group}]
-    val parameterString = parameters.mapNotNull { it.optionalParam }
+    val keyValueMap = parameters.mapNotNull { it.optionalParam }
         // extract the content of each parameter element
-        .map { param ->
-            param.optionalParamContentList
+        .flatMap { param ->
+            param.keyvalPairList
+        }.map { pair ->
+            pair.keyvalKey to pair.keyvalValue
         }
-        .map { contentList ->
-            contentList.mapNotNull { content: LatexOptionalParamContent ->
-                // the content is either simple text
-                val text = content.parameterText
-                if (text != null) return@mapNotNull text.text
-                // or a group like in param={some value}
-                if (content.group == null) return@mapNotNull null
-                content.group!!.contentList.joinToString { it.text }
-            }
-                // Join different content types (like name= and {value}) together without separator
-                .joinToString("")
-        }
-        // Join different parameters (like [param1][param2]) together with separator
-        .joinToString(",")
 
-    if (parameterString.trim { it <= ' ' }.isNotEmpty()) {
-        for (parameter in parameterString.split(",")) {
-            val parts = parameter.split("=".toRegex()).toTypedArray()
-            parameterMap[parts[0].trim()] = if (parts.size > 1) parts[1].trim() else ""
-        }
+    val parameterMap = LinkedHashMap<String, String>()
+    keyValueMap.forEach{ pair ->
+        // the content is either simple text
+        val keyText: String = pair.first.keyvalContentList.map { it -> it.parameterText?.text ?: it.group!!.contentList.joinToString(separator = "") {it.text} }.joinToString(separator = "")
+        val valueText: String = pair.second?.keyvalContentList?.map { it -> it.parameterText?.text ?: it.group!!.contentList.joinToString(separator = "") {it.text} }?.joinToString(separator = "") ?: ""
+//        val valueText: String = pair.second?.normalTextWord?.text ?: (pair.second?.group?.contentList?.joinToString { it.text } ?: "")
+        parameterMap[keyText] = valueText
     }
+
     return parameterMap
+
 }
 
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {

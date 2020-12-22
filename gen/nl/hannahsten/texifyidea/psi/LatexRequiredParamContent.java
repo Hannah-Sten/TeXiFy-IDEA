@@ -34,4 +34,7 @@ public interface LatexRequiredParamContent extends PsiElement {
   @Nullable
   PsiElement getCommandIfnextchar();
 
+  @Nullable
+  PsiElement getNormalTextChar();
+
 }

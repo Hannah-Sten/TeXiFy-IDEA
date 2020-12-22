@@ -42,11 +42,31 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitGreedyContent(@NotNull LatexGreedyContent o) {
+    visitPsiElement(o);
+  }
+
   public void visitGroup(@NotNull LatexGroup o) {
     visitPsiElement(o);
   }
 
   public void visitInlineMath(@NotNull LatexInlineMath o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyvalContent(@NotNull LatexKeyvalContent o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyvalKey(@NotNull LatexKeyvalKey o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyvalPair(@NotNull LatexKeyvalPair o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyvalValue(@NotNull LatexKeyvalValue o) {
     visitPsiElement(o);
   }
 

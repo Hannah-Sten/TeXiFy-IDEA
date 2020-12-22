@@ -3,7 +3,11 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.psi.LatexTypes.CLOSE_BRACKET
+import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_CHAR
+import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.findFirstChild
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
@@ -33,11 +37,11 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createOptionalParameterContent(parameter: String): List<LatexOptionalParamContent> {
+    private fun createKeyValuePairs(parameter: String): LatexKeyvalPair {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.optionalParamContentList
+        return optionalParam.keyvalPairList[0]
     }
 
     fun createFromText(text: String): PsiElement =
@@ -102,18 +106,12 @@ class LatexPsiHelper(private val project: Project) {
             }
         }
 
-        val newContents = createOptionalParameterContent(parameterText)
-        newContents.forEach { optionalParam.addBefore(it, elementsToReplace.first()) }
+        val newContents = createKeyValuePairs(parameterText)
+//        newContents.forEach { optionalParam.addBefore(it, elementsToReplace.first()) }
         elementsToReplace.forEach { it.delete() }
     }
 
-    /**
-     * Add an optional parameter of the form "param" or "param={value}" to the list of optional parameters.
-     * If there already are optional parameters, the new parameter will be appended with a "," as the separator.
-     *
-     * @return A list containing the newly inserted elements from left to right
-     */
-    fun addOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): List<PsiElement> {
+    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): PsiElement {
         val existingParameters = command.optionalParameters
         if (existingParameters.isEmpty()) {
             command.addAfter(createLatexOptionalParam(), command.parameterList[0])
@@ -122,22 +120,62 @@ class LatexPsiHelper(private val project: Project) {
         val optionalParam = command.parameterList
             .first { p -> p.optionalParam != null }.optionalParam!!
 
-        var parameterText = if (value != null) {
+        val parameterText = if (value != null) {
+            "$name=$value"
+        }
+        else {
+            name
+        }
+
+        val pair = createKeyValuePairs(parameterText)
+        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().first { it.elementType == CLOSE_BRACKET }
+        return if (optionalParam.keyvalPairList.isNotEmpty()) {
+            val existing = optionalParam.keyvalPairList.find { kv -> kv.keyvalKey.text == name }
+            if (existing != null && value != null) {
+                existing.keyvalValue?.delete()
+                existing.addAfter(pair.keyvalValue!!, existing.childrenOfType<LeafPsiElement>().first { it.text == "=" })
+                existing
+            }
+            else {
+                optionalParam.addBefore(createFromText(","), closeBracket)
+                optionalParam.addBefore(pair, closeBracket)
+                closeBracket.prevSibling
+            }
+        }
+        else {
+            optionalParam.addBefore(pair, closeBracket)
+            closeBracket.prevSibling
+        }
+    }
+
+    /**
+     * Add an optional parameter of the form "param" or "param={value}" to the list of optional parameters.
+     * If there already are optional parameters, the new parameter will be appended with a "," as the separator.
+     *
+     * @return A list containing the newly inserted elements from left to right
+     */
+    fun addOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): PsiElement {
+        val existingParameters = command.optionalParameters
+        if (existingParameters.isEmpty()) {
+            command.addAfter(createLatexOptionalParam(), command.parameterList[0])
+        }
+
+        val optionalParam = command.parameterList
+            .first { p -> p.optionalParam != null }.optionalParam!!
+
+        val parameterText = if (value != null) {
             "$name={$value}"
         }
         else {
             name
         }
 
-        if (existingParameters.isNotEmpty()) {
-            parameterText = ",$parameterText"
+        val pair = createKeyValuePairs(parameterText)
+        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().first { it.elementType == CLOSE_BRACKET }
+        if (optionalParam.keyvalPairList.isNotEmpty()){
+            optionalParam.addBefore(LeafPsiElement(NORMAL_TEXT_CHAR, ","), closeBracket)
         }
-        val newElements = mutableListOf<PsiElement>()
-        val contents = createOptionalParameterContent(parameterText)
-        contents.forEach {
-            val inserted = optionalParam.addBefore(it, optionalParam.lastChild)
-            newElements.add(inserted)
-        }
-        return newElements
+        optionalParam.addBefore(pair, closeBracket)
+        return pair
     }
 }

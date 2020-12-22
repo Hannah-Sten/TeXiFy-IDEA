@@ -87,4 +87,10 @@ public class LatexOptionalParamContentImpl extends ASTWrapperPsiElement implemen
     return findChildByType(COMMAND_IFNEXTCHAR);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getNormalTextChar() {
+    return findChildByType(NORMAL_TEXT_CHAR);
+  }
+
 }

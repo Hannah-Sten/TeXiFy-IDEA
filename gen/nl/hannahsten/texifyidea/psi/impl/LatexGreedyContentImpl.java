@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexGroupImpl extends ASTWrapperPsiElement implements LatexGroup {
+public class LatexGreedyContentImpl extends ASTWrapperPsiElement implements LatexGreedyContent {
 
-  public LatexGroupImpl(@NotNull ASTNode node) {
+  public LatexGreedyContentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitGroup(this);
+    visitor.visitGreedyContent(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class LatexGroupImpl extends ASTWrapperPsiElement implements LatexGroup {
 
   @Override
   @NotNull
-  public List<LatexGreedyContent> getContentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexGreedyContent.class);
+  public LatexNoMathContent getNoMathContent() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexNoMathContent.class));
   }
 
 }

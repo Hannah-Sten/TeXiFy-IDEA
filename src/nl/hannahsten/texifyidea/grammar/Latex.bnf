@@ -1,7 +1,7 @@
 {
     parserClass="nl.hannahsten.texifyidea.parser.LatexParser"
     parserUtilClass="nl.hannahsten.texifyidea.parser.LatexParserUtil"
-
+    parserImports=["static com.intellij.lang.WhitespacesBinders.*"]
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
     psiClassPrefix="Latex"
@@ -52,10 +52,10 @@
 }
 
 
-
 latexFile ::= content*
 
 content ::= no_math_content
+greedy_content ::= no_math_content { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"] }
 
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
@@ -98,26 +98,31 @@ parameter ::= optional_param | required_param
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET optional_param_content* CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET ( (keyval_pair  ("," keyval_pair)*) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
 required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 
 // These are like content, but no brackets and with parameter_text instead of normal_text
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
-optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | NORMAL_TEXT_CHAR
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
+
+keyval_pair ::= keyval_key ("=" keyval_value)?
+keyval_key ::= keyval_content+
+keyval_value ::= keyval_content+
+keyval_content ::= parameter_text | group
 
 // The lowest level of a parameter must have the getReferences etc. implemented
 // We don't do this on normal_text because then every normal_text in the document would be a reference
 // So, the following is like normal_text
 // This assumes that parameter text which is a reference, appears directly under param_content
 // Commands is here instead of in required_param_content because it can be part of reference text for example to a file
-parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+ {
+parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND)+ {
    methods=[getReferences getReference getNameIdentifier getName setName]
 }
 
-group ::= OPEN_BRACE content* CLOSE_BRACE { pin=1 }
+group ::= OPEN_BRACE greedy_content* CLOSE_BRACE { pin=1 methods=[contentList="greedy_content"] }
 
 comment ::= COMMENT_TOKEN
 

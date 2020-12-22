@@ -187,8 +187,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
             val moveCaretAfter: PsiElement
             moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
-                val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
-                insertedElements.last()
+                helper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
             }
             else {
                 // in a float environment the label must be inserted after a caption

@@ -68,8 +68,7 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
         val factory = LatexPsiHelper(project)
 
         val labelCommand = if (Magic.Command.labelAsParameter.contains(command.name)) {
-            val insertedElements = factory.addOptionalParameter(command, "label", createdLabel)
-            insertedElements.last()
+            factory.setOptionalParameter(command, "label", "{$createdLabel}")
         }
         else {
 

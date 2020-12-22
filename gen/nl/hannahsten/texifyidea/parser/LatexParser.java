@@ -10,6 +10,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
+import static com.intellij.lang.WhitespacesBinders.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -229,7 +230,19 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACE content* CLOSE_BRACE
+  // no_math_content
+  public static boolean greedy_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "greedy_content")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GREEDY_CONTENT, "<greedy content>");
+    r = no_math_content(b, l + 1);
+    register_hook_(b, WS_BINDERS, GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // OPEN_BRACE greedy_content* CLOSE_BRACE
   public static boolean group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
@@ -243,12 +256,12 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // content*
+  // greedy_content*
   private static boolean group_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!content(b, l + 1)) break;
+      if (!greedy_content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "group_1", c)) break;
     }
     return true;
@@ -274,6 +287,80 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "inline_math_1")) return false;
     math_content(b, l + 1);
     return true;
+  }
+
+  /* ********************************************************** */
+  // parameter_text | group
+  public static boolean keyval_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_content")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, KEYVAL_CONTENT, "<keyval content>");
+    r = parameter_text(b, l + 1);
+    if (!r) r = group(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // keyval_content+
+  public static boolean keyval_key(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_key")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, KEYVAL_KEY, "<keyval key>");
+    r = keyval_content(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!keyval_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "keyval_key", c)) break;
+    }
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // keyval_key ("=" keyval_value)?
+  public static boolean keyval_pair(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_pair")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, KEYVAL_PAIR, "<keyval pair>");
+    r = keyval_key(b, l + 1);
+    r = r && keyval_pair_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // ("=" keyval_value)?
+  private static boolean keyval_pair_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_pair_1")) return false;
+    keyval_pair_1_0(b, l + 1);
+    return true;
+  }
+
+  // "=" keyval_value
+  private static boolean keyval_pair_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_pair_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, "=");
+    r = r && keyval_value(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // keyval_content+
+  public static boolean keyval_value(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_value")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, KEYVAL_VALUE, "<keyval value>");
+    r = keyval_content(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!keyval_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "keyval_value", c)) break;
+    }
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   /* ********************************************************** */
@@ -382,7 +469,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BRACKET optional_param_content* CLOSE_BRACKET
+  // OPEN_BRACKET ( (keyval_pair  ("," keyval_pair)*) | optional_param_content*) CLOSE_BRACKET
   public static boolean optional_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param")) return false;
     if (!nextTokenIs(b, OPEN_BRACKET)) return false;
@@ -395,19 +482,63 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // optional_param_content*
+  // (keyval_pair  ("," keyval_pair)*) | optional_param_content*
   private static boolean optional_param_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = optional_param_1_0(b, l + 1);
+    if (!r) r = optional_param_1_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // keyval_pair  ("," keyval_pair)*
+  private static boolean optional_param_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = keyval_pair(b, l + 1);
+    r = r && optional_param_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // ("," keyval_pair)*
+  private static boolean optional_param_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!optional_param_1_0_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "optional_param_1_0_1", c)) break;
+    }
+    return true;
+  }
+
+  // "," keyval_pair
+  private static boolean optional_param_1_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_0_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ",");
+    r = r && keyval_pair(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // optional_param_content*
+  private static boolean optional_param_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_param_1_1")) return false;
     while (true) {
       int c = current_position_(b);
       if (!optional_param_content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "optional_param_1", c)) break;
+      if (!empty_element_parsed_guard_(b, "optional_param_1_1", c)) break;
     }
     return true;
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | NORMAL_TEXT_CHAR
   public static boolean optional_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_content")) return false;
     boolean r;
@@ -424,6 +555,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
     if (!r) r = parameter_text(b, l + 1);
+    if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -442,7 +574,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+
+  // (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND)+
   public static boolean parameter_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text")) return false;
     boolean r;
@@ -457,7 +589,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR
+  // commands | NORMAL_TEXT_WORD | STAR | AMPERSAND
   private static boolean parameter_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text_0")) return false;
     boolean r;
@@ -465,7 +597,6 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
     if (!r) r = consumeToken(b, AMPERSAND);
-    if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
     return r;
   }
 
@@ -612,7 +743,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
   public static boolean required_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_content")) return false;
     boolean r;
@@ -630,6 +761,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = parameter_text(b, l + 1);
     if (!r) r = consumeToken(b, OPEN_BRACKET);
     if (!r) r = consumeToken(b, CLOSE_BRACKET);
+    if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
