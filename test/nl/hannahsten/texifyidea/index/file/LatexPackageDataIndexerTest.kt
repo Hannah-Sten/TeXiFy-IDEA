@@ -33,9 +33,24 @@ class LatexPackageDataIndexerTest : BasePlatformTestCase() {
             %    \end{macrocode}
             % \end{macro}
             %
+            % \begin{macro}{\ifblank@line}
+            % \begin{macro}{\blank@linetrue}
+            % \begin{macro}{\blank@linefalse}
+            %    |\ifblank@line| is the switch used in the definition above.
+            %    In the original \textsf{verbatim} environment the |\if@tempswa|
+            %    switch is used. This is dangerous because its value may change
+            %    while processing lines in the \textsf{macrocode} environment.
+            %    \begin{macrocode}
+            \newif\ifblank@line
+            %    \end{macrocode}
+            % \end{macro}
+            % \end{macro}
+            % \end{macro}
+            %
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexPackageDataIndexer().map(MockContent(file))
+        assertEquals(1, map.size)
         assertEquals("Here is the default value for the |\\MacroTopsep| parameter used above.", map["\\MacroTopsep"])
     }
 
