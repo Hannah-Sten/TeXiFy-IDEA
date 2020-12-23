@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
@@ -172,7 +173,7 @@ fun PsiElement.extractLabelName(): String {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
             if (Magic.Command.labelAsParameter.contains(name)) {
-                optionalParameters["label"]!!
+                optionalParameterMap.toStringMap()["label"]!!
             }
             else {
                 // For now just take the first label name (may be multiple for user defined commands)
@@ -195,12 +196,29 @@ fun PsiElement.extractLabelElement(): PsiElement? {
     return when (this) {
         is BibtexEntry -> firstChildOfType(BibtexId::class)
         is LatexCommands -> {
-            // For now just take the first label name (may be multiple for user defined commands)
-            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
-            val position = info?.positions?.firstOrNull() ?: 0
-            // Skip optional parameters for now
-            this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)
-                ?.firstChildOfType(LatexParameterText::class)
+            if (Magic.Command.labelAsParameter.contains(name)) {
+                val labelEntry = optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
+                return labelEntry.value?.keyvalContentList?.first()?.parameterText
+                // TODO: groups are not working yet
+            } else {
+
+                // For now just take the first label name (may be multiple for user defined commands)
+                val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+                val position = info?.positions?.firstOrNull() ?: 0
+
+                // Skip optional parameters for now
+                this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)
+                    ?.firstChildOfType(LatexParameterText::class)
+            }
+        }
+        is LatexEnvironment -> {
+            if (Magic.Environment.labelAsParameter.contains(environmentName)) {
+                val labelEntry = beginCommand.optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
+                return labelEntry.value?.keyvalContentList?.first()?.parameterText
+                // TODO: groups are not working yet
+            } else {
+                null
+            }
         }
         else -> null
     }

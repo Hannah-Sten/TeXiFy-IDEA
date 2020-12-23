@@ -152,28 +152,25 @@ fun stripGroup(text: String): String {
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
-fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
+fun Map<LatexKeyvalKey, LatexKeyvalValue?>.toStringMap(): LinkedHashMap<String, String> {
+    val parameterMap = LinkedHashMap<String, String>()
+    this.forEach { (k, v) -> parameterMap[k.toString()] = v?.toString() ?: "" }
+    return parameterMap
+}
+
+fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue?> {
+
+    val parameterMap = LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue?>()
     // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
     // But within a parameter, there can be different content like [name={value in group}]
-    val keyValueMap = parameters.mapNotNull { it.optionalParam }
+    parameters.mapNotNull { it.optionalParam }
         // extract the content of each parameter element
         .flatMap { param ->
             param.keyvalPairList
-        }.map { pair ->
-            pair.keyvalKey to pair.keyvalValue
+        }.forEach { pair ->
+            parameterMap[pair.keyvalKey] = pair.keyvalValue
         }
-
-    val parameterMap = LinkedHashMap<String, String>()
-    keyValueMap.forEach{ pair ->
-        // the content is either simple text
-        val keyText: String = pair.first.keyvalContentList.map { it -> it.parameterText?.text ?: it.group!!.contentList.joinToString(separator = "") {it.text} }.joinToString(separator = "")
-        val valueText: String = pair.second?.keyvalContentList?.map { it -> it.parameterText?.text ?: it.group!!.contentList.joinToString(separator = "") {it.text} }?.joinToString(separator = "") ?: ""
-//        val valueText: String = pair.second?.normalTextWord?.text ?: (pair.second?.group?.contentList?.joinToString { it.text } ?: "")
-        parameterMap[keyText] = valueText
-    }
-
     return parameterMap
-
 }
 
 fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
@@ -193,7 +190,7 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
  */
 fun hasLabel(element: LatexCommands): Boolean {
     if (Magic.Command.labelAsParameter.contains(element.name)) {
-        return getOptionalParameters(element.parameterList).containsKey("label")
+        return getOptionalParameterMap(element.parameterList).toStringMap().containsKey("label")
     }
 
     // Next leaf is a command token, parent is LatexCommands
@@ -214,3 +211,9 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
     }
     return element
 }
+
+fun toString(element: LatexKeyvalKey): String =
+    element.keyvalContentList.map { it -> it.parameterText?.text ?: it.group!!.contentList.joinToString(separator = "") {it.text} }.joinToString(separator = "")
+
+fun toString(element: LatexKeyvalValue): String =
+    element.keyvalContentList.map { it -> it.parameterText?.text ?: it.group!!.contentList.joinToString(separator = "") {it.text} }.joinToString(separator = "")

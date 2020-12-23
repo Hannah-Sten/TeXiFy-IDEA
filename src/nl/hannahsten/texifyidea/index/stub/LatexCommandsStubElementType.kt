@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
+import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import java.io.IOException
@@ -29,7 +30,7 @@ class LatexCommandsStubElementType(debugName: String) :
         val commandToken = latexCommands.commandToken.text
         val requiredParameters = latexCommands.requiredParameters
         val optionalParameters: Map<String, String> =
-            latexCommands.optionalParameters
+            latexCommands.optionalParameterMap.toStringMap()
         return LatexCommandsStubImpl(
             parent!!, this,
             commandToken,

@@ -33,4 +33,9 @@ public class LatexKeyvalValueImpl extends ASTWrapperPsiElement implements LatexK
     return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexKeyvalContent.class);
   }
 
+  @Override
+  public String toString() {
+    return LatexPsiImplUtil.toString(this);
+  }
+
 }

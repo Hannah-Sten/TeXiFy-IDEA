@@ -63,8 +63,8 @@ public class LatexCommandsImpl extends LatexCommandsImplMixin implements LatexCo
   }
 
   @Override
-  public LinkedHashMap<String, String> getOptionalParameters() {
-    return LatexPsiImplUtil.getOptionalParameters(this);
+  public LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap() {
+    return LatexPsiImplUtil.getOptionalParameterMap(this);
   }
 
   @Override

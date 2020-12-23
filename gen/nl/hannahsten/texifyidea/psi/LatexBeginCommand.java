@@ -11,7 +11,7 @@ public interface LatexBeginCommand extends LatexCommandWithParams {
   @NotNull
   List<LatexParameter> getParameterList();
 
-  LinkedHashMap<String, String> getOptionalParameters();
+  LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap();
 
   List<String> getRequiredParameters();
 

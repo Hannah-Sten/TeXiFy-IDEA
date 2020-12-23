@@ -5,5 +5,5 @@ import com.intellij.psi.PsiElement
 interface LatexCommandWithParams : PsiElement {
     val parameterList: List<LatexParameter>
     val requiredParameters: List<String>
-    val optionalParameters: Map<String, String>
+    val optionalParameterMap: Map<LatexKeyvalKey, LatexKeyvalValue>
 }

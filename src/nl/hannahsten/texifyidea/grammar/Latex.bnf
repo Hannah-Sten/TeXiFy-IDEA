@@ -80,13 +80,13 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
     elementTypeClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType"
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexCommandsStub"
     mixin="nl.hannahsten.texifyidea.psi.LatexCommandsImplMixin"
-    methods=[getReferences getReference getOptionalParameters getRequiredParameters hasLabel getTextOffset getName setName]
+    methods=[getReferences getReference getOptionalParameterMap getRequiredParameters hasLabel getTextOffset getName setName]
 }
 
 
 begin_command ::= BEGIN_TOKEN STAR? parameter* {
     pin=1
-    methods=[getOptionalParameters getRequiredParameters]
+    methods=[getOptionalParameterMap getRequiredParameters]
 }
 
 end_command ::= END_TOKEN STAR? parameter* { pin=1 }
@@ -109,8 +109,12 @@ optional_param_content ::= raw_text | magic_comment | comment | environment | ps
 required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
 
 keyval_pair ::= keyval_key ("=" keyval_value)?
-keyval_key ::= keyval_content+
-keyval_value ::= keyval_content+
+keyval_key ::= keyval_content+ {
+    methods=[toString]
+}
+keyval_value ::= keyval_content+ {
+    methods=[toString]
+}
 keyval_content ::= parameter_text | group
 
 // The lowest level of a parameter must have the getReferences etc. implemented

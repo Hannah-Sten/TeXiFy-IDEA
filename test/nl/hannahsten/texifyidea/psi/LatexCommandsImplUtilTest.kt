@@ -26,7 +26,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase(){
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameters(parameters)
+        val map = getOptionalParameterMap(parameters).toStringMap()
         assertSize(3, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])
@@ -52,7 +52,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase(){
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameters(parameters)
+        val map = getOptionalParameterMap(parameters).toStringMap()
         assertSize(2, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])
@@ -77,7 +77,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase(){
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameters(parameters)
+        val map = getOptionalParameterMap(parameters).toStringMap()
         assertSize(3, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])
@@ -103,7 +103,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase(){
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameters(parameters)
+        val map = getOptionalParameterMap(parameters).toStringMap()
         assertSize(6, map.keys)
         assertEquals("value11,value12", map["param1"])
         assertEquals("value2", map["param2"])
@@ -132,7 +132,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase(){
             .firstChildOfType(LatexCommands::class)!!
             .parameterList
 
-        val map = getOptionalParameters(parameters)
+        val map = getOptionalParameterMap(parameters).toStringMap()
         assertSize(2, map.keys)
         assertEquals("value1", map["param1"])
         assertEquals("value2", map["param2"])

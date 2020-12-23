@@ -22,7 +22,7 @@ class LatexLanguageInjector : LanguageInjector {
 
             // Allow lstlisting language to be overridden with magic comment
             val languageId = if (!hasMagicCommentKey && host.environmentName == "lstlisting") {
-                host.beginCommand.optionalParameters.getOrDefault("language", null)
+                host.beginCommand.optionalParameterMap.toStringMap().getOrDefault("language", null)
             }
             else if (hasMagicCommentKey) {
                 magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
