@@ -14,28 +14,47 @@ class LatexPackageDataIndexer : DataIndexer<String, String, FileContent> {
      * Then we use a separate regex to get the actual docs out of that string, matching lines until a certain stopping criterion.
      * Use a positive lookahead to find overlapping matchings if they fall within the 'docs' range.
      */
-    private val macroWithDocsRegex = """(?=\\begin\{macro\}\{(?<command>\\[a-zA-Z_:]++)\}\s*(?<docs>[\s\S]{0,500}))""".toRegex()
+    private val macroWithDocsRegex = """(?=\\begin\{macro}\{(?<command>\\[a-zA-Z_:]++)}\s*(?<docs>[\s\S]{0,500}))""".toRegex()
     private val docsAfterMacroRegex = """(?:%\s*(?<line>.*))""".toRegex()
+
+    /**
+     * Commands that indicate that the documentation of a macro has stopped.
+     */
+    private val stopsDocs = setOf("\\begin", "\\end", "\\changes")
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
         val map = mutableMapOf<String, String>()
+        val macrosBeingOverloaded = mutableSetOf<String>()
+
         // Get the command and possible documentation
-        macroWithDocsRegex.findAll(inputData.contentAsText).forEach loop@{
-            val command = it.groups["command"]?.value ?: return@loop
-            val containsDocs = it.groups["docs"]?.value ?: return@loop
-            var docs = ""
-            // Strip the line prefixes and guess until where the documentation goes.
-            run breaker@{
-                docsAfterMacroRegex.findAll(containsDocs).forEach { line ->
-                    if (line.groups["line"]?.value?.containsAny(setOf("\\begin", "\\end")) == false) {
-                        docs += " " + line.groups["line"]?.value
-                    }
-                    else {
-                        return@breaker
+        macroWithDocsRegex.findAll(inputData.contentAsText).forEach loop@{ macroWithDocsResult ->
+            val command = macroWithDocsResult.groups["command"]?.value ?: return@loop
+            // The string that hopefully contains some documentation about the macro
+            val containsDocs = macroWithDocsResult.groups["docs"]?.value ?: return@loop
+
+            // If we are overloading macros, just save this one to fill with documentation later.
+            if (containsDocs.trim(' ', '%').startsWith("\\begin{macro}")) {
+                macrosBeingOverloaded.add(command)
+            }
+            else {
+                var docs = ""
+                // Strip the line prefixes and guess until where the documentation goes.
+                run breaker@{
+                    docsAfterMacroRegex.findAll(containsDocs).forEach { line ->
+                        if (line.groups["line"]?.value?.containsAny(stopsDocs) == false) {
+                            docs += " " + line.groups["line"]?.value
+                        }
+                        else {
+                            return@breaker
+                        }
                     }
                 }
+                map[command] = docs.trim()
+                if (macrosBeingOverloaded.isNotEmpty()) {
+                    macrosBeingOverloaded.forEach { map[it] = docs.trim() }
+                    macrosBeingOverloaded.clear()
+                }
             }
-            map[command] = docs.trim()
         }
         return map
     }
