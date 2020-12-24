@@ -1,6 +1,11 @@
 package nl.hannahsten.texifyidea.lang
 
+import com.intellij.openapi.project.Project
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.indexing.FileBasedIndex
+import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.files.removeFileExtension
 import nl.hannahsten.texifyidea.util.inMathContext
 import kotlin.reflect.KClass
 
@@ -28,6 +33,32 @@ interface LatexCommand : Dependend {
         }
 
         /**
+         * Create a [LatexCommand] for the given command name.
+         */
+        fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
+            val cmds = mutableSetOf<LatexCommand>()
+            val cmdWithSlash = "\\$cmdWithoutSlash"
+            // Look up in index
+            val files = FileBasedIndex.getInstance().getContainingFiles(
+                LatexPackageIndex.id,
+                cmdWithSlash,
+                GlobalSearchScope.everythingScope(project)
+            )
+            for (file in files) {
+                val dependency = file?.name?.removeFileExtension()
+                val cmd = object : LatexCommand {
+                    override val command = cmdWithoutSlash
+                    override val display: String? = null
+                    override val arguments = emptyArray<Argument>()
+                    override val dependency =
+                        if (dependency.isNullOrBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
+                }
+                cmds.add(cmd)
+            }
+            return cmds
+        }
+
+        /**
          * Looks up the given command within context.
          *
          * @param command The command PSI element to look up. Takes into account whether it is placed in math mode.
@@ -35,13 +66,18 @@ interface LatexCommand : Dependend {
          */
         fun lookup(command: LatexCommands): Set<LatexCommand>? {
             // todo indexed commands
-            val name = command.commandToken.text
-            val commandName = name.substring(1)
+            val cmdWithSlash = command.commandToken.text
+            val cmdWithoutSlash = cmdWithSlash.substring(1)
 
-            return if (command.inMathContext()) {
-                LatexMathCommand[commandName]
+            return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
+                LatexMathCommand[cmdWithoutSlash]
             }
-            else LatexRegularCommand[commandName]
+            else if (LatexRegularCommand[cmdWithoutSlash] != null) {
+                LatexRegularCommand[cmdWithoutSlash]
+            }
+            else {
+                lookupInIndex(cmdWithoutSlash, command.project)
+            }
         }
     }
 

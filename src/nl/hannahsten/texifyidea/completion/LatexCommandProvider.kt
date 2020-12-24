@@ -19,7 +19,6 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
 import nl.hannahsten.texifyidea.lang.*
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
@@ -56,21 +55,9 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
         result.addAllElements(
             FileBasedIndex.getInstance().getAllKeys(LatexPackageIndex.id, parameters.editor.project ?: return)
-                .map { cmdWithSlash ->
+                .mapNotNull { cmdWithSlash ->
                     val cmdWithoutSlash = cmdWithSlash.substring(1)
-                    val files = FileBasedIndex.getInstance().getContainingFiles(
-                        LatexPackageIndex.id,
-                        cmdWithSlash,
-                        GlobalSearchScope.everythingScope(parameters.editor.project ?: return)
-                    )
-                    // todo multiple dependencies?
-                    val dependency = files.firstOrNull()?.name?.removeFileExtension()
-                    val cmd = object : LatexCommand {
-                        override val command = cmdWithoutSlash
-                        override val display: String? = null
-                        override val arguments = emptyArray<Argument>()
-                        override val dependency = if (dependency.isNullOrBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
-                    }
+                    val cmd = LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).firstOrNull() ?: return@mapNotNull null
                     LookupElementBuilder.create(cmd, cmd.command)
                         .withPresentableText(cmd.commandDisplay)
                         .bold()

@@ -96,10 +96,6 @@ class LatexDocumentationProvider : DocumentationProvider {
         originalElement ?: return null
         val urls = getUrlFor(element, originalElement)
 
-        if (!urls.isNullOrEmpty()) {
-            docString += "<h3>External package documentation</h3>"
-        }
-
         if (urls != null) {
             for (url in urls) {
                 docString += "<a href=\"file:///$url\">$url</a><br/>"
