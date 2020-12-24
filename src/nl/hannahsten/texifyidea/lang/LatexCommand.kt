@@ -34,6 +34,7 @@ interface LatexCommand : Dependend {
          * @return The found command, or `null` when the command does not exist.
          */
         fun lookup(command: LatexCommands): Set<LatexCommand>? {
+            // todo indexed commands
             val name = command.commandToken.text
             val commandName = name.substring(1)
 

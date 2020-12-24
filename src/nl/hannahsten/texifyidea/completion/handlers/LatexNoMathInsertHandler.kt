@@ -9,10 +9,7 @@ import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.codeInsight.template.impl.TextExpression
-import nl.hannahsten.texifyidea.lang.Argument
-import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.RequiredArgument
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
 
@@ -25,7 +22,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
         val command = item.`object` as LatexCommand
 
         when (command.command) {
-            "begin" -> {
+            LatexRegularCommand.BEGIN.command -> {
                 insertBegin(context)
             }
             in Magic.Typography.pseudoCodeBeginEndOpposites -> {

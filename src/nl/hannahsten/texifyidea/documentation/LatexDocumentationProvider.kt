@@ -20,6 +20,7 @@ import java.io.IOException
 import java.io.InputStream
 
 /**
+ * todo quick documentation popup in autocompletion
  * @author Sten Wessel
  */
 class LatexDocumentationProvider : DocumentationProvider {
@@ -51,11 +52,6 @@ class LatexDocumentationProvider : DocumentationProvider {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
             return runTexdoc(LatexPackage(pkg))
         }
-        // todo indexed commands
-        if (element.name != null) {
-            val docs = FileBasedIndex.getInstance()
-                .getValues(LatexPackageIndex.id, element.name!!, GlobalSearchScope.projectScope(element.project))
-        }
 
         return runTexdoc(command.first().dependency)
     }
@@ -86,19 +82,31 @@ class LatexDocumentationProvider : DocumentationProvider {
         }
         else lookup = null
 
+        var docString = ""
+
+        // Indexed documentation
+        if (element is LatexCommands && element.name != null) {
+            val docs = FileBasedIndex.getInstance()
+                .getValues(LatexPackageIndex.id, element.name!!, GlobalSearchScope.everythingScope(element.project))
+                .firstOrNull()
+            docString += docs
+        }
+
+        // Link to package docs
         originalElement ?: return null
-        val urls = getUrlFor(element, originalElement) ?: return null
+        val urls = getUrlFor(element, originalElement)
 
-        if (urls.isEmpty()) {
-            return null
+        if (!urls.isNullOrEmpty()) {
+            docString += "<h3>External package documentation</h3>"
         }
 
-        val sb = StringBuilder("<h3>External package documentation</h3>")
-        for (url in urls) {
-            sb.append("<a href=\"file:///$url\">$url</a><br/>")
+        if (urls != null) {
+            for (url in urls) {
+                docString += "<a href=\"file:///$url\">$url</a><br/>"
+            }
         }
 
-        return sb.toString()
+        return docString
     }
 
     override fun getDocumentationElementForLookupItem(

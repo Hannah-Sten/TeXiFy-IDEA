@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
 import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
@@ -56,16 +57,24 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         result.addAllElements(
             FileBasedIndex.getInstance().getAllKeys(LatexPackageIndex.id, parameters.editor.project ?: return)
                 .map { cmdWithSlash ->
-                    val cmd = cmdWithSlash.substring(1)
+                    val cmdWithoutSlash = cmdWithSlash.substring(1)
                     val files = FileBasedIndex.getInstance().getContainingFiles(
                         LatexPackageIndex.id,
-                        cmd,
-                        GlobalSearchScope.projectScope(parameters.editor.project ?: return)
+                        cmdWithSlash,
+                        GlobalSearchScope.everythingScope(parameters.editor.project ?: return)
                     )
-                    // todo use files for insertion handler
-                    LookupElementBuilder.create(cmd, cmd)
-                        .withPresentableText(cmdWithSlash)
+                    // todo multiple dependencies?
+                    val dependency = files.firstOrNull()?.name?.removeFileExtension()
+                    val cmd = object : LatexCommand {
+                        override val command = cmdWithoutSlash
+                        override val display: String? = null
+                        override val arguments = emptyArray<Argument>()
+                        override val dependency = if (dependency.isNullOrBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
+                    }
+                    LookupElementBuilder.create(cmd, cmd.command)
+                        .withPresentableText(cmd.commandDisplay)
                         .bold()
+                        .withTailText(packageName(cmd), true)
                         .withInsertHandler(LatexNoMathInsertHandler())
                         .withIcon(TexifyIcons.DOT_COMMAND)
                 }
