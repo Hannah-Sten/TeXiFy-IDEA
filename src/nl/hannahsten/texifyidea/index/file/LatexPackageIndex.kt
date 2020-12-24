@@ -18,10 +18,14 @@ import nl.hannahsten.texifyidea.file.LatexSourceFileType
  * @author Thomas
  */
 class LatexPackageIndex : FileBasedIndexExtension<String, String>() {
+    companion object {
+        val id = ID.create<String, String>("nl.hannahsten.texifyidea.LatexPackageIndex")
+    }
+
     private val indexer = LatexPackageDataIndexer()
 
     override fun getName(): ID<String, String> {
-        return ID.create("nl.hannahsten.texifyidea.LatexPackageIndex")
+        return id
     }
 
     override fun getIndexer(): DataIndexer<String, String, FileContent> {

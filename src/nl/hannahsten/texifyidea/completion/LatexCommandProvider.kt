@@ -10,12 +10,14 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.ContainerUtil
+import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
@@ -39,6 +41,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             LatexMode.NORMAL -> {
                 addNormalCommands(result)
                 addCustomCommands(parameters, result)
+                addIndexedCommands(result, parameters)
             }
             LatexMode.MATH -> {
                 addMathCommands(result)
@@ -47,6 +50,26 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             LatexMode.ENVIRONMENT_NAME -> addEnvironments(result, parameters)
         }
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
+    }
+
+    private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
+        result.addAllElements(
+            FileBasedIndex.getInstance().getAllKeys(LatexPackageIndex.id, parameters.editor.project ?: return)
+                .map { cmdWithSlash ->
+                    val cmd = cmdWithSlash.substring(1)
+                    val files = FileBasedIndex.getInstance().getContainingFiles(
+                        LatexPackageIndex.id,
+                        cmd,
+                        GlobalSearchScope.projectScope(parameters.editor.project ?: return)
+                    )
+                    // todo use files for insertion handler
+                    LookupElementBuilder.create(cmd, cmd)
+                        .withPresentableText(cmdWithSlash)
+                        .bold()
+                        .withInsertHandler(LatexNoMathInsertHandler())
+                        .withIcon(TexifyIcons.DOT_COMMAND)
+                }
+        )
     }
 
     private fun addNormalCommands(result: CompletionResultSet) {
@@ -76,7 +99,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         result.addAllElements(
             commands.flatMap { cmd: LatexCommand ->
                 cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
-                    val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler(args.toList()) else LatexMathInsertHandler(args.toList())
+                    val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler(args.toList())
+                    else LatexMathInsertHandler(args.toList())
                     LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                         .withPresentableText(cmd.commandDisplay)
                         .bold()

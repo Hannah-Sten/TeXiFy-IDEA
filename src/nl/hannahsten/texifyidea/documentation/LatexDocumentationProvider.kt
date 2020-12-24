@@ -3,6 +3,9 @@ package nl.hannahsten.texifyidea.documentation
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.indexing.FileBasedIndex
+import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -47,6 +50,11 @@ class LatexDocumentationProvider : DocumentationProvider {
         if (command.first().command in PACKAGE_COMMANDS) {
             val pkg = element.requiredParameters.getOrNull(0) ?: return null
             return runTexdoc(LatexPackage(pkg))
+        }
+        // todo indexed commands
+        if (element.name != null) {
+            val docs = FileBasedIndex.getInstance()
+                .getValues(LatexPackageIndex.id, element.name!!, GlobalSearchScope.projectScope(element.project))
         }
 
         return runTexdoc(command.first().dependency)
