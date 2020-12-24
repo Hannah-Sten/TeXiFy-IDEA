@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-interface LatexCommand : Dependend {
+interface LatexCommand : Described, Dependend {
 
     companion object {
 
@@ -44,12 +44,16 @@ interface LatexCommand : Dependend {
                 cmdWithSlash,
                 GlobalSearchScope.everythingScope(project)
             )
+            val docs = FileBasedIndex.getInstance()
+                .getValues(LatexPackageIndex.id, cmdWithSlash, GlobalSearchScope.everythingScope(project))
+            // todo match values with files, use processValues()
             for (file in files) {
                 val dependency = file?.name?.removeFileExtension()
                 val cmd = object : LatexCommand {
                     override val command = cmdWithoutSlash
                     override val display: String? = null
                     override val arguments = emptyArray<Argument>()
+                    override val description = docs.firstOrNull() ?: ""
                     override val dependency =
                         if (dependency.isNullOrBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
                 }

@@ -24,7 +24,8 @@ enum class LatexRegularCommand(
     override val command: String,
     override vararg val arguments: Argument = emptyArray(),
     override val dependency: LatexPackage = DEFAULT,
-    override val display: String? = null
+    override val display: String? = null,
+    override val description: String = ""
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),

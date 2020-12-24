@@ -16,6 +16,7 @@ enum class LatexMathCommand(
     override vararg val arguments: Argument = emptyArray(),
     override val dependency: LatexPackage = DEFAULT,
     override val display: String? = null,
+    override val description: String = "",
     val collapse: Boolean = false
 ) : LatexCommand {
 

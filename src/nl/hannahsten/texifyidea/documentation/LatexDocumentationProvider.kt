@@ -3,9 +3,6 @@ package nl.hannahsten.texifyidea.documentation
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.indexing.FileBasedIndex
-import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -77,29 +74,31 @@ class LatexDocumentationProvider : DocumentationProvider {
             return stringBuilder.toString()
         }
 
-        if (element.previousSiblingIgnoreWhitespace() != null) {
-            return lookup?.description
-        }
-        else lookup = null
-
-        var docString = ""
-
         // Indexed documentation
-        if (element is LatexCommands && element.name != null) {
-            val docs = FileBasedIndex.getInstance()
-                .getValues(LatexPackageIndex.id, element.name!!, GlobalSearchScope.everythingScope(element.project))
-                .firstOrNull()
-            docString += docs
+        if (lookup == null) {
+            // Apparently the lookup item is not yet initialised, so let's do that first
+            // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion?
+            if (element !is LatexCommands) return null
+            lookup = LatexCommand.lookup(element)?.firstOrNull()
         }
+        var docString = if (lookup != null) lookup?.description else ""
 
         // Link to package docs
         originalElement ?: return null
-        val urls = getUrlFor(element, originalElement)
+        val urls = if (lookup is LatexCommand) runTexdoc((lookup as LatexCommand).dependency) else getUrlFor(element, originalElement)
+
+        if (docString?.isNotBlank() == true && !urls.isNullOrEmpty()) {
+            docString += "<br/>"
+        }
 
         if (urls != null) {
             for (url in urls) {
                 docString += "<a href=\"file:///$url\">$url</a><br/>"
             }
+        }
+
+        if (element.previousSiblingIgnoreWhitespace() == null) {
+            lookup = null
         }
 
         return docString
@@ -111,6 +110,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         psiElement: PsiElement?
     ): PsiElement? {
         if (obj == null || obj !is Described) {
+            // Cancel documentation popup
             lookup = null
             return null
         }
