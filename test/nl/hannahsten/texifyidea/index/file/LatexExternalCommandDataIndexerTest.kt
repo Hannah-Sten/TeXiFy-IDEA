@@ -84,12 +84,41 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals(map["\\MacrocodeTopsep"], map["\\MacroIndent"])
     }
 
+    fun testDoubleMacroDefinition2() {
+        val text = """
+            %
+            %
+            % \begin{macro}{\endmacro}
+            % \begin{macro}{\endenvironment}
+            %     Older releases of this environment omit the |\endgroup| token,
+            %     when being nested. This was done to avoid unnecessary stack usage.
+            %     However it does not work if \textsf{macro} and
+            %     \textsf{environment} environments are mixed, therefore we now
+            %     use a simpler approach.
+            % \changes{v1.5k}{1989/08/17}{Fix for save stack problem.}
+            % \changes{v1.9k}{1994/02/22}{Don't checkfor nesting}
+            %    \begin{macrocode}
+            \let\endmacro \endtrivlist
+            \let\endenvironment\endmacro
+            %    \end{macrocode}
+            %  \end{macro}
+            %  \end{macro}
+            %
+        """.trimIndent()
+        val file = myFixture.configureByText("doc.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(2, map.size)
+        assertEquals("Older releases of this environment omit the |\\endgroup| token, when being nested. This was done to avoid unnecessary stack usage. However it does not work if \\textsf{macro} and \\textsf{environment} environments are mixed, therefore we now use a simpler approach.", map["\\endenvironment"])
+        assertEquals(map["\\endenvironment"], map["\\endmacro"])
+    }
+
 
     fun testDescribeMacro() {
         val text = """
             % \subsection{Describing the usage of new macros}
             %
             % \DescribeMacro\DescribeMacro
+            % \changes{v1.7c}{1992/03/26}{Added.}
             % When you describe a new macro you may use |\DescribeMacro| to
             % indicate that at this point the usage of a specific macro is
             % explained. It takes one argument which will be printed in the margin

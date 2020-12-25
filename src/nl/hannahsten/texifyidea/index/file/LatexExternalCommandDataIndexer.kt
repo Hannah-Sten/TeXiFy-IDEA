@@ -35,7 +35,12 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
     /**
      * Commands that indicate that the documentation of a macro has stopped.
      */
-    private val stopsDocs = setOf("\\begin", "\\end", "\\changes")
+    private val stopsDocs = setOf("\\begin{", "\\end{", "\\DescribeMacro")
+
+    /**
+     * Skip lines that start with one of these strings.
+     */
+    private val skipLines = setOf("\\changes")
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
         val map = mutableMapOf<String, String>()
@@ -64,9 +69,14 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
                 var docs = ""
                 // Strip the line prefixes and guess until where the documentation goes.
                 run breaker@{
-                    docsAfterMacroRegex.findAll(containsDocs).forEach { line ->
-                        if (line.groups["line"]?.value?.containsAny(stopsDocs) == false && line.groups["line"]?.value?.isNotBlank() == true) {
-                            docs += " " + line.groups["line"]?.value
+                    docsAfterMacroRegex.findAll(containsDocs).forEach { lineResult ->
+                        val line = lineResult.groups["line"]?.value ?: return@forEach
+                        if (line.trim().startsWithAny(skipLines)) {
+                            return@forEach
+                        }
+                        else if (!line.containsAny(stopsDocs) && line.trim(' ', '%').isNotBlank()) {
+                            // todo replace commons things like \cs{command}, \cn{cmd} \marg, \oarg
+                            docs += " $line"
                         }
                         else {
                             return@breaker
