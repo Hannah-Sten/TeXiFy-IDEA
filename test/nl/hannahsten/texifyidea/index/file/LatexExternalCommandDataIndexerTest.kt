@@ -7,7 +7,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.indexing.FileContent
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
 
-class LatexPackageDataIndexerTest : BasePlatformTestCase() {
+class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
 
     fun testOneMacroOneLine() {
         val text = """
@@ -19,7 +19,7 @@ class LatexPackageDataIndexerTest : BasePlatformTestCase() {
             %\end{macro}
         """.trimIndent()
         val file = myFixture.configureByText("siunitx.dtx", text)
-        val map = LatexPackageDataIndexer().map(MockContent(file))
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals("The gram is an odd unit as it is needed for the base unit kilogram.", map["\\gram"])
     }
 
@@ -49,7 +49,7 @@ class LatexPackageDataIndexerTest : BasePlatformTestCase() {
             %
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
-        val map = LatexPackageDataIndexer().map(MockContent(file))
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(1, map.size)
         assertEquals("Here is the default value for the |\\MacroTopsep| parameter used above.", map["\\MacroTopsep"])
     }
@@ -78,29 +78,55 @@ class LatexPackageDataIndexerTest : BasePlatformTestCase() {
             %
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
-        val map = LatexPackageDataIndexer().map(MockContent(file))
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(2, map.size)
         assertEquals("In the code above, we have used two registers. Therefore we have to allocate them. The default values might be overwritten with the help of the |\\DocstyleParms| macro.", map["\\MacrocodeTopsep"])
         assertEquals(map["\\MacrocodeTopsep"], map["\\MacroIndent"])
     }
-//
-//    fun testDescribeMacro() {
-//        val text = """
-//            % \subsection{Describing the usage of new macros}
-//            %
-//            % \DescribeMacro\DescribeMacro
-//            % When you describe a new macro you may use |\DescribeMacro| to
-//            % indicate that at this point the usage of a specific macro is
-//            % explained. It takes one argument which will be printed in the margin
-//            % and also produces a special index entry.  For example, I used
-//            % |\DescribeMacro{\DescribeMacro}| to make clear that this is the
-//            % point where the usage of |\DescribeMacro| is explained.
-//        """.trimIndent()
-//        val file = myFixture.configureByText("doc.dtx", text)
-//        val map = LatexPackageDataIndexer().map(MockContent(file))
-//        assertEquals("When you describe a new macro you may use |\\DescribeMacro| to indicate that at this point the usage of a specific macro is explained. It takes one argument which will be printed in the margin and also produces a special index entry.  For example, I used |\\DescribeMacro{\\DescribeMacro}| to make clear that this is the point where the usage of |\\DescribeMacro| is explained.", map["\\DescribeMacro"])
-//    }
-//
+
+
+    fun testDescribeMacro() {
+        val text = """
+            % \subsection{Describing the usage of new macros}
+            %
+            % \DescribeMacro\DescribeMacro
+            % When you describe a new macro you may use |\DescribeMacro| to
+            % indicate that at this point the usage of a specific macro is
+            % explained. It takes one argument which will be printed in the margin
+            % and also produces a special index entry.  For example, I used
+            % <redacted> to make clear that this is the
+            % point where the usage of |\DescribeMacro| is explained.
+            %
+            % \DescribeMacro{\DescribeEnv}
+            % An analogous macro |\DescribeEnv| should be used to indicate
+            % that a \LaTeX{} environment is explained. It will produce a somewhat
+            % different index entry. Below I used |\DescribeEnv{verbatim}|.
+        """.trimIndent()
+        val file = myFixture.configureByText("doc.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(2, map.size)
+        assertEquals("When you describe a new macro you may use |\\DescribeMacro| to indicate that at this point the usage of a specific macro is explained. It takes one argument which will be printed in the margin and also produces a special index entry.  For example, I used <redacted> to make clear that this is the point where the usage of |\\DescribeMacro| is explained.", map["\\DescribeMacro"])
+        assertEquals("An analogous macro |\\DescribeEnv| should be used to indicate that a \\LaTeX{} environment is explained. It will produce a somewhat different index entry. Below I used |\\DescribeEnv{verbatim}|.", map["\\DescribeEnv"])
+    }
+
+
+    fun testDescribeMacros() {
+        val text = """
+            % \DescribeMacro\DontCheckModules \DescribeMacro\CheckModules
+            % \DescribeMacro\Module \DescribeMacro\AltMacroFont The `module'
+            % directives of the \textsf{docstrip} system \cite{art:docstrip} are
+            % normally recognised and invoke special formatting. 
+        """.trimIndent()
+        val file = myFixture.configureByText("doc.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(4, map.size)
+        assertEquals("The `module' directives of the \\textsf{docstrip} system \\cite{art:docstrip} are normally recognised and invoke special formatting.", map["\\DontCheckModules"])
+        assertEquals(map["\\CheckModules"], map["\\DontCheckModules"])
+        assertEquals(map["\\Module"], map["\\DontCheckModules"])
+        assertEquals(map["\\AltMacroFont"], map["\\DontCheckModules"])
+    }
+// todo separate index for environments
+
 //    fun testDescribeEnv() {
 //        val text = """
 //            % different index entry. Below I used |\DescribeEnv{verbatim}|.
@@ -116,7 +142,7 @@ class LatexPackageDataIndexerTest : BasePlatformTestCase() {
 //            %                      which can be used inside of other macros.}
 //        """.trimIndent()
 //        val file = myFixture.configureByText("doc.dtx", text)
-//        val map = LatexPackageDataIndexer().map(MockContent(file))
+//        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
 //        assertEquals("It is often a good idea to include examples of the usage of new macros in the text. Because of the |%| sign in the first column of every row, the \\textsf{verbatim} environment is slightly altered to suppress those characters.", map["verbatim"])
 //    }
 //
@@ -148,7 +174,7 @@ class LatexPackageDataIndexerTest : BasePlatformTestCase() {
 //%
 //        """.trimIndent()
 //        val file = myFixture.configureByText("doc.dtx", text)
-//        val map = LatexPackageDataIndexer().map(MockContent(file))
+//        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
 //        assertEquals("Parts of the macro definition will be surrounded by the environment \\textsf{macrocode}.  Put more precisely, they will be enclosed by a macro whose argument (the text to be set `verbatim') is terminated by the string \\verb*+%    \\end{macrocode}+.  Carefully note the number of spaces.", map["macrocode"])
 //    }
 

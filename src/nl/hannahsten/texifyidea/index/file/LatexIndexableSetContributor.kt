@@ -5,7 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.IndexableSetContributor
 
 /**
- * Specify the paths that have to be indexed for the [LatexPackageIndex].
+ * Specify the paths that have to be indexed for the [LatexExternalCommandIndex].
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
     override fun getAdditionalRootsToIndex(): MutableSet<VirtualFile> {

@@ -211,5 +211,8 @@ fun String.firstIndexOfAny(vararg chars: Char): Int {
 /** If this contains any of the given set. */
 fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
 
+/** If this starts with any of the given set. */
+fun String.startsWithAny(set: Set<String>) = set.any { this.startsWith(it) }
+
 /** Shrink textrange with the given amount at both sides. */
 fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))

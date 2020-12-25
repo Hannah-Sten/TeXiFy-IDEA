@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
@@ -54,7 +54,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
         result.addAllElements(
-            FileBasedIndex.getInstance().getAllKeys(LatexPackageIndex.id, parameters.editor.project ?: return)
+            FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
                 .mapNotNull { cmdWithSlash ->
                     val cmdWithoutSlash = cmdWithSlash.substring(1)
                     val cmd = LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).firstOrNull() ?: return@mapNotNull null

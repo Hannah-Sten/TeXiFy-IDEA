@@ -10,12 +10,13 @@ import java.io.FileNotFoundException
 class LatexQuickRunPackageDataIndexer : BasePlatformTestCase() {
     fun testRun() {
         try {
-            val text = File("/home/thomas/texlive/2020/texmf-dist/source/latex/siunitx/siunitx.dtx").readText()
+            val text = File("/home/thomas/texlive/2020/texmf-dist/source/latex/base/doc.dtx").readText()
             val file = myFixture.configureByText("doc.dtx", text)
-            val map = LatexPackageDataIndexer().map(LatexPackageDataIndexerTest.MockContent(file))
+            val map = LatexExternalCommandDataIndexer().map(LatexExternalCommandDataIndexerTest.MockContent(file))
             println(map)
         }
-        catch (ignored: FileNotFoundException) {
+        catch (e: FileNotFoundException) {
+            println(e)
         }
     }
 }

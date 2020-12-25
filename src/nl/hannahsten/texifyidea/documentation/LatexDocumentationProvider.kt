@@ -17,7 +17,6 @@ import java.io.IOException
 import java.io.InputStream
 
 /**
- * todo quick documentation popup in autocompletion
  * @author Sten Wessel
  */
 class LatexDocumentationProvider : DocumentationProvider {

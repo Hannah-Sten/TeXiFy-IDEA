@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.lang
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
-import nl.hannahsten.texifyidea.index.file.LatexPackageIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 import nl.hannahsten.texifyidea.util.inMathContext
@@ -40,12 +40,12 @@ interface LatexCommand : Described, Dependend {
             val cmdWithSlash = "\\$cmdWithoutSlash"
             // Look up in index
             val files = FileBasedIndex.getInstance().getContainingFiles(
-                LatexPackageIndex.id,
+                LatexExternalCommandIndex.id,
                 cmdWithSlash,
                 GlobalSearchScope.everythingScope(project)
             )
             val docs = FileBasedIndex.getInstance()
-                .getValues(LatexPackageIndex.id, cmdWithSlash, GlobalSearchScope.everythingScope(project))
+                .getValues(LatexExternalCommandIndex.id, cmdWithSlash, GlobalSearchScope.everythingScope(project))
             // todo match values with files, use processValues()
             for (file in files) {
                 val dependency = file?.name?.removeFileExtension()
@@ -69,7 +69,6 @@ interface LatexCommand : Described, Dependend {
          * @return The found command, or `null` when the command does not exist.
          */
         fun lookup(command: LatexCommands): Set<LatexCommand>? {
-            // todo indexed commands
             val cmdWithSlash = command.commandToken.text
             val cmdWithoutSlash = cmdWithSlash.substring(1)
 
