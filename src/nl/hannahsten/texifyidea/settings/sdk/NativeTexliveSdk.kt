@@ -8,11 +8,16 @@ import nl.hannahsten.texifyidea.util.runCommand
  * TeX Live, as installed natively by the OS's package manager.
  * Differences with [TexliveSdk] are for example that not all executables (like tlmgr) are available,
  * and the texmf-dist folder is not assumed to be in a fixed location relative to the executables, but can be anywhere.
+ *
+ * Documentation may or may not be present (on Arch it requires texlive-most-doc).
+ * tlmgr may or may not work (on Arch it requires manual config or tllocalmgr from tllocalmgr-git).
+ * Source files may or may not be present (on Arch they are present for texlive-full, but not for texlive-core).
+ * All in all, it's a lot of fun.
  */
 class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
     companion object {
-        // Path to texmf-dist
+        // Path to texmf-dist, e.g. /usr/share/texmf-dist/ for texlive-core on Arch or /opt/texlive/2020/texmf-dist/ for texlive-full
         val texmfDistPath: String by lazy {
             "kpsewhich article.sty".runCommand()?.substringBefore("texmf-dist") + "texmf-dist"
         }
