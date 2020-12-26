@@ -1,13 +1,13 @@
 package nl.hannahsten.texifyidea.file
 
 import com.intellij.openapi.fileTypes.LanguageFileType
-import nl.hannahsten.texifyidea.LatexLanguage
+import com.intellij.openapi.fileTypes.PlainTextLanguage
 import nl.hannahsten.texifyidea.TexifyIcons
 
 /**
  * @author Thomas
  */
-object LatexSourceFileType : LanguageFileType(LatexLanguage.INSTANCE) {
+object LatexSourceFileType : LanguageFileType(PlainTextLanguage.INSTANCE) {
 
     override fun getName() = "LaTeX source file (dtx)"
 
