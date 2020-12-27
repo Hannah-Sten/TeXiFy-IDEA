@@ -3,8 +3,10 @@ package nl.hannahsten.texifyidea.settings.sdk
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
@@ -153,6 +155,20 @@ object LatexSdkUtil {
      * Get type of project SDK. If null or not a LaTeX sdk, return null.
      */
     fun getLatexProjectSdkType(project: Project): LatexSdk? {
-        return getLatexProjectSdk(project) as? LatexSdk
+        return getLatexProjectSdk(project)?.sdkType as? LatexSdk
+    }
+
+    /**
+     * Collect SDK source paths, so paths to texmf-dist/source/latex, based on Project SDK if available (combining the default
+     * for the SDK type and any user-added source roots) and otherwise on a random guess (ok not really).
+     */
+    fun getSdkSourceRoots(project: Project): Set<VirtualFile> {
+        getLatexProjectSdk(project)?.let { sdk ->
+            val userProvided = sdk.rootProvider.getFiles(OrderRootType.SOURCES).toSet()
+            val default = if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultSourcesPath(sdk.homePath!!)).filterNotNull() else emptySet()
+            return userProvided + default
+        }
+        // todo try suggestHomePath for every sdk type
+        return emptySet()
     }
 }

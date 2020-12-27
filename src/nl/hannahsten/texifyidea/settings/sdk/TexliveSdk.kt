@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -82,6 +84,10 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
         if (sdk.homePath == null) return null
         return sdk.homePath
+    }
+
+    override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
+        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
     }
 
     /**
