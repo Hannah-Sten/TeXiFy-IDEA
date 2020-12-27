@@ -39,26 +39,19 @@ interface LatexCommand : Described, Dependend {
             val cmds = mutableSetOf<LatexCommand>()
             val cmdWithSlash = "\\$cmdWithoutSlash"
             // Look up in index
-            val files = FileBasedIndex.getInstance().getContainingFiles(
-                LatexExternalCommandIndex.id,
-                cmdWithSlash,
-                GlobalSearchScope.everythingScope(project)
-            )
-            val docs = FileBasedIndex.getInstance()
-                .getValues(LatexExternalCommandIndex.id, cmdWithSlash, GlobalSearchScope.everythingScope(project))
-            // todo match values with files, use processValues()
-            for (file in files) {
-                val dependency = file?.name?.removeFileExtension()
+            FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, FileBasedIndex.ValueProcessor { file, value ->
+                val dependency = file.name.removeFileExtension()
                 val cmd = object : LatexCommand {
                     override val command = cmdWithoutSlash
                     override val display: String? = null
                     override val arguments = emptyArray<Argument>()
-                    override val description = docs.firstOrNull() ?: ""
+                    override val description = value
                     override val dependency =
                         if (dependency.isNullOrBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
                 }
                 cmds.add(cmd)
-            }
+                true
+            }, GlobalSearchScope.everythingScope(project))
             return cmds
         }
 

@@ -1,0 +1,42 @@
+package nl.hannahsten.texifyidea.index.file
+
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
+
+class LatexDocsFormattingRegexesTest : BasePlatformTestCase() {
+
+    fun testCommands() {
+        val input = """
+            The macro \cmd{\bblastx} will print the example number before last.
+            This is like \cs{intertext} but uses shorter skips between the math. 
+            The behaviour of the \pkg{siunitx} package is controlled by a number of key--value options. These can be given globally using the \cs{sisetup} function or locally as the optional argument to the user macros.
+        """.trimIndent()
+        val expected = """
+            The macro \bblastx will print the example number before last.
+            This is like \intertext but uses shorter skips between the math. 
+            The behaviour of the siunitx package is controlled by a number of key--value options. These can be given globally using the \sisetup function or locally as the optional argument to the user macros.
+        """.trimIndent()
+        assertEquals(expected, LatexDocsFormattingRegexes.format(input))
+    }
+
+    fun testShortVerbatim() {
+        val input = """
+            |\bibcase|. You can insert it anywhere and it will make the first letter of the following word either lower- or uppercase. For example, |opcit.bst| inserts |\bibcase| before the particle `in' of an |@INCOLLECTION| entry.
+        """.trimIndent()
+        val expected = """
+            \bibcase. You can insert it anywhere and it will make the first letter of the following word either lower- or uppercase. For example, opcit.bst inserts \bibcase before the particle `in' of an @INCOLLECTION entry.
+        """.trimIndent()
+        assertEquals(expected, LatexDocsFormattingRegexes.format(input))
+    }
+
+    fun testMargOarg() {
+        val input = """
+            |\marg{text}| prints \marg{text}, `mandatory argument'.
+            |\oarg{text}| prints \oarg{text}, `optional argument'.
+        """.trimIndent()
+        val expected = """
+            \marg{text} prints {<text>}, `mandatory argument'.
+            \oarg{text} prints [<text>], `optional argument'.
+        """.trimIndent()
+        assertEquals(expected, LatexDocsFormattingRegexes.format(input))
+    }
+}

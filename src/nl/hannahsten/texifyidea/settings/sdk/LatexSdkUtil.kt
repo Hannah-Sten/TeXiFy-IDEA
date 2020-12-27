@@ -6,6 +6,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
@@ -168,7 +169,10 @@ object LatexSdkUtil {
             val default = if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultSourcesPath(sdk.homePath!!)).filterNotNull() else emptySet()
             return userProvided + default
         }
-        // todo try suggestHomePath for every sdk type
+        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk())) {
+            val roots = sdkType.suggestHomePaths().mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) }.toSet()
+            if (roots.isNotEmpty()) return roots
+        }
         return emptySet()
     }
 }

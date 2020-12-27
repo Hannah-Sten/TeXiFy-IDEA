@@ -18,7 +18,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
      * Use a positive lookahead to find overlapping matchings if they fall within the 'docs' range.
      */
     private val macroWithDocsRegex =
-        """(?=\\begin\{macro}\{(?<command>\\[a-zA-Z_:]++)}\s*(?<docs>[\s\S]{0,500}))""".toRegex()
+        """(?=\\begin\{macro}\{(?<command>\\[a-zA-Z_:]+)}\s*(?<docs>[\s\S]{0,500}))""".toRegex()
 
     /**
      * Some things to note:
@@ -75,7 +75,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
                             return@forEach
                         }
                         else if (!line.containsAny(stopsDocs) && line.trim(' ', '%').isNotBlank()) {
-                            // todo replace commons things like \cs{command}, \cn{cmd} \marg, \oarg
+                            // todo get arguments from \marg, \oarg
                             docs += " $line"
                         }
                         else {
@@ -83,9 +83,9 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
                         }
                     }
                 }
-                map[command] = docs.trim()
+                map[command] = LatexDocsFormattingRegexes.format(docs.trim())
                 if (macrosBeingOverloaded.isNotEmpty()) {
-                    macrosBeingOverloaded.forEach { map[it] = docs.trim() }
+                    macrosBeingOverloaded.forEach { map[it] = LatexDocsFormattingRegexes.format(docs.trim()) }
                     macrosBeingOverloaded.clear()
                 }
             }
