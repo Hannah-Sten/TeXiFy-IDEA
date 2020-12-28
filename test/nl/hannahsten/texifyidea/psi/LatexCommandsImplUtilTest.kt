@@ -6,11 +6,12 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import org.junit.Test
 
-class LatexCommandsImplUtilTest : BasePlatformTestCase(){
+class LatexCommandsImplUtilTest : BasePlatformTestCase() {
     @Test
     fun `test simple optional parameters map`() {
         // given
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             \begin{document}
                 \lstinputlisting[param1=value1,param2=value2,param3]{some/file}

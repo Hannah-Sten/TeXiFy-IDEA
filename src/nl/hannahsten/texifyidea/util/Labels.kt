@@ -200,8 +200,8 @@ fun PsiElement.extractLabelElement(): PsiElement? {
                 val labelEntry = optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
                 val keyValContent = labelEntry.value?.keyvalContentList?.first()
                 return keyValContent?.parameterText ?: keyValContent?.parameterGroup?.parameterGroupText
-            } else {
-
+            }
+            else {
                 // For now just take the first label name (may be multiple for user defined commands)
                 val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
                 val position = info?.positions?.firstOrNull() ?: 0
@@ -213,10 +213,12 @@ fun PsiElement.extractLabelElement(): PsiElement? {
         }
         is LatexEnvironment -> {
             if (Magic.Environment.labelAsParameter.contains(environmentName)) {
-                val labelEntry = beginCommand.optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
+                val labelEntry =
+                    beginCommand.optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
                 return labelEntry.value?.keyvalContentList?.first()?.parameterText
                     ?: labelEntry.value.keyvalContentList.first().parameterGroup?.parameterGroupText
-            } else {
+            }
+            else {
                 null
             }
         }
