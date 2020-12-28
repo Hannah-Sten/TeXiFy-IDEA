@@ -1,6 +1,10 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.file.LatexSourceFileType
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.files.allChildFiles
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -10,10 +14,18 @@ import java.io.FileNotFoundException
 class LatexQuickRunPackageDataIndexer : BasePlatformTestCase() {
     fun testRun() {
         try {
+            val filesToIndex = mutableSetOf<VirtualFile>()
+            LatexSdkUtil.getSdkSourceRoots(project).forEach { root ->
+                filesToIndex.addAll(
+                    root.allChildFiles().filter { it.extension == LatexSourceFileType.defaultExtension })
+            }
             val text = File("/home/thomas/texlive/2020/texmf-dist/source/latex/base/doc.dtx").readText()
             val file = myFixture.configureByText("doc.dtx", text)
             val map = LatexExternalCommandDataIndexer().map(LatexExternalCommandDataIndexerTest.MockContent(file))
-            println(map)
+//            filesToIndex.forEach {
+//                val map = LatexExternalCommandDataIndexer().map(LatexExternalCommandDataIndexerTest.MockContent(it.psiFile(myFixture.project) ?: return@forEach))
+//                println(map)
+//            }
         }
         catch (e: FileNotFoundException) {
             println(e)

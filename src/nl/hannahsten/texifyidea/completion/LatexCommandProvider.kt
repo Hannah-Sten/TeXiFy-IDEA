@@ -59,7 +59,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                     val cmdWithoutSlash = cmdWithSlash.substring(1)
                     val cmd = LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).firstOrNull() ?: return@mapNotNull null
                     LookupElementBuilder.create(cmd, cmd.command)
-                        .withPresentableText(cmd.commandDisplay)
+                        .withPresentableText(cmd.commandWithSlash)
                         .bold()
                         .withTailText(packageName(cmd), true)
                         .withInsertHandler(LatexNoMathInsertHandler())
@@ -73,7 +73,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             LatexRegularCommand.values().flatMap { cmd ->
                 cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
                     LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
-                        .withPresentableText(cmd.commandDisplay)
+                        .withPresentableText(cmd.commandWithSlash)
                         .bold()
                         .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                         .withTypeText(cmd.display)
@@ -98,7 +98,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                     val handler = if (cmd is LatexRegularCommand) LatexNoMathInsertHandler(args.toList())
                     else LatexMathInsertHandler(args.toList())
                     LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
-                        .withPresentableText(cmd.commandDisplay)
+                        .withPresentableText(cmd.commandWithSlash)
                         .bold()
                         .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                         .withTypeText(cmd.display)

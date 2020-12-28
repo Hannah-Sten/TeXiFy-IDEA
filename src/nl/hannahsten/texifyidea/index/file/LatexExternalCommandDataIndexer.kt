@@ -30,7 +30,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
     /**
      * Documentation given by \DescribeMacro.
      */
-    private val describeMacroRegex = """(?=\\DescribeMacro\{?(?<command>\\[a-zA-Z_:]++)}?\s*(?<docs>[\s\S]{0,500}))""".toRegex()
+    private val describeMacroRegex = """(?=\\DescribeMacro\{?(?<command>\\[a-zA-Z_:]+\*?)}?\s*(?<docs>[\s\S]{0,500}))""".toRegex()
 
     /**
      * Commands that indicate that the documentation of a macro has stopped.
@@ -40,7 +40,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
     /**
      * Skip lines that start with one of these strings.
      */
-    private val skipLines = setOf("\\changes")
+    private val skipLines = arrayOf("\\changes")
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
         val map = mutableMapOf<String, String>()
@@ -62,7 +62,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
             val containsDocs = macroWithDocsResult.groups["docs"]?.value ?: return@loop
 
             // If we are overloading macros, just save this one to fill with documentation later.
-            if (containsDocs.trim(' ', '%').startsWithAny(setOf("\\begin{macro}", "\\DescribeMacro"))) {
+            if (containsDocs.trim(' ', '%').startsWithAny("\\begin{macro}", "\\DescribeMacro")) {
                 macrosBeingOverloaded.add(command)
             }
             else {
@@ -71,7 +71,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
                 run breaker@{
                     docsAfterMacroRegex.findAll(containsDocs).forEach { lineResult ->
                         val line = lineResult.groups["line"]?.value ?: return@forEach
-                        if (line.trim().startsWithAny(skipLines)) {
+                        if (line.trim().startsWithAny(*skipLines)) {
                             return@forEach
                         }
                         else if (!line.containsAny(stopsDocs) && line.trim(' ', '%').isNotBlank()) {

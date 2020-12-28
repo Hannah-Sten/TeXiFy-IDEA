@@ -7,6 +7,8 @@ import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.length
+import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
 
 /**
@@ -39,20 +41,57 @@ interface LatexCommand : Described, Dependend {
             val cmds = mutableSetOf<LatexCommand>()
             val cmdWithSlash = "\\$cmdWithoutSlash"
             // Look up in index
-            FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, FileBasedIndex.ValueProcessor { file, value ->
+            FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
                 val dependency = file.name.removeFileExtension()
                 val cmd = object : LatexCommand {
                     override val command = cmdWithoutSlash
                     override val display: String? = null
-                    override val arguments = emptyArray<Argument>()
+                    override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
                     override val description = value
-                    override val dependency =
-                        if (dependency.isNullOrBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
+                    override val dependency = if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
                 }
                 cmds.add(cmd)
                 true
             }, GlobalSearchScope.everythingScope(project))
             return cmds
+        }
+
+        /**
+         * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).
+         */
+        private fun getArgumentsFromStartOfString(docs: String, counterInit: Int): Array<Argument> {
+            val arguments = mutableListOf<Argument>()
+            var counter = counterInit
+            // Only use the ones at the beginning of the string to avoid matching too much
+            """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
+                if (it.range.first == counter) {
+                    when (it.groups["command"]?.value) {
+                        LatexRegularCommand.OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
+                        LatexRegularCommand.MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                        LatexRegularCommand.PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                    }
+                    counter += it.range.length + 1
+                }
+            }
+
+            return arguments.toTypedArray()
+        }
+
+        fun extractArgumentsFromDocs(docs: String, commandWithSlash: String): Array<Argument> {
+            // Maybe the arguments are given right at the beginning of the docs
+            val argCommands = arrayOf(LatexRegularCommand.OARG, LatexRegularCommand.MARG, LatexRegularCommand.PARG).map { it.commandWithSlash }.toTypedArray()
+            if (docs.startsWithAny(*argCommands)) {
+                return getArgumentsFromStartOfString(docs, 0)
+            }
+
+            // Maybe the command appears somewhere in the docs with all the arguments after it
+            // Check for each command in the docs,
+            """\$commandWithSlash""".toRegex().findAll(docs).forEach { match ->
+                // whether the arguments follow it.
+                getArgumentsFromStartOfString(docs, match.range.last + 1).let { if (it.isNotEmpty()) return it }
+            }
+
+            return emptyArray()
         }
 
         /**
@@ -82,7 +121,7 @@ interface LatexCommand : Described, Dependend {
      */
     val command: String
 
-    val commandDisplay: String
+    val commandWithSlash: String
         get() = "\\$command"
 
     /**

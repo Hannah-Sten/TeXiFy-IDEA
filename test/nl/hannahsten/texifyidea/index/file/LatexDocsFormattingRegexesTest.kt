@@ -29,13 +29,12 @@ class LatexDocsFormattingRegexesTest : BasePlatformTestCase() {
     }
 
     fun testMargOarg() {
+        // Should be left alone, see LatexCommand
         val input = """
-            |\marg{text}| prints \marg{text}, `mandatory argument'.
-            |\oarg{text}| prints \oarg{text}, `optional argument'.
+            |\circlearc|\oarg{N}\marg{X}\marg{Y}\marg{RAD}\marg{ANGLE1}\marg{ANGLE2}\\
         """.trimIndent()
         val expected = """
-            \marg{text} prints {<text>}, `mandatory argument'.
-            \oarg{text} prints [<text>], `optional argument'.
+            \circlearc\oarg{N}\marg{X}\marg{Y}\marg{RAD}\marg{ANGLE1}\marg{ANGLE2}\\
         """.trimIndent()
         assertEquals(expected, LatexDocsFormattingRegexes.format(input))
     }
