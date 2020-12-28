@@ -1,15 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import nl.hannahsten.texifyidea.psi.*;
+import nl.hannahsten.texifyidea.psi.LatexKeyvalContent;
+import nl.hannahsten.texifyidea.psi.LatexParameterGroup;
+import nl.hannahsten.texifyidea.psi.LatexParameterText;
+import nl.hannahsten.texifyidea.psi.LatexVisitor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class LatexKeyvalContentImpl extends ASTWrapperPsiElement implements LatexKeyvalContent {
 
@@ -29,8 +30,8 @@ public class LatexKeyvalContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   @Nullable
-  public LatexGroup getGroup() {
-    return PsiTreeUtil.getChildOfType(this, LatexGroup.class);
+  public LatexParameterGroup getParameterGroup() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterGroup.class);
   }
 
   @Override

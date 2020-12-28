@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType;
@@ -19,7 +19,6 @@ public interface LatexTypes {
   IElementType END_COMMAND = new LatexElementType("END_COMMAND");
   IElementType ENVIRONMENT = new LatexEnvironmentStubElementType("ENVIRONMENT");
   IElementType ENVIRONMENT_CONTENT = new LatexElementType("ENVIRONMENT_CONTENT");
-  IElementType GREEDY_CONTENT = new LatexElementType("GREEDY_CONTENT");
   IElementType GROUP = new LatexElementType("GROUP");
   IElementType INLINE_MATH = new LatexElementType("INLINE_MATH");
   IElementType KEYVAL_CONTENT = new LatexElementType("KEYVAL_CONTENT");
@@ -34,6 +33,8 @@ public interface LatexTypes {
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
   IElementType OPTIONAL_PARAM_CONTENT = new LatexElementType("OPTIONAL_PARAM_CONTENT");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
+  IElementType PARAMETER_GROUP = new LatexElementType("PARAMETER_GROUP");
+  IElementType PARAMETER_GROUP_TEXT = new LatexElementType("PARAMETER_GROUP_TEXT");
   IElementType PARAMETER_TEXT = new LatexElementType("PARAMETER_TEXT");
   IElementType PSEUDOCODE_BLOCK = new LatexElementType("PSEUDOCODE_BLOCK");
   IElementType PSEUDOCODE_BLOCK_CONTENT = new LatexElementType("PSEUDOCODE_BLOCK_CONTENT");
@@ -93,9 +94,6 @@ public interface LatexTypes {
       else if (type == ENVIRONMENT_CONTENT) {
         return new LatexEnvironmentContentImpl(node);
       }
-      else if (type == GREEDY_CONTENT) {
-        return new LatexGreedyContentImpl(node);
-      }
       else if (type == GROUP) {
         return new LatexGroupImpl(node);
       }
@@ -137,23 +135,21 @@ public interface LatexTypes {
       }
       else if (type == PARAMETER) {
         return new LatexParameterImpl(node);
-      }
-      else if (type == PARAMETER_TEXT) {
+      } else if (type == PARAMETER_GROUP) {
+        return new LatexParameterGroupImpl(node);
+      } else if (type == PARAMETER_GROUP_TEXT) {
+        return new LatexParameterGroupTextImpl(node);
+      } else if (type == PARAMETER_TEXT) {
         return new LatexParameterTextImpl(node);
-      }
-      else if (type == PSEUDOCODE_BLOCK) {
+      } else if (type == PSEUDOCODE_BLOCK) {
         return new LatexPseudocodeBlockImpl(node);
-      }
-      else if (type == PSEUDOCODE_BLOCK_CONTENT) {
+      } else if (type == PSEUDOCODE_BLOCK_CONTENT) {
         return new LatexPseudocodeBlockContentImpl(node);
-      }
-      else if (type == RAW_TEXT) {
+      } else if (type == RAW_TEXT) {
         return new LatexRawTextImpl(node);
-      }
-      else if (type == REQUIRED_PARAM) {
+      } else if (type == REQUIRED_PARAM) {
         return new LatexRequiredParamImpl(node);
-      }
-      else if (type == REQUIRED_PARAM_CONTENT) {
+      } else if (type == REQUIRED_PARAM_CONTENT) {
         return new LatexRequiredParamContentImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);

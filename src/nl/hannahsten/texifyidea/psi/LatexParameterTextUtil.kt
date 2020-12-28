@@ -65,6 +65,7 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
 
 fun setName(element: LatexParameterText, name: String): PsiElement {
     val command = element.firstParentOfType(LatexCommands::class)
+    val environment = element.firstParentOfType(LatexEnvironment::class)
     // If we want to rename a label
     if (Magic.Command.reference.contains(command?.name) || Magic.Command.getLabelDefinitionCommands(element.project).contains(command?.name)) {
         // Get a new psi element for the complete label command (\label included),
@@ -82,6 +83,13 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
         else {
             command.parent.node.replaceChild(oldNode, newNode)
         }
+    }
+    else if (Magic.Command.labelAsParameter.contains(command?.name) || Magic.Environment.labelAsParameter.contains(
+            environment?.environmentName
+        )
+    ) {
+        val helper = LatexPsiHelper(element.project)
+        helper.setOptionalParameter(command ?: environment!!.beginCommand, "label", name)
     }
     else if (element.firstParentOfType(LatexEndCommand::class) != null || element.firstParentOfType(LatexBeginCommand::class) != null) {
         // We are renaming an environment, text in \begin or \end

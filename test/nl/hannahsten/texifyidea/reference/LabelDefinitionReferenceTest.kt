@@ -12,20 +12,21 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
     }
 
     fun `test rename of label in environment`() {
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
-            \begin{listing}[label=test]
-            \end{listing}
+            \begin{lstlisting}[label=test]
+            \end{lstlisting}
             \ref{test<caret>}
-            """
-            .trimMargin())
+            """.trimMargin()
+        )
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \begin{listing}[label=renamed]
-            \end{listing}
+            \begin{lstlisting}[label=renamed]
+            \end{lstlisting}
             \ref{renamed<caret>}
-            """
+            """.trimMargin()
         )
     }
 
@@ -39,9 +40,9 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \lstinputlisting[label=renamed]{inputfile} 
+            \lstinputlisting[label=renamed]{inputfile}
             \ref{renamed<caret>}
-            """
+            """.trimMargin()
         )
     }
 
@@ -55,9 +56,9 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \lstinputlisting[label={renamed}]{inputfile} 
+            \lstinputlisting[label={renamed}]{inputfile}
             \ref{renamed<caret>}
-            """
+            """.trimMargin()
         )
     }
 }

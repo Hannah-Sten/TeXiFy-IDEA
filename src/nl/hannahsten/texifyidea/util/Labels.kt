@@ -198,8 +198,8 @@ fun PsiElement.extractLabelElement(): PsiElement? {
         is LatexCommands -> {
             if (Magic.Command.labelAsParameter.contains(name)) {
                 val labelEntry = optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
-                return labelEntry.value?.keyvalContentList?.first()?.parameterText
-                // TODO: groups are not working yet
+                val keyValContent = labelEntry.value?.keyvalContentList?.first()
+                return keyValContent?.parameterText ?: keyValContent?.parameterGroup?.parameterGroupText
             } else {
 
                 // For now just take the first label name (may be multiple for user defined commands)
@@ -215,7 +215,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
             if (Magic.Environment.labelAsParameter.contains(environmentName)) {
                 val labelEntry = beginCommand.optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
                 return labelEntry.value?.keyvalContentList?.first()?.parameterText
-                // TODO: groups are not working yet
+                    ?: labelEntry.value.keyvalContentList.first().parameterGroup?.parameterGroupText
             } else {
                 null
             }

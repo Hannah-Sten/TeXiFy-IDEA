@@ -4,12 +4,9 @@ package nl.hannahsten.texifyidea.psi;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 
-public interface LatexKeyvalContent extends PsiElement {
+public interface LatexParameterGroup extends PsiElement {
 
   @Nullable
-  LatexParameterGroup getParameterGroup();
-
-  @Nullable
-  LatexParameterText getParameterText();
+  LatexParameterGroupText getParameterGroupText();
 
 }

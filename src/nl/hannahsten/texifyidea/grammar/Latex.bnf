@@ -26,6 +26,10 @@
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
     implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
+    // Make text in parameter group have an identifier, to be able to Ctrl+B for \label parameters
+    implements("parameter_group_text")="com.intellij.psi.PsiNameIdentifierOwner"
+
+
     // See the lexer
     tokens=[
         WHITE_SPACE='regexp:\s+'
@@ -55,7 +59,6 @@
 latexFile ::= content*
 
 content ::= no_math_content
-greedy_content ::= no_math_content { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"] }
 
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
@@ -108,6 +111,8 @@ required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | NORMAL_TEXT_CHAR
 required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
 
+// These non-terminals are used to match the key value pairs of optional parameters. We cannot (currently) define
+// "=" and "," as tokens because the lexer would create them as tokens everywhere, including in normal text.
 keyval_pair ::= keyval_key ("=" keyval_value)?
 keyval_key ::= keyval_content+ {
     methods=[toString]
@@ -115,7 +120,7 @@ keyval_key ::= keyval_content+ {
 keyval_value ::= keyval_content+ {
     methods=[toString]
 }
-keyval_content ::= parameter_text | group
+keyval_content ::= parameter_text | parameter_group
 
 // The lowest level of a parameter must have the getReferences etc. implemented
 // We don't do this on normal_text because then every normal_text in the document would be a reference
@@ -126,7 +131,13 @@ parameter_text ::= (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND)+ {
    methods=[getReferences getReference getNameIdentifier getName setName]
 }
 
-group ::= OPEN_BRACE greedy_content* CLOSE_BRACE { pin=1 methods=[contentList="greedy_content"] }
+group ::= OPEN_BRACE content* CLOSE_BRACE { pin=1 }
+
+parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }
+
+// Be sure to capture the whitespace before and after the actual content as groups are meant to capture
+// *everything* inside them.
+parameter_group_text ::= content* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"] methods=[getNameIdentifier getName setName] }
 
 comment ::= COMMENT_TOKEN
 

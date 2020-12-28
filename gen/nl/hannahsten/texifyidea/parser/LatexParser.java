@@ -1,16 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
-import static com.intellij.lang.WhitespacesBinders.*;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.WhitespacesBinders.GREEDY_LEFT_BINDER;
+import static com.intellij.lang.WhitespacesBinders.GREEDY_RIGHT_BINDER;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -230,19 +231,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // no_math_content
-  public static boolean greedy_content(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "greedy_content")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, GREEDY_CONTENT, "<greedy content>");
-    r = no_math_content(b, l + 1);
-    register_hook_(b, WS_BINDERS, GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // OPEN_BRACE greedy_content* CLOSE_BRACE
+  // OPEN_BRACE content* CLOSE_BRACE
   public static boolean group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
@@ -256,12 +245,12 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // greedy_content*
+  // content*
   private static boolean group_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!greedy_content(b, l + 1)) break;
+      if (!content(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "group_1", c)) break;
     }
     return true;
@@ -290,13 +279,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // parameter_text | group
+  // parameter_text | parameter_group
   public static boolean keyval_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, KEYVAL_CONTENT, "<keyval content>");
     r = parameter_text(b, l + 1);
-    if (!r) r = group(b, l + 1);
+    if (!r) r = parameter_group(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -571,6 +560,36 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = required_param(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  /* ********************************************************** */
+  // OPEN_BRACE parameter_group_text CLOSE_BRACE
+  public static boolean parameter_group(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "parameter_group")) return false;
+    if (!nextTokenIs(b, OPEN_BRACE)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, PARAMETER_GROUP, null);
+    r = consumeToken(b, OPEN_BRACE);
+    p = r; // pin = 1
+    r = r && report_error_(b, parameter_group_text(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
+  // content*
+  public static boolean parameter_group_text(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "parameter_group_text")) return false;
+    Marker m = enter_section_(b, l, _NONE_, PARAMETER_GROUP_TEXT, "<parameter group text>");
+    while (true) {
+      int c = current_position_(b);
+      if (!content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "parameter_group_text", c)) break;
+    }
+    register_hook_(b, WS_BINDERS, GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER);
+    exit_section_(b, l, m, true, false, null);
+    return true;
   }
 
   /* ********************************************************** */
