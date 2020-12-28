@@ -4,7 +4,6 @@ import nl.hannahsten.texifyidea.lang.Environment.Context
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GAUSS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.name
 import java.util.*
@@ -13,17 +12,17 @@ import java.util.*
  * @author Hannah Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-    override vararg val arguments: Argument,
     override val environmentName: String,
     override val initialContents: String = "",
     override val context: Context = Context.NORMAL,
-    override val dependency: LatexPackage = LatexPackage.DEFAULT
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override vararg val arguments: Argument,
 ) : Environment {
 
     // Vanilla LaTeX
     ABSTRACT(environmentName = "abstract"),
     ALLTT(environmentName = "alltt"),
-    ARRAY(RequiredArgument("cols"), environmentName = "array"),
+    ARRAY(environmentName = "array", arguments = arrayOf(RequiredArgument("cols"))),
     CENTER(environmentName = "center"),
     DESCRIPTION(environmentName = "description", initialContents = "\\item "),
     DISPLAYMATH(environmentName = "displaymath", context = Context.MATH),
@@ -44,11 +43,11 @@ enum class DefaultEnvironment(
     LARGE(environmentName = "large"),
     CAPITAL_LARGE(environmentName = "Large"),
     SCREAMING_LARGE(environmentName = "LARGE"),
-    LIST(RequiredArgument("label"), RequiredArgument("spacing"), environmentName = "list"),
-    LONGTABLE(RequiredArgument("cols"), environmentName = "longtable"),
+    LIST(environmentName = "list", arguments = arrayOf(RequiredArgument("label"), RequiredArgument("spacing"))),
+    LONGTABLE(environmentName = "longtable", arguments = arrayOf(RequiredArgument("cols"))),
     LRBOX(environmentName = "lrbox"),
     MATH(environmentName = "math"),
-    MINIPAGE(OptionalArgument("position"), RequiredArgument("width"), environmentName = "minipage"),
+    MINIPAGE(environmentName = "minipage", arguments = arrayOf(OptionalArgument("position"), RequiredArgument("width"))),
     NORMALSIZE(environmentName = "normalsize"),
     QUOTATION(environmentName = "quotation"),
     QUOTE(environmentName = "quote"),
@@ -57,10 +56,10 @@ enum class DefaultEnvironment(
     TABBING(environmentName = "tabbing"),
     TABLE(environmentName = "table", arguments = arrayOf(OptionalArgument("placement"))),
     TABLE_STAR(environmentName = "table*", arguments = arrayOf(OptionalArgument("placement"))),
-    TABU(RequiredArgument("cols"), environmentName = "tabu"),
-    TABULAR(OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular"),
-    TABULARX(RequiredArgument("width"), RequiredArgument("cols"), environmentName = "tabularx"),
-    TABULAR_STAR(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"), environmentName = "tabular*"),
+    TABU(environmentName = "tabu", arguments = arrayOf(RequiredArgument("cols"))),
+    TABULAR(environmentName = "tabular", arguments = arrayOf(OptionalArgument("pos"), RequiredArgument("cols"))),
+    TABULARX(environmentName = "tabularx", arguments = arrayOf(RequiredArgument("width"), RequiredArgument("cols"))),
+    TABULAR_STAR(environmentName = "tabular*", arguments = arrayOf(RequiredArgument("width"), OptionalArgument("pos"), RequiredArgument("cols"))),
     THEBIBLIOGRAPHY(environmentName = "thebibliography", arguments = arrayOf(RequiredArgument("widestlabel"))),
     THEINDEX(environmentName = "theindex"),
     THEOREM(environmentName = "theorem", arguments = arrayOf(OptionalArgument("optional"))),
@@ -136,7 +135,7 @@ enum class DefaultEnvironment(
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
 
     // xcolor
-    TESTCOLORS(environmentName = "testcolors", arguments = arrayOf(OptionalArgument("num models")), dependency = XCOLOR);
+    TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models")));
 
     companion object {
 
