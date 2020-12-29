@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.util.startsWithAny
 
 /**
  * Get the content we need from LaTeX Package source files.
- *
+ * todo MiKTeX support
  * @author Thomas
  */
 class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent> {
