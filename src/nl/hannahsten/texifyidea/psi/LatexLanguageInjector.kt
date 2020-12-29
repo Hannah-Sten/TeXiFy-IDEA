@@ -5,8 +5,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.util.Magic
@@ -30,7 +28,7 @@ class LatexLanguageInjector : LanguageInjector {
                     magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
                 }
                 host.environmentName == "lstlisting" -> {
-                    host.beginCommand.optionalParameters.getOrDefault("language", null)
+                    host.beginCommand.optionalParameterMap.toStringMap().getOrDefault("language", null)
                 }
                 else -> {
                     Magic.Environment.languageInjections[host.environmentName]

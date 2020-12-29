@@ -6,13 +6,13 @@ import org.jetbrains.annotations.Nullable;
 
 public interface LatexKeyvalContent extends PsiElement {
 
-    @Nullable
-    LatexCommands getCommands();
+  @Nullable
+  LatexCommands getCommands();
 
-    @Nullable
-    LatexKeyvalText getKeyvalText();
+  @Nullable
+  LatexKeyvalText getKeyvalText();
 
-    @Nullable
-    LatexParameterGroup getParameterGroup();
+  @Nullable
+  LatexParameterGroup getParameterGroup();
 
 }
