@@ -9,11 +9,13 @@ class LatexDocsFormattingRegexesTest : BasePlatformTestCase() {
             The macro \cmd{\bblastx} will print the example number before last.
             This is like \cs{intertext} but uses shorter skips between the math. 
             The behaviour of the \pkg{siunitx} package is controlled by a number of key--value options. These can be given globally using the \cs{sisetup} function or locally as the optional argument to the user macros.
+            \LaTeX{}
         """.trimIndent()
         val expected = """
             The macro \bblastx will print the example number before last.
             This is like \intertext but uses shorter skips between the math. 
             The behaviour of the siunitx package is controlled by a number of key--value options. These can be given globally using the \sisetup function or locally as the optional argument to the user macros.
+            \LaTeX{}
         """.trimIndent()
         assertEquals(expected, LatexDocsFormattingRegexes.format(input))
     }

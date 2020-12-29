@@ -75,7 +75,6 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
                             return@forEach
                         }
                         else if (!line.containsAny(stopsDocs) && line.trim(' ', '%').isNotBlank()) {
-                            // todo get arguments from \marg, \oarg
                             docs += " $line"
                         }
                         else {

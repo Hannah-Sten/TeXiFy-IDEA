@@ -52,34 +52,33 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
     }
 
+    private fun createLookupElement(cmd: LatexCommand): List<LookupElementBuilder> {
+        return cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
+            LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
+                .withPresentableText(cmd.commandWithSlash)
+                .bold()
+                .withTailText(args.joinToString("") + " " + packageName(cmd), true)
+                .withTypeText(cmd.display)
+                .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
+                .withIcon(TexifyIcons.DOT_COMMAND)
+        }
+    }
+
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
         result.addAllElements(
             FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
                 .mapNotNull { cmdWithSlash ->
                     val cmdWithoutSlash = cmdWithSlash.substring(1)
                     val cmd = LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).firstOrNull() ?: return@mapNotNull null
-                    LookupElementBuilder.create(cmd, cmd.command)
-                        .withPresentableText(cmd.commandWithSlash)
-                        .bold()
-                        .withTailText(packageName(cmd), true)
-                        .withInsertHandler(LatexNoMathInsertHandler())
-                        .withIcon(TexifyIcons.DOT_COMMAND)
-                }
+                    createLookupElement(cmd)
+                }.flatten()
         )
     }
 
     private fun addNormalCommands(result: CompletionResultSet) {
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
-                cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
-                    LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
-                        .withPresentableText(cmd.commandWithSlash)
-                        .bold()
-                        .withTailText(args.joinToString("") + " " + packageName(cmd), true)
-                        .withTypeText(cmd.display)
-                        .withInsertHandler(LatexNoMathInsertHandler(args.toList()))
-                        .withIcon(TexifyIcons.DOT_COMMAND)
-                }
+                createLookupElement(cmd)
             }
         )
         result.addLookupAdvertisement(getKindWords())
