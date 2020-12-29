@@ -6,7 +6,6 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
@@ -23,7 +22,6 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.settings.TexifyProjectConfigurable
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
@@ -115,8 +113,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
                         }
                         else {
                             InsertUnicodePackageFix()
-                        },
-                        ChangeCompilerCompatibilityFix()
+                        }
                     )
                 )
             }
@@ -149,23 +146,6 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             Magic.Package.unicode.forEach { p ->
                 file.insertUsepackage(p)
             }
-        }
-    }
-
-    /**
-     * Open the settings page so the user can change the compiler compatibility.
-     */
-    private class ChangeCompilerCompatibilityFix : LocalQuickFix {
-        @Nls
-        override fun getFamilyName(): String {
-            return "Change compiler compatibility"
-        }
-
-        // We just want to open the settings window, but cannot do an AWT event inside a write action
-        override fun startInWriteAction() = false
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, TexifyProjectConfigurable::class.java)
         }
     }
 

@@ -99,6 +99,19 @@ public class LatexPsiImplUtil {
         return LatexEnvironmentUtilKt.getEnvironmentName(element);
     }
 
+    public static boolean isValidHost(@NotNull LatexEnvironment element) {
+        return true;
+    }
+
+    public static PsiLanguageInjectionHost updateText(@NotNull LatexEnvironment element, @NotNull String text) {
+        return ElementManipulators.handleContentChange(element, text);
+    }
+
+    @NotNull
+    public static LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper(@NotNull LatexEnvironment element) {
+        return LiteralTextEscaper.createSimple(element);
+    }
+
     /*
      * LatexParameterText
      */
@@ -136,18 +149,20 @@ public class LatexPsiImplUtil {
     }
 
     /*
-     * LatexEnvironment
+     * LatexParameter
      */
-    public static boolean isValidHost(@NotNull LatexEnvironment element) {
+
+    public static boolean isValidHost(@NotNull LatexParameter element) {
         return true;
     }
 
-    public static PsiLanguageInjectionHost updateText(@NotNull LatexEnvironment element, @NotNull String text) {
+    public static PsiLanguageInjectionHost updateText(@NotNull LatexParameter element, @NotNull String text) {
         return ElementManipulators.handleContentChange(element, text);
     }
 
     @NotNull
-    public static LiteralTextEscaper<LatexEnvironment> createLiteralTextEscaper(@NotNull LatexEnvironment element) {
+    public static LiteralTextEscaper<LatexParameter> createLiteralTextEscaper(@NotNull LatexParameter element) {
         return LiteralTextEscaper.createSimple(element);
     }
+
 }

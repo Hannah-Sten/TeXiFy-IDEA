@@ -99,7 +99,7 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitParameter(@NotNull LatexParameter o) {
-    visitPsiElement(o);
+    visitPsiLanguageInjectionHost(o);
   }
 
   public void visitParameterGroup(@NotNull LatexParameterGroup o) {

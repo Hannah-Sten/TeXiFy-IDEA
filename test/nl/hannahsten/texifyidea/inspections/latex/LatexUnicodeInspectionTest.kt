@@ -63,40 +63,40 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
             \usepackage[utf8]{inputenc}
             \usepackage[T1]{fontenc}
             î""".trimIndent(),
-                "Include Unicode support packages", 3)
+                "Include Unicode support packages", 2)
     }
 
     @Suppress("NonAsciiCharacters")
     fun `test escape unicode quick fix é`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("é", "\\'e", "Escape Unicode character", 3)
+        testNamedQuickFix("é", "\\'e", "Escape Unicode character", 2)
     }
 
     @Suppress("NonAsciiCharacters")
     fun `test escape unicode quick fix î`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("î", "\\^{\\i}", "Escape Unicode character", 3)
+        testNamedQuickFix("î", "\\^{\\i}", "Escape Unicode character", 2)
     }
 
     fun `test escape unicode quick fix regular command`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("å", "\\aa", "Escape Unicode character", 3)
+        testNamedQuickFix("å", "\\aa", "Escape Unicode character", 2)
     }
 
     fun `test escape unicode quick fix known math command`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("\$α\$", "\$\\alpha\$", "Escape Unicode character", 2)
+        testNamedQuickFix("\$α\$", "\$\\alpha\$", "Escape Unicode character", 1)
     }
 
     fun `test escape unicode quick fix math command`() {
         setUnicodeSupport(false)
 
         // ℂ cannot be converted.
-        testNamedQuickFix("\$ℂ\$", "\$ℂ\$", "Escape Unicode character", 2)
+        testNamedQuickFix("\$ℂ\$", "\$ℂ\$", "Escape Unicode character", 1)
     }
 }
 
