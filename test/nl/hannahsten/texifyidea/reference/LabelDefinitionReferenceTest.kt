@@ -23,7 +23,26 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \begin{lstlisting}[label=renamed]
+            \begin{lstlisting}[label={renamed}]
+            \end{lstlisting}
+            \ref{renamed<caret>}
+            """.trimMargin()
+        )
+    }
+
+    fun `test rename of label in environment with special character`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{lstlisting}[label=test,escapechar=|]
+            \end{lstlisting}
+            \ref{test<caret>}
+            """.trimMargin()
+        )
+        myFixture.renameElementAtCaret("renamed")
+        myFixture.checkResult(
+            """
+            \begin{lstlisting}[label={renamed},escapechar=|]
             \end{lstlisting}
             \ref{renamed<caret>}
             """.trimMargin()
@@ -31,28 +50,50 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
     }
 
     fun `test rename of label in command`() {
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             \lstinputlisting[label=test]{inputfile}
             \ref{test<caret>}
             """
-                .trimMargin())
+                .trimMargin()
+        )
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \lstinputlisting[label=renamed]{inputfile}
+            \lstinputlisting[label={renamed}]{inputfile}
             \ref{renamed<caret>}
             """.trimMargin()
         )
     }
 
     fun `test rename of label in group`() {
-        myFixture.configureByText(LatexFileType,
+        myFixture.configureByText(
+            LatexFileType,
             """
             \lstinputlisting[label={test}]{inputfile}
             \ref{test<caret>}
             """
-                .trimMargin())
+                .trimMargin()
+        )
+        myFixture.renameElementAtCaret("renamed")
+        myFixture.checkResult(
+            """
+            \lstinputlisting[label={renamed}]{inputfile}
+            \ref{renamed<caret>}
+            """.trimMargin()
+        )
+    }
+
+    fun `test rename of label in multiple groups`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \lstinputlisting[label={test}{test2}]{inputfile}
+            \ref{testtest2<caret>}
+            """
+                .trimMargin()
+        )
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """

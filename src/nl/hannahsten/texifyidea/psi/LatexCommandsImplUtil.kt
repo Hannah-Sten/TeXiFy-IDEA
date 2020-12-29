@@ -213,9 +213,9 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
 }
 
 fun toString(element: LatexKeyvalKey): String =
-    element.keyvalContentList.map { it -> it.parameterText?.text ?: it.parameterGroup!!.parameterGroupText!!.text }
+    element.keyvalContentList.map { it -> it.keyvalText?.text ?: it.parameterGroup!!.parameterGroupText!!.text }
         .joinToString(separator = "")
 
 fun toString(element: LatexKeyvalValue): String =
-    element.keyvalContentList.map { it -> it.parameterText?.text ?: it.parameterGroup!!.parameterGroupText!!.text }
+    element.keyvalContentList.map { it -> it.keyvalText?.text ?: it.parameterGroup!!.parameterGroupText!!.text }
         .joinToString(separator = "")

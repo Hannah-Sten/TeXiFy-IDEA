@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.refactoring
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
+import nl.hannahsten.texifyidea.psi.LatexKeyvalValue
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 
 /**
@@ -10,6 +11,10 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
 class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
     override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean {
         // Label parameters are LatexParameterText
-        return element is LatexParameterText
+        return when (element) {
+            is LatexParameterText -> true
+            is LatexKeyvalValue -> true
+            else -> false
+        }
     }
 }

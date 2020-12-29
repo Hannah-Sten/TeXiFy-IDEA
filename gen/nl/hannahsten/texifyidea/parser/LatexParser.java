@@ -279,12 +279,12 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // parameter_text | parameter_group
+  // keyval_text | parameter_group
   public static boolean keyval_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, KEYVAL_CONTENT, "<keyval content>");
-    r = parameter_text(b, l + 1);
+    r = keyval_text(b, l + 1);
     if (!r) r = parameter_group(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -333,6 +333,39 @@ public class LatexParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, "=");
     r = r && keyval_value(b, l + 1);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | "|" | "!" | "\\" | "\"" | "&" | "<" | ">")+
+  public static boolean keyval_text(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_text")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, KEYVAL_TEXT, "<keyval text>");
+    r = keyval_text_0(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!keyval_text_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "keyval_text", c)) break;
+    }
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // NORMAL_TEXT_WORD | STAR | AMPERSAND | "|" | "!" | "\\" | "\"" | "&" | "<" | ">"
+  private static boolean keyval_text_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyval_text_0")) return false;
+    boolean r;
+    r = consumeToken(b, NORMAL_TEXT_WORD);
+    if (!r) r = consumeToken(b, STAR);
+    if (!r) r = consumeToken(b, AMPERSAND);
+    if (!r) r = consumeToken(b, "|");
+    if (!r) r = consumeToken(b, "!");
+    if (!r) r = consumeToken(b, "\\");
+    if (!r) r = consumeToken(b, "\"");
+    if (!r) r = consumeToken(b, AMPERSAND);
+    if (!r) r = consumeToken(b, "<");
+    if (!r) r = consumeToken(b, ">");
     return r;
   }
 

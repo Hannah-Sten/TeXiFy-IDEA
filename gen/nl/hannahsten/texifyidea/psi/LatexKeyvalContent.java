@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 public interface LatexKeyvalContent extends PsiElement {
 
   @Nullable
-  LatexParameterGroup getParameterGroup();
+  LatexKeyvalText getKeyvalText();
 
   @Nullable
-  LatexParameterText getParameterText();
+  LatexParameterGroup getParameterGroup();
 
 }

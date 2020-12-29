@@ -1,13 +1,21 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNameIdentifierOwner;
+import org.jetbrains.annotations.NotNull;
 
-public interface LatexKeyvalValue extends PsiElement {
+import java.util.List;
+
+public interface LatexKeyvalValue extends PsiNameIdentifierOwner {
 
   @NotNull
   List<LatexKeyvalContent> getKeyvalContentList();
+
+  PsiElement getNameIdentifier();
+
+  String getName();
+
+  PsiElement setName(String name);
 
 }

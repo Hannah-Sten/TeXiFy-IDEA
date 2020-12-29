@@ -1,15 +1,18 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import nl.hannahsten.texifyidea.psi.*;
+import nl.hannahsten.texifyidea.psi.LatexKeyvalContent;
+import nl.hannahsten.texifyidea.psi.LatexKeyvalValue;
+import nl.hannahsten.texifyidea.psi.LatexPsiImplUtil;
+import nl.hannahsten.texifyidea.psi.LatexVisitor;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class LatexKeyvalValueImpl extends ASTWrapperPsiElement implements LatexKeyvalValue {
 
@@ -36,6 +39,21 @@ public class LatexKeyvalValueImpl extends ASTWrapperPsiElement implements LatexK
   @Override
   public String toString() {
     return LatexPsiImplUtil.toString(this);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return LatexPsiImplUtil.getNameIdentifier(this);
+  }
+
+  @Override
+  public String getName() {
+    return LatexPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String name) {
+    return LatexPsiImplUtil.setName(this, name);
   }
 
 }

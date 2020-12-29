@@ -24,6 +24,7 @@ public interface LatexTypes {
   IElementType KEYVAL_CONTENT = new LatexElementType("KEYVAL_CONTENT");
   IElementType KEYVAL_KEY = new LatexElementType("KEYVAL_KEY");
   IElementType KEYVAL_PAIR = new LatexElementType("KEYVAL_PAIR");
+  IElementType KEYVAL_TEXT = new LatexElementType("KEYVAL_TEXT");
   IElementType KEYVAL_VALUE = new LatexElementType("KEYVAL_VALUE");
   IElementType MAGIC_COMMENT = new LatexMagicCommentStubElementType("MAGIC_COMMENT");
   IElementType MATH_CONTENT = new LatexElementType("MATH_CONTENT");
@@ -108,32 +109,25 @@ public interface LatexTypes {
       }
       else if (type == KEYVAL_PAIR) {
         return new LatexKeyvalPairImpl(node);
-      }
-      else if (type == KEYVAL_VALUE) {
+      } else if (type == KEYVAL_TEXT) {
+        return new LatexKeyvalTextImpl(node);
+      } else if (type == KEYVAL_VALUE) {
         return new LatexKeyvalValueImpl(node);
-      }
-      else if (type == MAGIC_COMMENT) {
+      } else if (type == MAGIC_COMMENT) {
         return new LatexMagicCommentImpl(node);
-      }
-      else if (type == MATH_CONTENT) {
+      } else if (type == MATH_CONTENT) {
         return new LatexMathContentImpl(node);
-      }
-      else if (type == MATH_ENVIRONMENT) {
+      } else if (type == MATH_ENVIRONMENT) {
         return new LatexMathEnvironmentImpl(node);
-      }
-      else if (type == NORMAL_TEXT) {
+      } else if (type == NORMAL_TEXT) {
         return new LatexNormalTextImpl(node);
-      }
-      else if (type == NO_MATH_CONTENT) {
+      } else if (type == NO_MATH_CONTENT) {
         return new LatexNoMathContentImpl(node);
-      }
-      else if (type == OPTIONAL_PARAM) {
+      } else if (type == OPTIONAL_PARAM) {
         return new LatexOptionalParamImpl(node);
-      }
-      else if (type == OPTIONAL_PARAM_CONTENT) {
+      } else if (type == OPTIONAL_PARAM_CONTENT) {
         return new LatexOptionalParamContentImpl(node);
-      }
-      else if (type == PARAMETER) {
+      } else if (type == PARAMETER) {
         return new LatexParameterImpl(node);
       } else if (type == PARAMETER_GROUP) {
         return new LatexParameterGroupImpl(node);

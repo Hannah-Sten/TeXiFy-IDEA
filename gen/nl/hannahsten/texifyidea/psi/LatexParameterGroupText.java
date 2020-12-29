@@ -2,20 +2,13 @@
 package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface LatexParameterGroupText extends PsiNameIdentifierOwner {
+public interface LatexParameterGroupText extends PsiElement {
 
   @NotNull
   List<LatexContent> getContentList();
-
-  PsiElement getNameIdentifier();
-
-  String getName();
-
-  PsiElement setName(String name);
 
 }
