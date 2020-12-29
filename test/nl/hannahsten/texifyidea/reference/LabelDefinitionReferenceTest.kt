@@ -34,7 +34,7 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            \begin{lstlisting}[label=test,escapechar=|]
+            \begin{lstlisting}[label=test,escapechar=|!\"&]
             \end{lstlisting}
             \ref{test<caret>}
             """.trimMargin()
@@ -42,7 +42,7 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \begin{lstlisting}[label={renamed},escapechar=|]
+            \begin{lstlisting}[label={renamed},escapechar=|!\"&]
             \end{lstlisting}
             \ref{renamed<caret>}
             """.trimMargin()

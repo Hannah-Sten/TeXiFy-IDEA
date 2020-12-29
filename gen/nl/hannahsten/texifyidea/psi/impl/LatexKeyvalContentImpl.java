@@ -5,10 +5,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.psi.LatexKeyvalContent;
-import nl.hannahsten.texifyidea.psi.LatexKeyvalText;
-import nl.hannahsten.texifyidea.psi.LatexParameterGroup;
-import nl.hannahsten.texifyidea.psi.LatexVisitor;
+import nl.hannahsten.texifyidea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,8 +21,14 @@ public class LatexKeyvalContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
+    if (visitor instanceof LatexVisitor) accept((LatexVisitor) visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @Nullable
+  public LatexCommands getCommands() {
+    return PsiTreeUtil.getChildOfType(this, LatexCommands.class);
   }
 
   @Override

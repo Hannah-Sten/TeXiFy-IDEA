@@ -40,11 +40,11 @@ public class LatexPsiImplUtil {
     }
 
     public static String toString(@NotNull LatexKeyvalKey element) {
-        return LatexCommandsImplUtilKt.toString(element);
+        return LatexCommandsImplUtilKt.keyValContentToString(element);
     }
 
     public static String toString(@NotNull LatexKeyvalValue element) {
-        return LatexCommandsImplUtilKt.toString(element);
+        return LatexCommandsImplUtilKt.keyValContentToString(element);
     }
 
     public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexCommands element) {

@@ -80,7 +80,7 @@ LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
 NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,]+
 // Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
-NORMAL_TEXT_CHAR=[|!\"=&<>,]
+NORMAL_TEXT_CHAR=[|!\"&<>]
 ANY_CHAR=[^]
 
 // Algorithmicx
@@ -363,4 +363,9 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
 {NORMAL_TEXT_CHAR}      { return NORMAL_TEXT_CHAR; }
+
+// Tokens for parameter separators (e.g., \cite{param1,param2}) and
+// keyval assigns (e.g. \lstinputlisting[label=somelabel])
+"="                     { return KEYVAL_ASSIGN; }
+","                     { return PARAM_SEPARATOR; }
 [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }

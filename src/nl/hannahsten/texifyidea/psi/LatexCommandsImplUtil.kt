@@ -173,7 +173,7 @@ fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<Lat
     return parameterMap
 }
 
-fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
+fun getRequiredParameters(parameters: List<LatexParameter>): List<String> {
     return parameters.mapNotNull { it.requiredParam }
         .map { param ->
             param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
@@ -212,10 +212,18 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
     return element
 }
 
-fun toString(element: LatexKeyvalKey): String =
-    element.keyvalContentList.map { it -> it.keyvalText?.text ?: it.parameterGroup!!.parameterGroupText!!.text }
-        .joinToString(separator = "")
+fun keyValContentToString(element: LatexKeyvalKey): String =
+    keyValContentToString(element.keyvalContentList)
 
-fun toString(element: LatexKeyvalValue): String =
-    element.keyvalContentList.map { it -> it.keyvalText?.text ?: it.parameterGroup!!.parameterGroupText!!.text }
-        .joinToString(separator = "")
+fun keyValContentToString(list: List<LatexKeyvalContent>): String =
+    list.joinToString(separator = "") {
+        when {
+            it.keyvalText != null -> it.keyvalText!!.text
+            it.parameterGroup != null -> it.parameterGroup!!.parameterGroupText!!.text
+            it.commands != null -> it.commands!!.text
+            else -> ""
+        }
+    }
+
+fun keyValContentToString(element: LatexKeyvalValue): String =
+    keyValContentToString(element.keyvalContentList)

@@ -63,7 +63,7 @@ content ::= no_math_content
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR)+
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR | KEYVAL_ASSIGN | PARAM_SEPARATOR )+
 
 environment ::= begin_command environment_content? end_command {
     pin=1
@@ -101,7 +101,7 @@ parameter ::= optional_param | required_param
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET ( (keyval_pair  ("," keyval_pair)*) | optional_param_content*) CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET ( (keyval_pair  (PARAM_SEPARATOR keyval_pair)*) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
 required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 
@@ -109,22 +109,20 @@ required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
 optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | NORMAL_TEXT_CHAR
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | PARAM_SEPARATOR | KEYVAL_ASSIGN | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
 
-// These non-terminals are used to match the key value pairs of optional parameters. We cannot (currently) define
-// "=" and "," as tokens because the lexer would create them as tokens everywhere, including in normal text.
-keyval_pair ::= keyval_key ("=" keyval_value)?
+keyval_pair ::= keyval_key (KEYVAL_ASSIGN keyval_value)?
 keyval_key ::= keyval_content+ {
     methods=[toString]
 }
 keyval_value ::= keyval_content+ {
     methods=[toString getNameIdentifier getName setName]
 }
-keyval_content ::= keyval_text | parameter_group
+keyval_content ::= commands | keyval_text | parameter_group
 
 // We need to include the special characters here because changing NORMAL_TEXT_CHAR would alter the lexer's behaviour
-// and break several other things.
-keyval_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | "|" | "!" | "\\" | "\"" | "&" | "<" | ">")+
+// in several other places.
+keyval_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | "|" | "!" | "\\" | "\"" | "<" | ">")+
 
 
 // The lowest level of a parameter must have the getReferences etc. implemented
