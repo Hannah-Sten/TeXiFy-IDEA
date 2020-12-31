@@ -10,7 +10,13 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
     override fun getAdditionalProjectRootsToIndex(project: Project): MutableSet<VirtualFile> {
-        return LatexSdkUtil.getSdkSourceRoots(project).toMutableSet()
+        // Avoid indexing in tests
+        return if (!project.name.contains("_temp_")) {
+            LatexSdkUtil.getSdkSourceRoots(project).toMutableSet()
+        }
+        else {
+            mutableSetOf()
+        }
     }
 
     override fun getAdditionalRootsToIndex() = mutableSetOf<VirtualFile>()

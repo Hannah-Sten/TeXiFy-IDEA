@@ -15,12 +15,12 @@ object LatexDocsRegexer {
      * Regexes and replacements which clean up the documentation.
      */
     private val formattingReplacers = listOf(
-        // Commands to remove entirely
-        Pair("""\\(cite|footnote)\{[^}]+?}\s*""".toRegex(), { "" }),
+        // Commands to remove entirely,, making sure to capture in the argument nested braces
+        Pair("""\\(cite|footnote)\{(\{[^}]*}|[^}])+?}\s*""".toRegex(), { "" }),
         // \cs command from the doctools package
         Pair("""(?<pre>[^|]|^)\\c[sn]\{(?<command>[^}]+?)}""".toRegex(), { result -> result.groups["pre"]?.value + "\\" + result.groups["command"]?.value }),
-        // Any other commands, hopefully like \textbf, \emph etc, except when in short verbatim and with some exceptions
-        Pair<Regex, (MatchResult) -> String>("""(?<pre>[^|]|^)\\(?![omp]arg|begin|end)[a-zA-Z_:]+?\{(?<argument>[^}]+?)}""".toRegex(), { result -> result.groups["pre"]?.value + result.groups["argument"]?.value }),
+        // Other commands, except when in short verbatim
+        Pair<Regex, (MatchResult) -> String>("""(?<pre>[^|]|^)\\(?:textbf|emph|textsf|cmd|pkg)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex(), { result -> result.groups["pre"]?.value + result.groups["argument"]?.value }),
         // Short verbatim, provided by ltxdoc
         Pair("""\|""".toRegex(), { "" }),
     )
@@ -28,7 +28,7 @@ object LatexDocsRegexer {
     /**
      * Commands that indicate that the documentation of a macro has stopped.
      */
-    private val stopsDocs = setOf("\\begin{", "\\end{", "\\DescribeMacro")
+    private val stopsDocs = setOf("\\begin{", "\\DescribeMacro")
 
     /**
      * Skip lines that start with one of these strings.

@@ -25,7 +25,7 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
             %                      which can be used inside of other macros.}
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
-        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        val map = LatexExternalEnvironmentDataIndexer().map(MockContent(file))
         assertEquals("It is often a good idea to include examples of the usage of new macros in the text. Because of the % sign in the first column of every row, the verbatim environment is slightly altered to suppress those characters.", map["verbatim"])
     }
 
@@ -41,12 +41,6 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
 %    enclosed by a macro whose argument (the text to be set
 %    `verbatim') is terminated by the string
 % \verb*+%    \end{macrocode}+.  Carefully note the number of spaces.
-%    |\macrocode| is defined completely analogously to
-%    |\verbatim|, but because a few small changes were carried
-%    out, almost all internal macros have got new names.  We start by
-%    calling the macro |\macro@code|, the macro which bears the
-%    brunt of most of the work, such as |\catcode| reassignments,
-%    etc.
 % \changes{v1.5r}{1989/11/04}{Support for code line no. (Undoc)}
 %    \begin{macrocode}
 \def\macrocode{\macro@code
@@ -57,8 +51,8 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
 %
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
-        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
-        assertEquals("Parts of the macro definition will be surrounded by the environment macrocod.  Put more precisely, they will be enclosed by a macro whose argument (the text to be set `verbatim') is terminated by the string \\verb*+%    \\end{macrocode}+.  Carefully note the number of spaces.", map["macrocode"])
+        val map = LatexExternalEnvironmentDataIndexer().map(MockContent(file))
+        assertEquals("Parts of the macro definition will be surrounded by the environment macrocode.  Put more precisely, they will be enclosed by a macro whose argument (the text to be set `verbatim') is terminated by the string \\verb*+%    \\end{macrocode}+.  Carefully note the number of spaces.", map["macrocode"])
     }
 
     class MockContent(val file: PsiFile) : FileContent {
