@@ -9,14 +9,15 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.ProcessingContext
-import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addEnvironments
+import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.addIndexedEnvironments
+import nl.hannahsten.texifyidea.completion.LatexEnvironmentProvider.packageName
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexMathInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -47,12 +48,15 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
                 addMathCommands(result)
                 addCustomCommands(parameters, result, LatexMode.MATH)
             }
-            LatexMode.ENVIRONMENT_NAME -> addEnvironments(result, parameters)
+            LatexMode.ENVIRONMENT_NAME -> {
+                addEnvironments(result, parameters)
+                addIndexedEnvironments(result, parameters)
+            }
         }
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
     }
 
-    private fun createLookupElement(cmd: LatexCommand): List<LookupElementBuilder> {
+    private fun createCommandLookupElement(cmd: LatexCommand): List<LookupElementBuilder> {
         return cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
             LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                 .withPresentableText(cmd.commandWithSlash)
@@ -69,8 +73,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
                 .mapNotNull { cmdWithSlash ->
                     val cmdWithoutSlash = cmdWithSlash.substring(1)
-                    val cmd = LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).firstOrNull() ?: return@mapNotNull null
-                    createLookupElement(cmd)
+                    val cmd = LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).firstOrNull() ?: return@mapNotNull null // todo add all commands instead of just the first?
+                    createCommandLookupElement(cmd)
                 }.flatten()
         )
     }
@@ -78,7 +82,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     private fun addNormalCommands(result: CompletionResultSet) {
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
-                createLookupElement(cmd)
+                createCommandLookupElement(cmd)
             }
         )
         result.addLookupAdvertisement(getKindWords())
@@ -108,37 +112,6 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         )
     }
 
-    private fun addEnvironments(result: CompletionResultSet, parameters: CompletionParameters) {
-        // Find all environments.
-        val environments: MutableList<Environment> = ArrayList()
-        Collections.addAll(environments, *DefaultEnvironment.values())
-        LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
-            .filter { cmd -> Magic.Command.environmentDefinitions.contains(cmd.name) }
-            .map { cmd -> cmd.requiredParameter(0) }
-            .filter { obj -> Objects.nonNull(obj) }
-            .map { environmentName -> SimpleEnvironment(environmentName!!) }
-            .forEach { e: SimpleEnvironment -> environments.add(e) }
-
-        // Create autocomplete elements.
-        result.addAllElements(
-            ContainerUtil.map2List(environments) { env: Environment ->
-                LookupElementBuilder.create(env, env.environmentName)
-                    .withPresentableText(env.environmentName)
-                    .bold()
-                    .withTailText(env.getArgumentsDisplay() + " " + packageName(env), true)
-                    .withIcon(TexifyIcons.DOT_ENVIRONMENT)
-            }
-        )
-        result.addLookupAdvertisement(getKindWords())
-    }
-
-    private fun packageName(dependend: Dependend): String {
-        val name = dependend.dependency.name
-        return if ("" == name) {
-            ""
-        }
-        else " ($name)"
-    }
 
     private fun addCustomCommands(
         parameters: CompletionParameters, result: CompletionResultSet,

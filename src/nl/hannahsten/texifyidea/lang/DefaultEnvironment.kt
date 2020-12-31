@@ -17,7 +17,8 @@ enum class DefaultEnvironment(
     override val environmentName: String,
     override val initialContents: String = "",
     override val context: Context = Context.NORMAL,
-    override val dependency: LatexPackage = LatexPackage.DEFAULT
+    override val dependency: LatexPackage = LatexPackage.DEFAULT,
+    override val description: String = ""
 ) : Environment {
 
     // Vanilla LaTeX
