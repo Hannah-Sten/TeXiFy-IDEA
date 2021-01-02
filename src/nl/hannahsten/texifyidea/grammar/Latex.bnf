@@ -64,7 +64,7 @@ content ::= no_math_content
 no_math_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group |
     OPEN_PAREN | CLOSE_PAREN | OPEN_BRACKET | CLOSE_BRACKET | normal_text
 
-normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR | KEYVAL_ASSIGN | PARAM_SEPARATOR )+
+normal_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR | EQUALS | COMMA )+
 
 environment ::= begin_command environment_content? end_command {
     pin=1
@@ -104,7 +104,7 @@ parameter ::= optional_param | required_param {
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET ( (keyval_pair  (PARAM_SEPARATOR keyval_pair)*) | optional_param_content*) CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)*) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
 required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 
@@ -112,9 +112,9 @@ required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 // We have to separate optional and required parameter content, because required parameter content
 // can contain mismatched brackets, but optional parameters not (then we wouldn't know what to match)
 optional_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | NORMAL_TEXT_CHAR
-required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | PARAM_SEPARATOR | KEYVAL_ASSIGN | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
+required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
 
-keyval_pair ::= keyval_key (KEYVAL_ASSIGN keyval_value)?
+keyval_pair ::= keyval_key (EQUALS keyval_value)?
 keyval_key ::= keyval_content+ {
     methods=[toString]
 }

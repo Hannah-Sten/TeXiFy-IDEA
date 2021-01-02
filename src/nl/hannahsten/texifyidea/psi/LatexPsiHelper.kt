@@ -6,7 +6,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexTypes.CLOSE_BRACKET
-import nl.hannahsten.texifyidea.psi.LatexTypes.KEYVAL_ASSIGN
+import nl.hannahsten.texifyidea.psi.LatexTypes.EQUALS
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.findFirstChild
 import nl.hannahsten.texifyidea.util.firstChildOfType
@@ -98,7 +98,7 @@ class LatexPsiHelper(private val project: Project) {
                 existing.keyvalValue?.delete()
                 existing.addAfter(
                     pair.keyvalValue!!,
-                    existing.childrenOfType<LeafPsiElement>().first { it.elementType == KEYVAL_ASSIGN })
+                    existing.childrenOfType<LeafPsiElement>().first { it.elementType == EQUALS })
                 existing
             }
             else {

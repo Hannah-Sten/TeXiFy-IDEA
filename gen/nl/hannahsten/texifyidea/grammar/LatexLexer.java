@@ -1035,7 +1035,7 @@ public class LatexLexer implements FlexLexer {
           case 71:
             break;
           case 12: {
-            return KEYVAL_ASSIGN;
+            return EQUALS;
           }
           // fall through
           case 72:
@@ -1060,7 +1060,7 @@ public class LatexLexer implements FlexLexer {
           case 75:
             break;
           case 16: {
-            return PARAM_SEPARATOR;
+            return COMMA;
           }
           // fall through
           case 76:

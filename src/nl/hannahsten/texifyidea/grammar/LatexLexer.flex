@@ -368,6 +368,6 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // Tokens for parameter separators (e.g., \cite{param1,param2}) and
 // keyval assigns (e.g. \lstinputlisting[label=somelabel])
-"="                     { return KEYVAL_ASSIGN; }
-","                     { return PARAM_SEPARATOR; }
+"="                     { return EQUALS; }
+","                     { return COMMA; }
 [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }

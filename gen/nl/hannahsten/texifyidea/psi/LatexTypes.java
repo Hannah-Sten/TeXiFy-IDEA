@@ -49,6 +49,7 @@ public interface LatexTypes {
   IElementType CLOSE_BRACE = new LatexTokenType("CLOSE_BRACE");
   IElementType CLOSE_BRACKET = new LatexTokenType("CLOSE_BRACKET");
   IElementType CLOSE_PAREN = new LatexTokenType("CLOSE_PAREN");
+  IElementType COMMA = new LatexTokenType("COMMA");
   IElementType COMMAND_IFNEXTCHAR = new LatexTokenType("COMMAND_IFNEXTCHAR");
   IElementType COMMAND_TOKEN = new LatexTokenType("COMMAND_TOKEN");
   IElementType COMMENT_TOKEN = new LatexTokenType("COMMENT_TOKEN");
@@ -56,9 +57,9 @@ public interface LatexTypes {
   IElementType DISPLAY_MATH_START = new LatexTokenType("\\[");
   IElementType END_PSEUDOCODE_BLOCK = new LatexTokenType("END_PSEUDOCODE_BLOCK");
   IElementType END_TOKEN = new LatexTokenType("\\end");
+  IElementType EQUALS = new LatexTokenType("EQUALS");
   IElementType INLINE_MATH_END = new LatexTokenType("INLINE_MATH_END");
   IElementType INLINE_MATH_START = new LatexTokenType("INLINE_MATH_START");
-  IElementType KEYVAL_ASSIGN = new LatexTokenType("KEYVAL_ASSIGN");
   IElementType MAGIC_COMMENT_TOKEN = new LatexTokenType("MAGIC_COMMENT_TOKEN");
   IElementType MIDDLE_PSEUDOCODE_BLOCK = new LatexTokenType("MIDDLE_PSEUDOCODE_BLOCK");
   IElementType NORMAL_TEXT_CHAR = new LatexTokenType("NORMAL_TEXT_CHAR");
@@ -66,7 +67,6 @@ public interface LatexTypes {
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
   IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");
   IElementType OPEN_PAREN = new LatexTokenType("OPEN_PAREN");
-  IElementType PARAM_SEPARATOR = new LatexTokenType("PARAM_SEPARATOR");
   IElementType RAW_TEXT_TOKEN = new LatexTokenType("RAW_TEXT");
   IElementType STAR = new LatexTokenType("*");
 
