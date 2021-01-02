@@ -24,7 +24,7 @@ public class LatexParameterGroupTextImpl extends ASTWrapperPsiElement implements
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof LatexVisitor) accept((LatexVisitor) visitor);
+    if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
     else super.accept(visitor);
   }
 

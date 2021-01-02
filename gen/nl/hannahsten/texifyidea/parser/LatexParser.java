@@ -338,7 +338,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | "|" | "!" | "\\" | "\"" | "<" | ">")+
+  // (NORMAL_TEXT_WORD | STAR | AMPERSAND |PIPE | EXCLAMATION_MARK | BACKSLASH | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET)+
   public static boolean keyval_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_text")) return false;
     boolean r;
@@ -353,19 +353,19 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT_WORD | STAR | AMPERSAND | "|" | "!" | "\\" | "\"" | "<" | ">"
+  // NORMAL_TEXT_WORD | STAR | AMPERSAND |PIPE | EXCLAMATION_MARK | BACKSLASH | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET
   private static boolean keyval_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyval_text_0")) return false;
     boolean r;
     r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
     if (!r) r = consumeToken(b, AMPERSAND);
-    if (!r) r = consumeToken(b, "|");
-    if (!r) r = consumeToken(b, "!");
-    if (!r) r = consumeToken(b, "\\");
-    if (!r) r = consumeToken(b, "\"");
-    if (!r) r = consumeToken(b, "<");
-    if (!r) r = consumeToken(b, ">");
+    if (!r) r = consumeToken(b, PIPE);
+    if (!r) r = consumeToken(b, EXCLAMATION_MARK);
+    if (!r) r = consumeToken(b, BACKSLASH);
+    if (!r) r = consumeToken(b, QUOTATION_MARK);
+    if (!r) r = consumeToken(b, OPEN_ANGLE_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_ANGLE_BRACKET);
     return r;
   }
 
@@ -464,7 +464,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR | EQUALS | COMMA )+
+  // (NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA )+
   public static boolean normal_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text")) return false;
     boolean r;
@@ -479,14 +479,19 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // NORMAL_TEXT_WORD | STAR | AMPERSAND | NORMAL_TEXT_CHAR | EQUALS | COMMA
+  // NORMAL_TEXT_WORD | STAR | AMPERSAND | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | PIPE | EXCLAMATION_MARK | BACKSLASH | EQUALS | COMMA
   private static boolean normal_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normal_text_0")) return false;
     boolean r;
     r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
     if (!r) r = consumeToken(b, AMPERSAND);
-    if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
+    if (!r) r = consumeToken(b, QUOTATION_MARK);
+    if (!r) r = consumeToken(b, OPEN_ANGLE_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_ANGLE_BRACKET);
+    if (!r) r = consumeToken(b, PIPE);
+    if (!r) r = consumeToken(b, EXCLAMATION_MARK);
+    if (!r) r = consumeToken(b, BACKSLASH);
     if (!r) r = consumeToken(b, EQUALS);
     if (!r) r = consumeToken(b, COMMA);
     return r;
@@ -562,7 +567,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | NORMAL_TEXT_CHAR
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | BACKSLASH
   public static boolean optional_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_param_content")) return false;
     boolean r;
@@ -579,7 +584,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, OPEN_PAREN);
     if (!r) r = consumeToken(b, CLOSE_PAREN);
     if (!r) r = parameter_text(b, l + 1);
-    if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
+    if (!r) r = consumeToken(b, BACKSLASH);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -628,7 +633,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND)+
+  // (commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK)+
   public static boolean parameter_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text")) return false;
     boolean r;
@@ -643,7 +648,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // commands | NORMAL_TEXT_WORD | STAR | AMPERSAND
+  // commands | NORMAL_TEXT_WORD | STAR | AMPERSAND | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET | QUOTATION_MARK | PIPE | EXCLAMATION_MARK
   private static boolean parameter_text_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_text_0")) return false;
     boolean r;
@@ -651,6 +656,11 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, NORMAL_TEXT_WORD);
     if (!r) r = consumeToken(b, STAR);
     if (!r) r = consumeToken(b, AMPERSAND);
+    if (!r) r = consumeToken(b, OPEN_ANGLE_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_ANGLE_BRACKET);
+    if (!r) r = consumeToken(b, QUOTATION_MARK);
+    if (!r) r = consumeToken(b, PIPE);
+    if (!r) r = consumeToken(b, EXCLAMATION_MARK);
     return r;
   }
 
@@ -797,7 +807,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | NORMAL_TEXT_CHAR
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH
   public static boolean required_param_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param_content")) return false;
     boolean r;
@@ -817,7 +827,7 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, EQUALS);
     if (!r) r = consumeToken(b, OPEN_BRACKET);
     if (!r) r = consumeToken(b, CLOSE_BRACKET);
-    if (!r) r = consumeToken(b, NORMAL_TEXT_CHAR);
+    if (!r) r = consumeToken(b, BACKSLASH);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
