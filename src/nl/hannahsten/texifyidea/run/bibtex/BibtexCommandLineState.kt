@@ -30,7 +30,7 @@ open class BibtexCommandLineState(
         }
         else GeneralCommandLine(command).withWorkDirectory(runConfig.mainFile?.parent?.path)
 
-        val handler: ProcessHandler = KillableProcessHandler(commandLine)
+        val handler: ProcessHandler = KillableProcessHandler(commandLine.withEnvironment(runConfig.environmentVariables.envs))
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
