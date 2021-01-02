@@ -59,7 +59,7 @@ interface LatexCommand : Described, Dependend {
         /**
          * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).
          */
-        private fun getArgumentsFromStartOfString(docs: String, counterInit: Int): Array<Argument> {
+        fun getArgumentsFromStartOfString(docs: String, counterInit: Int): Array<Argument> {
             val arguments = mutableListOf<Argument>()
             var counter = counterInit
             // Only use the ones at the beginning of the string to avoid matching too much

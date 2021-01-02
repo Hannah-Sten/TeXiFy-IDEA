@@ -4,8 +4,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
-import nl.hannahsten.texifyidea.lang.LatexCommand.Companion.extractArgumentsFromDocs
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import nl.hannahsten.texifyidea.util.startsWithAny
 
 /**
  * @author Hannah Schellekens
@@ -33,7 +33,7 @@ interface Environment : Dependend, Described {
             FileBasedIndex.getInstance().processValues(LatexExternalEnvironmentIndex.id, environmentName, null, { file, value ->
                 val dependency = file.name.removeFileExtension()
                 val env = object : Environment {
-                    override val arguments = extractArgumentsFromDocs(value, environmentName)
+                    override val arguments = extractArgumentsFromDocs(value)
                     override val description = value
                     override val dependency =
                         if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage(dependency)
@@ -45,6 +45,17 @@ interface Environment : Dependend, Described {
                 true
             }, GlobalSearchScope.everythingScope(project))
             return envs
+        }
+
+
+        fun extractArgumentsFromDocs(docs: String): Array<Argument> {
+            // Maybe the arguments are given right at the beginning of the docs
+            val argCommands = arrayOf(LatexRegularCommand.OARG, LatexRegularCommand.MARG, LatexRegularCommand.PARG).map { it.commandWithSlash }.toTypedArray()
+            if (docs.startsWithAny(*argCommands)) {
+                return LatexCommand.getArgumentsFromStartOfString(docs, 0)
+            }
+
+            return emptyArray()
         }
 
         /**
