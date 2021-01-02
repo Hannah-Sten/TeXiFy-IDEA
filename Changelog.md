@@ -8,6 +8,7 @@
 * Add rename element for commands. (#1689)
 * Add support for language injection on commands, and automatically inject Lua. (#1699)
 * Add support for using the out/ directory when using pdflatex and bibtex with TeX Live. (#1697)
+* Add live templates for \enquote and \footcite. (#1701)
 
 # Changes
 * Improve efficiency of fileset cache. (#1622)
@@ -32,4 +33,4 @@
 * Fix bibtex documentation popup in autocompletion. (#1695)
 * Other small fixes and improvements. (#1651, #1652)
 
-Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
+Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) and [Stefan Lobbenmeier](https://github.com/StefanLobbenmeier) for contributing to this release.
