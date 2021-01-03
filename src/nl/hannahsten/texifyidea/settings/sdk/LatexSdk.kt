@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -34,9 +33,11 @@ abstract class LatexSdk(name: String) : SdkType(name) {
     abstract fun getLatexDistributionType(): LatexDistributionType
 
     /**
-     * If the executable (pdflatex, kpsewhich, etc.) is not in PATH, use the home path of the SDK to find it and return the full path to the executable.
+     * Construct a valid path to the executable, given the homepath.
+     * This is different per SDK type, so therefore it is a method here.
+     * Use [LatexSdkUtil.getExecutableName] if you don't know yet which SDK type should be used.
      */
-    abstract fun getExecutableName(executable: String, project: Project): String
+    internal abstract fun getExecutableName(executable: String, homePath: String): String
 
     /**
      * Because we cannot add a Sources Path to the SDK programmatically, even though we know (given the SDK type)

@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -15,18 +14,9 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
 
     override fun getLatexDistributionType() = LatexDistributionType.MIKTEX
 
-    override fun getExecutableName(executable: String, project: Project): String {
-        return getExecutableName(executable, LatexSdkUtil.getLatexProjectSdk(project)?.homePath)
-    }
-
-    private fun getExecutableName(executable: String, homePath: String?): String {
-        return if (LatexSdkUtil.isPdflatexInPath || homePath == null) {
-            executable
-        }
-        else {
-            val path = LatexSdkUtil.getPdflatexParentPath(Paths.get(homePath, "miktex").toString()) ?: return executable
-            return Paths.get(path, executable).toString()
-        }
+    override fun getExecutableName(executable: String, homePath: String): String {
+        val path = LatexSdkUtil.getPdflatexParentPath(Paths.get(homePath, "miktex").toString()) ?: return executable
+        return Paths.get(path, executable).toString()
     }
 
     override fun suggestHomePath(): String {
@@ -64,7 +54,7 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
     override fun getVersionString(sdk: Sdk): String? {
         version?.let { return version }
 
-        val executable = getExecutableName("pdflatex", sdk.homePath)
+        val executable = sdk.homePath?.let { getExecutableName("pdflatex", it) } ?: "pdflatex"
         val output = "$executable --version".runCommand() ?: ""
         version = "\\(MiKTeX (\\d+.\\d+)\\)".toRegex().find(output)?.value
 

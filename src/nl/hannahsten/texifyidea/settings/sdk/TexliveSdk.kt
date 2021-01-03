@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -90,19 +89,9 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
     }
 
-    /**
-     * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
-     * and if needed (if not in path) prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
-     *
-     * @param executable Name of a program, e.g. pdflatex
-     */
-    override fun getExecutableName(executable: String, project: Project): String {
-        if (LatexSdkUtil.isPdflatexInPath) {
-            return executable
-        }
+    override fun getExecutableName(executable: String, homePath: String): String {
         // Get base path of LaTeX distribution
-        val home = LatexSdkUtil.getLatexProjectSdk(project)?.homePath ?: return executable
-        val basePath = LatexSdkUtil.getPdflatexParentPath(home)
+        val basePath = LatexSdkUtil.getPdflatexParentPath(homePath)
         return "$basePath/$executable"
     }
 }

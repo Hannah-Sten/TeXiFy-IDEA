@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -60,13 +59,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return "$texmfDistPath/doc"
     }
 
-    /**
-     * Get the executable name of a certain LaTeX executable (e.g. pdflatex/lualatex)
-     * and prefix it with the full path to the executable using the homePath of the specified LaTeX SDK.
-     *
-     * @param executable Name of a program, e.g. pdflatex
-     */
-    override fun getExecutableName(executable: String, project: Project): String {
+    override fun getExecutableName(executable: String, homePath: String): String {
         // Even though pdflatex is in path, it may be not the pdflatex we want, so we prefix the path to be sure.
         // Get base path of LaTeX distribution
         val basePath = "/usr/bin"

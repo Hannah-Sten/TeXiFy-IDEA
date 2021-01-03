@@ -6,7 +6,6 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
@@ -123,10 +122,19 @@ object LatexSdkUtil {
      * Get executable name of pdflatex, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
      */
     fun getExecutableName(executableName: String, project: Project): String {
+        // Give preference to the project SDK if a valid LaTeX SDK is selected
+        getLatexProjectSdk(project)?.let { sdk ->
+            if (sdk.homePath != null) {
+                (sdk.sdkType as? LatexSdk)?.getExecutableName(executableName, sdk.homePath!!)?.let { return it }
+            }
+        }
+        // If not, if it's in path then that also works
         if (isPdflatexInPath) {
             return executableName
         }
-        return (getPreferredSdkType()?.sdkType as? LatexSdk)?.getExecutableName(executableName, project) ?: executableName
+        // If it's also not it path, just try a few sdk types with the default home path
+        val preferredSdk = getPreferredSdkType()?.sdkType as? LatexSdk ?: return executableName
+        return preferredSdk.suggestHomePath()?.let { preferredSdk.getExecutableName(executableName, it) } ?: executableName
     }
 
     /**
