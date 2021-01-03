@@ -152,6 +152,24 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals(map["\\AltMacroFont"], map["\\DontCheckModules"])
     }
 
+    fun testFakeDescribeMacro() {
+        val text = """
+            % \DescribeMacro{\begin\{seriate\}} \DescribeMacro{\end\{seriate\}}
+            %   |Blah blah blah|\par
+            %   |\begin{seriate}|\par
+            %   |  \item first item,|\par
+            %   |  \item second item.|\par
+            %   |\end{seriate}|\par
+            %   |Blah blah blah|\par\vspace{0.6em}
+            % \noindent results in:\par\vspace{0.6em}
+            %   |Blah blah blah (a) first item, (b) second item.  Blah blah blah|
+            %
+        """.trimIndent()
+        val file = myFixture.configureByText("apa6.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(0, map.size)
+    }
+
     class MockContent(val file: PsiFile) : FileContent {
         override fun <T : Any?> getUserData(key: Key<T>): T? { return null }
 

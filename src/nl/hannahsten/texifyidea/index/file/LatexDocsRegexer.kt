@@ -56,13 +56,13 @@ object LatexDocsRegexer {
 
     /**
      * Extract documentation keys and values from [inputData] based on [regex] and put them in [map].
-     * Assumes that the regex contains groups with the name "key" and "value".
+     * Assumes that the regex contains groups with the name "key" or "key1" and "value".
      */
     fun getDocsByRegex(inputData: FileContent, map: MutableMap<String, String>, regex: Regex) {
         val macrosBeingOverloaded = mutableSetOf<String>()
 
         regex.findAll(inputData.contentAsText).forEach loop@{ macroWithDocsResult ->
-            val key = macroWithDocsResult.groups["key"]?.value ?: return@loop
+            val key = macroWithDocsResult.groups["key"]?.value ?: macroWithDocsResult.groups["key1"]?.value ?: return@loop
             // The string that hopefully contains some documentation about the macro
             val containsDocs = macroWithDocsResult.groups["value"]?.value ?: return@loop
 

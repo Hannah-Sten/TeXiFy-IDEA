@@ -124,6 +124,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
+    // indices plugin doesn't work in tests
     setPlugins("tanvd.grazi", "java") // , "com.jetbrains.hackathon.indices.viewer:1.12")
 
     // Use the since build number from plugin.xml

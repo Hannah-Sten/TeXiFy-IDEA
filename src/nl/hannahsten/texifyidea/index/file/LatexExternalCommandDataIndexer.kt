@@ -22,7 +22,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
          * Documentation given by \DescribeMacro.
          */
         val describeMacroRegex =
-            """(?=\\DescribeMacro\{?(?<key>\\[a-zA-Z_:]+\*?)}?\s*(?<value>[\s\S]{0,500}))""".toRegex()
+            """(?=\\DescribeMacro(?:(?<key>\\[a-zA-Z_:]+\*?)|\{(?<key1>\\[a-zA-Z_:]+\*?)})\s*(?<value>[\s\S]{0,500}))""".toRegex()
     }
 
     override fun map(inputData: FileContent): MutableMap<String, String> {

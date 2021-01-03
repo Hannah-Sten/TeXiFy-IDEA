@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
@@ -23,6 +24,7 @@ import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
+import nl.hannahsten.texifyidea.util.LatexPackage
 import nl.hannahsten.texifyidea.util.files.*
 import java.util.*
 import java.util.stream.Collectors
@@ -40,9 +42,9 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     ) {
         when (mode) {
             LatexMode.NORMAL -> {
-                addNormalCommands(result)
-                addCustomCommands(parameters, result)
                 addIndexedCommands(result, parameters)
+                addNormalCommands(result, parameters.editor.project ?: return)
+                addCustomCommands(parameters, result)
             }
             LatexMode.MATH -> {
                 addMathCommands(result)
@@ -56,7 +58,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
     }
 
-    private fun createCommandLookupElement(cmd: LatexCommand): List<LookupElementBuilder> {
+    private fun createCommandLookupElements(cmd: LatexCommand): List<LookupElementBuilder> {
         return cmd.arguments.toSet().optionalPowerSet().mapIndexed { index, args ->
             LookupElementBuilder.create(cmd, cmd.command + List(index) { " " }.joinToString(""))
                 .withPresentableText(cmd.commandWithSlash)
@@ -71,18 +73,31 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     private fun addIndexedCommands(result: CompletionResultSet, parameters: CompletionParameters) {
         result.addAllElements(
             FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, parameters.editor.project ?: return)
-                .mapNotNull { cmdWithSlash ->
+                .flatMap { cmdWithSlash ->
                     val cmdWithoutSlash = cmdWithSlash.substring(1)
-                    val cmd = LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).firstOrNull() ?: return@mapNotNull null // todo add all commands instead of just the first?
-                    createCommandLookupElement(cmd)
-                }.flatten()
+                    LatexCommand.lookupInIndex(cmdWithoutSlash, parameters.editor.project ?: return).flatMap { cmd ->
+                        createCommandLookupElements(cmd)
+                    }
+                }
         )
     }
 
-    private fun addNormalCommands(result: CompletionResultSet) {
+    private fun addNormalCommands(result: CompletionResultSet, project: Project) {
+        val indexedKeys = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.id, project)
+
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
-                createCommandLookupElement(cmd)
+                /** True if there is a package for which we already have the [cmd] command indexed.  */
+                fun alreadyIndexed() = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project)).map { LatexPackage.create(it.name) }.contains(cmd.dependency)
+
+                // Avoid adding duplicates
+                // Prefer the indexed command (if it really is the same one), as that one has documentation
+                if (cmd.commandWithSlash in indexedKeys && alreadyIndexed()) {
+                    emptyList()
+                }
+                else {
+                    createCommandLookupElements(cmd)
+                }
             }
         )
         result.addLookupAdvertisement(getKindWords())

@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
+import nl.hannahsten.texifyidea.util.files.removeFileExtension
+
 /**
  * @author Hannah Schellekens
  */
@@ -48,6 +50,14 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val ULEM = LatexPackage("ulem")
         @JvmField val XCOLOR = LatexPackage("xcolor")
         @JvmField val XPARSE = LatexPackage("xparse")
+
+        /**
+         * Create package based on the source (dtx) file name.
+         */
+        fun create(sourceFileName: String): LatexPackage {
+            val dependencyText = sourceFileName.removeFileExtension()
+            return if (dependencyText.isBlank() || dependencyText.startsWith("lt")) LatexPackage.DEFAULT else LatexPackage(dependencyText)
+        }
     }
 
     /**
