@@ -112,7 +112,6 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         )
     }
 
-
     private fun addCustomCommands(
         parameters: CompletionParameters, result: CompletionResultSet,
         mode: LatexMode? = null

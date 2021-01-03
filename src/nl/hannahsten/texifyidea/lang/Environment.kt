@@ -47,7 +47,6 @@ interface Environment : Dependend, Described {
             return envs
         }
 
-
         fun extractArgumentsFromDocs(docs: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs
             val argCommands = arrayOf(LatexRegularCommand.OARG, LatexRegularCommand.MARG, LatexRegularCommand.PARG).map { it.commandWithSlash }.toTypedArray()

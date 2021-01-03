@@ -111,7 +111,6 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals(map["\\endenvironment"], map["\\endmacro"])
     }
 
-
     fun testDescribeMacro() {
         val text = """
             % \subsection{Describing the usage of new macros}
@@ -136,7 +135,6 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals("When you describe a new macro you may use DescribeMacro to indicate that at this point the usage of a specific macro is explained. It takes one argument which will be printed in the margin and also produces a special index entry.  For example, I used <redacted> to make clear that this is the point where the usage of DescribeMacro is explained.", map["\\DescribeMacro"])
         assertEquals("An analogous macro \\DescribeEnv should be used to indicate that a \\LaTeX{} environment is explained. It will produce a somewhat different index entry. Below I used \\DescribeEnv{verbatim}.", map["\\DescribeEnv"])
     }
-
 
     fun testDescribeMacros() {
         val text = """
@@ -172,6 +170,5 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         override fun getContentAsText(): CharSequence = file.text
 
         override fun getPsiFile() = file
-
     }
 }

@@ -2,9 +2,6 @@ package nl.hannahsten.texifyidea.index.file
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.file.LatexSourceFileType
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.allChildFiles
 import java.io.File
 import java.io.FileNotFoundException
 

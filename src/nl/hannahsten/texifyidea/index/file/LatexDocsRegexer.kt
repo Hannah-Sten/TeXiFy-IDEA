@@ -54,7 +54,6 @@ object LatexDocsRegexer {
         return formatted
     }
 
-
     /**
      * Extract documentation keys and values from [inputData] based on [regex] and put them in [map].
      * Assumes that the regex contains groups with the name "key" and "value".

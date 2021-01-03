@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.file.LatexSourceFileType
 
 class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
 
-
     fun testDescribeEnv() {
         val text = """
             % different index entry. Below I used |\DescribeEnv{verbatim}|.
@@ -73,6 +72,5 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
         override fun getContentAsText(): CharSequence = file.text
 
         override fun getPsiFile() = file
-
     }
 }

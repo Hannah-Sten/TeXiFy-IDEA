@@ -32,5 +32,4 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
         LatexDocsRegexer.getDocsByRegex(inputData, map, describeMacroRegex)
         return map
     }
-
 }

@@ -24,5 +24,4 @@ class LatexExternalEnvironmentDataIndexer : DataIndexer<String, String, FileCont
         LatexDocsRegexer.getDocsByRegex(inputData, map, describeMacroRegex)
         return map
     }
-
 }
