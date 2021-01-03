@@ -169,8 +169,10 @@ object LatexSdkUtil {
             val default = if (sdk.homePath != null) setOf((sdk.sdkType as? LatexSdk)?.getDefaultSourcesPath(sdk.homePath!!)).filterNotNull() else emptySet()
             return userProvided + default
         }
-        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk())) {
-            val roots = sdkType.suggestHomePaths().mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) }.toSet()
+        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexSdk())) {
+            val roots = sdkType.suggestHomePaths().mapNotNull { homePath ->
+                sdkType.getDefaultSourcesPath(homePath)
+            }.toSet()
             if (roots.isNotEmpty()) return roots
         }
         return emptySet()

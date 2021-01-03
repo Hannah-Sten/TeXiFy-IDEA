@@ -81,6 +81,13 @@ dependencies {
     implementation("com.github.hypfvieh:dbus-java:3.2.3")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
 
+    // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
+    implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
+//    implementation("org.codehaus.plexus:plexus-utils:3.3.0")
+//    implementation("org.codehaus.plexus:plexus-logging:1.0.4")
+    implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.2.3")
+
     // Test dependencies
 
     // Also implementation junit 4, just in case

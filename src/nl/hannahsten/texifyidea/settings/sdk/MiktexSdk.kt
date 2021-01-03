@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Paths
@@ -42,6 +44,11 @@ class MiktexSdk : LatexSdk("MiKTeX SDK") {
             results.add(suggestHomePath())
         }
         return results
+    }
+
+    override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
+        // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
+        return LocalFileSystem.getInstance().findFileByPath(Paths.get(homePath, "source").toString())
     }
 
     override fun isValidSdkHome(path: String?): Boolean {

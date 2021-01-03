@@ -15,10 +15,10 @@ class LatexQuickRunPackageDataIndexer : BasePlatformTestCase() {
     fun testRun() {
         try {
             val filesToIndex = mutableSetOf<VirtualFile>()
-            LatexSdkUtil.getSdkSourceRoots(project).forEach { root ->
-                filesToIndex.addAll(
-                    root.allChildFiles().filter { it.extension == LatexSourceFileType.defaultExtension })
-            }
+//            LatexSdkUtil.getSdkSourceRoots(project).forEach { root ->
+//                filesToIndex.addAll(
+//                    root.allChildFiles().filter { it.extension == LatexSourceFileType.defaultExtension })
+//            }
             val text = File("/home/thomas/texlive/2020/texmf-dist/source/latex/base/doc.dtx").readText()
             val file = myFixture.configureByText("doc.dtx", text)
             val map = LatexExternalCommandDataIndexer().map(LatexExternalCommandDataIndexerTest.MockContent(file))
