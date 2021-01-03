@@ -24,12 +24,13 @@ object LatexDocsRegexer {
         Pair<Regex, (MatchResult) -> String>("""(?<pre>[^|]|^)\\(?:textbf|emph|textsf|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex(), { result -> result.groups["pre"]?.value + result.groups["argument"]?.value }),
         // Short verbatim, provided by ltxdoc
         Pair("""\|""".toRegex(), { "" }),
+        Pair("""\n""".toRegex(), { "<br>" }),
     )
 
     /**
-     * Commands that indicate that the documentation of a macro has stopped.
+     * Commands that indicate that the documentation of a macro has stopped (besides a newline).
      */
-    private val stopsDocs = setOf("\\begin{", "\\DescribeMacro")
+    private val stopsDocs = setOf("\\begin{macrocode}", "\\DescribeMacro")
 
     /**
      * Skip lines that start with one of these strings.
@@ -42,7 +43,7 @@ object LatexDocsRegexer {
      * - Docs do not necessarily start on their own line
      * - We do use empty lines to guess where the docs end
      */
-    private val docsAfterMacroRegex = """(?:%?\h*(?<line>.+))""".toRegex()
+    private val docsAfterMacroRegex = """(?:%?\h*(?<line>.+\n))""".toRegex()
 
     /**
      * Should format to valid HTML as used in the docs popup.
