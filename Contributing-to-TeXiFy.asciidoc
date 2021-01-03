@@ -48,6 +48,7 @@ We assume that git, IntelliJ, java and LaTeX are installed. If not, try the norm
 * Select 'Use auto-import'.
 * Thank Gradle that you're done now!
 * Check that in menu:Settings[Build, Execution, Deployment > Compiler > Kotlin Compiler] the Target JVM version is set correctly, currently it should be 1.8. If you encounter an error like `Kotlin: Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.` when building, you need to look here.
+* Check that in menu:Settings[Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM] it is set to at least Java 11 (as the IntelliJ SDK requires Java 11 since september 2020).
 * Test it worked by executing the 'build' task in menu:Tasks[build > build].
 * You can ignore deprecation warnings in the build output.
 * If something doesn't work, try looking at the https://github.com/Hannah-Sten/TeXiFy-IDEA/wiki/Troubleshooting[FAQ] first.
@@ -87,6 +88,10 @@ This means that probably using `name` is recommended, as it would use the index,
 This can lead to strange behaviour (see e.g. https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1097[#1097]), which can be fixed by updating the index correctly.
 
 == Troubleshooting
+
+=== bad class file: class file has wrong version 55.0, should be 52.0
+
+The IntelliJ SDK https://blog.jetbrains.com/platform/2020/09/intellij-project-migrates-to-java-11/[requires Java 11], see https://stackoverflow.com/a/59783851/4126843.
 
 === Execution failed for task ':runIde'.	Process 'command java.exe' finished with non-zero exit value 1
 
