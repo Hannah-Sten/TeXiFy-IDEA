@@ -2,20 +2,13 @@
 package nl.hannahsten.texifyidea.psi;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface LatexKeyvalValue extends PsiNameIdentifierOwner {
+public interface LatexKeyvalValue extends PsiElement {
 
-  @NotNull
-  List<LatexKeyvalContent> getKeyvalContentList();
-
-  PsiElement getNameIdentifier();
-
-  String getName();
-
-  PsiElement setName(String name);
+    @NotNull
+    List<LatexKeyvalContent> getKeyvalContentList();
 
 }

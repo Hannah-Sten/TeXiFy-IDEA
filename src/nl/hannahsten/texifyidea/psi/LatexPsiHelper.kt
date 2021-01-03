@@ -74,6 +74,13 @@ class LatexPsiHelper(private val project: Project) {
         return createFromText(commandText).firstChildOfType(LatexRequiredParam::class)!!
     }
 
+    /**
+     * Set the value of the optional parameter with the givevn key name. If the the parameter already exists,
+     * its value is changed. If no key with the given name exists yet, a new one is created with the given value.
+     *
+     * @param name The name of the parameter to change
+     * @param value The new parameter value. If the value is null, the parameter will have a key only.
+     */
     fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): PsiElement {
         val existingParameters = command.optionalParameterMap
         if (existingParameters.isEmpty()) {

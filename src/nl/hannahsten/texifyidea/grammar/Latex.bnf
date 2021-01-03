@@ -26,9 +26,6 @@
     // Make text have an identifier, to be able to Ctrl+B for \label parameters
     implements("parameter_text")="com.intellij.psi.PsiNameIdentifierOwner"
 
-    // Make text in parameter group have an identifier, to be able to Ctrl+B for \label parameters
-    implements("keyval_value")="com.intellij.psi.PsiNameIdentifierOwner"
-
     implements("parameter")="com.intellij.psi.PsiLanguageInjectionHost"
     // See the lexer
     tokens=[
@@ -119,13 +116,9 @@ keyval_key ::= keyval_content+ {
     methods=[toString]
 }
 keyval_value ::= keyval_content+ {
-    methods=[toString getNameIdentifier getName setName]
+    methods=[toString]
 }
-keyval_content ::= commands | keyval_text | parameter_group
-
-// We need to include the special characters here because changing NORMAL_TEXT_CHAR would alter the lexer's behaviour
-// in several other places.
-keyval_text ::= (NORMAL_TEXT_WORD | STAR | AMPERSAND |PIPE | EXCLAMATION_MARK | BACKSLASH | QUOTATION_MARK | OPEN_ANGLE_BRACKET | CLOSE_ANGLE_BRACKET)+
+keyval_content ::= parameter_text | parameter_group
 
 
 // The lowest level of a parameter must have the getReferences etc. implemented
@@ -143,7 +136,7 @@ parameter_group ::= OPEN_BRACE parameter_group_text CLOSE_BRACE { pin=1 }
 
 // Be sure to capture the whitespace before and after the actual content as groups are meant to capture
 // *everything* inside them.
-parameter_group_text ::= content* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
+parameter_group_text ::= (parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET)* { hooks = [wsBinders="GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]  }
 
 comment ::= COMMENT_TOKEN
 

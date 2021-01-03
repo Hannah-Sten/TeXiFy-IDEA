@@ -9,6 +9,6 @@ import java.util.List;
 public interface LatexParameterGroupText extends PsiElement {
 
   @NotNull
-  List<LatexContent> getContentList();
+  List<LatexParameterText> getParameterTextList();
 
 }

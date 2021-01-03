@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import nl.hannahsten.texifyidea.psi.LatexKeyvalContent;
@@ -39,21 +38,6 @@ public class LatexKeyvalValueImpl extends ASTWrapperPsiElement implements LatexK
   @Override
   public String toString() {
     return LatexPsiImplUtil.toString(this);
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return LatexPsiImplUtil.getNameIdentifier(this);
-  }
-
-  @Override
-  public String getName() {
-    return LatexPsiImplUtil.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(String name) {
-    return LatexPsiImplUtil.setName(this, name);
   }
 
 }

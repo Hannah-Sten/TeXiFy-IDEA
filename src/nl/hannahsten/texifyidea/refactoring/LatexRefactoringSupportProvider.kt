@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.refactoring
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.psi.LatexKeyvalValue
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 
 /**
@@ -13,7 +12,6 @@ class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
         // Label parameters are LatexParameterText
         return when (element) {
             is LatexParameterText -> true
-            is LatexKeyvalValue -> true
             else -> false
         }
     }

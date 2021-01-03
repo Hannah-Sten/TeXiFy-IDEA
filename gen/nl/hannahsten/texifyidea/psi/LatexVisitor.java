@@ -62,12 +62,8 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitKeyvalText(@NotNull LatexKeyvalText o) {
-    visitPsiElement(o);
-  }
-
   public void visitKeyvalValue(@NotNull LatexKeyvalValue o) {
-    visitPsiNameIdentifierOwner(o);
+    visitPsiElement(o);
   }
 
   public void visitMagicComment(@NotNull LatexMagicComment o) {

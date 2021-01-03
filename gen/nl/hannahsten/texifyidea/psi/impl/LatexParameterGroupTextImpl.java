@@ -5,8 +5,8 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.psi.LatexContent;
 import nl.hannahsten.texifyidea.psi.LatexParameterGroupText;
+import nl.hannahsten.texifyidea.psi.LatexParameterText;
 import nl.hannahsten.texifyidea.psi.LatexVisitor;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,10 +28,10 @@ public class LatexParameterGroupTextImpl extends ASTWrapperPsiElement implements
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public List<LatexContent> getContentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexContent.class);
-  }
+    @Override
+    @NotNull
+    public List<LatexParameterText> getParameterTextList() {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexParameterText.class);
+    }
 
 }

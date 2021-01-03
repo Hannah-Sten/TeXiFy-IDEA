@@ -23,7 +23,7 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \begin{lstlisting}[label={renamed}]
+            \begin{lstlisting}[label=renamed]
             \end{lstlisting}
             \ref{renamed<caret>}
             """.trimMargin()
@@ -42,7 +42,7 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \begin{lstlisting}[label={renamed},escapechar=|!\"&]
+            \begin{lstlisting}[label=renamed,escapechar=|!\"&]
             \end{lstlisting}
             \ref{renamed<caret>}
             """.trimMargin()
@@ -61,7 +61,7 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.renameElementAtCaret("renamed")
         myFixture.checkResult(
             """
-            \lstinputlisting[label={renamed}]{inputfile}
+            \lstinputlisting[label=renamed]{inputfile}
             \ref{renamed<caret>}
             """.trimMargin()
         )
@@ -73,24 +73,6 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
             """
             \lstinputlisting[label={test}]{inputfile}
             \ref{test<caret>}
-            """
-                .trimMargin()
-        )
-        myFixture.renameElementAtCaret("renamed")
-        myFixture.checkResult(
-            """
-            \lstinputlisting[label={renamed}]{inputfile}
-            \ref{renamed<caret>}
-            """.trimMargin()
-        )
-    }
-
-    fun `test rename of label in multiple groups`() {
-        myFixture.configureByText(
-            LatexFileType,
-            """
-            \lstinputlisting[label={test}{test2}]{inputfile}
-            \ref{testtest2<caret>}
             """
                 .trimMargin()
         )

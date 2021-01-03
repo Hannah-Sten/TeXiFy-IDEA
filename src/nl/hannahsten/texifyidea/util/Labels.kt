@@ -193,12 +193,19 @@ fun PsiElement.extractLabelName(): String {
  * Extracts the label element (so the element that should be resolved to) from the PsiElement given that the PsiElement represents a label.
  */
 fun PsiElement.extractLabelElement(): PsiElement? {
+    fun getLabelParameterText(command: LatexCommandWithParams): LatexParameterText {
+        val optionalParameters = command.optionalParameterMap
+        val labelEntry = optionalParameters.filter { pair -> pair.key.toString() == "label" }.first()
+        val contentList = labelEntry.value.keyvalContentList
+        return contentList.firstOrNull { c -> c.parameterText != null }?.parameterText
+            ?: contentList.first { c -> c.parameterGroup != null }.parameterGroup!!.parameterGroupText!!.parameterTextList.first()
+    }
+
     return when (this) {
         is BibtexEntry -> firstChildOfType(BibtexId::class)
         is LatexCommands -> {
             if (Magic.Command.labelAsParameter.contains(name)) {
-                val labelEntry = optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
-                return labelEntry.value
+                return getLabelParameterText(this)
             }
             else {
                 // For now just take the first label name (may be multiple for user defined commands)
@@ -212,9 +219,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
         }
         is LatexEnvironment -> {
             if (Magic.Environment.labelAsParameter.contains(environmentName)) {
-                val labelEntry =
-                    beginCommand.optionalParameterMap.filter { pair -> pair.key.toString() == "label" }.first()
-                return labelEntry.value
+                getLabelParameterText(beginCommand)
             }
             else {
                 null
