@@ -136,18 +136,6 @@ public class LatexPsiImplUtil {
         return LatexParameterTextUtilKt.getName(element);
     }
 
-    public static PsiElement getNameIdentifier(@NotNull LatexKeyvalValue element) {
-        return LatexParameterGroupTextUtilKt.getNameIdentifier(element);
-    }
-
-    public static PsiElement setName(@NotNull LatexKeyvalValue element, String name) {
-        return LatexParameterGroupTextUtilKt.setName(element, name);
-    }
-
-    public static String getName(@NotNull LatexKeyvalValue element) {
-        return LatexParameterGroupTextUtilKt.getName(element);
-    }
-
     /*
      * LatexParameter
      */
