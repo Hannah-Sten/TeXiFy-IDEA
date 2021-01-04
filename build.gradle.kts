@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 // Include the Gradle plugins which help building everything.
 // Supersedes the use of "buildscript" block and "apply plugin:"
 plugins {
-    id("org.jetbrains.intellij") version "0.6.4"
+    id("org.jetbrains.intellij") version "0.6.5"
     kotlin("jvm") version("1.4.30-M1")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "nl.hannahsten"
-version = "0.7.2"
+version = "0.7.3-alpha.1"
 
 repositories {
     mavenCentral()
