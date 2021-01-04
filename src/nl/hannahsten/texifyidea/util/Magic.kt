@@ -343,7 +343,7 @@ object Magic {
          * Commands that define a label via an optional parameter
          */
         @JvmField
-        val labelAsParameter = hashSetOf("\\lstinputlisting")
+        val labelAsParameter = hashSetOf(LSTINPUTLISTING.commandDisplay)
 
         /**
          * All commands that mark some kind of section.
