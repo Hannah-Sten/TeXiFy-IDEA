@@ -152,6 +152,24 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals(map["\\AltMacroFont"], map["\\DontCheckModules"])
     }
 
+    fun testDeclareCommand() {
+        val text = """
+            happy, if
+            %    \cs{autoref} starts a paragraph.
+            %    \begin{macrocode}
+            \DeclareRobustCommand*{\autoref}{%
+              \leavevmode
+              \@ifstar{\HyRef@autoref\@gobbletwo}{\HyRef@autoref\hyper@@link}%
+            }
+            \def\HyRef@autoref#1#2{%
+              \begingroup
+        """.trimIndent()
+        val file = myFixture.configureByText("hyperref.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(1, map.size)
+        assertEquals("", map["\\autoref"])
+    }
+
     fun testFakeDescribeMacro() {
         val text = """
             % \DescribeMacro{\begin\{seriate\}} \DescribeMacro{\end\{seriate\}}

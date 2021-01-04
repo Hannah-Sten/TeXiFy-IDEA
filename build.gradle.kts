@@ -83,8 +83,6 @@ dependencies {
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
-//    implementation("org.codehaus.plexus:plexus-utils:3.3.0")
-//    implementation("org.codehaus.plexus:plexus-logging:1.0.4")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.0")
     implementation("org.codehaus.plexus:plexus-archiver:4.2.3")
 

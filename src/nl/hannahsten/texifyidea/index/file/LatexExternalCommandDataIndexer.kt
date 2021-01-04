@@ -23,6 +23,8 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
          */
         val describeMacroRegex =
             """(?=\\DescribeMacro(?:(?<key>\\[a-zA-Z_:]+\*?)|\{(?<key1>\\[a-zA-Z_:]+\*?)})\s*(?<value>[\s\S]{0,500}))""".toRegex()
+
+        val directCommandDefinitionRegex = """\\(DeclareRobustCommand|newcommand)\*?\{(?<key>\\[a-zA-Z_:]+\*?)}(?<value>)""".toRegex()
     }
 
     override fun map(inputData: FileContent): MutableMap<String, String> {
@@ -30,6 +32,7 @@ class LatexExternalCommandDataIndexer : DataIndexer<String, String, FileContent>
 
         LatexDocsRegexer.getDocsByRegex(inputData, map, macroWithDocsRegex)
         LatexDocsRegexer.getDocsByRegex(inputData, map, describeMacroRegex)
+        LatexDocsRegexer.getDocsByRegex(inputData, map, directCommandDefinitionRegex)
         return map
     }
 }

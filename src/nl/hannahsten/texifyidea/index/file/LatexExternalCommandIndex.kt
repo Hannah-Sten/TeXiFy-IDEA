@@ -11,6 +11,8 @@ import nl.hannahsten.texifyidea.file.LatexSourceFileType
  * The actual indexing is done by [LatexExternalCommandDataIndexer].
  * The paths that have to be indexed are given by [LatexIndexableSetContributor].
  *
+ * When developing, the index is present in build/idea-sandbox/system-test/index
+ *
  * Key: LaTeX command (with backslash).
  * Value: Documentation string.
  *

@@ -163,7 +163,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         extend(
             CompletionType.BASIC,
             PlatformPatterns.psiElement().inside(LatexRequiredParam::class.java)
-                .with(object : PatternCondition<PsiElement>("xcolor color completion patter") {
+                .with(object : PatternCondition<PsiElement>("xcolor color completion pattern") {
                     override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
                         val command = LatexPsiUtil.getParentOfType(psiElement, LatexCommands::class.java)
                             ?: return false

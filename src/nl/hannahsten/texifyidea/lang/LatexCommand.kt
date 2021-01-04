@@ -44,7 +44,8 @@ interface LatexCommand : Described, Dependend {
                 val dependency = LatexPackage.create(file.name)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
-                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()
+//                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList() todo
+                val defaultcmds = emptyList<LatexCommand>()
                 val cmd = if (defaultcmds.isNotEmpty()) {
                     val defaultCmd = defaultcmds.first()
                     object : LatexCommand {
@@ -91,6 +92,9 @@ interface LatexCommand : Described, Dependend {
             return arguments.toTypedArray()
         }
 
+        /**
+         * todo after arguments are extracted, remove from docs?
+         */
         fun extractArgumentsFromDocs(docs: String, commandWithSlash: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs
             val argCommands = arrayOf(LatexRegularCommand.OARG, LatexRegularCommand.MARG, LatexRegularCommand.PARG).map { it.commandWithSlash }.toTypedArray()

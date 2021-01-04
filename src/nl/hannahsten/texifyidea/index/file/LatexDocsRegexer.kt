@@ -13,6 +13,8 @@ object LatexDocsRegexer {
 
     /**
      * Regexes and replacements which clean up the documentation.
+     *
+     * Arguments \[mop\]arg should be left in, because they are needed when adding to the autocomplete
      */
     private val formattingReplacers = listOf(
         // Commands to remove entirely,, making sure to capture in the argument nested braces
@@ -65,7 +67,7 @@ object LatexDocsRegexer {
         regex.findAll(inputData.contentAsText).forEach loop@{ macroWithDocsResult ->
             val key = macroWithDocsResult.groups["key"]?.value ?: macroWithDocsResult.groups["key1"]?.value ?: return@loop
             // The string that hopefully contains some documentation about the macro
-            val containsDocs = macroWithDocsResult.groups["value"]?.value ?: return@loop
+            val containsDocs = macroWithDocsResult.groups["value"]?.value ?: ""
 
             // If we are overloading macros, just save this one to fill with documentation later.
             if (containsDocs.trim(' ', '%').startsWithAny("\\begin{macro}", "\\DescribeMacro")) {
