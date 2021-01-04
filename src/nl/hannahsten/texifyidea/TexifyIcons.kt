@@ -24,10 +24,24 @@ object TexifyIcons {
     )
 
     /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val LATEX_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/latex-file_smaller.svg", TexifyIcons::class.java
+    )
+
+    /**
      * Copyright (c) 2019 Hannah Schellekens
      */
     val TIKZ_FILE = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/tikz-file.svg", TexifyIcons::class.java
+    )
+
+    /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val TIKZ_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/tikz-file_smaller.svg", TexifyIcons::class.java
     )
 
     /**
@@ -38,10 +52,24 @@ object TexifyIcons {
     )
 
     /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val PDF_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/pdf-file_smaller.svg", TexifyIcons::class.java
+    )
+
+    /**
      * Copyright (c) 2017 Hannah Schellekens
      */
     val DVI_FILE = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/dvi-file.svg", TexifyIcons::class.java
+    )
+
+    /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val DVI_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/dvi-file_smaller.svg", TexifyIcons::class.java
     )
 
     /**
@@ -52,10 +80,24 @@ object TexifyIcons {
     )
 
     /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val BIBLIOGRAPHY_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/bibliography-file_smaller.svg", TexifyIcons::class.java
+    )
+
+    /**
      * Copyright (c) 2017 Hannah Schellekens
      */
     val CLASS_FILE = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/class-file.svg", TexifyIcons::class.java
+    )
+
+    /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val CLASS_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/class-file_smaller.svg", TexifyIcons::class.java
     )
 
     /**
@@ -66,6 +108,13 @@ object TexifyIcons {
     )
 
     /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val DOCUMENTED_LATEX_SOURCE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/doc-latex-file_smaller.svg", TexifyIcons::class.java
+    )
+
+    /**
      * Copyright (c) 2017 Hannah Schellekens
      */
     val STYLE_FILE = IconLoader.getIcon(
@@ -73,10 +122,24 @@ object TexifyIcons {
     )
 
     /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val STYLE_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/style-file_smaller.svg", TexifyIcons::class.java
+    )
+
+    /**
      * Copyright (c) 2017 Hannah Schellekens
      */
     val FILE = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/file.svg", TexifyIcons::class.java
+    )
+
+    /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/file_smaller.svg", TexifyIcons::class.java
     )
 
     /**
@@ -91,6 +154,13 @@ object TexifyIcons {
      */
     val SYNCTEX_FILE = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/synctex-file.svg", TexifyIcons::class.java
+    )
+
+    /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val SYNCTEX_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/synctex-file_smaller.svg", TexifyIcons::class.java
     )
 
     /**
@@ -119,6 +189,13 @@ object TexifyIcons {
      */
     val TEXT_FILE = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/text-file.svg", TexifyIcons::class.java
+    )
+
+    /**
+     * Copyright (c) 2021 Hannah Schellekens
+     */
+    val TEXT_FILE_SMALLER = IconLoader.getIcon(
+        "/nl/hannahsten/texifyidea/icons/text-file_smaller.svg", TexifyIcons::class.java
     )
 
     /**
@@ -379,27 +456,30 @@ object TexifyIcons {
      * This method ignores case.
      *
      * @param extension
-     * The extension of the file to get the icon of without a dot.
+     *              The extension of the file to get the icon of without a dot.
+     * @param smaller
+     *              `true` for a small icon, `false` for a regular sized icon.
      * @return The Icon that corresponds to the given extension.
      * @throws IllegalArgumentException
      * When `extension` is null.
      */
-    fun getIconFromExtension(extension: String?): Icon {
+    fun getIconFromExtension(extension: String?, smaller: Boolean = false): Icon {
         return if (extension == null) {
             FILE
         }
         else when (extension.toLowerCase()) {
-            "tex" -> LATEX_FILE
-            "bib" -> BIBLIOGRAPHY_FILE
-            "cls" -> CLASS_FILE
-            "dtx" -> DOCUMENTED_LATEX_SOURCE
-            "sty" -> STYLE_FILE
-            "txt" -> TEXT_FILE
-            "tikz" -> TIKZ_FILE
-            "log" -> TEXT_FILE
-            "pdf" -> PDF_FILE
-            "synctex.gz" -> SYNCTEX_FILE
-            else -> FILE
+            "tex" -> if (smaller) LATEX_FILE_SMALLER else LATEX_FILE
+            "bib" -> if (smaller) BIBLIOGRAPHY_FILE_SMALLER else BIBLIOGRAPHY_FILE
+            "cls" -> if (smaller) CLASS_FILE_SMALLER else CLASS_FILE
+            "dtx" -> if (smaller) DOCUMENTED_LATEX_SOURCE_SMALLER else DOCUMENTED_LATEX_SOURCE
+            "sty" -> if (smaller) STYLE_FILE_SMALLER else STYLE_FILE
+            "txt" -> if (smaller) TEXT_FILE_SMALLER else TEXT_FILE
+            "tikz" ->if (smaller) TIKZ_FILE_SMALLER else TIKZ_FILE
+            "log" -> if (smaller) TEXT_FILE_SMALLER else TEXT_FILE
+            "pdf" -> if (smaller) PDF_FILE_SMALLER else PDF_FILE
+            "synctex.gz" -> if (smaller) SYNCTEX_FILE_SMALLER else SYNCTEX_FILE
+            "dvi" -> if (smaller) DVI_FILE_SMALLER else DVI_FILE
+            else -> if (smaller) FILE_SMALLER else FILE
         }
     }
 }

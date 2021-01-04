@@ -22,8 +22,8 @@ import javax.swing.Icon
 class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(
-        element: PsiElement,
-        result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
+            element: PsiElement,
+            result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
     ) {
 
         // Gutters should only be used with leaf elements.
@@ -53,24 +53,28 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         if (referencesList.isEmpty()) return
 
         val files = referencesList.mapNotNull { it.resolve() }
-        val extension = if (files.isNotEmpty()) files.first().name.getFileExtension() else ""
-        val icon = TexifyIcons.getIconFromExtension(extension)
+        val gutterFile = files.firstOrNull()?.virtualFile
+        val extension = gutterFile?.let {
+            if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
+        }
+        // Gutter requires a smaller icon per IJ SDK docs.
+        val icon = TexifyIcons.getIconFromExtension(extension, smaller = true)
 
         val builder = NavigationGutterIconBuilder
-            .create(icon)
-            .setTargets(files)
-            .setPopupTitle("Navigate to Referenced File")
-            .setTooltipText("Go to referenced file")
-            .setCellRenderer(GotoFileCellRenderer(0))
+                .create(icon)
+                .setTargets(files)
+                .setPopupTitle("Navigate to Referenced File")
+                .setTooltipText("Go to referenced file")
+                .setCellRenderer(GotoFileCellRenderer(0))
 
         result.add(builder.createLineMarkerInfo(element))
     }
 
-    override fun getName(): String? {
+    override fun getName(): String {
         return "Navigate to referenced file"
     }
 
-    override fun getIcon(): Icon? {
-        return TexifyIcons.LATEX_FILE
+    override fun getIcon(): Icon {
+        return TexifyIcons.LATEX_FILE_SMALLER
     }
 }
