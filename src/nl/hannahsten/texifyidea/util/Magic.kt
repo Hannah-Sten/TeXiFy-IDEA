@@ -578,7 +578,7 @@ object Magic {
             "\\" + INCLUDE.command to listOf(".tex"),
             "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
             "\\" + BIBLIOGRAPHY.command to listOf(".bib"),
-            "\\" + INCLUDEGRAPHICS.command to listOf(".eps", ".pdf", ".png", ".jpeg", ".jbig2", ".jp2"), // https://tex.stackexchange.com/a/1075/98850
+            "\\" + INCLUDEGRAPHICS.command to File.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
         )
 
         /**
@@ -875,6 +875,11 @@ object Magic {
          * Extensions of files required by bib2gls
          */
         val bib2glsDependenciesExtensions = setOf("aux", "glg", "log")
+
+        /**
+         * All extensions for graphic files.
+         */
+        val graphicFileExtensions = setOf("eps", "pdf", "png", "jpeg", "jpg", "jbig2", "jp2")
     }
 
     /**

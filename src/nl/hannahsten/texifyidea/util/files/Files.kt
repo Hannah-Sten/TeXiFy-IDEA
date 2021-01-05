@@ -12,6 +12,8 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.Magic
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.Transferable
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
@@ -129,3 +131,22 @@ fun createFile(fileName: String, contents: String): File {
  */
 fun getExternalFile(path: String): VirtualFile? =
     LocalFileSystem.getInstance().findFileByPath(path)
+
+/**
+ * Extracts the list of files from the Drag and Drop Transferable, only if java file list is a supported flavour.
+ *
+ * @return The file list transfer data, or `null` when file lists are not supported.
+ */
+fun Transferable.extractFiles(): List<File>? {
+    if (isDataFlavorSupported(DataFlavor.javaFileListFlavor).not()) return null
+
+    @Suppress("UNCHECKED_CAST")
+    return getTransferData(DataFlavor.javaFileListFlavor) as? List<File>
+}
+
+/**
+ * Extracts the first file from the Drag and Drop Transferable, only if java file list is a supported flavour.
+ *
+ * @return The first file in the transfer data, or `null` when file lists are not supported.
+ */
+fun Transferable.extractFile() = extractFiles()?.firstOrNull()
