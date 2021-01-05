@@ -13,7 +13,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.scale.JBUIScale.scale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
-import nl.hannahsten.texifyidea.action.tablewizard.TableInformation
+import nl.hannahsten.texifyidea.action.wizard.table.TableInformation
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -36,13 +36,13 @@ import javax.swing.border.EmptyBorder
  * @author Abby Berkers
  */
 class TableCreationDialogWrapper(
-    private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
-    private val tableModel: TableCreationTableModel = TableCreationTableModel(),
-    var tableInformation: TableInformation = TableInformation(tableModel, columnTypes, "", ""),
+        private val columnTypes: MutableList<ColumnType> = emptyList<ColumnType>().toMutableList(),
+        private val tableModel: TableCreationTableModel = TableCreationTableModel(),
+        var tableInformation: TableInformation = TableInformation(tableModel, columnTypes, "", ""),
     // Components that have to be validated when clicking the OK button.
-    private val table: JTable = JBTable(tableModel),
-    private val caption: JBTextField = JBTextField(),
-    private val reference: JBTextField = JBTextField("tab:")
+        private val table: JTable = JBTable(tableModel),
+        private val caption: JBTextField = JBTextField(),
+        private val reference: JBTextField = JBTextField("tab:")
 ) :
     DialogWrapper(true) {
 
