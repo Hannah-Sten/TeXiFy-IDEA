@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
 
 /**
@@ -52,11 +53,13 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val XPARSE = LatexPackage("xparse")
 
         /**
-         * Create package based on the source (dtx) file name.
+         * Create package based on the source (dtx) file.
          */
-        fun create(sourceFileName: String): LatexPackage {
-            val dependencyText = sourceFileName.removeFileExtension()
-            return if (dependencyText.isBlank() || dependencyText.startsWith("lt")) LatexPackage.DEFAULT else LatexPackage(dependencyText)
+        fun create(sourceFileName: VirtualFile): LatexPackage {
+            val isLatexBase = sourceFileName.parent.name == "base"
+            val dependencyText = sourceFileName.name.removeFileExtension()
+            // todo instead of just default, remember actual file to later find matching doc/latex/base/ pdf file (but perhaps don't show it as a package)
+            return if (dependencyText.isBlank() || isLatexBase) DEFAULT else LatexPackage(dependencyText)
         }
     }
 

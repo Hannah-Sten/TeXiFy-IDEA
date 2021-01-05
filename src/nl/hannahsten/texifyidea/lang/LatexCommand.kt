@@ -41,7 +41,7 @@ interface LatexCommand : Described, Dependend {
             val cmdWithSlash = "\\$cmdWithoutSlash"
             // Look up in index
             FileBasedIndex.getInstance().processValues(LatexExternalCommandIndex.id, cmdWithSlash, null, { file, value ->
-                val dependency = LatexPackage.create(file.name)
+                val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
 //                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList() todo

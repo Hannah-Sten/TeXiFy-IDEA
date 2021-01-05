@@ -43,7 +43,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         when (mode) {
             LatexMode.NORMAL -> {
                 addIndexedCommands(result, parameters)
-//                addNormalCommands(result, parameters.editor.project ?: return)
+//                addNormalCommands(result, parameters.editor.project ?: return) todo
                 addCustomCommands(parameters, result)
             }
             LatexMode.MATH -> {
@@ -88,7 +88,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
         result.addAllElements(
             LatexRegularCommand.values().flatMap { cmd ->
                 /** True if there is a package for which we already have the [cmd] command indexed.  */
-                fun alreadyIndexed() = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project)).map { LatexPackage.create(it.name) }.contains(cmd.dependency)
+                fun alreadyIndexed() = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.id, cmd.commandWithSlash, GlobalSearchScope.everythingScope(project)).map { LatexPackage.create(it) }.contains(cmd.dependency)
 
                 // Avoid adding duplicates
                 // Prefer the indexed command (if it really is the same one), as that one has documentation

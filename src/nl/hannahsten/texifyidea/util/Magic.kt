@@ -6,12 +6,9 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.ARRAY
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.LONGTABLE
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULARX
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR_STAR
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
+import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexMathCommand.*
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -27,6 +24,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.PDFCOMMENT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import org.intellij.lang.annotations.Language
 import java.awt.Color
@@ -36,7 +34,14 @@ typealias LatexPackage = LatexPackage
 typealias RegexPattern = Pattern
 
 /**
+ * Saves typing.
+ */
+val LatexCommand.cmd: String
+    get() = this.commandWithSlash
+
+/**
  * Magic constants are awesome!
+ * todo split up
  *
  * @author Hannah Schellekens
  */
@@ -308,8 +313,8 @@ object Magic {
          */
         @JvmField
         val high = hashSetOf(
-            "\\frac", "\\dfrac", "\\sqrt", "\\sum", "\\int", "\\iint", "\\iiint", "\\iiiint",
-            "\\prod", "\\bigcup", "\\bigcap", "\\bigsqcup", "\\bigsqcap"
+            FRAC.cmd, DFRAC.cmd, SQRT.cmd, SUM.cmd, INT.cmd, IINT.cmd, IIINT.cmd, IIIINT.cmd,
+            PROD.cmd, BIGCUP.cmd, BIGCAP.cmd, BIGSQCUP.cmd, BIGSQCAP.cmd
         )
 
         /**
@@ -317,11 +322,11 @@ object Magic {
          */
         @JvmField
         val labeledPrefixes = mapOf(
-            "\\" + CHAPTER.command to "ch",
-            "\\" + SECTION.command to "sec",
-            "\\" + SUBSECTION.command to "subsec",
-            "\\" + SUBSUBSECTION.command to "subsubsec",
-            "\\" + ITEM.command to "itm"
+            CHAPTER.cmd to "ch",
+            SECTION.cmd to "sec",
+            SUBSECTION.cmd to "subsec",
+            SUBSUBSECTION.cmd to "subsubsec",
+            ITEM.cmd to "itm"
         )
 
         /**
@@ -344,37 +349,37 @@ object Magic {
         @JvmField
         val sectionMarkers = listOf(
             PART, CHAPTER, SECTION, SUBSECTION, SUBSUBSECTION, PARAGRAPH, SUBPARAGRAPH
-        ).map { "\\" + it.command }
+        ).map { it.cmd }
 
         /**
          * The colours that each section separator has.
          */
         @JvmField
         val sectionSeparatorColors = mapOf(
-            "\\${PART.command}" to Color(152, 152, 152),
-            "\\${CHAPTER.command}" to Color(172, 172, 172),
-            "\\${SECTION.command}" to Color(182, 182, 182),
-            "\\${SUBSECTION.command}" to Color(202, 202, 202),
-            "\\${SUBSUBSECTION.command}" to Color(212, 212, 212),
-            "\\${PARAGRAPH.command}" to Color(222, 222, 222),
-            "\\${SUBPARAGRAPH.command}" to Color(232, 232, 232)
+            PART.cmd to Color(152, 152, 152),
+            CHAPTER.cmd to Color(172, 172, 172),
+            SECTION.cmd to Color(182, 182, 182),
+            SUBSECTION.cmd to Color(202, 202, 202),
+            SUBSUBSECTION.cmd to Color(212, 212, 212),
+            PARAGRAPH.cmd to Color(222, 222, 222),
+            SUBPARAGRAPH.cmd to Color(232, 232, 232)
         )
 
         /**
          * LaTeX commands that increase a counter that can be labeled.
          */
         @JvmField
-        val increasesCounter = hashSetOf("\\caption", "\\captionof") + labeledPrefixes.keys
+        val increasesCounter = hashSetOf(CAPTION.cmd, CAPTIONOF.cmd) + labeledPrefixes.keys
 
         /**
          * All commands that represent a reference to a label, excluding user defined commands.
          */
         @JvmField
         val labelReferenceWithoutCustomCommands = hashSetOf(
-            "\\ref", "\\eqref", "\\nameref", "\\autoref",
-            "\\fullref", "\\pageref", "\\vref", "\\Autoref", "\\cref", "\\Cref",
-            "\\labelcref", "\\cpageref"
-        )
+            REF, EQREF, NAMEREF, AUTOREF,
+            FULLREF, PAGEREF, VREF, AUTOREF_CAPITAL, CREF, CREF_CAPITAL,
+            LABELCREF, CPAGEREF
+        ).map { it.cmd }.toSet()
 
         /**
          * All commands that represent a reference to a label, including user defined commands.
@@ -412,12 +417,12 @@ object Magic {
         /**
          * Commands from the import package which require an absolute path as first parameter.
          */
-        val absoluteImportCommands = setOf("\\includefrom", "\\inputfrom", "\\import")
+        val absoluteImportCommands = setOf(INCLUDEFROM.cmd, INPUTFROM.cmd, IMPORT.cmd)
 
         /**
          * Commands from the import package which require a relative path as first parameter.
          */
-        val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
+        val relativeImportCommands = setOf(SUBIMPORT.cmd, SUBINPUTFROM.cmd, SUBINCLUDEFROM.cmd)
 
         /**
          * All commands for which we assume that commas in required parameters do not separate parameters.
@@ -430,7 +435,7 @@ object Magic {
          * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
          */
         @JvmField
-        val labelDefinitionsWithoutCustomCommands = setOf("\\label")
+        val labelDefinitionsWithoutCustomCommands = setOf(LABEL.cmd)
 
         /**
          * Get all commands defining labels, including user defined commands.
@@ -587,15 +592,15 @@ object Magic {
          */
         @JvmField
         val includeOnlyExtensions: Map<String, Set<String>> = mapOf(
-            "\\include" to hashSetOf("tex"),
-            "\\includeonly" to hashSetOf("tex"),
-            "\\subfile" to hashSetOf("tex"),
-            "\\subfileinclude" to hashSetOf("tex"),
-            "\\bibliography" to hashSetOf("bib"),
-            "\\addbibresource" to hashSetOf("bib"),
-            "\\RequirePackage" to hashSetOf("sty"),
-            "\\usepackage" to hashSetOf("sty"),
-            "\\documentclass" to hashSetOf("cls"),
+            INCLUDE.cmd to hashSetOf("tex"),
+            INCLUDEONLY.cmd to hashSetOf("tex"),
+            SUBFILE.cmd to hashSetOf("tex"),
+            SUBFILEINCLUDE.cmd to hashSetOf("tex"),
+            BIBLIOGRAPHY.cmd to hashSetOf("bib"),
+            ADDBIBRESOURCE.cmd to hashSetOf("bib"),
+            REQUIREPACKAGE.cmd to hashSetOf("sty"),
+            USEPACKAGE.cmd to hashSetOf("sty"),
+            DOCUMENTCLASS.cmd to hashSetOf("cls"),
             "\\" + EXTERNALDOCUMENT.command to hashSetOf("tex") // Not completely true, as it only includes labels
         )
 
@@ -612,7 +617,7 @@ object Magic {
          * All commands that end if.
          */
         @JvmField
-        val endIfs = hashSetOf("\\fi")
+        val endIfs = hashSetOf(FI.cmd)
 
         /**
          * All commands that at first glance look like \if-esque commands, but that actually aren't.
@@ -625,7 +630,7 @@ object Magic {
          */
         @JvmField
         val stylePrimitives = listOf(
-            "\\rm", "\\sf", "\\tt", "\\it", "\\sl", "\\sc", "\\bf"
+            RM.cmd, SF.cmd, TT.cmd, IT.cmd, SL.cmd, SC.cmd, BF.cmd
         )
 
         /**
@@ -642,9 +647,9 @@ object Magic {
          */
         @JvmField
         val textStyles = setOf(
-            "\\textrm", "\\textsf", "\\texttt", "\\textit",
-            "\\textsl", "\\textsc", "\\textbf", "\\emph",
-            "\\textup", "\\textmd"
+            TEXTRM.cmd, TEXTSF.cmd, TEXTTT.cmd, TEXTIT.cmd,
+            TEXTSL.cmd, TEXTSC.cmd, TEXTBF.cmd, EMPH.cmd,
+            TEXTUP.cmd, TEXTMD.cmd
         )
 
         /**
@@ -822,8 +827,8 @@ object Magic {
         val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
 
         val automaticExtensions = mapOf(
-            "\\include" to LatexFileType.defaultExtension,
-            "\\bibliography" to BibtexFileType.defaultExtension
+            INCLUDE.cmd to LatexFileType.defaultExtension,
+            BIBLIOGRAPHY.cmd to BibtexFileType.defaultExtension
         )
 
         /**
@@ -964,7 +969,7 @@ object Magic {
          * All commands that have a color as an argument.
          */
         @JvmField
-        val takeColorCommands = values()
+        val takeColorCommands = LatexRegularCommand.values()
             .filter {
                 it.arguments.map { it.name }.contains("color")
             }
@@ -974,7 +979,7 @@ object Magic {
          * All commands that define a new color.
          */
         @JvmField
-        val colorDefinitions = values()
+        val colorDefinitions = LatexRegularCommand.values()
             .filter { it.dependency == XCOLOR }
             .filter { it.arguments.map { it.name }.contains("name") }
 

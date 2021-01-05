@@ -39,4 +39,17 @@ class LatexCommandTest : BasePlatformTestCase() {
         assertEquals(RequiredArgument("model-list"), args[1])
         assertEquals(RequiredArgument("set spec"), args[4])
     }
+
+    fun testLatexBaseMetaArguments() {
+        // base/ltsect.dtx
+        // No clue why they didn't use the doc package.
+        val text = """
+            The |\contentsline{|\meta{type}|}{|\meta{entry}|}{|\meta{page}|}| macro produces a \meta{type} entry in a table of contents, etc.
+        """.trimIndent()
+        val args = LatexCommand.extractArgumentsFromDocs(text, "\\contentsline")
+        assertEquals("Number of arguments:", 3, args.size)
+        assertEquals(RequiredArgument("type"), args[0])
+        assertEquals(RequiredArgument("entry"), args[1])
+        assertEquals(RequiredArgument("page"), args[2])
+    }
 }
