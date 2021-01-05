@@ -15,13 +15,13 @@ class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEnt
     }
 
     fun `test quick fix`() {
-        myFixture.configureByFiles( "references.bib", "main.tex")
+        myFixture.configureByFiles( "references-before.bib", "main-quick-fix.tex")
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals("Expected number of quick fixes:", 2, quickFixes.size)
         writeCommand(myFixture.project) {
             quickFixes.firstOrNull()?.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
-        myFixture.checkResultByFile("references_after.bib")
+        myFixture.checkResultByFile("references-after.bib")
     }
 }

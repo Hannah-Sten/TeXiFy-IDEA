@@ -1,20 +1,22 @@
 package nl.hannahsten.texifyidea.inspections.bibtex
 
-import com.intellij.codeInspection.*
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.refactoring.suggested.createSmartPointer
-import com.jetbrains.rd.util.remove
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.util.childrenOfType
-import nl.hannahsten.texifyidea.util.nextSiblingOfType
+import nl.hannahsten.texifyidea.util.previousSiblingOfType
 
 class BibtexUnusedEntryInspection : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.BIBTEX
@@ -42,6 +44,7 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
 
             val searchScope = GlobalSearchScope.fileScope(descriptor.psiElement.containingFile)
             BibtexEntryIndex.getEntryByName(text, project, searchScope).forEach {
+                it.previousSiblingOfType(PsiWhiteSpace::class)?.let { w -> w.parent.node.removeChild(w.node) }
                 it.parent.node.removeChild(it.node)
             }
         }
