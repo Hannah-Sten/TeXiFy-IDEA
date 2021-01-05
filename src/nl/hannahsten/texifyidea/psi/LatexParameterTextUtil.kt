@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -52,9 +53,12 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
     // (think non-ASCII characters in a \section command), we return null here when the element is not an identifier
     // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
     val name = element.firstParentOfType(LatexCommands::class)?.name
+    val environmentName = element.firstParentOfType(LatexEnvironment::class)?.environmentName
     if (!Magic.Command.labelReferenceWithoutCustomCommands.contains(name) &&
         !Magic.Command.labelDefinitionsWithoutCustomCommands.contains(name) &&
         !Magic.Command.bibliographyReference.contains(name) &&
+        !Magic.Command.labelAsParameter.contains(name) &&
+        !Magic.Environment.labelAsParameter.contains(environmentName) &&
         element.firstParentOfType(LatexEndCommand::class) == null &&
         element.firstParentOfType(LatexBeginCommand::class) == null
     ) {
@@ -65,6 +69,7 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
 
 fun setName(element: LatexParameterText, name: String): PsiElement {
     val command = element.firstParentOfType(LatexCommands::class)
+    val environment = element.firstParentOfType(LatexEnvironment::class)
     // If we want to rename a label
     if (Magic.Command.reference.contains(command?.name) || Magic.Command.getLabelDefinitionCommands(element.project).contains(command?.name)) {
         // Get a new psi element for the complete label command (\label included),
@@ -82,6 +87,21 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
         else {
             command.parent.node.replaceChild(oldNode, newNode)
         }
+    }
+    else if (Magic.Command.labelAsParameter.contains(command?.name) || Magic.Environment.labelAsParameter.contains(
+            environment?.environmentName
+        )
+    ) {
+        val helper = LatexPsiHelper(element.project)
+
+        // If the label name is inside a group, keep the group
+        val value = if (element.parentOfType(LatexParameterGroupText::class) != null) {
+            "{$name}"
+        }
+        else {
+            name
+        }
+        helper.setOptionalParameter(command ?: environment!!.beginCommand, "label", value)
     }
     else if (element.firstParentOfType(LatexEndCommand::class) != null || element.firstParentOfType(LatexBeginCommand::class) != null) {
         // We are renaming an environment, text in \begin or \end

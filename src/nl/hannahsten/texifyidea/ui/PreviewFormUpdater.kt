@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.io.FileUtil.createTempDirectory
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -103,10 +104,12 @@ $previewCode
             try {
                 // Snap apps are confined to the users home directory
                 if (SystemEnvironment.isInkscapeInstalledAsSnap) {
-                    setPreviewCodeInTemp(createTempDir(directory = File(System.getProperty("user.home"))))
+                    @Suppress("BlockingMethodInNonBlockingContext")
+                    setPreviewCodeInTemp(createTempDirectory(File(System.getProperty("user.home")), "preview", null))
                 }
                 else {
-                    setPreviewCodeInTemp(createTempDir())
+                    @Suppress("BlockingMethodInNonBlockingContext")
+                    setPreviewCodeInTemp(createTempDirectory("preview", null))
                 }
             }
             catch (exception: AccessDeniedException) {

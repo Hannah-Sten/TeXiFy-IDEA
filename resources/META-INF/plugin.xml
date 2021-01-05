@@ -26,14 +26,14 @@
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>
     <name>TeXiFy IDEA</name>
-    <version>0.7.1</version>
+    <version>0.7.2</version>
     <!--
     Info about build ranges: https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
     Note that an xyz branch corresponds to version 20xy.z and a since build of xyz.*
     means that the first possible build is the next branch number after xyz, so e.g.
     a since build of 173.* is equal to 181
     -->
-    <idea-version since-build="203.4449.2"/>
+    <idea-version since-build="203.5251.39"/>
     <vendor url="https://hannah-sten.github.io/home/index.html">Hannah-Sten</vendor>
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
@@ -82,9 +82,9 @@
 
     <!-- Changelog -->
     <change-notes><![CDATA[
-        <p><strong>Beta 0.7.1</strong></p>
+        <p><strong>Beta 0.7.2</strong></p>
         <p>
-            Welcome to TeXiFy IDEA 0.7.1, an update with many bug fixes improving 0.7, but also some new features like glossaries and Zathura support.
+            Welcome to TeXiFy IDEA 0.7.2, which introduces LaTeX SDKs to IntelliJ, adds support for using an out/ directory when using pdflatex with bibtex on TeX Live, and much more.
         <p>
         <p>
             We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
@@ -95,42 +95,49 @@
             <em>Additions</em>
         </p>
         <ul>
-            <li> Support paths relative to main file or project dir in run configuration template. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1553">#1553</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1601">#1601</a>)</li>
-            <li> Add support for the Zathura pdf viewer. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1551">#1551</a>)</li>
-            <li> Add support for the glossaries package. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1572">#1572</a>)</li>
-            <li> Add action to shift arguments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1585">#1585</a>)</li>
-            <li> Add inspection which checks if the documentclass is in the same file as the document environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1617">#1617</a>)</li>
-            <li> Improve subfiles support. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1462">#1462</a>)</li>
+            <li> Add support for pythontex. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1656">#1656</a>)</li>
+            <li> Add back support for algorithm2e formatting. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1661">#1661</a>)</li>
+            <li> Add fake section magic comments. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1662">#1662</a>)</li>
+            <li> Add support for custom LaTeX SDKs in IntelliJ. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1629">#1629</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1689">#1689</a>)</li>
+            <li> Add rename element for commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1689">#1689</a>)</li>
+            <li> Add support for language injection on commands, and automatically inject Lua. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1699">#1699</a>)</li>
+            <li> Add support for using the out/ directory when using pdflatex and bibtex with TeX Live. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1697">#1697</a>)</li>
+            <li> Add live templates for \enquote and \footcite. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1701">#1701</a>)</li>
         </ul>
         <br>
         <p>
             <em>Changes</em>
         </p>
         <ul>
-            <li> Don't override command line arguments when a latexmkrc file is used. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1586">#1586</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1597">#1597</a>)</li>
-            <li> Improve speed of package not installed inspection when a package is not installed. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1595">#1595</a>)</li>
-            <li> Use the document environment instead of the documentclass command as indication of the root file. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1617">#1617</a>)</li>
+            <li> Improve efficiency of fileset cache. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1622">#1622</a>)</li>
+            <li> Inspection which checks that \if commands are closed is now a warning. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1628">#1628</a>)</li>
+            <li> Support (almost) any non-letter char as inline verbatim delimiters. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1645">#1645</a>)</li>
+            <li> Move PDF viewer setting to the run configuration. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1649">#1649</a>)</li>
+            <li> Don't focus Okular after compilation. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1655">#1655</a>)</li>
+            <li> Don't override icons from the Material design plugins. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1669">#1669</a>)</li>
+            <li> Improve table formatting for very wide tables. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1672">#1672</a>)</li>
         </ul>
         <br>
         <p>
             <em>Bug fixes</em>
         </p>
         <ul>
-            <li> Fix some log parsing issues with parentheses. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1579">#1579</a>)</li>
-            <li> Include optional parameters in position when looking for labels from redefined commands. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1577">#1577</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1598">#1598</a>)</li>
-            <li> Fix a parse error with nested brackets in optional parameter of verbatim environment. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1569">#1569</a>)</li>
-            <li> Fix file inclusion loop triggered incorrectly. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1570">#1570</a>)</li>
-            <li> Fix a concurrency issue with the fileset cache. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1567">#1567</a>)</li>
-            <li> Fix bibtex autocompletion not working with multiple comma-separated keys. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1566">#1566</a>)</li>
-            <li> Fix incorrect insertion of spaces around braces in bibtex. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1609">#1609</a>)</li>
-            <li> Fix some log parsing issues with long filenames and improve log parsing in some other cases. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1604">#1604</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1613">#1613</a>)</li>
-            <li> Fix sync from source for structure view. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1613">#1613</a>)</li>
-            <li> Fix kpsewhich not being used for other files except sty/cls. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1620">#1620</a>)</li>
-            <li> Other bug fixes and improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1576">#1576</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1603">#1603</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1587">#1587</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1626">#1626</a>)</li>
+            <li> Fix formatting indentation inside parameters. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1627">#1627</a>)</li>
+            <li> Fix negative offset in LatexUnresolvedReferenceInspection. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1637">#1637</a>)</li>
+            <li> Fix file extension incorrectly added when renaming. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1669">#1669</a>)</li>
+            <li> Avoid adding items to non-existing menus in MPS. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1669">#1669</a>)</li>
+            <li> Fix false positive for escaping math operators when in \text. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1679">#1679</a>)</li>
+            <li> Improve smart quote substitution for csquotes. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1685">#1685</a>)</li>
+            <li> Fix freeze when WSL bash asks for user input. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1681">#1681</a>)</li>
+            <li> Only create subdirs in output dir for non-MiKTeX installations. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1681">#1681</a>)</li>
+            <li> \part is not a sectioning command when exam class is used. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1681">#1681</a>)</li>
+            <li> Support multiple middle pseudocode blocks. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1689">#1689</a>)</li>
+            <li> Fix bibtex documentation popup in autocompletion. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1695">#1695</a>)</li>
+            <li> Other small fixes and improvements. (<a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1651">#1651</a>, <a href="https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/1652">#1652</a>)</li>
         </ul>
         <br>
         <p>
-            Thanks to <a href="https://github.com/xaaris">Johannes Berger</a> and <a href="https://github.com/fberlakovich">Felix Berlakovich</a> for contributing to this release.
+            Thanks to <a href="https://github.com/StefanLobbenmeier">Stefan Lobbenmeier</a> and <a href="https://github.com/fberlakovich">Felix Berlakovich</a> for contributing to this release.
         </p>
         <br>
         <p>
@@ -504,6 +511,7 @@
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
         <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>

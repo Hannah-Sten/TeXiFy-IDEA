@@ -6,12 +6,12 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import java.util.LinkedHashMap;
 
-public interface LatexBeginCommand extends PsiElement {
+public interface LatexBeginCommand extends LatexCommandWithParams {
 
   @NotNull
   List<LatexParameter> getParameterList();
 
-  LinkedHashMap<String, String> getOptionalParameters();
+  LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap();
 
   List<String> getRequiredParameters();
 

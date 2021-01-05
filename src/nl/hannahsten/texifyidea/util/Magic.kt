@@ -6,6 +6,12 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.ARRAY
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.LONGTABLE
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULARX
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR_STAR
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -210,7 +216,7 @@ object Magic {
         val listingEnvironments = hashSetOf("itemize", "enumerate", "description")
 
         @JvmField
-        val tableEnvironments = hashSetOf("tabular", "tabular*", "tabularx", "array", "longtable")
+        val tableEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, ARRAY, LONGTABLE, TABU).map { it.environmentName }
 
         /**
          * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
@@ -226,12 +232,6 @@ object Magic {
             "lstlisting", "lst",
             "Verbatim", "verb"
         )
-
-        /**
-         * Environments that define their label via an optional parameter
-         */
-        @JvmField
-        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
 
         /**
          * Environments that introduce figures
@@ -278,6 +278,12 @@ object Magic {
             "aligned", "alignedat",
             "cases", "dcases"
         ) + matrixEnvironments
+
+        /**
+         * Environments that define their label via an optional parameter
+         */
+        @JvmField
+        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
     }
 
     /**
@@ -315,7 +321,8 @@ object Magic {
             "\\" + SECTION.command to "sec",
             "\\" + SUBSECTION.command to "subsec",
             "\\" + SUBSUBSECTION.command to "subsubsec",
-            "\\" + ITEM.command to "itm"
+            "\\" + ITEM.command to "itm",
+            "\\" + LSTINPUTLISTING.command to "lst"
         )
 
         /**
@@ -331,6 +338,12 @@ object Magic {
             PARAGRAPH to 4,
             SUBPARAGRAPH to 5
         )
+
+        /**
+         * Commands that define a label via an optional parameter
+         */
+        @JvmField
+        val labelAsParameter = hashSetOf(LSTINPUTLISTING.commandDisplay)
 
         /**
          * All commands that mark some kind of section.

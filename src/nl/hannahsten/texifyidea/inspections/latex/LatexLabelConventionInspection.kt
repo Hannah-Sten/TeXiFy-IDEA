@@ -29,6 +29,10 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun getLabeledCommand(label: PsiElement): PsiElement? {
             return when (label) {
                 is LatexCommands -> {
+                    if (Magic.Command.labelAsParameter.contains(label.name)) {
+                        return label
+                    }
+
                     if (label.inDirectEnvironmentMatching {
                         Magic.Environment.labeled.containsKey(it.environmentName) &&
                             !Magic.Environment.labelAsParameter.contains(it.environmentName)
@@ -129,17 +133,22 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // Replace in command label definition
             if (command is LatexCommands) {
-                val labelInfo = CommandManager.labelAliasesInfo.getOrDefault(command.name, null) ?: return
-                if (!labelInfo.labelsPreviousCommand) return
-                val position = labelInfo.positions.firstOrNull() ?: return
+                if (Magic.Command.labelAsParameter.contains(command.name)) {
+                    latexPsiHelper.setOptionalParameter(command, "label", "{$createdLabel}")
+                }
+                else {
+                    val labelInfo = CommandManager.labelAliasesInfo.getOrDefault(command.name, null) ?: return
+                    if (!labelInfo.labelsPreviousCommand) return
+                    val position = labelInfo.positions.firstOrNull() ?: return
 
-                val labelParameter = command.requiredParameters().getOrNull(position) ?: return
-                labelParameter.replace(latexPsiHelper.createRequiredParameter(createdLabel))
+                    val labelParameter = command.requiredParameters().getOrNull(position) ?: return
+                    labelParameter.replace(latexPsiHelper.createRequiredParameter(createdLabel))
+                }
             }
 
             // Replace in environment
             if (command is LatexEnvironment) {
-                latexPsiHelper.replaceOptionalParameter(command.beginCommand.parameterList, "label", createdLabel)
+                latexPsiHelper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
             }
 
             // Replace in document.

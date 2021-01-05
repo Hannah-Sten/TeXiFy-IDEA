@@ -40,6 +40,8 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
         val regex = StringBuilder(".*")
         if (extensions.isEmpty()) {
             setRegex(regex.toString())
+            this.supportedExtensions = supportedExtensions
+            this.defaultExtension = ""
             return
         }
         else {

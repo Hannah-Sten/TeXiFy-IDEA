@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.structure.latex
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.nextCommand
 
 /**
@@ -15,7 +16,7 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
 
     init {
         // Fetch parameter amount.
-        val optional = newCommand.optionalParameters.keys.toList()
+        val optional = newCommand.optionalParameterMap.toStringMap().keys.toList()
         var params = -1
         if (optional.isNotEmpty()) {
             try {

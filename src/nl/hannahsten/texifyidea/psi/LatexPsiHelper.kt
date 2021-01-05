@@ -3,7 +3,11 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.LatexLanguage
+import nl.hannahsten.texifyidea.psi.LatexTypes.CLOSE_BRACKET
+import nl.hannahsten.texifyidea.psi.LatexTypes.EQUALS
+import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.findFirstChild
 import nl.hannahsten.texifyidea.util.firstChildOfType
 
@@ -33,11 +37,11 @@ class LatexPsiHelper(private val project: Project) {
         return fileFromText.firstChild
     }
 
-    private fun createOptionalParameterContent(parameter: String): List<LatexOptionalParamContent> {
+    private fun createKeyValuePairs(parameter: String): LatexKeyvalPair {
         val commandText = "\\begin{lstlisting}[$parameter]"
         val environment = createFromText(commandText).firstChildOfType(LatexEnvironment::class)!!
         val optionalParam = environment.beginCommand.firstChildOfType(LatexOptionalParam::class)!!
-        return optionalParam.optionalParamContentList
+        return optionalParam.keyvalPairList[0]
     }
 
     fun createFromText(text: String): PsiElement =
@@ -71,50 +75,14 @@ class LatexPsiHelper(private val project: Project) {
     }
 
     /**
-     * Replaces the optional parameter with the supplied name. If a value is supplied, the new parameter will
-     * have a value appended with an equal sign (e.g., param={value}). The new parameter has the same position
-     * as the old one. If no parameter with the supplied name is found, no action will be performed.
-     */
-    fun replaceOptionalParameter(parameters: List<LatexParameter>, name: String, newValue: String?) {
-        val optionalParam = parameters.first { p -> p.optionalParam != null }.optionalParam!!
-
-        val parameterText = if (newValue != null) {
-            "$name={$newValue}"
-        }
-        else {
-            name
-        }
-
-        val labelRegex = "label\\s*=\\s*[^,]*".toRegex()
-        val elementsToReplace = mutableListOf<LatexOptionalParamContent>()
-        val elementIterator = optionalParam.optionalParamContentList.iterator()
-        while (elementIterator.hasNext()) {
-            val latexContent = elementIterator.next()
-            val elementIsLabel = latexContent.parameterText?.text?.contains(labelRegex) ?: false
-            if (elementIsLabel) {
-                elementsToReplace.add(latexContent)
-
-                // check if the label name is part of the text or in a separate group
-                if (latexContent.parameterText!!.text.split("=")[1].trim().isEmpty()) {
-                    val group = elementIterator.next()
-                    elementsToReplace.add(group)
-                }
-            }
-        }
-
-        val newContents = createOptionalParameterContent(parameterText)
-        newContents.forEach { optionalParam.addBefore(it, elementsToReplace.first()) }
-        elementsToReplace.forEach { it.delete() }
-    }
-
-    /**
-     * Add an optional parameter of the form "param" or "param={value}" to the list of optional parameters.
-     * If there already are optional parameters, the new parameter will be appended with a "," as the separator.
+     * Set the value of the optional parameter with the givevn key name. If the the parameter already exists,
+     * its value is changed. If no key with the given name exists yet, a new one is created with the given value.
      *
-     * @return A list containing the newly inserted elements from left to right
+     * @param name The name of the parameter to change
+     * @param value The new parameter value. If the value is null, the parameter will have a key only.
      */
-    fun addOptionalParameter(command: LatexBeginCommand, name: String, value: String?): List<PsiElement> {
-        val existingParameters = command.optionalParameters
+    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): PsiElement {
+        val existingParameters = command.optionalParameterMap
         if (existingParameters.isEmpty()) {
             command.addAfter(createLatexOptionalParam(), command.parameterList[0])
         }
@@ -122,22 +90,33 @@ class LatexPsiHelper(private val project: Project) {
         val optionalParam = command.parameterList
             .first { p -> p.optionalParam != null }.optionalParam!!
 
-        var parameterText = if (value != null) {
-            "$name={$value}"
+        val parameterText = if (value != null) {
+            "$name=$value"
         }
         else {
             name
         }
 
-        if (existingParameters.isNotEmpty()) {
-            parameterText = ",$parameterText"
+        val pair = createKeyValuePairs(parameterText)
+        val closeBracket = optionalParam.childrenOfType<LeafPsiElement>().first { it.elementType == CLOSE_BRACKET }
+        return if (optionalParam.keyvalPairList.isNotEmpty()) {
+            val existing = optionalParam.keyvalPairList.find { kv -> kv.keyvalKey.text == name }
+            if (existing != null && value != null) {
+                existing.keyvalValue?.delete()
+                existing.addAfter(
+                    pair.keyvalValue!!,
+                    existing.childrenOfType<LeafPsiElement>().first { it.elementType == EQUALS })
+                existing
+            }
+            else {
+                optionalParam.addBefore(createFromText(","), closeBracket)
+                optionalParam.addBefore(pair, closeBracket)
+                closeBracket.prevSibling
+            }
         }
-        val newElements = mutableListOf<PsiElement>()
-        val contents = createOptionalParameterContent(parameterText)
-        contents.forEach {
-            val inserted = optionalParam.addBefore(it, optionalParam.lastChild)
-            newElements.add(inserted)
+        else {
+            optionalParam.addBefore(pair, closeBracket)
+            closeBracket.prevSibling
         }
-        return newElements
     }
 }
