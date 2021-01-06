@@ -133,6 +133,13 @@ fun getExternalFile(path: String): VirtualFile? =
     LocalFileSystem.getInstance().findFileByPath(path)
 
 /**
+ * Converts the absolute path to a relative path.
+ */
+fun String.toRelativePath(basePath: String): String {
+    return File(basePath).toURI().relativize(File(this).toURI()).path
+}
+
+/**
  * Extracts the list of files from the Drag and Drop Transferable, only if java file list is a supported flavour.
  *
  * @return The file list transfer data, or `null` when file lists are not supported.

@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.action.EditorAction
@@ -20,6 +21,7 @@ import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrappe
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import nl.hannahsten.texifyidea.util.files.toRelativePath
 import java.io.File
 import java.util.*
 
@@ -50,7 +52,7 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         // Handle result.
         val graphicData = dialogWrapper.extractData()
         file.psiFile(project)?.let { graphicData.importPackages(it) }
-        editor.editor.insertGraphic(graphicData, indent)
+        editor.editor.insertGraphic(project, graphicData, indent)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -59,26 +61,26 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         executeAction(file, project)
     }
 
-    private fun Editor.insertGraphic(data: InsertGraphicData, indent: String, tab: String = "    ") {
+    private fun Editor.insertGraphic(project: Project, data: InsertGraphicData, indent: String, tab: String = "    ") {
         // Only the graphics (non-centered).
         val toInsert = if (data.center.not() && data.placeInFigure.not()) {
-            data.includeCommand()
+            data.includeCommand(project)
         }
         // Centered graphics, but not in a figure.
         else if (data.center && data.placeInFigure.not()) {
             buildString {
                 append("\\begin{center}\n")
-                append(indent).append(tab).append(data.includeCommand()).newline()
+                append(indent).append(tab).append(data.includeCommand(project)).newline()
                 append(indent).append("\\end{center}")
             }
         }
         // Insert figure.
-        else data.figure(indent, tab)
+        else data.figure(project, indent, tab)
 
         insertAtCaretAndMove(toInsert)
     }
 
-    private fun InsertGraphicData.figure(indent: String, tab: String) = buildString {
+    private fun InsertGraphicData.figure(project: Project, indent: String, tab: String) = buildString {
         append("\\begin{figure}")
         if (positions?.isNotEmpty() == true) {
             append(positionOptions())
@@ -93,7 +95,7 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
             addCaptionAndLabel(this@figure, indent, tab)
         }
 
-        append(indent).append(tab).append(includeCommand()).newline()
+        append(indent).append(tab).append(includeCommand(project)).newline()
 
         if (captionLocation == CaptionLocation.BELOW_GRAPHIC) {
             addCaptionAndLabel(this@figure, indent, tab)
@@ -107,17 +109,22 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         append(indent).append(tab).append("\\label{").append(data.label ?: "").append("}").newline()
     }
 
-    private fun InsertGraphicData.includeCommand() = buildString {
+    private fun InsertGraphicData.includeCommand(project: Project) = buildString {
         append("\\includegraphics")
         if (options.isNotBlank()) {
             append("[").append(options).append("]")
         }
-        append("{").append(convertFilePath(filePath)).append("}")
+        append("{").append(convertFilePath(project, filePath)).append("}")
     }
 
-    private fun convertFilePath(filePath: String): String {
-        // TODO: Automagically convert to relative path.
-        return filePath.removeFileExtension()
+    private fun convertFilePath(project: Project, filePath: String): String {
+        val rootManager = ProjectRootManager.getInstance(project)
+
+        return rootManager.contentSourceRoots.asSequence()
+                .map { filePath.toRelativePath(it.path) }
+                .minByOrNull { it.length }
+                ?.removeFileExtension()
+                ?: filePath
     }
 
     private fun InsertGraphicData.captionCommand() = buildString {

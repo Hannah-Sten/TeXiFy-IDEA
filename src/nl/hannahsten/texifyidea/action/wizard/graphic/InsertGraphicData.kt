@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
  */
 data class InsertGraphicData(
         val filePath: String,
+        val relativePath: Boolean,
         val options: String,
         val center: Boolean,
         val placeInFigure: Boolean,

@@ -46,6 +46,11 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     }
 
     /**
+     * Insert a relative file path if checked, absolute if unchecked.
+     */
+    private val checkRelativePath = JBCheckBox("convert to relative path", true)
+
+    /**
      * The width option for the graphic. Not necessarily a number. Whatever is in here will get put
      * in the optional parameters.
      */
@@ -152,6 +157,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
      */
     fun extractData() = InsertGraphicData(
             filePath = txtGraphicFile.text.trim(),
+            relativePath = checkRelativePath.isSelected,
             options = txtCustomOptions.text.trim(),
             center = checkCenterHorizontally.isSelected,
             placeInFigure = checkPlaceInFigure.isSelected,
@@ -192,6 +198,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
 
         val labelWidth = 64
         addLabeledComponent(txtGraphicFile, "Path:", labelWidth)
+        addLabeledComponent(checkRelativePath, "", labelWidth)
     }
 
     private fun JPanel.addGraphicOptionControls() {
