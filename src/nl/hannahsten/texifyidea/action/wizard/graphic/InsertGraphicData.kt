@@ -20,5 +20,5 @@ data class InsertGraphicData(
         /** `null` when [placeInFigure] is `false`, not `null` otherwise */
         val label: String? = null,
         /** `null` when [placeInFigure] is `false`, not `null` otherwise */
-        val positions: Set<FigureLocation>? = null
+        val positions: List<FigureLocation>? = null
 )

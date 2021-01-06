@@ -159,7 +159,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
             caption = whenFigure(txtLongCaption.text.trim()),
             shortCaption = whenFigure(txtShortCaption.text.trim()),
             label = whenFigure(txtLabel.text.trim()),
-            positions = whenFigure(setOfNotNull(
+            positions = whenFigure(listOfNotNull(
                     if (checkTop.isSelected) FigureLocation.TOP else null,
                     if (checkBottom.isSelected) FigureLocation.BOTTOM else null,
                     if (checkPage.isSelected) FigureLocation.PAGE else null,
