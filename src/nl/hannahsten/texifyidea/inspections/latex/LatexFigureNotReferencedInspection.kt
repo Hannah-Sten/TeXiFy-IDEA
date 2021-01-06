@@ -36,7 +36,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     }
 
     private fun removeReferencedLabels(file: PsiFile, figureLabels: MutableMap<String?, LatexCommands>) {
-        val referenceCommands = Magic.Command.getLabelReferenceCommands(file.project)
+        val referenceCommands = file.project.getLabelReferenceCommands()
         for (command in file.commandsInFileSet()) {
             // Don't resolve references in command definitions
             if (command.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions ||

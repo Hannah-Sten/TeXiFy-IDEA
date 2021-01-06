@@ -10,12 +10,12 @@ class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEnt
     }
 
     fun `test warnings where needed`() {
-        myFixture.configureByFiles( "references.bib", "main.tex")
+        myFixture.configureByFiles("references.bib", "main.tex")
         myFixture.checkHighlighting()
     }
 
     fun `test quick fix`() {
-        myFixture.configureByFiles( "references-before.bib", "main-quick-fix.tex")
+        myFixture.configureByFiles("references-before.bib", "main-quick-fix.tex")
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals("Expected number of quick fixes:", 2, quickFixes.size)
         writeCommand(myFixture.project) {

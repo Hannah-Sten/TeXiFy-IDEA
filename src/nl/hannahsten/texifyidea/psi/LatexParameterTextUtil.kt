@@ -5,10 +5,7 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.*
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -71,7 +68,7 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
     val command = element.firstParentOfType(LatexCommands::class)
     val environment = element.firstParentOfType(LatexEnvironment::class)
     // If we want to rename a label
-    if (Magic.Command.reference.contains(command?.name) || Magic.Command.getLabelDefinitionCommands(element.project).contains(command?.name)) {
+    if (Magic.Command.reference.contains(command?.name) || element.project.getLabelDefinitionCommands().contains(command?.name)) {
         // Get a new psi element for the complete label command (\label included),
         // because if we replace the complete command instead of just the normal text
         // then the indices will be updated, which is necessary for the reference resolve to work

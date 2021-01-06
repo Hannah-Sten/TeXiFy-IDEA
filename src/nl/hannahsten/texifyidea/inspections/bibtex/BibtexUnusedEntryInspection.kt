@@ -25,6 +25,7 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> =
         file.childrenOfType(BibtexId::class)
+            .asSequence()
             .filter { ReferencesSearch.search(it).toList().isEmpty() }
             .map {
                 manager.createProblemDescriptor(
@@ -35,6 +36,7 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
                     isOntheFly
                 )
             }
+            .toList()
 
     class RemoveBibtexEntryFix(private val id: SmartPsiElementPointer<BibtexId>) : LocalQuickFix {
         override fun getFamilyName(): String = "Remove BibTeX entry ${id.element?.text}"

@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.shrink
 import java.util.*
@@ -30,7 +31,7 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
     val firstParam = readFirstParam(element)
 
     // If it is a reference to a label
-    if (Magic.Command.getLabelReferenceCommands(element.project).contains(element.commandToken.text) && firstParam != null) {
+    if (element.project.getLabelReferenceCommands().contains(element.commandToken.text) && firstParam != null) {
         val references = extractLabelReferences(element, firstParam)
         return references.toTypedArray()
     }
