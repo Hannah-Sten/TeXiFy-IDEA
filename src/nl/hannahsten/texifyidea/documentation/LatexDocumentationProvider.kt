@@ -6,7 +6,6 @@ import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -125,7 +124,8 @@ class LatexDocumentationProvider : DocumentationProvider {
     ): PsiElement? = null
 
     private fun runTexdoc(pkg: LatexPackage): List<String> {
-        val name = if (pkg == DEFAULT) "source2e" else pkg.name
+        // base/lt... files are documented in source2e.pdf
+        val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
 
         val stream: InputStream
         try {

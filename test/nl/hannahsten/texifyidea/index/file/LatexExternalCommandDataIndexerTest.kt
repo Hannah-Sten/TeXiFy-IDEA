@@ -188,6 +188,25 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         assertEquals(0, map.size)
     }
 
+    fun testAmsmath() {
+        val text = """
+            %
+            %  \begin{macro}{\DeclareMathOperator}
+            %    The command \cn{DeclareMathOperator} defines the first argument to
+            %    be an operator name whose text is the second argument. The star
+            %    form means that the operator name should take limits (like \cn{max}
+            %    or \cn{lim}).
+            %    \begin{macrocode}
+            \newcommand{\DeclareMathOperator}{%
+              \@ifstar{\@declmathop m}{\@declmathop o}}
+            %    \end{macrocode}
+            %  \end{macro}
+        """.trimIndent()
+        val file = myFixture.configureByText("amsopn.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals("The command \\DeclareMathOperator defines the first argument to be an operator name whose text is the second argument. The star orm means that the operator name should take limits (like \\max or \\lim).", map["\\DeclareMathOperator"])
+    }
+
     class MockContent(val file: PsiFile) : FileContent {
         override fun <T : Any?> getUserData(key: Key<T>): T? { return null }
 

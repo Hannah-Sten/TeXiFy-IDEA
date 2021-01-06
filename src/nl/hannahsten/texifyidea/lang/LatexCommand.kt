@@ -34,7 +34,7 @@ interface LatexCommand : Described, Dependend {
         }
 
         /**
-         * Create a [LatexCommand] for the given command name.
+         * Create a [LatexCommand] for the given command name, or merge with existing one.
          */
         fun lookupInIndex(cmdWithoutSlash: String, project: Project): Set<LatexCommand> {
             val cmds = mutableSetOf<LatexCommand>()
@@ -124,9 +124,6 @@ interface LatexCommand : Described, Dependend {
 
             return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
                 LatexMathCommand[cmdWithoutSlash]
-            }
-            else if (LatexRegularCommand[cmdWithoutSlash] != null) {
-                LatexRegularCommand[cmdWithoutSlash]
             }
             else {
                 lookupInIndex(cmdWithoutSlash, command.project)
