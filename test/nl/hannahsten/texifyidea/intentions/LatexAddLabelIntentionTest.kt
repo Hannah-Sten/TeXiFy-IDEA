@@ -16,7 +16,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """
@@ -38,7 +38,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """
@@ -60,7 +60,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
         )
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
-            intentions.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
         myFixture.checkResult(
             """
