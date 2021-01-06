@@ -75,7 +75,7 @@ dependencies {
     implementation(files("lib/JavaDDEx64.dll"))
 
     // From Kotlin documentation
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
+//    compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.2.3")
