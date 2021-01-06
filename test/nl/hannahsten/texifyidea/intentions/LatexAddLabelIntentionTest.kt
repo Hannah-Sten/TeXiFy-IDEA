@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.intentions
 
+import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
@@ -82,6 +83,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
+        TemplateManagerImpl.setTemplateTesting(myFixture.projectDisposable)
         val intentions = myFixture.availableIntentions
         writeCommand(myFixture.project) {
             intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
@@ -90,7 +92,7 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
             """
             \begin{document}
                 \begin{enumerate}
-                    \item\label{itm:item}<caret> Some item
+                    \item\label{itm:<caret>} Some item
                 \end{enumerate}
             \end{document}
             """.trimIndent()
