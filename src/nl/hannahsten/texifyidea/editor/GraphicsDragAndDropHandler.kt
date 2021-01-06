@@ -1,13 +1,21 @@
 package nl.hannahsten.texifyidea.editor
 
+import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CustomFileDropHandler
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.action.insert.InsertTable
+import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.extractFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.insertAtCaretAndMove
+import nl.hannahsten.texifyidea.util.insertUsepackage
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
@@ -38,11 +46,12 @@ open class GraphicsDragAndDropHandler : CustomFileDropHandler() {
 
     override fun handleDrop(transferable: Transferable, editor: Editor?, project: Project?): Boolean {
         if (editor == null) return false
+        if (project == null) return false
 
-        // TODO: Change to usage of the insertgraphic wizard.
-        //          This is just placeholder behaviour.
         val toDrop = transferable.extractFile() ?: return false
-        editor.insertAtCaretAndMove(toDrop.absolutePath)
+        editor.document.psiFile(project)?.virtualFile?.let { file ->
+            InsertGraphicWizardAction(toDrop).executeAction(file, project)
+        }
 
         return true
     }

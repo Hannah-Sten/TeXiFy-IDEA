@@ -7,7 +7,10 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.action.EditorAction
 import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.action.wizard.table.TableInformation
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -17,6 +20,7 @@ import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrappe
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import java.io.File
 import java.util.*
 
 /**
@@ -25,11 +29,12 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
-class InsertGraphicWizardAction : AnAction() {
+class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
 
-    override fun actionPerformed(e: AnActionEvent) {
-        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
-        val project = e.getData(PlatformDataKeys.PROJECT) ?: return
+    /**
+     * Opens and handles the graphic insertion wizard.
+     */
+    fun executeAction(file: VirtualFile, project: Project) {
         val editor = project.currentTextEditor() ?: return
         val document = editor.editor.document
 
@@ -37,7 +42,7 @@ class InsertGraphicWizardAction : AnAction() {
         val indent = document.lineIndentationByOffset(editor.editor.caretOffset())
 
         // Create the dialog.
-        val dialogWrapper = InsertGraphicWizardDialogWrapper()
+        val dialogWrapper = InsertGraphicWizardDialogWrapper(initialFilePath = initialFile?.absolutePath ?: "")
 
         // If the user pressed OK, do stuff.
         if (!dialogWrapper.showAndGet()) return
@@ -46,6 +51,12 @@ class InsertGraphicWizardAction : AnAction() {
         val graphicData = dialogWrapper.extractData()
         file.psiFile(project)?.let { graphicData.importPackages(it) }
         editor.editor.insertGraphic(graphicData, indent)
+    }
+
+    override fun actionPerformed(e: AnActionEvent) {
+        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
+        val project = e.getData(PlatformDataKeys.PROJECT) ?: return
+        executeAction(file, project)
     }
 
     private fun Editor.insertGraphic(data: InsertGraphicData, indent: String, tab: String = "    ") {
