@@ -18,10 +18,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.allCommands
-import nl.hannahsten.texifyidea.util.getIncludeCommands
-import nl.hannahsten.texifyidea.util.getIncludedFiles
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.List
@@ -177,7 +174,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
+        val labelingCommands = getLabelDefinitionCommands()
         commands.filter { labelingCommands.contains(it.commandToken.text) }
             .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
             .forEach {

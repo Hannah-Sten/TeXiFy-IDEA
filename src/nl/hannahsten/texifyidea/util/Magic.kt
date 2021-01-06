@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
-import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.ARRAY
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.LONGTABLE
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
@@ -384,14 +383,6 @@ object Magic {
         )
 
         /**
-         * All commands that represent a reference to a label, including user defined commands.
-         */
-        fun getLabelReferenceCommands(project: Project): Set<String> {
-            CommandManager.updateAliases(labelReferenceWithoutCustomCommands, project)
-            return CommandManager.getAliases(labelReferenceWithoutCustomCommands.first())
-        }
-
-        /**
          * All commands that represent a reference to a bibliography entry/item.
          * Commands listed here should also be listed in [nl.hannahsten.texifyidea.lang.LatexRegularCommand].
          */
@@ -434,27 +425,10 @@ object Magic {
 
         /**
          * All commands that define labels and that are present by default.
-         * To include user defined commands, use [getLabelDefinitionCommands] (may be significantly slower).
+         * To include user defined commands, use [Project.getLabelReferenceCommands] (may be significantly slower).
          */
         @JvmField
         val labelDefinitionsWithoutCustomCommands = setOf("\\label")
-
-        /**
-         * Get all commands defining labels, including user defined commands.
-         * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
-         *
-         * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
-         */
-        fun getLabelDefinitionCommands(project: Project): Set<String> {
-            // Check if updates are needed
-            CommandManager.updateAliases(labelDefinitionsWithoutCustomCommands, project)
-            return CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
-        }
-
-        /**
-         * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
-         */
-        fun getLabelDefinitionCommands() = CommandManager.getAliases(labelDefinitionsWithoutCustomCommands.first())
 
         /**
          * All commands that define bibliography items.

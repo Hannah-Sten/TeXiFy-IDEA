@@ -47,6 +47,6 @@ public interface BibtexEntry extends PsiNameIdentifierOwner, StubBasedPsiElement
 
   String getName();
 
-  PsiElement setName(@NotNull @NonNls String name);
+  PsiElement setName(@NonNls @NotNull String name);
 
 }

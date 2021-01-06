@@ -126,7 +126,7 @@ fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = this.commandsInFile
  * @return A collection of all label commands.
  */
 fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection<LatexCommands> {
-    val commandNames = Magic.Command.getLabelDefinitionCommands(project)
+    val commandNames = project.getLabelDefinitionCommands()
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 
@@ -136,7 +136,7 @@ fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection
  * @return A sequence of all label commands.
  */
 fun Sequence<PsiElement>.findLatexCommandsLabels(project: Project): Sequence<LatexCommands> {
-    val commandNames = Magic.Command.getLabelDefinitionCommands(project)
+    val commandNames = project.getLabelDefinitionCommands()
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 
@@ -159,6 +159,31 @@ fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
     result.addAll(environments)
     result.addAll(parameterLabeledCommands)
     return result
+}
+
+/**
+ * All commands that represent a reference to a label, including user defined commands.
+ */
+fun Project.getLabelReferenceCommands(): Set<String> {
+    CommandManager.updateAliases(Magic.Command.labelReferenceWithoutCustomCommands, this)
+    return CommandManager.getAliases(Magic.Command.labelReferenceWithoutCustomCommands.first())
+}
+
+/**
+ * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
+ */
+fun getLabelDefinitionCommands() = CommandManager.getAliases(Magic.Command.labelDefinitionsWithoutCustomCommands.first())
+
+/**
+ * Get all commands defining labels, including user defined commands.
+ * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
+ *
+ * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
+ */
+fun Project.getLabelDefinitionCommands(): Set<String> {
+    // Check if updates are needed
+    CommandManager.updateAliases(Magic.Command.labelDefinitionsWithoutCustomCommands, this)
+    return CommandManager.getAliases(Magic.Command.labelDefinitionsWithoutCustomCommands.first())
 }
 
 /*
