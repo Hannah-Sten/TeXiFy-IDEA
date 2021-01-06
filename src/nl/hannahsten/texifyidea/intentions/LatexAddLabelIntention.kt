@@ -56,7 +56,7 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
                 required[0]
             }
             else {
-                return
+                command.name ?: return
             }
         }
 

@@ -70,4 +70,30 @@ class LatexAddLabelIntentionTest : BasePlatformTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testLabelForItem() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \begin{enumerate}
+                    \item<caret> Some item
+                \end{enumerate}
+            \end{document}
+            """.trimIndent()
+        )
+        val intentions = myFixture.availableIntentions
+        writeCommand(myFixture.project) {
+            intentions.first { i -> i.text == "Add label" }.invoke(myFixture.project, myFixture.editor, myFixture.file)
+        }
+        myFixture.checkResult(
+            """
+            \begin{document}
+                \begin{enumerate}
+                    \item\label{itm:item}<caret> Some item
+                \end{enumerate}
+            \end{document}
+            """.trimIndent()
+        )
+    }
 }
