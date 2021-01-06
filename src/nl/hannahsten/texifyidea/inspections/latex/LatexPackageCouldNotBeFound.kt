@@ -8,7 +8,11 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.PackageUtils
+import nl.hannahsten.texifyidea.util.childrenOfType
+import nl.hannahsten.texifyidea.util.magic.GeneralMagic
+import nl.hannahsten.texifyidea.util.projectSearchScope
+import nl.hannahsten.texifyidea.util.requiredParameter
 
 class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
@@ -38,7 +42,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
                     manager.createProblemDescriptor(
                         command,
                         displayName,
-                        Magic.General.noQuickFix,
+                        GeneralMagic.noQuickFix,
                         ProblemHighlightType.WARNING,
                         isOntheFly
                     )

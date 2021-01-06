@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.matches
 import nl.hannahsten.texifyidea.util.previousCommand
 import java.util.*
@@ -39,7 +40,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                         manager.createProblemDescriptor(
                             command,
                             "No matching \\if-command found",
-                            Magic.General.noQuickFix,
+                            GeneralMagic.noQuickFix,
                             ProblemHighlightType.GENERIC_ERROR,
                             isOntheFly
                         )
@@ -60,7 +61,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     cmd,
                     "If statement should probably be closed with \\fi",
-                    Magic.General.noQuickFix,
+                    GeneralMagic.noQuickFix,
                     ProblemHighlightType.WARNING,
                     isOntheFly
                 )

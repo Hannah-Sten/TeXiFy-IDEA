@@ -12,6 +12,7 @@ import com.intellij.codeInsight.template.impl.TextExpression
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
+import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -25,7 +26,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
             LatexRegularCommand.BEGIN.command -> {
                 insertBegin(context)
             }
-            in Magic.Typography.pseudoCodeBeginEndOpposites -> {
+            in TypographyMagic.pseudoCodeBeginEndOpposites -> {
                 insertPseudocodeEnd(command.command, context)
             }
             else -> {
@@ -44,7 +45,7 @@ class LatexNoMathInsertHandler(val arguments: List<Argument>? = null) : InsertHa
 
         val templateText = List(numberRequiredArguments) {
             "{\$__Variable${it}\$}"
-        }.joinToString("") + "\n\$END\$\n\\${Magic.Typography.pseudoCodeBeginEndOpposites[name]}"
+        }.joinToString("") + "\n\$END\$\n\\${TypographyMagic.pseudoCodeBeginEndOpposites[name]}"
         val parameterTemplate = object : TemplateImpl("", templateText, "") {
             override fun isToReformat(): Boolean = false
         }

@@ -26,7 +26,7 @@ open class LatexCiteBeforePeriodInspection : TexifyRegexInspection(
         // Let's assume that an abbreviation before a cite which is not directly before a cite does not appear within n characters before the cite
         val range = matcher.groupRange(0)
         val subString = psiFile.text.substring(max(range.first - 6, 0), range.last)
-        Magic.Pattern.abbreviation.toRegex().find(subString)?.groups?.isNotEmpty() == true || Magic.General.unRegexableAbbreviations.any { subString.contains(it) }
+        Magic.Pattern.abbreviation.toRegex().find(subString)?.groups?.isNotEmpty() == true || Magic.Pattern.unRegexableAbbreviations.any { subString.contains(it) }
     }
 ) {
 

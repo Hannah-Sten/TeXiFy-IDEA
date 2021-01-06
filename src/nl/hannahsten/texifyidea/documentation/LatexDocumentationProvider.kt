@@ -99,7 +99,8 @@ class LatexDocumentationProvider : DocumentationProvider {
             lookup = null
         }
 
-        return docString
+        // If we return a blank string, the popup will just say "Fetching documentation..."
+        return if (docString.isNullOrBlank()) "<br>" else docString
     }
 
     override fun getDocumentationElementForLookupItem(

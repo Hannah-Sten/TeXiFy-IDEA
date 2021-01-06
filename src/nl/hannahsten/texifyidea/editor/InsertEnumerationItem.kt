@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexOptionalParam
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /**
  * @author Hannah Schellekens
@@ -135,7 +136,7 @@ class InsertEnumerationItem : EnterHandlerDelegate {
         }
 
         val isGluedToTheBeginCommand = element.hasParent(LatexBeginCommand::class)
-        val isInsideAnEnumeration = element.inDirectEnvironment(Magic.Environment.listingEnvironments)
+        val isInsideAnEnumeration = element.inDirectEnvironment(EnvironmentMagic.listingEnvironments)
         return isInsideAnEnumeration && !isGluedToTheBeginCommand
     }
 }
