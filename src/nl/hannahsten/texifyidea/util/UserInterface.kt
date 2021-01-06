@@ -6,6 +6,9 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.awt.RelativePoint
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
+import javax.swing.text.JTextComponent
 
 /**
  * Shows a toast message above the loading bar.
@@ -55,3 +58,28 @@ fun toastError(project: Project, htmlMessage: String) = toast(project, MessageTy
  *          What to show in the toast. Supports HTML.
  */
 fun toastWarning(project: Project, htmlMessage: String) = toast(project, MessageType.WARNING, htmlMessage)
+
+/**
+ * Adds a text listener to the component.
+ *
+ * @param event
+ *          The function to execute when any text updates in the component.
+ * @return The document listener that was added to the component's document.
+ */
+fun JTextComponent.addTextChangeListener(event: (DocumentEvent?) -> Unit): DocumentListener {
+    val documentListener = object : DocumentListener {
+        override fun insertUpdate(e: DocumentEvent?) {
+            event(e)
+        }
+
+        override fun removeUpdate(e: DocumentEvent?) {
+            event(e)
+        }
+
+        override fun changedUpdate(e: DocumentEvent?) {
+            event(e)
+        }
+    }
+    document.addDocumentListener(documentListener)
+    return documentListener
+}

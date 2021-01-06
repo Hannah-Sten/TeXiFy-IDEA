@@ -13,14 +13,16 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
+import com.intellij.ui.components.panels.VerticalLayout
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.addTextChangeListener
 import java.awt.BorderLayout
 import java.awt.Dimension
-import javax.swing.Box
-import javax.swing.BoxLayout
-import javax.swing.JComponent
-import javax.swing.JPanel
+import java.awt.event.ItemEvent
+import javax.swing.*
 import javax.swing.border.EmptyBorder
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
 
 /**
  * @author Hannah Schellekens
@@ -51,19 +53,30 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
      * The width option for the graphic. Not necessarily a number. Whatever is in here will get put
      * in the optional parameters.
      */
-    private val txtWidth = JBTextField("", 8)
+    private val txtWidth = JBTextField("", 8).apply {
+        addTextChangeListener {
+            updateGraphicsOptions("width")
+        }
+    }
 
     /**
      * The height option for the graphic. Not necessarily a number. Whatever is in here will get put
      * in the optional parameters.
      */
-    private val txtHeight = JBTextField("", 8)
+    private val txtHeight = JBTextField("", 8).apply {
+        addTextChangeListener {
+            updateGraphicsOptions("height")
+        }
+    }
 
     /**
      * The angle option for the graphic. When empty, no angle. Not necessarily a number.
      */
     private val txtAngle = JBTextField("").apply {
         toolTipText = "Degrees, anticlockwise"
+        addTextChangeListener {
+            updateGraphicsOptions("angle")
+        }
     }
 
     /**
@@ -80,7 +93,11 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Whether to place the included graphic inside a figure environment.
      */
-    private val checkPlaceInFigure = JBCheckBox("Place in figure environment", true)
+    private val checkPlaceInFigure = JBCheckBox("Place in figure environment", true).apply {
+        addItemListener {
+            updateFigureControlsState()
+        }
+    }
 
     /**
      * Where to put the caption in the figure environment.
@@ -102,7 +119,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Contains the label for the figure.
      */
-    private val txtLabel = JBTextField()
+    private val txtLabel = JBTextField("fig:")
 
     /**
      * Place figure on top position.
@@ -159,12 +176,12 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         addSectionHeader("Graphic options")
 
         val labelWidth = 64
-        val transformPanel = JPanel(HorizontalLayout(0)).apply {
+        val optionsPanel = JPanel(HorizontalLayout(0)).apply {
             addLabeledComponent(txtWidth, "Width:", labelWidth)
             addLabeledComponent(txtHeight, "Height:", labelWidth)
             addLabeledComponent(txtAngle, "Angle:", labelWidth)
         }
-        add(transformPanel)
+        add(optionsPanel)
         addLabeledComponent(txtCustomOptions, "Custom:", labelWidth)
     }
 
@@ -231,5 +248,36 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         }
         add(pane)
         return pane
+    }
+
+    private fun updateFigureControlsState() {
+        val enabled = checkPlaceInFigure.isSelected
+
+        cboxCaptionLocation.isEnabled = enabled
+        txtLongCaption.isEnabled = enabled
+        txtShortCaption.isEnabled = enabled
+        txtLabel.isEnabled = enabled
+        checkTop.isEnabled = enabled
+        checkBottom.isEnabled = enabled
+        checkPage.isEnabled = enabled
+        checkHere.isEnabled = enabled
+        checkStrictHere.isEnabled = enabled
+    }
+
+    private fun JTextField.updateGraphicsOptions(fieldName: String) {
+        val text = text.replace(",", "")
+        // Update
+        if (txtCustomOptions.text.contains("$fieldName=")) {
+            txtCustomOptions.text = txtCustomOptions.text
+                    .replace(Regex("$fieldName=[^,]*"), Regex.escapeReplacement("$fieldName=$text"))
+        }
+        // Nothing yet, set width property.
+        else if (txtCustomOptions.text.isBlank()) {
+            txtCustomOptions.text = "$fieldName=$text"
+        }
+        // When there is something, append width property.
+        else {
+            txtCustomOptions.text = txtCustomOptions.text + ",$fieldName=$text"
+        }
     }
 }
