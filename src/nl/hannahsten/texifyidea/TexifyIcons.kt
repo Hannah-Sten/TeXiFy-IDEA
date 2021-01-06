@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.PlatformIcons
+import java.util.*
 import javax.swing.Icon
 
 /**
@@ -17,10 +18,12 @@ object TexifyIcons {
     )
 
     /**
-     * Copyright (c) 2017 Hannah Schellekens
+     * Copyright (c) 2017-2021 Hannah Schellekens
      */
     val LATEX_FILE = IconLoader.getIcon(
             "/nl/hannahsten/texifyidea/icons/latex-file.svg", TexifyIcons::class.java
+    ) or IconLoader.getIcon(
+            "/nl/hannahsten/texifyidea/icons/latex-file-alt.svg", TexifyIcons::class.java
     )
 
     /**
@@ -28,6 +31,8 @@ object TexifyIcons {
      */
     val LATEX_FILE_SMALLER = IconLoader.getIcon(
             "/nl/hannahsten/texifyidea/icons/latex-file_smaller.svg", TexifyIcons::class.java
+    ) or IconLoader.getIcon(
+            "/nl/hannahsten/texifyidea/icons/latex-file-alt_smaller.svg", TexifyIcons::class.java
     )
 
     /**
@@ -481,5 +486,18 @@ object TexifyIcons {
             "dvi" -> if (smaller) DVI_FILE_SMALLER else DVI_FILE
             else -> if (smaller) FILE_SMALLER else FILE
         }
+    }
+
+    /**
+     * Get a variation on the tex icon if applicable.
+     *
+     * @param smaller
+     *              `true` for a small icon, `false` for a regular sized icon.
+     */
+    private infix fun Icon.or(icon: Icon): Icon {
+        val calendar = Calendar.getInstance()
+        if (calendar.get(Calendar.DAY_OF_MONTH) != 1) return this
+        if (calendar.get(Calendar.MONTH) != 3) return this
+        return icon
     }
 }

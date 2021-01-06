@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<rect fill="#FFFFFF" fill-opacity="0" width="16" height="16"/>
+<g>
+	<defs>
+		<rect id="SVGID_1_" width="16" height="16"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  overflow="visible"/>
+	</clipPath>
+	<g clip-path="url(#SVGID_2_)">
+		<path fill="#C5C7C9" fill-opacity="0.8" d="M5,5l4-4v4H5z M10,6V1h5v14H5V6H10z"/>
+	</g>
+</g>
+<g>
+	<defs>
+		<rect id="SVGID_3_" width="16" height="16"/>
+	</defs>
+	<clipPath id="SVGID_4_">
+		<use xlink:href="#SVGID_3_"  overflow="visible"/>
+	</clipPath>
+</g>
+<rect x="9.844" y="8" fill="#41A5EE" width="4.156" height="1"/>
+<rect x="9.844" y="10" fill="#2B7CD3" width="4.156" height="1"/>
+<rect x="9.844" y="12" fill="#185ABD" width="4.156" height="1"/>
+<rect x="1" y="6.5" fill="#185ABD" width="8" height="8"/>
+<text transform="matrix(1 0 0 1 1.5938 12.625)" fill="#FFFFFF" font-family="'Gotham-Bold'" font-size="6">W</text>
+</svg>
