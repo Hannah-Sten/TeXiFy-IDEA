@@ -37,5 +37,7 @@ class InsertGraphicWizardAction : AnAction() {
 
         // If the user pressed OK, do stuff.
         if (!dialogWrapper.showAndGet()) return
+
+        val graphicData = dialogWrapper.extractData()
     }
 }

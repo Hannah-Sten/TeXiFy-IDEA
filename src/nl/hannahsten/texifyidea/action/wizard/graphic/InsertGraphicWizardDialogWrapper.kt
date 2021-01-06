@@ -5,24 +5,20 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.ContextHelpLabel
 import com.intellij.ui.TitledSeparator
-import com.intellij.ui.components.CheckBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
-import com.intellij.ui.components.panels.VerticalLayout
+import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
+import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.addTextChangeListener
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.awt.event.ItemEvent
 import javax.swing.*
 import javax.swing.border.EmptyBorder
-import javax.swing.event.DocumentEvent
-import javax.swing.event.DocumentListener
 
 /**
  * @author Hannah Schellekens
@@ -134,7 +130,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * Place figure on page position.
      */
-    private val checkPage = JBCheckBox( "page")
+    private val checkPage = JBCheckBox("page")
 
     /**
      * Place figure here.
@@ -150,6 +146,32 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         super.init()
         title = "Insert graphic"
     }
+
+    /**
+     * Get the data that has been entered into the UI.
+     */
+    fun extractData() = InsertGraphicData(
+            filePath = txtGraphicFile.text.trim(),
+            options = txtCustomOptions.text.trim(),
+            center = checkCenterHorizontally.isSelected,
+            placeInFigure = checkPlaceInFigure.isSelected,
+            captionLocation = whenFigure(cboxCaptionLocation.selectedItem as CaptionLocation),
+            caption = whenFigure(txtLongCaption.text.trim()),
+            shortCaption = whenFigure(txtShortCaption.text.trim()),
+            label = whenFigure(txtLabel.text.trim()),
+            positions = whenFigure(setOfNotNull(
+                    if (checkTop.isSelected) FigureLocation.TOP else null,
+                    if (checkBottom.isSelected) FigureLocation.BOTTOM else null,
+                    if (checkPage.isSelected) FigureLocation.PAGE else null,
+                    if (checkHere.isSelected) FigureLocation.HERE else null,
+                    if (checkStrictHere.isSelected) FigureLocation.STRICT_HERE else null
+            ))
+    )
+
+    /**
+     * Only selects the value when [checkPlaceInFigure] is selected.
+     */
+    private fun <T> whenFigure(value: T): T? = if (checkPlaceInFigure.isSelected) value else null
 
     override fun createCenterPanel() = JPanel().apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS).apply {

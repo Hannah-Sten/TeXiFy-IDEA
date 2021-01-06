@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.action.wizard.graphic
+package nl.hannahsten.texifyidea.lang.graphic
 
 import nl.hannahsten.texifyidea.lang.Described
 
