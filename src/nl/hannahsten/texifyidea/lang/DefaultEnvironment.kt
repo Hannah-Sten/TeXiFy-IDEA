@@ -68,6 +68,7 @@ enum class DefaultEnvironment(
     TITLEPAGE(environmentName = "titlepage"),
     TRIVLIST(environmentName = "trivlist"),
     VERBATIM(environmentName = "verbatim"),
+    VERBATIM_CAPITAL(environmentName = "Verbatim"),
     VERBATIM_STAR(environmentName = "verbatim*"),
     VERSE(environmentName = "verse"),
 
@@ -120,23 +121,15 @@ enum class DefaultEnvironment(
     VSMALLMATRIX_CAPITAL(environmentName = "Vsmallmatrix", context = Context.MATH, dependency = MATHTOOLS),
     VSMALLMATRIX_CAPITAL_STAR(environmentName = "Vsmallmatrix*", context = Context.MATH, dependency = MATHTOOLS),
 
-    // gauss
+    // other
+    ALGORITHM("algorithm"),
     GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
-
-    // comment
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = LatexPackage.COMMENT),
-
-    // lualatex
-    LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
-
-    // listings
     LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),
-
-    // tikz
+    LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
+    TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
-
-    // xcolor
-    TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models")));
+    ;
 
     companion object {
 

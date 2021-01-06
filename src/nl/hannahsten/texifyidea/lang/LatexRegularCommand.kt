@@ -123,6 +123,7 @@ enum class LatexRegularCommand(
     LOADCLASSWITHOPTIONS("LoadClassWithOptions", RequiredFileArgument("class", true, false, "cls")),
     LOWERCASE("lowercase", "text".asRequired(Type.TEXT)),
     LQ("lq", display = "‘"),
+    MAKENOIDXGLOSSARIES("makenoidxglossaries", dependency = GLOSSARIES),
     MAKETITLE("maketitle"),
     MARG("marg", "arg".asRequired()),
     MBOX("mbox", "text".asRequired()),

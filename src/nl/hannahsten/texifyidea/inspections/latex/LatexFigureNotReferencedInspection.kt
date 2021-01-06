@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -63,7 +64,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             .toMutableMap()
 
     private fun isFigureLabel(label: LatexCommands): Boolean =
-        label.inDirectEnvironment(Magic.Environment.figures)
+        label.inDirectEnvironment(EnvironmentMagic.figures)
 }
 
 private val LatexCommands.labelName: String?

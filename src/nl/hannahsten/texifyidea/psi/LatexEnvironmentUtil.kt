@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /*
 * LatexEnvironment
@@ -16,13 +17,13 @@ import nl.hannahsten.texifyidea.util.Magic
 fun getLabel(element: LatexEnvironment): String? {
     val stub = element.stub
     if (stub != null) return stub.label
-    return if (Magic.Environment.labelAsParameter.contains(element.environmentName)) {
+    return if (EnvironmentMagic.labelAsParameter.contains(element.environmentName)) {
         // See if we can find a label option
         val optionalParameters = getOptionalParameters(element.beginCommand.parameterList)
         optionalParameters.getOrDefault("label", null)
     }
     else {
-        if (!Magic.Environment.labeled.containsKey(element.environmentName)) return null
+        if (!EnvironmentMagic.labeled.containsKey(element.environmentName)) return null
         val content = element.environmentContent ?: return null
 
         // See if we can find a label command inside the environment

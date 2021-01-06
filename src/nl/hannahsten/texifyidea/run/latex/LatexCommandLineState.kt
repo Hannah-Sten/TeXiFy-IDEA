@@ -125,7 +125,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandsInFileSet = mainFile.psiFile(environment.project)?.commandsInFileSet()?.mapNotNull { it.name } ?: emptyList()
 
             // Option 1 in http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf
-            val usesTexForGlossaries = "\\" + LatexRegularCommand.MAKENOIDXGLOSSARIES.command in commandsInFileSet
+            val usesTexForGlossaries = LatexRegularCommand.MAKENOIDXGLOSSARIES.commandWithSlash in commandsInFileSet
 
             if (usesTexForGlossaries) {
                 runConfig.compileTwice = true

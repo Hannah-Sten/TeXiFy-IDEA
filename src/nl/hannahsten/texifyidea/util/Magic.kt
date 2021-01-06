@@ -49,33 +49,6 @@ object Magic {
      */
     object Environment {
 
-        /**
-         * Map that maps all environments that are expected to have a label to the label prefix they have by convention.
-         *
-         * environment name `=>` label prefix without colon
-         */
-        @JvmField
-        val labeled = mapOfVarargs(
-            "figure", "fig",
-            "table", "tab",
-            "equation", "eq",
-            "algorithm", "alg",
-            "lstlisting", "lst",
-            "Verbatim", "verb"
-        )
-
-        /**
-         * Environments that define their label via an optional parameter
-         */
-        @JvmField
-        val labelAsParameter = hashSetOf("lstlisting", "Verbatim")
-
-        /**
-         * Environments that introduce figures
-         */
-        @JvmField
-        val figures = hashSetOf("figure")
-
         @JvmField
         val verbatim = hashSetOf("verbatim", "Verbatim", "lstlisting", "plantuml", "luacode", "luacode*", "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted")
 

@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.insight.InsightGroup
@@ -21,6 +20,7 @@ import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import org.jetbrains.annotations.Nls
 import java.util.*
 
@@ -56,7 +56,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             labeledCommands.contains(it.name) && it.name != "\\item" && !it.hasStar()
         }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
 
-        file.environmentsInFile().filter { Magic.Environment.labeled.containsKey(it.environmentName) }
+        file.environmentsInFile().filter { EnvironmentMagic.labeled.containsKey(it.environmentName) }
             .forEach { addEnvironmentDescriptor(it, descriptors, manager, isOntheFly) }
 
         return descriptors
@@ -174,11 +174,10 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             // Determine label name.
             val createdLabel = getUniqueLabelName(
                 command.environmentName.formatAsLabel(),
-                Magic.Environment.labeled[command.environmentName], command.containingFile
+                EnvironmentMagic.labeled[command.environmentName], command.containingFile
             )
 
-            val moveCaretAfter: PsiElement
-            moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
+            val moveCaretAfter = if (EnvironmentMagic.labelAsParameter.contains(command.environmentName)) {
                 val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
                 insertedElements.last()
             }

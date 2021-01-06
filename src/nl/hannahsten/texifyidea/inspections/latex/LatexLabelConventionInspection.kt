@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.util.*
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -30,8 +31,8 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             return when (label) {
                 is LatexCommands -> {
                     if (label.inDirectEnvironmentMatching {
-                        Magic.Environment.labeled.containsKey(it.environmentName) &&
-                            !Magic.Environment.labelAsParameter.contains(it.environmentName)
+                        EnvironmentMagic.labeled.containsKey(it.environmentName) &&
+                            !EnvironmentMagic.labelAsParameter.contains(it.environmentName)
                     }
                     ) {
                         label.parentOfType(LatexEnvironment::class)
@@ -58,7 +59,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                     Magic.Command.labeledPrefixes.getOrDefault(labeledCommand.name, null)
                 }
                 is LatexEnvironment -> {
-                    Magic.Environment.labeled.getOrDefault(labeledCommand.environmentName, null)
+                    EnvironmentMagic.labeled.getOrDefault(labeledCommand.environmentName, null)
                 }
                 else -> null
             }
