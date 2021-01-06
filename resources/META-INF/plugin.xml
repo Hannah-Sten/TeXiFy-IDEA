@@ -158,15 +158,21 @@
                 <!-- MPS doesn't have the EditSmartGroup group, so we register directly in the Edit menu. -->
             <add-to-group group-id="EditMenu" anchor="last"/>
 
-            <!-- Table Creation Wizard-->
-            <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
-                    description="Shows popup to create and insert a table."/>
-
             <!-- Toggle Star -->
             <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
+
+            <separator></separator>
+
+            <!-- Table Creation Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableCreationWizard" text="Insert _Table..."
+                    description="Shows a popup to create and insert a table."/>
+
+            <!-- Graphic Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction" id="texify.GraphicInsertWizard" text="Insert _Graphic..."
+                    description="Shows a popup to insert a graphic."/>
         </group>
 
         <!-- LaTeX Analyze commands -->

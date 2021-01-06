@@ -25,12 +25,11 @@ class LatexTableWizardAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT)
-        val editors = FileEditorManager.getInstance(project!!).selectedEditors
-        val editor = editors.first { it is TextEditor } as TextEditor
+        val editor = project?.currentTextEditor() ?: return
         val document = editor.editor.document
 
         // Get the indentation from the current line.
-        val indent = document.lineIndentation(document.getLineNumber(editor.editor.caretOffset()))
+        val indent = document.lineIndentationByOffset(editor.editor.caretOffset())
 
         // Create the dialog.
         val dialogWrapper = TableCreationDialogWrapper()

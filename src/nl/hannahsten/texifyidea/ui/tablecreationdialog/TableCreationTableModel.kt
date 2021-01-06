@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableModel
  * @author Abby Berkers
  */
 class TableCreationTableModel : DefaultTableModel() {
+
     /**
      * Remove a column and its header from the table.
      */
