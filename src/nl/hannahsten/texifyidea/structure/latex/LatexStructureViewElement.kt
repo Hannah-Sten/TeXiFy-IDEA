@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
@@ -57,7 +56,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         return (element as? LatexCommands)?.commandToken?.text?.toLowerCase()
             ?: if (element is PsiNameIdentifierOwner) {
                 element.name!!.toLowerCase()
-            } else {
+            }
+            else {
                 element.text.toLowerCase()
             }
     }
@@ -65,7 +65,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     override fun getPresentation(): ItemPresentation {
         if (element is LatexCommands) {
             return LatexPresentationFactory.getPresentation(element)
-        } else if (element is PsiFile) {
+        }
+        else if (element is PsiFile) {
             return LatexFilePresentation(element)
         }
 
@@ -157,7 +158,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             for (psiFile in command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView)) {
                 if (BibtexFileType == psiFile.fileType) {
                     elt.addChild(BibtexStructureViewElement(psiFile))
-                } else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
+                }
+                else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
                     elt.addChild(LatexStructureViewElement(psiFile))
                 }
             }
@@ -269,7 +271,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         if (token == "\\setcounter") {
             numbering.setCounter(level, amount)
-        } else {
+        }
+        else {
             numbering.addCounter(level, amount)
         }
     }

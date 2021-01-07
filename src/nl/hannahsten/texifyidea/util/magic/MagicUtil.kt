@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.lang.LatexCommand
 val LatexCommand.cmd: String
     get() = this.commandWithSlash
 
-
 /**
  * Saves typing.
  */

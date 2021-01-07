@@ -2,15 +2,16 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.psi.toStringMap
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.io.IOException
-import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
@@ -87,7 +88,7 @@ class LatexCommandsStubElementType(debugName: String) :
         if (CommandMagic.definitions.contains(token) || CommandMagic.redefinitions.contains(token)) {
             indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
-        if (Magic.Command.labelAsParameter.contains(token) && latexCommandsStub.optionalParams.contains("label")) {
+        if (CommandMagic.labelAsParameter.contains(token) && latexCommandsStub.optionalParams.contains("label")) {
             val label = latexCommandsStub.optionalParams["label"]!!
             indexSink.occurrence(LatexParameterLabeledCommandsIndex.key(), label)
         }

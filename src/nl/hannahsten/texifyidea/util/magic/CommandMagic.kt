@@ -5,7 +5,6 @@ import nl.hannahsten.texifyidea.lang.LatexMathCommand.*
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import java.awt.Color
 
-
 object CommandMagic {
     /**
      * LaTeX commands that make the text take up more vertical space.
@@ -23,9 +22,9 @@ object CommandMagic {
         SECTION.cmd to "sec",
         SUBSECTION.cmd to "subsec",
         SUBSUBSECTION.cmd to "subsubsec",
-        ITEM.cmd to "itm"
+        ITEM.cmd to "itm",
+        LSTINPUTLISTING.cmd to "lst",
     )
-
 
     /**
      * Level of labeled commands.
@@ -40,6 +39,12 @@ object CommandMagic {
         PARAGRAPH to 4,
         SUBPARAGRAPH to 5
     )
+
+    /**
+     * Commands that define a label via an optional parameter
+     */
+    @JvmField
+    val labelAsParameter = hashSetOf(LSTINPUTLISTING.cmd)
 
     /**
      * All commands that mark some kind of section.
@@ -76,16 +81,8 @@ object CommandMagic {
      * All commands that represent a reference to a label, excluding user defined commands.
      */
     val labelReferenceWithoutCustomCommands = hashSetOf(
-        REF,EQREF,NAMEREF,AUTOREF,FULLREF,PAGEREF,VREF,AUTOREF_CAPITAL,CREF,CREF_CAPITAL,LABELCREF,CPAGEREF
+        REF, EQREF, NAMEREF, AUTOREF, FULLREF, PAGEREF, VREF, AUTOREF_CAPITAL, CREF, CREF_CAPITAL, LABELCREF, CPAGEREF
     ).map { it.cmd }.toSet()
-
-    /**
-     * All commands that represent a reference to a label, including user defined commands.
-     */
-    fun getLabelReferenceCommands(project: Project): Set<String> {
-        CommandManager.updateAliases(labelReferenceWithoutCustomCommands, project)
-        return CommandManager.getAliases(labelReferenceWithoutCustomCommands.first())
-    }
 
     /**
      * All commands that represent a reference to a bibliography entry/item.
@@ -120,12 +117,6 @@ object CommandMagic {
      * Commands from the import package which require a relative path as first parameter.
      */
     val relativeImportCommands = setOf(SUBIMPORT.cmd, SUBINPUTFROM.cmd, SUBINCLUDEFROM.cmd)
-
-    /**
-     * All commands for which we assume that commas in required parameters do not separate parameters.
-     * By default we assume the comma is a separator.
-     */
-    val commandsWithNoCommaSeparatedParameters = setOf(INCLUDEGRAPHICS.cmd)
 
     /**
      * All commands that define labels and that are present by default.

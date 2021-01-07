@@ -49,7 +49,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             CommandMagic.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
         }.map { "\\" + it.command }.toMutableList()
 
-        labeledCommands.addAll(Magic.Command.labelAsParameter)
+        labeledCommands.addAll(CommandMagic.labelAsParameter)
 
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
         if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
@@ -81,7 +81,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         val fixes = mutableListOf<LocalQuickFix>()
         fixes.add(InsertLabelForCommandFix())
-        if (!Magic.Command.labelAsParameter.contains(command.name)) {
+        if (!CommandMagic.labelAsParameter.contains(command.name)) {
             fixes.add(ChangeMinimumLabelLevelFix())
         }
 

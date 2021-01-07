@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.CommandManager
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 

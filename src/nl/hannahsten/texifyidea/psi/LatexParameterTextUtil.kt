@@ -7,8 +7,10 @@ import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -88,7 +90,7 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
             command.parent.node.replaceChild(oldNode, newNode)
         }
     }
-    else if (Magic.Command.labelAsParameter.contains(command?.name) || Magic.Environment.labelAsParameter.contains(
+    else if (CommandMagic.labelAsParameter.contains(command?.name) || EnvironmentMagic.labelAsParameter.contains(
             environment?.environmentName
         )
     ) {

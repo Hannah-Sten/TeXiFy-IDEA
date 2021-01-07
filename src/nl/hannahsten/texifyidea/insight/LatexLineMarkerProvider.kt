@@ -26,6 +26,7 @@ class LatexLineMarkerProvider : LineMarkerProvider {
             LineMarkersPass.createMethodSeparatorLineMarker(element.commandToken, colourManager).apply {
                 separatorColor = CommandMagic.sectionSeparatorColors[commandToken]
             }
-        } else null
+        }
+        else null
     }
 }

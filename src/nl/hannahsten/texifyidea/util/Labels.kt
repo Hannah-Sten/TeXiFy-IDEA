@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /*
  * Collections
@@ -166,14 +167,14 @@ fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
  * All commands that represent a reference to a label, including user defined commands.
  */
 fun Project.getLabelReferenceCommands(): Set<String> {
-    CommandManager.updateAliases(Magic.Command.labelReferenceWithoutCustomCommands, this)
-    return CommandManager.getAliases(Magic.Command.labelReferenceWithoutCustomCommands.first())
+    CommandManager.updateAliases(CommandMagic.labelReferenceWithoutCustomCommands, this)
+    return CommandManager.getAliases(CommandMagic.labelReferenceWithoutCustomCommands.first())
 }
 
 /**
  * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
  */
-fun getLabelDefinitionCommands() = CommandManager.getAliases(Magic.Command.labelDefinitionsWithoutCustomCommands.first())
+fun getLabelDefinitionCommands() = CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 
 /**
  * Get all commands defining labels, including user defined commands.
@@ -183,8 +184,8 @@ fun getLabelDefinitionCommands() = CommandManager.getAliases(Magic.Command.label
  */
 fun Project.getLabelDefinitionCommands(): Set<String> {
     // Check if updates are needed
-    CommandManager.updateAliases(Magic.Command.labelDefinitionsWithoutCustomCommands, this)
-    return CommandManager.getAliases(Magic.Command.labelDefinitionsWithoutCustomCommands.first())
+    CommandManager.updateAliases(CommandMagic.labelDefinitionsWithoutCustomCommands, this)
+    return CommandManager.getAliases(CommandMagic.labelDefinitionsWithoutCustomCommands.first())
 }
 
 /*
@@ -198,7 +199,7 @@ fun PsiElement.extractLabelName(): String {
     return when (this) {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
-            if (Magic.Command.labelAsParameter.contains(name)) {
+            if (CommandMagic.labelAsParameter.contains(name)) {
                 optionalParameterMap.toStringMap()["label"]!!
             }
             else {
@@ -230,7 +231,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
     return when (this) {
         is BibtexEntry -> firstChildOfType(BibtexId::class)
         is LatexCommands -> {
-            if (Magic.Command.labelAsParameter.contains(name)) {
+            if (CommandMagic.labelAsParameter.contains(name)) {
                 return getLabelParameterText(this)
             }
             else {
@@ -244,7 +245,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
             }
         }
         is LatexEnvironment -> {
-            if (Magic.Environment.labelAsParameter.contains(environmentName)) {
+            if (EnvironmentMagic.labelAsParameter.contains(environmentName)) {
                 getLabelParameterText(beginCommand)
             }
             else {

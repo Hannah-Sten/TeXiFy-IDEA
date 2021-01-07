@@ -17,8 +17,8 @@ import nl.hannahsten.texifyidea.reference.CommandDefinitionReference
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.shrink
 import java.util.*
@@ -191,7 +191,7 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
  * Checks if the command is followed by a label.
  */
 fun hasLabel(element: LatexCommands): Boolean {
-    if (Magic.Command.labelAsParameter.contains(element.name)) {
+    if (CommandMagic.labelAsParameter.contains(element.name)) {
         return getOptionalParameterMap(element.parameterList).toStringMap().containsKey("label")
     }
 

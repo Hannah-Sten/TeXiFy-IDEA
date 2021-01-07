@@ -7,7 +7,6 @@ import com.intellij.psi.LanguageInjector
 import com.intellij.psi.PsiLanguageInjectionHost
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.camelCase
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic

@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic

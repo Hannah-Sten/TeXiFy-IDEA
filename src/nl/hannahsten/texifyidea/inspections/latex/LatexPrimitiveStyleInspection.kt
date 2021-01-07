@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getNextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.deleteElement
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import org.jetbrains.annotations.Nls

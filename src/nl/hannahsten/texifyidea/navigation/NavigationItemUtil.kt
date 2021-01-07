@@ -6,10 +6,8 @@ import com.intellij.util.xml.model.gotosymbol.GoToSymbolProvider
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 import nl.hannahsten.texifyidea.util.*
 
@@ -31,7 +29,8 @@ object NavigationItemUtil {
                     text,
                     if (psiElement.name in psiElement.project.getLabelDefinitionCommands()) {
                         TexifyIcons.DOT_LABEL
-                    } else TexifyIcons.DOT_BIB
+                    }
+                    else TexifyIcons.DOT_BIB
                 )
             }
             is BibtexEntry -> GoToSymbolProvider.BaseNavigationItem(

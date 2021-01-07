@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.SimpleEnvironment
 import nl.hannahsten.texifyidea.util.Kindness
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*

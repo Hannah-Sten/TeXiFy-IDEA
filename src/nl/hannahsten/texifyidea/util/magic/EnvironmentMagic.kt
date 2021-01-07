@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.util.magic
 
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
 
-
 object EnvironmentMagic {
 
     val listingEnvironments = hashSetOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }
@@ -27,7 +26,6 @@ object EnvironmentMagic {
      * Environments that define their label via an optional parameter
      */
     val labelAsParameter = hashSetOf(LISTINGS.env, VERBATIM_CAPITAL.env)
-
 
     /**
      * Environments that introduce figures

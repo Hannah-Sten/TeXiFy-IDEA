@@ -8,7 +8,6 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.findBibtexItems
 import nl.hannahsten.texifyidea.util.findLabelsInFileSetAsCollection
@@ -50,7 +49,8 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                                     true
                                 )
                                 .withIcon(TexifyIcons.DOT_BIB)
-                        } else {
+                        }
+                        else {
                             return@map null
                         }
                     }

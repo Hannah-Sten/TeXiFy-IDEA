@@ -31,7 +31,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun getLabeledCommand(label: PsiElement): PsiElement? {
             return when (label) {
                 is LatexCommands -> {
-                    if (Magic.Command.labelAsParameter.contains(label.name)) {
+                    if (CommandMagic.labelAsParameter.contains(label.name)) {
                         return label
                     }
 
@@ -135,7 +135,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // Replace in command label definition
             if (command is LatexCommands) {
-                if (Magic.Command.labelAsParameter.contains(command.name)) {
+                if (CommandMagic.labelAsParameter.contains(command.name)) {
                     latexPsiHelper.setOptionalParameter(command, "label", "{$createdLabel}")
                 }
                 else {

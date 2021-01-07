@@ -5,7 +5,6 @@ import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**

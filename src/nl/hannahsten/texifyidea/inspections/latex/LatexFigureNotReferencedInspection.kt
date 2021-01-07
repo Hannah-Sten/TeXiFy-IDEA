@@ -8,13 +8,10 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.findLabelingCommandsInFileAsSequence
-import nl.hannahsten.texifyidea.util.firstParentOfType
-import nl.hannahsten.texifyidea.util.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {

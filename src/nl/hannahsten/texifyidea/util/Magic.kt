@@ -3,12 +3,6 @@ package nl.hannahsten.texifyidea.util
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.ARRAY
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.LONGTABLE
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULARX
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR_STAR
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -32,7 +26,6 @@ import java.util.regex.Pattern
 
 typealias LatexPackage = LatexPackage
 typealias RegexPattern = Pattern
-
 
 /**
  * Magic constants are awesome!

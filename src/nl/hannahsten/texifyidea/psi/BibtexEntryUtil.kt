@@ -4,7 +4,6 @@ import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.evaluate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 

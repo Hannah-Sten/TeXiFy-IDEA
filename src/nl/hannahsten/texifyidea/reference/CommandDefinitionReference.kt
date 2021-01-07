@@ -4,7 +4,6 @@ import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentsOfType

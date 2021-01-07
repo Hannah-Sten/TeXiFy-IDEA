@@ -49,7 +49,7 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
                 ?: return
 
         // Determine label name.
-        val labelString: String = if (Magic.Command.labelAsParameter.contains(command.name)) {
+        val labelString: String = if (CommandMagic.labelAsParameter.contains(command.name)) {
             // For parameter labeled commands we use the command name itself
             command.name!!
         }
@@ -71,7 +71,7 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
 
         val factory = LatexPsiHelper(project)
 
-        val labelCommand = if (Magic.Command.labelAsParameter.contains(command.name)) {
+        val labelCommand = if (CommandMagic.labelAsParameter.contains(command.name)) {
             factory.setOptionalParameter(command, "label", "{$createdLabel}")
         }
         else {
