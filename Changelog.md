@@ -3,6 +3,7 @@
 # Additions
 * Add support for labels defined in optional parameters of commands. (#1698)
 * Added BibTeX unused entry inspection. (#1717)
+* Performance improvements. (#1716)
 
 # Changes
 * Decreased size of gutter icons to 12x12. (#1715)
