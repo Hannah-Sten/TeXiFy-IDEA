@@ -5,6 +5,9 @@
 menu:Analyze[LaTeX > Word count]
 
 Count words in the currently open file, excluding LaTeX commands.
+Also includes the text in:
+* Sections (\section, \subsection etc.)
+* csquotes (\enquote)
 
 == [[file-templates]] Customizable file templates
 
