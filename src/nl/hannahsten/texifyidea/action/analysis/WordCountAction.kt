@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -61,6 +62,15 @@ open class WordCountAction : AnAction(
          * Words containing solely of punctuation must be ignored.
          */
         private val PUNCTUATION = Pattern.compile("[.,\\-_–:;?!'\"~=+*/\\\\&|]+")
+
+        private val SECTION_COMMANDS = LatexSectionFoldingBuilder.sectionCommandNames.map { "\\" + it }
+
+        /**
+         * Commands that only formatting or labels to the text,
+         * but still display the content
+         */
+        private val TEXT_COMMANDS = setOf("\\enquote") + SECTION_COMMANDS
+
     }
 
     override fun actionPerformed(event: AnActionEvent) {
@@ -109,6 +119,8 @@ open class WordCountAction : AnAction(
         val fileSet = baseFile.referencedFileSet()
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
+        val parameterText = fileSet.flatMap { it.childrenOfType(LatexParameterText::class) }
+                .filter { it.command?.text in TEXT_COMMANDS }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
             .filter {
@@ -127,17 +139,21 @@ open class WordCountAction : AnAction(
         val bibliography = bibliographies.flatMap { it.childrenOfType(LatexNormalText::class) }
 
         val (wordsNormal, charsNormal) = countWords(allNormalText)
+        val (wordsParameter, charsParameter) = countWords(parameterText)
         val (wordsBib, charsBib) = countWords(bibliography)
 
-        return Pair(wordsNormal - wordsBib, charsNormal - charsBib)
+        return Pair(wordsNormal + wordsParameter - wordsBib, charsNormal + charsParameter - charsBib)
     }
+
+    private val LatexParameterText.command : PsiElement?
+        get() { return this.parent?.parent?.parent?.prevSibling}
 
     /**
      * Counts all the words in the text elements.
      *
      * @return A pair of the total amount of words, and the amount of characters that make up the words.
      */
-    private fun countWords(latexNormalText: List<LatexNormalText>): Pair<Int, Int> {
+    private fun countWords(latexNormalText: List<PsiElement>): Pair<Int, Int> {
         // separate all latex words.
         val latexWords: MutableSet<PsiElement> = HashSet()
         var characters = 0
