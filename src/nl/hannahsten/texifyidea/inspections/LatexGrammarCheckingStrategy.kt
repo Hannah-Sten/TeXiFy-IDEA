@@ -14,8 +14,11 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }
         ?.let { it is LatexGroup } ?: true
 
-    override fun isMyContextRoot(element: PsiElement) =
-        element is LatexNormalText && element.isNotInMathEnvironment() && element.isNotInSquareBrackets() || element is PsiComment
+    override fun isMyContextRoot(element: PsiElement) = when (element) {
+        is LatexNormalText -> element.isNotInMathEnvironment() && element.isNotInSquareBrackets()
+        is PsiComment -> true
+        else -> false
+    }
 
     override fun getStealthyRanges(root: PsiElement, text: CharSequence) = StrategyUtils.indentIndexes(text, setOf(' '))
 
