@@ -63,6 +63,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 * link:Magic-comments[Magic comments]
 * link:Custom-commands[Support for `\newcommand`-like custom definitions of cite and label commands]
 * link:Move-arguments[Action for swapping arguments of LaTeX commands]
+* link:++Menu-entries#insert-graphic-wizard++[Drag and drop graphics inside your document]
 
 == Reading
 * Customizable syntax highlighting
@@ -147,6 +148,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * link:Menu-entries#Word-counting-tool[Word counting tool]
 * link:Menu-entries#file-templates[Customizable file templates for .tex, .sty, .cls and .bib files]
 * link:++Menu-entries#table-creation-wizard++[Table Creation Wizard]
+* link:++Menu-entries#insert-graphic-wizard++[Graphic Insertion Wizard]
 * link:++Menu-entries#clear-aux-files++[Menu button to delete generated auxiliary files]
 * Crash reporting dialog
 * File creation dialog
@@ -227,7 +229,9 @@ menu:Edit[LaTeX > Sectioning]:: Insert sectioning commands like `\part` or `\sub
 
 menu:Edit[LaTeX > Font Style]:: Insert font style commands like `\textbf` for bold face. If any text is selected, it will be used as argument to the command.
 
-menu:Edit[LaTeX > link:Menu-entries#table-creation-wizard[Table Creation Wizard]]:: Displays a table creation wizard that generates a LaTeX table.
+menu:Edit[LaTeX > link:Menu-entries#table-creation-wizard[Insert Table...]]:: Displays a table creation wizard that generates a LaTeX table.
+
+menu:Edit[LaTeX > link:Menu-entries#insert-graphic-wizard[Insert Graphic...]]:: Displays a wizard that generates graphic inclusion LaTeX.
 
 // todo link to description pages for the next entries
 menu:Edit[LaTeX > Toggle Star]:: Toggle the star of a command.
