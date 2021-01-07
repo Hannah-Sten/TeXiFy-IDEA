@@ -144,11 +144,6 @@ open class WordCountAction : AnAction(
         return Pair(wordsNormal + wordsParameter - wordsBib, charsNormal + charsParameter - charsBib)
     }
 
-    private val LatexParameterText.command: PsiElement?
-        get() {
-            return this.parent?.parent?.parent?.prevSibling
-        }
-
     /**
      * Counts all the words in the text elements.
      *

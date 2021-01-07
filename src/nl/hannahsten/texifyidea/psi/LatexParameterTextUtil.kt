@@ -120,3 +120,8 @@ fun setName(element: LatexParameterText, name: String): PsiElement {
 fun getName(element: LatexParameterText): String {
     return element.text ?: ""
 }
+
+val LatexParameterText.command: PsiElement?
+    get() {
+        return this.parent?.parent?.parent?.prevSibling
+    }
