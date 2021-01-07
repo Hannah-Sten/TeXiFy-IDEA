@@ -719,24 +719,34 @@
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
                          groupName="BibTeX" displayName="Same bibliography is included multiple times"
                          enabledByDefault="true"/>
-        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
+        <localInspection language="Bibtex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
                          groupName="BibTeX" displayName="Unused bib entry"
                          enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexAddLabelIntention</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexAddLabelToEnvironmentIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>
