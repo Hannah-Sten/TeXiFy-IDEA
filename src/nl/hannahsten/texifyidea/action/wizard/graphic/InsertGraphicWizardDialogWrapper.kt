@@ -11,15 +11,14 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
-import com.intellij.ui.layout.checkBoxFollowedBySpinner
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.addKeyReleasedListener
+import nl.hannahsten.texifyidea.util.addTextChangeListener
+import nl.hannahsten.texifyidea.util.setInputFilter
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.awt.event.ItemEvent
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 

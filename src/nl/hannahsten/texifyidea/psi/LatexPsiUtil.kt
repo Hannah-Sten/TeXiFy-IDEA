@@ -4,7 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.tree.TokenSet
-import java.util.ArrayList
+import java.util.*
 
 /**
  * @author Hannah Schellekens
