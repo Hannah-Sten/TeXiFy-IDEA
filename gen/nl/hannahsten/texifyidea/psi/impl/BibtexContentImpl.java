@@ -21,6 +21,7 @@ public class BibtexContentImpl extends ASTWrapperPsiElement implements BibtexCon
     visitor.visitContent(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);
@@ -30,12 +31,6 @@ public class BibtexContentImpl extends ASTWrapperPsiElement implements BibtexCon
   @NotNull
   public List<BibtexString> getStringList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BibtexString.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdentifier() {
-    return findChildByType(IDENTIFIER);
   }
 
 }

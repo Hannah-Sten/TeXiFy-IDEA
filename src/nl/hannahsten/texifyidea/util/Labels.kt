@@ -3,8 +3,10 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.index.BibtexEntryIndex
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.psi.*
@@ -21,7 +23,8 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  *
  * @return A set containing all labels that are defined in the fileset of the given file.
  */
-fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
+fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> =
+    (findLatexLabelStringsInFileSetAsSequence() + findBibtexLabelsInFileSetAsSequence()).toSet()
 
 /**
  * Finds all defined labels within a given file.
@@ -31,7 +34,8 @@ fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> = (findLatexL
  */
 fun PsiFile.findLabelsInFileSetAsCollection(): List<PsiElement> = sequenceOf(
     findLabelingCommandsInFileSetAsSequence(),
-    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()
+    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence(),
+    LatexParameterLabeledCommandsIndex.getItemsInFileSet(this).asSequence()
 ).flatten().toList()
 
 /*
@@ -52,7 +56,8 @@ fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
  */
 fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = sequenceOf(
     findLabelingCommandsInFileAsSequence(),
-    LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence()
+    LatexParameterLabeledEnvironmentsIndex.getItems(this).asSequence(),
+    LatexParameterLabeledCommandsIndex.getItems(this).asSequence()
 ).flatten()
 
 /**
@@ -60,7 +65,8 @@ fun PsiFile.findLatexLabelPsiElementsInFileAsSequence(): Sequence<PsiElement> = 
  */
 fun PsiFile.findLatexLabelPsiElementsInFileSetAsSequence(): Sequence<PsiElement> = sequenceOf(
     findLabelingCommandsInFileSetAsSequence(),
-    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence()
+    LatexParameterLabeledEnvironmentsIndex.getItemsInFileSet(this).asSequence(),
+    LatexParameterLabeledCommandsIndex.getItemsInFileSet(this).asSequence()
 ).flatten()
 
 /**
@@ -121,7 +127,7 @@ fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = this.commandsInFile
  * @return A collection of all label commands.
  */
 fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection<LatexCommands> {
-    val commandNames = CommandMagic.getLabelDefinitionCommands(project)
+    val commandNames = project.getLabelDefinitionCommands()
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 
@@ -131,7 +137,7 @@ fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection
  * @return A sequence of all label commands.
  */
 fun Sequence<PsiElement>.findLatexCommandsLabels(project: Project): Sequence<LatexCommands> {
-    val commandNames = CommandMagic.getLabelDefinitionCommands(project)
+    val commandNames = project.getLabelDefinitionCommands()
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 
@@ -148,10 +154,37 @@ fun Project.findAllLabelsAndBibtexIds(): Collection<PsiElement> {
     val commands = LatexCommandsIndex.getItems(this).findLatexCommandsLabels(this)
     val bibtexIds = BibtexEntryIndex.getIndexedEntries(this)
     val environments = LatexParameterLabeledEnvironmentsIndex.getItems(this)
+    val parameterLabeledCommands = LatexParameterLabeledCommandsIndex.getItems(this)
     val result = ArrayList<PsiElement>(commands)
     result.addAll(bibtexIds)
     result.addAll(environments)
+    result.addAll(parameterLabeledCommands)
     return result
+}
+
+/**
+ * All commands that represent a reference to a label, including user defined commands.
+ */
+fun Project.getLabelReferenceCommands(): Set<String> {
+    CommandManager.updateAliases(Magic.Command.labelReferenceWithoutCustomCommands, this)
+    return CommandManager.getAliases(Magic.Command.labelReferenceWithoutCustomCommands.first())
+}
+
+/**
+ * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
+ */
+fun getLabelDefinitionCommands() = CommandManager.getAliases(Magic.Command.labelDefinitionsWithoutCustomCommands.first())
+
+/**
+ * Get all commands defining labels, including user defined commands.
+ * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
+ *
+ * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
+ */
+fun Project.getLabelDefinitionCommands(): Set<String> {
+    // Check if updates are needed
+    CommandManager.updateAliases(Magic.Command.labelDefinitionsWithoutCustomCommands, this)
+    return CommandManager.getAliases(Magic.Command.labelDefinitionsWithoutCustomCommands.first())
 }
 
 /*
@@ -165,12 +198,17 @@ fun PsiElement.extractLabelName(): String {
     return when (this) {
         is BibtexEntry -> identifier() ?: ""
         is LatexCommands -> {
-            // For now just take the first label name (may be multiple for user defined commands)
-            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
-            val position = info?.positions?.firstOrNull() ?: 0
-            val prefix = info?.prefix ?: ""
-            // Skip optional parameters for now (also below and in
-            prefix + this.requiredParameter(position)
+            if (Magic.Command.labelAsParameter.contains(name)) {
+                optionalParameterMap.toStringMap()["label"]!!
+            }
+            else {
+                // For now just take the first label name (may be multiple for user defined commands)
+                val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+                val position = info?.positions?.firstOrNull() ?: 0
+                val prefix = info?.prefix ?: ""
+                // Skip optional parameters for now (also below and in
+                prefix + this.requiredParameter(position)
+            }
         }
         is LatexEnvironment -> this.label ?: ""
         else -> text
@@ -181,14 +219,37 @@ fun PsiElement.extractLabelName(): String {
  * Extracts the label element (so the element that should be resolved to) from the PsiElement given that the PsiElement represents a label.
  */
 fun PsiElement.extractLabelElement(): PsiElement? {
+    fun getLabelParameterText(command: LatexCommandWithParams): LatexParameterText {
+        val optionalParameters = command.optionalParameterMap
+        val labelEntry = optionalParameters.filter { pair -> pair.key.toString() == "label" }.first()
+        val contentList = labelEntry.value.keyvalContentList
+        return contentList.firstOrNull { c -> c.parameterText != null }?.parameterText
+            ?: contentList.first { c -> c.parameterGroup != null }.parameterGroup!!.parameterGroupText!!.parameterTextList.first()
+    }
+
     return when (this) {
         is BibtexEntry -> firstChildOfType(BibtexId::class)
         is LatexCommands -> {
-            // For now just take the first label name (may be multiple for user defined commands)
-            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
-            val position = info?.positions?.firstOrNull() ?: 0
-            // Skip optional parameters for now
-            this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)?.firstChildOfType(LatexParameterText::class)
+            if (Magic.Command.labelAsParameter.contains(name)) {
+                return getLabelParameterText(this)
+            }
+            else {
+                // For now just take the first label name (may be multiple for user defined commands)
+                val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+                val position = info?.positions?.firstOrNull() ?: 0
+
+                // Skip optional parameters for now
+                this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)
+                    ?.firstChildOfType(LatexParameterText::class)
+            }
+        }
+        is LatexEnvironment -> {
+            if (Magic.Environment.labelAsParameter.contains(environmentName)) {
+                getLabelParameterText(beginCommand)
+            }
+            else {
+                null
+            }
         }
         else -> null
     }

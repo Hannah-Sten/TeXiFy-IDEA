@@ -79,9 +79,8 @@ MAGIC_COMMENT_LEXER_SWITCH="%"{MAGIC_COMMENT_PREFIX} {WHITE_SPACE}? "parser" {WH
 LEXER_OFF_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "off" [^\r\n]*
 LEXER_ON_TOKEN={MAGIC_COMMENT_LEXER_SWITCH} "on" [^\r\n]*
 
-NORMAL_TEXT_WORD=[^\s\\{}%\[\]$\(\)|!\"=&<>]+
+NORMAL_TEXT_WORD=[^\s\\\{\}%\[\]$\(\)|!\"=&<>,]+
 // Separate from normal text, e.g. because they can be \verb delimiters or should not appear in normal text words for other reasons
-NORMAL_TEXT_CHAR=[|!\"=&<>]
 ANY_CHAR=[^]
 
 // Algorithmicx
@@ -345,11 +344,21 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 
 // In case a backslash is not a command, probably because  a line ends with a backslash, then we do not want to lex the following newline as a command token,
 // because that will confuse the formatter because it will see the next line as being on this line
-\\                    { return NORMAL_TEXT_CHAR; }
+\\                    { return BACKSLASH; }
 
 "*"                     { return STAR; }
 // A separate token, used for example for aligning & in tables
 "&"                     { return AMPERSAND; }
+
+// Tokens for special characters of which certain grammar elements might support only a few
+"="                     { return EQUALS; }
+","                     { return COMMA; }
+"\""                    { return QUOTATION_MARK; }
+"<"                     { return OPEN_ANGLE_BRACKET; }
+">"                     { return CLOSE_ANGLE_BRACKET; }
+"|"                     { return PIPE;}
+"!"                     { return EXCLAMATION_MARK; }
+
 {OPEN_BRACKET}          { return OPEN_BRACKET; }
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }
 {OPEN_BRACE}            { return OPEN_BRACE; }
@@ -365,6 +374,5 @@ END_PSEUDOCODE_BLOCK="\\EndFor" | "\\EndIf" | "\\EndWhile" | "\\Until" | "\\EndL
 {MAGIC_COMMENT_TOKEN}   { return MAGIC_COMMENT_TOKEN; }
 {COMMENT_TOKEN}         { return COMMENT_TOKEN; }
 {NORMAL_TEXT_WORD}      { return NORMAL_TEXT_WORD; }
-{NORMAL_TEXT_CHAR}      { return NORMAL_TEXT_CHAR; }
 
 [^]                     { return com.intellij.psi.TokenType.BAD_CHARACTER; }

@@ -21,6 +21,7 @@ public class BibtexNormalTextImpl extends ASTWrapperPsiElement implements Bibtex
     visitor.visitNormalText(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof BibtexVisitor) accept((BibtexVisitor)visitor);
     else super.accept(visitor);

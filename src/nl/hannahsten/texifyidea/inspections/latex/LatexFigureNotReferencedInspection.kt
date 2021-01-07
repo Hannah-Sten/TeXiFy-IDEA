@@ -41,7 +41,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     }
 
     private fun removeReferencedLabels(file: PsiFile, figureLabels: MutableMap<String?, LatexCommands>) {
-        val referenceCommands = CommandMagic.getLabelReferenceCommands(file.project)
+        val referenceCommands = file.project.getLabelReferenceCommands()
         for (command in file.commandsInFileSet()) {
             // Don't resolve references in command definitions
             if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions ||
@@ -61,6 +61,9 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
             ProblemHighlightType.WEAK_WARNING
         )
 
+    /**
+     * Find all commands in the file that label a figure.
+     */
     private fun getFigureLabels(file: PsiFile): MutableMap<String?, LatexCommands> =
         file.findLabelingCommandsInFileAsSequence()
             .filter(this::isFigureLabel)

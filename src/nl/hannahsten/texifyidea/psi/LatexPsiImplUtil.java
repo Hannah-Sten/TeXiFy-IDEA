@@ -39,19 +39,22 @@ public class LatexPsiImplUtil {
         }
     }
 
-    /**
-     * Generates a list of all optional parameter names and values.
-     */
-    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexCommands element) {
-        return LatexCommandsImplUtilKt.getOptionalParameters(element.getParameterList());
+    public static String toString(@NotNull LatexKeyvalKey element) {
+        return LatexCommandsImplUtilKt.keyValContentToString(element);
     }
 
-    /**
-     * Generates a list of all optional parameter names and values.
-     */
-    public static LinkedHashMap<String, String> getOptionalParameters(@NotNull LatexBeginCommand element) {
-        return LatexCommandsImplUtilKt.getOptionalParameters(element.getParameterList());
+    public static String toString(@NotNull LatexKeyvalValue element) {
+        return LatexCommandsImplUtilKt.keyValContentToString(element);
     }
+
+    public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexCommands element) {
+        return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
+    }
+
+    public static LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue> getOptionalParameterMap(@NotNull LatexBeginCommand element) {
+        return LatexCommandsImplUtilKt.getOptionalParameterMap(element.getParameterList());
+    }
+
 
     /**
      * Generates a list of all names of all required parameters in the command.

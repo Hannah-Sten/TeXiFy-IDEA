@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.LatexPackage
@@ -203,7 +204,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     private fun getTailText(commands: LatexCommands): String {
         return when (commands.commandToken.text) {
             "\\newcommand" -> {
-                val optional: List<String> = LinkedList(commands.optionalParameters.keys)
+                val optional: List<String> = LinkedList(commands.optionalParameterMap.toStringMap().keys)
                 var requiredParameterCount = 0
                 if (optional.isNotEmpty()) {
                     try {
@@ -220,7 +221,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
             "\\DeclarePairedDelimiter" -> "{param}"
             "\\DeclarePairedDelimiterX", "\\DeclarePairedDelimiterXPP" -> {
-                val optional = commands.optionalParameters.keys.firstOrNull()
+                val optional = commands.optionalParameterMap.toStringMap().keys.firstOrNull()
                 val nrParams = try {
                     optional?.toInt() ?: 0
                 }

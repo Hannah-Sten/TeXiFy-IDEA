@@ -37,8 +37,9 @@ open class LatexNoExtensionInspection : TexifyInspectionBase() {
         file.commandsInFile().asSequence()
             .filter { it.name in CommandMagic.illegalExtensions }
             .filter { command ->
-                CommandMagic.illegalExtensions[command.name]!!.any { extension ->
-                    command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == true }
+                CommandMagic.illegalExtensions[command.name]!!.any {
+                    extension ->
+                    command.requiredParameters.any { it.split(",").any { parameter -> parameter.endsWith(extension) } }
                 }
             }
             .forEach { command ->

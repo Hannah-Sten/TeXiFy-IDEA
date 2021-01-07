@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.findBibtexItems
 import nl.hannahsten.texifyidea.util.findLabelsInFileSetAsCollection
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
 /**
@@ -55,7 +56,8 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                     }
                     null
                 }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
-        } else if (CommandMagic.getLabelReferenceCommands(element.project).contains(command)) {
+        }
+        else if (element.project.getLabelReferenceCommands().contains(command)) {
             return file.findLabelsInFileSetAsCollection()
                 .stream()
                 .filter { it.extractLabelName().isNotBlank() }

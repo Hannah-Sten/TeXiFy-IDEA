@@ -283,7 +283,7 @@ object CommandManager : Iterable<String?>, Serializable {
                 val definedCommand = commandDefinition.requiredParameter(0) ?: return@forEach
                 if (definedCommand.isBlank()) return@forEach
 
-                val isFirstParameterOptional = commandDefinition.optionalParameters.size > 1
+                val isFirstParameterOptional = commandDefinition.parameterList.filter { it.optionalParam != null }.size > 1
 
                 val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
                     ?.requiredParamContentList

@@ -20,7 +20,7 @@ fun getLabel(element: LatexEnvironment): String? {
     if (stub != null) return stub.label
     return if (EnvironmentMagic.labelAsParameter.contains(element.environmentName)) {
         // See if we can find a label option
-        val optionalParameters = getOptionalParameters(element.beginCommand.parameterList)
+        val optionalParameters = getOptionalParameterMap(element.beginCommand.parameterList).toStringMap()
         optionalParameters.getOrDefault("label", null)
     }
     else {

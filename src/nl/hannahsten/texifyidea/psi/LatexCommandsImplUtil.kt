@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.shrink
 import java.util.*
@@ -31,7 +32,7 @@ fun getReferences(element: LatexCommands): Array<PsiReference> {
     val firstParam = readFirstParam(element)
 
     // If it is a reference to a label
-    if (CommandMagic.getLabelReferenceCommands(element.project).contains(element.commandToken.text) && firstParam != null) {
+    if (element.project.getLabelReferenceCommands().contains(element.commandToken.text) && firstParam != null) {
         val references = extractLabelReferences(element, firstParam)
         return references.toTypedArray()
     }
@@ -153,40 +154,28 @@ fun stripGroup(text: String): String {
  * If a value does not have a name, the value will be the key in the hashmap mapping to the empty string.
  */
 // Explicitly use a LinkedHashMap to preserve iteration order
-fun getOptionalParameters(parameters: List<LatexParameter>): LinkedHashMap<String, String> {
+fun Map<LatexKeyvalKey, LatexKeyvalValue?>.toStringMap(): LinkedHashMap<String, String> {
     val parameterMap = LinkedHashMap<String, String>()
-    // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
-    // But within a parameter, there can be different content like [name={value in group}]
-    val parameterString = parameters.mapNotNull { it.optionalParam }
-        // extract the content of each parameter element
-        .map { param ->
-            param.optionalParamContentList
-        }
-        .map { contentList ->
-            contentList.mapNotNull { content: LatexOptionalParamContent ->
-                // the content is either simple text
-                val text = content.parameterText
-                if (text != null) return@mapNotNull text.text
-                // or a group like in param={some value}
-                if (content.group == null) return@mapNotNull null
-                content.group!!.contentList.joinToString { it.text }
-            }
-                // Join different content types (like name= and {value}) together without separator
-                .joinToString("")
-        }
-        // Join different parameters (like [param1][param2]) together with separator
-        .joinToString(",")
-
-    if (parameterString.trim { it <= ' ' }.isNotEmpty()) {
-        for (parameter in parameterString.split(",")) {
-            val parts = parameter.split("=".toRegex()).toTypedArray()
-            parameterMap[parts[0].trim()] = if (parts.size > 1) parts[1].trim() else ""
-        }
-    }
+    this.forEach { (k, v) -> parameterMap[k.toString()] = v?.toString() ?: "" }
     return parameterMap
 }
 
-fun getRequiredParameters(parameters: List<LatexParameter>): List<String>? {
+fun getOptionalParameterMap(parameters: List<LatexParameter>): LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue?> {
+
+    val parameterMap = LinkedHashMap<LatexKeyvalKey, LatexKeyvalValue?>()
+    // Parameters can be defined using multiple optional parameters, like \command[opt1][opt2]{req1}
+    // But within a parameter, there can be different content like [name={value in group}]
+    parameters.mapNotNull { it.optionalParam }
+        // extract the content of each parameter element
+        .flatMap { param ->
+            param.keyvalPairList
+        }.forEach { pair ->
+            parameterMap[pair.keyvalKey] = pair.keyvalValue
+        }
+    return parameterMap
+}
+
+fun getRequiredParameters(parameters: List<LatexParameter>): List<String> {
     return parameters.mapNotNull { it.requiredParam }
         .map { param ->
             param.text.dropWhile { it == '{' }.dropLastWhile { it == '}' }.trim()
@@ -202,6 +191,10 @@ fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<Ps
  * Checks if the command is followed by a label.
  */
 fun hasLabel(element: LatexCommands): Boolean {
+    if (Magic.Command.labelAsParameter.contains(element.name)) {
+        return getOptionalParameterMap(element.parameterList).toStringMap().containsKey("label")
+    }
+
     // Next leaf is a command token, parent is LatexCommands
     val labelMaybe = element.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
@@ -220,3 +213,18 @@ fun setName(element: LatexCommands, newName: String): PsiElement {
     }
     return element
 }
+
+fun keyValContentToString(element: LatexKeyvalKey): String =
+    keyValContentToString(element.keyvalContentList)
+
+fun keyValContentToString(list: List<LatexKeyvalContent>): String =
+    list.joinToString(separator = "") {
+        when {
+            it.parameterText != null -> it.parameterText!!.text
+            it.parameterGroup != null -> it.parameterGroup!!.parameterGroupText!!.text
+            else -> ""
+        }
+    }
+
+fun keyValContentToString(element: LatexKeyvalValue): String =
+    keyValContentToString(element.keyvalContentList)

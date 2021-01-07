@@ -38,8 +38,9 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
         file.commandsInFile().asSequence()
             .filter { it.name in CommandMagic.requiredExtensions }
             .filter { command ->
-                CommandMagic.requiredExtensions[command.name]!!.any { extension ->
-                    command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == false }
+                CommandMagic.requiredExtensions[command.name]!!.any {
+                    extension ->
+                    command.requiredParameters.any { !it.split(",").any { parameter -> parameter.endsWith(extension) } }
                 }
             }
             .forEach { command ->
