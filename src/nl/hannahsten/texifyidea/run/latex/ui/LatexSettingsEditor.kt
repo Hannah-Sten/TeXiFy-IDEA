@@ -332,7 +332,7 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
                     )
             )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files (use directory of main file when using BiBTeX without MiKTeX),\n or use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.mainFileString} or ${LatexOutputPath.projectDirString} as placeholders:")
         panel.add(outputPath)
     }
 

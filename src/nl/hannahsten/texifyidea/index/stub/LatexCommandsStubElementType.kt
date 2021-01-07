@@ -2,11 +2,10 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
+import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import java.io.IOException
@@ -30,8 +29,8 @@ class LatexCommandsStubElementType(debugName: String) :
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
         val requiredParameters = latexCommands.requiredParameters
-        val optionalParameters: List<String> =
-            LinkedList(latexCommands.optionalParameters.keys)
+        val optionalParameters: Map<String, String> =
+            latexCommands.optionalParameterMap.toStringMap()
         return LatexCommandsStubImpl(
             parent!!, this,
             commandToken,
@@ -58,13 +57,21 @@ class LatexCommandsStubElementType(debugName: String) :
     override fun deserialize(stubInputStream: StubInputStream, parent: StubElement<*>): LatexCommandsStub {
         val name = stubInputStream.readName().toString()
         val required = deserialiseList(stubInputStream.readName().toString())
-        val optional = deserialiseList(stubInputStream.readName().toString())
+        val optional = deserializeMap(stubInputStream.readName().toString())
         return LatexCommandsStubImpl(
             parent, this,
             name,
             required,
             optional
         )
+    }
+
+    private fun deserializeMap(fromString: String): Map<String, String> {
+        val keyValuePairs = deserialiseList(fromString)
+        return keyValuePairs.filter { it.isNotEmpty() }.map {
+            val parts = it.split(KEY_VALUE_SEPARATOR)
+            parts[0] to parts[1]
+        }.toMap()
     }
 
     override fun indexStub(latexCommandsStub: LatexCommandsStub, indexSink: IndexSink) {
@@ -79,23 +86,29 @@ class LatexCommandsStubElementType(debugName: String) :
         if (Magic.Command.definitions.contains(token) || Magic.Command.redefinitions.contains(token)) {
             indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
+        if (Magic.Command.labelAsParameter.contains(token) && latexCommandsStub.optionalParams.contains("label")) {
+            val label = latexCommandsStub.optionalParams["label"]!!
+            indexSink.occurrence(LatexParameterLabeledCommandsIndex.key(), label)
+        }
     }
 
     private fun deserialiseList(string: String): List<String> {
-        return SEPERATOR.splitAsStream(string)
+        return LIST_ELEMENT_SEPARATOR.splitAsStream(string)
             .collect(Collectors.toList())
     }
 
     private fun serialiseRequired(stub: LatexCommandsStub): String {
-        return java.lang.String.join(SEPERATOR.pattern(), stub.requiredParams)
+        return java.lang.String.join(LIST_ELEMENT_SEPARATOR.pattern(), stub.requiredParams)
     }
 
     private fun serialiseOptional(stub: LatexCommandsStub): String {
-        return java.lang.String.join(SEPERATOR.pattern(), stub.optionalParams)
+        val keyValuePairs = stub.optionalParams.map { "${it.key}=${it.value}" }
+        return java.lang.String.join(LIST_ELEMENT_SEPARATOR.pattern(), keyValuePairs)
     }
 
     companion object {
-        private val SEPERATOR =
+        private val LIST_ELEMENT_SEPARATOR =
             Pattern.compile("\u1923\u9123\u2d20 hello\u0012")
+        private val KEY_VALUE_SEPARATOR = "=".toRegex()
     }
 }

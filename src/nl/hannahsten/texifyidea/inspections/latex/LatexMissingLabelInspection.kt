@@ -47,6 +47,8 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             Magic.Command.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
         }.map { "\\" + it.command }.toMutableList()
 
+        labeledCommands.addAll(Magic.Command.labelAsParameter)
+
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
         if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
             labeledCommands.remove("\\part")
@@ -75,12 +77,18 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             return false
         }
 
+        val fixes = mutableListOf<LocalQuickFix>()
+        fixes.add(InsertLabelForCommandFix())
+        if (!Magic.Command.labelAsParameter.contains(command.name)) {
+            fixes.add(ChangeMinimumLabelLevelFix())
+        }
+
         // For adding the label, see LatexAddLabelIntention
         descriptors.add(
             manager.createProblemDescriptor(
                 command,
                 "Missing label",
-                arrayOf(InsertLabelAfterCommandFix(), ChangeMinimumLabelLevelFix()),
+                fixes.toTypedArray(),
                 ProblemHighlightType.WEAK_WARNING,
                 isOntheFly,
                 false
@@ -154,7 +162,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
      * This is also an intention, but in order to keep the same alt+enter+enter functionality (because we have an other
      * quickfix as well) we keep it as a quickfix also.
      */
-    private class InsertLabelAfterCommandFix : LabelQuickFix() {
+    private class InsertLabelForCommandFix : LabelQuickFix() {
 
         // It has to appear in alphabetical order before the other quickfix
         override fun getFamilyName() = "Add label for this command"
@@ -179,8 +187,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
             val moveCaretAfter: PsiElement
             moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
-                val insertedElements = helper.addOptionalParameter(command.beginCommand, "label", createdLabel)
-                insertedElements.last()
+                helper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
             }
             else {
                 // in a float environment the label must be inserted after a caption

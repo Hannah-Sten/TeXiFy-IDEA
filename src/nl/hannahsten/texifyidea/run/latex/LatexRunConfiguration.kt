@@ -32,7 +32,9 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
@@ -381,6 +383,14 @@ class LatexRunConfiguration constructor(
         bibtexRunConfiguration.mainFile = mainFile
         bibtexRunConfiguration.setSuggestedName()
 
+        // On non-MiKTeX systems, add bibinputs for bibtex to work
+        if (!latexDistribution.isMiktex()) {
+            // Only if default, because the user could have changed it after creating the run config but before running
+            if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path))
+            }
+        }
+
         runManager.addConfiguration(bibSettings)
 
         bibRunConfigs = bibRunConfigs + setOf(bibSettings)
@@ -410,14 +420,6 @@ class LatexRunConfiguration constructor(
             psiFile?.hasBibliography() == true -> BibliographyCompiler.BIBTEX
             psiFile?.usesBiber() == true -> BibliographyCompiler.BIBER
             else -> return // Do not auto-generate a bib run config when we can't detect bibtex
-        }
-
-        // On non-MiKTeX systems, override outputPath to disable the out/ directory by default for bibtex to work
-        if (!latexDistribution.isMiktex()) {
-            // Only if default, because the user could have changed it after creating the run config but before running
-            if (outputPath.isDefault() && mainFile != null) {
-                outputPath.virtualFile = mainFile!!.parent
-            }
         }
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config

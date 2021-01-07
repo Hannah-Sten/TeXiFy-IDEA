@@ -10,6 +10,9 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
 class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
     override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean {
         // Label parameters are LatexParameterText
-        return element is LatexParameterText
+        return when (element) {
+            is LatexParameterText -> true
+            else -> false
+        }
     }
 }

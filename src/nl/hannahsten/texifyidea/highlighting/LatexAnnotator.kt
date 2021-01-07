@@ -207,7 +207,7 @@ open class LatexAnnotator : Annotator {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
-            in Magic.Command.getLabelDefinitionCommands() -> {
+            in getLabelDefinitionCommands() -> {
                 LatexSyntaxHighlighter.LABEL_DEFINITION
             }
             // Bibliography references (citations).

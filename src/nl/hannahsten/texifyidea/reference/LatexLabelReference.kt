@@ -8,10 +8,7 @@ import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.extractLabelName
-import nl.hannahsten.texifyidea.util.findBibtexItems
-import nl.hannahsten.texifyidea.util.findLabelsInFileSetAsCollection
+import nl.hannahsten.texifyidea.util.*
 import java.util.*
 
 /**
@@ -53,7 +50,7 @@ class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiRefere
                     null
                 }.filter { o: LookupElementBuilder? -> Objects.nonNull(o) }.toArray()
         }
-        else if (Magic.Command.getLabelReferenceCommands(element.project).contains(command)) {
+        else if (element.project.getLabelReferenceCommands().contains(command)) {
             return file.findLabelsInFileSetAsCollection()
                 .stream()
                 .filter { it.extractLabelName().isNotBlank() }

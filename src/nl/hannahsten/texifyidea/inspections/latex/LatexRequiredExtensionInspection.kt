@@ -39,7 +39,7 @@ open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
             .filter { command ->
                 Magic.Command.requiredExtensions[command.name]!!.any {
                     extension ->
-                    command.requiredParameters.any { it?.split(",")?.any { parameter -> parameter.endsWith(extension) } == false }
+                    command.requiredParameters.any { !it.split(",").any { parameter -> parameter.endsWith(extension) } }
                 }
             }
             .forEach { command ->

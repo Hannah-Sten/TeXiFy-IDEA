@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface LatexOptionalParam extends PsiElement {
 
   @NotNull
+  List<LatexKeyvalPair> getKeyvalPairList();
+
+  @NotNull
   List<LatexOptionalParamContent> getOptionalParamContentList();
 
 }

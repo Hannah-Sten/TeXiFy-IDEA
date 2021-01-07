@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LISTINGS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SIUNITX
@@ -550,7 +551,12 @@ enum class LatexRegularCommand(
     IFFALSE("iffalse"),
     FI("fi"),
     ELSE("else"),
-    OR("or");
+    OR("or"),
+
+    /**
+     * Listings
+     */
+    LSTINPUTLISTING("lstinputlisting", "options".asOptional(), RequiredFileArgument("filename", false, false), dependency = LISTINGS);
 
     companion object {
 

@@ -1,20 +1,21 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiLanguageInjectionHost;
+import com.intellij.psi.PsiNameIdentifierOwner;
+import org.jetbrains.annotations.NotNull;
 
 public class LatexVisitor extends PsiElementVisitor {
 
   public void visitBeginCommand(@NotNull LatexBeginCommand o) {
-    visitPsiElement(o);
+    visitCommandWithParams(o);
   }
 
   public void visitCommands(@NotNull LatexCommands o) {
     visitPsiNameIdentifierOwner(o);
+    // visitCommandWithParams(o);
   }
 
   public void visitComment(@NotNull LatexComment o) {
@@ -49,6 +50,22 @@ public class LatexVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitKeyvalContent(@NotNull LatexKeyvalContent o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyvalKey(@NotNull LatexKeyvalKey o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyvalPair(@NotNull LatexKeyvalPair o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyvalValue(@NotNull LatexKeyvalValue o) {
+    visitPsiElement(o);
+  }
+
   public void visitMagicComment(@NotNull LatexMagicComment o) {
     visitPsiElement(o);
   }
@@ -78,6 +95,14 @@ public class LatexVisitor extends PsiElementVisitor {
   }
 
   public void visitParameter(@NotNull LatexParameter o) {
+    visitPsiLanguageInjectionHost(o);
+  }
+
+  public void visitParameterGroup(@NotNull LatexParameterGroup o) {
+    visitPsiElement(o);
+  }
+
+  public void visitParameterGroupText(@NotNull LatexParameterGroupText o) {
     visitPsiElement(o);
   }
 
@@ -111,6 +136,10 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitPsiNameIdentifierOwner(@NotNull PsiNameIdentifierOwner o) {
     visitElement(o);
+  }
+
+  public void visitCommandWithParams(@NotNull LatexCommandWithParams o) {
+    visitPsiElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {

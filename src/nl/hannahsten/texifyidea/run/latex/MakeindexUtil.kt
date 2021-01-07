@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
@@ -69,7 +70,7 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text in PackageUtils.PACKAGE_COMMANDS }
             .filter { command -> command.requiredParameters.any { it in Magic.Package.index || it in Magic.Package.glossary } }
-            .flatMap { it.optionalParameters.keys }
+            .flatMap { it.optionalParameterMap.toStringMap().keys }
     }
 }
 
@@ -83,7 +84,7 @@ fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): HashMap<Strin
         LatexCommandsIndex.getItemsInFileSet(mainPsiFile)
             .filter { it.commandToken.text == "\\makeindex" }
             .forEach {
-                makeindexOptions.putAll(it.optionalParameters)
+                makeindexOptions.putAll(it.optionalParameterMap.toStringMap())
             }
         makeindexOptions
     }

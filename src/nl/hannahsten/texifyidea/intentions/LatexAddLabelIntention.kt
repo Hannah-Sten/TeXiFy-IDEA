@@ -45,23 +45,38 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
                 ?: return
 
         // Determine label name.
-        val required = command.requiredParameters
-        if (required.isEmpty()) {
-            return
+        val labelString: String = if (Magic.Command.labelAsParameter.contains(command.name)) {
+            // For parameter labeled commands we use the command name itself
+            command.name!!
+        }
+        else {
+            // For all other commands we use the first required parameter
+            val required = command.requiredParameters
+            if (required.isNotEmpty()) {
+                required[0]
+            }
+            else {
+                return
+            }
         }
 
         val createdLabel = getUniqueLabelName(
-            required[0].formatAsLabel(),
+            labelString.formatAsLabel(),
             Magic.Command.labeledPrefixes[command.name!!], command.containingFile
         )
 
         val factory = LatexPsiHelper(project)
 
-        // Insert label
-        // command -> NoMathContent -> Content -> Container containing the command
-        val commandContent = command.parent.parent
-        val labelCommand = commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
+        val labelCommand = if (Magic.Command.labelAsParameter.contains(command.name)) {
+            factory.setOptionalParameter(command, "label", "{$createdLabel}")
+        }
+        else {
 
+            // Insert label
+            // command -> NoMathContent -> Content -> Container containing the command
+            val commandContent = command.parent.parent
+            commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
+        }
         // Adjust caret offset.
         val caret = editor.caretModel
         caret.moveToOffset(labelCommand.endOffset())

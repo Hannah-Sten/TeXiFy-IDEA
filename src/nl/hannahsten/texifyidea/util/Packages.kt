@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.*
@@ -266,12 +267,12 @@ object PackageUtils {
                 .text == "\\documentclass" || cmd.commandToken
                     .text == "\\LoadClass"
             ) {
-                setOf(cmd.optionalParameters.keys.toList())
+                setOf(cmd.optionalParameterMap.toStringMap().keys.toList())
             }
             else {
                 setOf(
                     cmd.requiredParameters,
-                    cmd.optionalParameters.keys
+                    cmd.optionalParameterMap.toStringMap().keys
                         .toList()
                 )
             }
