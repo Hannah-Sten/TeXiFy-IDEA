@@ -17,7 +17,14 @@ enum class FigureLocation(
     PAGE("p", "page"),
     HERE("h", "here"),
     STRICT_HERE("H", "strict here", requiredPackage = LatexPackage.FLOAT),
-    OVERRIDE_INTERNAL_PARAMETERS("!", "override internal parameters");
+    OVERRIDE_INTERNAL_PARAMETERS("!", "override");
 
     override fun toString() = description
+
+    companion object {
+
+        val ALL_SYMBOLS = values().mapNotNull { it.symbol.firstOrNull() }
+
+        fun bySymbol(symbol: String) = values().firstOrNull { it.symbol == symbol }
+    }
 }

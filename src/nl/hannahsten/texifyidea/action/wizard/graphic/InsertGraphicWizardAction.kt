@@ -19,9 +19,7 @@ import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.removeFileExtension
-import nl.hannahsten.texifyidea.util.files.toRelativePath
+import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
 import java.util.*
 
@@ -117,14 +115,15 @@ class InsertGraphicWizardAction(val initialFile: File? = null) : AnAction() {
         append("{").append(convertFilePath(project, filePath)).append("}")
     }
 
-    private fun convertFilePath(project: Project, filePath: String): String {
+    private fun InsertGraphicData.convertFilePath(project: Project, absoluteFilePath: String): String {
         val rootManager = ProjectRootManager.getInstance(project)
 
-        return rootManager.contentSourceRoots.asSequence()
-                .map { filePath.toRelativePath(it.path) }
-                .minByOrNull { it.length }
-                ?.removeFileExtension()
-                ?: filePath
+        val filePath = if (relativePath) {
+            rootManager.relativizePath(absoluteFilePath) ?: absoluteFilePath
+        }
+        else absoluteFilePath
+
+        return filePath.removeFileExtension()
     }
 
     private fun InsertGraphicData.captionCommand() = buildString {

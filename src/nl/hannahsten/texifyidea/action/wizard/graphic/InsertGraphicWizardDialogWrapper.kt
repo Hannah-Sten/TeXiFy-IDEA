@@ -11,12 +11,15 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
+import com.intellij.ui.layout.checkBoxFollowedBySpinner
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
-import nl.hannahsten.texifyidea.util.Magic
-import nl.hannahsten.texifyidea.util.addTextChangeListener
+import nl.hannahsten.texifyidea.util.*
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.event.ItemEvent
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
@@ -123,29 +126,34 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     private val txtLabel = JBTextField("fig:")
 
     /**
-     * Place figure on top position.
+     * Contains the positioning symbols.
      */
-    private val checkTop = JBCheckBox("top")
+    private val txtPosition = JBTextField("").apply {
+        setInputFilter(FigureLocation.ALL_SYMBOLS.toSet())
+        addKeyReleasedListener { updatePositionCheckmarks() }
+    }
 
     /**
-     * Place figure on bottom position.
+     * The check boxes for the figure locations.
      */
-    private val checkBottom = JBCheckBox("bottom")
-
-    /**
-     * Place figure on page position.
-     */
-    private val checkPage = JBCheckBox("page")
-
-    /**
-     * Place figure here.
-     */
-    private val checkHere = JBCheckBox("here")
-
-    /**
-     * Place figure strictly here.
-     */
-    private val checkStrictHere = JBCheckBox("strict here")
+    private val checkPosition = FigureLocation.values().asSequence()
+            .map { location ->
+                location.symbol to JBCheckBox(location.description).apply {
+                    addActionListener { event ->
+                        val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
+                        // Add symbol if selected.
+                        if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
+                            txtPosition.text = txtPosition.text + location.symbol
+                        }
+                        // Remove if deselected.
+                        else {
+                            txtPosition.text = txtPosition.text.replace(location.symbol, "")
+                        }
+                    }
+                }
+            }
+            // Use linked hash map to preserve order.
+            .toMap(LinkedHashMap())
 
     init {
         super.init()
@@ -161,23 +169,19 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
             options = txtCustomOptions.text.trim(),
             center = checkCenterHorizontally.isSelected,
             placeInFigure = checkPlaceInFigure.isSelected,
-            captionLocation = whenFigure(cboxCaptionLocation.selectedItem as CaptionLocation),
-            caption = whenFigure(txtLongCaption.text.trim()),
-            shortCaption = whenFigure(txtShortCaption.text.trim()),
-            label = whenFigure(txtLabel.text.trim()),
-            positions = whenFigure(listOfNotNull(
-                    if (checkTop.isSelected) FigureLocation.TOP else null,
-                    if (checkBottom.isSelected) FigureLocation.BOTTOM else null,
-                    if (checkPage.isSelected) FigureLocation.PAGE else null,
-                    if (checkHere.isSelected) FigureLocation.HERE else null,
-                    if (checkStrictHere.isSelected) FigureLocation.STRICT_HERE else null
-            ))
+            captionLocation = whenFigure { cboxCaptionLocation.selectedItem as CaptionLocation },
+            caption = whenFigure { txtLongCaption.text.trim() },
+            shortCaption = whenFigure { txtShortCaption.text.trim() },
+            label = whenFigure { txtLabel.text.trim() },
+            positions = whenFigure {
+                txtPosition.text.trim().mapNotNull { FigureLocation.bySymbol(it.toString()) }
+            }
     )
 
     /**
      * Only selects the value when [checkPlaceInFigure] is selected.
      */
-    private fun <T> whenFigure(value: T): T? = if (checkPlaceInFigure.isSelected) value else null
+    private fun <T> whenFigure(value: () -> T): T? = if (checkPlaceInFigure.isSelected) value() else null
 
     override fun createCenterPanel() = JPanel().apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS).apply {
@@ -229,15 +233,14 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         addLabeledComponent(txtLongCaption, "Caption:", labelWidth)
         addLabeledComponent(txtShortCaption, "Short caption:", labelWidth)
         addLabeledComponent(txtLabel, "Label:", labelWidth)
+        addLabeledComponent(txtPosition, "Position:", labelWidth)
 
         val positionBoxes = JPanel(HorizontalLayout(8)).apply {
-            add(checkTop)
-            add(checkBottom)
-            add(checkPage)
-            add(checkHere)
-            add(checkStrictHere)
+            checkPosition.values.forEach {
+                add(it)
+            }
         }
-        addLabeledComponent(positionBoxes, "Position:", labelWidth)
+        addLabeledComponent(positionBoxes, "", labelWidth)
     }
 
     private fun JPanel.addSectionHeader(title: String, margin: Int = 8) {
@@ -286,11 +289,9 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         txtLongCaption.isEnabled = enabled
         txtShortCaption.isEnabled = enabled
         txtLabel.isEnabled = enabled
-        checkTop.isEnabled = enabled
-        checkBottom.isEnabled = enabled
-        checkPage.isEnabled = enabled
-        checkHere.isEnabled = enabled
-        checkStrictHere.isEnabled = enabled
+        checkPosition.values.forEach {
+            it.isEnabled = enabled
+        }
     }
 
     private fun JTextField.updateGraphicsOptions(fieldName: String) {
@@ -307,6 +308,13 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         // When there is something, append width property.
         else {
             txtCustomOptions.text = txtCustomOptions.text + ",$fieldName=$text"
+        }
+    }
+
+    private fun updatePositionCheckmarks() {
+        val positionText = txtPosition.text
+        checkPosition.forEach { (symbol, checkbox) ->
+            checkbox.isSelected = symbol in positionText
         }
     }
 }
