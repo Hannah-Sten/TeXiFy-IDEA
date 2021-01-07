@@ -4,14 +4,15 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
 import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.caretOffset
+import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import java.util.*
 
 /**
