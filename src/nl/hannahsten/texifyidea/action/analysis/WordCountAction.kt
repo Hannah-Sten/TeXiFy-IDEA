@@ -70,7 +70,6 @@ open class WordCountAction : AnAction(
          * but still display the content
          */
         private val TEXT_COMMANDS = setOf("\\enquote") + SECTION_COMMANDS
-
     }
 
     override fun actionPerformed(event: AnActionEvent) {
@@ -145,8 +144,10 @@ open class WordCountAction : AnAction(
         return Pair(wordsNormal + wordsParameter - wordsBib, charsNormal + charsParameter - charsBib)
     }
 
-    private val LatexParameterText.command : PsiElement?
-        get() { return this.parent?.parent?.parent?.prevSibling}
+    private val LatexParameterText.command: PsiElement?
+        get() {
+            return this.parent?.parent?.parent?.prevSibling
+        }
 
     /**
      * Counts all the words in the text elements.
