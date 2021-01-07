@@ -9,6 +9,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.nextLeaf
 import com.intellij.util.containers.toArray
+import nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.RequiredArgument
@@ -227,3 +228,15 @@ fun keyValContentToString(list: List<LatexKeyvalContent>): String =
 
 fun keyValContentToString(element: LatexKeyvalValue): String =
     keyValContentToString(element.keyvalContentList)
+
+val SECTION_COMMANDS = LatexSectionFoldingBuilder.sectionCommandNames.map { "\\" + it }
+
+/**
+ * Commands that only formatting or labels to the text,
+ * but still display the content
+ */
+val TEXT_COMMANDS = setOf("\\enquote") + SECTION_COMMANDS
+
+fun PsiElement.isTextCommand() : Boolean {
+    return this.text in TEXT_COMMANDS
+}

@@ -62,14 +62,6 @@ open class WordCountAction : AnAction(
          * Words containing solely of punctuation must be ignored.
          */
         private val PUNCTUATION = Pattern.compile("[.,\\-_–:;?!'\"~=+*/\\\\&|]+")
-
-        private val SECTION_COMMANDS = LatexSectionFoldingBuilder.sectionCommandNames.map { "\\" + it }
-
-        /**
-         * Commands that only formatting or labels to the text,
-         * but still display the content
-         */
-        private val TEXT_COMMANDS = setOf("\\enquote") + SECTION_COMMANDS
     }
 
     override fun actionPerformed(event: AnActionEvent) {
@@ -119,7 +111,7 @@ open class WordCountAction : AnAction(
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
         val parameterText = fileSet.flatMap { it.childrenOfType(LatexParameterText::class) }
-                .filter { it.command?.text in TEXT_COMMANDS }
+                .filter { it.command?.isTextCommand() ?: false }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
             .filter {
