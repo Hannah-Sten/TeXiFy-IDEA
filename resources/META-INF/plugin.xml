@@ -523,7 +523,7 @@
 
         <!-- Tool windows-->
         <toolWindow factoryClass="nl.hannahsten.texifyidea.toolwindow.DetexifyToolWindowFactory"
-                    id="Detexify" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/detexify.svg"/>
+                    id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
 
         <!-- Other Services -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
