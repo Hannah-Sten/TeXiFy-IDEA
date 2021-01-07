@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import org.jetbrains.annotations.Nls
 import java.util.*
@@ -42,9 +43,10 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val minimumLevel = Magic.Command.labeledLevels[TexifySettings.getInstance().missingLabelMinimumLevel] ?: error("No valid minimum level given")
-        val labeledCommands = Magic.Command.labeledLevels.keys.filter { command ->
-            Magic.Command.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
+        val minimumLevel = CommandMagic.labeledLevels[TexifySettings.getInstance().missingLabelMinimumLevel]
+            ?: error("No valid minimum level given")
+        val labeledCommands = CommandMagic.labeledLevels.keys.filter { command ->
+            CommandMagic.labeledLevels[command]?.let { it <= minimumLevel } == true // -1 is a higher level than 0
         }.map { "\\" + it.command }.toMutableList()
 
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question

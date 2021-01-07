@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.formatting
 import com.intellij.lang.LanguageFormattingRestriction
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /**
  * @author Abby Berkers
@@ -15,7 +15,7 @@ class LatexLanguageFormattingRestriction : LanguageFormattingRestriction {
 
     private fun isFormatterNotAllowed(context: PsiElement): Boolean {
         return if (context.containingFile is LatexFile) {
-            Magic.Environment.verbatim.any {
+            EnvironmentMagic.verbatim.any {
                 context.node.text.startsWith("\\begin{$it}") &&
                     context.node.text.endsWith("\\end{$it}")
             }

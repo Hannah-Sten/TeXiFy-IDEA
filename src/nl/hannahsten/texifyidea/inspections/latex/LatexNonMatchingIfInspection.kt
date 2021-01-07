@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.matches
 import nl.hannahsten.texifyidea.util.previousCommand
@@ -33,7 +34,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         val commands = file.commandsInFile().sortedBy { it.textOffset }
         for (command in commands) {
             val name = command.name
-            if (command.name in Magic.Command.endIfs) {
+            if (command.name in CommandMagic.endIfs) {
                 // Non-opened fi.
                 if (stack.isEmpty()) {
                     descriptors.add(
@@ -50,7 +51,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
                 stack.pop()
             }
-            else if (Magic.Pattern.ifCommand.matches(name) && name !in Magic.Command.ignoredIfs && command.previousCommand()?.name != "\\newif") {
+            else if (Magic.Pattern.ifCommand.matches(name) && name !in CommandMagic.ignoredIfs && command.previousCommand()?.name != "\\newif") {
                 stack.push(command)
             }
         }

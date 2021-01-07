@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.forcedFirstRequiredParameterAsCommand
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
@@ -27,10 +28,9 @@ object NavigationItemUtil {
                 return GoToSymbolProvider.BaseNavigationItem(
                     psiElement,
                     text,
-                    if (psiElement.name in Magic.Command.getLabelDefinitionCommands(psiElement.project)) {
+                    if (psiElement.name in CommandMagic.getLabelDefinitionCommands(psiElement.project)) {
                         TexifyIcons.DOT_LABEL
-                    }
-                    else TexifyIcons.DOT_BIB
+                    } else TexifyIcons.DOT_BIB
                 )
             }
             is BibtexEntry -> GoToSymbolProvider.BaseNavigationItem(

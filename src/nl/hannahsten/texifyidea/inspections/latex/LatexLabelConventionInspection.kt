@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.util.*
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
@@ -56,7 +57,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
         private fun getLabelPrefix(labeledCommand: PsiElement): String? {
             return when (labeledCommand) {
                 is LatexCommands -> {
-                    Magic.Command.labeledPrefixes.getOrDefault(labeledCommand.name, null)
+                    CommandMagic.labeledPrefixes.getOrDefault(labeledCommand.name, null)
                 }
                 is LatexEnvironment -> {
                     EnvironmentMagic.labeled.getOrDefault(labeledCommand.environmentName, null)
@@ -164,7 +165,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             // Loop over every file
             for (pair in commandsAndFiles) {
                 // Only look at commands which refer to something
-                val commands = pair.second.filter { Magic.Command.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
+                val commands = pair.second.filter { CommandMagic.labelReferenceWithoutCustomCommands.contains(it.name) }.reversed()
                 val requiredParams = mutableListOf<LatexRequiredParam>()
 
                 // Find all the parameters with the given labelName

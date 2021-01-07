@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.Environment.Context
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHMICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GAUSS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
@@ -123,10 +124,12 @@ enum class DefaultEnvironment(
 
     // other
     ALGORITHM("algorithm"),
+    ALGORITHMIC("algorithmic", dependency = ALGORITHMICX),
     GMATRIX(environmentName = "gmatrix", context = Context.MATH, dependency = GAUSS),
     COMMENT(environmentName = "comment", context = Context.COMMENT, dependency = LatexPackage.COMMENT),
     LISTINGS(environmentName = "lstlisting", dependency = LatexPackage.LISTINGS),
     LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
+    LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
     TESTCOLORS(environmentName = "testcolors", initialContents = "", context = Context.NORMAL, dependency = LatexPackage.XCOLOR, arguments = arrayOf(OptionalArgument("num models"))),
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
     ;

@@ -5,12 +5,12 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.camelCase
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 
 /**
@@ -33,7 +33,7 @@ class LatexLanguageInjector : LanguageInjector {
                     host.beginCommand.optionalParameters.getOrDefault("language", null)
                 }
                 else -> {
-                    Magic.Environment.languageInjections[host.environmentName]
+                    EnvironmentMagic.languageInjections[host.environmentName]
                 }
             }
 
@@ -47,7 +47,7 @@ class LatexLanguageInjector : LanguageInjector {
         if (host is LatexParameter) {
             val parent = host.parentOfType(LatexCommands::class) ?: return
 
-            val languageId = Magic.Command.languageInjections[parent.commandToken.text.substring(1)]
+            val languageId = CommandMagic.languageInjections[parent.commandToken.text.substring(1)]
             val language = findLanguage(languageId) ?: return
             val range = host.textRange
                 .shiftRight(-host.textOffset)

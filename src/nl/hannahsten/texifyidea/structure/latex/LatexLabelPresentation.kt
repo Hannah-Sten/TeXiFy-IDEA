@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
@@ -17,13 +18,15 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val presentableText: String
 
     init {
-        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
+        val labelingCommands = CommandMagic.getLabelDefinitionCommands()
         if (!labelingCommands.contains(labelCommand.commandToken.text)) {
             val token = labelCommand.commandToken.text
             throw IllegalArgumentException("command '$token' is no \\label-command")
         }
 
-        val position = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull() ?: 0
+        val position =
+            CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull()
+                ?: 0
         presentableText = labelCommand.requiredParameter(position) ?: "no label found"
 
         // Location string.

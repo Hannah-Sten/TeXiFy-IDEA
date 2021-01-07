@@ -8,6 +8,7 @@ import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import nl.hannahsten.texifyidea.util.Magic;
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic;
 
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 
@@ -1102,14 +1103,14 @@ public class LatexLexer implements FlexLexer {
           case 83: break;
           case 26: 
             { yypopState();
-        // toString to fix comparisons of charsequence subsequences with string
-        if (Magic.Environment.verbatim.contains(yytext().toString())) {
-            yypushState(VERBATIM_START);
-        }
-        else if (yytext().toString().equals("algorithmic")) {
-            yypushState(PSEUDOCODE);
-        }
-        return NORMAL_TEXT_WORD;
+            // toString to fix comparisons of charsequence subsequences with string
+            if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
+                yypushState(VERBATIM_START);
+            }
+            else if (yytext().toString().equals("algorithmic")) {
+                yypushState(PSEUDOCODE);
+            }
+            return NORMAL_TEXT_WORD;
             } 
             // fall through
           case 84: break;
@@ -1153,7 +1154,7 @@ public class LatexLexer implements FlexLexer {
           case 34: 
             { // Pop current state
         yypopState();
-        if (Magic.Environment.verbatim.contains(yytext().toString())) {
+        if (EnvironmentMagic.verbatim.contains(yytext().toString())) {
             // Pop verbatim state
             yypopState();
             return NORMAL_TEXT_WORD;

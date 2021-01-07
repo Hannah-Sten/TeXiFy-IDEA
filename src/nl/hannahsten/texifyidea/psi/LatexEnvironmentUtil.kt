@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 /*
@@ -31,8 +32,9 @@ fun getLabel(element: LatexEnvironment): String? {
         if (!children.isEmpty()) {
             // We cannot include user defined labeling commands, because to get them we need the index,
             // but this code is used to create the index (for environments)
-            val labelCommands = Magic.Command.labelDefinitionsWithoutCustomCommands
-            val labelCommand = children.firstOrNull { c: LatexCommands -> labelCommands.contains(c.name) } ?: return null
+            val labelCommands = CommandMagic.labelDefinitionsWithoutCustomCommands
+            val labelCommand =
+                children.firstOrNull { c: LatexCommands -> labelCommands.contains(c.name) } ?: return null
             val requiredParameters = labelCommand.requiredParameters
             if (requiredParameters.isEmpty()) return null
             val info = CommandManager.labelAliasesInfo.getOrDefault(labelCommand.name, null) ?: return null

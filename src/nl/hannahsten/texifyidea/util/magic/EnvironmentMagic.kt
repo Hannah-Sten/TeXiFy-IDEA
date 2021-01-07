@@ -1,13 +1,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
-import nl.hannahsten.texifyidea.lang.Environment
 
-/**
- * Saves typing.
- */
-val Environment.env: String
-    get() = this.environmentName
 
 object EnvironmentMagic {
 
@@ -39,4 +33,41 @@ object EnvironmentMagic {
      * Environments that introduce figures
      */
     val figures = hashSetOf(FIGURE.env)
+
+    // Note: used in the lexer
+    @JvmField
+    val verbatim = hashSetOf(VERBATIM.env, VERBATIM_CAPITAL.env, LISTINGS.env, "plantuml", LUACODE.env, LUACODE_STAR.env, "sagesilent", "sageblock", "sagecommandline", "sageverbatim", "sageexample", "minted")
+
+    /**
+     * Environments that always contain a certain language.
+     *
+     * Maps the name of the environment to the registered Language id.
+     */
+    val languageInjections = hashMapOf(
+        LUACODE.env to "Lua",
+        LUACODE_STAR.env to "Lua"
+    )
+
+    val algorithmEnvironments = setOf(ALGORITHMIC.env)
+
+    /**
+     * All environments that define a matrix.
+     */
+    val matrixEnvironments = setOf(
+        "matrix", "pmatrix", "bmatrix", "vmatrix", "Bmatrix", "Vmatrix",
+        "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
+        "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
+        "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
+        "gmatrix", "tikz-cd"
+    )
+
+    val alignableEnvironments = setOf(
+        "eqnarray", "eqnarray*",
+        "split",
+        "align", "align*",
+        "alignat", "alignat*",
+        "flalign", "flalign*",
+        "aligned", "alignedat",
+        "cases", "dcases"
+    ) + matrixEnvironments
 }

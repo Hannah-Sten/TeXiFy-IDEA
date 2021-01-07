@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.allCommands
 import nl.hannahsten.texifyidea.util.getIncludeCommands
 import nl.hannahsten.texifyidea.util.getIncludedFiles
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.List
@@ -52,19 +53,18 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase() ?: if (element is PsiNameIdentifierOwner) {
-            element.name!!.toLowerCase()
-        }
-        else {
-            element.text.toLowerCase()
-        }
+        return (element as? LatexCommands)?.commandToken?.text?.toLowerCase()
+            ?: if (element is PsiNameIdentifierOwner) {
+                element.name!!.toLowerCase()
+            } else {
+                element.text.toLowerCase()
+            }
     }
 
     override fun getPresentation(): ItemPresentation {
         if (element is LatexCommands) {
             return LatexPresentationFactory.getPresentation(element)
-        }
-        else if (element is PsiFile) {
+        } else if (element is PsiFile) {
             return LatexFilePresentation(element)
         }
 
@@ -103,7 +103,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             }
 
             // Only consider section markers.
-            if (!Magic.Command.sectionMarkers.contains(token)) {
+            if (!CommandMagic.sectionMarkers.contains(token)) {
                 continue
             }
 
@@ -133,7 +133,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
 
         // Add command definitions.
-        Magic.Command.commandDefinitions.forEach {
+        CommandMagic.commandDefinitions.forEach {
             addFromCommand(treeElements, commands, it)
         }
 
@@ -156,8 +156,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             for (psiFile in command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView)) {
                 if (BibtexFileType == psiFile.fileType) {
                     elt.addChild(BibtexStructureViewElement(psiFile))
-                }
-                else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
+                } else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
                     elt.addChild(LatexStructureViewElement(psiFile))
                 }
             }
@@ -177,7 +176,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     private fun addFromLabelingCommands(treeElements: MutableList<TreeElement>, commands: List<LatexCommands>) {
-        val labelingCommands = Magic.Command.getLabelDefinitionCommands()
+        val labelingCommands = CommandMagic.getLabelDefinitionCommands()
         commands.filter { labelingCommands.contains(it.commandToken.text) }
             .mapNotNull { LatexStructureViewCommandElement.newCommand(it) }
             .forEach {
@@ -269,8 +268,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         if (token == "\\setcounter") {
             numbering.setCounter(level, amount)
-        }
-        else {
+        } else {
             numbering.addCounter(level, amount)
         }
     }
@@ -285,7 +283,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         return sections.stream()
             .map { this.order(it) }
             .min { obj, anotherInteger -> obj.compareTo(anotherInteger) }
-            .map { Magic.Command.sectionMarkers[it] }
+            .map { CommandMagic.sectionMarkers[it] }
             .orElse("\\section")
     }
 
@@ -306,5 +304,5 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun order(commands: LatexCommands) = order(commands.commandToken.text)
 
-    private fun order(commandName: String) = Magic.Command.sectionMarkers.indexOf(commandName)
+    private fun order(commandName: String) = CommandMagic.sectionMarkers.indexOf(commandName)
 }

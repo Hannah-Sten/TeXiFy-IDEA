@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.firstChildOfType
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.trimRange
 import java.util.*
 
@@ -38,7 +39,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
 
         val commands = file.commandsInFile()
         for (command in commands) {
-            if (command.name !in Magic.Command.sectionMarkers) {
+            if (command.name !in CommandMagic.sectionMarkers) {
                 continue
             }
 

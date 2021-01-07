@@ -26,6 +26,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
 import nl.hannahsten.texifyidea.util.LatexPackage
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 import java.util.stream.Collectors
 
@@ -149,7 +150,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             if (!cmd.isDefinition() && !cmd.isEnvironmentDefinition()) {
                 continue
             }
-            if (mode !== LatexMode.MATH && cmd.name in Magic.Command.mathCommandDefinitions) {
+            if (mode !== LatexMode.MATH && cmd.name in CommandMagic.mathCommandDefinitions) {
                 continue
             }
             val cmdName = getCommandName(cmd) ?: continue
@@ -190,7 +191,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
     }
 
     private fun getTypeText(commands: LatexCommands): String {
-        if (commands.commandToken.text in Magic.Command.commandDefinitions) {
+        if (commands.commandToken.text in CommandMagic.commandDefinitions) {
             return ""
         }
         val firstNext = commands.nextCommand() ?: return ""
@@ -243,7 +244,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
     private fun getCommandName(commands: LatexCommands): String? {
         return when (commands.name) {
-            in Magic.Command.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
+            in CommandMagic.mathCommandDefinitions + setOf("\\newcommand", "\\newif") -> getNewCommandName(commands)
             else -> getDefinitionName(commands)
         }
     }

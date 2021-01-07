@@ -5,9 +5,9 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.extractLabelName
 import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -17,11 +17,11 @@ fun getReferences(element: LatexParameterText): Array<PsiReference> {
     // If the command is a label reference
     // NOTE When adding options here, also update getNameIdentifier below
     return when {
-        Magic.Command.labelReferenceWithoutCustomCommands.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
+        CommandMagic.labelReferenceWithoutCustomCommands.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(LatexLabelParameterReference(element))
         }
         // If the command is a bibliography reference
-        Magic.Command.bibliographyReference.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
+        CommandMagic.bibliographyReference.contains(element.firstParentOfType(LatexCommands::class)?.name) -> {
             arrayOf<PsiReference>(BibtexIdReference(element))
         }
         // If the command is an \end command (references to \begin)
@@ -52,9 +52,9 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
     // (think non-ASCII characters in a \section command), we return null here when the element is not an identifier
     // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
     val name = element.firstParentOfType(LatexCommands::class)?.name
-    if (!Magic.Command.labelReferenceWithoutCustomCommands.contains(name) &&
-        !Magic.Command.labelDefinitionsWithoutCustomCommands.contains(name) &&
-        !Magic.Command.bibliographyReference.contains(name) &&
+    if (!CommandMagic.labelReferenceWithoutCustomCommands.contains(name) &&
+        !CommandMagic.labelDefinitionsWithoutCustomCommands.contains(name) &&
+        !CommandMagic.bibliographyReference.contains(name) &&
         element.firstParentOfType(LatexEndCommand::class) == null &&
         element.firstParentOfType(LatexBeginCommand::class) == null
     ) {
@@ -66,7 +66,8 @@ fun getNameIdentifier(element: LatexParameterText): PsiElement? {
 fun setName(element: LatexParameterText, name: String): PsiElement {
     val command = element.firstParentOfType(LatexCommands::class)
     // If we want to rename a label
-    if (Magic.Command.reference.contains(command?.name) || Magic.Command.getLabelDefinitionCommands(element.project).contains(command?.name)) {
+    if (CommandMagic.reference.contains(command?.name) || CommandMagic.getLabelDefinitionCommands(element.project)
+            .contains(command?.name)) {
         // Get a new psi element for the complete label command (\label included),
         // because if we replace the complete command instead of just the normal text
         // then the indices will be updated, which is necessary for the reference resolve to work

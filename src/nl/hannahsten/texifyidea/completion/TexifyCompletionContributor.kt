@@ -23,6 +23,8 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.CommentMagic
 import java.util.*
 
 /**
@@ -188,7 +190,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
             LatexMagicCommentKeyProvider
         )
 
-        extendLatexCommands(LatexBibliographyReferenceProvider, Magic.Command.bibliographyReference)
+        extendLatexCommands(LatexBibliographyReferenceProvider, CommandMagic.bibliographyReference)
 
         // Inspection list for magic comment suppress
         val suppressRegex = Regex("""suppress\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
@@ -199,7 +201,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
 
         // List containing tikz/math to autocomplete the begin/end/preamble values in magic comments
         val beginEndRegex = Regex("""(begin|end|preview) preamble\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("preamble", beginEndRegex, LatexMagicCommentValueProvider(beginEndRegex, Magic.Comment.preambleValues))
+        extendMagicCommentValues("preamble", beginEndRegex, LatexMagicCommentValueProvider(beginEndRegex, CommentMagic.preambleValues))
 
         // List of LaTeX compilers
         val compilerRegex = Regex("""compiler\s*=\s*""", EnumSet.of(RegexOption.IGNORE_CASE))
@@ -209,7 +211,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
         extendMagicCommentValues("bibtex compiler", bibtexCompilerRegex, LatexMagicCommentValueProvider(bibtexCompilerRegex, BibliographyCompiler.values().map { it.executableName }.toHashSet()))
 
         val fakeRegex = Regex("""fake\s*(=\s*)?""", EnumSet.of(RegexOption.IGNORE_CASE))
-        extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(fakeRegex, Magic.Comment.fakeSectionValues))
+        extendMagicCommentValues("fake", fakeRegex, LatexMagicCommentValueProvider(fakeRegex, CommentMagic.fakeSectionValues))
 
         // Package names
         extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")

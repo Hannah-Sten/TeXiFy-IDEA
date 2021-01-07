@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -131,7 +132,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
         // We guess the filename is after the last occurrence of /
         val oldNode = myElement?.node
 
-        val newName = if ((oldNode?.psi as? LatexCommands)?.name in Magic.Command.illegalExtensions.keys) {
+        val newName = if ((oldNode?.psi as? LatexCommands)?.name in CommandMagic.illegalExtensions.keys) {
             newElementName.removeFileExtension()
         }
         else {
@@ -169,7 +170,7 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
      * the command that includes a file, and the name of the file.
      */
     private fun LatexCommands.getFileNameWithExtensions(fileName: String): Set<String> {
-        val extension = Magic.Command.includeOnlyExtensions[this.commandToken.text] ?: emptySet()
+        val extension = CommandMagic.includeOnlyExtensions[this.commandToken.text] ?: emptySet()
         return extension.map { "$fileName.$it" }.toSet() + setOf(fileName)
     }
 }

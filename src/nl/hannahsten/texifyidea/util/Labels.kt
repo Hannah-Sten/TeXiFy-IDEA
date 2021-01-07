@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /*
  * Collections
@@ -120,7 +121,7 @@ fun PsiFile.findBibitemCommands(): Sequence<LatexCommands> = this.commandsInFile
  * @return A collection of all label commands.
  */
 fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection<LatexCommands> {
-    val commandNames = Magic.Command.getLabelDefinitionCommands(project)
+    val commandNames = CommandMagic.getLabelDefinitionCommands(project)
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 
@@ -130,7 +131,7 @@ fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection
  * @return A sequence of all label commands.
  */
 fun Sequence<PsiElement>.findLatexCommandsLabels(project: Project): Sequence<LatexCommands> {
-    val commandNames = Magic.Command.getLabelDefinitionCommands(project)
+    val commandNames = CommandMagic.getLabelDefinitionCommands(project)
     return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
 }
 
@@ -194,10 +195,10 @@ fun PsiElement.extractLabelElement(): PsiElement? {
 }
 
 /**
- * Finds all section marker commands (as defined in [Magic.Command.sectionMarkers]) in the project.
+ * Finds all section marker commands (as defined in [CommandMagic.sectionMarkers]) in the project.
  *
  * @return A list containing all the section marker [LatexCommands].
  */
 fun Project.findSectionMarkers() = LatexCommandsIndex.getItems(this).filter {
-    it.commandToken.text in Magic.Command.sectionMarkers
+    it.commandToken.text in CommandMagic.sectionMarkers
 }

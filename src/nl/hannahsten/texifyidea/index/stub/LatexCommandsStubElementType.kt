@@ -7,8 +7,8 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getIncludeCommands
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.io.IOException
 import java.util.*
 import java.util.regex.Pattern
@@ -76,7 +76,7 @@ class LatexCommandsStubElementType(debugName: String) :
         if (getIncludeCommands().contains(token)) {
             indexSink.occurrence(LatexIncludesIndex.key(), token)
         }
-        if (Magic.Command.definitions.contains(token) || Magic.Command.redefinitions.contains(token)) {
+        if (CommandMagic.definitions.contains(token) || CommandMagic.redefinitions.contains(token)) {
             indexSink.occurrence(LatexDefinitionIndex.key(), token)
         }
     }

@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import kotlin.math.min
 
 /**
@@ -20,7 +21,7 @@ import kotlin.math.min
  * @return `true` if the command is an environment definition or a command definition, `false` when the command is
  *         `null` or otherwise.
  */
-fun LatexCommands?.isDefinition() = this != null && this.name in Magic.Command.definitions
+fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
 
 /**
  * Checks whether the given LaTeX commands is a color definition or not.
@@ -41,7 +42,7 @@ fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Magi
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
-    (this.name in Magic.Command.redefinitions || this.name in Magic.Command.redefinitions)
+        (this.name in CommandMagic.redefinitions || this.name in CommandMagic.redefinitions)
 
 /**
  * Checks whether the given LaTeX commands is a command definition or not.
@@ -49,7 +50,7 @@ fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
  * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
  */
 fun LatexCommands?.isCommandDefinition(): Boolean =
-    this != null && (name in Magic.Command.regularCommandDefinitions || name in Magic.Command.mathCommandDefinitions)
+    this != null && (name in CommandMagic.regularCommandDefinitions || name in CommandMagic.mathCommandDefinitions)
 
 /**
  * Checks whether the given LaTeX commands is an environment definition or not.
@@ -103,7 +104,7 @@ fun LatexCommands.previousCommand(): LatexCommands? {
  * Get the name of the command that is defined by `this` command.
  */
 fun LatexCommands.definedCommandName() = when (name) {
-    in Magic.Command.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
+    in CommandMagic.mathCommandDefinitions + setOf("\\newcommand") -> forcedFirstRequiredParameterAsCommand()?.name
     else -> definitionCommand()?.name
 }
 

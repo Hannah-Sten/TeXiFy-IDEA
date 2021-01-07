@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.SimpleEnvironment
 import nl.hannahsten.texifyidea.util.Kindness
 import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 
@@ -46,7 +47,7 @@ object LatexEnvironmentProvider {
         val environments: MutableList<Environment> = ArrayList()
         Collections.addAll(environments, *DefaultEnvironment.values())
         LatexDefinitionIndex.getItemsInFileSet(parameters.originalFile).stream()
-            .filter { cmd -> Magic.Command.environmentDefinitions.contains(cmd.name) }
+            .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
             .map { cmd -> cmd.requiredParameter(0) }
             .filter { obj -> Objects.nonNull(obj) }
             .map { environmentName -> SimpleEnvironment(environmentName!!) }

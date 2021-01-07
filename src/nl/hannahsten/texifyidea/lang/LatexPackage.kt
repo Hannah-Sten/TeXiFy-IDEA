@@ -23,6 +23,7 @@ open class LatexPackage @JvmOverloads constructor(
         // Predefined packages.
         @JvmField val DEFAULT = LatexPackage("")
         @JvmField val ALGORITHM2E = LatexPackage("algorithm2e")
+        @JvmField val ALGORITHMICX = LatexPackage("algorithmicx")
         @JvmField val ALGPSEUDOCODE = LatexPackage("algpseudocode")
         @JvmField val AMSFONTS = LatexPackage("amsfonts")
         @JvmField val AMSMATH = LatexPackage("amsmath")

@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 import java.util.*
 
@@ -51,7 +52,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
         val commands = file.commandsInFile()
         for (command in commands) {
             // Only target references.
-            if (!Magic.Command.reference.contains(command.name)) continue
+            if (!CommandMagic.reference.contains(command.name)) continue
 
             // Don't consider certain commands.
             if (command.name in IGNORED_COMMANDS) continue

@@ -8,9 +8,13 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.util.findLabelingCommandsInFileAsSequence
+import nl.hannahsten.texifyidea.util.firstParentOfType
+import nl.hannahsten.texifyidea.util.inDirectEnvironment
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.requiredParameter
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
@@ -37,10 +41,10 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
     }
 
     private fun removeReferencedLabels(file: PsiFile, figureLabels: MutableMap<String?, LatexCommands>) {
-        val referenceCommands = Magic.Command.getLabelReferenceCommands(file.project)
+        val referenceCommands = CommandMagic.getLabelReferenceCommands(file.project)
         for (command in file.commandsInFileSet()) {
             // Don't resolve references in command definitions
-            if (command.parent.firstParentOfType(LatexCommands::class)?.name in Magic.Command.commandDefinitions ||
+            if (command.parent.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitions ||
                 referenceCommands.contains(command.name)
             ) {
                 command.referencedLabelNames.forEach { figureLabels.remove(it) }

@@ -6,8 +6,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.formatAsLabel
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parentOfType
 import kotlin.math.max
 
 /**
@@ -29,7 +33,7 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
             return false
         }
 
-        return findCommand(editor, file)?.name in Magic.Command.labeledPrefixes
+        return findCommand(editor, file)?.name in CommandMagic.labeledPrefixes
     }
 
     override fun startInWriteAction() = true
@@ -52,7 +56,7 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
 
         val createdLabel = getUniqueLabelName(
             required[0].formatAsLabel(),
-            Magic.Command.labeledPrefixes[command.name!!], command.containingFile
+            CommandMagic.labeledPrefixes[command.name!!], command.containingFile
         )
 
         val factory = LatexPsiHelper(project)
