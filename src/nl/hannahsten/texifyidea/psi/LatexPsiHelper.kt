@@ -81,7 +81,7 @@ class LatexPsiHelper(private val project: Project) {
      * @param name The name of the parameter to change
      * @param value The new parameter value. If the value is null, the parameter will have a key only.
      */
-    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): PsiElement {
+    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexKeyvalPair {
         val existingParameters = command.optionalParameterMap
         if (existingParameters.isEmpty()) {
             command.addAfter(createLatexOptionalParam(), command.parameterList[0])
@@ -111,12 +111,12 @@ class LatexPsiHelper(private val project: Project) {
             else {
                 optionalParam.addBefore(createFromText(","), closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
-                closeBracket.prevSibling
+                closeBracket.prevSibling as LatexKeyvalPair
             }
         }
         else {
             optionalParam.addBefore(pair, closeBracket)
-            closeBracket.prevSibling
+            closeBracket.prevSibling as LatexKeyvalPair
         }
     }
 }

@@ -136,9 +136,9 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[label={lst:lstlisting}<caret>]
+            \begin{lstlisting}[label={lst:lstlisting}]
             \end{lstlisting}
-        \end{document}
+        \end{document}<caret>
         """.trimIndent()
     )
 
@@ -153,8 +153,8 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         after = """
         \begin{document}
             \label{lst:lstlisting}
-            \begin{lstlisting}[label={lst:lstlisting2}<caret>]
-            \end{lstlisting}
+            \begin{lstlisting}[label={lst:lstlisting2}]
+            \end{lstlisting}<caret>
         \end{document}
         """.trimIndent()
     )
@@ -168,9 +168,9 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}<caret>]
+            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
             \end{lstlisting}
-        \end{document}
+        \end{document}<caret>
         """.trimIndent()
     )
 

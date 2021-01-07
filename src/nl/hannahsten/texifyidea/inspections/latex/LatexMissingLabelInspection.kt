@@ -4,11 +4,19 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiNamedElement
+import com.intellij.refactoring.rename.RenameProcessor
+import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 import com.intellij.refactoring.suggested.createSmartPointer
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention
@@ -169,7 +177,43 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            LatexAddLabelIntention(command.createSmartPointer()).invoke(project, command.containingFile.openedEditor(), command.containingFile)
+            LatexAddLabelIntention(command.createSmartPointer()).invoke(
+                project,
+                command.containingFile.openedEditor(),
+                command.containingFile
+            )
+        }
+    }
+
+    private class LabelInplaceRenamer(
+        elementToRename: PsiNamedElement,
+        editor: Editor,
+        private val prefix: String,
+        initialName: String,
+        private val endMarker: RangeMarker
+    ) : MemberInplaceRenamer(elementToRename, null, editor, initialName, initialName) {
+
+        override fun getRangeToRename(element: PsiElement): TextRange {
+            // The label prefix is given by convention and not renamed
+            return TextRange(prefix.length, element.textLength)
+        }
+
+        override fun createRenameProcessor(element: PsiElement?, newName: String?): RenameProcessor {
+            // Automatically prepend the prefix
+            return super.createRenameProcessor(element, "$prefix$newName")
+        }
+
+        override fun moveOffsetAfter(success: Boolean) {
+            super.moveOffsetAfter(success)
+            myEditor.caretModel.moveToOffset(endMarker.endOffset)
+        }
+
+        override fun restoreCaretOffsetAfterRename() {
+            // Dispose the marker like the parent method does, but do not move the caret. We already moved it in
+            // moveOffsetAfter
+            if (myBeforeRevert != null) {
+                myBeforeRevert.dispose()
+            }
         }
     }
 
@@ -180,14 +224,29 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexEnvironment
             val helper = LatexPsiHelper(project)
             // Determine label name.
+            val prefix = Magic.Environment.labeled[command.environmentName] ?: ""
             val createdLabel = getUniqueLabelName(
                 command.environmentName.formatAsLabel(),
-                Magic.Environment.labeled[command.environmentName], command.containingFile
+                prefix, command.containingFile
             )
 
-            val moveCaretAfter: PsiElement
-            moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
-                helper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
+            val openedEditor = command.containingFile.openedEditor() ?: return
+
+            if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
+                val param = helper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
+                PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(openedEditor.document)
+                val parameterText =
+                    param.keyvalValue!!.keyvalContentList.first().parameterGroup!!.parameterGroupText!!.parameterTextList.first()
+                openedEditor.caretModel.moveToOffset(parameterText.textOffset + prefix.length + 1)
+                val prefixText = "$prefix:"
+                val onlyName = createdLabel.substring(prefixText.length)
+
+                // We need to store the end position in a marker because the rename changes the document and, therefore,
+                // the offsets. The marker updates itself automatically
+                val endMarker =
+                    openedEditor.document.createRangeMarker(command.startOffset, command.endOffset())
+                val renamer = LabelInplaceRenamer(parameterText!!, openedEditor, prefixText, onlyName, endMarker)
+                renamer.performInplaceRefactoring(LinkedHashSet())
             }
             else {
                 // in a float environment the label must be inserted after a caption
@@ -196,13 +255,11 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                     command.environmentContent?.childrenOfType<LatexCommands>()
                         ?.findLast { c -> c.name == "\\caption" }
                 )
-                labelCommand
-            }
 
-            // Adjust caret offset
-            val openedEditor = command.containingFile.openedEditor() ?: return
-            val caretModel = openedEditor.caretModel
-            caretModel.moveToOffset(moveCaretAfter.endOffset())
+                // Adjust caret offset
+                val caretModel = openedEditor.caretModel
+                caretModel.moveToOffset(labelCommand.endOffset())
+            }
         }
     }
 }
