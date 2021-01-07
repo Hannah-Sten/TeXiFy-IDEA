@@ -522,7 +522,9 @@
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Tool windows-->
-        <toolWindow factoryClass="nl.hannahsten.texifyidea.toolwindow.DetexifyToolWindowFactory" id="Detexify" anchor="right" secondary="false"/>
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.toolwindow.DetexifyToolWindowFactory"
+                    id="Detexify" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/detexify.svg"/>
+
         <!-- Other Services -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
                         serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
