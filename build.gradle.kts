@@ -74,9 +74,6 @@ dependencies {
     implementation(files("lib/JavaDDE.dll"))
     implementation(files("lib/JavaDDEx64.dll"))
 
-    // From Kotlin documentation
-//    compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
-
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java:3.2.3")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
@@ -117,7 +114,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.9")
+    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.9.1")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
