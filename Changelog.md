@@ -1,5 +1,7 @@
 # Beta 0.7.3
 
+ETA: First half of February, 2021
+
 # Additions
 * Added a wizard to insert graphics. (#1729)
 * Added support for labels defined in optional parameters of commands. (#1698)
