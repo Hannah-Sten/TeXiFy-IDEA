@@ -114,7 +114,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.9.1")
+    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.9.1")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
