@@ -216,3 +216,8 @@ fun String.startsWithAny(vararg prefix: String) = prefix.any { this.startsWith(i
 
 /** Shrink textrange with the given amount at both sides. */
 fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))
+
+/**
+ * Appends a line separator.
+ */
+fun StringBuilder.newline() = append("\n")!!

@@ -233,6 +233,11 @@ object Magic {
          * Extensions of files required by bib2gls
          */
         val bib2glsDependenciesExtensions = setOf("aux", "glg", "log")
+
+        /**
+         * All extensions for graphic files.
+         */
+        val graphicFileExtensions = setOf("eps", "pdf", "png", "jpeg", "jpg", "jbig2", "jp2")
     }
 
     /**

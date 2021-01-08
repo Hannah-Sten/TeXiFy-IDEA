@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -54,4 +56,13 @@ fun Project.allFiles(type: FileType): Collection<VirtualFile> {
  */
 fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
     RunManager.getInstance(it).selectedConfiguration?.configuration as? LatexRunConfiguration
+}
+
+/**
+ * Get the first of the selected editors as a [TextEditor].
+ * Returns `null` when there are no selected *text* editors.
+ */
+fun Project.currentTextEditor(): TextEditor? {
+    val editors = FileEditorManager.getInstance(this).selectedEditors
+    return editors.firstOrNull { it is TextEditor } as TextEditor?
 }

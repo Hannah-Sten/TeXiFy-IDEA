@@ -8,9 +8,11 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.containsKeyOrValue
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.findKeys
+import nl.hannahsten.texifyidea.util.inMathContext
 
 /**
  * @author Hannah Schellekens

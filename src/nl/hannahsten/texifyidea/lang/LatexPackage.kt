@@ -35,6 +35,7 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val COMMENT = LatexPackage("comment")
         @JvmField val CLEVEREF = LatexPackage("cleveref")
         @JvmField val CSQUOTES = LatexPackage("csquotes")
+        @JvmField val FLOAT = LatexPackage("float")
         @JvmField val FONTENC = LatexPackage("fontenc")
         @JvmField val GAUSS = LatexPackage("gauss")
         @JvmField val GLOSSARIES = LatexPackage("glossaries")
