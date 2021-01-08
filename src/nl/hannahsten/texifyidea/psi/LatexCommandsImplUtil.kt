@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.requiredParameters
 import nl.hannahsten.texifyidea.util.shrink
 import java.util.*
@@ -128,7 +129,7 @@ fun readFirstParam(element: LatexCommands): LatexRequiredParam? {
 }
 
 fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
-    return splitToRanges(stripGroup(param.text), Magic.Pattern.parameterSplit)
+    return splitToRanges(stripGroup(param.text), PatternMagic.parameterSplit)
         .map { r: TextRange -> r.shiftRight(1) }
 }
 

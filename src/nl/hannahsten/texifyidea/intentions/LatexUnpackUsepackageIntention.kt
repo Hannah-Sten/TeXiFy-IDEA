@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 /**
  * @author Hannah Schellekens
@@ -41,7 +42,7 @@ open class LatexUnpackUsepackageIntention : TexifyIntentionBase("Split into mult
         val command = selected.parentOfType(LatexCommands::class) ?: return
         val required = command.firstChildOfType(LatexRequiredParam::class) ?: return
         val requiredText = required.text.trimRange(1, 1)
-        val packages = Magic.Pattern.parameterSplit.split(requiredText)
+        val packages = PatternMagic.parameterSplit.split(requiredText)
 
         // Reorganise includes.
         val document = file.document() ?: return

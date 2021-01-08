@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import kotlin.math.min
 
 /**
@@ -38,7 +39,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val matcher = Magic.Pattern.sentenceEnd.matcher(text.text)
+            val matcher = PatternMagic.sentenceEnd.matcher(text.text)
             while (matcher.find()) {
                 val offset = text.textOffset + matcher.end()
                 val lineNumber = document.getLineNumber(offset)
@@ -84,7 +85,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
             val textInElement = document.getText(TextRange(textOffset + range.startOffset, textOffset + range.endOffset))
 
             // Do not apply the fix when there is no break point.
-            val signMarker = Magic.Pattern.sentenceSeparator.matcher(textInElement)
+            val signMarker = PatternMagic.sentenceSeparator.matcher(textInElement)
             if (signMarker.find().not()) {
                 return
             }

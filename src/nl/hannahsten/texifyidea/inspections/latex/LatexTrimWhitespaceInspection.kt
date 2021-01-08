@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.firstChildOfType
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.trimRange
 import java.util.*
 
@@ -44,7 +45,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
             }
 
             val sectionName = command.firstChildOfType(LatexRequiredParam::class)?.text?.trimRange(1, 1) ?: continue
-            if (!Magic.Pattern.excessWhitespace.matcher(sectionName).matches()) {
+            if (!PatternMagic.excessWhitespace.matcher(sectionName).matches()) {
                 continue
             }
 

@@ -1,8 +1,11 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package nl.hannahsten.texifyidea.util.magic
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.CommandManager
 import nl.hannahsten.texifyidea.lang.LatexMathCommand.*
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
+import nl.hannahsten.texifyidea.util.Magic
 import java.awt.Color
 
 object CommandMagic {
@@ -255,7 +258,7 @@ object CommandMagic {
         INCLUDE.cmd to listOf(".tex"),
         SUBFILEINCLUDE.cmd to listOf(".tex"),
         BIBLIOGRAPHY.cmd to listOf(".bib"),
-        INCLUDEGRAPHICS.cmd to listOf(".eps", ".pdf", ".png", ".jpeg", ".jbig2", ".jp2"), // https://tex.stackexchange.com/a/1075/98850
+        INCLUDEGRAPHICS.cmd to Magic.File.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
     )
 
     /**
@@ -281,6 +284,7 @@ object CommandMagic {
         EXTERNALDOCUMENT.cmd to hashSetOf("tex") // Not completely true, as it only includes labels
     )
 
+    @Suppress("unused")
     val startIfs = hashSetOf(
         IF, IFCAT, IFX,
         IFCASE, IFNUM, IFODD,

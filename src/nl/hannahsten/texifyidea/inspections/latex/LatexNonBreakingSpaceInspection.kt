@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parentOfType
 import java.util.*
 
@@ -103,7 +104,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
                 val text = texts.reversed().iterator().next()
 
                 // When there is a tilde, destroy the whitespace.
-                if (Magic.Pattern.endsWithNonBreakingSpace.matcher(text.text).find()) {
+                if (PatternMagic.endsWithNonBreakingSpace.matcher(text.text).find()) {
                     replacement = ""
                 }
             }

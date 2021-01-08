@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.util
 
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
-import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -38,154 +37,16 @@ object Magic {
     /**
      * @author Hannah Schellekens
      */
-    object Pattern {
-
-        @JvmField
-        val ellipsis = Regex("""(?<!\.)(\.\.\.)(?!\.)""")
-
-        /**
-         * This is the only correct way of using en dashes.
-         */
-        @JvmField
-        val correctEnDash = RegexPattern.compile("[0-9]+--[0-9]+")!!
-
-        /**
-         * Matches the prefix of a label. Amazing comment this is right?
-         */
-        @JvmField
-        val labelPrefix = RegexPattern.compile(".*:")!!
-
-        /**
-         * Matches the end of a sentence.
-         *
-         * Includes `[^.][^.]` because of abbreviations (at least in Dutch) like `s.v.p.`
-         */
-        @JvmField
-        val sentenceEnd = RegexPattern.compile("([^.A-Z][^.A-Z][.?!;;] +[^%\\s])|(^\\. )")!!
-
-        /**
-         * Matches all interpunction that marks the end of a sentence.
-         */
-        @JvmField
-        val sentenceSeparator = RegexPattern.compile("[.?!;;]")!!
-
-        /**
-         * Matches all sentenceSeparators at the end of a line (with or without space).
-         */
-        @JvmField
-        val sentenceSeparatorAtLineEnd = RegexPattern.compile("$sentenceSeparator\\s*$")!!
-
-        /**
-         * Matches when a string ends with a non breaking space.
-         */
-        @JvmField
-        val endsWithNonBreakingSpace = RegexPattern.compile("~$")!!
-
-        /**
-         * Finds all abbreviations that have at least two letters separated by comma's.
-         *
-         * It might be more parts, like `b.v.b.d. ` is a valid abbreviation. Likewise are `sajdflkj.asdkfj.asdf ` and
-         * `i.e. `. Single period abbreviations are not being detected as they can easily be confused with two letter words
-         * at the end of the sentence (also localisation...) For this there is a quickfix in [LatexLineBreakInspection].
-         */
-        @JvmField
-        val abbreviation = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s~])")!!
-
-        /**
-         * Abbreviations not detected by [Pattern.abbreviation].
-         */
-        val unRegexableAbbreviations = listOf(
-            "et al."
-        )
-
-        /** [abbreviation]s that are missing a normal space (or a non-breaking space) */
-        val abbreviationWithoutNormalSpace = RegexPattern.compile("[0-9A-Za-z.]+\\.[A-Za-z](\\.[\\s])")!!
-
-        /**
-         * Matches all comments, starting with % and ending with a newline.
-         */
-        val comments: RegexPattern = RegexPattern.compile("%(.*)\\n")
-
-        /**
-         * Matches leading and trailing whitespace on a string.
-         */
-        @JvmField
-        val excessWhitespace = RegexPattern.compile("(^(\\s+).*(\\s*)\$)|(^(\\s*).*(\\s+)\$)")!!
-
-        /**
-         * Matches a non-ASCII character.
-         */
-        @JvmField
-        val nonAscii = RegexPattern.compile("\\P{ASCII}")!!
-
-        /**
-         * Separator for multiple parameter values in one parameter.
-         *
-         * E.g. when you have \cite{citation1,citation2,citation3}, this pattern will match the separating
-         * comma.
-         */
-        @JvmField
-        val parameterSplit = RegexPattern.compile("\\s*,\\s*")!!
-
-        /**
-         * Matches the extension of a file name.
-         */
-        @JvmField
-        val fileExtension = RegexPattern.compile("\\.[a-zA-Z0-9]+$")!!
-
-        /**
-         * Matches all leading whitespace.
-         */
-        @JvmField
-        val leadingWhitespace = RegexPattern.compile("^\\s*")!!
-
-        /**
-         * Matches newlines.
-         */
-        @JvmField
-        val newline = RegexPattern.compile("\\n")!!
-
-        /**
-         * Checks if the string is `text`, two newlines, `text`.
-         */
-        @JvmField
-        val containsMultipleNewlines = RegexPattern.compile("[^\\n]*\\n\\n+[^\\n]*")!!
-
-        /**
-         * Matches HTML tags of the form `<tag>`, `<tag/>` and `</tag>`.
-         */
-        @JvmField
-        val htmlTag = RegexPattern.compile("""<.*?/?>""")!!
-
-        /**
-         * Matches a LaTeX command that is the start of an \if-\fi structure.
-         */
-        @JvmField
-        val ifCommand = RegexPattern.compile("\\\\if[a-zA-Z@]*")!!
-
-        /**
-         * Matches the begin and end commands of the cases and split environments.
-         */
-        @JvmField
-        val casesOrSplitCommands = Regex(
-            "((?=\\\\begin\\{cases})|(?<=\\\\begin\\{cases}))" +
-                "|((?=\\\\end\\{cases})|(?<=\\\\end\\{cases}))" +
-                "|((?=\\\\begin\\{split})|(?<=\\\\begin\\{split}))" +
-                "|((?=\\\\end\\{split})|(?<=\\\\end\\{split}))"
-        )
-    }
-
-    /**
-     * @author Hannah Schellekens
-     */
     object File {
 
         /**
          * All file extensions of files that can be included (and where the included files contain language that needs to be considered).
          */
         @JvmField
+        @Deprecated("old", ReplaceWith("FileMagic.includeExtensions", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val includeExtensions = hashSetOf("tex", "sty", "cls", "bib")
 
+        @Deprecated("old", ReplaceWith("FileMagic.automaticExtensions", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val automaticExtensions = mapOf(
             INCLUDE.cmd to LatexFileType.defaultExtension,
             BIBLIOGRAPHY.cmd to BibtexFileType.defaultExtension
@@ -195,6 +56,7 @@ object Magic {
          * All possible file types.
          */
         @JvmField
+        @Deprecated("old", ReplaceWith("FileMagic.fileTypes", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val fileTypes = setOf(
             LatexFileType,
             StyleFileType,
@@ -210,6 +72,7 @@ object Magic {
          * (https://github.com/TeXworks/texworks/blob/9c8cc8b88505103cb8f43fe4105638c77c7e7303/res/resfiles/configuration/texworks-config.txt#L37).
          */
         @JvmField
+        @Deprecated("old", ReplaceWith("FileMagic.auxiliaryFileTypes", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val auxiliaryFileTypes = arrayOf("aux", "bbl", "bcf", "brf", "fls", "idx", "ind", "lof", "lot", "nav", "out", "snm", "toc", "glo", "gls", "ist", "xdy")
 
         /**
@@ -217,26 +80,31 @@ object Magic {
          * Because any package can generated new files, this list is not complete.
          */
         // Actually run.xml should be included (latexmk) but file extensions with a dot are not found currently, see Utils#File.extension
+        @Deprecated("old", ReplaceWith("FileMagic.generatedFileTypes", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val generatedFileTypes = auxiliaryFileTypes + arrayOf("blg", "dvi", "fdb_latexmk", "ilg", "log", "out.ps", "pdf", "xml", "sagetex.sage", "sagetex.scmd", "sagetex.sout", "synctex", "gz", "synctex(busy)", "upa", "doctest.sage", "xdv", "glg", "glstex")
 
         /**
          * All bibtex keys which have a reference to a (local) file in the content.
          */
+        @Deprecated("old", ReplaceWith("FileMagic.bibtexFileKeys", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val bibtexFileKeys = setOf("bibsource", "file")
 
         /**
          * Extensions of index-related files, which are generated by makeindex-like programs and should be copied next to the main file for the index/glossary packages to work.
          */
+        @Deprecated("old", ReplaceWith("FileMagic.indexFileExtensions", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val indexFileExtensions = setOf("ind", "glo", "ist", "xdy")
 
         /**
          * Extensions of files required by bib2gls
          */
+        @Deprecated("old", ReplaceWith("FileMagic.bib2glsDependenciesExtensions", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val bib2glsDependenciesExtensions = setOf("aux", "glg", "log")
 
         /**
          * All extensions for graphic files.
          */
+        @Deprecated("old", ReplaceWith("FileMagic.graphicFileExtensions", "nl.hannahsten.texifyidea.util.magic.FileMagic"))
         val graphicFileExtensions = setOf("eps", "pdf", "png", "jpeg", "jpg", "jbig2", "jp2")
     }
 
@@ -249,6 +117,7 @@ object Magic {
          * All unicode enabling packages.
          */
         @JvmField
+        @Deprecated("old", ReplaceWith("PackageMagic.unicode", "nl.hannahsten.texifyidea.util.magic.PackageMagic"))
         val unicode = hashSetOf(
             LatexPackage.INPUTENC.with("utf8"),
             LatexPackage.FONTENC.with("T1")
@@ -257,6 +126,7 @@ object Magic {
         /**
          * All known packages which provide an index.
          */
+        @Deprecated("old", ReplaceWith("PackageMagic.index", "nl.hannahsten.texifyidea.util.magic.PackageMagic"))
         val index = hashSetOf(
             "makeidx", "multind", "index", "splitidx", "splitindex", "imakeidx", "hvindex", "idxlayout", "repeatindex", "indextools"
         )
@@ -264,11 +134,13 @@ object Magic {
         /**
          * Packages which provide a glossary.
          */
+        @Deprecated("old", ReplaceWith("PackageMagic.glossary", "nl.hannahsten.texifyidea.util.magic.PackageMagic"))
         val glossary = hashSetOf(GLOSSARIES, GLOSSARIESEXTRA).map { it.name }
 
         /**
          * Known conflicting packages.
          */
+        @Deprecated("old", ReplaceWith("PackageMagic.conflictingPackages", "nl.hannahsten.texifyidea.util.magic.PackageMagic"))
         val conflictingPackages = listOf(
             setOf(BIBLATEX, NATBIB)
         )
@@ -276,6 +148,7 @@ object Magic {
         /**
          * Maps packages to the packages it loads.
          */
+        @Deprecated("old", ReplaceWith("PackageMagic.packagesLoadingOtherPackages:", "nl.hannahsten.texifyidea.util.magic.PackageMagic"))
         val packagesLoadingOtherPackages: Map<LatexPackage, Set<LatexPackage>> = mapOf(
             AMSSYMB to setOf(AMSFONTS),
             MATHTOOLS to setOf(AMSMATH),
@@ -289,6 +162,7 @@ object Magic {
          * Maps argument specifiers to whether they are required (true) or
          * optional (false).
          */
+        @Deprecated("old", ReplaceWith("PackageMagic.xparseParamSpecifiers", "nl.hannahsten.texifyidea.util.magic.PackageMagic"))
         val xparseParamSpecifiers = mapOf(
             'm' to true,
             'r' to true,
@@ -315,6 +189,7 @@ object Magic {
          * Maps file extentions to their corresponding icons.
          */
         @JvmField
+        @Deprecated("old", ReplaceWith("IconMagic.fileIcons", "nl.hannahsten.texifyidea.util.magic.IconMagic"))
         val fileIcons = mapOf(
             "pdf" to TexifyIcons.PDF_FILE,
             "dvi" to TexifyIcons.DVI_FILE,
@@ -334,6 +209,7 @@ object Magic {
          * All commands that have a color as an argument.
          */
         @JvmField
+        @Deprecated("old", ReplaceWith("ColorMagic.takeColorCommands", "nl.hannahsten.texifyidea.util.magic.ColorMagic"))
         val takeColorCommands = LatexRegularCommand.values()
             .filter {
                 it.arguments.map { it.name }.contains("color")
@@ -344,14 +220,17 @@ object Magic {
          * All commands that define a new color.
          */
         @JvmField
+        @Deprecated("old", ReplaceWith("ColorMagic.colorDefinitions", "nl.hannahsten.texifyidea.util.magic.ColorMagic"))
         val colorDefinitions = LatexRegularCommand.values()
             .filter { it.dependency == XCOLOR }
             .filter { it.arguments.map { it.name }.contains("name") }
 
         @JvmField
+        @Deprecated("old", ReplaceWith("ColorMagic.colorCommands", "nl.hannahsten.texifyidea.util.magic.ColorMagic"))
         val colorCommands = takeColorCommands + colorDefinitions.map { it.command }
 
         @JvmField
+        @Deprecated("old", ReplaceWith("ColorMagic.defaultXcolors", "nl.hannahsten.texifyidea.util.magic.ColorMagic"))
         val defaultXcolors = mapOf(
             "red" to 0xff0000,
             "green" to 0x00ff00,

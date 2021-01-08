@@ -26,6 +26,7 @@ import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
@@ -91,7 +92,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
         val texts = PsiTreeUtil.findChildrenOfType(file, LatexNormalText::class.java)
         for (text in texts) {
-            val matcher = Magic.Pattern.nonAscii.matcher(text.text)
+            val matcher = PatternMagic.nonAscii.matcher(text.text)
             while (matcher.find()) {
                 val inMathMode = PsiTreeUtil.getParentOfType(text, LatexMathEnvironment::class.java) != null
 

@@ -6,11 +6,11 @@ import nl.hannahsten.texifyidea.lang.LatexCommand
 /**
  * Saves typing.
  */
-val LatexCommand.cmd: String
+internal val LatexCommand.cmd: String
     get() = this.commandWithSlash
 
 /**
  * Saves typing.
  */
-val Environment.env: String
+internal val Environment.env: String
     get() = this.environmentName

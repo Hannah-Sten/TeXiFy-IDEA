@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsAndFilesInFileSet
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.*
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -125,7 +126,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             val prefix: String = getLabelPrefix(labeledCommand) ?: return
             val labelName = oldLabel.formatAsLabel()
             val createdLabelBase = if (labelName.contains(":")) {
-                Magic.Pattern.labelPrefix.matcher(labelName).replaceAll("$prefix:")
+                PatternMagic.labelPrefix.matcher(labelName).replaceAll("$prefix:")
             }
             else {
                 "$prefix:$labelName"
