@@ -10,8 +10,9 @@
 - [ ] runIDE and check the changelog is formatted correctly
 - [ ] Update version in plugin.xml and build.gradle
 - [ ] Update feature list in readme/plugin.xml if needed
-- [ ] buildPlugin and release on GitHub (on the right branch), using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
 - [ ] Release on plugin repo: in build.gradle change `channels 'alpha'` to `channels 'stable'` temporarily and publishPlugin
+- [ ] Merge PR
+- [ ] buildPlugin and release on GitHub, using the markdown changelog (then remove it from Changelog.md). tag version: 0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone
 
 Regexes to replace markdown by html:
