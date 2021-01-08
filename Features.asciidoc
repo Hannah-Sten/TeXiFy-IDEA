@@ -134,7 +134,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * VCS integration including Git
 * Terminal window
 * Running external tools before compiling
-* link:Detexify[Detexify]
+* link:Tools[Detexify]
 
 == UI
 * link:UI#Icons[Fancy icons that fit in with the IntelliJ style]
