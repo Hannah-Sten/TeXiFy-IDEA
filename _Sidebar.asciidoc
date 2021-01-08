@@ -2,4 +2,6 @@ link:Home[Home]
 
 link:Features[Features]
 
+link:Troubleshooting[Troubleshooting]
+
 link:Contributing[Contributing to the wiki]
