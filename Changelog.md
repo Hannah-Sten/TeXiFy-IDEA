@@ -1,6 +1,7 @@
 # Beta 0.7.3
 
 # Additions
+* Add wizard to insert images by drag and drop. (#1729)
 * Add support for labels defined in optional parameters of commands. (#1698)
 * Added BibTeX unused entry inspection. (#1717)
 * Performance improvements. (#1716)
