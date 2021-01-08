@@ -6,6 +6,12 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.awt.RelativePoint
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
+import javax.swing.text.JTextComponent
 
 /**
  * Shows a toast message above the loading bar.
@@ -20,10 +26,10 @@ import com.intellij.ui.awt.RelativePoint
 fun toast(project: Project, type: MessageType, htmlMessage: String) {
     val statusBar = WindowManager.getInstance().getStatusBar(project)
     JBPopupFactory.getInstance()
-        .createHtmlTextBalloonBuilder(htmlMessage, type, null)
-        .setFadeoutTime(7500)
-        .createBalloon()
-        .show(RelativePoint.getCenterOf(statusBar.component), Balloon.Position.above)
+            .createHtmlTextBalloonBuilder(htmlMessage, type, null)
+            .setFadeoutTime(7500)
+            .createBalloon()
+            .show(RelativePoint.getCenterOf(statusBar.component), Balloon.Position.above)
 }
 
 /**
@@ -55,3 +61,73 @@ fun toastError(project: Project, htmlMessage: String) = toast(project, MessageTy
  *          What to show in the toast. Supports HTML.
  */
 fun toastWarning(project: Project, htmlMessage: String) = toast(project, MessageType.WARNING, htmlMessage)
+
+/**
+ * Adds a text listener to the component.
+ *
+ * @param event
+ *          The function to execute when any text updates in the component.
+ * @return The document listener that was added to the component's document.
+ */
+fun JTextComponent.addTextChangeListener(event: (DocumentEvent?) -> Unit): DocumentListener {
+    val documentListener = object : DocumentListener {
+        override fun insertUpdate(e: DocumentEvent?) {
+            event(e)
+        }
+
+        override fun removeUpdate(e: DocumentEvent?) {
+            event(e)
+        }
+
+        override fun changedUpdate(e: DocumentEvent?) {
+            event(e)
+        }
+    }
+    document.addDocumentListener(documentListener)
+    return documentListener
+}
+
+/**
+ * Adds a key typed listener to the component.
+ *
+ * @param event
+ *          The function to execute when any key is typed.
+ * @return The key listener that was added to the component.
+ */
+fun JTextComponent.addKeyTypedListener(event: (KeyEvent) -> Unit): KeyListener {
+    val adapter = object : KeyAdapter() {
+        override fun keyTyped(e: KeyEvent?) {
+            e?.let { event(it) }
+        }
+    }
+    addKeyListener(adapter)
+    return adapter
+}
+
+/**
+ * Adds a key released listener to the component.
+ *
+ * @param event
+ *          The function to execute when any key is released.
+ * @return The key listener that was added to the component.
+ */
+fun JTextComponent.addKeyReleasedListener(event: (KeyEvent) -> Unit): KeyListener {
+    val adapter = object : KeyAdapter() {
+        override fun keyReleased(e: KeyEvent?) {
+            e?.let { event(it) }
+        }
+    }
+    addKeyListener(adapter)
+    return adapter
+}
+
+/**
+ * Only allows the given characters to be typed into the component.
+ *
+ * @return The KeyListener that is used for the filter.
+ */
+fun JTextComponent.setInputFilter(allowedCharacters: Set<Char>) = addKeyTypedListener {
+    if (it.keyChar !in allowedCharacters) {
+        it.consume()
+    }
+}

@@ -1,17 +1,18 @@
-package nl.hannahsten.texifyidea.action.tablewizard
+package nl.hannahsten.texifyidea.action.wizard.table
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
 import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.caretOffset
+import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import java.util.*
 
 /**
@@ -21,15 +22,15 @@ import java.util.*
  * @author Abby Berkers
  */
 class LatexTableWizardAction : AnAction() {
+
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT)
-        val editors = FileEditorManager.getInstance(project!!).selectedEditors
-        val editor = editors.first { it is TextEditor } as TextEditor
+        val editor = project?.currentTextEditor() ?: return
         val document = editor.editor.document
 
         // Get the indentation from the current line.
-        val indent = document.lineIndentation(document.getLineNumber(editor.editor.caretOffset()))
+        val indent = document.lineIndentationByOffset(editor.editor.caretOffset())
 
         // Create the dialog.
         val dialogWrapper = TableCreationDialogWrapper()
@@ -44,11 +45,11 @@ class LatexTableWizardAction : AnAction() {
 
             // Insert the booktabs package.
             WriteCommandAction.runWriteCommandAction(
-                project,
-                "Insert table",
-                "LaTeX",
-                Runnable { file.psiFile(project)!!.insertUsepackage(LatexPackage.BOOKTABS) },
-                file.psiFile(project)
+                    project,
+                    "Insert table",
+                    "LaTeX",
+                    Runnable { file.psiFile(project)!!.insertUsepackage(LatexPackage.BOOKTABS) },
+                    file.psiFile(project)
             )
         }
     }
@@ -68,17 +69,17 @@ class LatexTableWizardAction : AnAction() {
         fun processTableContent(indent: String): String {
             return with(tableInformation) {
                 val headers = tableModel.getColumnNames()
-                    .joinToString(
-                        prefix = "$indent\\toprule\n$indent",
-                        separator = " & ",
-                        postfix = " \\\\\n$indent\\midrule\n"
-                    ) { "\\textbf{$it}" }
+                        .joinToString(
+                                prefix = "$indent\\toprule\n$indent",
+                                separator = " & ",
+                                postfix = " \\\\\n$indent\\midrule\n"
+                        ) { "\\textbf{$it}" }
 
                 val rows = tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
                     (row as Vector<*>).joinToString(
-                        prefix = indent,
-                        separator = " & ",
-                        postfix = " \\\\"
+                            prefix = indent,
+                            separator = " & ",
+                            postfix = " \\\\"
                     ) {
                         // Enclose with $ if the type of this column is math.
                         val index = row.indexOf(it)
@@ -94,18 +95,18 @@ class LatexTableWizardAction : AnAction() {
         // (this includes the caption and label).
         return with(tableInformation) {
             val openTableCommand = "\\begin{table}\n" +
-                "$lineIndent$tabIndent\\centering\n" +
-                // Everything within the table command gets an extra indent.
-                "$lineIndent$tabIndent\\begin{tabular}{${columnTypes.toLatexColumnFormatters()}}\n"
+                    "$lineIndent$tabIndent\\centering\n" +
+                    // Everything within the table command gets an extra indent.
+                    "$lineIndent$tabIndent\\begin{tabular}{${columnTypes.toLatexColumnFormatters()}}\n"
 
             // The content has to be indented once more.
             val content = processTableContent(indent = lineIndent + tabIndent + tabIndent)
 
             val closeTableCommand = "$lineIndent$tabIndent\\end{tabular}\n" +
-                "$lineIndent$tabIndent\\caption{$caption}\n" +
-                "$lineIndent$tabIndent\\label{$label}\n" +
-                "$lineIndent\\end{table}\n" +
-                lineIndent // Indentation on the last line so we can continue typing there.
+                    "$lineIndent$tabIndent\\caption{$caption}\n" +
+                    "$lineIndent$tabIndent\\label{$label}\n" +
+                    "$lineIndent\\end{table}\n" +
+                    lineIndent // Indentation on the last line so we can continue typing there.
 
             openTableCommand + content + closeTableCommand
         }

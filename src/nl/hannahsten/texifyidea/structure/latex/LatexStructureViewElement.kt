@@ -21,15 +21,6 @@ import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.*
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.asSequence
-import kotlin.collections.contains
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.isNotEmpty
-import kotlin.collections.mapNotNull
-import kotlin.collections.toTypedArray
 
 /**
  * @author Hannah Schellekens
