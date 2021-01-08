@@ -4,7 +4,7 @@
 * Added a wizard to insert graphics. (#1729)
 * Added support for labels defined in optional parameters of commands. (#1698)
 * Added BibTeX unused entry inspection. (#1717)
-* Add label intention for \item commands. (#1719)
+* Added label intention for \item commands. (#1719)
 * Performance improvements. (#1716)
 
 # Changes
