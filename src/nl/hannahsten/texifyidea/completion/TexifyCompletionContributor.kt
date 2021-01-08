@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
 import java.util.*
@@ -171,7 +172,7 @@ open class TexifyCompletionContributor : CompletionContributor() {
                             ?: return false
 
                         val name = command.commandToken.text
-                        return name.substring(1) in Magic.Colors.takeColorCommands
+                        return name.substring(1) in ColorMagic.takeColorCommands
                     }
                 }),
             LatexXColorProvider

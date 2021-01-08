@@ -23,9 +23,9 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 import org.jetbrains.annotations.Nls
@@ -71,7 +71,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             }
 
             val included = PackageUtils.getIncludedPackages(file)
-            return Magic.Package.unicode.stream().allMatch { p -> included.contains(p.name) }
+            return PackageMagic.unicode.stream().allMatch { p -> included.contains(p.name) }
         }
     }
 
@@ -144,7 +144,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val file = descriptor.psiElement.containingFile
 
-            Magic.Package.unicode.forEach { p ->
+            PackageMagic.unicode.forEach { p ->
                 file.insertUsepackage(p)
             }
         }

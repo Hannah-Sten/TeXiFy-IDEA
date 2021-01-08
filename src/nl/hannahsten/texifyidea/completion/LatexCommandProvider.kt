@@ -25,9 +25,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
-import nl.hannahsten.texifyidea.util.LatexPackage
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.util.*
 import java.util.stream.Collectors
 
@@ -234,7 +234,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             "\\NewDocumentCommand", "\\DeclareDocumentCommand" -> {
                 val paramSpecification = commands.requiredParameters.getOrNull(1)?.removeAll("null", " ") ?: ""
                 paramSpecification.map { c ->
-                    if (Magic.Package.xparseParamSpecifiers[c] ?: return@map "") "{param}"
+                    if (PackageMagic.xparseParamSpecifiers[c] ?: return@map "") "{param}"
                     else "[]"
                 }.joinToString("")
             }

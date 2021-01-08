@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.editor
 
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 class MultiLineMathContentToOneLine(private val equation: String) {

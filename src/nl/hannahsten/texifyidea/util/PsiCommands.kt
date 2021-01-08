@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import kotlin.math.min
 
@@ -29,9 +30,9 @@ fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.de
  * @return `true` if the command defines a color, `false` when the command command
  *          is `null` or otherwise.
  */
-fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in Magic.Colors.colorDefinitions.map { it.command }
+fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in ColorMagic.colorDefinitions.map { it.command }
 
-fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in Magic.Colors.colorCommands
+fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in ColorMagic.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.

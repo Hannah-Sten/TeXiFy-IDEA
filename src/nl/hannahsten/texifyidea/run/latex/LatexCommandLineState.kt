@@ -23,10 +23,10 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerForwardSearch
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.sumatra.SumatraForwardSearchListener
 import nl.hannahsten.texifyidea.run.sumatra.isSumatraAvailable
-import nl.hannahsten.texifyidea.util.Magic.Package
 import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
 
 /**
@@ -137,7 +137,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 ?.includedPackages()
                 ?: setOf()
 
-            isMakeindexNeeded = includedPackages.intersect(Package.index + Package.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
+            isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 
             // Some packages do handle makeindex themselves
             // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that

@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.util.magic
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.util.RegexPattern
 
-
 /**
  * @author Hannah Schellekens
  */

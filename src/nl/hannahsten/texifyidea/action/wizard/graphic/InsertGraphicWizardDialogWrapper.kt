@@ -13,9 +13,9 @@ import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.addKeyReleasedListener
 import nl.hannahsten.texifyidea.util.addTextChangeListener
+import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.setInputFilter
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -42,7 +42,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         text = initialFilePath
         addBrowseFolderListener(TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                        .withFileFilter { vf -> vf.extension?.toLowerCase() in Magic.File.graphicFileExtensions }
+                        .withFileFilter { vf -> vf.extension?.toLowerCase() in FileMagic.graphicFileExtensions }
                         .withTitle("Select graphics file...")
         ))
     }
