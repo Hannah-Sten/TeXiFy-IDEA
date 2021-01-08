@@ -111,7 +111,6 @@ You can search through this wiki by using the GitHub global search bar at the to
 * link:Run-configurations#environment-variables[Support for TEXINPUTS and environment variables in general]
 * link:Dockerized-MiKTeX[Support for Dockerized MiKTeX]
 * link:WSL-support[Support for TeX Live from WSL]
-* link:
 
 == BibTeX
 
@@ -135,6 +134,7 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * VCS integration including Git
 * Terminal window
 * Running external tools before compiling
+* link:Detexify[Detexify]
 
 == UI
 * link:UI#Icons[Fancy icons that fit in with the IntelliJ style]

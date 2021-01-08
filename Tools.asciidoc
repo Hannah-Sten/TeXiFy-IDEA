@@ -1,0 +1,10 @@
+:experimental:
+
+== Detexify
+
+_Since b0.7.3_
+
+On the right toolbar, you will find the Detexify tool window. This tool window shows a browser with https://detexify.kirelabs.org/classify.html[Detexify]:
+
+> Just draw the symbol you are looking for into the square area and look what happens!
+
