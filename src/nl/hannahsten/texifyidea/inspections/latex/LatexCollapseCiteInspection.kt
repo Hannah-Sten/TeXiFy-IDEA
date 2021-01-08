@@ -42,7 +42,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             }
 
             val bundle = cmd.findCiteBundle()
-            if (bundle.size <= 1) {
+            if (bundle.size <= 1 || bundle.any { it.optionalParameterMap.isNotEmpty() }) {
                 continue
             }
 

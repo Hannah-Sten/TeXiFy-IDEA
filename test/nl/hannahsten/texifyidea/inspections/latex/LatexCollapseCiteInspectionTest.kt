@@ -15,6 +15,14 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
         myFixture.checkHighlighting()
     }
 
+    fun `test no warning when both arguments are optional`() {
+        testHighlighting("\\cite[p. 1]{book1}\\cite[aardappel]{Groente}")
+    }
+
+    fun `test no warning when one argument is optional`() {
+        testHighlighting("\\cite{book1}\\cite[aardappel]{Groente}")
+    }
+
     fun testQuickfix() {
         myFixture.configureByText(
             LatexFileType,
