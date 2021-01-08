@@ -4,41 +4,29 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.jcef.JBCefBrowser
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 
 class DetexifyToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val myToolWindow = DetexifyToolWindow(toolWindow)
-        val contentFactory = ContentFactory.SERVICE.getInstance()
-        val content: Content = contentFactory.createContent(myToolWindow.content, "", false)
+        val detexifyToolWindow = DetexifyToolWindow()
+        val content = ContentFactory.SERVICE.getInstance().createContent(detexifyToolWindow.content, "", false)
         toolWindow.contentManager.addContent(content)
     }
 
+    /**
+     * Only show the Detexify tool window in a project that contains a LaTeX module.
+     */
     override fun isApplicable(project: Project): Boolean {
         return ModuleManager.getInstance(project).modules.any { it.moduleTypeName == LatexModuleType.ID }
     }
-}
 
-class DetexifyToolWindow(window: ToolWindow) {
-    @JvmField
-    val browser = JBCefBrowser("https://detexify.kirelabs.org/classify.html")
-    val content = browser.component
+    class DetexifyToolWindow {
+        val content = JBCefBrowser(DETEXIFY_URL).component
 
-    init {
-        window.title = "Detexify"
-        window.component.addFocusListener(object : FocusListener {
-            override fun focusGained(focusEvent: FocusEvent) {
-                for (listener in browser.component.focusListeners) listener.focusGained(focusEvent)
-            }
-
-            override fun focusLost(focusEvent: FocusEvent) {
-                for (listener in browser.component.focusListeners) listener.focusLost(focusEvent)
-            }
-        })
+        companion object {
+            const val DETEXIFY_URL = "https://detexify.kirelabs.org/classify.html"
+        }
     }
 }
