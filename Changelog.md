@@ -14,5 +14,6 @@ ETA: First half of February, 2021
 * Performance improvements. (#1716)
 
 # Bug fixes
+* None, yet.
 
 Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
