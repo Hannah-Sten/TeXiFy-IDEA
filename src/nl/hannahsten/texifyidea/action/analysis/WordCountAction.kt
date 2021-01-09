@@ -111,7 +111,7 @@ open class WordCountAction : AnAction(
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = fileSet.flatMap { it.childrenOfType(LatexNormalText::class) }
         val parameterText = fileSet.flatMap { it.childrenOfType(LatexParameterText::class) }
-                .filter { it.command?.isTextCommand() ?: false }
+                .filter { it.command?.text !in IGNORE_COMMANDS }
 
         val bibliographies = baseFile.childrenOfType(LatexEnvironment::class)
             .filter {
