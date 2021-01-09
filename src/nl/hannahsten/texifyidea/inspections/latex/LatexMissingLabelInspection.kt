@@ -136,15 +136,11 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         }
     }
 
-    abstract class LabelQuickFix : LocalQuickFix {
-
-    }
-
     /**
      * This is also an intention, but in order to keep the same alt+enter+enter functionality (because we have an other
      * quickfix as well) we keep it as a quickfix also.
      */
-    private class InsertLabelForCommandFix : LabelQuickFix() {
+    private class InsertLabelForCommandFix : LocalQuickFix {
 
         // It has to appear in alphabetical order before the other quickfix
         override fun getFamilyName() = "Add label for this command"
@@ -159,7 +155,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         }
     }
 
-    private class InsertLabelInEnvironmentFix : LabelQuickFix() {
+    private class InsertLabelInEnvironmentFix : LocalQuickFix {
         override fun getFamilyName() = "Add label for this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

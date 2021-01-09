@@ -59,7 +59,5 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
             val caretModel = editor.caretModel
             caretModel.moveToOffset(labelCommand.endOffset())
         }
-
     }
-
 }
