@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.Magic
@@ -40,50 +41,49 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             ?: findTarget(editor, file)
             ?: return
 
-        // Determine label name.
-        val labelString: String? = if (Magic.Command.labelAsParameter.contains(command.name)) {
-            // For parameter labeled commands we use the command name itself
-            command.name!!
-        }
-        else {
-            // For all other commands we use the first required parameter
+        val prefix = Magic.Command.labeledPrefixes[command.name!!] ?: return
+
+        val factory = LatexPsiHelper(project)
+
+        // For sections we can infer a reasonable label name from the required parameter
+        if (Magic.Command.sectionMarkers.contains(command.name)) {
             val required = command.requiredParameters
-            if (required.isNotEmpty()) {
-                required[0]
-            }
-            else {
-                null
-            }
-        }
 
-        val prefix = Magic.Command.labeledPrefixes[command.name!!]
-
-        if (labelString != null) {
+            // Section commands should all have a required parameter
+            val labelString: String = required.getOrNull(0) ?: return
             val createdLabel = getUniqueLabelName(
                 labelString.formatAsLabel(),
                 prefix, command.containingFile
             )
 
-            val factory = LatexPsiHelper(project)
+            // Insert label
+            // command -> NoMathContent -> Content -> Container containing the command
+            val commandContent = command.parent.parent
+            val labelCommand =
+                commandContent.parent.addAfter(factory.createLabelCommand(createdLabel.labelText), commandContent)
 
-            val labelCommand = if (Magic.Command.labelAsParameter.contains(command.name)) {
-                factory.setOptionalParameter(command, "label", "{$createdLabel}")
-            }
-            else {
-                // Insert label
-                // command -> NoMathContent -> Content -> Container containing the command
-                val commandContent = command.parent.parent
-                commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
-            }
             // Adjust caret offset.
             val caret = editor.caretModel
             caret.moveToOffset(labelCommand.endOffset())
         }
         else {
-            editor.caretModel.moveToOffset(command.endOffset())
-            val template = TemplateImpl("", "\\label{$prefix:\$__Variable0\$}", "")
-            template.addVariable(TextExpression(""), true)
-            TemplateManager.getInstance(editor.project).startTemplate(editor, template)
+            if (Magic.Command.labelAsParameter.contains(command.name)) {
+                // Create a label parameter and initiate the rename process
+                val createdLabel = getUniqueLabelName(
+                    command.name!!.replace("\\", ""),
+                    prefix, command.containingFile
+                )
+                val endMarker =
+                    editor.document.createRangeMarker(command.startOffset, command.endOffset())
+                createLabelAndStartRename(editor, project, command, createdLabel, endMarker)
+            }
+            else {
+                // Insert and start the \label live template
+                editor.caretModel.moveToOffset(command.endOffset())
+                val template = TemplateImpl("", "\\label{$prefix:\$__Variable0\$}", "")
+                template.addVariable(TextExpression(""), true)
+                TemplateManager.getInstance(editor.project).startTemplate(editor, template)
+            }
         }
     }
 }

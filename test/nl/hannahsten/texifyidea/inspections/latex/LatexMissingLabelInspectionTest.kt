@@ -137,9 +137,10 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         after = """
         \begin{document}
             \begin{lstlisting}[label={lst:lstlisting}]
-            \end{lstlisting}
+            \end{lstlisting}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
     )
 
     fun `test quick fix in listings when label already exists`() = testQuickFix(
@@ -154,9 +155,10 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         \begin{document}
             \label{lst:lstlisting}
             \begin{lstlisting}[label={lst:lstlisting2}]
-            \end{lstlisting}
+            \end{lstlisting}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
     )
 
     fun `test quick fix in listings with other parameters`() = testQuickFix(
@@ -169,9 +171,10 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         after = """
         \begin{document}
             \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
-            \end{lstlisting}
+            \end{lstlisting}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
     )
 
     fun `test fix all missing label problems in this file`() = testQuickFixAll(
@@ -221,8 +224,9 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
     )
 }
