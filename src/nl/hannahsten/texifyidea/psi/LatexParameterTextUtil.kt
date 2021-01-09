@@ -123,5 +123,5 @@ fun getName(element: LatexParameterText): String {
 
 val LatexParameterText.command: PsiElement?
     get() {
-        return this.grandparent(4)?.firstChild
+        return this.firstParentOfType(LatexCommands::class)?.firstChild
     }
