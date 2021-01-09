@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.folding.LatexSectionFoldingBuilder
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
