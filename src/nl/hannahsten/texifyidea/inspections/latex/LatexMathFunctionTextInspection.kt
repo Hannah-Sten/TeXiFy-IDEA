@@ -20,13 +20,13 @@ import nl.hannahsten.texifyidea.util.requiredParameter
 /**
  * @author Hannah Schellekens
  */
-open class LatexMathFunctionInspection : TexifyInspectionBase() {
+open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
     override fun getDisplayName() = "Use math function instead of \\text"
 
-    override val inspectionId = "MathFunction"
+    override val inspectionId = "MathFunctionText"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()

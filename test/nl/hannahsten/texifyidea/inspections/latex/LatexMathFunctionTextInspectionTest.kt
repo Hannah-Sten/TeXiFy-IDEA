@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.util.Magic
 /**
  * @author Hannah Schellekens
  */
-class LatexMathFunctionInspectionTest : TexifyInspectionTestBase(LatexNonBreakingSpaceInspection()) {
+class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexNonBreakingSpaceInspection()) {
 
     fun testWarning() {
         MATH_FUNCTIONS.forEach {
