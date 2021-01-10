@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities.invokeLater
  * @author Sergei Izmailov
  */
 class PreviewFormUpdater(private val previewForm: PreviewForm) {
+
     /**
      * The default preamble.
      *

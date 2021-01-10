@@ -63,6 +63,7 @@ interface Environment : Dependend {
      * @author Hannah Schellekens
      */
     enum class Context {
+
         NORMAL,
         MATH,
         COMMENT

@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexTrimWhiteSpaceInspectionTest : TexifyInspectionTestBase(LatexTrimWhitespaceInspection()) {
+
     fun `test no warning in section command`() = testHighlighting("""\section{test}""")
 
     fun `test no warning in non-section command`() = testHighlighting("""\box{ test}""")

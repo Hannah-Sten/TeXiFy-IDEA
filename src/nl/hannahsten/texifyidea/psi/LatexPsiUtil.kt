@@ -10,6 +10,7 @@ import java.util.ArrayList
  * @author Hannah Schellekens
  */
 object LatexPsiUtil {
+
     /**
      * Finds the previous sibling of an element but skips over whitespace.
      *

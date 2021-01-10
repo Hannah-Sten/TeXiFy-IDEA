@@ -9,6 +9,7 @@ import com.intellij.ui.jcef.JBCefBrowser
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 
 class DetexifyToolWindowFactory : ToolWindowFactory {
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val detexifyToolWindow = DetexifyToolWindow()
         val content = ContentFactory.SERVICE.getInstance().createContent(detexifyToolWindow.content, "", false)
@@ -23,9 +24,11 @@ class DetexifyToolWindowFactory : ToolWindowFactory {
     }
 
     class DetexifyToolWindow {
+
         val content = JBCefBrowser(DETEXIFY_URL).component
 
         companion object {
+
             const val DETEXIFY_URL = "https://detexify.kirelabs.org/classify.html"
         }
     }

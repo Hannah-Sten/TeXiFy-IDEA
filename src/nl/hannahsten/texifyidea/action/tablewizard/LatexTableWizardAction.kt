@@ -21,6 +21,7 @@ import java.util.*
  * @author Abby Berkers
  */
 class LatexTableWizardAction : AnAction() {
+
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT)

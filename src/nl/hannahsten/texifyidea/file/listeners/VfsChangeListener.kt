@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
 
 class VfsChangeListener : BulkFileListener {
+
     override fun after(events: MutableList<out VFileEvent>) {
         // Drop cache when files are added/deleted
         events.filter { event -> !event.isFromSave && event.file?.extension in Magic.File.fileTypes.map { it.defaultExtension } }

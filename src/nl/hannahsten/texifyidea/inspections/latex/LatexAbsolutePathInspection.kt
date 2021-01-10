@@ -17,6 +17,7 @@ import java.io.File
  * @author Thomas
  */
 class LatexAbsolutePathInspection : TexifyInspectionBase() {
+
     override val inspectionGroup = InsightGroup.LATEX
 
     override val inspectionId = "AbsolutePath"

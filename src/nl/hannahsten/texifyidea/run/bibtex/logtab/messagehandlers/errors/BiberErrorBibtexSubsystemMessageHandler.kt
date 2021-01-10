@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * Handle biber error messages with file and line information.
  */
 object BiberErrorBibtexSubsystemMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         BibtexLogMagicRegex.biberErrorBibtexSubsystem.find(window.lastOrNull() ?: "")?.apply {
             // Though we have the name of the auxiliary file, we just assume it is the same as the opened bib file

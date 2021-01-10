@@ -30,6 +30,7 @@ import java.io.File
 class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?, var mainFile: VirtualFile?, private val project: Project) {
 
     companion object {
+
         const val projectDirString = "{projectDir}"
         const val mainFileString = "{mainFileParent}"
     }

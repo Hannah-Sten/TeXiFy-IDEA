@@ -22,6 +22,7 @@ import java.io.InputStream
 class LatexDocumentationProvider : DocumentationProvider {
 
     companion object {
+
         private val PACKAGE_COMMANDS = setOf("usepackage", "RequirePackage", "documentclass", "LoadClass")
     }
 

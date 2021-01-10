@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
     companion object {
+
         /**
          * Returns year of texlive installation, 0 if it is not texlive.
          * Assumes the pdflatex version output contains something like (TeX Live 2019).

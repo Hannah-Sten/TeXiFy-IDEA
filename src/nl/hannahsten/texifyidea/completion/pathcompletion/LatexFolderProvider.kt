@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.util.files.findRelativeSearchPathsForImportComma
  * Provide base folder for autocompleting folders.
  */
 class LatexFolderProvider : LatexPathProviderBase() {
+
     override fun selectScanRoots(file: PsiFile): List<VirtualFile> {
         val searchDirs = getProjectRoots().toMutableList()
         val allIncludeCommands = LatexIncludesIndex.getItems(file)

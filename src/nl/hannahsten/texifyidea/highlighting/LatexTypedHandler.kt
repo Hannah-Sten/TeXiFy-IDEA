@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
  * @author Sten Wessel
  */
 class LatexTypedHandler : TypedHandlerDelegate() {
+
     /**
      * When pressing $ when text is selected, surround with $ signs.
      */

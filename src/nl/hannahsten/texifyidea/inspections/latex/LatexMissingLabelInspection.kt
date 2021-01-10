@@ -124,6 +124,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
      * Open the settings page so the user can change the minimum labeled level.
      */
     private class ChangeMinimumLabelLevelFix : LocalQuickFix {
+
         @Nls
         override fun getFamilyName(): String {
             return "Change minimum sectioning level"
@@ -137,6 +138,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     }
 
     abstract class LabelQuickFix : LocalQuickFix {
+
         protected fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
             val labelBase = "$prefix:$base"
             val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
@@ -174,6 +176,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
     }
 
     private class InsertLabelInEnvironmentFix : LabelQuickFix() {
+
         override fun getFamilyName() = "Add label for this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

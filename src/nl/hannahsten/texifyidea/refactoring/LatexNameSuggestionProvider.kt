@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.util.firstParentOfType
 
 class LatexNameSuggestionProvider : NameSuggestionProvider {
+
     override fun getSuggestedNames(element: PsiElement, nameSuggestionContext: PsiElement?, result: MutableSet<String>): SuggestedNameInfo? {
 
         if (element.firstParentOfType(LatexBeginCommand::class) != null) {

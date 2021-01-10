@@ -941,6 +941,7 @@ object Magic {
     }
 
     object Colors {
+
         /**
          * All commands that have a color as an argument.
          */

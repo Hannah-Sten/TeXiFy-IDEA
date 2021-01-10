@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.psi.LatexMagicComment
  * @author Hannah Schellekens
  */
 object IndexKeys {
+
     val COMMANDS_KEY =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.commands")
     val INCLUDES_KEY =

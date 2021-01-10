@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexAddLabelIntentionTest : BasePlatformTestCase() {
+
     fun testMissingChapterLabel() {
         myFixture.configureByText(
             LatexFileType,

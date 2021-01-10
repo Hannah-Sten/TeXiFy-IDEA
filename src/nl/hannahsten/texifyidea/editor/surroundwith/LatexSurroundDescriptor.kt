@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 
 class LatexSurroundDescriptor : SurroundDescriptor {
+
     /**
      * Get the first and last element of the selection, as these are the only
      * elements the [LatexSurrounder] uses to surround a piece of text.

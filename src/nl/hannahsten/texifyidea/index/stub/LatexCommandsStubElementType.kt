@@ -18,6 +18,7 @@ import java.util.stream.Collectors
  */
 class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage.INSTANCE) {
+
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return object : LatexCommandsImpl(latexCommandsStub, this) {
             init {
@@ -107,6 +108,7 @@ class LatexCommandsStubElementType(debugName: String) :
     }
 
     companion object {
+
         private val LIST_ELEMENT_SEPARATOR =
             Pattern.compile("\u1923\u9123\u2d20 hello\u0012")
         private val KEY_VALUE_SEPARATOR = "=".toRegex()

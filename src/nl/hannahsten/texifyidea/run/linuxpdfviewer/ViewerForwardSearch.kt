@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  * Provides forward search for the available pdf viewers.
  */
 class ViewerForwardSearch(private val viewer: PdfViewer) {
+
     /**
      * Execute forward search when the process is done.
      */

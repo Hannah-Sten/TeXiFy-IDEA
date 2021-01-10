@@ -48,6 +48,7 @@ class ContinuousPreviewHandler : TypedHandlerDelegate() {
 }
 
 class ContinuousPreviewBackspacehandler : BackspaceHandlerDelegate() {
+
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {}
 
     override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {

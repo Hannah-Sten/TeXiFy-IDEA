@@ -26,6 +26,7 @@ class RunExternalToolListener(
 ) : ProcessListener {
 
     companion object {
+
         /**
          * Check the contents of the LaTeX fileset to find out if any external tools are needed.
          */

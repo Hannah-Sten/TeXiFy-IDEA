@@ -22,6 +22,7 @@ import java.util.*
  * @author Hannah Schellekens
  */
 class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup
         get() = InsightGroup.LATEX
 
@@ -60,6 +61,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
     }
 
     private inner class OverToFracFix : LocalQuickFix {
+
         @Nls
         override fun getFamilyName(): String {
             return "Convert to \\frac"

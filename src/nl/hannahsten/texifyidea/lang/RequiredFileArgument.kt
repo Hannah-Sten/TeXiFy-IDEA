@@ -18,6 +18,7 @@ import java.util.regex.Pattern
  * @author Hannah Schellekens
  */
 open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported: Boolean = true, open val commaSeparatesArguments: Boolean, vararg extensions: String) : RequiredArgument(name!!, Type.FILE), FileNameMatcher, FileExtensionMatcher {
+
     lateinit var supportedExtensions: Set<String>
     lateinit var defaultExtension: String
         private set

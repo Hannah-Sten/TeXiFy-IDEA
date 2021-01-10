@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.util.projectSearchScope
  * @author Abby Berkers
  */
 class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<LatexCommands>(element), PsiPolyVariantReference {
+
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }

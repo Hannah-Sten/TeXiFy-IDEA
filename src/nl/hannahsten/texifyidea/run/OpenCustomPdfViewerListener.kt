@@ -12,6 +12,7 @@ import java.io.IOException
  * Run the given command after the process has succeeded.
  */
 class OpenCustomPdfViewerListener(val command: Array<String>, val failSilently: Boolean = false, val runConfig: LatexRunConfiguration) : ProcessListener {
+
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
             try {

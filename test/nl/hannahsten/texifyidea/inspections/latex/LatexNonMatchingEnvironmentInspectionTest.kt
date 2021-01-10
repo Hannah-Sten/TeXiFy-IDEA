@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexNonMatchingEnvironmentInspectionTest : TexifyInspectionTestBase(LatexNonMatchingEnvironmentInspection()) {
+
     fun `test no warning`() = testHighlighting("""
         \begin{center}
             bla
