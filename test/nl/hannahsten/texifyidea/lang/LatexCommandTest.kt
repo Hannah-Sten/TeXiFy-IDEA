@@ -44,7 +44,7 @@ class LatexCommandTest : BasePlatformTestCase() {
         // base/ltsect.dtx
         // No clue why they didn't use the doc package.
         val text = """
-            The |\contentsline{|\meta{type}|}{|\meta{entry}|}{|\meta{page}|}| macro produces a \meta{type} entry in a table of contents, etc.
+            The \contentsline{\meta{type}}{\meta{entry}}{\meta{page}} macro produces a \meta{type} entry in a table of contents, etc.
         """.trimIndent()
         val args = LatexCommand.extractArgumentsFromDocs(text, "\\contentsline")
         assertEquals("Number of arguments:", 3, args.size)

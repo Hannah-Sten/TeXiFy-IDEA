@@ -44,8 +44,8 @@ interface LatexCommand : Described, Dependend {
                 val dependency = LatexPackage.create(file)
                 // Merge with already known command if possible, assuming that there was a reason to specify things (especially parameters) manually
                 // Basically this means we add the indexed docs to the known command
-                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()// todo
-//                val defaultcmds = emptyList<LatexCommand>()
+//                val defaultcmds = lookup(cmdWithSlash)?.filter { it.dependency == dependency } ?: emptyList()// todo
+                val defaultcmds = emptyList<LatexCommand>()
                 val cmd = if (defaultcmds.isNotEmpty()) {
                     val defaultCmd = defaultcmds.first()
                     object : LatexCommand {
@@ -77,15 +77,41 @@ interface LatexCommand : Described, Dependend {
         fun getArgumentsFromStartOfString(docs: String, counterInit: Int): Array<Argument> {
             val arguments = mutableListOf<Argument>()
             var counter = counterInit
-            // Only use the ones at the beginning of the string to avoid matching too much
-            """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
-                if (it.range.first == counter) {
-                    when (it.groups["command"]?.value) {
-                        LatexRegularCommand.OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
-                        LatexRegularCommand.MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
-                        LatexRegularCommand.PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+            run breaker@{
+                // Only use the ones at the beginning of the string to avoid matching too much
+                """\s*\\(?<command>[omp]arg)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
+                    if (it.range.first == counter) {
+                        when (it.groups["command"]?.value) {
+                            LatexRegularCommand.OARG.command -> arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
+                            LatexRegularCommand.MARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                            LatexRegularCommand.PARG.command -> arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
+                        }
+                        counter += it.range.length + 1
                     }
-                    counter += it.range.length + 1
+                    else {
+                        return@breaker
+                    }
+                }
+            }
+
+            // Special convention in LaTeX base
+            if (arguments.isEmpty()) {
+                run breaker@{
+                    counter = counterInit
+                    """\s*(?:\{\\meta\{(?<marg>.+?)}}|\[\\meta\{(?<oarg>.+?)}])""".toRegex().findAll(docs, counterInit).forEach { match ->
+                        if (match.range.first == counter) {
+                            match.groups["marg"]?.value?.let {
+                                arguments.add(RequiredArgument(it))
+                            }
+                            match.groups["oarg"]?.value?.let {
+                                arguments.add(OptionalArgument(it))
+                            }
+                            counter += match.range.length + 1
+                        }
+                        else {
+                            return@breaker
+                        }
+                    }
                 }
             }
 
