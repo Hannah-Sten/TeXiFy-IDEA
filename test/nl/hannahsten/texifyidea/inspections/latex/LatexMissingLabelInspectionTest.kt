@@ -229,4 +229,18 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         usestemplate = true
     )
+
+    fun `test quick fix in lstinputlistings creates optional parameters at correct position`() = testQuickFix(
+        before = """
+        \begin{document}
+                \lstinputlisting{some/file}
+        \end{document}
+        """.trimIndent(),
+        after = """
+        \begin{document}
+                \lstinputlisting[label={lst:lstinputlisting}]{some/file}<caret>
+        \end{document}
+        """.trimIndent(),
+        usestemplate = true
+    )
 }
