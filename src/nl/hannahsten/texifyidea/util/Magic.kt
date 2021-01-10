@@ -11,6 +11,8 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULARX
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR_STAR
+import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -438,12 +440,45 @@ object Magic {
 
         /**
          * All math operators without a leading slash.
+         *
+         * Reference [Unofficial LaTeX2e reference manual](https://latexref.xyz/Math-functions.html)
          */
         @JvmField
-        val slashlessMathOperators = hashSetOf(
-            "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
-            "deg", "det", "dim", "exp", "gcd", "hom", "inf", "ker", "lg", "lim", "liminf", "limsup",
-            "ln", "log", "max", "min", "Pr", "sec", "sin", "sinh", "sup", "tan", "tanh"
+        val slashlessMathOperators: Set<LatexCommand> = hashSetOf(
+                LatexMathCommand.ARCCOS,
+                LatexMathCommand.ARCSIN,
+                LatexMathCommand.ARCTAN,
+                LatexMathCommand.ARG,
+                LatexMathCommand.BMOD,
+                LatexMathCommand.COS,
+                LatexMathCommand.COSH,
+                LatexMathCommand.COT,
+                LatexMathCommand.COTH,
+                LatexMathCommand.CSC,
+                LatexMathCommand.DEG,
+                LatexMathCommand.DET,
+                LatexMathCommand.DIM,
+                LatexMathCommand.EXP,
+                LatexMathCommand.GCD,
+                LatexMathCommand.HOM,
+                LatexMathCommand.INF,
+                LatexMathCommand.KER,
+                LatexMathCommand.LG,
+                LatexMathCommand.LIM,
+                LatexMathCommand.LIMINF,
+                LatexMathCommand.LIMSUP,
+                LatexMathCommand.LN,
+                LatexMathCommand.LOG,
+                LatexMathCommand.MAX,
+                LatexMathCommand.MIN,
+                LatexMathCommand.PMOD,
+                LatexMathCommand.CAPITAL_PR,
+                LatexMathCommand.SEC,
+                LatexMathCommand.SIN,
+                LatexMathCommand.SINH,
+                LatexMathCommand.SUP,
+                LatexMathCommand.TAN,
+                LatexMathCommand.TANH,
         )
 
         /**

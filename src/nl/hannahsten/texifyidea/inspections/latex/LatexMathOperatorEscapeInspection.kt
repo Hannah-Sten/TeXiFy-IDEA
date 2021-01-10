@@ -27,25 +27,22 @@ import org.jetbrains.annotations.Nls
  * @author Sten Wessel
  */
 class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
-    override val inspectionGroup: InsightGroup
-        get() = InsightGroup.LATEX
+
+    override val inspectionGroup = InsightGroup.LATEX
 
     @Nls
-    override fun getDisplayName(): String {
-        return "Non-escaped common math operators"
-    }
+    override fun getDisplayName() = "Non-escaped common math operators"
 
-    override val inspectionId: String
-        get() = "MathOperatorEscape"
+    override val inspectionId = "MathOperatorEscape"
 
     override fun inspectFile(
-        file: PsiFile, manager: InspectionManager,
-        isOntheFly: Boolean
+            file: PsiFile, manager: InspectionManager,
+            isOntheFly: Boolean
     ): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val pattern = PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT_WORD)
         val envs =
-            PsiTreeUtil.findChildrenOfType(file, LatexMathContent::class.java)
+                PsiTreeUtil.findChildrenOfType(file, LatexMathContent::class.java)
 
         for (env in envs) {
             env.acceptChildren(object : PsiRecursiveElementVisitor() {
@@ -53,24 +50,24 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
                     ProgressManager.checkCanceled()
                     if (pattern.accepts(element)) {
                         fun hasMathParentBeforeTextParent() = PsiTreeUtil.collectParents(
-                            element,
-                            LatexMathContent::class.java,
-                            false
+                                element,
+                                LatexMathContent::class.java,
+                                false
                         ) { it is LatexCommands && it.name == "\\text" }.size > 0
 
                         fun descriptorAlreadyExists() = descriptors.firstOrNull {
                             it.psiElement == element && it.descriptionTemplate == "Non-escaped math operator"
                         } != null
 
-                        if (Magic.Command.slashlessMathOperators.contains(element.text) && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
+                        if (element.text in SLASHLESS_MATH_OPERATORS && !descriptorAlreadyExists() && hasMathParentBeforeTextParent()) {
                             descriptors.add(
-                                manager.createProblemDescriptor(
-                                    element,
-                                    "Non-escaped math operator",
-                                    EscapeMathOperatorFix(),
-                                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                    isOntheFly
-                                )
+                                    manager.createProblemDescriptor(
+                                            element,
+                                            "Non-escaped math operator",
+                                            EscapeMathOperatorFix(),
+                                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                                            isOntheFly
+                                    )
                             )
                         }
                     }
@@ -93,13 +90,20 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
         }
 
         override fun applyFix(
-            project: Project,
-            descriptor: ProblemDescriptor
+                project: Project,
+                descriptor: ProblemDescriptor
         ) {
             val element = descriptor.psiElement
             val document =
-                PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+                    PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
             document?.insertString(element.textOffset, "\\")
         }
+    }
+
+    companion object {
+
+        private val SLASHLESS_MATH_OPERATORS = Magic.Command.slashlessMathOperators.asSequence()
+                .map { it.command }
+                .toSet()
     }
 }

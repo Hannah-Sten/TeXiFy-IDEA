@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.util.Magic
 
 /**
  * @author Hannah Schellekens
@@ -66,45 +67,6 @@ class LatexMathFunctionInspectionTest : TexifyInspectionTestBase(LatexNonBreakin
 
     companion object {
 
-        /**
-         * Reference [Unofficial LaTeX2e reference manual](https://latexref.xyz/Math-functions.html)
-         */
-        private val MATH_FUNCTIONS = listOf(
-                "arccos",
-                "arcsin",
-                "arctan",
-                "arg",
-                "bmod",
-                "cos",
-                "cosh",
-                "cot",
-                "coth",
-                "csc",
-                "deg",
-                "det",
-                "dim",
-                "exp",
-                "gcd",
-                "hom",
-                "inf",
-                "ker",
-                "lg",
-                "lim",
-                "liminf",
-                "limsup",
-                "ln",
-                "log",
-                "max",
-                "min",
-                "pmod",
-                "Pr",
-                "projlim",
-                "sec",
-                "sin",
-                "sinh",
-                "sup",
-                "tan",
-                "tanh",
-        )
+        private val MATH_FUNCTIONS = Magic.Command.slashlessMathOperators.map { it.command }
     }
 }
