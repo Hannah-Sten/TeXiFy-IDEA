@@ -1,6 +1,10 @@
 :pygmentize:
 
 == Non-escaped common math operators
+== Math functions in `\text`
+_Since b0.7.3_
+
+Math functions using `\text{myoperator}` can be replaced by their dedicated function (`\myoperator`).
 == Non-breaking spaces before references
 == Ellipsis with `...` instead of `\ldots` or `\dots`
 == Normal space after abbreviation
