@@ -14,7 +14,7 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
         MATH_FUNCTIONS.forEach {
             myFixture.configureByText(LatexFileType,
                     """
-                        $<warning descr="Use math function instead of \text">\text{$it}</warning>(3, 4)
+                        $<warning descr="Use math function instead of \text">\text{$it}</warning>(3, 4)$
                         \(<warning descr="Use math function instead of \text">\text{$it   }</warning>(12)\)
                         \[<warning descr="Use math function instead of \text">\text{  $it}</warning>   text\]
                         \begin{equation}
