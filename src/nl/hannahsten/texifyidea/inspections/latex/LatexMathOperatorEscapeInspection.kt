@@ -35,14 +35,10 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
 
     override val inspectionId = "MathOperatorEscape"
 
-    override fun inspectFile(
-            file: PsiFile, manager: InspectionManager,
-            isOntheFly: Boolean
-    ): List<ProblemDescriptor> {
+    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val pattern = PlatformPatterns.psiElement(LatexTypes.NORMAL_TEXT_WORD)
-        val envs =
-                PsiTreeUtil.findChildrenOfType(file, LatexMathContent::class.java)
+        val envs = PsiTreeUtil.findChildrenOfType(file, LatexMathContent::class.java)
 
         for (env in envs) {
             env.acceptChildren(object : PsiRecursiveElementVisitor() {
@@ -71,9 +67,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
                             )
                         }
                     }
-                    else {
-                        super.visitElement(element)
-                    }
+                    else super.visitElement(element)
                 }
             })
         }
@@ -84,18 +78,13 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
      * @author Sten Wessel
      */
     private class EscapeMathOperatorFix : LocalQuickFix {
-        @Nls
-        override fun getFamilyName(): String {
-            return "Escape math operator"
-        }
 
-        override fun applyFix(
-                project: Project,
-                descriptor: ProblemDescriptor
-        ) {
+        @Nls
+        override fun getFamilyName(): String = "Escape math operator"
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
-            val document =
-                    PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
+            val document = PsiDocumentManager.getInstance(project).getDocument(element.containingFile)
             document?.insertString(element.textOffset, "\\")
         }
     }
