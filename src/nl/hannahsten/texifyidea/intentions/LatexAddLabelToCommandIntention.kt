@@ -29,8 +29,6 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
         return findTarget<LatexCommands>(editor, file)?.name in Magic.Command.labeledPrefixes
     }
 
-    override fun startInWriteAction() = true
-
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         if (editor == null || file == null) {
             return

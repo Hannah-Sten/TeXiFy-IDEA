@@ -105,4 +105,6 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         val renamer = LabelInplaceRenamer(parameterText, editor, label.prefixText, label.base, moveCaretTo)
         renamer.performInplaceRefactoring(LinkedHashSet())
     }
+
+    override fun startInWriteAction() = true
 }
