@@ -18,6 +18,7 @@ import kotlin.math.max
 
 abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
 
+
     /**
      * This class handles the rename of a label parameter after insertion
      */
@@ -98,8 +99,11 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
         val helper = LatexPsiHelper(project)
         val parameter = helper.setOptionalParameter(command, "label", "{${label.labelText}}")
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
+
+        // setOptionalParameter should create an appropriate optionaArgument node with label={text} in it
         val parameterText =
-            parameter.keyvalValue!!.keyvalContentList.first().parameterGroup!!.parameterGroupText!!.parameterTextList.first()
+            parameter.keyvalValue?.keyvalContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
+                ?: throw AssertionError("parameter created by setOptionalParameter does not have the right structure")
         // Move the caret onto the label
         editor.caretModel.moveToOffset(parameterText.textOffset + label.prefix.length + 1)
         val renamer = LabelInplaceRenamer(parameterText, editor, label.prefixText, label.base, moveCaretTo)
