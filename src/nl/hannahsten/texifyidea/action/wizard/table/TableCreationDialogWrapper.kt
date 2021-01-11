@@ -258,7 +258,7 @@ open class TableCreationDialogWrapper(
             override fun actionPerformed(e: AnActionEvent) {
                 if (table.selectedColumn >= 0) {
                     TableCreationEditColumnDialog(
-                            { title, columnType, _ -> addTableColumn(title, columnType) },
+                            { title, columnType, columnIndex -> editTableColumn(title, columnType, columnIndex) },
                             table.selectedColumn,
                             table.getColumnName(table.selectedColumn),
                             columnTypes[table.selectedColumn]

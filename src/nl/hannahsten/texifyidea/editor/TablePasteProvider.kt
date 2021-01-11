@@ -65,14 +65,14 @@ open class TablePasteProvider : PasteProvider {
     private fun Document.toTableDialogWrapper(): TableCreationDialogWrapper? {
         val rows = select("table tr")
         val height = rows.size
-        val width = rows.firstOrNull()?.select("td")?.size ?: 0
+        val width = rows.firstOrNull()?.select("td, th")?.size ?: 0
 
         if (height == 0 && width == 0) return null
 
         // Convert html to data vector Vector<Vector<Any?>> and headers.
-        val header = rows.first().select("td").map { it.text() }.toVector()
+        val header = rows.first().select("td, th").map { it.text() }.toVector()
         val content: Vector<Vector<Any?>> = rows.drop(1).map { tr ->
-            tr.select("td").map { td -> td.handleHtmlFormatting() as Any? }.toVector()
+            tr.select("td, th").map { td -> td.handleHtmlFormatting() as Any? }.toVector()
         }.toVector()
 
         // Find the type of column automatically.
@@ -81,7 +81,7 @@ open class TablePasteProvider : PasteProvider {
             // Check if all contents of the column (except the header) can be converted to a number.
             // When that's the case => it's a number column. All other cases, text. Ignoring the Math option
             // as the table information is most probably something outside of a latex context.
-            if (contentRows.all { it.select("td").getOrNull(col)?.text()?.toDoubleOrNull() != null }) {
+            if (contentRows.all { it.select("td, th").getOrNull(col)?.text()?.toDoubleOrNull() != null }) {
                 ColumnType.NUMBERS_COLUMN
             }
             else ColumnType.TEXT_COLUMN
@@ -101,11 +101,11 @@ open class TablePasteProvider : PasteProvider {
         val prefix = StringBuilder()
         val suffix = StringBuilder()
 
-        if (select("b").isNotEmpty()) {
+        if (select("b, strong").isNotEmpty()) {
             prefix.append("\\textbf{")
             suffix.append("}")
         }
-        if (select("i").isNotEmpty()) {
+        if (select("i, em").isNotEmpty()) {
             prefix.append("\\textit{")
             suffix.append("}")
         }
