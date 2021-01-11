@@ -17,4 +17,16 @@ object Clipboard {
                 .takeIf { it >= 0 }
                 ?.let { clipboardContents.substring(it) }
     }
+
+    /**
+     * Extracts the fragment html from the given contents.
+     *
+     * @return null when it could not find the fragment.
+     */
+    @JvmStatic
+    fun extractHtmlFragmentFromClipboard(clipboardContents: String) = clipboardContents
+            .split("<!--StartFragment-->")
+            .getOrNull(1)
+            ?.split("<!--EndFragment-->")
+            ?.first()
 }
