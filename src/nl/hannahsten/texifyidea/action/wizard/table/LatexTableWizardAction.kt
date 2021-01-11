@@ -32,6 +32,7 @@ class LatexTableWizardAction : AnAction() {
 
         // Create the dialog.
         val dialogWrapper = TableCreationDialogWrapper()
+
         // If the user pressed OK, do stuff.
         if (dialogWrapper.showAndGet()) {
 
@@ -46,7 +47,7 @@ class LatexTableWizardAction : AnAction() {
                     project,
                     "Insert table",
                     "LaTeX",
-                    Runnable { file.psiFile(project)!!.insertUsepackage(LatexPackage.BOOKTABS) },
+                    Runnable { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
                     file.psiFile(project)
             )
         }
@@ -56,8 +57,10 @@ class LatexTableWizardAction : AnAction() {
      * Convert the table information to a latex table that can be inserted into the file.
      *
      * @param tableInformation
-     * @param lineIndent is the indentation of the current line, to be used on each new line.
-     * @param tabIndent is the continuation indent.
+     * @param lineIndent
+     *          The indentation of the current line, to be used on each new line.
+     * @param tabIndent
+     *          The continuation indent.
      */
     private fun convertTableToLatex(tableInformation: TableInformation, lineIndent: String, tabIndent: String = "    "): String {
         /**

@@ -35,7 +35,7 @@ class TableCreationTableModel : DefaultTableModel() {
      * Adds an empty row to the table.
      */
     fun addEmptyRow() {
-        val emptyRow = (0 until columnCount).map { "" }.toTypedArray()
+        val emptyRow =  Array(columnCount) { "" }
         addRow(emptyRow)
     }
 

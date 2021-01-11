@@ -10,18 +10,29 @@ import javax.swing.JPanel
 /**
  * Dialog to add a new column to the table.
  *
- * @param onOkFunction The function to execute when clicking the OK button.
- * @param editingColumn The index of the column being edited.
- * @param columnName The name of the column that is being edited. Default is the empty string, the title of a column that does
- *          not yet exist.
- * @param columnType The [ColumnType] of the column that is being edited. Default is a text column.
- *
  * @author Abby Berkers
  */
 class TableCreationEditColumnDialog(
-        private val onOkFunction: (String, ColumnType, Int) -> Unit,
+
+        /**
+         * The function to execute when clicking the OK button.
+         */
+        private val onOkFunction: (title: String, columnType: ColumnType, columnIndex: Int) -> Unit,
+
+        /**
+         * The index of the column being edited.
+         */
         private val editingColumn: Int,
+
+        /**
+         * The name of the column that is being edited. Default is the empty string, the title of a column that does
+         * not yet exist.
+         */
         private val columnName: String = "",
+
+        /**
+         * The [ColumnType] of the column that is being edited. Default is a text column.
+         */
         private val columnType: ColumnType = ColumnType.TEXT_COLUMN
 ) {
 
@@ -34,6 +45,7 @@ class TableCreationEditColumnDialog(
 
             // A combobox to select the column type.
             val columnTypeComboBox = JComboBox(ColumnType.values().map { it.displayName }.toTypedArray())
+
             // Select the old type of the editing column.
             columnTypeComboBox.selectedIndex = ColumnType.values().indexOf(columnType)
             val columnTypeLabel = JBLabel("Column type")
