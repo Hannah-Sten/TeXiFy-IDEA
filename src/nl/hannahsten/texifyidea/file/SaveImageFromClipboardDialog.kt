@@ -4,12 +4,14 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.ImageUtil
 import nl.hannahsten.texifyidea.ui.ImagePanel
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.addLabeledComponent
+import nl.hannahsten.texifyidea.util.formatAsFileName
 import org.apache.commons.io.FilenameUtils
 import org.jsoup.Jsoup
 import java.awt.BorderLayout
@@ -19,7 +21,9 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.BoxLayout
+import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.border.EmptyBorder
 
@@ -43,8 +47,8 @@ open class SaveImageFromClipboardDialog(
          * The function to execute when the dialog is succesfully closed.
          * Does not execute when cancelled.
          */
-        val onOkFunction: (SaveImageFromClipboardDialog) -> Unit
-) {
+        onOkFunction: (SaveImageFromClipboardDialog) -> Unit
+) : DialogWrapper(true) {
 
     /**
      * The image data from the clipboard.
@@ -126,28 +130,80 @@ open class SaveImageFromClipboardDialog(
         imageName?.let { txtImageName.text = it }
         imageFormat?.let { cboxImageFormat.selectedItem = it }
 
-        DialogBuilder().apply {
-            title("Save image from clipboard")
+        // Setup dialog.
+        super.init()
+        title = "Save image from clipboard"
+        myPreferredFocusedComponent = txtImageName
 
-            // Fill UI.
-            setCenterPanel(JPanel().apply {
-                layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                minimumSize = Dimension(512, 64)
+        if (showAndGet()) {
+            saveImage()
+            onOkFunction(this@SaveImageFromClipboardDialog)
+        }
+    }
 
-                addImageMetaPanel()
-                addImageDataInputs()
-            })
-            setPreferredFocusComponent(txtImageName)
+    override fun createCenterPanel() = JPanel().apply {
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        minimumSize = Dimension(512, 64)
 
-            // Actions/closing.
-            addOkAction()
-            setOkOperation {
-                dialogWrapper.close(0)
-            }
+        addImageMetaPanel()
+        addImageDataInputs()
+    }
 
-            if (show() == DialogWrapper.OK_EXIT_CODE) {
-                onOkFunction(this@SaveImageFromClipboardDialog)
-            }
+    override fun doOKAction() {
+        close(0)
+    }
+
+    override fun doValidate() = when {
+        txtResourceFolder.text.isBlank() -> {
+            ValidationInfo("You must select a destination folder.", txtResourceFolder)
+        }
+        txtImageName.text.isBlank() -> {
+            ValidationInfo("You must enter an image name.")
+        }
+        txtImageName.text.trim().formatAsFileName().isBlank() -> {
+            ValidationInfo("You must enter a valid image name (invalid characters).", txtImageName)
+        }
+        destinationFile()?.exists() ?: false -> {
+            ValidationInfo("This file already exists", txtImageName)
+        }
+        else -> null
+    }
+
+    /**
+     * Saves the pasted image.
+     */
+    private fun saveImage() {
+        val imageFormat = cboxImageFormat.selectedItem as? ImageFormat ?: return
+        val destination = destinationFile() ?: return
+
+        createDirectories()
+
+        if (ImageIO.write(image, imageFormat.extension, destination)) {
+            savedImage = destination
+            LocalFileSystem.getInstance().refresh(true)
+        }
+    }
+
+    /**
+     * Get the file where the image must be stored.
+     * Also creates the necessary directories.
+     */
+    private fun destinationFile(): File? {
+        val imageFormat = cboxImageFormat.selectedItem as? ImageFormat ?: return null
+
+        val directory = File(txtResourceFolder.text)
+        val validImageName = txtImageName.text.trim().formatAsFileName()
+        val fileName = "$validImageName.${imageFormat.extension}"
+        return File("${directory.path}/$fileName")
+    }
+
+    /**
+     * Creates all necessary directories, if needed.
+     */
+    private fun createDirectories() {
+        val directory = File(txtResourceFolder.text)
+        if (directory.exists().not()) {
+            directory.mkdirs()
         }
     }
 

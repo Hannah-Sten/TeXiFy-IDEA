@@ -4,10 +4,15 @@ import com.intellij.ide.PasteProvider
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.SaveImageFromClipboardDialog
+import nl.hannahsten.texifyidea.util.files.extractFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.Transferable
 import javax.swing.text.DefaultEditorKit
 
 /**
@@ -20,11 +25,30 @@ open class ImagePasteProvider : PasteProvider {
 
     override fun performPaste(dataContext: DataContext) {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return
+        val file = dataContext.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val clipboardTransferable = dataContext.getData(PasteAction.TRANSFERABLE_PROVIDER)?.produce() ?: return
 
-        SaveImageFromClipboardDialog(project, clipboardTransferable) {
-            println("Closed!")
+        // When pasting some copied image.
+        if (clipboardTransferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+            pasteRawImage(project, file, clipboardTransferable)
         }
+        // When pasting an existing image file.
+        else if (clipboardTransferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+            pasteImageFile(project, file, clipboardTransferable)
+        }
+    }
+
+    private fun pasteRawImage(project: Project, file: VirtualFile, clipboard: Transferable) {
+        SaveImageFromClipboardDialog(project, clipboard) {
+            it.savedImage?.let { imageFile ->
+                InsertGraphicWizardAction(imageFile).executeAction(file, project)
+            }
+        }
+    }
+
+    private fun pasteImageFile(project: Project, file: VirtualFile, clipboard: Transferable) {
+        val clipboardFile = clipboard.extractFile() ?: return
+        InsertGraphicWizardAction(clipboardFile).executeAction(file, project)
     }
 
     override fun isPastePossible(dataContext: DataContext): Boolean {
@@ -32,7 +56,8 @@ open class ImagePasteProvider : PasteProvider {
         if (file.isLatexFile().not()) return false
 
         val transferable = dataContext.getData(PasteAction.TRANSFERABLE_PROVIDER)?.produce() ?: return false
-        return transferable.isDataFlavorSupported(DataFlavor.imageFlavor)
+        return transferable.isDataFlavorSupported(DataFlavor.imageFlavor) ||
+                transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
     }
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
