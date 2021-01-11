@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.action.wizard.table.ColumnType
 import nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction
 import nl.hannahsten.texifyidea.action.wizard.table.TableCreationDialogWrapper
 import nl.hannahsten.texifyidea.action.wizard.table.TableCreationTableModel
-import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.toVector
