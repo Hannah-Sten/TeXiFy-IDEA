@@ -64,6 +64,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 * link:Custom-commands[Support for `\newcommand`-like custom definitions of cite and label commands]
 * link:Move-arguments[Action for swapping arguments of LaTeX commands]
 * link:++Menu-entries#insert-graphic-wizard++[Drag and drop graphics inside your document]
+* link:++Menu-entries#table-creation-wizard++[Paste HTML tables and turn them into LaTeX]
 
 == Reading
 * Customizable syntax highlighting
