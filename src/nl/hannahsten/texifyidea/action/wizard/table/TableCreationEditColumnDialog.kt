@@ -2,11 +2,9 @@ package nl.hannahsten.texifyidea.action.wizard.table
 
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.panels.VerticalLayout
 import nl.hannahsten.texifyidea.util.addLabeledComponent
-import javax.swing.BoxLayout
 import javax.swing.JComboBox
 import javax.swing.JPanel
 

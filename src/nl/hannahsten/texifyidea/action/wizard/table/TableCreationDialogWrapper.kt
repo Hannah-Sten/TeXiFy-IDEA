@@ -10,7 +10,6 @@ import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.components.panels.HorizontalLayout
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.ui.table.JBTable
@@ -20,8 +19,6 @@ import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
-import javax.swing.border.EmptyBorder
-import javax.swing.table.TableModel
 
 /**
  * Wrapper that contains the table creation dialog.

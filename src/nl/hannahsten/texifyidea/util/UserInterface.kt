@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBLabel
-import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardDialogWrapper
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.KeyAdapter

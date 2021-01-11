@@ -7,17 +7,17 @@ import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
 import nl.hannahsten.texifyidea.util.*
-import java.awt.BorderLayout
 import java.awt.Dimension
-import javax.swing.*
-import javax.swing.border.EmptyBorder
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JPanel
+import javax.swing.JTextField
 
 /**
  * @author Hannah Schellekens

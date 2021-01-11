@@ -4,7 +4,6 @@ import com.intellij.ide.PasteProvider
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.editor.actions.PasteAction
-import jnr.a64asm.Shift
 import nl.hannahsten.texifyidea.action.wizard.table.ColumnType
 import nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction
 import nl.hannahsten.texifyidea.action.wizard.table.TableCreationDialogWrapper
@@ -16,7 +15,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.awt.datatransfer.DataFlavor
-import java.lang.StringBuilder
 import java.util.*
 
 /**
