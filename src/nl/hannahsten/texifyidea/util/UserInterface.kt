@@ -6,9 +6,16 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.awt.RelativePoint
+import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardDialogWrapper
+import java.awt.BorderLayout
+import java.awt.Dimension
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.text.JTextComponent
@@ -130,4 +137,42 @@ fun JTextComponent.setInputFilter(allowedCharacters: Set<Char>) = addKeyTypedLis
     if (it.keyChar !in allowedCharacters) {
         it.consume()
     }
+}
+
+/**
+ * Adds a component to the panel with a label before it.
+ *
+ * @param component
+ *          The component to add to the panel.
+ * @param description
+ *          The label to put before the component.
+ * @param labelWidth
+ *          The fixed label width, or `null` to use the label's inherent size.
+ */
+fun JPanel.addLabeledComponent(
+        component: JComponent,
+        description: String,
+        labelWidth: Int? = null,
+        leftPadding: Int = 16
+): JPanel {
+    // Uses a border layout with West for the label and Center for the control itself.
+    // East is reserved for suffix elements.
+    val pane = JPanel(BorderLayout()).apply {
+        val label = JBLabel(description).apply {
+            // Left padding.
+            border = EmptyBorder(0, leftPadding, 0, 0)
+
+            // Custom width if specified.
+            labelWidth?.let {
+                preferredSize = Dimension(it, height)
+            }
+
+            // Align top.
+            alignmentY = 0.0f
+        }
+        add(label, BorderLayout.WEST)
+        add(component, BorderLayout.CENTER)
+    }
+    add(pane)
+    return pane
 }

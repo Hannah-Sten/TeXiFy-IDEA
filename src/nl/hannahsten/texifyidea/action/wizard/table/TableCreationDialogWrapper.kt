@@ -4,14 +4,18 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.KeyboardShortcut
 import com.intellij.openapi.actionSystem.ShortcutSet
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AnActionButton
 import com.intellij.ui.LayeredIcon
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.components.panels.HorizontalLayout
+import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.ui.scale.JBUIScale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
+import nl.hannahsten.texifyidea.util.addLabeledComponent
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
@@ -38,12 +42,15 @@ open class TableCreationDialogWrapper : DialogWrapper(true) {
     /**
      * The table component that shows the table.
      */
-    private val table = JBTable(tableModel)
+    private val table = JBTable(tableModel).apply {
+        addTabCreatesNewRowAction()
+        addEnterCreatesNewRowAction()
+    }
 
     /**
      * The text field that contains the caption for the table.
      */
-    private val lblCaption = JBTextField()
+    private val txtCaption = JBTextField()
 
     /**
      * The text field that contains the label for the table. It has a default value "tab:" to encourage usage
@@ -98,87 +105,62 @@ open class TableCreationDialogWrapper : DialogWrapper(true) {
         tableModel.fireTableStructureChanged()
     }
 
-    override fun createCenterPanel(): JPanel {
-        // Decorator that contains the add/remove/edit buttons.
-        val decorator = ToolbarDecorator.createDecorator(table)
-                .setAddAction {
-                    TableCreationEditColumnDialog(
-                            { title, columnType, _ -> addTableColumn(title, columnType) },
-                            tableModel.columnCount
-                    )
+    override fun createCenterPanel(): JPanel = JPanel(BorderLayout(8, 8)).apply {
+        // Put help text below table
+        add(createTablePanelContainer(), BorderLayout.CENTER)
+
+        // Create labels.
+        add(JPanel(VerticalLayout(8)).apply {
+            addLabeledComponent(txtCaption, "Caption:", labelWidth = 64, leftPadding = 0)
+            addLabeledComponent(txtReference, "Label:", labelWidth = 64, leftPadding = 0)
+        }, BorderLayout.SOUTH)
+    }
+
+    /**
+     * Generates table and the toolbaar buttons.
+     */
+    private fun createToolbarDecorator() = ToolbarDecorator.createDecorator(table)
+            .setAddAction {
+                TableCreationEditColumnDialog(
+                        { title, columnType, _ -> addTableColumn(title, columnType) },
+                        tableModel.columnCount
+                )
+            }
+            .setAddActionName("Add Column")
+            .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
+            .addExtraAction(getRemoveColumnActionButton())
+            .addExtraAction(getEditColumnActionButton())
+            .addExtraAction(getAddRowActionButton())
+            .addExtraAction(getRemoveRowActionButton().apply {
+                shortcut = ShortcutSet {
+                    arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null))
                 }
-                .setAddActionName("Add Column")
-                .setAddIcon(addText(IconUtil.getAddIcon(), "C"))
-                .addExtraAction(getRemoveColumnActionButton())
-                .addExtraAction(getEditColumnActionButton())
-                .addExtraAction(getAddRowActionButton())
-                .addExtraAction(getRemoveRowActionButton().apply {
-                    shortcut = ShortcutSet {
-                        arrayOf(KeyboardShortcut(KeyStroke.getKeyStroke("DELETE"), null))
-                    }
-                })
-                .createPanel()
+            })
+            .createPanel()
 
-        table.addTabCreatesNewRowAction()
-        table.addEnterCreatesNewRowAction()
+    /**
+     * Panel containing the table and its controls.
+     */
+    private fun createTablePanel() = JPanel(BorderLayout()).apply {
+        add(createToolbarDecorator(), BorderLayout.CENTER)
+    }
 
-        val captionLabel = JBLabel("Caption:")
-        captionLabel.labelFor = lblCaption
+    /**
+     * Creates a hint label describing the table controls.
+     */
+    private fun createHelpText() = JBLabel().apply {
+        text = "<html>Press tab to go to the next cell or row, press enter to go to the next row.</html>"
+        foreground = Color.GRAY
+    }
 
-        val referenceLabel = JBLabel("Label:")
-        referenceLabel.labelFor = txtReference
+    /**
+     * The panel containing everything related to the table.
+     */
+    private fun createTablePanelContainer() = JPanel(BorderLayout()).apply {
+        minimumSize = Dimension(480, 320)
 
-        // Add all elements to the panel view.
-        return JPanel().apply {
-            // Add some air around the elements.
-            border = EmptyBorder(8, 8, 8, 8)
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
-            // Create a panel for the table and its decorator.
-            val tablePanel = JPanel().apply {
-                layout = BorderLayout()
-                add(JScrollPane(table), BorderLayout.WEST)
-                add(decorator, BorderLayout.EAST)
-            }
-
-            // Help text
-            val helpText = JBLabel("<html>Press tab to go to the next cell or row, press enter to go to the next row.</html>")
-            helpText.foreground = Color.GRAY
-
-            // Put help text below table
-            val tablePanelContainer = JPanel(GridBagLayout())
-            val constraints = GridBagConstraints()
-            constraints.gridx = 0
-            constraints.gridy = GridBagConstraints.RELATIVE
-            tablePanelContainer.apply {
-                add(tablePanel, constraints)
-                add(helpText, constraints)
-            }
-            add(tablePanelContainer)
-
-            // Create a panel for the caption box and its label.
-            val captionPanel = JPanel().apply {
-                layout = BoxLayout(this, BoxLayout.X_AXIS)
-                captionLabel.preferredSize = Dimension(80, captionLabel.height)
-                add(captionLabel)
-                add(lblCaption)
-            }
-
-            // Create a panel for the label/reference box and its label.
-            val referencePanel = JPanel().apply {
-                layout = BoxLayout(this, BoxLayout.X_AXIS)
-                referenceLabel.preferredSize = Dimension(80, referenceLabel.height)
-                add(referenceLabel)
-                add(txtReference)
-            }
-
-            // Actually add all the panels to the main panel.
-            // Add some air between components.
-            add(Box.createRigidArea(Dimension(0, 8)))
-            add(captionPanel)
-            add(Box.createRigidArea(Dimension(0, 8)))
-            add(referencePanel)
-        }
+        add(createTablePanel(), BorderLayout.CENTER)
+        add(createHelpText(), BorderLayout.SOUTH)
     }
 
     /**
@@ -248,6 +230,20 @@ open class TableCreationDialogWrapper : DialogWrapper(true) {
         }
 
         actionMap.put("enter", actionWrapper)
+    }
+
+    /**
+     * Saves all data in [tableInformation].
+     * Every input is always valid: this will mean empty icons.
+     */
+    override fun doValidate(): ValidationInfo? {
+        tableInformation = TableInformation(
+                tableModel,
+                columnTypes,
+                txtCaption.text.trim(),
+                txtReference.text.trim()
+        )
+        return null
     }
 
     private fun getEditColumnActionButton(): AnActionButton {

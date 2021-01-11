@@ -4,6 +4,9 @@ import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.components.panels.VerticalLayout
+import nl.hannahsten.texifyidea.util.addLabeledComponent
+import javax.swing.BoxLayout
 import javax.swing.JComboBox
 import javax.swing.JPanel
 
@@ -39,27 +42,19 @@ class TableCreationEditColumnDialog(
     init {
         DialogBuilder().apply {
             // Text field for the name of the column, with the old name of the editing column filled in.
-            val columnNameField = JBTextField(columnName)
-            val columnNameLabel = JBLabel("Column name")
-            columnNameLabel.labelFor = columnNameField
+            val txtColumnName = JBTextField(columnName)
 
             // A combobox to select the column type.
-            val columnTypeComboBox = JComboBox(ColumnType.values().map { it.displayName }.toTypedArray())
-
-            // Select the old type of the editing column.
-            columnTypeComboBox.selectedIndex = ColumnType.values().indexOf(columnType)
-            val columnTypeLabel = JBLabel("Column type")
-            columnTypeLabel.labelFor = columnTypeComboBox
+            val cboxColumnType = JComboBox(ColumnType.values().map { it.displayName }.toTypedArray())
+            cboxColumnType.selectedIndex = ColumnType.values().indexOf(columnType)
 
             // Add UI elements.
-            val panel = JPanel().apply {
-                add(columnNameLabel)
-                add(columnNameField)
-                add(columnTypeLabel)
-                add(columnTypeComboBox)
+            val panel = JPanel(VerticalLayout(8)).apply {
+                addLabeledComponent(txtColumnName, "Column title:", labelWidth = 96, leftPadding = 0)
+                addLabeledComponent(cboxColumnType, "Column type:", labelWidth = 96, leftPadding = 0)
             }
             setCenterPanel(panel)
-            setPreferredFocusComponent(columnNameField)
+            setPreferredFocusComponent(txtColumnName)
 
             addOkAction()
             setOkOperation {
@@ -74,7 +69,7 @@ class TableCreationEditColumnDialog(
             }
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
-                onOkFunction(columnNameField.text, ColumnType.values()[columnTypeComboBox.selectedIndex], editingColumn)
+                onOkFunction(txtColumnName.text, ColumnType.values()[cboxColumnType.selectedIndex], editingColumn)
             }
         }
     }
