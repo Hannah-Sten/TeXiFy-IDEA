@@ -35,7 +35,7 @@ The available column types are:
 LaTeX.
 - Numbers: As per convention, numbers are aligned on the right.
 
-Since b0.7.3, the table wizard also opens when you paste a HTML table (in your browser, Excel, LibreOffice, ...)
+_Since b0.7.3_ the table wizard also opens when you paste an HTML table (in your browser, Excel, LibreOffice, ...)
 
 
 == [[insert-graphic-wizard]]Insert Graphic Wizard
