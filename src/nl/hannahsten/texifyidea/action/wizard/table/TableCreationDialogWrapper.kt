@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.ui.tablecreationdialog
+package nl.hannahsten.texifyidea.action.wizard.table
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.KeyboardShortcut
@@ -13,7 +13,6 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.scale.JBUIScale.scale
 import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
-import nl.hannahsten.texifyidea.action.wizard.table.TableInformation
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent

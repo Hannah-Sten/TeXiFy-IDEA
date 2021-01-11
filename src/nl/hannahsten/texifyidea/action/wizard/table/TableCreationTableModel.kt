@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.ui.tablecreationdialog
+package nl.hannahsten.texifyidea.action.wizard.table
 
 import java.util.*
 import javax.swing.table.DefaultTableModel

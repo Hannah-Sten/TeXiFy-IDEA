@@ -1,8 +1,5 @@
 package nl.hannahsten.texifyidea.action.wizard.table
 
-import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
-import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationTableModel
-
 /**
  * Stores all information about a table.
  *

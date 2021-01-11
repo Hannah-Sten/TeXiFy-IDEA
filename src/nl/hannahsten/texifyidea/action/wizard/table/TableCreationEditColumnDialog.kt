@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.ui.tablecreationdialog
+package nl.hannahsten.texifyidea.action.wizard.table
 
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
@@ -19,10 +19,10 @@ import javax.swing.JPanel
  * @author Abby Berkers
  */
 class TableCreationEditColumnDialog(
-    private val onOkFunction: (String, ColumnType, Int) -> Unit,
-    private val editingColumn: Int,
-    private val columnName: String = "",
-    private val columnType: ColumnType = ColumnType.TEXT_COLUMN
+        private val onOkFunction: (String, ColumnType, Int) -> Unit,
+        private val editingColumn: Int,
+        private val columnName: String = "",
+        private val columnType: ColumnType = ColumnType.TEXT_COLUMN
 ) {
 
     init {
