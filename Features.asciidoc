@@ -65,6 +65,7 @@ You can search through this wiki by using the GitHub global search bar at the to
 * link:Move-arguments[Action for swapping arguments of LaTeX commands]
 * link:++Menu-entries#insert-graphic-wizard++[Drag and drop graphics inside your document]
 * link:++Menu-entries#table-creation-wizard++[Paste HTML tables and turn them into LaTeX]
+* link:++Pasting-images[Paste images directly from your clipboard]
 
 == Reading
 * Customizable syntax highlighting
