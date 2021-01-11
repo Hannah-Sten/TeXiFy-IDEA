@@ -18,7 +18,6 @@ import kotlin.math.max
 
 abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
 
-
     /**
      * This class handles the rename of a label parameter after insertion
      */
