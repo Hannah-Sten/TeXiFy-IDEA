@@ -21,23 +21,27 @@ import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+import javax.swing.table.TableModel
 
 /**
  * Wrapper that contains the table creation dialog.
  *
  * @author Abby Berkers
  */
-open class TableCreationDialogWrapper : DialogWrapper(true) {
+open class TableCreationDialogWrapper(
+        initialColumnTypes: List<ColumnType>? = null,
+        initialTableModel: TableCreationTableModel? = null
+) : DialogWrapper(true) {
 
     /**
      * Types of the columns of the table, see [ColumnType], always start with an empty table.
      */
-    private val columnTypes = mutableListOf<ColumnType>()
+    private val columnTypes = initialColumnTypes?.toMutableList() ?: mutableListOf()
 
     /**
      * The model of the table, always start with an empty table.
      */
-    private val tableModel = TableCreationTableModel()
+    private val tableModel = initialTableModel ?: TableCreationTableModel()
 
     /**
      * The table component that shows the table.

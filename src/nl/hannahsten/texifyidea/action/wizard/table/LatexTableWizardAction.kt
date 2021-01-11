@@ -4,6 +4,11 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.caretOffset
@@ -21,17 +26,15 @@ import java.util.*
  */
 class LatexTableWizardAction : AnAction() {
 
-    override fun actionPerformed(e: AnActionEvent) {
-        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
-        val project = e.getData(PlatformDataKeys.PROJECT)
-        val editor = project?.currentTextEditor() ?: return
+    fun executeAction(file: VirtualFile, project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null) {
+        val editor = project.currentTextEditor() ?: return ?: return
         val document = editor.editor.document
 
         // Get the indentation from the current line.
         val indent = document.lineIndentationByOffset(editor.editor.caretOffset())
 
         // Create the dialog.
-        val dialogWrapper = TableCreationDialogWrapper()
+        val dialogWrapper = defaultDialogWrapper ?: TableCreationDialogWrapper()
 
         // If the user pressed OK, do stuff.
         if (dialogWrapper.showAndGet()) {
@@ -51,6 +54,12 @@ class LatexTableWizardAction : AnAction() {
                     file.psiFile(project)
             )
         }
+    }
+
+    override fun actionPerformed(e: AnActionEvent) {
+        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
+        val project = e.getData(PlatformDataKeys.PROJECT) ?: return
+        executeAction(file, project)
     }
 
     /**

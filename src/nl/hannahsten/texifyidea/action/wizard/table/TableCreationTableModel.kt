@@ -6,7 +6,11 @@ import javax.swing.table.DefaultTableModel
 /**
  * @author Abby Berkers
  */
-class TableCreationTableModel : DefaultTableModel() {
+class TableCreationTableModel : DefaultTableModel {
+
+    constructor(data: Vector<Vector<Any?>>, columnNames: Vector<String>) : super(data, columnNames)
+
+    constructor() : this(Vector(), Vector())
 
     /**
      * Remove a column and its header from the table.
