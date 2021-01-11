@@ -7,13 +7,11 @@ import com.intellij.openapi.editor.actions.PasteAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
-import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.SaveImageFromClipboardDialog
 import nl.hannahsten.texifyidea.util.files.extractFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
-import javax.swing.text.DefaultEditorKit
 
 /**
  * When pasting image files: do the same as dragging and dropping an image file.
