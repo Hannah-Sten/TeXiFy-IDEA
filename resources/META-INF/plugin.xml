@@ -528,6 +528,10 @@
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
+        <!-- Tool windows -->
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.SymbolToolWindowFactory"
+                    id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg"/>
+
         <!-- Other Services -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
                         serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
