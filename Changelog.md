@@ -11,6 +11,8 @@ ETA: First half of February, 2021
 # Changes
 * Decreased size of gutter icons to 12x12. (#1715)
 * Dragging and dropping graphic files opens a graphic insertion wizard. (#1729)
+* Adding labels with no reasonable defaults now starts a refactoring. (#1733)
+* Supported lstlisting for add label quickfix. (#1733)
 * Performance improvements. (#1716)
 
 # Bug fixes
