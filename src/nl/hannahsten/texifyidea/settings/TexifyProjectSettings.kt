@@ -12,6 +12,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 class TexifyProjectSettings : PersistentStateComponent<TexifyProjectSettings> {
 
     companion object {
+
         @JvmStatic
         fun getInstance(project: Project): TexifyProjectSettings = ServiceManager.getService(project, TexifyProjectSettings::class.java)
     }

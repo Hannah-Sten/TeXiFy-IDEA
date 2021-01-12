@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
  *
  */
 class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/completion/path/relativetoroot"
     }

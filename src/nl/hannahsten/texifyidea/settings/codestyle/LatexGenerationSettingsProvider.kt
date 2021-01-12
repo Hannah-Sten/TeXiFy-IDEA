@@ -19,6 +19,7 @@ import javax.swing.JPanel
  * @author Abby Berkers
  */
 class LatexGenerationSettingsProvider : CodeStyleSettingsProvider() {
+
     override fun createConfigurable(settings: CodeStyleSettings, modelSettings: CodeStyleSettings): CodeStyleConfigurable {
         return LatexCodeStyleGenerationConfigurable(settings)
     }
@@ -30,6 +31,7 @@ class LatexGenerationSettingsProvider : CodeStyleSettingsProvider() {
 }
 
 class LatexCodeStyleGenerationConfigurable(private val mySettings: CodeStyleSettings) : CodeStyleConfigurable {
+
     private val myCommenterForm: CommenterForm = CommenterForm(LatexLanguage.INSTANCE)
 
     override fun getDisplayName(): String = ApplicationBundle.message("title.code.generation")

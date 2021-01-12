@@ -5,8 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.LatexLanguage
-import nl.hannahsten.texifyidea.psi.LatexTypes.CLOSE_BRACKET
-import nl.hannahsten.texifyidea.psi.LatexTypes.EQUALS
+import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.findFirstChild
 import nl.hannahsten.texifyidea.util.firstChildOfType
@@ -75,20 +74,42 @@ class LatexPsiHelper(private val project: Project) {
     }
 
     /**
+     * Returns the LatexOptionalParam node that is supposed to contain the label key for the command.
+     * If no such node exists yet, a new one is created at the correct position.
+     */
+    private fun getOrCreateLabelOptionalParameters(command: LatexCommandWithParams): LatexOptionalParam {
+
+        // This is only a heuristic. We would actually need detailed information on which optional parameter is
+        // supposed to hold the label key.
+        val existingParameters = command.optionalParameterMap
+        if (existingParameters.isEmpty()) {
+            if (command is LatexCommands) {
+                // For commands insert an optional parameter right after the command name (in case the command has a
+                // star, insert the parameter after the start)
+                command.addAfter(createLatexOptionalParam(),
+                    command.childrenOfType<LeafPsiElement>().firstOrNull { it.elementType == STAR }
+                        ?: command.commandToken)
+            }
+            else {
+                // Otherwise assume that the command belongs to an environment and insert the optional parameter after
+                // the first parameter (which is the environment name)
+                command.addAfter(createLatexOptionalParam(), command.parameterList[0])
+            }
+        }
+
+        return command.parameterList
+            .first { p -> p.optionalParam != null }.optionalParam!!
+    }
+
+    /**
      * Set the value of the optional parameter with the givevn key name. If the the parameter already exists,
      * its value is changed. If no key with the given name exists yet, a new one is created with the given value.
      *
      * @param name The name of the parameter to change
      * @param value The new parameter value. If the value is null, the parameter will have a key only.
      */
-    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): PsiElement {
-        val existingParameters = command.optionalParameterMap
-        if (existingParameters.isEmpty()) {
-            command.addAfter(createLatexOptionalParam(), command.parameterList[0])
-        }
-
-        val optionalParam = command.parameterList
-            .first { p -> p.optionalParam != null }.optionalParam!!
+    fun setOptionalParameter(command: LatexCommandWithParams, name: String, value: String?): LatexKeyvalPair {
+        val optionalParam = getOrCreateLabelOptionalParameters(command)
 
         val parameterText = if (value != null) {
             "$name=$value"
@@ -111,12 +132,12 @@ class LatexPsiHelper(private val project: Project) {
             else {
                 optionalParam.addBefore(createFromText(","), closeBracket)
                 optionalParam.addBefore(pair, closeBracket)
-                closeBracket.prevSibling
+                closeBracket.prevSibling as LatexKeyvalPair
             }
         }
         else {
             optionalParam.addBefore(pair, closeBracket)
-            closeBracket.prevSibling
+            closeBracket.prevSibling as LatexKeyvalPair
         }
     }
 }

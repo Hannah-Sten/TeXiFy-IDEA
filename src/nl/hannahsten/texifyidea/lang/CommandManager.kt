@@ -32,6 +32,7 @@ import java.util.stream.StreamSupport
  */
 // Currently it is a singleton, in the future this may be one instance per fileset
 object CommandManager : Iterable<String?>, Serializable {
+
     /**
      * Maps a command to a set of aliases including the command itself.
      *

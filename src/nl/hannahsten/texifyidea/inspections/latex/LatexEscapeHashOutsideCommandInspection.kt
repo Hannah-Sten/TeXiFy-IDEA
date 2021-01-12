@@ -17,6 +17,7 @@ class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
     quickFixName = { "escape #" },
     replacement = { _, _ -> """\#""" }
 ) {
+
     override fun checkContext(element: PsiElement): Boolean {
         return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isCommandDefinition() } && element.parentOfType(LatexCommands::class)?.name !in CommandMagic.urls
     }

@@ -22,6 +22,7 @@ import kotlin.reflect.jvm.internal.impl.utils.SmartList
  * @author Hannah Schellekens
  */
 class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup
         get() = InsightGroup.LATEX
 
@@ -60,6 +61,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
     }
 
     private inner class InspectionFix : LocalQuickFix {
+
         @Nls
         override fun getFamilyName(): String {
             return "Convert to LaTeX alternative"

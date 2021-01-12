@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nls
  * @author Sten Wessel
  */
 class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup
         get() = InsightGroup.LATEX
 
@@ -87,6 +88,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
      * @author Sten Wessel
      */
     private class EscapeMathOperatorFix : LocalQuickFix {
+
         @Nls
         override fun getFamilyName(): String {
             return "Escape math operator"

@@ -12,6 +12,7 @@ import java.io.File
  * @author Abby Berkers
  */
 class ClearAuxFiles : AnAction() {
+
     override fun actionPerformed(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return

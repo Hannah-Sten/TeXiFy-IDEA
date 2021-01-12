@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =

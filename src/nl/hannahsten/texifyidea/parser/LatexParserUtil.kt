@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 @Suppress("FunctionName")
 class LatexParserUtil : GeneratedParserUtilBase() {
+
     companion object {
 
         /**

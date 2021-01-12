@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.ViewerConversation
  * @author Stephan Sundermann
  */
 object SkimConversation : ViewerConversation() {
+
     private var pdfFilePath: String? = null
 
     /**

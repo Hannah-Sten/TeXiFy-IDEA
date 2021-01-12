@@ -12,6 +12,7 @@ object LatexLineWarningHandler : LatexMessageHandler(
     WARNING,
     """${LatexLogMagicRegex.LATEX_WARNING_REGEX}(?<message>.+)${LatexLogMagicRegex.LINE_REGEX}""".toRegex()
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         LatexLineWarningHandler.regex.forEach {
             it.find(text)?.apply {

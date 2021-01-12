@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
  * Disable the formatter on files that start and end with a verbatim environment.
  */
 class LatexLanguageFormattingRestriction : LanguageFormattingRestriction {
+
     override fun isFormatterAllowed(context: PsiElement): Boolean = !isFormatterNotAllowed(context)
 
     private fun isFormatterNotAllowed(context: PsiElement): Boolean {

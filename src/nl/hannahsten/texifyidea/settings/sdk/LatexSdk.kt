@@ -11,6 +11,7 @@ import org.jdom.Element
  * @author Thomas
  */
 abstract class LatexSdk(name: String) : SdkType(name) {
+
     override fun saveAdditionalData(additionalData: SdkAdditionalData, additional: Element) {}
 
     override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator): AdditionalDataConfigurable? {

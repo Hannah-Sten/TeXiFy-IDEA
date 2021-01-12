@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 class LatexInsertFormatterCommentsIntention : TexifyIntentionBase("Insert comments to disable the formatter.") {
+
     private val onTag = CodeStyleSettings.getDefaults().FORMATTER_ON_TAG
     private val offTag = CodeStyleSettings.getDefaults().FORMATTER_OFF_TAG
 

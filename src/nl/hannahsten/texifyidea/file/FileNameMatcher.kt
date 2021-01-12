@@ -5,6 +5,7 @@ package nl.hannahsten.texifyidea.file
  */
 @FunctionalInterface
 interface FileNameMatcher {
+
     /**
      * Checks if the given file name matches or not.
      *

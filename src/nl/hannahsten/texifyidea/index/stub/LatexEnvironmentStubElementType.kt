@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import java.io.IOException
 
 open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage.INSTANCE) {
+
     override fun createPsi(stub: LatexEnvironmentStub): LatexEnvironment {
         return LatexEnvironmentImpl(stub, this)
     }

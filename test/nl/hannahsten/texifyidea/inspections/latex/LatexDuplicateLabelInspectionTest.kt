@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicateLabelInspection()) {
+
     fun testWarning() {
         myFixture.configureByText(
             LatexFileType,

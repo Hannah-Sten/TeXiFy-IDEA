@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nls
  * @author Sten Wessel
  */
 class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup
         get() = InsightGroup.LATEX
 

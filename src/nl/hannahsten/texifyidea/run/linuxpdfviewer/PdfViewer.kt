@@ -19,6 +19,7 @@ enum class PdfViewer(
     val displayName: String,
     val conversation: ViewerConversation?
 ) {
+
     EVINCE("evince", "Evince", EvinceConversation),
     OKULAR("okular", "Okular", OkularConversation),
     ZATHURA("zathura", "Zathura", ZathuraConversation),
@@ -59,6 +60,7 @@ enum class PdfViewer(
     override fun toString(): String = displayName
 
     companion object {
+
         private val availability: Map<PdfViewer, Boolean> by lazy {
             values().associateWith {
                 it.checkAvailability()

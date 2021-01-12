@@ -21,6 +21,7 @@ import java.util.*
  * @author Hannah Schellekens, Sten Wessel
  */
 class LatexLabelReference(element: LatexCommands, range: TextRange?) : PsiReferenceBase<LatexCommands?>(element) {
+
     override fun resolve(): PsiElement? {
         return null
     }

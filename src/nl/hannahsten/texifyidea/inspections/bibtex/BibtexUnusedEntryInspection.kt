@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.previousSiblingOfType
 
 class BibtexUnusedEntryInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup = InsightGroup.BIBTEX
 
     override val inspectionId: String = "UnusedEntry"
@@ -39,6 +40,7 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
             .toList()
 
     class RemoveBibtexEntryFix(private val id: SmartPsiElementPointer<BibtexId>) : LocalQuickFix {
+
         override fun getFamilyName(): String = "Remove BibTeX entry ${id.element?.text}"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

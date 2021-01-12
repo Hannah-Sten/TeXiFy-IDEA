@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchingIfInspection()) {
+
     fun `test if closed`() = testHighlighting(
         """
         \if

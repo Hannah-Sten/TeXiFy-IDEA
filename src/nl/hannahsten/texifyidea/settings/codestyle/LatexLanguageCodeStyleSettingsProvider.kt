@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.util.removeHtmlTags
 class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
     companion object {
+
         private val demoText = GeneralMagic.latexDemoText.removeHtmlTags()
     }
 

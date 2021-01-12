@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.util.usesColor
 import java.awt.Color
 
 object LatexElementColorProvider : ElementColorProvider {
+
     override fun setColorTo(element: PsiElement, color: Color) {}
 
     override fun getColorFrom(element: PsiElement): Color? {

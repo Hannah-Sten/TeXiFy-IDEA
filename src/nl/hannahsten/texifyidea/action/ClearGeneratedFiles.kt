@@ -11,6 +11,7 @@ import java.io.File
  * Similar to [ClearAuxFiles].
  */
 class ClearGeneratedFiles : AnAction() {
+
     override fun actionPerformed(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return

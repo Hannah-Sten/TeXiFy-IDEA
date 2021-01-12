@@ -11,6 +11,7 @@ import javax.swing.JPanel
  * @author Abby Berkers
  */
 class OkularConfigureInverseSearchDialog {
+
     init {
         DialogBuilder().apply {
             setTitle("Configure inverse search")

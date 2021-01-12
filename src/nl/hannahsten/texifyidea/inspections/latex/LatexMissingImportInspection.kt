@@ -35,6 +35,7 @@ import java.util.*
  * @author Hannah Schellekens
  */
 open class LatexMissingImportInspection : TexifyInspectionBase() {
+
     override val inspectionGroup = InsightGroup.LATEX
 
     override val inspectionId = "MissingImport"
