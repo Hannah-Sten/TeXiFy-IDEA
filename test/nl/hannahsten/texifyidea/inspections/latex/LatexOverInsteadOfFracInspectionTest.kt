@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexOverInsteadOfFracInspectionTest : TexifyInspectionTestBase(LatexOverInsteadOfFracInspection()) {
+
     fun `test over warning`() = testHighlighting("""$1 <warning descr="Use of \over is discouraged">\over</warning> 2$""")
 
     fun `test frac no warning`() = testHighlighting("""$\frac{1}{2}$""")

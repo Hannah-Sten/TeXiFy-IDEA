@@ -14,6 +14,7 @@ import javax.swing.border.EmptyBorder
  * @author Abby Berkers
  */
 class PopupChooserCellRenderer : ListCellRenderer<String> {
+
     override fun getListCellRendererComponent(list: JList<out String>?, value: String?, position: Int, isSelected: Boolean, hasFocus: Boolean): Component {
         val renderer = DefaultListCellRenderer().getListCellRendererComponent(
             list, value, position,

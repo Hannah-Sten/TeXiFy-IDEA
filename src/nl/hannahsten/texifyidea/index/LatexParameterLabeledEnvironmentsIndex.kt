@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  * a label defined with an optional parameter.
  */
 class LatexParameterLabeledEnvironmentsIndex : StringStubIndexExtension<LatexEnvironment>() {
+
     companion object : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.LABELED_ENVIRONMENTS_KEY)
 
     @Suppress("RedundantCompanionReference")

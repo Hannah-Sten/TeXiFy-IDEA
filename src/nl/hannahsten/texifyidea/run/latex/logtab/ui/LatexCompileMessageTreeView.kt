@@ -22,6 +22,7 @@ class LatexCompileMessageTreeView(
     val bibtexMessageList: MutableList<BibtexLogMessage>
 ) :
     NewErrorTreeViewPanel(project, null) {
+
     fun config(): LatexErrorTreeViewConfiguration = LatexErrorTreeViewConfiguration.getInstance(myProject)
 
     override fun fillRightToolbarGroup(group: DefaultActionGroup) {
@@ -135,6 +136,7 @@ class LatexCompileMessageTreeView(
 
     inner class FilterKeywordAction(private val keyword: LatexKeywordFilter, val project: Project) :
         ToggleAction("Show $keyword messages", "Show $keyword messages", keyword.icon), DumbAware {
+
         override fun isSelected(e: AnActionEvent): Boolean = config().showKeywordWarnings[keyword] ?: true
 
         override fun setSelected(e: AnActionEvent, state: Boolean) {
@@ -145,6 +147,7 @@ class LatexCompileMessageTreeView(
 
     inner class FilterBibtexAction(val project: Project) :
         ToggleAction("Show bibtex messages by latexmk", "", TexifyIcons.DOT_BIB), DumbAware {
+
         override fun isSelected(e: AnActionEvent): Boolean = config().showBibtexWarnings
 
         override fun setSelected(e: AnActionEvent, state: Boolean) {
@@ -154,6 +157,7 @@ class LatexCompileMessageTreeView(
     }
 
     inner class ExpandAllAction : AnAction("Expand All", "", AllIcons.Actions.Expandall), DumbAware {
+
         override fun actionPerformed(e: AnActionEvent) {
             expandAll()
             config().expanded = true
@@ -161,6 +165,7 @@ class LatexCompileMessageTreeView(
     }
 
     inner class CollapseAllAction : AnAction("Collapse All", "", AllIcons.Actions.Collapseall), DumbAware {
+
         override fun actionPerformed(e: AnActionEvent) {
             collapseAll()
             config().expanded = false

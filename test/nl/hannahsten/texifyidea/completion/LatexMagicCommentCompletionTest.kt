@@ -5,6 +5,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 
 class LatexMagicCommentCompletionTest : BasePlatformTestCase() {
+
     fun `test magic comment key completion`() {
         myFixture.configureByText(LatexFileType, """
             %! comp<caret>

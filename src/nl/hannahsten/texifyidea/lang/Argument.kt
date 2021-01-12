@@ -8,6 +8,7 @@ abstract class Argument @JvmOverloads protected constructor(val name: String, va
     abstract override fun toString(): String
 
     enum class Type {
+
         NORMAL,
         FILE,
         TEXT

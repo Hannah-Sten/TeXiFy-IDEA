@@ -4,6 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 
 class InputFileReferenceTest : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/reference"
     }

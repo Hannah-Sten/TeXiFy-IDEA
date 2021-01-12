@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.util.endOffset
  * Surrounds selected text with the [surroundPair].
  */
 open class LatexSurrounder(private val before: String, private val after: String) : Surrounder {
+
     override fun isApplicable(elements: Array<out PsiElement>): Boolean {
         return true
     }

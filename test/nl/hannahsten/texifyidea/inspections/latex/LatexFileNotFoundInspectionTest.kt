@@ -9,6 +9,7 @@ import java.nio.file.Paths
 import kotlin.test.assertFails
 
 class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFoundInspection()) {
+
     private var absoluteWorkingPath: String
 
     init {

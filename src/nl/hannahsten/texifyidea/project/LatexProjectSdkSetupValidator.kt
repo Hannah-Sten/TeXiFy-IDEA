@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
  * @author Thomas
  */
 class LatexProjectSdkSetupValidator : ProjectSdkSetupValidator {
+
     override fun isApplicableFor(project: Project, file: VirtualFile): Boolean {
         // Check if setting up a LaTeX SDK would make sense
         val isLatexFile = file.fileType is LatexFileType || PsiManager.getInstance(project).findFile(file)?.language?.isKindOf(LatexLanguage.INSTANCE) == true

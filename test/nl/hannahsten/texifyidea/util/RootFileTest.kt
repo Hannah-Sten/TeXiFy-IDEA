@@ -4,6 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.inspections.latex.LatexFileNotFoundInspection
 
 class RootFileTest : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/util/rootfile"
     }

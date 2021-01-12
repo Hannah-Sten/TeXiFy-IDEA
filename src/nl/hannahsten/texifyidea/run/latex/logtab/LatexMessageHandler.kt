@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
 open class LatexMessageHandler(open val messageType: LatexLogMessageType, open vararg val regex: Regex) {
+
     open fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.forEach {
             it.find(text)?.apply {

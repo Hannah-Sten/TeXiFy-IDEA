@@ -12,6 +12,7 @@ open class ForwardSearchActionBase(val viewer: PdfViewer) : EditorAction(
     name = "_ForwardSearch",
     icon = TexifyIcons.RIGHT
 ) {
+
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (!viewer.isAvailable()) {
             return

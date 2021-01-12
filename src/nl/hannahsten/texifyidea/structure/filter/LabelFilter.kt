@@ -12,6 +12,7 @@ import javax.swing.Icon
  * @author Hannah Schellekens
  */
 class LabelFilter : Filter {
+
     override fun isVisible(treeElement: TreeElement): Boolean {
         if (treeElement !is LatexStructureViewCommandElement) {
             return true
@@ -29,6 +30,7 @@ class LabelFilter : Filter {
      * @author Hannah Schellekens
      */
     private class LatexLabelFilterPresentation : ActionPresentation {
+
         override fun getText(): String = "Show Labels"
 
         override fun getDescription(): String = "Show Labels"
@@ -36,6 +38,7 @@ class LabelFilter : Filter {
         override fun getIcon(): Icon = TexifyIcons.DOT_LABEL
 
         companion object {
+
             val INSTANCE = LatexLabelFilterPresentation()
         }
     }

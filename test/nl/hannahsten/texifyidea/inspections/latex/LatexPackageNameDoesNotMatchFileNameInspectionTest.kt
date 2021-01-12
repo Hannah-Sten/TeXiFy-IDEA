@@ -4,6 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/packagenamedoesnotmatch"
     }
