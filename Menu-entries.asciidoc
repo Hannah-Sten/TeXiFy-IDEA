@@ -48,6 +48,8 @@ Helps you generate LaTeX for inserting graphics. The wizard also opens when drop
 
 See https://user-images.githubusercontent.com/17410729/103922867-b0108300-5114-11eb-92d8-25d63eaeb1f1.mp4[demo video].
 
+image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/figures/insert-graphic-wizard.mp4[]
+
 
 == [[clear-aux-files]]Clear Auxiliary Files
 
