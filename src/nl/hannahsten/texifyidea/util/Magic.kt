@@ -5,14 +5,9 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.ARRAY
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.LONGTABLE
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULARX
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR_STAR
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
 import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
+import nl.hannahsten.texifyidea.lang.LatexMathCommand.*
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -28,6 +23,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.PDFCOMMENT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import org.intellij.lang.annotations.Language
 import java.awt.Color
@@ -445,40 +441,8 @@ object Magic {
          */
         @JvmField
         val slashlessMathOperators: Set<LatexCommand> = hashSetOf(
-                LatexMathCommand.ARCCOS,
-                LatexMathCommand.ARCSIN,
-                LatexMathCommand.ARCTAN,
-                LatexMathCommand.ARG,
-                LatexMathCommand.BMOD,
-                LatexMathCommand.COS,
-                LatexMathCommand.COSH,
-                LatexMathCommand.COT,
-                LatexMathCommand.COTH,
-                LatexMathCommand.CSC,
-                LatexMathCommand.DEG,
-                LatexMathCommand.DET,
-                LatexMathCommand.DIM,
-                LatexMathCommand.EXP,
-                LatexMathCommand.GCD,
-                LatexMathCommand.HOM,
-                LatexMathCommand.INF,
-                LatexMathCommand.KER,
-                LatexMathCommand.LG,
-                LatexMathCommand.LIM,
-                LatexMathCommand.LIMINF,
-                LatexMathCommand.LIMSUP,
-                LatexMathCommand.LN,
-                LatexMathCommand.LOG,
-                LatexMathCommand.MAX,
-                LatexMathCommand.MIN,
-                LatexMathCommand.PMOD,
-                LatexMathCommand.CAPITAL_PR,
-                LatexMathCommand.SEC,
-                LatexMathCommand.SIN,
-                LatexMathCommand.SINH,
-                LatexMathCommand.SUP,
-                LatexMathCommand.TAN,
-                LatexMathCommand.TANH,
+            ARCCOS, ARCSIN, ARCTAN, ARG, BMOD, COS, COSH, COT, COTH, CSC, DEG, DET, DIM, EXP, GCD, HOM, INF,
+            KER, LG, LIM, LIMINF, LIMSUP, LN, LOG, MAX, MIN, PMOD, CAPITAL_PR, SEC, SIN, SINH, SUP, TAN, TANH,
         )
 
         /**
@@ -986,7 +950,7 @@ object Magic {
          * All commands that have a color as an argument.
          */
         @JvmField
-        val takeColorCommands = values()
+        val takeColorCommands = LatexRegularCommand.values()
             .filter {
                 it.arguments.map { it.name }.contains("color")
             }
@@ -996,7 +960,7 @@ object Magic {
          * All commands that define a new color.
          */
         @JvmField
-        val colorDefinitions = values()
+        val colorDefinitions = LatexRegularCommand.values()
             .filter { it.dependency == XCOLOR }
             .filter { it.arguments.map { it.name }.contains("name") }
 
