@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.refactoring.suggested.startOffset
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -52,7 +53,7 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
             val labelCommand = helper.addToContent(
                 environment, helper.createLabelCommand(createdLabel.labelText),
                 environment.environmentContent?.childrenOfType<LatexCommands>()
-                    ?.findLast { c -> c.name == "\\caption" }
+                    ?.findLast { c -> c.name == LatexRegularCommand.CAPTION.commandDisplay }
             )
 
             // Adjust caret offset
