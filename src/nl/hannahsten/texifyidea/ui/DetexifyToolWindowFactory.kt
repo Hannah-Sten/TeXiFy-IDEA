@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.toolwindow
+package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project

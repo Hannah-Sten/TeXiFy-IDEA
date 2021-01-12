@@ -522,7 +522,7 @@
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
 
         <!-- Tool windows-->
-        <toolWindow factoryClass="nl.hannahsten.texifyidea.toolwindow.DetexifyToolWindowFactory"
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
                     id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
 
         <!-- Other Services -->
