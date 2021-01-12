@@ -24,7 +24,7 @@ import java.util.*
 class LatexTableWizardAction : AnAction() {
 
     fun executeAction(file: VirtualFile, project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null) {
-        val editor = project.currentTextEditor() ?: return ?: return
+        val editor = project.currentTextEditor() ?: return
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -45,7 +45,7 @@ class LatexTableWizardAction : AnAction() {
             // Insert the booktabs package.
             WriteCommandAction.runWriteCommandAction(
                     project,
-                    "Insert table",
+                    "Insert Table",
                     "LaTeX",
                     Runnable { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
                     file.psiFile(project)
