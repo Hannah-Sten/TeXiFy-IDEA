@@ -136,10 +136,11 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[label={lst:lstlisting}<caret>]
-            \end{lstlisting}
+            \begin{lstlisting}[label={lst:lstlisting}]
+            \end{lstlisting}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
     )
 
     fun `test quick fix in listings when label already exists`() = testQuickFix(
@@ -153,10 +154,11 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         after = """
         \begin{document}
             \label{lst:lstlisting}
-            \begin{lstlisting}[label={lst:lstlisting2}<caret>]
-            \end{lstlisting}
+            \begin{lstlisting}[label={lst:lstlisting2}]
+            \end{lstlisting}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
     )
 
     fun `test quick fix in listings with other parameters`() = testQuickFix(
@@ -168,10 +170,11 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}<caret>]
-            \end{lstlisting}
+            \begin{lstlisting}[someoption,otheroption={with value},label={lst:lstlisting}]
+            \end{lstlisting}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
     )
 
     fun `test fix all missing label problems in this file`() = testQuickFixAll(
@@ -221,8 +224,23 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}<caret>
         \end{document}
-        """.trimIndent()
+        """.trimIndent(),
+        usestemplate = true
+    )
+
+    fun `test quick fix in lstinputlistings creates optional parameters at correct position`() = testQuickFix(
+        before = """
+        \begin{document}
+                \lstinputlisting{some/file}
+        \end{document}
+        """.trimIndent(),
+        after = """
+        \begin{document}
+                \lstinputlisting[label={lst:lstinputlisting}]{some/file}<caret>
+        \end{document}
+        """.trimIndent(),
+        usestemplate = true
     )
 }
