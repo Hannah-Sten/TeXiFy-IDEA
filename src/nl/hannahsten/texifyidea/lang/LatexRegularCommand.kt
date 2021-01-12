@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SIUNITX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 
@@ -307,6 +308,7 @@ enum class LatexRegularCommand(
     TEXTDAGGER("textdagger", display = "†"),
     TEXTDAGGERDBL("textdaggerdbl", display = "‡"),
     TEXTDOLLAR("textdollar", display = "$"),
+    TEXTDOWNARROW("textdownarrow", dependency = TEXTCOMP, display = "↓"),
     TEXTELLIPSIS("textellipsis", display = "…"),
     TEXTEMDASH("textemdash", display = "—"),
     TEXTENDASH("textendash", display = "–"),
@@ -314,6 +316,7 @@ enum class LatexRegularCommand(
     TEXTGREATER("textgreater", display = ">"),
     TEXTHEIGHT("textheight"),
     TEXTIT("textit", "text".asRequired(Type.TEXT)),
+    TEXTLEFTARROW("textleftarrow", dependency = TEXTCOMP, display = "←"),
     TEXTLESS("textless"),
     TEXTLF("textlf", "text".asRequired(Type.TEXT)),
     TEXTMD("textmd", "text".asRequired(Type.TEXT)),
@@ -326,6 +329,7 @@ enum class LatexRegularCommand(
     TEXTQUOTELEFT("textquoteleft", display = "‘"),
     TEXTQUOTERIGHT("textquoteright", display = "’"),
     TEXTREGISTERED("textregistered", display = "®"),
+    TEXTRIGHTARROW("textrightarrow", dependency = TEXTCOMP, display = "→"),
     TEXTRM("textrm", "text".asRequired(Type.TEXT)),
     TEXTSC("textsc", "textsc".asRequired(Type.TEXT)),
     TEXTSECTION("textsection", display = "§"),
@@ -338,6 +342,7 @@ enum class LatexRegularCommand(
     TEXTTT("texttt", "text".asRequired(Type.TEXT)),
     TEXTUNDERSCORE("textunderscore", display = "_"),
     TEXTUP("textup", "text".asRequired(Type.TEXT)),
+    TEXTUPARROW("textdownarrow", dependency = TEXTCOMP, display = "↑"),
     TEXTVISIBLESPACE("textvisiblespace", display = "␣"),
     TEXTWIDTH("textwidth"),
     THANKS("thanks", "to".asRequired(Type.TEXT)),

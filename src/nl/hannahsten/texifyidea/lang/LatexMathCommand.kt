@@ -355,7 +355,7 @@ enum class LatexMathCommand(
     DOWNHARPOONLEFT("downharpoonleft", dependency = AMSSYMB, display = "⇃", collapse = true),
     LOOPARROWRIGHT("looparrowright", dependency = AMSSYMB, display = "↬", collapse = true),
     CIRCLEARROWRIGHT("circlearrowright", dependency = AMSSYMB, display = "↻", collapse = true),
-    UPHARPOONRIGHT("rightsquigarrow", dependency = AMSSYMB, display = "↾", collapse = true),
+    UPHARPOONRIGHT("upharpoonright", dependency = AMSSYMB, display = "↾", collapse = true),
     NLEFTARROW("nleftarrow", dependency = AMSSYMB, display = "↚", collapse = true),
     NL_EFTARROW("nLeftarrow", dependency = AMSSYMB, display = "⇍", collapse = true),
     NR_IGHTARROW("nRightarrow", dependency = AMSSYMB, display = "⇏", collapse = true),

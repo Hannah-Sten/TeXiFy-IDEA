@@ -45,6 +45,7 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val PYTHONTEX = LatexPackage("pythontex")
         @JvmField val SIUNITX = LatexPackage("siunitx")
         @JvmField val SUBFILES = LatexPackage("subfiles")
+        @JvmField val TEXTCOMP = LatexPackage("textcomp")
         @JvmField val TIKZ = LatexPackage("tikz")
         @JvmField val ULEM = LatexPackage("ulem")
         @JvmField val XCOLOR = LatexPackage("xcolor")
