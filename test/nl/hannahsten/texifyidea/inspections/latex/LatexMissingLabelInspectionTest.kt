@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.CommandManager
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missinglabel"
     }

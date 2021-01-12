@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
 
     companion object {
+
         // Path to texmf-dist
         val texmfDistPath: String by lazy {
             "kpsewhich article.sty".runCommand()?.substringBefore("texmf-dist") + "texmf-dist"

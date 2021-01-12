@@ -531,6 +531,8 @@
         <!-- Tool windows -->
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.SymbolToolWindowFactory"
                     id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg"/>
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
+                    id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
 
         <!-- Other Services -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
@@ -719,6 +721,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
+                         groupName="LaTeX" displayName="Use math function instead of \text"
                          enabledByDefault="true"/>
 
         <!-- Element manipulator -->

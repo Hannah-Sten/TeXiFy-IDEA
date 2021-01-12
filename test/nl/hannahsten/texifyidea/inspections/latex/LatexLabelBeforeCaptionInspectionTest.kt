@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 import org.junit.Test
 
 class LatexLabelBeforeCaptionInspectionTest : BasePlatformTestCase() {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/labelaftercaption"
     }

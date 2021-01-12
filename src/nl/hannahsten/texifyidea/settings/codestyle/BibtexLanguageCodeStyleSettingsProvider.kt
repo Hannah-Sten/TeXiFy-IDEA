@@ -10,7 +10,9 @@ import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.removeHtmlTags
 
 class BibtexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
+
     companion object {
+
         private val demoText = Magic.General.bibtexDemoText.removeHtmlTags()
     }
     override fun getLanguage(): Language = BibtexLanguage

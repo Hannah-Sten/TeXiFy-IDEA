@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.util.TexLivePackages
 import nl.hannahsten.texifyidea.util.runCommand
 
 class TexLivePackageListInitializer : StartupActivity {
+
     override fun runActivity(project: Project) {
         if (TexliveSdk.isAvailable) {
             val result = "tlmgr list --only-installed".runCommand() ?: return

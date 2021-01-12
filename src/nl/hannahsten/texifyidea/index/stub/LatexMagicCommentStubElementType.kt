@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.psi.value
 import java.io.IOException
 
 open class LatexMagicCommentStubElementType(debugName: String) : IStubElementType<LatexMagicCommentStub, LatexMagicComment>(debugName, LatexLanguage.INSTANCE) {
+
     override fun createPsi(stub: LatexMagicCommentStub): LatexMagicComment = LatexMagicCommentImpl(stub, this)
 
     override fun createStub(psi: LatexMagicComment, parentStub: StubElement<*>): LatexMagicCommentStub {

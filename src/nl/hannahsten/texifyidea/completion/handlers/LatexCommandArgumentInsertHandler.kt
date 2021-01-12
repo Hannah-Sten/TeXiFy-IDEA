@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.util.parentOfType
  * @author Hannah Schellekens
  */
 class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) : InsertHandler<LookupElement> {
+
     override fun handleInsert(insertionContext: InsertionContext, lookupElement: LookupElement) {
         removeWhiteSpaces(insertionContext)
 

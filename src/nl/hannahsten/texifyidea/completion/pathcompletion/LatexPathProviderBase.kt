@@ -27,12 +27,14 @@ import java.util.regex.Pattern
  * @author Lukas Heiligenbrunner
  */
 abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>() {
+
     private var parameters: CompletionParameters? = null
     private var resultSet: CompletionResultSet? = null
     private var validExtensions: Set<String>? = null
     private var absolutePathSupport = true
 
     companion object {
+
         private val TRIM_SLASH = Pattern.compile("/[^/]*$")
     }
 

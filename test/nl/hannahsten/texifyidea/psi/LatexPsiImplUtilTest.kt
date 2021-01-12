@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.util.requiredParameters
 import org.junit.Test
 
 class LatexPsiImplUtilTest : BasePlatformTestCase() {
+
     private val url = "https://github.com/Hannah-Sten/TeXiFy-IDEA"
 
     override fun getTestDataPath(): String {

@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
  * This class is used to enable inline refactoring.
  */
 class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
+
     override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean {
         // Label parameters are LatexParameterText
         return when (element) {
