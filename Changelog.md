@@ -5,6 +5,7 @@ ETA: First half of February, 2021
 # Additions
 * Added a wizard to insert graphics. (#1729)
 * Added support for labels defined in optional parameters of commands. (#1698)
+* Added Detexify tool window. (#1731)
 * Added BibTeX unused entry inspection. (#1717)
 * Added label intention for \item commands. (#1719)
 
@@ -16,6 +17,6 @@ ETA: First half of February, 2021
 * Performance improvements. (#1716)
 
 # Bug fixes
-* None, yet.
+* Fixed compile gutter icons showing up on parameters. (#1734)
 
 Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
