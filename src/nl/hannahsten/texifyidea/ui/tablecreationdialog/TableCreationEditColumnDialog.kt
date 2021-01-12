@@ -40,8 +40,7 @@ class TableCreationEditColumnDialog(
             columnTypeLabel.labelFor = columnTypeComboBox
 
             // Add UI elements.
-            val panel = JPanel()
-            panel.apply {
+            val panel = JPanel().apply {
                 add(columnNameLabel)
                 add(columnNameField)
                 add(columnTypeLabel)
@@ -55,7 +54,7 @@ class TableCreationEditColumnDialog(
                 dialogWrapper.close(0)
             }
 
-            if (columnName == "") {
+            if (columnName.isBlank()) {
                 title("Add column")
             }
             else {

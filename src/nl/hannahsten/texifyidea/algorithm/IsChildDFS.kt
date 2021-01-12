@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.algorithm
 
-import java.util.ArrayDeque
-import java.util.Deque
+import java.util.*
 
 /**
  * Depth first search that checks if a goal node is a child of the given start node.

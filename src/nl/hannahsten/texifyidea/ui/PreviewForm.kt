@@ -1,7 +1,9 @@
 package nl.hannahsten.texifyidea.ui
 
 import java.awt.image.BufferedImage
-import javax.swing.*
+import javax.swing.JPanel
+import javax.swing.JTabbedPane
+import javax.swing.JTextArea
 
 /**
  * @author Sergei Izmailov
