@@ -84,6 +84,7 @@ abstract class LatexAddLabelIntention : TexifyIntentionBase("Add label") {
     }
 
     data class LabelWithPrefix(val prefix: String, val base: String) {
+
         val prefixText = "$prefix:"
         val labelText = "$prefix:$base"
     }
