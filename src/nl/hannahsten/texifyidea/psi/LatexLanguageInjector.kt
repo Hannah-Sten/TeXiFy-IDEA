@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.util.parentOfType
  * @author Sten Wessel
  */
 class LatexLanguageInjector : LanguageInjector {
+
     override fun getLanguagesToInject(host: PsiLanguageInjectionHost, registrar: InjectedLanguagePlaces) {
         if (host is LatexEnvironment) {
 

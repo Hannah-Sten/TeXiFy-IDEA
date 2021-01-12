@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
  * @author Sten Wessel
  */
 class LatexParserDefinition : ParserDefinition {
+
     override fun createLexer(project: Project): Lexer = LatexLexerAdapter()
 
     override fun createParser(project: Project): PsiParser = LatexParser()
@@ -44,6 +45,7 @@ class LatexParserDefinition : ParserDefinition {
     ): SpaceRequirements = SpaceRequirements.MAY
 
     companion object {
+
         val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
         val COMMENTS = TokenSet.create(LatexTypes.COMMENT_TOKEN)
         val NORMAL_TEXT = TokenSet.create(LatexTypes.NORMAL_TEXT)

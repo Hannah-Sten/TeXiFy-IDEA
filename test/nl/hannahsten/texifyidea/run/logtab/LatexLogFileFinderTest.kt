@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexFileStack
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_WIDTH
 
 class LatexLogFileFinderTest : BasePlatformTestCase() {
+
     fun testFileIsImmediatelyClosed() {
         val line =
             """(/home/abby/texlive/2019/texmf-dist/tex/latex/graphics/keyval.sty)"""

@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.util.firstChildOfType
 import org.junit.Test
 
 class LatexCommandsImplUtilTest : BasePlatformTestCase() {
+
     @Test
     fun `test simple optional parameters map`() {
         // given

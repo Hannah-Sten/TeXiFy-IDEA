@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.impl.BibtexEntryImpl
 
 open class BibtexEntryStubElementType(debugName: String) : IStubElementType<BibtexEntryStub, BibtexEntry>(debugName, BibtexLanguage) {
+
     override fun createPsi(stub: BibtexEntryStub): BibtexEntry {
         return BibtexEntryImpl(stub, this)
     }

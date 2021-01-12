@@ -14,6 +14,7 @@ object LatexReferenceCitationWarningHandler : LatexMessageHandler(
     LatexLogMessageType.WARNING,
     """^$LATEX_WARNING_REGEX (?<ref>Reference|Citation) $REFERENCE_REGEX on page \d+ undefined $LINE_REGEX$""".toRegex()
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.first().find(text)?.apply {
             val ref = groups["ref"]?.value

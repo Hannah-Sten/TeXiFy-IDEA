@@ -14,6 +14,7 @@ class TexifyRegexInspectionTest {
         errorMessage = { "" },
         pattern = Pattern.compile("bl.b")
     ) {
+
         // Provide dummy document contents
         var dummyDocument = ""
 

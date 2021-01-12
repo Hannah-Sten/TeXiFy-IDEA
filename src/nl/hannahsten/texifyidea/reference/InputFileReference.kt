@@ -25,6 +25,7 @@ import nl.hannahsten.texifyidea.util.files.*
  * @param defaultExtension Default extension of the command in which this reference is.
  */
 class InputFileReference(element: LatexCommands, val range: TextRange, val extensions: Set<String>, val defaultExtension: String) : PsiReferenceBase<LatexCommands>(element) {
+
     init {
         rangeInElement = range
     }

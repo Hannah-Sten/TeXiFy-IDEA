@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/missingimport"
     }

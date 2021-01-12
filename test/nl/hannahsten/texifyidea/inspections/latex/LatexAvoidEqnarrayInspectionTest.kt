@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexAvoidEqnarrayInspectionTest : TexifyInspectionTestBase(LatexAvoidEqnarrayInspection()) {
+
     fun `test eqnarray warning`() = testHighlighting("""
         \begin{<warning descr="Avoid using the 'eqnarray' environment">eqnarray</warning>}
             x

@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexLineBreakInspectionTest : TexifyInspectionTestBase(LatexLineBreakInspection()) {
+
     fun testWarning() = testHighlighting("""
             Not this, b<weak_warning descr="Sentence does not start on a new line">ut. This starts a new line.</weak_warning>
 This e<weak_warning descr="Sentence does not start on a new line">tc. is missing a normal space, but i.e. this etc.</weak_warning>\ is not.

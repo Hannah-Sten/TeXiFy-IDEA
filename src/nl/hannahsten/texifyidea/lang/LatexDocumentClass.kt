@@ -11,6 +11,7 @@ open class LatexDocumentClass(
 ) {
 
     companion object {
+
         val EXAM = LatexDocumentClass("exam")
     }
 

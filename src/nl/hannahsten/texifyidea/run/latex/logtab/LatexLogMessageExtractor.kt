@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings.*
 import nl.hannahsten.texifyidea.util.remove
 
 object LatexLogMessageExtractor {
+
     /**
      * Pre-processing to check if line is worth looking at.
      */

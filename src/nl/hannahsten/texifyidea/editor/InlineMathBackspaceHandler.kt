@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.get
 
 class InlineMathBackspaceHandler : BackspaceHandlerDelegate() {
+
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {
         if (c == '$' && file.isLatexFile()) {
             val offset = editor.caretOffset()

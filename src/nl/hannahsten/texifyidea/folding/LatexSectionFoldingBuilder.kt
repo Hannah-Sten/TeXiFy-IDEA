@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 open class LatexSectionFoldingBuilder : FoldingBuilderEx() {
 
     companion object {
+
         private val sectionCommandNames = arrayOf(
             "part", "chapter",
             "section", "subsection", "subsubsection",

@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.inMathContext
 
 class LatexPostfixExpressionSelector(private val mathOnly: Boolean = false, private val textOnly: Boolean = false) : PostfixTemplateExpressionSelector {
+
     override fun hasExpression(context: PsiElement, copyDocument: Document, newOffset: Int): Boolean {
         return when {
             mathOnly -> context.inMathContext()
