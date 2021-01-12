@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.action.tablewizard
+package nl.hannahsten.texifyidea.action.wizard.table
 
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
 import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationTableModel
@@ -15,8 +15,8 @@ import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationTableModel
  * @author Abby Berkers
  */
 data class TableInformation(
-    val tableModel: TableCreationTableModel,
-    val columnTypes: List<ColumnType>,
-    val caption: String,
-    val label: String
+        val tableModel: TableCreationTableModel,
+        val columnTypes: List<ColumnType>,
+        val caption: String,
+        val label: String
 )

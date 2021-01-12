@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.intentions
 
+import com.intellij.codeInsight.template.TemplateManager
+import com.intellij.codeInsight.template.impl.TemplateImpl
+import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
@@ -45,7 +48,7 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
                 ?: return
 
         // Determine label name.
-        val labelString: String = if (Magic.Command.labelAsParameter.contains(command.name)) {
+        val labelString: String? = if (Magic.Command.labelAsParameter.contains(command.name)) {
             // For parameter labeled commands we use the command name itself
             command.name!!
         }
@@ -56,30 +59,39 @@ open class LatexAddLabelIntention(val command: SmartPsiElementPointer<LatexComma
                 required[0]
             }
             else {
-                return
+                null
             }
         }
 
-        val createdLabel = getUniqueLabelName(
-            labelString.formatAsLabel(),
-            Magic.Command.labeledPrefixes[command.name!!], command.containingFile
-        )
+        val prefix = Magic.Command.labeledPrefixes[command.name!!]
 
-        val factory = LatexPsiHelper(project)
+        if (labelString != null) {
+            val createdLabel = getUniqueLabelName(
+                labelString.formatAsLabel(),
+                prefix, command.containingFile
+            )
 
-        val labelCommand = if (Magic.Command.labelAsParameter.contains(command.name)) {
-            factory.setOptionalParameter(command, "label", "{$createdLabel}")
+            val factory = LatexPsiHelper(project)
+
+            val labelCommand = if (Magic.Command.labelAsParameter.contains(command.name)) {
+                factory.setOptionalParameter(command, "label", "{$createdLabel}")
+            }
+            else {
+                // Insert label
+                // command -> NoMathContent -> Content -> Container containing the command
+                val commandContent = command.parent.parent
+                commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
+            }
+            // Adjust caret offset.
+            val caret = editor.caretModel
+            caret.moveToOffset(labelCommand.endOffset())
         }
         else {
-
-            // Insert label
-            // command -> NoMathContent -> Content -> Container containing the command
-            val commandContent = command.parent.parent
-            commandContent.parent.addAfter(factory.createLabelCommand(createdLabel), commandContent)
+            editor.caretModel.moveToOffset(command.endOffset())
+            val template = TemplateImpl("", "\\label{$prefix:\$__Variable0\$}", "")
+            template.addVariable(TextExpression(""), true)
+            TemplateManager.getInstance(editor.project).startTemplate(editor, template)
         }
-        // Adjust caret offset.
-        val caret = editor.caretModel
-        caret.moveToOffset(labelCommand.endOffset())
     }
 
     private fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
