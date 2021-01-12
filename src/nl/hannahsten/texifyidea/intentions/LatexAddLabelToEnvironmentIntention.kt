@@ -9,11 +9,11 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.childrenOfType
 import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.formatAsLabel
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementPointer<LatexEnvironment>? = null) :
     LatexAddLabelIntention() {
@@ -23,7 +23,7 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
             return false
         }
 
-        return findTarget<LatexEnvironment>(editor, file)?.environmentName in Magic.Environment.labeled
+        return findTarget<LatexEnvironment>(editor, file)?.environmentName in EnvironmentMagic.labeled
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
@@ -37,13 +37,13 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
 
         val helper = LatexPsiHelper(project)
         // Determine label name.
-        val prefix = Magic.Environment.labeled[environment.environmentName] ?: ""
+        val prefix = EnvironmentMagic.labeled[environment.environmentName] ?: ""
         val createdLabel = getUniqueLabelName(
             environment.environmentName.formatAsLabel(),
             prefix, environment.containingFile
         )
 
-        if (Magic.Environment.labelAsParameter.contains(environment.environmentName)) {
+        if (EnvironmentMagic.labelAsParameter.contains(environment.environmentName)) {
             val endMarker =
                 editor.document.createRangeMarker(environment.startOffset, environment.endOffset())
             createLabelAndStartRename(editor, project, environment.beginCommand, createdLabel, endMarker)
@@ -53,7 +53,7 @@ open class LatexAddLabelToEnvironmentIntention(val environment: SmartPsiElementP
             val labelCommand = helper.addToContent(
                 environment, helper.createLabelCommand(createdLabel.labelText),
                 environment.environmentContent?.childrenOfType<LatexCommands>()
-                    ?.findLast { c -> c.name == LatexRegularCommand.CAPTION.commandDisplay }
+                    ?.findLast { c -> c.name == LatexRegularCommand.CAPTION.commandWithSlash }
             )
 
             // Adjust caret offset

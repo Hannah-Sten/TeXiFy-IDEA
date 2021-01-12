@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
