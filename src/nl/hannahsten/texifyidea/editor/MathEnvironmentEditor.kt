@@ -14,6 +14,7 @@ class MathEnvironmentEditor(
     val editor: Editor,
     val environment: PsiElement
 ) {
+
     /**
      * Apply the conversion of a math environment.
      */

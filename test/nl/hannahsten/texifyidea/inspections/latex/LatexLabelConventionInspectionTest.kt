@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelConventionInspection()) {
+
     fun testSectionLabelConventionWarning() {
         myFixture.configureByText(
             LatexFileType,

@@ -36,6 +36,7 @@ class SdkSettingsStep(
     sdkTypeIdFilter: Condition<in SdkTypeId?>,
     sdkFilter: Condition<in Sdk?>?
 ) : ModuleWizardStep() {
+
     private val myJdkComboBox: JdkComboBox
     private val myWizardContext: WizardContext
     private val myModel: ProjectSdksModel

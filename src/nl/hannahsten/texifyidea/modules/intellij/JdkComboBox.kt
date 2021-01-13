@@ -47,6 +47,7 @@ class JdkComboBox(
         sdkFilter
     )
 ) {
+
     private val myOnNewSdkAdded: Consumer<Sdk> = Consumer { sdk: Sdk? -> onNewSdkAdded?.consume(sdk) }
 
     override fun onModelUpdated(model: SdkListModel) {
@@ -127,6 +128,7 @@ class JdkComboBox(
 
     private class JdkComboBoxModel(val myInnerModel: SdkListModel) :
         AbstractListModel<JdkComboBoxItem>(), ComboBoxModel<JdkComboBoxItem?> {
+
         private var mySelectedItem: JdkComboBoxItem? = null
         override fun getSize(): Int {
             return myInnerModel.items.size
@@ -156,11 +158,13 @@ class JdkComboBox(
     }
 
     private interface InnerComboBoxItem {
+
         val item: SdkListItem
     }
 
     private interface SelectableComboBoxItem
     abstract class JdkComboBoxItem {
+
         open val jdk: Sdk?
             get() = null
         open val sdkName: String?
@@ -168,6 +172,7 @@ class JdkComboBox(
     }
 
     private class InnerJdkComboBoxItem(override val item: SdkListItem) : JdkComboBoxItem(), InnerComboBoxItem {
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other == null || javaClass != other.javaClass) return false
@@ -183,11 +188,13 @@ class JdkComboBox(
     private class ActualJdkInnerItem(private val myItem: SdkItem) : ActualJdkComboBoxItem(
         myItem.sdk
     ), InnerComboBoxItem {
+
         override val item: SdkListItem
             get() = myItem
     }
 
     open class ActualJdkComboBoxItem(override val jdk: Sdk) : JdkComboBoxItem(), SelectableComboBoxItem {
+
         override fun toString(): String {
             return jdk.name
         }
@@ -208,6 +215,7 @@ class JdkComboBox(
     }
 
     class ProjectJdkComboBoxItem : JdkComboBoxItem(), InnerComboBoxItem, SelectableComboBoxItem {
+
         override val item: SdkListItem
             get() = ProjectSdkItem()
 
@@ -221,6 +229,7 @@ class JdkComboBox(
     }
 
     class NoneJdkComboBoxItem : JdkComboBoxItem(), InnerComboBoxItem, SelectableComboBoxItem {
+
         override val item: SdkListItem
             get() = NoneSdkItem()
 
@@ -238,6 +247,7 @@ class JdkComboBox(
     }
 
     companion object {
+
         private val LOG = Logger.getInstance(
             JdkComboBox::class.java
         )

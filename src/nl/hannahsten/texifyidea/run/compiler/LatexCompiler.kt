@@ -381,6 +381,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     override fun toString() = this.displayName
 
     companion object {
+
         fun byExecutableName(exe: String): LatexCompiler {
             return values().firstOrNull {
                 it.executableName.equals(exe, true)

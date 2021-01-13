@@ -9,6 +9,7 @@ import org.freedesktop.dbus.interfaces.DBusInterface
  */
 @Suppress("FunctionName")
 interface Daemon : DBusInterface {
+
     /**
      * Find a certain document.
      * This seems to be unable to handle spaces in a path: the pdf will open but the process owner will not be returned.

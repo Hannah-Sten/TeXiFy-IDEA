@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 class DockerSdk : LatexSdk("LaTeX Docker SDK") {
 
     companion object {
+
         val isInPath: Boolean by lazy {
             "docker --version".runCommand()?.contains("Docker version") == true
         }

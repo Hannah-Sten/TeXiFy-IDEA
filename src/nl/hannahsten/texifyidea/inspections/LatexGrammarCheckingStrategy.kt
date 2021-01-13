@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.psi.*
 
 class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
+
     private fun PsiElement.isNotInMathEnvironment() = parents().none { it is LatexMathEnvironment }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }

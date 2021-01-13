@@ -6,21 +6,21 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.createSmartPointer
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention
+import nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention
+import nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention
 import nl.hannahsten.texifyidea.lang.LatexDocumentClass
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifyConfigurable
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.hasStar
 import org.jetbrains.annotations.Nls
 import java.util.*
 
@@ -124,6 +124,7 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
      * Open the settings page so the user can change the minimum labeled level.
      */
     private class ChangeMinimumLabelLevelFix : LocalQuickFix {
+
         @Nls
         override fun getFamilyName(): String {
             return "Change minimum sectioning level"
@@ -136,73 +137,36 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
         }
     }
 
-    abstract class LabelQuickFix : LocalQuickFix {
-        protected fun getUniqueLabelName(base: String, prefix: String?, file: PsiFile): String {
-            val labelBase = "$prefix:$base"
-            val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
-            return appendCounter(labelBase, allLabels)
-        }
-
-        /**
-         * Keeps adding a counter behind the label until there is no other label with that name.
-         */
-        private fun appendCounter(label: String, allLabels: Set<String>): String {
-            var counter = 2
-            var candidate = label
-
-            while (allLabels.contains(candidate)) {
-                candidate = label + (counter++)
-            }
-
-            return candidate
-        }
-    }
-
     /**
      * This is also an intention, but in order to keep the same alt+enter+enter functionality (because we have an other
      * quickfix as well) we keep it as a quickfix also.
      */
-    private class InsertLabelForCommandFix : LabelQuickFix() {
+    private class InsertLabelForCommandFix : LocalQuickFix {
 
         // It has to appear in alphabetical order before the other quickfix
         override fun getFamilyName() = "Add label for this command"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            LatexAddLabelIntention(command.createSmartPointer()).invoke(project, command.containingFile.openedEditor(), command.containingFile)
+            LatexAddLabelToCommandIntention(command.createSmartPointer()).invoke(
+                project,
+                command.containingFile.openedEditor(),
+                command.containingFile
+            )
         }
     }
 
-    private class InsertLabelInEnvironmentFix : LabelQuickFix() {
+    private class InsertLabelInEnvironmentFix : LocalQuickFix {
+
         override fun getFamilyName() = "Add label for this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val command = descriptor.psiElement as LatexEnvironment
-            val helper = LatexPsiHelper(project)
-            // Determine label name.
-            val createdLabel = getUniqueLabelName(
-                command.environmentName.formatAsLabel(),
-                Magic.Environment.labeled[command.environmentName], command.containingFile
+            val environment = descriptor.psiElement as LatexEnvironment
+            LatexAddLabelToEnvironmentIntention(environment.createSmartPointer()).invoke(
+                project,
+                environment.containingFile.openedEditor(),
+                environment.containingFile
             )
-
-            val moveCaretAfter: PsiElement
-            moveCaretAfter = if (Magic.Environment.labelAsParameter.contains(command.environmentName)) {
-                helper.setOptionalParameter(command.beginCommand, "label", "{$createdLabel}")
-            }
-            else {
-                // in a float environment the label must be inserted after a caption
-                val labelCommand = helper.addToContent(
-                    command, helper.createLabelCommand(createdLabel),
-                    command.environmentContent?.childrenOfType<LatexCommands>()
-                        ?.findLast { c -> c.name == "\\caption" }
-                )
-                labelCommand
-            }
-
-            // Adjust caret offset
-            val openedEditor = command.containingFile.openedEditor() ?: return
-            val caretModel = openedEditor.caretModel
-            caretModel.moveToOffset(moveCaretAfter.endOffset())
         }
     }
 }

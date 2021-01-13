@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class BibtexFormattingTest : BasePlatformTestCase() {
+
     fun testSpacesAroundBraces() {
         """
             @inproceedings {pose:alp2018densepose, 

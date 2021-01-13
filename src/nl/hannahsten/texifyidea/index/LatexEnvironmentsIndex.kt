@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  * This index contains all environments
  */
 class LatexEnvironmentsIndex : StringStubIndexExtension<LatexEnvironment>() {
+
     companion object : IndexUtilBase<LatexEnvironment>(LatexEnvironment::class.java, IndexKeys.ENVIRONMENTS_KEY)
 
     @Suppress("RedundantCompanionReference")
