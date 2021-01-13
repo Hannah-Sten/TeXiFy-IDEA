@@ -79,7 +79,7 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
         }
 
         open fun getArguments(command: LatexCommands): Pair<PsiElement, PsiElement>? {
-            val parent = command.parent.parent
+            val parent = command.parent
             val firstSib = LatexPsiUtil.getNextSiblingIgnoreWhitespace(parent) ?: return null
             val secondSib = LatexPsiUtil.getNextSiblingIgnoreWhitespace(firstSib) ?: return null
             return Pair(firstSib, secondSib)

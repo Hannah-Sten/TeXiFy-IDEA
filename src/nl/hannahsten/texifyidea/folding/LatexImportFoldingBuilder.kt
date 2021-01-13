@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.index.LatexIncludesIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.PsiContainer
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstChildOfType
@@ -61,7 +61,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
 
     private fun PsiElement.nextCommand(): LatexCommands? {
         val content = if (this is LatexCommands) {
-            parentOfType(LatexContent::class) ?: return null
+            parentOfType(LatexNoMathContent::class) ?: return null
         }
         else this
         val next = content.nextSibling

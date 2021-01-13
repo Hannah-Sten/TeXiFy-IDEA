@@ -22,9 +22,11 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
         element is LatexContent && element.isNotInMathEnvironment() && element.isNotInSquareBrackets() || element is PsiComment
 
     override fun getStealthyRanges(root: PsiElement, text: CharSequence): LinkedSet<IntRange> {
+        // Only keep normaltext, assuming other things (like inline math) need to be ignored.
         val ranges = root.childrenOfType(LatexNormalText::class)
             // Ranges that we need to keep
-            .flatMap { listOf(it.textRange.startOffset, it.textRange.endOffset) }
+            .flatMap { listOf(it.textRangeInParent.startOffset, it.textRangeInParent.endOffset) }
+            .sorted()
             // Shift by 1
             .drop(1).dropLast(1)
             // To get the ranges that we need to ignore

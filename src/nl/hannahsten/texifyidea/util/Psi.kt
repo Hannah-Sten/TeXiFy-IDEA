@@ -346,6 +346,7 @@ fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequenc
  */
 fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.parent }
 
+// todo split to different file
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,7 +422,7 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
 /**
  * Checks if the latex content objects is a display math environment.
  */
-fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
+fun LatexNoMathContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
 
 /*
  * Technically it's impossible to determine for all cases whether a users wants to compile with biber or biblatex.
