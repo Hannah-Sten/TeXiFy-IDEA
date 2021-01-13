@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface LatexGroup extends PsiElement {
 
-  @NotNull
-  List<LatexContent> getContentList();
+  @Nullable
+  LatexContent getContent();
 
 }

@@ -115,7 +115,7 @@ object LatexPsiUtil {
     fun getChildren(element: PsiElement?): List<PsiElement> {
         val result: MutableList<PsiElement?> = ArrayList()
 
-        // LatexCommands
+        // LatexCommands todo check with bnf
         when (element) {
             is LatexCommands -> {
                 result.addAll(element.parameterList)
@@ -125,13 +125,13 @@ object LatexPsiUtil {
                 result.add(element.commentToken)
             }
             is LatexContent -> {
-                result.add(element.noMathContent)
+                result.addAll(element.noMathContentList)
             }
             is LatexDisplayMath -> {
                 result.add(element.mathContent)
             }
             is LatexGroup -> {
-                result.addAll(element.contentList)
+                result.add(element.content)
             }
             is LatexInlineMath -> {
                 result.add(element.mathContent)

@@ -212,16 +212,6 @@ fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
 }
 
 /**
- * @see LatexPsiUtil.getAllChildren
- */
-fun PsiElement.allChildren(): List<PsiElement> = LatexPsiUtil.getAllChildren(this)
-
-/**
- * @see LatexPsiUtil.getChildren
- */
-fun PsiElement.allLatexChildren(): List<PsiElement> = LatexPsiUtil.getChildren(this)
-
-/**
  * Finds the `generations`th parent of the psi element.
  */
 fun PsiElement.grandparent(generations: Int): PsiElement? {

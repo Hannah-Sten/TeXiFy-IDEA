@@ -29,8 +29,8 @@ public class LatexContentImpl extends ASTWrapperPsiElement implements LatexConte
 
   @Override
   @NotNull
-  public LatexNoMathContent getNoMathContent() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, LatexNoMathContent.class));
+  public List<LatexNoMathContent> getNoMathContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexNoMathContent.class);
   }
 
 }
