@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StringStubIndexExtension
+import nl.hannahsten.texifyidea.LatexParserDefinition
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
@@ -11,4 +12,6 @@ open class LatexCommandsIndex : StringStubIndexExtension<LatexCommands>() {
     companion object : IndexCommandsUtilBase(IndexKeys.COMMANDS_KEY)
 
     override fun getKey() = Companion.key()
+
+    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
 }
