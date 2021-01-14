@@ -62,7 +62,7 @@ class LatexGrammarCheckingStrategy : GrammarCheckingStrategy {
 
         // Currently, GrammarChecker does not handle overlapped ranges, so we do that ourselves
         for (range in StrategyUtils.indentIndexes(text, setOf(' '))) {
-            val overlapped = ranges.filter{ range.overlaps(it) }
+            val overlapped = ranges.filter { range.overlaps(it) }
             ranges.removeAll(overlapped)
             ranges.add(range.merge(overlapped))
         }
