@@ -114,7 +114,7 @@ tasks.processResources {
 intellij {
     pluginName = "TeXiFy-IDEA"
 
-    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.9.1")
+    setPlugins("tanvd.grazi", "java", "com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.10.0")
 
     // Use the since build number from plugin.xml
     updateSinceUntilBuild = false
@@ -124,7 +124,7 @@ intellij {
     // Comment out to use the latest EAP snapshot
     // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
     // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
-    version = "203.5600.34-EAP-SNAPSHOT"
+    version = "2020.3.1"
 //    version = "PY-203.5419.8-EAP-SNAPSHOT"
 //    type = "PY"
 
