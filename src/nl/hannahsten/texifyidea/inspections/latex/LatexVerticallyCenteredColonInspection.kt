@@ -30,7 +30,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
     mathMode = true,
     replacement = this::replacement,
     replacementRange = { it.groupRange(0) },
-    quickFixName = { "Change to ${PATTERNS[it.group(0)]!!.command} (mathtools)" },
+    quickFixName = { "Change to ${PATTERNS[it.group(0).replace(WHITESPACE, "")]!!.command} (mathtools)" },
     cancelIf = { _, file ->
         // Per mathtools documentation, colons are automatically centered when this option is set.
         // It is impossible to determine whether this option is actually set (think scoping, but this option can also be
@@ -44,26 +44,29 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
 
     companion object {
 
+        // Whitespace in between is matched, except for newlines (we have to draw the line somewhere...)
         private val PATTERNS = mapOf(
-            ":=" to Pattern(""":=""", "\\coloneqq"),
-            "::=" to Pattern("""::=""", "\\Coloneqq"),
-            ":-" to Pattern(""":-""", "\\coloneq"),
-            "::-" to Pattern("""::-""", "\\Coloneq"),
-            "=:" to Pattern("""=:""", "\\eqqcolon"),
-            "=::" to Pattern("""=::""", "\\Eqqcolon"),
-            "-:" to Pattern("""-:""", "\\eqcolon"),
-            "-::" to Pattern("""-::""", "\\Eqcolon"),
-            ":\\approx" to Pattern(""":\\approx(?![a-zA-Z])""", "\\colonapprox"),
-            "::\\approx" to Pattern("""::\\approx(?![a-zA-Z])""", "\\Colonapprox"),
-            ":\\sim" to Pattern(""":\\sim(?![a-zA-Z])""", "\\colonsim"),
-            "::\\sim" to Pattern("""::\\sim(?![a-zA-Z])""", "\\Colonsim"),
-            "::" to Pattern("""::""", "\\dblcolon"),
+            ":=" to Pattern(""":[^\S\r\n]*=""", "\\coloneqq"),
+            "::=" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*=""", "\\Coloneqq"),
+            ":-" to Pattern(""":[^\S\r\n]*-""", "\\coloneq"),
+            "::-" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*-""", "\\Coloneq"),
+            "=:" to Pattern("""=[^\S\r\n]*:""", "\\eqqcolon"),
+            "=::" to Pattern("""=[^\S\r\n]*:[^\S\r\n]*:""", "\\Eqqcolon"),
+            "-:" to Pattern("""-[^\S\r\n]*:""", "\\eqcolon"),
+            "-::" to Pattern("""-[^\S\r\n]*:[^\S\r\n]*:""", "\\Eqcolon"),
+            ":\\approx" to Pattern(""":[^\S\r\n]*\\approx(?![a-zA-Z])""", "\\colonapprox"),
+            "::\\approx" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*\\approx(?![a-zA-Z])""", "\\Colonapprox"),
+            ":\\sim" to Pattern(""":[^\S\r\n]*\\sim(?![a-zA-Z])""", "\\colonsim"),
+            "::\\sim" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*\\sim(?![a-zA-Z])""", "\\Colonsim"),
+            "::" to Pattern(""":[^\S\r\n]*:""", "\\dblcolon"),
         )
+
+        private val WHITESPACE = """[^\S\r\n]+""".toRegex()
 
         private val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern()
 
         fun replacement(matcher: Matcher, file: PsiFile): String {
-            val replacement = PATTERNS[matcher.group(0)]!!.command
+            val replacement = PATTERNS[matcher.group(0).replace(WHITESPACE, "")]!!.command
 
             // If the next character would be a letter, it would mess up the command that is inserted: append a space as well
             if (file.document()?.get(matcher.end())?.get(0)?.isLetter() == true) {

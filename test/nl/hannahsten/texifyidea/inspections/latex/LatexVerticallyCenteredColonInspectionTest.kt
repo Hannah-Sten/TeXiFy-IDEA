@@ -13,7 +13,18 @@ class LatexVerticallyCenteredColonInspectionTest : TexifyInspectionTestBase(Late
 
     fun `test warning lookahead`() = testHighlighting("""\[ a <warning descr="Colon is vertically uncentered">:\approx</warning>\infty \]""")
 
-    fun `test nowarning lookahead`() = testHighlighting("""\[ a :\approximate b \]""")
+    fun `test no warning lookahead`() = testHighlighting("""\[ a :\approximate b \]""")
+
+    fun `test warning spaces`() = testHighlighting("""\[ a <warning descr="Colon is vertically uncentered">: :  =</warning> b \]""")
+
+    fun `test no warning newline`() = testHighlighting("""
+            \[
+                a : 
+                 = b
+            \]
+        """.trimIndent())
+
+    fun `test no warning outside math mode`() = testHighlighting("""a := b \[ a : b \]""")
 
     fun `test quick fix without inserting space`() = testQuickFix(
         before = """\[ a :=\infty \]""",
