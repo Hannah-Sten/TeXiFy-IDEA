@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LATEXSYMB
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 
 /**
  * @author Sten Wessel
@@ -127,7 +128,7 @@ enum class LatexMathCommand(
     CONTOUR_INTEGRAL("oint", display = "∮", collapse = true),
     THEREFORE("therefore", dependency = AMSSYMB, display = "∴", collapse = true),
     BECAUSE("because", dependency = AMSSYMB, display = "∵", collapse = true),
-    TILDE_OPERATOR("sim", display = "~", collapse = true),
+    TILDE_OPERATOR("sim", display = "∼", collapse = true),
     WREATH_PRODUCT("wr", display = "≀", collapse = true),
     APPROX("approx", display = "≈", collapse = true),
     NOT_EQUAL("neq", display = "≠", collapse = true),
@@ -284,6 +285,23 @@ enum class LatexMathCommand(
     BACKEPSILON("backepsilon", dependency = AMSSYMB, display = "϶", collapse = true),
     DOUBLE_SUBSET("Subset", dependency = AMSSYMB, display = "⋐", collapse = true),
     DOUBLE_SUPSET("Supset", dependency = AMSSYMB, display = "⋑", collapse = true),
+
+    /*
+     * Mathtools Coloneq
+     */
+    COLON_EQUALSS("coloneqq", dependency = MATHTOOLS, display = ":=", collapse = true),
+    EQUALSS_COLON("eqqcolon", dependency = MATHTOOLS, display = "=:", collapse = true),
+    COLON_EQUALS("coloneq", dependency = MATHTOOLS, display = ":–", collapse = true),
+    EQUALS_COLON("eqcolon", dependency = MATHTOOLS, display = "–:", collapse = true),
+    COLON_APPROX("colonapprox", dependency = MATHTOOLS, display = ":≈", collapse = true),
+    COLON_SIM("colonsim", dependency = MATHTOOLS, display = ":∼", collapse = true),
+    DOUBLE_COLON("dblcolon", dependency = MATHTOOLS, display = "::", collapse = true),
+    DOUBLE_COLON_EQUALSS("Coloneqq", dependency = MATHTOOLS, display = "::=", collapse = true),
+    EQUALSS_DOUBLE_COLON("Eqqcolon", dependency = MATHTOOLS, display = "=::", collapse = true),
+    DOUBLE_COLON_EQUALS("Coloneq", dependency = MATHTOOLS, display = "::–", collapse = true),
+    EQUALS_DOUBLE_COLON("Eqcolon", dependency = MATHTOOLS, display = "–::", collapse = true),
+    DOUBLE_COLON_APPROX("Colonapprox", dependency = MATHTOOLS, display = "::≈", collapse = true),
+    DOUBLE_COLON_SIM("Colonsim", dependency = MATHTOOLS, display = "::∼", collapse = true),
 
     /*
      *  Left/Right
