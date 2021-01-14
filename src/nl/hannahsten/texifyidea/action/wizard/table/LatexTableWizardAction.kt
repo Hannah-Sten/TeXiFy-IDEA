@@ -4,10 +4,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.ui.tablecreationdialog.ColumnType
-import nl.hannahsten.texifyidea.ui.tablecreationdialog.TableCreationDialogWrapper
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -23,17 +23,16 @@ import java.util.*
  */
 class LatexTableWizardAction : AnAction() {
 
-    override fun actionPerformed(e: AnActionEvent) {
-        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
-        val project = e.getData(PlatformDataKeys.PROJECT)
-        val editor = project?.currentTextEditor() ?: return
+    fun executeAction(file: VirtualFile, project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null) {
+        val editor = project.currentTextEditor() ?: return
         val document = editor.editor.document
 
         // Get the indentation from the current line.
         val indent = document.lineIndentationByOffset(editor.editor.caretOffset())
 
         // Create the dialog.
-        val dialogWrapper = TableCreationDialogWrapper()
+        val dialogWrapper = defaultDialogWrapper ?: TableCreationDialogWrapper()
+
         // If the user pressed OK, do stuff.
         if (dialogWrapper.showAndGet()) {
 
@@ -46,20 +45,28 @@ class LatexTableWizardAction : AnAction() {
             // Insert the booktabs package.
             WriteCommandAction.runWriteCommandAction(
                     project,
-                    "Insert table",
+                    "Insert Table",
                     "LaTeX",
-                    Runnable { file.psiFile(project)!!.insertUsepackage(LatexPackage.BOOKTABS) },
+                    Runnable { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
                     file.psiFile(project)
             )
         }
+    }
+
+    override fun actionPerformed(e: AnActionEvent) {
+        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
+        val project = e.getData(PlatformDataKeys.PROJECT) ?: return
+        executeAction(file, project)
     }
 
     /**
      * Convert the table information to a latex table that can be inserted into the file.
      *
      * @param tableInformation
-     * @param lineIndent is the indentation of the current line, to be used on each new line.
-     * @param tabIndent is the continuation indent.
+     * @param lineIndent
+     *          The indentation of the current line, to be used on each new line.
+     * @param tabIndent
+     *          The continuation indent.
      */
     private fun convertTableToLatex(tableInformation: TableInformation, lineIndent: String, tabIndent: String = "    "): String {
         /**

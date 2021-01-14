@@ -475,6 +475,8 @@
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
         <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.TablePasteProvider"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
 
         <!-- References and refactoring -->
         <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
@@ -724,6 +726,9 @@
                          enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
+                         enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
+                         groupName="LaTeX" displayName="Use math function instead of \text"
                          enabledByDefault="true"/>
 
         <!-- Element manipulator -->

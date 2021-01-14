@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
@@ -18,22 +17,17 @@ import nl.hannahsten.texifyidea.util.addTextChangeListener
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.setInputFilter
 import java.awt.BorderLayout
+import nl.hannahsten.texifyidea.util.*
 import java.awt.Dimension
-import javax.swing.*
-import javax.swing.border.EmptyBorder
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JPanel
+import javax.swing.JTextField
 
 /**
  * @author Hannah Schellekens
  */
 open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : DialogWrapper(true) {
-
-    companion object {
-
-        /**
-         * The amount of pixels between the left pane border and the contorls.
-         */
-        private const val CONTROL_LEFT_PADDING = 16
-    }
 
     /**
      * Stores the path to the graphics file.
@@ -246,39 +240,6 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
         add(Box.createRigidArea(Dimension(0, margin)))
         add(TitledSeparator(title))
         add(Box.createRigidArea(Dimension(0, margin)))
-    }
-
-    /**
-     * Adds a component to the panel with a label before it.
-     *
-     * @param component
-     *          The component to add to the panel.
-     * @param description
-     *          The label to put before the component.
-     * @param labelWidth
-     *          The fixed label width, or `null` to use the label's inherent size.
-     */
-    private fun JPanel.addLabeledComponent(component: JComponent, description: String, labelWidth: Int? = null): JPanel {
-        // Uses a border layout with West for the label and Center for the control itself.
-        // East is reserved for suffix elements.
-        val pane = JPanel(BorderLayout()).apply {
-            val label = JBLabel(description).apply {
-                // Left padding.
-                border = EmptyBorder(0, CONTROL_LEFT_PADDING, 0, 0)
-
-                // Custom width if specified.
-                labelWidth?.let {
-                    preferredSize = Dimension(it, height)
-                }
-
-                // Align top.
-                alignmentY = 0.0f
-            }
-            add(label, BorderLayout.WEST)
-            add(component, BorderLayout.CENTER)
-        }
-        add(pane)
-        return pane
     }
 
     private fun updateFigureControlsState() {
