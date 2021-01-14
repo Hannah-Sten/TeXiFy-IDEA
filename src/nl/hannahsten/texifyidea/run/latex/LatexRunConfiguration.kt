@@ -54,6 +54,7 @@ class LatexRunConfiguration constructor(
 ) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
+
         private const val TEXIFY_PARENT = "texify"
         private const val COMPILER = "compiler"
         private const val COMPILER_PATH = "compiler-path"

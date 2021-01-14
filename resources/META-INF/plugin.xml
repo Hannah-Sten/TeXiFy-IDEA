@@ -158,15 +158,21 @@
                 <!-- MPS doesn't have the EditSmartGroup group, so we register directly in the Edit menu. -->
             <add-to-group group-id="EditMenu" anchor="last"/>
 
-            <!-- Table Creation Wizard-->
-            <action class="nl.hannahsten.texifyidea.action.tablewizard.LatexTableWizardAction" id="texify.TableCreationWizzard" text="_Table Creation Wizard"
-                    description="Shows popup to create and insert a table."/>
-
             <!-- Toggle Star -->
             <action class="nl.hannahsten.texifyidea.action.LatexToggleStarAction" id="texify.ToggleStar" text="Toggle _Star"
                     description="Adds/removes a star from a LaTeX command.">
                 <keyboard-shortcut first-keystroke="alt shift 8" keymap="$default" />
             </action>
+
+            <separator></separator>
+
+            <!-- Table Creation Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction" id="texify.TableCreationWizard" text="Insert _Table..."
+                    description="Shows a popup to create and insert a table."/>
+
+            <!-- Graphic Wizard-->
+            <action class="nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction" id="texify.GraphicInsertWizard" text="Insert _Graphic..."
+                    description="Shows a popup to insert a graphic."/>
         </group>
 
         <!-- LaTeX Analyze commands -->
@@ -467,6 +473,9 @@
         <backspaceHandlerDelegate implementation="nl.hannahsten.texifyidea.editor.InlineMathBackspaceHandler" />
         <extendWordSelectionHandler implementation="nl.hannahsten.texifyidea.editor.LatexCommandSelectioner"/>
         <basicWordSelectionFilter implementation="nl.hannahsten.texifyidea.editor.CommandSelectionFilter"/>
+        <customFileDropHandler implementation="nl.hannahsten.texifyidea.editor.GraphicsDragAndDropHandler"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.TablePasteProvider"/>
+        <customPasteProvider implementation="nl.hannahsten.texifyidea.editor.ImagePasteProvider"/>
 
         <!-- References and refactoring -->
         <lang.findUsagesProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.reference.LatexUsagesProvider"/>
@@ -520,6 +529,10 @@
         <!-- Documentation -->
         <lang.documentationProvider language="Latex" implementationClass="nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider"/>
         <lang.documentationProvider language="Bibtex" implementationClass="nl.hannahsten.texifyidea.documentation.BibtexDocumentationProvider"/>
+
+        <!-- Tool windows-->
+        <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
+                    id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
 
         <!-- Other Services -->
         <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
@@ -709,6 +722,9 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
+                         groupName="LaTeX" displayName="Use math function instead of \text"
+                         enabledByDefault="true"/>
 
         <!-- Element manipulator -->
         <lang.elementManipulator forClass="nl.hannahsten.texifyidea.psi.impl.LatexEnvironmentImpl"
@@ -719,24 +735,34 @@
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
                          groupName="BibTeX" displayName="Duplicate ID"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
                          groupName="BibTeX" displayName="Missing bibliography style"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
                          groupName="BibTeX" displayName="Duplicate bibliography style commands"
                          enabledByDefault="true"/>
-        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
+        <localInspection language="Latex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
                          groupName="BibTeX" displayName="Same bibliography is included multiple times"
                          enabledByDefault="true"/>
-        <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
+        <localInspection language="Bibtex"
+                         implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
                          groupName="BibTeX" displayName="Unused bib entry"
                          enabledByDefault="true"/>
 
         <!-- Intentions -->
         <intentionAction>
-            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelIntention</className>
+            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention</className>
             <category>LaTeX</category>
             <descriptionDirectoryName>LatexAddLabelIntention</descriptionDirectoryName>
+        </intentionAction>
+
+        <intentionAction>
+            <className>nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention</className>
+            <category>LaTeX</category>
+            <descriptionDirectoryName>LatexAddLabelToEnvironmentIntention</descriptionDirectoryName>
         </intentionAction>
 
         <intentionAction>

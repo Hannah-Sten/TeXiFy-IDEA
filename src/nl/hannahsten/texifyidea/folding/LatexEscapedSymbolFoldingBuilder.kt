@@ -28,6 +28,7 @@ class LatexEscapedSymbolFoldingBuilder : FoldingBuilderEx() {
     }
 
     companion object {
+
         val commandsToFold = setOf("%", "#", "&", "_", "$").map { "\\" + it }
     }
 }

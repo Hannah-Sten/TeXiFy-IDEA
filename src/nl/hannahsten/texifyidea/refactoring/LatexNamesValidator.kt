@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.util.formatAsLabel
  * Check if user provided names during refactoring are valid.
  */
 class LatexNamesValidator : NamesValidator {
+
     override fun isKeyword(name: String, project: Project?): Boolean {
         return false
     }

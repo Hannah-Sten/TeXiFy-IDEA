@@ -21,6 +21,7 @@ enum class InternalPdfViewer(
     override val displayName: String,
     val conversation: ViewerConversation?
 ) : PdfViewer {
+
     EVINCE("evince", "Evince", EvinceConversation),
     OKULAR("okular", "Okular", OkularConversation),
     ZATHURA("zathura", "Zathura", ZathuraConversation),
@@ -62,6 +63,7 @@ enum class InternalPdfViewer(
 
     companion object {
         private val availability: Map<InternalPdfViewer, Boolean> by lazy {
+
             values().associateWith {
                 it.checkAvailability()
             }

@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
 
 class LatexPackageNotInstalledInspectionTest : TexifyInspectionTestBase(LatexPackageNotInstalledInspection()) {
+
     fun `test no warnings when not using texlive`() {
         texliveWithTlmgr(texlive = false, tlmgr = false)
 

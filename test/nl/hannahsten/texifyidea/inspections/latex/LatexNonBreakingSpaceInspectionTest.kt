@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBreakingSpaceInspection()) {
+
     fun testWarning() {
         myFixture.configureByText(
             LatexFileType,

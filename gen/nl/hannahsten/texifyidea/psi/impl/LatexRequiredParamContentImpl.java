@@ -1,16 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import java.util.List;
+import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMAND_IFNEXTCHAR;
 
 public class LatexRequiredParamContentImpl extends ASTWrapperPsiElement implements LatexRequiredParamContent {
 

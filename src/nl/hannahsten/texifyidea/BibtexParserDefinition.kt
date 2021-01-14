@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.psi.BibtexTypes
  * @author Hannah Schellekens
  */
 class BibtexParserDefinition : ParserDefinition {
+
     override fun createLexer(project: Project) = BibtexLexerAdapter()
 
     override fun createParser(project: Project) = BibtexParser()
@@ -42,6 +43,7 @@ class BibtexParserDefinition : ParserDefinition {
     ): SpaceRequirements = SpaceRequirements.MAY
 
     companion object {
+
         val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
         val COMMENTS = TokenSet.create(BibtexTypes.COMMENT)
         val NORMAL_TEXT = TokenSet.create(BibtexTypes.NORMAL_TEXT)

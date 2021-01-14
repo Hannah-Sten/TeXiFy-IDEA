@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.util.findBibtexItems
 import java.util.*
 
 object LatexBibliographyReferenceProvider : CompletionProvider<CompletionParameters>() {
+
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val lookupItems = parameters.originalFile.findBibtexItems()
             .map { bibtexEntry ->

@@ -51,6 +51,7 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
      * Remove the command line.
      */
     class RemoveFix : LocalQuickFix {
+
         override fun getFamilyName(): String {
             return "Remove this Line"
         }

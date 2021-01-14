@@ -20,6 +20,7 @@ import java.util.*
 import java.util.stream.Collectors
 
 object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
+
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         addDefaultColors(result)
         addCustomColors(parameters, result)

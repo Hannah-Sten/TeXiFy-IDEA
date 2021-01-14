@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.ui.SkimConfigureInverseSearchDialog
  * @author Stephan Sundermann
  */
 class ConfigureInverseSearchAction : AnAction() {
+
     override fun actionPerformed(e: AnActionEvent) {
         SkimConfigureInverseSearchDialog()
     }

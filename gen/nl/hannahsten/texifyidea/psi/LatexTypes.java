@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStubElementType;
 import nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStubElementType;
@@ -36,6 +36,8 @@ public interface LatexTypes {
   IElementType PARAMETER_GROUP = new LatexElementType("PARAMETER_GROUP");
   IElementType PARAMETER_GROUP_TEXT = new LatexElementType("PARAMETER_GROUP_TEXT");
   IElementType PARAMETER_TEXT = new LatexElementType("PARAMETER_TEXT");
+  IElementType PICTURE_PARAM = new LatexElementType("PICTURE_PARAM");
+  IElementType PICTURE_PARAM_CONTENT = new LatexElementType("PICTURE_PARAM_CONTENT");
   IElementType PSEUDOCODE_BLOCK = new LatexElementType("PSEUDOCODE_BLOCK");
   IElementType PSEUDOCODE_BLOCK_CONTENT = new LatexElementType("PSEUDOCODE_BLOCK_CONTENT");
   IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
@@ -152,6 +154,12 @@ public interface LatexTypes {
       }
       else if (type == PARAMETER_TEXT) {
         return new LatexParameterTextImpl(node);
+      }
+      else if (type == PICTURE_PARAM) {
+        return new LatexPictureParamImpl(node);
+      }
+      else if (type == PICTURE_PARAM_CONTENT) {
+        return new LatexPictureParamContentImpl(node);
       }
       else if (type == PSEUDOCODE_BLOCK) {
         return new LatexPseudocodeBlockImpl(node);

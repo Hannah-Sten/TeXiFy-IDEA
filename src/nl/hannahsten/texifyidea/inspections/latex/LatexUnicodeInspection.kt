@@ -50,6 +50,7 @@ import java.util.regex.Pattern
 class LatexUnicodeInspection : TexifyInspectionBase() {
 
     companion object {
+
         private val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
 
         /**

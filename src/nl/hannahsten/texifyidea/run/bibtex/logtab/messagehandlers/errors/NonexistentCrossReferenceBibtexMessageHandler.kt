@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * Note that it consists of two lines, without any indication that it does.
  */
 object NonexistentCrossReferenceBibtexMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         BibtexLogMagicRegex.nonexistentCrossReferenceError.find(window.lastOrNull() ?: "")?.apply {
             if (window.size < 2) return null

@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings
 
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LATEX_WARNING_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.LINE_REGEX
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.REFERENCE_REGEX
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
 
 /**
  * Reference `<key>' on page <number> undefined (p927 LaTeX Companion).
@@ -14,6 +14,7 @@ object LatexReferenceCitationWarningHandler : LatexMessageHandler(
     LatexLogMessageType.WARNING,
     """^$LATEX_WARNING_REGEX (?<ref>Reference|Citation) $REFERENCE_REGEX on page \d+ undefined $LINE_REGEX$""".toRegex()
 ) {
+
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
         regex.first().find(text)?.apply {
             val ref = groups["ref"]?.value

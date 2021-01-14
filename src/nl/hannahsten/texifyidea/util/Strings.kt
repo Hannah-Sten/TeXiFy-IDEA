@@ -213,3 +213,8 @@ fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
 
 /** Shrink textrange with the given amount at both sides. */
 fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))
+
+/**
+ * Appends a line separator.
+ */
+fun StringBuilder.newline() = append("\n")!!

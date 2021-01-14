@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.util.files.commandsInFile
 import org.jetbrains.annotations.Nls
 
 class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup
         get() = InsightGroup.LATEX
 

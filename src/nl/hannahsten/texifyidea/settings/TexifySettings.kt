@@ -14,12 +14,14 @@ import nl.hannahsten.texifyidea.run.linuxpdfviewer.InternalPdfViewer
 class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     companion object {
+
         @JvmStatic
         fun getInstance(): TexifySettings = ServiceManager.getService(TexifySettings::class.java)
     }
 
     // Options for smart quote replacement, in the order as they appear in the combobox
     enum class QuoteReplacement {
+
         NONE,
         LIGATURES,
         COMMANDS,

@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
  * Select all of the LatexCommands, so including the backslash.
  */
 class LatexCommandSelectioner : ExtendWordSelectionHandlerBase() {
+
     override fun canSelect(e: PsiElement): Boolean {
         return !CommandSelectionFilter().value(e)
     }

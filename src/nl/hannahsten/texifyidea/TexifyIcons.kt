@@ -10,6 +10,7 @@ import javax.swing.Icon
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object TexifyIcons {
+
     /**
      * Copyright (c) 2017 Hannah Schellekens
      */

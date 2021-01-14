@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
+
     fun `test illegal unicode character`() {
         setUnicodeSupport(false)
 
@@ -31,6 +32,7 @@ class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
 }
 
 class InsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
+
     fun `test without support`() {
         setUnicodeSupport(false)
 
@@ -56,6 +58,7 @@ class InsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
 }
 
 class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
+
     fun `test include packages quick fix`() {
         setUnicodeSupport(false)
 
@@ -101,5 +104,6 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
 }
 
 abstract class LatexUnicodeInspectionTest : TexifyInspectionTestBase(LatexUnicodeInspection()) {
+
     fun setUnicodeSupport(enabled: Boolean = true) = nl.hannahsten.texifyidea.testutils.setUnicodeSupport(myFixture.project, enabled)
 }

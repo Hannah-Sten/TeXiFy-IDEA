@@ -5,12 +5,9 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.ARRAY
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.LONGTABLE
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABU
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULARX
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR_STAR
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
+import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexMathCommand.*
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
@@ -26,6 +23,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.PDFCOMMENT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
+import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import org.intellij.lang.annotations.Language
 import java.awt.Color
@@ -438,12 +436,13 @@ object Magic {
 
         /**
          * All math operators without a leading slash.
+         *
+         * Reference [Unofficial LaTeX2e reference manual](https://latexref.xyz/Math-functions.html)
          */
         @JvmField
-        val slashlessMathOperators = hashSetOf(
-            "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
-            "deg", "det", "dim", "exp", "gcd", "hom", "inf", "ker", "lg", "lim", "liminf", "limsup",
-            "ln", "log", "max", "min", "Pr", "sec", "sin", "sinh", "sup", "tan", "tanh"
+        val slashlessMathOperators: Set<LatexCommand> = hashSetOf(
+            ARCCOS, ARCSIN, ARCTAN, ARG, BMOD, COS, COSH, COT, COTH, CSC, DEG, DET, DIM, EXP, GCD, HOM, INF,
+            KER, LG, LIM, LIMINF, LIMSUP, LN, LOG, MAX, MIN, PMOD, CAPITAL_PR, SEC, SIN, SINH, SUP, TAN, TANH,
         )
 
         /**
@@ -552,7 +551,7 @@ object Magic {
             "\\" + INCLUDE.command to listOf(".tex"),
             "\\" + SUBFILEINCLUDE.command to listOf(".tex"),
             "\\" + BIBLIOGRAPHY.command to listOf(".bib"),
-            "\\" + INCLUDEGRAPHICS.command to listOf(".eps", ".pdf", ".png", ".jpeg", ".jbig2", ".jp2"), // https://tex.stackexchange.com/a/1075/98850
+            "\\" + INCLUDEGRAPHICS.command to File.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
         )
 
         /**
@@ -849,6 +848,11 @@ object Magic {
          * Extensions of files required by bib2gls
          */
         val bib2glsDependenciesExtensions = setOf("aux", "glg", "log")
+
+        /**
+         * All extensions for graphic files.
+         */
+        val graphicFileExtensions = setOf("eps", "pdf", "png", "jpeg", "jpg", "jbig2", "jp2")
     }
 
     /**
@@ -941,11 +945,12 @@ object Magic {
     }
 
     object Colors {
+
         /**
          * All commands that have a color as an argument.
          */
         @JvmField
-        val takeColorCommands = values()
+        val takeColorCommands = LatexRegularCommand.values()
             .filter {
                 it.arguments.map { it.name }.contains("color")
             }
@@ -955,7 +960,7 @@ object Magic {
          * All commands that define a new color.
          */
         @JvmField
-        val colorDefinitions = values()
+        val colorDefinitions = LatexRegularCommand.values()
             .filter { it.dependency == XCOLOR }
             .filter { it.arguments.map { it.name }.contains("name") }
 

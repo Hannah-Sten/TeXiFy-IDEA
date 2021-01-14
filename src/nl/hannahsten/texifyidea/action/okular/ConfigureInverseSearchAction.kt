@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.ui.OkularConfigureInverseSearchDialog
  * @author Abby Berkers
  */
 class ConfigureInverseSearchAction : AnAction() {
+
     override fun actionPerformed(e: AnActionEvent) {
         OkularConfigureInverseSearchDialog()
     }
