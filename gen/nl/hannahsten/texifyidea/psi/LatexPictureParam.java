@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LatexKeyvalContent extends PsiElement {
+public interface LatexPictureParam extends PsiElement {
 
-  @Nullable
-  LatexParameterGroup getParameterGroup();
-
-  @Nullable
-  LatexParameterText getParameterText();
+  @NotNull
+  List<LatexPictureParamContent> getPictureParamContentList();
 
 }

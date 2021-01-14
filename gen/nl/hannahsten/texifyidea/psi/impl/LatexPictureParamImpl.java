@@ -11,14 +11,14 @@ import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import nl.hannahsten.texifyidea.psi.*;
 
-public class LatexParameterGroupImpl extends ASTWrapperPsiElement implements LatexParameterGroup {
+public class LatexPictureParamImpl extends ASTWrapperPsiElement implements LatexPictureParam {
 
-  public LatexParameterGroupImpl(@NotNull ASTNode node) {
+  public LatexPictureParamImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull LatexVisitor visitor) {
-    visitor.visitParameterGroup(this);
+    visitor.visitPictureParam(this);
   }
 
   @Override
@@ -28,9 +28,9 @@ public class LatexParameterGroupImpl extends ASTWrapperPsiElement implements Lat
   }
 
   @Override
-  @Nullable
-  public LatexParameterGroupText getParameterGroupText() {
-    return PsiTreeUtil.getChildOfType(this, LatexParameterGroupText.class);
+  @NotNull
+  public List<LatexPictureParamContent> getPictureParamContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexPictureParamContent.class);
   }
 
 }

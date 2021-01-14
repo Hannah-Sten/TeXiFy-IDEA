@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StringStubIndexExtension
+import nl.hannahsten.texifyidea.LatexParserDefinition
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 
 /**
@@ -13,4 +14,6 @@ class LatexParameterLabeledEnvironmentsIndex : StringStubIndexExtension<LatexEnv
 
     @Suppress("RedundantCompanionReference")
     override fun getKey() = Companion.key()
+
+    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
 }
