@@ -54,7 +54,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
             "-:" to Pattern("""-:""", "\\eqcolon"),
             "-::" to Pattern("""-::""", "\\Eqcolon"),
             ":\\approx" to Pattern(""":\\approx(?![a-zA-Z])""", "\\colonapprox"),
-            "::\\approx" to Pattern("""::\\approx(?![[a-zA-Z])""", "\\Colonapprox"),
+            "::\\approx" to Pattern("""::\\approx(?![a-zA-Z])""", "\\Colonapprox"),
             ":\\sim" to Pattern(""":\\sim(?![a-zA-Z])""", "\\colonsim"),
             "::\\sim" to Pattern("""::\\sim(?![a-zA-Z])""", "\\Colonsim"),
             "::" to Pattern("""::""", "\\dblcolon"),
