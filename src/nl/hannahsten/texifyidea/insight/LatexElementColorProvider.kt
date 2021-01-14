@@ -89,7 +89,6 @@ object LatexElementColorProvider : ElementColorProvider {
         var currentColor = colors.first()
         for ((i, color) in colors.withIndex()) {
             if (i > 0 && i - 1 in numbers.indices) currentColor = mix(currentColor, color, numbers[i - 1])
-                ?: return null
         }
         return currentColor
     }

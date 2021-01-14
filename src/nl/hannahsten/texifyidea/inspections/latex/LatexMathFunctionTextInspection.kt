@@ -11,10 +11,10 @@ import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.inMathContext
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
 
 /**
@@ -65,7 +65,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
 
     companion object {
 
-        private val AFFECTED_COMMANDS = Magic.Command.slashlessMathOperators.asSequence()
+        private val AFFECTED_COMMANDS = CommandMagic.slashlessMathOperators.asSequence()
                 .map { it.command }
                 .toSet()
     }

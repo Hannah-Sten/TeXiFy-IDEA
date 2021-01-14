@@ -152,12 +152,13 @@ object CommandMagic {
 
     /**
      * All math operators without a leading slash.
+     *
+     * Reference [Unofficial LaTeX2e reference manual](https://latexref.xyz/Math-functions.html)
      */
     @JvmField
     val slashlessMathOperators = hashSetOf(
-        "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
-        "deg", "det", "dim", "exp", "gcd", "hom", "inf", "ker", "lg", "lim", "liminf", "limsup",
-        "ln", "log", "max", "min", "Pr", "sec", "sin", "sinh", "sup", "tan", "tanh"
+        ARCCOS, ARCSIN, ARCTAN, ARG, BMOD, COS, COSH, COT, COTH, CSC, DEG, DET, DIM, EXP, GCD, HOM, INF,
+        KER, LG, LIM, LIMINF, LIMSUP, LN, LOG, MAX, MIN, PMOD, CAPITAL_PR, SEC, SIN, SINH, SUP, TAN, TANH,
     )
 
     /**

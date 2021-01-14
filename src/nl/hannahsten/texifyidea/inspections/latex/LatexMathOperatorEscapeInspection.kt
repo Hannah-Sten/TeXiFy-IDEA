@@ -91,7 +91,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
 
     companion object {
 
-        private val SLASHLESS_MATH_OPERATORS = Magic.Command.slashlessMathOperators.asSequence()
+        private val SLASHLESS_MATH_OPERATORS = CommandMagic.slashlessMathOperators.asSequence()
                 .map { it.command }
                 .toSet()
     }
