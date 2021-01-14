@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LATEXSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.WASYSYM
 
 /**
  * @author Sten Wessel
@@ -501,6 +502,7 @@ enum class LatexMathCommand(
     IMATH("imath", display = "ı", collapse = true),
     INF("inf"),
     INVERSE_F("Finv", dependency = AMSSYMB, display = "Ⅎ", collapse = true),
+    INVNEG("invneg", dependency = WASYSYM),
     JMATH("jmath", display = "ȷ", collapse = true),
     KER("ker"),
     LDOTP("ldotp"),
@@ -511,6 +513,7 @@ enum class LatexMathCommand(
     LIMSUP("limsup"),
     LN("ln"),
     LOG("log"),
+    LOGOF("logof", dependency = WASYSYM, display = "⍟", collapse = true),
     LOWER_LEFT_CORNER("llcorner", dependency = AMSSYMB, display = "⌞", collapse = true),
     LOWER_RIGHT_CORNER("lrcorner", dependency = AMSSYMB, display = "⌟", collapse = true),
     LOZENGE("lozenge", dependency = AMSSYMB, display = "⬨", collapse = true),
@@ -534,6 +537,7 @@ enum class LatexMathCommand(
     MIN("min"),
     NATURAL("natural", display = "♮", collapse = true),
     NEG("neg", display = "¬", collapse = true),
+    OCIRCLE("ocircle", dependency = WASYSYM, display = "◯", collapse = true),
     OPEN_BRACE("{", display = "{"),
     OVERBRACE("overbrace", "text".asRequired()),
     OVERLEFTARROW("overleftarrow", "text".asRequired()),
@@ -579,6 +583,7 @@ enum class LatexMathCommand(
     VEC("vec", "a".asRequired()),
     VEE("vee", display = "⋁", collapse = true),
     VERTICAL_ARROW("arrowvert"),
+    WASYPROPTO("wasypropto", dependency = WASYSYM, display = "∝", collapse = true),
     WEDGE("wedge", display = "⋀", collapse = true),
     WIDEHAT("widehat", "text".asRequired()),
     WIDETILDE("widetilde", "text".asRequired()),
