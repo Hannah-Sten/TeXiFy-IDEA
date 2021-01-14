@@ -30,7 +30,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
     mathMode = true,
     replacement = this::replacement,
     replacementRange = { it.groupRange(0) },
-    quickFixName = { "Change to ${PATTERNS[it.group(0)]} (mathtools)" },
+    quickFixName = { "Change to ${PATTERNS[it.group(0)]!!.command} (mathtools)" },
     cancelIf = { _, file ->
         // Per mathtools documentation, colons are automatically centered when this option is set.
         // It is impossible to determine whether this option is actually set (think scoping, but this option can also be
