@@ -16,6 +16,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
  * See the [Intellij Forum](https://intellij-support.jetbrains.com/hc/en-us/community/posts/360009392960/comments/360001899860).
  */
 class BuiltInPdfViewer : ExternalPdfViewer {
+
     override val displayName: String = "Built-in PDF Viewer"
     override val name: String = displayName.capitalize().replace(" ", "")
 

@@ -15,6 +15,7 @@ private val EP_NAME = ExtensionPointName<ExternalPdfViewer>("nl.rubensten.texify
  * Interface that defines a pdf viewer so we can use both [InternalPdfViewer]s and [ExternalPdfViewer]s interchangeably.
  */
 interface PdfViewer {
+
     val name: String?
     val displayName: String?
 }
@@ -23,6 +24,7 @@ interface PdfViewer {
  * Define behaviour that external pdf viewers should inherit.
  */
 interface ExternalPdfViewer : PdfViewer {
+
     fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean)
 }
 
@@ -30,5 +32,6 @@ interface ExternalPdfViewer : PdfViewer {
  * Define functions that handle all external pdf viewers one by one.
  */
 object ExternalPdfViewers {
+
     fun getExternalPdfViewers(): List<ExternalPdfViewer> = EP_NAME.extensionList
 }

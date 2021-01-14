@@ -62,6 +62,7 @@ enum class InternalPdfViewer(
     override fun toString(): String = displayName
 
     companion object {
+
         private val availability: Map<InternalPdfViewer, Boolean> by lazy {
 
             values().associateWith {
