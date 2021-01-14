@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.ui.tablecreationdialog
+package nl.hannahsten.texifyidea.action.wizard.table
 
 import java.util.*
 import javax.swing.table.DefaultTableModel
@@ -6,7 +6,11 @@ import javax.swing.table.DefaultTableModel
 /**
  * @author Abby Berkers
  */
-class TableCreationTableModel : DefaultTableModel() {
+class TableCreationTableModel : DefaultTableModel {
+
+    constructor(data: Vector<Vector<Any?>>, columnNames: Vector<String>) : super(data, columnNames)
+
+    constructor() : this(Vector(), Vector())
 
     /**
      * Remove a column and its header from the table.
@@ -35,7 +39,7 @@ class TableCreationTableModel : DefaultTableModel() {
      * Adds an empty row to the table.
      */
     fun addEmptyRow() {
-        val emptyRow = (0 until columnCount).map { "" }.toTypedArray()
+        val emptyRow = Array(columnCount) { "" }
         addRow(emptyRow)
     }
 
