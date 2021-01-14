@@ -206,14 +206,29 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // <<injection_env_content raw_text>> | content
+  // <<injection_env_content raw_text>> | no_math_content+
   public static boolean environment_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "environment_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENVIRONMENT_CONTENT, "<environment content>");
     r = injection_env_content(b, l + 1, LatexParser::raw_text);
-    if (!r) r = content(b, l + 1);
+    if (!r) r = environment_content_1(b, l + 1);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // no_math_content+
+  private static boolean environment_content_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "environment_content_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = no_math_content(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!no_math_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "environment_content_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -618,14 +633,13 @@ public class LatexParser implements PsiParser, LightPsiParser {
   public static boolean picture_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "picture_param")) return false;
     if (!nextTokenIs(b, OPEN_PAREN)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, PICTURE_PARAM, null);
+    boolean r;
+    Marker m = enter_section_(b);
     r = consumeToken(b, OPEN_PAREN);
-    p = r; // pin = 1
-    r = r && report_error_(b, picture_param_1(b, l + 1));
-    r = p && consumeToken(b, CLOSE_PAREN) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
+    r = r && picture_param_1(b, l + 1);
+    r = r && consumeToken(b, CLOSE_PAREN);
+    exit_section_(b, m, PICTURE_PARAM, r);
+    return r;
   }
 
   // picture_param_content*

@@ -36,11 +36,4 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
         <error descr="No matching \if-command found">\fi</error>
         """.trimIndent()
     )
-
-    fun `test fake custom if-like command`() = testHighlighting(
-        """
-        \newcommand{\iflam}{if something}
-        \iflam
-        """.trimIndent()
-    )
 }

@@ -77,7 +77,9 @@ environment ::= begin_command environment_content? end_command {
     methods=[getEnvironmentName getLabel isValidHost updateText createLiteralTextEscaper]
  }
 
-environment_content ::= <<injection_env_content raw_text>> | content
+// There cannot be empty content in an environment, because it will break formatting related things
+// because there would be an empty content just before \end{env}
+environment_content ::= <<injection_env_content raw_text>> | no_math_content+
 
 pseudocode_block ::= BEGIN_PSEUDOCODE_BLOCK parameter* pseudocode_block_content? (MIDDLE_PSEUDOCODE_BLOCK pseudocode_block_content?)* (END_PSEUDOCODE_BLOCK parameter*) { pin=5 }
 
@@ -112,7 +114,7 @@ optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)*) | optional
 
 required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 
-picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=1 }
+picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }
 
 // These are like content, but no brackets and with parameter_text instead of normal_text
 // We have to separate optional and required parameter content, because required parameter content

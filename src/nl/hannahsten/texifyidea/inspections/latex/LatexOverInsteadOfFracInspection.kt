@@ -11,10 +11,11 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexMathContent
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getNextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parentOfType
 import org.jetbrains.annotations.Nls
 import java.util.*
 
@@ -74,10 +75,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
             val element = descriptor.psiElement as? LatexCommands ?: return
 
             // Find elements to put in numerator and denominator.
-            var content = element.parent.parent
-            if (content is LatexMathContent) {
-                content = element.parent
-            }
+            val content = element.parentOfType(LatexNoMathContent::class)
             val previous = getPreviousSiblingIgnoreWhitespace(content!!)
             val next = getNextSiblingIgnoreWhitespace(content)
             val before = previous?.text ?: ""

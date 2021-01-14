@@ -11,10 +11,11 @@ import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexMathContent
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getNextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.deleteElement
+import nl.hannahsten.texifyidea.util.parentOfType
 import org.jetbrains.annotations.Nls
 import kotlin.reflect.jvm.internal.impl.utils.SmartList
 
@@ -78,10 +79,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
             if (cmdIndex < 0) {
                 return
             }
-            var content = element.parent.parent
-            if (content is LatexMathContent) {
-                content = element.parent
-            }
+            val content = element.parentOfType(LatexNoMathContent::class)
             val next = getNextSiblingIgnoreWhitespace(content!!)
             val after = if (next == null) "" else next.text
             val replacement =

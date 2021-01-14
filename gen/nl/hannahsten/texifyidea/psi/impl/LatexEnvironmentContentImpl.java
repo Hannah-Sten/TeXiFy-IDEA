@@ -28,9 +28,9 @@ public class LatexEnvironmentContentImpl extends ASTWrapperPsiElement implements
   }
 
   @Override
-  @Nullable
-  public LatexContent getContent() {
-    return PsiTreeUtil.getChildOfType(this, LatexContent.class);
+  @NotNull
+  public List<LatexNoMathContent> getNoMathContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, LatexNoMathContent.class);
   }
 
 }
