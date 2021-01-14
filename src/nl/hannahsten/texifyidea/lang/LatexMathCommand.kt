@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LATEXSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.STMARYRD
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.WASYSYM
 
 /**
@@ -295,6 +296,12 @@ enum class LatexMathCommand(
     RISING_DOTS_EQUALS("risingdotseq", dependency = AMSSYMB, display = "≓", collapse = true),
     FALLING_DOTS_EQUALS("fallingdotseq", dependency = AMSSYMB, display = "≒", collapse = true),
     DOT_EQUALS("doteq", dependency = AMSSYMB),
+    SUBSET_PLUS("subsetplus", dependency = STMARYRD),
+    SUBSET_PLUS_EQUALS("subsetpluseq", dependency = STMARYRD),
+    SUPSET_PLUS("supsetplus", dependency = STMARYRD),
+    SUPSET_PLUS_EQUALS("supsetpluseq", dependency = STMARYRD),
+    IN_PLUS("inplus", dependency = STMARYRD),
+    NI_PLUS("niplus", dependency = STMARYRD),
 
     /*
      * Mathtools Coloneq
@@ -342,6 +349,18 @@ enum class LatexMathCommand(
     RIGHT_VERT("rvert", dependency = AMSMATH),
     LEFT_DOUBLE_VERT("lVert", dependency = AMSMATH),
     RIGHT_DOUBLE_VERT("rVert", dependency = AMSMATH),
+    LEFT_BAG("lbag", display = "⟅", dependency = STMARYRD),
+    RIGHT_BAG("rbag", display = "⟆", dependency = STMARYRD),
+    LEFT_BAG_BOLD("Lbag", display = "⟅", dependency = STMARYRD),
+    RIGHT_BAG_BOLD("Rbag", display = "⟆", dependency = STMARYRD),
+    LEFT_BRACKET_BOLD("llbracket", display = "⟦", dependency = STMARYRD),
+    RIGHT_BRACKET_BOLD("rrbracket", display = "⟧", dependency = STMARYRD),
+    LEFT_CEIL_BOLD("llceil"),
+    RIGHT_CEIL_BOLD("rrceil"),
+    LEFT_FLOOR_BOLD("llfloor"),
+    RIGHT_FLOOR_BOLD("rrfloor"),
+    LEFT_PARENTHESIS_BOLD("llparenthesis", display = "⦅", dependency = STMARYRD),
+    RIGHT_PARENTHESIS_BOLD("rrparenthesis", display = "⦆", dependency = STMARYRD),
 
     /*
      *  Arrows
@@ -413,6 +432,30 @@ enum class LatexMathCommand(
     NR_IGHTARROW("nRightarrow", dependency = AMSSYMB, display = "⇏", collapse = true),
     NLEFTRIGHTARROW("nleftrightarrow", dependency = AMSSYMB, display = "↮", collapse = true),
     NL_EFTRIGHTARROW("nLeftrightarrow", dependency = AMSSYMB, display = "⇎", collapse = true),
+    TRIANGLE_LEFT_EQUALS_SLANT("trianglelefteqslant", dependency = STMARYRD),
+    TRIANGLE_RIGHT_EQUALS_SLANT("trianglerighteqslant", dependency = STMARYRD),
+    NOT_TRIANGLE_LEFT_EQUALS_SLANT("ntrianglelefteqslant", dependency = STMARYRD),
+    NOT_TRIANGLE_RIGHT_SLANT("ntrianglerighteqslant", dependency = STMARYRD),
+
+    LLONGMAPSFROM("Longmapsfrom", dependency = STMARYRD, display = "⟽", collapse = true),
+    LLONGMAPSTO("Longmapsto", dependency = STMARYRD, display = "⟾", collapse = true),
+    MMAPSFROM("Mapsfrom", dependency = STMARYRD, display = "⤆", collapse = true),
+    MMAPSTO("Mapsto", dependency = STMARYRD, display = "⤇", collapse = true),
+    LEFTARROWTRIANGLE("leftarrowtriangle", dependency = STMARYRD, display = "⇽", collapse = true),
+    RIGHTARROWTRIANGLE("rightarrowtriangle", dependency = STMARYRD, display = "⇾", collapse = true),
+    LEFTRIGHTARROWEQ("leftrightarroweq", dependency = STMARYRD),
+    LEFTRIGHTARROWTRIANGLE("leftrightarrowtriangle", dependency = STMARYRD, display = "⇿", collapse = true),
+    LIGHTNING("lightning", dependency = STMARYRD, display = "☇", collapse = true),
+    LONGMAPSFROM("longmapsfrom", dependency = STMARYRD, display = "⟻", collapse = true),
+    MAPSFROM("mapsfrom", dependency = STMARYRD, display = "↤", collapse = true),
+    NNEARROW("nnearrow", dependency = STMARYRD, display = "↗", collapse = true),
+    NNWARROW("nnwarrow", dependency = STMARYRD, display = "↖", collapse = true),
+    SSEARROW("ssearrow", dependency = STMARYRD, display = "↘", collapse = true),
+    SSWARROW("sswarrow", dependency = STMARYRD, display = "↙", collapse = true),
+    SHORTLEFTARROW("shortleftarrow", dependency = STMARYRD, display = "←", collapse = true),
+    SHORTUPARROW("shortuparrow", dependency = STMARYRD, display = "↑", collapse = true),
+    SHORTRIGHTARROW("shortrightarrow", dependency = STMARYRD, display = "→", collapse = true),
+    SHORTDOWNARROW("shortdownarrow", dependency = STMARYRD, display = "↓", collapse = true),
 
     /*
      *  Generic commands
@@ -599,6 +642,74 @@ enum class LatexMathCommand(
     WP("wp", display = "℘", collapse = true),
     XLEFTARROW("xleftarrow", "text".asRequired(), dependency = AMSMATH),
     XRIGHTARROW("xrightarrow", "text".asRequired(), dependency = AMSMATH),
+
+    /*
+     * Uncategorized stmaryrd symbols.
+     */
+    YLEFT("Yleft", dependency = STMARYRD),
+    YUP("Yup", dependency = STMARYRD),
+    YRIGHT("Yright", dependency = STMARYRD),
+    YDOWN("Ydown", dependency = STMARYRD),
+    BINAMPERSAND("binampersand", dependency = STMARYRD, display = "&", collapse = true),
+    BINDNASREPMA("bindnasrepma", dependency = STMARYRD),
+    BARO("baro", dependency = STMARYRD, display = "⏀", collapse = true),
+    BOXBAR("boxbar", dependency = STMARYRD),
+    BOXCIRCLE("boxcircle", dependency = STMARYRD),
+    BOXBOX("boxbox", dependency = STMARYRD),
+    BOXDOT("boxdot", dependency = STMARYRD),
+    BOXAST("boxast", dependency = STMARYRD),
+    BOXBSLASH("boxbslash", dependency = STMARYRD),
+    BOXEMPTY("boxempty", dependency = STMARYRD, display = "◻", collapse = true),
+    BOXSLASH("boxslash", dependency = STMARYRD),
+    BIGBOX("bigbox", dependency = STMARYRD),
+    VARCURLYVEE("varcurlyvee", dependency = STMARYRD),
+    BIGCURLYVEE("bigcurlyvee", dependency = STMARYRD),
+    VARCURLYWEDGE("varcurlywedge", dependency = STMARYRD),
+    BIGCURLYWEDGE("bigcurlywedge", dependency = STMARYRD),
+    CURLYVEEDOWNARROW("curlyveedownarrow", dependency = STMARYRD),
+    CURLYVEEUPARROW("curlyveeuparrow", dependency = STMARYRD),
+    CURLYWEDGEDOWNARROW("curlywedgedownarrow", dependency = STMARYRD),
+    CURLYWEDGEUPARROW("curlywedgeuparrow", dependency = STMARYRD),
+    BBSLASH("bbslash", dependency = STMARYRD, display = "⑊", collapse = true),
+    SSLASH("sslash", dependency = STMARYRD, display = "⃫", collapse = true),
+    FATBSLASH("fatbslash", dependency = STMARYRD),
+    FATSLASH("fatslash", dependency = STMARYRD),
+    FATSEMI("fatsemi", dependency = STMARYRD),
+    BIGPARALLEL("bigparallel", dependency = STMARYRD, display = "∥", collapse = true),
+    INTERLEAVE("interleave", dependency = STMARYRD, display = "⫴", collapse = true),
+    BIGINTERLEAVE("biginterleave", dependency = STMARYRD, display = "⫴", collapse = true),
+    TALLOBLONG("talloblong", dependency = STMARYRD, display = "▯", collapse = true),
+    LEFTSLICE("leftslice", dependency = STMARYRD),
+    RIGHTSLICE("rightslice", dependency = STMARYRD),
+    MERGE("merge", dependency = STMARYRD),
+    MOO("moo", dependency = STMARYRD),
+    NPLUS("nplus", dependency = STMARYRD),
+    BIGNPLUS("bignplus", dependency = STMARYRD),
+    MINUSO("minuso", dependency = STMARYRD, display = "⦵", collapse = true),
+    OBAR("obar", dependency = STMARYRD, display = "⊖", collapse = true),
+    OBLONG("oblong", dependency = STMARYRD, display = "▯", collapse = true),
+    OBSLASH("obslash", dependency = STMARYRD, display = "⃠", collapse = true),
+    OGREATERTHAN("ogreaterthan", dependency = STMARYRD, display = "⧁", collapse = true),
+    OLESSTHAN("olessthan", dependency = STMARYRD, display = "⧀", collapse = true),
+    OVEE("ovee", dependency = STMARYRD),
+    OWEDGE("owedge", dependency = STMARYRD),
+    VARBIGCIRC("varbigcirc", dependency = STMARYRD, display = "◯", collapse = true),
+    VAROAST("varoast", dependency = STMARYRD, display = "⊛", collapse = true),
+    VAROBAR("varobar", dependency = STMARYRD, display = "⦶", collapse = true),
+    VAROBSLASH("varobslash", dependency = STMARYRD, display = "⦸", collapse = true),
+    VAROCIRCLE("varocircle", dependency = STMARYRD, display = "⦾", collapse = true),
+    VARODOT("varodot", dependency = STMARYRD, display = "⨀", collapse = true),
+    VAROGREATERTHAN("varogreaterthan", dependency = STMARYRD, display = "⧁", collapse = true),
+    VAROLESSTHAN("varolessthan", dependency = STMARYRD, display = "⧀", collapse = true),
+    VAROMINUS("varominus", dependency = STMARYRD, display = "⊖", collapse = true),
+    VAROPLUS("varoplus", dependency = STMARYRD, display = "⊕", collapse = true),
+    VAROSLASH("varoslash", dependency = STMARYRD, display = "⊘", collapse = true),
+    VAROTIMES("varotimes", dependency = STMARYRD, display = "⊗", collapse = true),
+    VAROVEE("varovee", dependency = STMARYRD),
+    VAROWEDGE("varowedge", dependency = STMARYRD),
+    VARTIMES("vartimes", dependency = STMARYRD, display = "⨉", collapse = true),
+    BIGSQCAP("bigsqcap", dependency = STMARYRD, display = "⊓", collapse = true),
+    BIGTRANGLEDOWN("bigtrangledown", dependency = STMARYRD, display = "▽", collapse = true),
     ;
 
     companion object {
