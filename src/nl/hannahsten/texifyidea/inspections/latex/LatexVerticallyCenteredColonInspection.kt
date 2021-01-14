@@ -28,7 +28,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     pattern = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern(),
     mathMode = true,
-    replacement =  this::replacement,
+    replacement = this::replacement,
     replacementRange = { it.groupRange(0) },
     quickFixName = { "Change to ${PATTERNS[it.group(0)]} (mathtools)" },
     cancelIf = { _, file ->
@@ -43,6 +43,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
     private data class Pattern(val regex: String, val command: String)
 
     companion object {
+
         private val PATTERNS = mapOf(
             ":=" to Pattern(""":=""", "\\coloneqq"),
             "::=" to Pattern("""::=""", "\\Coloneqq"),
