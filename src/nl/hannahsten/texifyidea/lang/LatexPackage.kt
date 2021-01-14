@@ -24,6 +24,7 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val COMMENT = LatexPackage("comment")
         @JvmField val CLEVEREF = LatexPackage("cleveref")
         @JvmField val CSQUOTES = LatexPackage("csquotes")
+        @JvmField val EUROSYM = LatexPackage("eurosym")
         @JvmField val FLOAT = LatexPackage("float")
         @JvmField val FONTENC = LatexPackage("fontenc")
         @JvmField val GAUSS = LatexPackage("gauss")
@@ -38,6 +39,7 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val LATEXSYMB = LatexPackage("latexsymb")
         @JvmField val LISTINGS = LatexPackage("listings")
         @JvmField val LUACODE = LatexPackage("luacode")
+        @JvmField val MARVOSYM = LatexPackage("marvosym")
         @JvmField val MATHABX = LatexPackage("mathabx")
         @JvmField val MATHTOOLS = LatexPackage("mathtools")
         @JvmField val NATBIB = LatexPackage("natbib")
@@ -48,6 +50,7 @@ open class LatexPackage @JvmOverloads constructor(
         @JvmField val TEXTCOMP = LatexPackage("textcomp")
         @JvmField val TIKZ = LatexPackage("tikz")
         @JvmField val ULEM = LatexPackage("ulem")
+        @JvmField val WASYSYM = LatexPackage("wasysym")
         @JvmField val XCOLOR = LatexPackage("xcolor")
         @JvmField val XPARSE = LatexPackage("xparse")
     }

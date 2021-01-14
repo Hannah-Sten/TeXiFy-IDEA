@@ -3,30 +3,34 @@ package nl.hannahsten.texifyidea.lang
 import nl.hannahsten.texifyidea.lang.Argument.Type
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGPSEUDOCODE
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CSQUOTES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.EUROSYM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.FONTENC
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GLOSSARIES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LISTINGS
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MARVOSYM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SIUNITX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.TEXTCOMP
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.WASYSYM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
 
 /**
  * @author Sten Wessel
  */
 enum class LatexRegularCommand(
-    override val command: String,
-    override vararg val arguments: Argument = emptyArray(),
-    override val dependency: LatexPackage = DEFAULT,
-    override val display: String? = null
+        override val command: String,
+        override vararg val arguments: Argument = emptyArray(),
+        override val dependency: LatexPackage = DEFAULT,
+        override val display: String? = null
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
@@ -71,11 +75,14 @@ enum class LatexRegularCommand(
     CONVERTCOLORSPEC("convertcolorspec", "model".asRequired(), "spec".asRequired(), "target model".asRequired(), "cmd".asRequired(), dependency = XCOLOR),
     CREF("cref", "label".asRequired(), dependency = CLEVEREF),
     CREF_CAPITAL("Cref", "label".asRequired(), dependency = CLEVEREF),
+    DAG("dag", display = "†"),
+    DDAG("dag", display = "‡"),
     DATE("date", "text".asRequired(Type.TEXT)),
     DECLARE_MATH_OPERATOR("DeclareMathOperator", "command".asRequired(), "operator".asRequired(Type.TEXT), dependency = AMSMATH),
     DEF("def"),
     DIRECTLUA("directlua", "luacode".asRequired()),
     DOCUMENTCLASS("documentclass", "options".asOptional(), RequiredFileArgument("class", true, false, "cls")),
+    DOLLAR_SIGN("$", display = "$"),
     DOTFILL("dotfill"),
     EM("em"),
     EMPH("emph", "text".asRequired(Type.TEXT)),
@@ -200,6 +207,7 @@ enum class LatexRegularCommand(
     NORMALFONT("normalfont"),
     NORMALSIZE("normalsize"),
     OE("oe", display = "œ"),
+    OLDSTYLEENUMS("oldstylenums", "number".asRequired()),
     ONLYIFSTANDALONE("onlyifstandalone", "code".asRequired()), // dependency = standalone, but either class or package
     CAPITAL_OE("OE", display = "Œ"),
     ODDSIDEMARGIN("oddsidemargin"),
@@ -255,6 +263,7 @@ enum class LatexRegularCommand(
     SCSHAPE("scshape"),
     SECTION("section", "shorttitle".asOptional(Type.TEXT), "title".asRequired(Type.TEXT)),
     SECTION_STAR("section*", "title".asRequired(Type.TEXT)),
+    SECTION_SIGN("S", display = "§"),
     SELECTFONT("selectfont"),
     SETCOUNTER("setcounter", "countername".asRequired(), "value".asRequired()),
     SETLENGTH("setlength", "cmd".asRequired(), "length".asRequired()),
@@ -301,7 +310,7 @@ enum class LatexRegularCommand(
     TEXTBRACELEFT("textbraceleft", display = "{"),
     TEXTBRACERIGHT("textbraceright", display = "}"),
     TEXTBULLET("textbullet", display = "•"),
-    TEXTCIRCLED("textcircled", "text".asRequired()),
+    TEXTCIRCLED("textcircled", "a".asRequired()),
     TEXTCOLOR("textcolor", "color".asRequired(), "text".asRequired(), dependency = XCOLOR),
     TEXTCOLOR2("textcolor", "model-list".asOptional(), "spec-list".asRequired(), "text".asRequired(), dependency = XCOLOR),
     TEXTCOPYRIGHT("textcopyright", display = "©"),
@@ -317,7 +326,7 @@ enum class LatexRegularCommand(
     TEXTHEIGHT("textheight"),
     TEXTIT("textit", "text".asRequired(Type.TEXT)),
     TEXTLEFTARROW("textleftarrow", dependency = TEXTCOMP, display = "←"),
-    TEXTLESS("textless"),
+    TEXTLESS("textless", display = "<"),
     TEXTLF("textlf", "text".asRequired(Type.TEXT)),
     TEXTMD("textmd", "text".asRequired(Type.TEXT)),
     TEXTNORMAL("textnormal"),
@@ -370,7 +379,115 @@ enum class LatexRegularCommand(
     WIDTH("width"),
     XGLOBAL("xglobal", dependency = XCOLOR),
 
-    /**
+    /*
+     * textcomp definitions
+     */
+    TEXTTILDELOW("texttildelow", dependency = TEXTCOMP, display = "˷"),
+    TEXTASCIIMACRON("textasciimacron", dependency = TEXTCOMP, display = "¯"),
+    TEXTASCIIACUTE("textasciiacute", dependency = TEXTCOMP, display = "´"),
+    TEXTASCIIDIERESIS("textasciidieresis", dependency = TEXTCOMP, display = "¨"),
+    TEXTASCIIGRAVE("textasciigrave", dependency = TEXTCOMP, display = "`"),
+    TEXTASCIIBREVE("textasciibreve", dependency = TEXTCOMP, display = "˘"),
+    TEXTASCIICARON("textasciicaron", dependency = TEXTCOMP, display = "˘"),
+    TEXTACUTEDBL("textacutedbl", dependency = TEXTCOMP, display = "̋"),
+    TEXTGRAVEDBL("textgravedbl", dependency = TEXTCOMP, display = "̏"),
+    TEXTQUOTESTRAIGTBASE("textquotestraightbase", dependency = TEXTCOMP, display = "‚"),
+    TEXTQUOTESTRAIGHTDBLBASE("textquotestraightdblbase", dependency = TEXTCOMP, display = "„"),
+    TEXTQUOTESINGLE("textquotesingle", dependency = TEXTCOMP, display = "‛"),
+    TEXTDBLHYPHEN("textdblhyphen", dependency = TEXTCOMP),
+    TEXTDBLHYPHENCHAR("textdblhyphenchar", dependency = TEXTCOMP),
+    TEXTASTERISKCENTERED_TEXTCOMP("textasteriskcentered", dependency = TEXTCOMP, display = "∗"),
+    TEXTINTERROBANG("textinterrobang", dependency = TEXTCOMP, display = "‽"),
+    TEXTINTERROBANGDOWN("textinterrobangdown", dependency = TEXTCOMP),
+    TEXTTWELVEUDASH("texttwelveudash", dependency = TEXTCOMP, display = "—"),
+    TEXTTHREEQUARTERSEMDASH("textthreequartersemdash", dependency = TEXTCOMP, display = "—"),
+    TEXTCURRENCY("textcurrency", dependency = TEXTCOMP, display = "¤"),
+    TEXTBAHT("textbaht", dependency = TEXTCOMP, display = "฿"),
+    TEXTGUARANI("textguarani", dependency = TEXTCOMP, display = "₲"),
+    TEXTWON("textwon", dependency = TEXTCOMP, display = "₩"),
+    TEXTCENT("textcent", dependency = TEXTCOMP, display = "¢"),
+    TEXTCENTOLDSTYLE("textcentoldstyle", dependency = TEXTCOMP),
+    TEXTDOLLAROLDSTYLE("textdollaroldstyle", dependency = TEXTCOMP),
+    TEXTLIRA("textlira", dependency = TEXTCOMP, display = "₤"),
+    TEXTYEN("textyen", dependency = TEXTCOMP, display = "¥"),
+    TEXTDONG("textdong", dependency = TEXTCOMP, display = "₫"),
+    TEXTNAIRA("textnaira", dependency = TEXTCOMP, display = "₦"),
+    TEXTCOLONMONETARY("textcolonmonetary", dependency = TEXTCOMP, display = "₡"),
+    TEXTPESO("textpeso", dependency = TEXTCOMP, display = "₱"),
+    TEXTFLORIN("textflorin", dependency = TEXTCOMP, display = "ƒ"),
+    TEXTEURO("texteuro", dependency = TEXTCOMP, display = "€"),
+    TEXTCOPYLEFT("textcopyleft", dependency = TEXTCOMP, display = "\uD83C\uDD2F"),
+    TEXTSERVICEMARK("textservicemark", dependency = TEXTCOMP, display = "℠"),
+    TEXTONEHALF("textonehalf", dependency = TEXTCOMP, display = "½"),
+    TEXTONEQUARTER("textonequarter", dependency = TEXTCOMP, display = "¼"),
+    TEXTTHREEQUARTERS("textthreequarters", dependency = TEXTCOMP, display = "¾"),
+    TEXTONESUPERIOR("textonesuperior", dependency = TEXTCOMP, display = "¹"),
+    TEXTTWOSUPERIOR("texttwosuperior", dependency = TEXTCOMP, display = "²"),
+    TEXTTHREESUPERIOR("textthreesuperior", dependency = TEXTCOMP, display = "³"),
+    TEXTNUMERO("textnumero", dependency = TEXTCOMP, display = "№"),
+    TEXTPERTENTHOUSAND("textpertenthousand", dependency = TEXTCOMP, display = "‱"),
+    TEXTPERTHOUSAND("textperthousand", dependency = TEXTCOMP, display = "‰"),
+    TEXTDISCOUNT("textdiscount", dependency = TEXTCOMP, display = "⁒"),
+    TEXTBLANK("textblank", dependency = TEXTCOMP, display = "␢"),
+    TEXTRECIPE("textrecipe", dependency = TEXTCOMP, display = "℞"),
+    TEXTESTIMATED("textestimated", dependency = TEXTCOMP, display = "℮"),
+    TEXTREFERENCEMARK("textreferencemark", dependency = TEXTCOMP, display = "※"),
+    TEXTMUSICALNOTE("textmusicalnote", dependency = TEXTCOMP, display = "♪"),
+    TEXTPILCROW("textpilcrow", dependency = TEXTCOMP, display = "¶"),
+    TEXTBIGCIRCLE("textbigcircle", dependency = TEXTCOMP, display = "○"),
+    TEXTOPENBULLET("textopenbullet", dependency = TEXTCOMP, display = "◦"),
+    TEXTORDMASCULINE("textordmasculine", dependency = TEXTCOMP, display = "º"),
+    TEXTORDFEMININE("xxxxx", dependency = TEXTCOMP, display = "ª"),
+    TEXTBORN("textborn", dependency = TEXTCOMP, display = "★"),
+    TEXTDIVORCED("textdivorced", dependency = TEXTCOMP, display = "⚮"),
+    TEXTDIED("textdied", dependency = TEXTCOMP, display = "✝"),
+    TEXTMARRIED("textmarried", dependency = TEXTCOMP, display = "⚭"),
+    TEXTLEAF("textleaf", dependency = TEXTCOMP),
+    TEXTCELCIUS("textcelcius", dependency = TEXTCOMP, display = "℃"),
+    TEXTDEGREE("textdegree", dependency = TEXTCOMP, display = "°"),
+    TEXT_UPSIDE_DOWN_OHM("textmho", dependency = TEXTCOMP, display = "℧"),
+    TEXTOHM("textohm", dependency = TEXTCOMP, display = "Ω"),
+    TEXTBROKENBAR("textbrokenbar", dependency = TEXTCOMP, display = "¦"),
+    TEXTBARDOUBLE("textbardbl", dependency = TEXTCOMP, display = "‖"),
+    TEXTFRACTIONSOLIDUS("textfractionsolidus", dependency = TEXTCOMP, display = "⁄"),
+    TEXTLANGLE("textlangle", dependency = TEXTCOMP, display = "〈"),
+    TEXTRANGLE("textrangle", dependency = TEXTCOMP, display = "〉"),
+    TEXTLNOT("textlnot", dependency = TEXTCOMP, display = "¬"),
+    TEXTMINUS("textminus", dependency = TEXTCOMP, display = "−"),
+    TEXTLBRACKDBL("textlbrackdbl", dependency = TEXTCOMP, display = "〚"),
+    TEXTRBRACKDBL("textrbrackdbl", dependency = TEXTCOMP, display = "〛"),
+    TEXTMU("textmu", dependency = TEXTCOMP, display = "μ"),
+    TEXTPM("textpm", dependency = TEXTCOMP, display = "±"),
+    TEXTLQUILL("textlquill", dependency = TEXTCOMP, display = "⁅"),
+    TEXTRQUILL("textrquill", dependency = TEXTCOMP, display = "⁆"),
+    TEXTSURD("textsurd", dependency = TEXTCOMP, display = "√"),
+    TEXTTIMES("texttimes", dependency = TEXTCOMP, display = "×"),
+    TEXTDIV("textdiv", dependency = TEXTCOMP, display = "÷"),
+
+    /*
+     * euro symbols
+     */
+    GENEURO("geneuro", dependency = EUROSYM, display = "€"),
+    GENEURONARROW("geneuronarrow", dependency = EUROSYM, display = "€"),
+    GENEUROWIDE("geneurowide", dependency = EUROSYM, display = "€"),
+    OFFICIALEURO("officialeuro", dependency = EUROSYM, display = "€"),
+
+    /*
+     * Other symbols
+     */
+    CUT_LEFT("Cutleft", dependency = MARVOSYM),
+    CUT_RIGHT("Cutright", dependency = MARVOSYM, display = "✁"),
+    LEFT_SCISSORS("Leftscissors", dependency = MARVOSYM),
+    RIGHT_SCISSORS("Rightscissors", dependency = MARVOSYM, display = "✂"),
+    CUT_LINE("Cutline", dependency = MARVOSYM),
+    KUT_LINE("Kutline", dependency = MARVOSYM),
+    CHECKED_BOX("CheckedBox", dependency = WASYSYM, display = "☑"),
+    CAPITAL_SQUARE("Square", dependency = WASYSYM, display = "☐"),
+    CROSSED_BOX("XBox", dependency = WASYSYM, display = "☒"),
+    CHECKMARK("checkmark", dependency = AMSSYMB, display = "✓"),
+    MALTESE("maltese", dependency = AMSSYMB, display = "✠"),
+
+    /*
      * New definitions
      */
     NEWCOMMAND("newcommand", "cmd".asRequired(), "args".asOptional(), "default".asOptional(), "def".asRequired(Type.TEXT)),
@@ -383,14 +500,14 @@ enum class LatexRegularCommand(
     NEWENVIRONMENT("newenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
     RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Type.TEXT), "enddef".asRequired(Type.TEXT)),
 
-    /**
+    /*
      * mathtools definitions
      */
     DECLARE_PAIRED_DELIMITER("DeclarePairedDelimiter", "cmd".asRequired(), "left delimiter".asRequired(), "right delimiter".asRequired(), dependency = MATHTOOLS),
     DECLARE_PAIRED_DELIMITER_X("DeclarePairedDelimiterX", "cmd".asRequired(), "num args".asOptional(), "left delimiter".asRequired(), "right delimiter".asRequired(), "body".asRequired(Type.TEXT), dependency = MATHTOOLS),
     DECLARE_PAIRED_DELIMITER_XPP("DeclarePairedDelimiterXPP", "cmd".asRequired(), "num args".asOptional(), "pre code".asRequired(), "left delimiter".asRequired(), "right delimiter".asRequired(), "post code".asRequired(), "body".asRequired(Type.TEXT), dependency = MATHTOOLS),
 
-    /**
+    /*
      * xcolor definitions
      */
     DEFINECOLOR("definecolor", "type".asOptional(), "name".asRequired(), "model-list".asRequired(), "spec-list".asRequired(), dependency = XCOLOR),
@@ -405,7 +522,7 @@ enum class LatexRegularCommand(
     PROVIDECOLORS("providecolors", "id-list".asRequired(), dependency = XCOLOR),
     DEFINECOLORSERIES("definecolorseries", "name".asRequired(), "core model".asRequired(), "method".asRequired(), "b-model".asOptional(), "b-spec".asRequired(), "s-model".asRequired(), "s-spec".asRequired(), dependency = XCOLOR),
 
-    /**
+    /*
      * Xparse definitions
      */
     NEWDOCUMENTCOMMAND("NewDocumentCommand", "name".asRequired(), "args spec".asRequired(), "code".asRequired(), dependency = LatexPackage.XPARSE),
@@ -417,7 +534,7 @@ enum class LatexRegularCommand(
     PROVIDEDOCUMENTENVIRONMENT("ProvideDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = LatexPackage.XPARSE),
     DECLAREDOCUMENTENVIRONMENT("DeclareDocumentEnvironment", "name".asRequired(), "args spec".asRequired(), "start code".asRequired(), "end code".asRequired(), dependency = LatexPackage.XPARSE),
 
-    /**
+    /*
      * Natbib citations
      */
     CITEP("citep", "before".asOptional(), "after".asOptional(), "keys".asRequired(), dependency = NATBIB),
@@ -445,7 +562,7 @@ enum class LatexRegularCommand(
     CITENUM("citenum", "key".asRequired(), dependency = NATBIB),
     CITETEXT("citetext", "text".asRequired(), dependency = NATBIB),
 
-    /**
+    /*
      * Biblatex commands
      */
     CITE_CAPITALIZED("Cite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
@@ -499,7 +616,7 @@ enum class LatexRegularCommand(
     PARENTTEXT("parenttext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
     BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
 
-    /**
+    /*
      * SIunitx commands
      */
     ANG("ang", "options".asOptional(), "angle".asRequired(), dependency = SIUNITX),
@@ -513,7 +630,7 @@ enum class LatexRegularCommand(
     SISETUP("sisetup", "options".asRequired(), dependency = SIUNITX),
     TABLENUM("tablenum", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
 
-    /**
+    /*
      * Algorithmicx
      */
     FOR("For", "condition".asRequired(), dependency = ALGPSEUDOCODE),

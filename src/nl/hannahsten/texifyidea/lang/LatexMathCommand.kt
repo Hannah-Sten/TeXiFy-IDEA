@@ -567,6 +567,7 @@ enum class LatexMathCommand(
     UNDERLEFTRIGHTARROW("underleftrightarrow", "text".asRequired(), dependency = AMSMATH),
     UNDERLINE("underline", "text".asRequired()),
     UNDERRIGHTARROW("underrightarrow", "text".asRequired(), dependency = AMSMATH),
+    UNDERSCORE("_", display = "_"),
     UPPER_LEFT_CORNER("ulcorner", dependency = AMSSYMB, display = "⌜", collapse = true),
     UPPER_RIGHT_CORNER("urcorner", dependency = AMSSYMB, display = "⌝", collapse = true),
     VARINJLIM("varinjlim", dependency = AMSMATH),
