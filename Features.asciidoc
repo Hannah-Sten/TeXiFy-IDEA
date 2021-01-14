@@ -278,6 +278,7 @@ menu:Right-click on LaTeX source file[Run 'filename']:: Compiles the file.
 * End-of-sentence space after sentences ending with capitals
 * Use of `.` instead of `\cdot`
 * Use of `x` instead of `\times`
+* Vertically uncentered colon: use of raw `:=` instead of `\coloneqq` by mathtools (and variants)
 * Grouped superscript and subscript
 * Insert `\qedhere` in trailing displaymath environment
 * Use the matching amssymb symbol for extreme inequalities
