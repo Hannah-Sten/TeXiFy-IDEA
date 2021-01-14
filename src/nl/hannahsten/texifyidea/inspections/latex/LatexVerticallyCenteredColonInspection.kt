@@ -26,7 +26,7 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
     inspectionId = "VerticallyCenteredColon",
     errorMessage = { "Colon is vertically uncentered" },
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    pattern = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern(),
+    pattern = REGEX,
     mathMode = true,
     replacement = this::replacement,
     replacementRange = { it.groupRange(0) },
@@ -59,6 +59,8 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
             "::\\sim" to Pattern("""::\\sim(?![a-zA-Z])""", "\\Colonsim"),
             "::" to Pattern("""::""", "\\dblcolon"),
         )
+
+        private val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern()
 
         fun replacement(matcher: Matcher, file: PsiFile): String {
             val replacement = PATTERNS[matcher.group(0)]!!.command
