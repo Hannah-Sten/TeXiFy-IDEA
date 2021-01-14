@@ -12,9 +12,9 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
 import java.util.*
 import kotlin.math.max
 
@@ -80,8 +80,8 @@ open class LatexDiscouragedUseOfDefInspection : TexifyInspectionBase() {
 
         open fun getArguments(command: LatexCommands): Pair<PsiElement, PsiElement>? {
             val parent = command.parent
-            val firstSib = LatexPsiUtil.getNextSiblingIgnoreWhitespace(parent) ?: return null
-            val secondSib = LatexPsiUtil.getNextSiblingIgnoreWhitespace(firstSib) ?: return null
+            val firstSib = parent.nextSiblingIgnoreWhitespace() ?: return null
+            val secondSib = firstSib.nextSiblingIgnoreWhitespace() ?: return null
             return Pair(firstSib, secondSib)
         }
     }

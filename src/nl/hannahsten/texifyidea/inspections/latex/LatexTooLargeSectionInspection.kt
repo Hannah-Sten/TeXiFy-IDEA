@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -157,7 +156,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
              */
             fun findLabel(cmd: LatexCommands): LatexCommands? {
                 val grandparent = cmd.parent.parent
-                val sibling = LatexPsiUtil.getNextSiblingIgnoreWhitespace(grandparent) ?: return null
+                val sibling = grandparent.nextSiblingIgnoreWhitespace() ?: return null
                 val child = sibling.firstChildOfType(LatexCommands::class) ?: return null
                 return if (child.name == "\\label") child else null
             }

@@ -13,9 +13,9 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getNextSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.psi.LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.nextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parentOfType
+import nl.hannahsten.texifyidea.util.previousSiblingIgnoreWhitespace
 import org.jetbrains.annotations.Nls
 import java.util.*
 
@@ -76,8 +76,8 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
 
             // Find elements to put in numerator and denominator.
             val content = element.parentOfType(LatexNoMathContent::class)
-            val previous = getPreviousSiblingIgnoreWhitespace(content!!)
-            val next = getNextSiblingIgnoreWhitespace(content)
+            val previous = content!!.previousSiblingIgnoreWhitespace()
+            val next = content.nextSiblingIgnoreWhitespace()
             val before = previous?.text ?: ""
             val after = next?.text ?: ""
             val psiReplacement = LatexPsiHelper(project).createFromText("\\frac{$before}{$after}").firstChild

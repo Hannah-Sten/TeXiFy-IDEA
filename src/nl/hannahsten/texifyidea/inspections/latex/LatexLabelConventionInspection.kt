@@ -42,7 +42,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                     }
                     else {
                         val parent = label.parentOfType(LatexNoMathContent::class) ?: return null
-                        val sibling = LatexPsiUtil.getPreviousSiblingIgnoreWhitespace(parent) ?: return null
+                        val sibling = parent.previousSiblingIgnoreWhitespace() ?: return null
                         sibling.firstChildOfType(LatexCommands::class)
                     }
                 }
