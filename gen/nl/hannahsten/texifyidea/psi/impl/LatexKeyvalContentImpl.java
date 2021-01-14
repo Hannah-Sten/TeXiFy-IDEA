@@ -1,16 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import java.util.List;
+import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import nl.hannahsten.texifyidea.psi.LatexKeyvalContent;
-import nl.hannahsten.texifyidea.psi.LatexParameterGroup;
-import nl.hannahsten.texifyidea.psi.LatexParameterText;
-import nl.hannahsten.texifyidea.psi.LatexVisitor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import nl.hannahsten.texifyidea.psi.*;
 
 public class LatexKeyvalContentImpl extends ASTWrapperPsiElement implements LatexKeyvalContent {
 
@@ -24,20 +23,20 @@ public class LatexKeyvalContentImpl extends ASTWrapperPsiElement implements Late
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
-      if (visitor instanceof LatexVisitor) accept((LatexVisitor) visitor);
-      else super.accept(visitor);
+    if (visitor instanceof LatexVisitor) accept((LatexVisitor)visitor);
+    else super.accept(visitor);
   }
 
-    @Override
-    @Nullable
-    public LatexParameterGroup getParameterGroup() {
-        return PsiTreeUtil.getChildOfType(this, LatexParameterGroup.class);
-    }
+  @Override
+  @Nullable
+  public LatexParameterGroup getParameterGroup() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterGroup.class);
+  }
 
-    @Override
-    @Nullable
-    public LatexParameterText getParameterText() {
-        return PsiTreeUtil.getChildOfType(this, LatexParameterText.class);
-    }
+  @Override
+  @Nullable
+  public LatexParameterText getParameterText() {
+    return PsiTreeUtil.getChildOfType(this, LatexParameterText.class);
+  }
 
 }

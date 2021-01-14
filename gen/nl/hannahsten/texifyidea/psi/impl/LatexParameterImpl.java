@@ -37,6 +37,12 @@ public class LatexParameterImpl extends ASTWrapperPsiElement implements LatexPar
 
   @Override
   @Nullable
+  public LatexPictureParam getPictureParam() {
+    return PsiTreeUtil.getChildOfType(this, LatexPictureParam.class);
+  }
+
+  @Override
+  @Nullable
   public LatexRequiredParam getRequiredParam() {
     return PsiTreeUtil.getChildOfType(this, LatexRequiredParam.class);
   }
