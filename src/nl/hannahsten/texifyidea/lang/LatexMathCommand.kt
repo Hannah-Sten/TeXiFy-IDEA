@@ -286,6 +286,15 @@ enum class LatexMathCommand(
     BACKEPSILON("backepsilon", dependency = AMSSYMB, display = "϶", collapse = true),
     DOUBLE_SUBSET("Subset", dependency = AMSSYMB, display = "⋐", collapse = true),
     DOUBLE_SUPSET("Supset", dependency = AMSSYMB, display = "⋑", collapse = true),
+    CIRCLE_EQUALS("circeq", dependency = AMSSYMB, display = "≗", collapse = true),
+    TRIANGLE_EQUALS("triangleq", dependency = AMSSYMB, display = "≜", collapse = true),
+    EQUALS_CIRCLE("eqcirc", dependency = AMSSYMB),
+    BUMP_EQUALS("bumpeq", dependency = AMSSYMB),
+    DOUBLE_BUMP_EQUALS("Bumpeq", dependency = AMSSYMB, display = "", collapse = true),
+    DOT_EQUALS_DOT("doteqdot", dependency = AMSSYMB, display = "≑", collapse = true),
+    RISING_DOTS_EQUALS("risingdotseq", dependency = AMSSYMB, display = "≓", collapse = true),
+    FALLING_DOTS_EQUALS("fallingdotseq", dependency = AMSSYMB, display = "≒", collapse = true),
+    DOT_EQUALS("doteq", dependency = AMSSYMB),
 
     /*
      * Mathtools Coloneq
