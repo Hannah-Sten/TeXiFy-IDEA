@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.inspections.latex.LatexLineBreakInspection
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
 import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexMathCommand.*
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ALGORITHM2E
@@ -441,8 +442,8 @@ object Magic {
          */
         @JvmField
         val slashlessMathOperators: Set<LatexCommand> = hashSetOf(
-            ARCCOS, ARCSIN, ARCTAN, ARG, BMOD, COS, COSH, COT, COTH, CSC, DEG, DET, DIM, EXP, GCD, HOM, INF,
-            KER, LG, LIM, LIMINF, LIMSUP, LN, LOG, MAX, MIN, PMOD, CAPITAL_PR, SEC, SIN, SINH, SUP, TAN, TANH,
+            INVERSE_COSINE, INVERSE_SINE, INVERSE_TANGENT, ARGUMENT, BMOD, COSINE, HYPERBOLIC_COSINE, COTANGENT, HYPERBOLIC_COTANGENT, COSECANT, DEGREES, DERMINANT, DIMENSION, EXPONENTIAL, GREATEST_COMMON_DIVISOR, HOMOMORPHISM, INFINUM,
+            KERNEL, BASE_2_LOGARITHM, LIMIT, LIMIT_INFERIOR, LIMIT_SUPERIOR, NATURAL_LOGARITHM, LOGARITHM, MAXIMUM, MINIMUM, PMOD, PROBABILITY, SECANT, LatexMathCommand.SINE, HYPERBOLIC_SINE, SUPREMUM, TANGENT, HBOLICTANGENT,
         )
 
         /**

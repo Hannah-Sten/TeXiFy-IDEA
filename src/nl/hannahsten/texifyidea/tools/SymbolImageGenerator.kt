@@ -23,7 +23,7 @@ private const val QUALITY = 100
  *
  * @author Hannah Schellekens
  */
-fun generateSymbolImages(symbolDirectory: String, skipExisting: Boolean = false) = auxDirectory(symbolDirectory) {
+fun generateSymbolImages(symbolDirectory: String, skipExisting: Boolean = true) = auxDirectory(symbolDirectory) {
     val symbols = SymbolCategories.symbolList.distinctBy { it.imagePath }
 
     symbols.forEach { symbol ->

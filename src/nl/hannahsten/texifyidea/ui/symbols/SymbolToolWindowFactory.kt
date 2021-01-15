@@ -9,6 +9,7 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.SearchTextField
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -17,8 +18,10 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
+import java.awt.ScrollPane
 import javax.swing.JButton
 import javax.swing.JPanel
+import javax.swing.JScrollPane
 import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 
@@ -57,6 +60,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          * Selects the current category if icons.
          */
         private val cboxCategory = ComboBox(SymbolCategories.categoryList.toTypedArray()).apply {
+            maximumRowCount = 16
             addActionListener {
                 updateFilters()
             }
@@ -82,7 +86,10 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             border = EmptyBorder(8, 8, 8, 8)
 
             add(filterPanel(), BorderLayout.NORTH)
-            add(panelSymbols, BorderLayout.CENTER)
+            add(JBScrollPane(panelSymbols,
+                    JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                    JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+            ), BorderLayout.CENTER)
         }
 
         /**
@@ -127,7 +134,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          */
         private fun updateFilters() {
             val selectedCategory = cboxCategory.item
-            val query = txtSearch.text.trim()
+            val query = txtSearch.text.trim().replace(" ", "")
 
             btnSymbols.forEach { (category, symbolMap) ->
                 symbolMap.forEach { (symbol, button) ->
@@ -171,7 +178,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             command?.let { append(it.commandDisplay) }
             append(generatedLatex)
             append(dependency.name)
-            append(description)
+            append(description.replace(" ", ""))
         }.toLowerCase()
     }
 }
