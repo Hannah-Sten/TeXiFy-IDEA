@@ -52,7 +52,7 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
     fun `test quick fix with some optional parameters, replace first`() {
         testQuickFix(
             """\ci<caret>te{a}\cite[b]{c}\cite{d}\cite[e]{f}""",
-            """\ci<caret>te{a,d}\cite[b]{c}\cite[e]{f}""",
+            """\cite{a,d}\cite[b]{c}\cite[e]{f}""",
             2
         )
     }
@@ -60,7 +60,7 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
     fun `test quick fix with some optional parameters, replace second`() {
         testQuickFix(
             """\cite{a}\cite[b]{c}\cit<caret>e{d}\cite[e]{f}""",
-            """\cite[b]{c}\cite{a,<caret>d}\cite[e]{f}""",
+            """\cite[b]{c}\cite{a,d}\cite[e]{f}""",
             2
         )
     }

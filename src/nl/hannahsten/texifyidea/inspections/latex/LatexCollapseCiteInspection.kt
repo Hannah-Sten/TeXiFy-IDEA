@@ -8,12 +8,14 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.suggested.endOffset
+import com.jetbrains.rd.util.remove
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
@@ -123,8 +125,6 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      * @param citeBundle a bundle of cite commands that have to be merged into one command. All commands
      * in this bundle have only required parameters, as cites with optional parameters should not
      * be collapsed.
-     *
-     * @author Hannah Schellekens
      */
     private inner class InspectionFix(val citeBundle: List<LatexCommands>) : LocalQuickFix {
 
@@ -133,8 +133,6 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         }
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val file = descriptor.psiElement.containingFile ?: return
-            val document = file.document() ?: return
             val sortedBundle = citeBundle.sortedBy { it.textOffset }
             // The bundle can contain a gap when the cite commands in it surround a cite command
             // that is not in the bundle, e.g., a cite command that has an optional parameter.
@@ -142,42 +140,35 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
                 .zipWithNext { a, b -> a.nextSibling != b }
                 .any()
 
-            // The text range of the bundle of cites, gaps included.
-            val offsetRange = sortedBundle.first().textOffset until sortedBundle.last().endOffset()
             // Create the content of the required parameter of the new cite command.
             val bundle = sortedBundle
                 .flatMap { it.requiredParameters }
                 .joinToString(",")
 
-            // When the bundle does contain gaps, we place the replacement at the location of the cite at which the
-            // quick fix was invoked. The required parameter of this cite gets replaced by the new bundle, and all
-            // other cite commands that are in the citeBundle are removed.
-            val replacementText = if (bundleContainsGap) {
+            // Find the cite command that has to be replaced. When the bundle contains a gap, this is the command
+            // underneath the caret. When the bundle does not contain a gap this is the first command, as it doesn't matter
+            // whichever one we pick.
+            val targetCite = if (!bundleContainsGap) sortedBundle.firstOrNull() ?: return
+            else {
                 val editor = FileEditorManager.getInstance(project).selectedTextEditor
-                val citeAtCaret = editor?.caretOffset()?.let {
+                editor?.caretOffset()?.let {
                     sortedBundle.first { cite -> cite.endOffset >= it }
                 }
                     ?: sortedBundle.lastOrNull()
                     ?: return
-
-                val star = if (citeAtCaret.hasStar()) "*" else ""
-                val replacement = "${citeAtCaret.name}$star{$bundle}"
-                val oldText = document.getText(offsetRange.toTextRange())
-
-                // Replace the cite at the caret with the new bundle and remove all other cites in the citeBundle.
-                sortedBundle.fold(oldText) { text, cite ->
-                    text.replace(cite.text, if (cite == citeAtCaret) replacement else "")
-                }
-            }
-            // When the bundle does not contain gaps the replacement text is simply a cite with the new bundle as
-            // required argument.
-            else {
-                val first = citeBundle.first()
-                val star = if (first.hasStar()) "*" else ""
-                "${first.name}$star{$bundle}"
             }
 
-            document.replaceString(offsetRange.toTextRange(), replacementText)
+            // Construct the entire text of the new cite command.
+            val star = if (targetCite.hasStar()) "*" else ""
+            val replacement = "${targetCite.name}$star{$bundle}"
+
+            val psiHelper = LatexPsiHelper(project)
+            for (cite in sortedBundle) {
+                // Replace the target cite with the new cite command, using the psi tree.
+                if (cite == targetCite) cite.replace(psiHelper.createFromText(replacement).firstChild)
+                // Remove any other cite from the psi tree.
+                else cite.parent.node.removeChild(cite.node)
+            }
         }
     }
 }
