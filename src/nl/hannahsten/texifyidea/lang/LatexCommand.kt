@@ -51,7 +51,7 @@ interface LatexCommand : Described, Dependend {
                         override val command = cmdWithoutSlash
                         override val display = defaultCmd.display
                         override val arguments = defaultCmd.arguments
-                        override val description = value
+                        override val description = format(value)
                         override val dependency = dependency
                     }
                 }
@@ -60,7 +60,7 @@ interface LatexCommand : Described, Dependend {
                         override val command = cmdWithoutSlash
                         override val display: String? = null
                         override val arguments = extractArgumentsFromDocs(value, commandWithSlash)
-                        override val description = value
+                        override val description = format(value)
                         override val dependency = dependency
                     }
                 }
@@ -68,6 +68,13 @@ interface LatexCommand : Described, Dependend {
                 true
             }, GlobalSearchScope.everythingScope(project))
             return cmds
+        }
+
+        /**
+         * Do the last bit of formatting, to remove things that [nl.hannahsten.texifyidea.index.file.LatexDocsRegexer] needed to keep in because we needed the information here.
+         */
+        fun format(docs: String): String {
+            return """^(?:\s*\\[mop]arg\{[^}]+}\s*)*(?:\\\\)?\s*""".toRegex().replace(docs, "")
         }
 
         /**
@@ -118,7 +125,7 @@ interface LatexCommand : Described, Dependend {
         }
 
         /**
-         * todo after arguments are extracted, remove from docs?
+         * Given the [docs] of the [commandWithSlash], check if the parameters of the [commandWithSlash] are documented in [docs] and if so, return them.
          */
         fun extractArgumentsFromDocs(docs: String, commandWithSlash: String): Array<Argument> {
             // Maybe the arguments are given right at the beginning of the docs

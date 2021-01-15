@@ -53,9 +53,9 @@ object LatexDocsRegexer {
      * Only done when indexing, but it should still be fast because it can be done up to 28714 times for full TeX Live.
      */
     fun format(docs: String): String {
-        var formatted = docs
-        formattingReplacers.forEach { formatted = it.first.replace(formatted, it.second) }
-        return formatted
+        var formatted = docs.trim()
+        formattingReplacers.forEach { formatted = it.first.replace(formatted, it.second).trim() }
+        return formatted.trim()
     }
 
     /**

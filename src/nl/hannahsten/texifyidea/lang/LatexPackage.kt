@@ -68,9 +68,6 @@ open class LatexPackage @JvmOverloads constructor(
             val isLatexBase = sourceFileName.parent.name == "base"
             val dependencyText = sourceFileName.parent.name
             val fileName = sourceFileName.name.removeFileExtension()
-            // todo instead of just default/package name, remember actual file to later find matching doc/latex/base/ pdf file
-            //   however, the actual name to put in a new \usepackage can be different: in case of amsmath, there are multiple sty files but you should only \usepackage{amsmath}, while in case of rubik (folder name), the actual sty is rubikrotation/rubikpatterns/etc
-            //   so, problem: how to know which name should go in \usepackage, given dtx file in which command is defined
             return if (isLatexBase) LatexPackage("", fileName = fileName) else LatexPackage(dependencyText, fileName = fileName)
         }
     }
