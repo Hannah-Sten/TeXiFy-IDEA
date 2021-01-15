@@ -8,6 +8,7 @@ To use a live template, type (a part of) the key, for example `fig`, hit enter w
 image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/figures/live-templates.gif[]
 
 Currently implemented by default are live templates for:
+
 - figures, tables, itemize, enumerate, and in math for summations and integrals;
 - sectioning with automatic label (triggered with `\partl`, `\chapl`, `\secl`, etc.).
 
