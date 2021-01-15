@@ -70,7 +70,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
         /**
          * Panel that contains all the symbols in the current category.
          */
-        private val panelSymbols = JPanel(WrapLayout(FlowLayout.LEFT, 4, 4)).apply {
+        private val panelSymbols = JPanel(WrapLayout(FlowLayout.LEFT, 2, 2)).apply {
             SymbolCategories.categories.forEach { (category, symbols) ->
                 symbols.forEach { symbol ->
                     add(symbol.createButton(category))

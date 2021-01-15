@@ -18,22 +18,22 @@ object SymbolCategories {
 
         createCategory("Operators") {
             add(LatexMathCommand.DELTA)
-            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\hat{a}")
             add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
             add(LatexMathCommand.DELTA)
-            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\hat{a}")
             add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
             add(LatexMathCommand.DELTA)
-            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\hat{a}")
             add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
             add(LatexMathCommand.DELTA)
-            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\hat{a}")
             add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
             add(LatexMathCommand.DELTA)
-            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\hat{a}")
             add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
             add(LatexMathCommand.DELTA)
-            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\hat{a}")
             add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
         }
 

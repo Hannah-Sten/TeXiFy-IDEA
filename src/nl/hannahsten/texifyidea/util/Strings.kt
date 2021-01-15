@@ -218,3 +218,18 @@ fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, end
  * Appends a line separator.
  */
 fun StringBuilder.newline() = append("\n")!!
+
+/**
+ * Encloses the string with the given prefix and suffix when the given predicate yields true.
+ * Otherwise just returns this string.
+ */
+inline fun String.encloseWhen(prefix: String = "", suffix: String = "", predicate: () -> Boolean) = buildString {
+    val predicateResult = predicate()
+    if (predicateResult) {
+        append(prefix)
+    }
+    append(this@encloseWhen)
+    if (predicateResult) {
+        append(suffix)
+    }
+}

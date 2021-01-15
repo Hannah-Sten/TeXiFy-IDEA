@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.ui.symbols
 
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
 
 /**
@@ -26,6 +27,17 @@ interface SymbolUiEntry : Described {
     val generatedLatex: String
 
     /**
+     * The file name of the light theme image, ends with .png.
+     */
+    val fileName: String
+
+    /**
+     * The file name of the dark theme image, ends with .png.
+     */
+    val fileNameDark: String
+        get() = fileName.replace(".png", "_dark.png")
+
+    /**
      * The resource location of the symbol `png` image for light UIs. Image must be at most 44x44.
      */
     val imagePath: String
@@ -46,4 +58,10 @@ interface SymbolUiEntry : Described {
      */
     val dependency: LatexPackage
         get() = command?.dependency ?: LatexPackage.DEFAULT
+
+    /**
+     * Whether this is a math symbol.
+     */
+    val isMathSymbol: Boolean
+        get() = command is LatexMathCommand
 }
