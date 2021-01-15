@@ -48,5 +48,9 @@ open class CommandUiEntry(
     }
     else command.display ?: "\\command.command"
 
-    override val description = customDescription ?: command.commandDisplay
+    override val description = customDescription ?: when (command) {
+        is LatexMathCommand -> command.name.toLowerCase().replace("_", " ") + " (math)"
+        is LatexRegularCommand -> command.name.toLowerCase().replace("_", " ")
+        else -> command.commandDisplay
+    }
 }

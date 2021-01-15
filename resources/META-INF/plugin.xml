@@ -530,7 +530,7 @@
 
         <!-- Tool windows -->
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.symbols.SymbolToolWindowFactory"
-                    id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg"/>
+                    id="Symbols" anchor="right" secondary="false" icon="/nl/hannahsten/texifyidea/icons/symbols.svg" order="before Detexify"/>
         <toolWindow factoryClass="nl.hannahsten.texifyidea.ui.DetexifyToolWindowFactory"
                     id="Detexify" anchor="right" secondary="false" icon="AllIcons.Actions.Search"/>
 

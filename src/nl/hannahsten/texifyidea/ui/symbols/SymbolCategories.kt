@@ -16,16 +16,62 @@ object SymbolCategories {
      */
     val categories: Map<SymbolCategory, List<SymbolUiEntry>> = LinkedHashMap<SymbolCategory, List<SymbolUiEntry>>().apply {
 
-        createCategory("Testcategory") {
+        createCategory("Operators") {
             add(LatexMathCommand.DELTA)
-            add(LatexMathCommand.HAT, latex = "\\hat{<cursor>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
+            add(LatexMathCommand.DELTA)
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
+            add(LatexMathCommand.DELTA)
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
+            add(LatexMathCommand.DELTA)
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
+            add(LatexMathCommand.DELTA)
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
+            add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
+            add(LatexMathCommand.DELTA)
+            add(LatexMathCommand.HAT, latex = "\\hat{<caret>}", image = "\\[\n\\hat{a}\n\\]")
             add(LatexRegularCommand.NEWLINE, latex = "\\newline % No you don't want this\n", description = "Bad.")
         }
 
-        createCategory("Another test category") {
+        createCategory("Misc. Symbols") {
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
+            add(LatexRegularCommand.SAGITTARIUS)
             add(LatexRegularCommand.SAGITTARIUS)
         }
     }
+
+    /**
+     * The list of all registered categories.
+     * Also contains the ALL category.
+     */
+    val categoryList: List<SymbolCategory> = listOf(SymbolCategory.ALL) + categories.map { (category, _) -> category }
+
+    /**
+     * Flat map of all registered symbols, in order.
+     */
+    val symbolList: List<SymbolUiEntry> = categories.flatMap { it.value }
+
+    /**
+     * Get the operators that are in the given category.
+     * The category [SymbolCategory.ALL] returns all available symbols.
+     */
+    operator fun get(category: SymbolCategory): List<SymbolUiEntry> = if (category == SymbolCategory.ALL) {
+        symbolList
+    }
+    else categories[category] ?: emptyList()
 
     /**
      * Adds a UI entry for the given command to the entry list.

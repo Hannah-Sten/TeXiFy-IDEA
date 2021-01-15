@@ -9,6 +9,7 @@ import com.intellij.ui.awt.RelativePoint
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
+import javax.swing.Icon
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.text.JTextComponent

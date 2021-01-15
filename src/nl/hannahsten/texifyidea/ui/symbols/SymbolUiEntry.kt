@@ -26,7 +26,7 @@ interface SymbolUiEntry : Described {
     val generatedLatex: String
 
     /**
-     * The resource location of the symbol `png` image for light UIs.
+     * The resource location of the symbol `png` image for light UIs. Image must be at most 44x44.
      */
     val imagePath: String
 
