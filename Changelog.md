@@ -10,6 +10,7 @@ ETA: First half of February, 2021
 * Added Detexify tool window. (#1731)
 * Added BibTeX unused entry inspection. (#1717)
 * Added label intention for \item commands. (#1719)
+* Added vertically centered colon inspection. (#1743)
 * Add inspection to encourage replacing \text{min} by \min for a lot of similar math operators. (#1737)
 
 # Changes
