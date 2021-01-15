@@ -26,6 +26,8 @@ object LatexDocsRegexer {
         Pair<Regex, (MatchResult) -> String>("""(?<pre>[^|]|^)\\(?:textbf|emph|textsf|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex(), { result -> result.groups["pre"]?.value + result.groups["argument"]?.value }),
         // Short verbatim, provided by ltxdoc
         Pair("""\|""".toRegex(), { "" }),
+        // While it is true that text reflows in the documentation popup, so we don't need linebreaks, often package authors include an environment or something else
+        // which does depend on linebreaks to be readable, and therefore we keep linebreaks by default.
         Pair("""\n""".toRegex(), { "<br>" }),
     )
 
@@ -90,7 +92,12 @@ object LatexDocsRegexer {
                         }
                     }
                 }
-                map[key] = format(docs.trim())
+
+                // Avoid overwriting existing docs with an empty string
+                val formatted = format(docs.trim())
+                if (key in map.keys && formatted.isBlank()) return@loop
+
+                map[key] = formatted
                 if (macrosBeingOverloaded.isNotEmpty()) {
                     macrosBeingOverloaded.forEach { map[it] = format(docs.trim()) }
                     macrosBeingOverloaded.clear()

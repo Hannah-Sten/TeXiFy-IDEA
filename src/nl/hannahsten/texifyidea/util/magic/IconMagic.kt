@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util.magic
 import nl.hannahsten.texifyidea.TexifyIcons
 
 object IconMagic {
+
     /**
      * Maps file extentions to their corresponding icons.
      */

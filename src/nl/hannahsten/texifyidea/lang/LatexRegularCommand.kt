@@ -199,8 +199,7 @@ enum class LatexRegularCommand(
     TEXTGREATER("textgreater", display = ">"),
     TEXTIT("textit", "text".asRequired(Type.TEXT)),
     // todo check below whether commands can be removed
-    // todo what is DeclareTextSymbol (ltoutenc.dtx)
-    TEXTLESS("textless"),
+    TEXTLESS("textless", display = "<"),
     TEXTLF("textlf", "text".asRequired(Type.TEXT)),
     TEXTMD("textmd", "text".asRequired(Type.TEXT)),
     TEXTNORMAL("textnormal"),

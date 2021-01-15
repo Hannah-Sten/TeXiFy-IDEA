@@ -9,6 +9,7 @@ import com.intellij.util.indexing.FileContent
  * @author Thomas
  */
 class LatexExternalEnvironmentDataIndexer : DataIndexer<String, String, FileContent> {
+
     /**
      * See [LatexExternalCommandDataIndexer].
      */

@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
 import java.awt.Color
 
 object CommandMagic {
+
     /**
      * LaTeX commands that make the text take up more vertical space.
      */

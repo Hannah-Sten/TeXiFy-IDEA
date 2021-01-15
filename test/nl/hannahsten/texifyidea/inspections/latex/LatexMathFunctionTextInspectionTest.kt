@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
-import nl.hannahsten.texifyidea.util.Magic
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * @author Hannah Schellekens
@@ -67,6 +67,6 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
 
     companion object {
 
-        private val MATH_FUNCTIONS = Magic.Command.slashlessMathOperators.map { it.command }
+        private val MATH_FUNCTIONS = CommandMagic.slashlessMathOperators.map { it.command }
     }
 }

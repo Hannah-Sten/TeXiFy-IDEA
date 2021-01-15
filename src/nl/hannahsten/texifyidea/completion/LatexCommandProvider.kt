@@ -46,7 +46,7 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
             LatexMode.NORMAL -> {
                 addIndexedCommands(result, parameters)
                 addNormalCommands(result, parameters.editor.project ?: return) //todo
-                addCustomCommands(parameters, result)
+//                addCustomCommands(parameters, result)
             }
             LatexMode.MATH -> {
                 addMathCommands(result)

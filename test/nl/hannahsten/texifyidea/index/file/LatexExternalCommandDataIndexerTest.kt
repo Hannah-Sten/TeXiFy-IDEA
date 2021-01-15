@@ -51,7 +51,7 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(1, map.size)
-        assertEquals("Here is the default value for the \\MacroTopsep parameter used above.", map["\\MacroTopsep"])
+        assertEquals("Here is the default value for the \\MacroTopsep parameter<br> used above.", map["\\MacroTopsep"])
     }
 
     fun testDoubleMacroDefinition() {
@@ -79,7 +79,7 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(2, map.size)
-        assertEquals("In the code above, we have used two registers. Therefore we have to allocate them. The default values might be overwritten with the help of the \\DocstyleParms macro.", map["\\MacrocodeTopsep"])
+        assertEquals("In the code above, we have used two registers. Therefore we have<br> to allocate them. The default values might be overwritten with<br> the help of the \\DocstyleParms macro.", map["\\MacrocodeTopsep"])
         assertEquals(map["\\MacrocodeTopsep"], map["\\MacroIndent"])
     }
 
@@ -107,7 +107,7 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(2, map.size)
-        assertEquals("Older releases of this environment omit the \\endgroup token, when being nested. This was done to avoid unnecessary stack usage. However it does not work if macro and environment environments are mixed, therefore we now use a simpler approach.", map["\\endenvironment"])
+        assertEquals("Older releases of this environment omit the \\endgroup token,<br> when being nested. This was done to avoid unnecessary stack usage.<br> However it does not work if macro and<br> environment environments are mixed, therefore we now<br> use a simpler approach.", map["\\endenvironment"])
         assertEquals(map["\\endenvironment"], map["\\endmacro"])
     }
 
@@ -128,12 +128,13 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
             % An analogous macro |\DescribeEnv| should be used to indicate
             % that a \LaTeX{} environment is explained. It will produce a somewhat
             % different index entry. Below I used |\DescribeEnv{verbatim}|.
+            % 
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(2, map.size)
-        assertEquals("When you describe a new macro you may use DescribeMacro to indicate that at this point the usage of a specific macro is explained. It takes one argument which will be printed in the margin and also produces a special index entry.  For example, I used <redacted> to make clear that this is the point where the usage of DescribeMacro is explained.", map["\\DescribeMacro"])
-        assertEquals("An analogous macro \\DescribeEnv should be used to indicate that a \\LaTeX{} environment is explained. It will produce a somewhat different index entry. Below I used \\DescribeEnv{verbatim}.", map["\\DescribeEnv"])
+        assertEquals("When you describe a new macro you may use DescribeMacro to<br> indicate that at this point the usage of a specific macro is<br> explained. It takes one argument which will be printed in the margin<br> and also produces a special index entry.  For example, I used<br> <redacted> to make clear that this is the<br> point where the usage of DescribeMacro is explained.", map["\\DescribeMacro"])
+        assertEquals("An analogous macro \\DescribeEnv should be used to indicate<br> that a \\LaTeX{} environment is explained. It will produce a somewhat<br> different index entry. Below I used \\DescribeEnv{verbatim}.", map["\\DescribeEnv"])
     }
 
     fun testDescribeMacros() {
@@ -142,11 +143,12 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
             % \DescribeMacro\Module \DescribeMacro\AltMacroFont The `module'
             % directives of the \textsf{docstrip} system \cite{art:docstrip} are
             % normally recognised and invoke special formatting. 
+            % 
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
         assertEquals(4, map.size)
-        assertEquals("The `module' directives of the docstrip system are normally recognised and invoke special formatting.", map["\\DontCheckModules"])
+        assertEquals("The `module'<br> directives of the docstrip system are<br> normally recognised and invoke special formatting.", map["\\DontCheckModules"])
         assertEquals(map["\\CheckModules"], map["\\DontCheckModules"])
         assertEquals(map["\\Module"], map["\\DontCheckModules"])
         assertEquals(map["\\AltMacroFont"], map["\\DontCheckModules"])
@@ -204,10 +206,29 @@ class LatexExternalCommandDataIndexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val file = myFixture.configureByText("amsopn.dtx", text)
         val map = LatexExternalCommandDataIndexer().map(MockContent(file))
-        assertEquals("The command \\DeclareMathOperator defines the first argument to be an operator name whose text is the second argument. The star orm means that the operator name should take limits (like \\max or \\lim).", map["\\DeclareMathOperator"])
+        assertEquals("The command \\DeclareMathOperator defines the first argument to<br> be an operator name whose text is the second argument. The star<br> form means that the operator name should take limits (like \\max<br> or \\lim).", map["\\DeclareMathOperator"])
+    }
+
+    fun testDeclareTextSymbol() {
+        val text = """
+            \DeclareTextSymbol{\textless}{T1}{`\<}
+            \DeclareTextSymbol{\textquestiondown}{T1}{190}
+            \DeclareTextCommand{\textdollar}{OT1}{\hmode@bgroup
+               \ifdim \fontdimen\@ne\font >\z@
+                  \slshape
+               \else
+                  \upshape
+               \fi
+               \char`\${'$'}\egroup}
+        """.trimIndent()
+        val file = myFixture.configureByText("ltoutenc.dtx", text)
+        val map = LatexExternalCommandDataIndexer().map(MockContent(file))
+        assertEquals(3, map.size)
+        assertEquals("", map["\\textless"])
     }
 
     class MockContent(val file: PsiFile) : FileContent {
+
         override fun <T : Any?> getUserData(key: Key<T>): T? { return null }
 
         override fun <T : Any?> putUserData(key: Key<T>, value: T?) { }

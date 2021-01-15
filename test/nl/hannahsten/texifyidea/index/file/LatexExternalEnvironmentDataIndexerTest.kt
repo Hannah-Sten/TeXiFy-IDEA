@@ -22,10 +22,11 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
             %                      Sch\"opf~\cite{art:verbatim}. He also
             %                      provided a new \textsf{verbatim} environment
             %                      which can be used inside of other macros.}
+            % 
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalEnvironmentDataIndexer().map(MockContent(file))
-        assertEquals("It is often a good idea to include examples of the usage of new macros in the text. Because of the % sign in the first column of every row, the verbatim environment is slightly altered to suppress those characters.", map["verbatim"])
+        assertEquals("It is often a good idea to include examples of the usage of new macros<br> in the text. Because of the % sign in the first column of every<br> row, the verbatim environment is slightly altered to suppress<br> those<br> characters.", map["verbatim"])
     }
 
     fun testNewEnvironment() {
@@ -51,10 +52,11 @@ class LatexExternalEnvironmentDataIndexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val file = myFixture.configureByText("doc.dtx", text)
         val map = LatexExternalEnvironmentDataIndexer().map(MockContent(file))
-        assertEquals("Parts of the macro definition will be surrounded by the environment macrocode.  Put more precisely, they will be enclosed by a macro whose argument (the text to be set `verbatim') is terminated by the string \\verb*+%    \\end{macrocode}+.  Carefully note the number of spaces.", map["macrocode"])
+        assertEquals("Parts of the macro definition will be surrounded by the<br> environment macrocode.  Put more precisely, they will be<br> enclosed by a macro whose argument (the text to be set<br> `verbatim') is terminated by the string<br> \\verb*+%    \\end{macrocode}+.  Carefully note the number of spaces.", map["macrocode"])
     }
 
     class MockContent(val file: PsiFile) : FileContent {
+
         override fun <T : Any?> getUserData(key: Key<T>): T? { return null }
 
         override fun <T : Any?> putUserData(key: Key<T>, value: T?) { }
