@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexDocumentclassNotInRootInspectionTest : TexifyInspectionTestBase(LatexDocumentclassNotInRootInspection()) {
+
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/documentclassnotinroot"
     }

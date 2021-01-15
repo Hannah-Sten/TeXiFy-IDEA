@@ -16,6 +16,7 @@ import java.io.File
 import kotlin.math.max
 
 class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String = "PackageSubdirectoryInspection"
@@ -55,6 +56,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
     }
 
     inner class FixSubdirectoryQuickFix(private val oldDir: String, private val newDir: String) : LocalQuickFix {
+
         override fun getFamilyName(): String =
             "Change LaTeX command to match directory structure"
 

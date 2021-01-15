@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class TableAlignTest : BasePlatformTestCase() {
+
     @Throws(Exception::class)
     override fun setUp() {
         super.setUp()

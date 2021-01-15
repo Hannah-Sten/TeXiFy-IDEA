@@ -102,7 +102,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.10.2")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
-    ktlintRuleset(files("lib/ktlint-ruleset-0.1.jar"))
+    ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
 }
 
 // Special resource dependencies

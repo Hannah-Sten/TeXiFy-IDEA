@@ -11,6 +11,7 @@ import javax.swing.JPanel
  * @author Stephan Sundermann
  */
 class SkimConfigureInverseSearchDialog {
+
     init {
         DialogBuilder().apply {
             setTitle("Configure inverse search")

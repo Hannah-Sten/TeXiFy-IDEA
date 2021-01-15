@@ -18,6 +18,7 @@ import javax.swing.JTextField
  * @param newFileFullPath The full path of the new file, without tex extension.
  */
 class CreateFileDialog(private val currentFilePath: String?, private val newFileName: String, var newFileFullPath: String? = null) {
+
     init {
         DialogBuilder().apply {
             setTitle("Create new file")

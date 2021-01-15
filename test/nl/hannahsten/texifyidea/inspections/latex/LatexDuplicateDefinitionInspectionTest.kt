@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexDuplicateDefinitionInspectionTest : TexifyInspectionTestBase(LatexDuplicateDefinitionInspection()) {
+
     fun testWarning() {
         myFixture.configureByText(
             LatexFileType,

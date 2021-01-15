@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections
 
+import com.intellij.codeInsight.template.impl.TemplateManagerImpl
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -18,7 +19,16 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         myFixture.checkHighlighting()
     }
 
-    protected fun testQuickFix(before: String, after: String, numberOfFixes: Int = 1, selectedFix: Int = 1) {
+    protected fun testQuickFix(
+        before: String,
+        after: String,
+        numberOfFixes: Int = 1,
+        selectedFix: Int = 1,
+        usestemplate: Boolean = false
+    ) {
+        if (usestemplate) {
+            TemplateManagerImpl.setTemplateTesting(getTestRootDisposable())
+        }
         myFixture.configureByText(LatexFileType, before)
         // Collect the quick fixed before going into write action, to avoid AssertionError: Must not start highlighting from within write action.
         val quickFixes = myFixture.getAllQuickFixes()
@@ -26,7 +36,10 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         writeCommand(myFixture.project) {
             quickFixes[selectedFix - 1]?.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
-
+        if (usestemplate) {
+            val state = TemplateManagerImpl.getTemplateState(myFixture.editor)!!
+            state.gotoEnd(false)
+        }
         myFixture.checkResult(after)
     }
 

@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.warnings
 
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageWithLineHandler
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex
 
 /**
  * Multi-line warning with line number.

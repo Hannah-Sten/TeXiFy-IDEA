@@ -16,6 +16,7 @@ object LatexErrorHandler : LatexMessageHandler(
     """^$PDFTEX_ERROR_REGEX (?<message>.+)""".toRegex(),
     directLuaError
 ) {
+
     private val messageProcessors = listOf(LatexPackageErrorProcessor, LatexRemoveErrorTextProcessor)
 
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {

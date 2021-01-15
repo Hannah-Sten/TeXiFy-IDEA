@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.childrenOfType
 
 class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
+
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
     override val inspectionId: String =
@@ -48,6 +49,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
     }
 
     object PackageNameMatchFileNameQuickFix : LocalQuickFix {
+
         override fun getFamilyName(): String {
             return "Fix package name"
         }

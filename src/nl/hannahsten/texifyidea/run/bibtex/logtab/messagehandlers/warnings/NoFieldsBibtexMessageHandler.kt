@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexMessageHandler
  * Handle log messages which use line 3937 in bibtex.web, which is a special case where 'Warning--' and '--line' appear on the same line.
  */
 object NoFieldsBibtexMessageHandler : BibtexMessageHandler() {
+
     override fun findMessage(window: List<String>, currentFile: String): BibtexLogMessage? {
         // This case is handled by WarningBibtexMessageHandler
         BibtexLogMagicRegex.noFields.find(window.lastOrNull() ?: "")?.apply {
