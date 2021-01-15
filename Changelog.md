@@ -12,6 +12,7 @@ ETA: First half of February, 2021
 * Added label intention for \item commands. (#1719)
 * Added vertically centered colon inspection. (#1743)
 * Add inspection to encourage replacing \text{min} by \min for a lot of similar math operators. (#1737)
+* Added sectioning commands with label live template. (#1746)
 
 # Changes
 * Decreased size of gutter icons to 12x12. (#1715)
