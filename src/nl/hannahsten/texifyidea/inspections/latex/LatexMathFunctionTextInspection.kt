@@ -6,6 +6,8 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
@@ -16,6 +18,7 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.inMathContext
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.requiredParameter
+import nl.hannahsten.texifyidea.util.requiredParameters
 
 /**
  * @author Hannah Schellekens
@@ -39,7 +42,7 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
                             manager.createProblemDescriptor(
                                     affectedTextCommand,
                                     "Use math function instead of \\text",
-                                    MathFunctionFix(affectedTextCommand),
+                                    MathFunctionFix(SmartPointerManager.createPointer(affectedTextCommand)),
                                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                     isOntheFly
                             )
@@ -52,14 +55,15 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
     /**
      * @author Hannah Schellekens
      */
-    private class MathFunctionFix(val textCommand: LatexCommands) : LocalQuickFix {
+    private class MathFunctionFix(val textCommandPointer: SmartPsiElementPointer<LatexCommands>) : LocalQuickFix {
 
         override fun getFamilyName() = "Convert to math function"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val textCommand = textCommandPointer.element ?: return
             val document = textCommand.containingFile.document() ?: return
             val mathFunction = textCommand.requiredParameter(0)?.trim() ?: return
-            document.replaceString(textCommand.startOffset, textCommand.endOffset, "\\$mathFunction")
+            document.replaceString(textCommand.startOffset, textCommand.requiredParameters()[0].endOffset, "\\$mathFunction")
         }
     }
 

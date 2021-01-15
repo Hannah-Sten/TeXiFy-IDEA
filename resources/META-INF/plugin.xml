@@ -727,6 +727,9 @@
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexDocumentclassNotInRootInspection"
                          groupName="LaTeX" displayName="File that contains a document environment should contain a \documentclass command"
                          enabledByDefault="true"/>
+        <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexVerticallyCenteredColonInspection"
+                         groupName="LaTeX" displayName="Vertically uncentered colon"
+                         enabledByDefault="true"/>
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.LatexMathFunctionTextInspection"
                          groupName="LaTeX" displayName="Use math function instead of \text"
                          enabledByDefault="true"/>

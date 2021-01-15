@@ -13,6 +13,9 @@ public interface LatexParameter extends PsiLanguageInjectionHost {
   LatexOptionalParam getOptionalParam();
 
   @Nullable
+  LatexPictureParam getPictureParam();
+
+  @Nullable
   LatexRequiredParam getRequiredParam();
 
   boolean isValidHost();

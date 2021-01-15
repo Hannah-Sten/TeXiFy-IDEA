@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndexKey
+import nl.hannahsten.texifyidea.LatexParserDefinition
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 
 class LatexMagicCommentIndex : StringStubIndexExtension<LatexMagicComment>() {
@@ -10,4 +11,6 @@ class LatexMagicCommentIndex : StringStubIndexExtension<LatexMagicComment>() {
 
     @Suppress("RedundantCompanionReference")
     override fun getKey(): StubIndexKey<String, LatexMagicComment> = Companion.key()
+
+    override fun getVersion() = LatexParserDefinition.FILE.stubVersion
 }
