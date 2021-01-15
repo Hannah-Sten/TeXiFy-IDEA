@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GRAPHICX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.LISTINGS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NATBIB
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SIUNITX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.XCOLOR
@@ -198,12 +197,9 @@ enum class LatexRegularCommand(
     TEXTEXCLAMDOWN("textexclamdown", display = "¡"),
     TEXTGREATER("textgreater", display = ">"),
     TEXTIT("textit", "text".asRequired(Type.TEXT)),
-    // todo check below whether commands can be removed
     TEXTLESS("textless", display = "<"),
     TEXTLF("textlf", "text".asRequired(Type.TEXT)),
     TEXTMD("textmd", "text".asRequired(Type.TEXT)),
-    TEXTNORMAL("textnormal"),
-    TEXTPARAGRAPH("textparagraph"),
     TEXTPERIODCENTERED("textperiodcentered", display = "·"),
     TEXTQUESTIONDOWN("textquestiondown", display = "¿"),
     TEXTQUOTEDBLLEFT("textquotedblleft", display = "“"),
@@ -217,40 +213,22 @@ enum class LatexRegularCommand(
     TEXTSF("textsf", "text".asRequired(Type.TEXT)),
     TEXTSL("textsl", "text".asRequired(Type.TEXT)),
     TEXTSTERLING("textsterling", display = "£"),
-    TEXTSUBSCRIPT("textsubscript", "text".asRequired(Type.TEXT)),
-    TEXTSUPERSCRIPT("textsuperscript", "text".asRequired(Type.TEXT)),
     TEXTTRADEMARK("texttrademark", display = "™"),
     TEXTTT("texttt", "text".asRequired(Type.TEXT)),
     TEXTUNDERSCORE("textunderscore", display = "_"),
     TEXTUP("textup", "text".asRequired(Type.TEXT)),
     TEXTVISIBLESPACE("textvisiblespace", display = "␣"),
-    TEXTWIDTH("textwidth"),
-    THANKS("thanks", "to".asRequired(Type.TEXT)),
-    THICKLINES("thicklines"),
-    THINLINES("thinlines"),
-    THISPAGESTYLE("thispagestyle", "style".asRequired()),
     TIME("time"),
-    TINY("tiny"),
-    TITLE("title", "text".asRequired(Type.TEXT)),
-    TODAY("today"),
-    TOPMARGIN("topmargin"),
     TT("tt"),
-    TTFAMILY("ttfamily"),
-    TWOCOLUMN("twocolumn", "text".asOptional(Type.TEXT)),
     UNBOLDMATH("unboldmath"),
-    UNDERLINE("underline", "text".asRequired(Type.TEXT)),
-    UNITLENGTH("unitlength"),
     UPPERCASE("uppercase", "text".asRequired(Type.TEXT)),
     UPSHAPE("upshape"),
     URL("url", "url".asRequired(), dependency = LatexPackage.HYPERREF),
     USEPACKAGE("usepackage", "options".asOptional(), RequiredFileArgument("package", true, true, "sty")),
     VDOTS("vdots", display = "⋮"),
-    VLINE("vline"),
     VREF("vref", "key".asRequired(), dependency = CLEVEREF),
-    VSPACE("vspace", "length".asRequired()),
     VSPACE_STAR("vspace*", "length".asRequired()),
     WIDTH("width"),
-    XGLOBAL("xglobal", dependency = XCOLOR),
 
     /**
      * Commands with a color argument, used to display gutter icons. See [nl.hannahsten.texifyidea.util.Magic#Color.takeColorCommands].
@@ -345,9 +323,13 @@ enum class LatexRegularCommand(
     CITEAUTHOR_CAPITALIZED("Citeauthor", "keys".asRequired(), dependency = NATBIB),
     CITEAUTHOR_STAR_CAPITALIZED("Citeauthor*", "keys".asRequired(), dependency = NATBIB),
     CITEYEAR("citeyear", "keys".asRequired(), dependency = NATBIB),
+    CITEYEAR_STAR("citeyear*", "keys".asRequired(), dependency = NATBIB),
     CITEYEARPAR("citeyearpar", "keys".asRequired(), dependency = NATBIB),
+    CITETITLE("citetitle", "keys".asRequired(), dependency = NATBIB),
+    CITETITLE_STAR("citetitle*", "keys".asRequired(), dependency = NATBIB),
     CITENUM("citenum", "key".asRequired(), dependency = NATBIB),
     CITETEXT("citetext", "text".asRequired(), dependency = NATBIB),
+    NOCITE("nocide", "keys".asRequired(), dependency = NATBIB),
 
     /**
      * Biblatex commands
@@ -402,20 +384,6 @@ enum class LatexRegularCommand(
     FNOTECITE("fnotecite", "prenote".asOptional(), "postnote".asOptional(), "key".asRequired(), dependency = BIBLATEX),
     PARENTTEXT("parenttext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
     BRACKETTEXT("brackettext", "text".asRequired(Type.TEXT), dependency = BIBLATEX),
-
-    /**
-     * SIunitx commands
-     */
-    ANG("ang", "options".asOptional(), "angle".asRequired(), dependency = SIUNITX),
-    NUM("num", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
-    SI("si", "options".asOptional(), "unit".asRequired(), dependency = SIUNITX),
-    SI_NUM("SI", "options".asOptional(), "number".asRequired(), "pre-unit".asOptional(), "unit".asRequired(), dependency = SIUNITX),
-    NUMLIST("numlist", "options".asOptional(), "numbers".asRequired(), dependency = SIUNITX),
-    NUMRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), dependency = SIUNITX),
-    SILIST("SIlist", "options".asOptional(), "numbers".asRequired(), "unit".asRequired(), dependency = SIUNITX),
-    SIRANGE("numrange", "options".asOptional(), "number1".asRequired(), "number2".asRequired(), "unit".asRequired(), dependency = SIUNITX),
-    SISETUP("sisetup", "options".asRequired(), dependency = SIUNITX),
-    TABLENUM("tablenum", "options".asOptional(), "number".asRequired(), dependency = SIUNITX),
 
     /**
      * Algorithmicx

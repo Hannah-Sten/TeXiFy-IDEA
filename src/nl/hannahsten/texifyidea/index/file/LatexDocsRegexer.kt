@@ -21,7 +21,6 @@ object LatexDocsRegexer {
         Pair("""\\(cite|footnote)\{(\{[^}]*}|[^}])+?}\s*""".toRegex(), { "" }),
         // \cs command from the doctools package
         Pair("""(?<pre>[^|]|^)\\c[sn]\{(?<command>[^}]+?)}""".toRegex(), { result -> result.groups["pre"]?.value + "\\" + result.groups["command"]?.value }),
-        // todo use html formatting for textbf/cmd/env
         // Other commands, except when in short verbatim
         Pair<Regex, (MatchResult) -> String>("""(?<pre>[^|]|^)\\(?:textbf|emph|textsf|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex(), { result -> result.groups["pre"]?.value + result.groups["argument"]?.value }),
         // Short verbatim, provided by ltxdoc
