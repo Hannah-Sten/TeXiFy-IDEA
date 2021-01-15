@@ -1,6 +1,12 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
+import com.intellij.execution.ui.SettingsEditorFragment
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
+import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.options.ConfigurationException
@@ -8,10 +14,13 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.DropDownLink
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
@@ -238,10 +247,41 @@ class LatexSettingsEditor(private var project: Project?) : SettingsEditor<LatexR
         return panel
     }
 
+    /**
+     * Stolen from FragmentedSettingsBuilder
+     */
+    private class ToggleThing(name: String, val fragment: SettingsEditorFragment<*, *>? = null): ToggleAction(name) {
+        var toggle = false
+
+        override fun isSelected(e: AnActionEvent): Boolean {
+            return toggle
+        }
+
+        override fun setSelected(e: AnActionEvent, state: Boolean) {
+            toggle = state
+        }
+
+        override fun update(e: AnActionEvent) {
+            super.update(e)
+            e.presentation.isVisible = fragment?.isRemovable ?: true
+        }
+    }
+
     private fun createUIComponents() {
         // Layout
         panel = JPanel()
         panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
+
+        // todo work in progress
+        val actionGroup = DefaultActionGroup()
+        actionGroup.add(Separator())
+        actionGroup.add(ToggleThing("Toggle1"))
+        actionGroup.add(ToggleThing("Toggle2"))
+        val callback = {  } // todo focus lastSelected. FragmentedSettingsBuilder:190
+        var modifyOptions: DropDownLink<String>? = null
+        val popup: ListPopup = JBPopupFactory.getInstance().createActionGroupPopup("Title", actionGroup, DataManager.getInstance().getDataContext(modifyOptions), JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true, callback, -1)
+        modifyOptions = DropDownLink<String>("Modify options") { popup }
+        panel.add(modifyOptions)
 
         addCompilerPathField(panel)
 
