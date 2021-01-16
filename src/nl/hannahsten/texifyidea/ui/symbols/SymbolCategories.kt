@@ -564,7 +564,7 @@ object SymbolCategories {
             add(ABOVE_LEFT_ARROW, latex = "\\xleftarrow{<caret>}", image = "\\xleftarrow{abc}")
             add(ABOVE_RIGHT_ARROW, latex = "\\xrightarrow{<caret>}", image = "\\xrightarrow{abc}")
             add(STACKED_RELATION, latex = "\\stackrel{<caret>}{}", image = "\\stackrel{abc}{=}")
-            add(SQUARE_ROOT, latex = "\\sqrt{<caret>}", image = "\\sqrt{abc}")
+            add(SQUARE_ROOT, latex = "\\sqrt{<caret>}", image = "\\sqrt{x}")
             add(MIDDLE_DOT)
             add(COLON)
             add(LDOTP)
