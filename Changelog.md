@@ -11,8 +11,9 @@ ETA: First half of February, 2021
 * Added BibTeX unused entry inspection. (#1717)
 * Added label intention for \item commands. (#1719)
 * Added vertically centered colon inspection. (#1743)
-* Add inspection to encourage replacing \text{min} by \min for a lot of similar math operators. (#1737)
+* Added inspection to encourage replacing \text{min} by \min for a lot of similar math operators. (#1737)
 * Added sectioning commands with label live template. (#1746)
+* Added support for custom output directories to the 'Delete generated files' action. (#1745)
 
 # Changes
 * Decreased size of gutter icons to 12x12. (#1715)
@@ -24,6 +25,8 @@ ETA: First half of February, 2021
 
 # Bug fixes
 * Fixed compile gutter icons showing up on parameters. (#1734)
+* Fixed a bug with run configurations not being copied correctly. (#1745)
+* Fixed overriding backspace handlers in non-LaTeX files. (#1745)
 * Fixed crashes. (#1720, #1721)
 
 Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
