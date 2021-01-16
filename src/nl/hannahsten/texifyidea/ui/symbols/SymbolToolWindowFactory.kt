@@ -89,7 +89,9 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             add(JBScrollPane(panelSymbols,
                     JBScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-            ), BorderLayout.CENTER)
+            ).apply {
+                border = EmptyBorder(0, 0, 0, 0)
+            }, BorderLayout.CENTER)
         }
 
         /**
@@ -142,7 +144,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
                             // Selected category must match.
                             (selectedCategory == category || selectedCategory == SymbolCategory.ALL) &&
                                     // When a query is typed, must match as well.
-                                    (query.isBlank() || symbol.queryString().contains(query))
+                                    (query.isBlank() || symbol.queryString(category).contains(query))
                 }
             }
         }
@@ -173,12 +175,16 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
 
         /**
          * Generate a lowercase string through which to search.
+         *
+         * @param category
+         *          The category the symbol is in.
          */
-        private fun SymbolUiEntry.queryString() = buildString {
+        private fun SymbolUiEntry.queryString(category: SymbolCategory? = null) = buildString {
             command?.let { append(it.commandDisplay) }
             append(generatedLatex)
             append(dependency.name)
             append(description.replace(" ", ""))
+            category?.let { append(it.name.replace(" ", "").toLowerCase()) }
         }.toLowerCase()
     }
 }
