@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
@@ -49,6 +50,13 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
 fun Project.allFiles(type: FileType): Collection<VirtualFile> {
     val scope = GlobalSearchScope.projectScope(this)
     return FileTypeIndex.getFiles(type, scope)
+}
+
+/**
+ * Get all LaTeX run configurations in the project.
+ */
+fun Project.allRunConfigurations(): Collection<LatexRunConfiguration> {
+    return (RunManagerImpl.getInstanceImpl(this) as RunManager).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
 }
 
 /**
