@@ -16,6 +16,18 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
         myFixture.checkHighlighting()
     }
 
+    fun `test no warning when both arguments are optional`() {
+        testHighlighting("\\cite[p. 1]{book1}\\cite[aardappel]{Groente}")
+    }
+
+    fun `test no warning when one argument is optional`() {
+        testHighlighting("\\cite{book1}\\cite[aardappel]{Groente}")
+    }
+
+    fun `test warning for all cites without optional arguments`() {
+        testHighlighting("<warning>\\cite{book1}</warning>\\cite[aardappel]{Groente}<warning>\\cite{Doei}</warning>")
+    }
+
     fun testQuickfix() {
         myFixture.configureByText(
             LatexFileType,
@@ -34,6 +46,22 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
             """
             \cite{knuth1990,goossens1993}
             """.trimIndent()
+        )
+    }
+
+    fun `test quick fix with some optional parameters, replace first`() {
+        testQuickFix(
+            """\ci<caret>te{a}\cite[b]{c}\cite{d}\cite[e]{f}""",
+            """\cite{a,d}\cite[b]{c}\cite[e]{f}""",
+            2
+        )
+    }
+
+    fun `test quick fix with some optional parameters, replace second`() {
+        testQuickFix(
+            """\cite{a}\cite[b]{c}\cit<caret>e{d}\cite[e]{f}""",
+            """\cite[b]{c}\cite{a,d}\cite[e]{f}""",
+            2
         )
     }
 }
