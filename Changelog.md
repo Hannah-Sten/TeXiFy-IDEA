@@ -25,8 +25,8 @@ ETA: First half of February, 2021
 
 # Bug fixes
 * Fixed compile gutter icons showing up on parameters. (#1734)
-* Fixed a bug with run configurations not being copied correctly. (#1745)
-* Fixed overriding backspace handlers in non-LaTeX files. (#1745)
+* Fixed a bug with run configurations not being copied correctly. (#1728, #1745)
+* Fixed overriding backspace handlers in non-LaTeX files. (#1740, #1745)
 * Fixed crashes. (#1720, #1721)
 
 Thanks to Felix Berlakovich ([@fberlakovich](https://github.com/fberlakovich)) for contributing to this release.
