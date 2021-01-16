@@ -18,6 +18,8 @@ interface PdfViewer {
 
     val name: String?
     val displayName: String?
+
+    fun isAvailable(): Boolean
 }
 
 /**

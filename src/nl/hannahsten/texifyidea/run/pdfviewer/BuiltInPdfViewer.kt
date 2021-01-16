@@ -18,7 +18,13 @@ import com.intellij.openapi.vfs.LocalFileSystem
 class BuiltInPdfViewer : ExternalPdfViewer {
 
     override val displayName: String = "Built-in PDF Viewer"
-    override val name: String = displayName.capitalize().replace(" ", "")
+
+    /**
+     * The built-in pdf viewer is always available when the pdf viewer plugin is installed.
+     */
+    override fun isAvailable(): Boolean = true
+
+    override val name: String = displayName.toUpperCase().replace(" ", "-")
 
     override fun forwardSearch(pdfPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
         pdfPath ?: return

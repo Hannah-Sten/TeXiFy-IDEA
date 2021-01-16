@@ -29,7 +29,7 @@ enum class InternalPdfViewer(
     SUMATRA("sumatra", "Sumatra", null), // Dummy options to support Windows
     NONE("", "No PDF viewer", null);
 
-    fun isAvailable(): Boolean = availability[this] ?: false
+    override fun isAvailable(): Boolean = availability[this] ?: false
 
     /**
      * Check if the viewer is installed and available from the path.
@@ -64,7 +64,6 @@ enum class InternalPdfViewer(
     companion object {
 
         private val availability: Map<InternalPdfViewer, Boolean> by lazy {
-
             values().associateWith {
                 it.checkAvailability()
             }
