@@ -608,4 +608,13 @@ class LatexRunConfiguration constructor(
             ", outputFormat=" + outputFormat +
             '}'.toString()
     }
+
+    // Explicitly deep clone references, otherwise a copied run config has references to the original objects
+    override fun clone(): RunConfiguration {
+        return super.clone().also {
+            val runConfiguration = it as? LatexRunConfiguration ?: return@also
+            runConfiguration.outputPath = this.outputPath.clone()
+            runConfiguration.auxilPath = this.auxilPath.clone()
+        }
+    }
 }
