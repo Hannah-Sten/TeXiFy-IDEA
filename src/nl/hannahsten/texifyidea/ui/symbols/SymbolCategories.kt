@@ -406,6 +406,28 @@ object SymbolCategories {
         }
 
         createCategory("Delimiters") {
+            // Place the enclosing delimiters at the front:
+            // 1. Makes the symbol overview less cluttered.
+            // 2. Encourages usage of \left\right over standalone symbols.
+            add(DryUiEntry(description = "brackets", "\\left[ <caret> \\right]", "misc_brackets_pair.png", "\\left[...\\right]", true))
+            addLeftRight(LEFT_BRACKET_BOLD, RIGHT_BRACKET_BOLD, "bold brackets", "misc_bold_brackets_pair.png")
+            addLeftRight(LEFT_ANGLE_BRACKET, RIGHT_ANGLE_BRACKET, "angular brackets", "misc_angular_brackets_pair.png")
+            add(DryUiEntry(description = "absolute value", "\\left| <caret> \\right|", "misc_absolute_value_pair.png", "\\left|...\\right|", true))
+            addLeftRight(DOUBLE_VERTICAL_LINE, DOUBLE_VERTICAL_LINE, "length", "misc_length_pair.png")
+            addLeftRight(LEFT_CEIL, RIGHT_CEIL, "ceiling", "misc_ceiling_pair.png")
+            addLeftRight(LEFT_CEIL_BOLD, RIGHT_CEIL_BOLD, "bold ceiling", "misc_bold_ceiling_pair.png", requireLeftRight = false)
+            addLeftRight(LEFT_FLOOR, RIGHT_FLOOR, "floor", "misc_floor_pair.png")
+            addLeftRight(LEFT_FLOOR_BOLD, RIGHT_FLOOR_BOLD, "bold floor", "misc_bold_floor_pair.png", requireLeftRight = false)
+            add(DryUiEntry(description = "parentheses", "\\left( <caret> \\right)", "misc_parentheses_pair.png", "\\left(...\\right)", true))
+            addLeftRight(LEFT_PARENTHESIS_BOLD, RIGHT_PARENTHESIS_BOLD, "bold parentheses", "misc_bold_parentheses_pair.png", requireLeftRight = false)
+            add(DryUiEntry(description = "braces", "\\left\\{ <caret> \\right\\}", "misc_braces_pair.png", "\\left\\{...\\right\\}", true))
+            addLeftRight(LEFT_MOUSTACHE, RIGHT_MOUSTACHE, "moustaches", "misc_moustaches_pair.png")
+            addLeftRight(LEFT_GROUP, RIGHT_GROUP, "group", "misc_group_pair.png")
+            addLeftRight(BRACEVERT, BRACEVERT, "bracevert", "misc_bracevert_pair.png")
+            addLeftRight(LEFT_BAG, RIGHT_BAG, "bag", "misc_bag_pair.png", requireLeftRight = false)
+            addLeftRight(LEFT_BAG_BOLD, RIGHT_BAG_BOLD, "bold bag", "misc_bold_bag_pair.png", requireLeftRight = false)
+
+            // Single delimiters.
             add(DryUiEntry(description = "left bracket", "[", "misc_left_bracket.png", "[", true))
             add(DryUiEntry(description = "right bracket", "]", "misc_right_bracket.png", "]", true))
             add(LEFT_BRACKET_BOLD)
@@ -441,14 +463,14 @@ object SymbolCategories {
             add(RIGHT_VERTICAL_LINE)
             add(LEFT_DOUBLE_VERTICAL_LINES)
             add(RIGHT_DOUBLE_VERTICAL_LINES)
-            add(UPPER_LEFT_CORNER)
-            add(UPPER_RIGHT_CORNER)
-            add(LOWER_LEFT_CORNER)
-            add(LOWER_RIGHT_CORNER)
             add(LEFT_BAG)
             add(RIGHT_BAG)
             add(LEFT_BAG_BOLD)
             add(RIGHT_BAG_BOLD)
+            add(UPPER_LEFT_CORNER)
+            add(UPPER_RIGHT_CORNER)
+            add(LOWER_LEFT_CORNER)
+            add(LOWER_RIGHT_CORNER)
         }
 
         createCategory("Greek") {
@@ -489,6 +511,27 @@ object SymbolCategories {
     else categories[category] ?: emptyList()
 
     /**
+     * Adds a symbol entry for a Left/Right pair that inserts \leftX ... \rightX.
+     *
+     * @param requireLeftRight
+     *          True if the commands should be preceded with \left and \right. False if the commands alone suffice.
+     */
+    fun MutableList<SymbolUiEntry>.addLeftRight(
+            left: LatexCommand, right: LatexCommand, description: String, fileName: String, requireLeftRight: Boolean = true
+    ) {
+        val leftCmd = if (requireLeftRight) "\\left" else ""
+        val rightCmd = if (requireLeftRight) "\\right" else ""
+        add(DryUiEntry(
+                description = description,
+                generatedLatex = "$leftCmd${left.commandDisplay} <caret> $rightCmd${right.commandDisplay}",
+                fileName = fileName,
+                imageLatex = "$leftCmd${left.commandDisplay}...$rightCmd${right.commandDisplay}",
+                isMathSymbol = true,
+                dependency = left.dependency
+        ))
+    }
+
+    /**
      * Adds a UI entry for the given command to the entry list.
      * For the parameters see [CommandUiEntry].
      */
@@ -498,7 +541,18 @@ object SymbolCategories {
             fileName: String? = null,
             description: String? = null,
             image: String? = null
-    ) = add(CommandUiEntry(command, latex, fileName, description, image))
+    ) = add(command.toEntry(latex, fileName, description, image))
+
+
+    /**
+     * Turns the command into a ui entry.
+     */
+    private fun LatexCommand.toEntry(
+            latex: String? = null,
+            fileName: String? = null,
+            description: String? = null,
+            image: String? = null
+    ) = CommandUiEntry(this, latex, fileName, description, image)
 
     /**
      * Adds a new category to the map and initializes the symbols.
