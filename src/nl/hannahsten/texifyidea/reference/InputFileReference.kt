@@ -11,7 +11,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -37,13 +36,6 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
     override fun resolve(): PsiFile? {
         return resolve(true)
-    }
-
-    /**
-     * Return true if this reference refers to a graphics file, so that this reference may need the \graphicspath command in the file set to resolve correctly.
-     */
-    fun referencesGraphicsFile(): Boolean {
-        return key == LatexRegularCommand.INCLUDEGRAPHICS.commandDisplay
     }
 
     /**
