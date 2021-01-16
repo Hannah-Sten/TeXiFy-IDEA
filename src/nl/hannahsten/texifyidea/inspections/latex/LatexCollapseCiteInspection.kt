@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.*
@@ -91,12 +91,12 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         return bundle
     }
 
-    private fun LatexCommands.nextCite() = searchCite { it.nextSiblingIgnoreWhitespace() as? LatexContent }
+    private fun LatexCommands.nextCite() = searchCite { it.nextSiblingIgnoreWhitespace() as? LatexNoMathContent }
 
-    private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexContent }
+    private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexNoMathContent }
 
-    private inline fun LatexCommands.searchCite(nextThing: (LatexContent) -> LatexContent?): LatexCommands? {
-        val content = grandparent(2) as? LatexContent ?: return null
+    private inline fun LatexCommands.searchCite(nextThing: (LatexNoMathContent) -> LatexNoMathContent?): LatexCommands? {
+        val content = firstParentOfType(LatexNoMathContent::class) ?: return null
         val nextContent = nextThing(content) ?: return null
 
         var cite = nextContent.firstChildOfType(LatexCommands::class)
@@ -116,7 +116,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         return if (nextCommandIsACitation && previousCommandIsOfTheSameType && equalStars) cite else null
     }
 
-    private fun LatexContent.isCorrect(): Boolean {
+    private fun LatexNoMathContent.isCorrect(): Boolean {
         val normalText = firstChildOfType(LatexParameterText::class) ?: return false
         return normalText.text.length == 1
     }

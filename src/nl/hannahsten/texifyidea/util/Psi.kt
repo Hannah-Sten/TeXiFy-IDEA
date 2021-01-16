@@ -10,12 +10,7 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import kotlin.reflect.KClass
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// // PSI ELEMENT ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Get the offset where the psi element ends.
@@ -164,14 +159,38 @@ fun PsiElement.inComment() = inDirectEnvironmentContext(Environment.Context.COMM
 }
 
 /**
- * @see LatexPsiUtil.getPreviousSiblingIgnoreWhitespace
+ * Finds the previous sibling of an element but skips over whitespace.
+ *
+ * @receiver The element to get the previous sibling of.
+ * @return The previous sibling of the given psi element, or `null` when there is no
+ * previous sibling.
  */
-fun PsiElement.previousSiblingIgnoreWhitespace() = LatexPsiUtil.getPreviousSiblingIgnoreWhitespace(this)
+fun PsiElement.previousSiblingIgnoreWhitespace(): PsiElement? {
+    var sibling: PsiElement? = this
+    while (sibling?.prevSibling.also { sibling = it } != null) {
+        if (sibling !is PsiWhiteSpace) {
+            return sibling
+        }
+    }
+    return null
+}
 
 /**
- * @see LatexPsiUtil.getNextSiblingIgnoreWhitespace
+ * Finds the next sibling of an element but skips over whitespace.
+ *
+ * @receiver The element to get the next sibling of.
+ * @return The next sibling of the given psi element, or `null` when there is no previous
+ * sibling.
  */
-fun PsiElement.nextSiblingIgnoreWhitespace() = LatexPsiUtil.getNextSiblingIgnoreWhitespace(this)
+fun PsiElement.nextSiblingIgnoreWhitespace(): PsiElement? {
+    var sibling: PsiElement? = this
+    while (sibling?.nextSibling.also { sibling = it } != null) {
+        if (sibling !is PsiWhiteSpace) {
+            return sibling
+        }
+    }
+    return null
+}
 
 /**
  * Finds the next sibling of the element that has the given type.
@@ -210,16 +229,6 @@ fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
 
     return null
 }
-
-/**
- * @see LatexPsiUtil.getAllChildren
- */
-fun PsiElement.allChildren(): List<PsiElement> = LatexPsiUtil.getAllChildren(this)
-
-/**
- * @see LatexPsiUtil.getChildren
- */
-fun PsiElement.allLatexChildren(): List<PsiElement> = LatexPsiUtil.getChildren(this)
 
 /**
  * Finds the `generations`th parent of the psi element.
@@ -355,141 +364,3 @@ fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequenc
  * Get a sequence of all parents of this element.
  */
 fun PsiElement.parents(): Sequence<PsiElement> = generateSequence(this) { it.parent }
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// // LATEX ELEMENTS ////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Looks up the name of the environment in the required parameter.
- */
-fun LatexEnvironment.name(): LatexParameterText? {
-    return firstChildOfType(LatexParameterText::class)
-}
-
-/**
- * Checks if the environment contains the given context.
- */
-fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
-    val name = name()?.text ?: return false
-    val environment = Environment[name] ?: return false
-    return environment.context == context
-}
-
-/**
- * Get the environment name of the begin command.
- */
-fun LatexBeginCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
-
-/**
- * Finds the [LatexEndCommand] that matches the begin command.
- */
-fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEndCommand::class)
-
-/**
- * Looks up all the required parameters from this begin command.
- *
- * @return A list of all required parameters.
- */
-fun LatexBeginCommand.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
-    .filter { it.requiredParam != null }
-    .mapNotNull(LatexParameter::getRequiredParam)
-    .toList()
-
-/**
- * Checks if the given latex command marks a valid entry point for latex compilation.
- *
- * A valid entry point means that a latex compilation can start from the file containing the
- * given command.
- *
- * @return `true` if the command marks a valid entry point, `false` if not.
- */
-fun LatexBeginCommand.isEntryPoint(): Boolean {
-    // Currently: only allowing `\begin{document}`.
-    val requiredParameters = requiredParameters()
-    return requiredParameters.firstOrNull()?.text == "{document}"
-}
-
-/**
- * Get the environment name of the end command.
- */
-fun LatexEndCommand.environmentName(): String? = beginOrEndEnvironmentName(this)
-
-/**
- * Get the environment name of a begin/end command.
- *
- * @param element
- *              Either a [LatexBeginCommand] or a [LatexEndCommand]
- */
-private fun beginOrEndEnvironmentName(element: PsiElement) = element.firstChildOfType(LatexParameterText::class)?.text
-
-/**
- * Finds the [LatexBeginCommand] that matches the end command.
- */
-fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(LatexBeginCommand::class)
-
-/**
- * Checks if the latex content objects is a display math environment.
- */
-fun LatexContent.isDisplayMath() = firstChildOfType(LatexDisplayMath::class) != null && firstChildOfType(LatexEnvironment::class) == null
-
-/*
- * Technically it's impossible to determine for all cases whether a users wants to compile with biber or biblatex.
- * But often when people use the biblatex package they use biber.
- * And often, when they use biber they use \printbibliography instead of \bibliography.
- * Hence, the following methods often work - and if they don't, users can easily change the compiler in the run config.
- */
-
-/**
- * Checks if the fileset for this file has a bibliography included.
- *
- * @return `true` when the fileset has a bibliography included, `false` otherwise.
- */
-fun PsiFile.hasBibliography() = this.commandsInFileSet().any { it.name == "\\bibliography" }
-
-/**
- * Checks if the fileset for this file uses \printbibliography, in which case the user probably wants to use biber.
- *
- * @return `true` when the fileset has a bibliography included, `false` otherwise.
- */
-fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibliography" }
-
-/**
- * Splits the first normal text child element of [element] on [delimiter].
- *
- * Note that only the first [LatexParameterText] child content is processed.
- * When other PSI children are present in the parameter, these are ignored.
- *
- * @return The split contents.
- */
-fun splitContent(element: PsiElement, delimiter: String = ",") = element.firstChildOfType(LatexParameterText::class)?.text?.split(delimiter) ?: emptyList()
-
-/**
- * Splits the plain text contents on [delimiter].
- *
- * Note that only the first [LatexParameterText] child content is processed.
- * When other PSI children are present in the parameter, these are ignored.
- *
- * @return The split contents.
- */
-fun LatexRequiredParam.splitContent(delimiter: String = ",") = splitContent(this, delimiter)
-
-/**
- * Splits the plain text contents on [delimiter].
- *
- * Note that only the first [LatexParameterText] child content is processed.
- * When other PSI children are present in the parameter, these are ignored.
- *
- * @return The split contents.
- */
-fun LatexOptionalParam.splitContent(delimiter: String = ",") = splitContent(this, delimiter)
-
-/**
- * Splits the plain text contents on [delimiter].
- *
- * Note that only the first [LatexParameterText] child content is processed.
- * When other PSI children are present in the parameter, these are ignored.
- *
- * @return The split contents.
- */
-fun LatexParameter.splitContent(delimiter: String = ",") = splitContent(this, delimiter)

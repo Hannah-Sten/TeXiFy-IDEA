@@ -30,17 +30,10 @@ class LatexNonMatchingIfInspectionTest : TexifyInspectionTestBase(LatexNonMatchi
         """.trimIndent()
     )
 
-    fun `test newfi not opened`() = testHighlighting(
+    fun `test newif not opened`() = testHighlighting(
         """
         \newif\ifpaper
         <error descr="No matching \if-command found">\fi</error>
         """.trimIndent()
     )
-
-//    fun `test fake custom if-like command`() = testHighlighting(
-//        """
-//        \newcommand{\iflam}{if something}
-//        \iflam
-//        """.trimIndent()
-//    )
 }
