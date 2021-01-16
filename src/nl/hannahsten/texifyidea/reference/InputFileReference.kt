@@ -41,8 +41,10 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
     /**
      * @param lookForInstalledPackages Whether to look for packages installed elsewhere on the filesystem.
      * Set to false when it would make the operation too expensive, for example when trying to calculate the fileset of many files.
+     * @param includeGraphicsFiles True if we also need to resolve to graphics files. Doing so is really expensive at the moment (at least until the implementation in LatexGraphicsPathProvider is improved): for projects with 500+ include commands in hundreds of files this can take 10 seconds in total if you call this function for every include command.
+     * However, note that doing only one resolve is not too expensive at all (10 seconds divided by 500 commands/resolves) so this is not a problem when doing only one resolve (if requested by the user).
      */
-    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null): PsiFile? {
+    fun resolve(lookForInstalledPackages: Boolean, givenRootFile: VirtualFile? = null, includeGraphicsFiles: Boolean = true): PsiFile? {
         // IMPORTANT In this method, do not use any functionality which makes use of the file set, because this function is used to find the file set so that would cause an infinite loop
 
         // Get a list of extra paths to search in for the file, absolute or relative (to the directory containing the root file)
@@ -95,8 +97,10 @@ class InputFileReference(element: LatexCommands, val range: TextRange, val exten
 
         // Try search paths
         if (targetFile == null) {
-            // Add the graphics paths to the search paths
-            searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
+            if (includeGraphicsFiles) {
+                // Add the graphics paths to the search paths
+                searchPaths.addAll(LatexGraphicsPathProvider().getGraphicsPathsWithoutFileSet(element))
+            }
             for (searchPath in searchPaths) {
                 val path = if (!searchPath.endsWith("/")) "$searchPath/" else searchPath
                 targetFile = rootDirectory.findFile(path + processedKey, extensions)
