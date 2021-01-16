@@ -98,22 +98,40 @@ fun PsiFile.isUsed(`package`: LatexPackage) = isUsed(`package`.name)
  */
 internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
     val result = HashSet<PsiFile>()
-    referencedFiles(result, rootFile)
+    referencedFiles(result, rootFile, mutableSetOf())
     return result
 }
 
 /**
- * Recursive implementation of [referencedFiles].
+ * Assuming that all given references point to graphics files, resolve them.
  */
-private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
+private fun resolveGraphicsReferences(references: Set<InputFileReference>) {
+
+}
+
+/**
+ * Recursive implementation of [referencedFiles].
+ *
+ * @param remainingGraphicsReferences References that need to be resolved after completing the fileset for all LaTeX files.
+ */
+private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile, remainingGraphicsReferences: MutableSet<InputFileReference>) {
     LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
         command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile) }
+            .mapNotNull {
+                // When resolving graphics references, we need the fileset in order to find the \graphicspath command in that fileset, so we can only resolve them at the end.
+                if (it.referencesGraphicsFile()) {
+                    remainingGraphicsReferences.add(it)
+                    null
+                }
+                else {
+                    it.resolve(false, rootFile)
+                }
+            }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
                 files.add(it)
-                it.referencedFiles(files, rootFile)
+                it.referencedFiles(files, rootFile, remainingGraphicsReferences)
             }
     }
 }
