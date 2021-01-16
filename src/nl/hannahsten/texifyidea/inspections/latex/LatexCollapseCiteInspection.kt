@@ -48,7 +48,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             }
 
             val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
-            if (bundle.size <= 1 || !bundle.contains(cmd)) {
+            if (bundle.size < 2 || !bundle.contains(cmd)) {
                 continue
             }
 
@@ -120,7 +120,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
     }
 
     /**
-     * @param citeBundle a bundle of cite commands that have to be merged into one command. All commands
+     * @property citeBundle a bundle of cite commands that have to be merged into one command. All commands
      * in this bundle have only required parameters, as cites with optional parameters should not
      * be collapsed.
      */
@@ -144,17 +144,18 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
                 .joinToString(",")
 
             // Find the cite command that has to be replaced. When the bundle contains a gap, this is the command
-            // underneath the caret. When the bundle does not contain a gap this is the first command, as it doesn't matter
-            // whichever one we pick.
-            val targetCite = if (!bundleContainsGap) sortedBundle.firstOrNull() ?: return
-            else {
-                val editor = FileEditorManager.getInstance(project).selectedTextEditor
-                editor?.caretOffset()?.let {
-                    sortedBundle.first { cite -> cite.endOffset >= it }
-                }
-                    ?: sortedBundle.lastOrNull()
-                    ?: return
+            // underneath the caret.
+            val targetCite = if (bundleContainsGap) {
+                val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return
+                sortedBundle.firstOrNull { it.endOffset >= editor.caretOffset() }
+                    // When something went wrong with finding a cite at the caret we target the last of the cites
+                    // based on the assumption that cites that have an optional argument are more specific and/or
+                    // important cites and "should" come first.
+                    ?: sortedBundle.lastOrNull() ?: return
             }
+            // When the bundle does not contain a gap this is the first command, as it doesn't matter
+            // whichever one we pick.
+            else sortedBundle.firstOrNull() ?: return
 
             // Construct the entire text of the new cite command.
             val star = if (targetCite.hasStar()) "*" else ""
@@ -163,7 +164,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             val psiHelper = LatexPsiHelper(project)
             for (cite in sortedBundle) {
                 // Replace the target cite with the new cite command, using the psi tree.
-                if (cite == targetCite) cite.replace(psiHelper.createFromText(replacement).firstChild)
+                if (cite == targetCite) {
+                    cite.replace(psiHelper.createFromText(replacement).firstChild)
+                }
                 // Remove any other cite from the psi tree.
                 else cite.parent.node.removeChild(cite.node)
             }
