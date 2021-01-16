@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
+import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType

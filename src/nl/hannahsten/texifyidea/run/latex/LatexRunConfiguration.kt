@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.diagnostic.logging.LogConsoleManagerBase
+import com.intellij.execution.CommonProgramRunConfigurationParameters
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
@@ -20,6 +21,7 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.util.PathUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
@@ -28,7 +30,7 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
-import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.run.latex.ui.NewLatexSettingsEditor
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -50,7 +52,7 @@ class LatexRunConfiguration constructor(
     project: Project,
     factory: ConfigurationFactory,
     name: String
-) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
+) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration, CommonProgramRunConfigurationParameters {
 
     companion object {
 
@@ -82,13 +84,7 @@ class LatexRunConfiguration constructor(
     var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
-    var compilerArguments: String? = null
-        set(compilerArguments) {
-            field = compilerArguments?.trim()
-            if (field?.isEmpty() == true) {
-                field = null
-            }
-        }
+    var compilerArguments: String? by options::compilerArguments
 
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
@@ -167,8 +163,18 @@ class LatexRunConfiguration constructor(
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
 
+    override fun getDefaultOptionsClass(): Class<out LatexRunConfigurationOptions> {
+        // Data holder for the options
+        return LatexRunConfigurationOptions::class.java
+    }
+
+    override fun getOptions(): LatexRunConfigurationOptions {
+        return super.getOptions() as LatexRunConfigurationOptions
+    }
+
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
-        return LatexSettingsEditor(project)
+        return NewLatexSettingsEditor(this)
+//        return LatexSettingsEditor(project)
     }
 
     override fun createAdditionalTabComponents(
@@ -607,5 +613,30 @@ class LatexRunConfiguration constructor(
             ", mainFile=" + mainFile +
             ", outputFormat=" + outputFormat +
             '}'.toString()
+    }
+
+    override fun getProgramParameters() = options.compilerArguments
+
+    override fun setProgramParameters(value: String?) {
+        options.compilerArguments = value
+    }
+
+    override fun getWorkingDirectory(): String? = options.workingDirectory ?: PathUtil.toSystemDependentName(project.basePath)
+
+    override fun setWorkingDirectory(value: String?) {
+        val normalized = PathUtil.toSystemIndependentName(value?.ifBlank { null }?.trim())
+        options.workingDirectory = if (normalized != project.basePath) normalized else null
+    }
+
+    override fun getEnvs() = options.env
+
+    override fun setEnvs(envs: MutableMap<String, String>) {
+        options.env = envs
+    }
+
+    override fun isPassParentEnvs() = options.isPassParentEnv
+
+    override fun setPassParentEnvs(passParentEnvs: Boolean) {
+        options.isPassParentEnv = passParentEnvs
     }
 }
