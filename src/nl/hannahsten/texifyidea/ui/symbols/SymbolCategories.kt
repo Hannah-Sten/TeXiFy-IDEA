@@ -16,6 +16,8 @@ object SymbolCategories {
     val categories: Map<SymbolCategory, List<SymbolUiEntry>> = LinkedHashMap<SymbolCategory, List<SymbolUiEntry>>().apply {
 
         createCategory("Operators") {
+            add(DryUiEntry(description = "plus sign", "+", "misc_plus.png", "+", true))
+            add(DryUiEntry(description = "minus sign", "-", "misc_minus.png", "-", true))
             add(PLUS_MINUS)
             add(MINUS_PLUS)
             add(TIMES)
@@ -31,6 +33,7 @@ object SymbolCategories {
             add(DOT_PLUS)
             add(LEFT_THREE_TIMES)
             add(RIGHT_THREE_TIMES)
+            add(DryUiEntry(description = "factorial", "!", "misc_factorial.png", "!", true))
             add(AMALGAMATION)
             add(CIRCLED_TIMES)
             add(CIRCLED_PLUS)
@@ -221,7 +224,7 @@ object SymbolCategories {
             add(MID_SHORT)
             add(NOT_MID_SHORT)
             add(NOT_PARALLEL_SHORT)
-            add(DryUiEntry(description = "lesser than", "<", "misc_lesser.png", "<", true))
+            add(DryUiEntry(description = "less than", "<", "misc_lesser.png", "<", true))
             add(DryUiEntry(description = "greater than", ">", "misc_greater.png", ">", true))
             add(NOT_LESS_THAN)
             add(NOT_GREATER_THAN)
