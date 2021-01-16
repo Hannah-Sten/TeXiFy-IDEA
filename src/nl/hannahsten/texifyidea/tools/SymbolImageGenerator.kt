@@ -65,14 +65,14 @@ private fun convertToImage(
     // Create pdf.
     ProcessBuilder(
             "pdflatex", "-job-name=texify-symbol", "-aux-directory=\"$auxilDirectory\"", latexFileName
-    ).directory(File(symbolDirectory)).start().waitFor(10, TimeUnit.SECONDS)
+    ).directory(File(symbolDirectory)).start().waitFor(6, TimeUnit.SECONDS)
 
     // Convert pdf to image.
     val imageName = if (theme == Theme.DARK) symbol.fileNameDark else symbol.fileName
     ProcessBuilder(
             "magick", "convert", "-density", DENSITY.toString(), "-quality", QUALITY.toString(), "texify-symbol.pdf",
             imageName
-    ).directory(File(symbolDirectory)).start().waitFor(10, TimeUnit.SECONDS)
+    ).directory(File(symbolDirectory)).start().waitFor(6, TimeUnit.SECONDS)
 
     // Delete leftover pdf.
     File("$symbolDirectory/texify-symbol.pdf").delete()
