@@ -39,7 +39,7 @@
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
-
+    <depends optional="true" config-file="intellij-pdf-viewer.xml">com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer</depends>
     <description><![CDATA[
         <p>
             Plugin for LaTeX and BibTeX support in IntelliJ.
@@ -835,4 +835,10 @@
             <descriptionDirectoryName>LatexLanguageInjectionIntention</descriptionDirectoryName>
         </intentionAction>
     </extensions>
+
+    <extensionPoints>
+        <extensionPoint name="pdfViewer"
+                        interface="nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer"
+                        dynamic="true"/>
+    </extensionPoints>
 </idea-plugin>
