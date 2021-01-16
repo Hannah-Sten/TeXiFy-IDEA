@@ -124,7 +124,7 @@ private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile:
                     null
                 }
                 else {
-                    it.resolve(false, rootFile)
+                    it.resolve(false, rootFile, false)
                 }
             }
             .forEach {
