@@ -8,10 +8,7 @@ import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
-import nl.hannahsten.texifyidea.lang.Argument
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.RequiredArgument
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -32,8 +29,8 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
             is LatexMathCommand -> {
                 insertMathCommand(`object`, insertionContext, lookupElement)
             }
-            is LatexRegularCommand -> {
-                insertNoMathCommand(`object`, insertionContext, lookupElement)
+            is LatexRegularCommand, is LatexCommand -> {
+                insertNoMathCommand(`object` as LatexCommand, insertionContext, lookupElement)
             }
         }
     }
@@ -48,7 +45,7 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         }
     }
 
-    private fun insertNoMathCommand(noMathCommand: LatexRegularCommand, context: InsertionContext, lookupElement: LookupElement) {
+    private fun insertNoMathCommand(noMathCommand: LatexCommand, context: InsertionContext, lookupElement: LookupElement) {
         if (noMathCommand.autoInsertRequired()) {
             insert(context, lookupElement)
         }
