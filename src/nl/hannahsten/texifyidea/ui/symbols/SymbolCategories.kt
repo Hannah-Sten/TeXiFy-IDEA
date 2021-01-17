@@ -1007,7 +1007,6 @@ object SymbolCategories {
             image: String? = null
     ) = add(command.toEntry(latex, fileName, description, image))
 
-
     /**
      * Turns the command into a ui entry.
      */

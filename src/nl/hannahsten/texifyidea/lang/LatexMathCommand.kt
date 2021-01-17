@@ -308,8 +308,6 @@ enum class LatexMathCommand(
     IN_PLUS("inplus", dependency = STMARYRD),
     REVERSED_IN_PLUS("niplus", dependency = STMARYRD),
 
-
-
     /*
      * Mathtools Coloneq
      */

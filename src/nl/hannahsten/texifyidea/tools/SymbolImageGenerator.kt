@@ -1,12 +1,8 @@
 package nl.hannahsten.texifyidea.tools
 
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
-import nl.hannahsten.texifyidea.ui.symbols.CommandUiEntry
 import nl.hannahsten.texifyidea.ui.symbols.SymbolCategories
 import nl.hannahsten.texifyidea.ui.symbols.SymbolUiEntry
 import nl.hannahsten.texifyidea.util.encloseWhen
-import nl.hannahsten.texifyidea.util.println
-import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
 import java.util.concurrent.TimeUnit
 

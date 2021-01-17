@@ -1,26 +1,12 @@
 package nl.hannahsten.texifyidea.action.debug
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.externalSystem.model.ProjectKeys
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.ui.DialogBuilder
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.util.Consumer
-import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.tools.generateSymbolImages
-import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import java.util.regex.Pattern
-import javax.swing.JLabel
-import javax.swing.SwingConstants
+import nl.hannahsten.texifyidea.util.toastInfo
 
 /**
  * @author Hannah Schellekens

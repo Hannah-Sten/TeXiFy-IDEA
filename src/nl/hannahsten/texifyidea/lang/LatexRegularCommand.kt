@@ -487,7 +487,7 @@ enum class LatexRegularCommand(
     AC("AC", dependency = WASYSYM, display = "∼"),
     TEXT_UPSIDE_DOWN_OMEGA("agemO", dependency = WASYSYM, display = "℧"),
     APL_BOX("APLbox", dependency = WASYSYM, display = "⎕"),
-    APL_CIRCLE("APLcirc", dependency = WASYSYM,),
+    APL_CIRCLE("APLcirc", dependency = WASYSYM),
     APL_COMMENT("APLcomment", dependency = WASYSYM),
     APL_DOWN("APLdown", dependency = WASYSYM, display = "⍗"),
     APL_DOWN_ARROW_BOX("APLdownarrowbox", dependency = WASYSYM),
