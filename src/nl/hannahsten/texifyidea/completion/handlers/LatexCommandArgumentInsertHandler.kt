@@ -102,6 +102,7 @@ class LatexCommandArgumentInsertHandler(val arguments: List<Argument>? = null) :
         // context.startOffset is the offset of the start of the just inserted text.
         val insertedText = document.text.substring(context.startOffset, offset)
         val indexFirstSpace = insertedText.indexOfFirst { it == ' ' }
+        if (indexFirstSpace == -1) return
         document.deleteString(context.startOffset + indexFirstSpace, offset)
     }
 }
