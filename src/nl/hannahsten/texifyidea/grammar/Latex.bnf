@@ -101,7 +101,7 @@ parameter ::= optional_param | required_param | picture_param {
 // will be seen as simply an open bracket, but '[x]' at the same location will
 // be parsed as optional parameter.
 // https://stackoverflow.com/a/48709143/6629569
-optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)*) | optional_param_content*) CLOSE_BRACKET { pin=3 }
+optional_param ::= OPEN_BRACKET ( (keyval_pair  (COMMA keyval_pair)* COMMA?) | optional_param_content*) CLOSE_BRACKET { pin=3 }
 
 required_param ::= OPEN_BRACE required_param_content* CLOSE_BRACE { pin=1 }
 
