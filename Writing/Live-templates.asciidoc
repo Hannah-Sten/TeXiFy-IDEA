@@ -10,7 +10,7 @@ image::https://raw.githubusercontent.com/wiki/Hannah-Sten/TeXiFy-IDEA/Writing/fi
 Currently implemented by default are live templates for:
 
 - figures, tables, itemize, enumerate, and in math for summations and integrals;
-- sectioning with automatic label (triggered with `\partl`, `\chapl`, `\secl`, etc.).
+- sectioning with automatic label (triggered with `\partl`, `\chapl`, `\secl`, etc.), _since b0.7.3_.
 
 You can find these live templates, as well as add your own, under menu:File[Settings > Editor > Live Templates > LaTeX].
 
