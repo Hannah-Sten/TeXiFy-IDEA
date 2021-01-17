@@ -18,10 +18,8 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
-import java.awt.ScrollPane
 import javax.swing.JButton
 import javax.swing.JPanel
-import javax.swing.JScrollPane
 import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 
@@ -155,10 +153,25 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
         private fun insertSymbol(symbol: SymbolUiEntry) {
             val editor = project.currentTextEditor()?.editor ?: return
             val originalCaret = editor.caretOffset()
+            val selection = editor.selectionModel
 
             val latex = symbol.generatedLatex
-            val textToInsert = latex.replace("<caret>", "")
-            editor.insertAtCaretAndMove(textToInsert)
+            val caretLocationInGeneratedLatex = latex.indexOf("<caret>")
+
+            // When there is is a selection and a <caret> position is defined in the generated latex,
+            // then the generated latex can be seen as 2 parts. If there is text selected, enclose the
+            // selected text by these two parts. When there is no caret, it is interpreted as ending at the end
+            // of the generated latex which means just appending
+            if (selection.selectionEnd - selection.selectionStart > 0 && caretLocationInGeneratedLatex > 0) {
+                WriteCommandAction.runWriteCommandAction(project) {
+                    val parts = latex.split("<caret>")
+                    editor.document.insertString(selection.selectionEnd, parts[1])
+                    editor.document.insertString(selection.selectionStart, parts[0])
+                    editor.caretModel.moveToOffset(selection.selectionEnd + latex.length - 7 /* <caret> */)
+                }
+            }
+            // Nothing needs to be enclosed: just append.
+            else editor.insertAtCaretAndMove(latex.replace("<caret>", ""))
 
             // Import the required package.
             WriteCommandAction.runWriteCommandAction(project) {
@@ -166,9 +179,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             }
 
             // When <caret> is defined, the cursor ends up at the location of <caret>
-            val caretLocationInGeneratedLatex = latex.indexOf("<caret>")
             if (caretLocationInGeneratedLatex < 0) return
-
             val newCaret = originalCaret + caretLocationInGeneratedLatex
             editor.caretModel.moveToOffset(newCaret)
         }
