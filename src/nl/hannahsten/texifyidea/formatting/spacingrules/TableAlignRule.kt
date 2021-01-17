@@ -239,7 +239,7 @@ private fun getSpacesForRightBlock(
                 // Make sure not to only put the \\ on a new line
                 val didPreviousCellGetNewline = if (level == 0) true else relativeIndices.getOrNull(i)?.getOrNull(level - 1) ?: 0 > LINE_LENGTH
                 if (relativeIndices.getOrNull(i)?.getOrNull(level) ?: 0 > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)) return -1
-                return spacesPerCell[min(i, spacesPerCell.size - 1)][level]
+                return spacesPerCell.getOrNull(min(i, spacesPerCell.size - 1))?.getOrNull(level)
             }
         }
     }

@@ -1,11 +1,11 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.psi;
 
-import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiLanguageInjectionHost;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.psi.PsiLanguageInjectionHost;
 
 public class LatexVisitor extends PsiElementVisitor {
 
@@ -108,6 +108,14 @@ public class LatexVisitor extends PsiElementVisitor {
 
   public void visitParameterText(@NotNull LatexParameterText o) {
     visitPsiNameIdentifierOwner(o);
+  }
+
+  public void visitPictureParam(@NotNull LatexPictureParam o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPictureParamContent(@NotNull LatexPictureParamContent o) {
+    visitPsiElement(o);
   }
 
   public void visitPseudocodeBlock(@NotNull LatexPseudocodeBlock o) {

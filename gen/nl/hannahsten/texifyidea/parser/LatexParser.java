@@ -1,17 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
-
-import static com.intellij.lang.WhitespacesBinders.GREEDY_LEFT_BINDER;
-import static com.intellij.lang.WhitespacesBinders.GREEDY_RIGHT_BINDER;
-import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
 import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.*;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.PsiParser;
+import com.intellij.lang.LightPsiParser;
+import static com.intellij.lang.WhitespacesBinders.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -557,14 +556,14 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // optional_param | required_param
+  // optional_param | required_param | picture_param
   public static boolean parameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter")) return false;
-    if (!nextTokenIs(b, "<parameter>", OPEN_BRACE, OPEN_BRACKET)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PARAMETER, "<parameter>");
     r = optional_param(b, l + 1);
     if (!r) r = required_param(b, l + 1);
+    if (!r) r = picture_param(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -640,6 +639,57 @@ public class LatexParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, QUOTATION_MARK);
     if (!r) r = consumeToken(b, PIPE);
     if (!r) r = consumeToken(b, EXCLAMATION_MARK);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // OPEN_PAREN picture_param_content* CLOSE_PAREN
+  public static boolean picture_param(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "picture_param")) return false;
+    if (!nextTokenIs(b, OPEN_PAREN)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, PICTURE_PARAM, null);
+    r = consumeToken(b, OPEN_PAREN);
+    p = r; // pin = 1
+    r = r && report_error_(b, picture_param_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_PAREN) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // picture_param_content*
+  private static boolean picture_param_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "picture_param_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!picture_param_content(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "picture_param_1", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
+  public static boolean picture_param_content(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "picture_param_content")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, PICTURE_PARAM_CONTENT, "<picture param content>");
+    r = raw_text(b, l + 1);
+    if (!r) r = magic_comment(b, l + 1);
+    if (!r) r = comment(b, l + 1);
+    if (!r) r = environment(b, l + 1);
+    if (!r) r = pseudocode_block(b, l + 1);
+    if (!r) r = math_environment(b, l + 1);
+    if (!r) r = consumeToken(b, COMMAND_IFNEXTCHAR);
+    if (!r) r = commands(b, l + 1);
+    if (!r) r = group(b, l + 1);
+    if (!r) r = parameter_text(b, l + 1);
+    if (!r) r = consumeToken(b, BACKSLASH);
+    if (!r) r = consumeToken(b, COMMA);
+    if (!r) r = consumeToken(b, EQUALS);
+    if (!r) r = consumeToken(b, OPEN_BRACKET);
+    if (!r) r = consumeToken(b, CLOSE_BRACKET);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
