@@ -164,4 +164,31 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
         assertSize(1, map.keys)
         assertEquals("\\textwidth", map["linewidth"])
     }
+
+    @Test
+    fun `test empty value parameters map`() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \lstinputlisting[param1=,param2,param3=value]{some/file}
+            \end{document}
+            """.trimIndent()
+        )
+
+        // when
+        val parameters = PsiDocumentManager.getInstance(myFixture.project)
+            .getPsiFile(myFixture.editor.document)!!
+            .children
+            .first()
+            .firstChildOfType(LatexCommands::class)!!
+            .parameterList
+
+        val map = getOptionalParameterMap(parameters).toStringMap()
+        assertSize(3, map.keys)
+        assertEquals("", map["param1"])
+        assertEquals("", map["param2"])
+        assertEquals("value", map["param3"])
+    }
 }

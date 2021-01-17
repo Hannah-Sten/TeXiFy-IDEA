@@ -114,7 +114,7 @@ optional_param_content ::= raw_text | magic_comment | comment | environment | ps
 required_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | group | OPEN_PAREN | CLOSE_PAREN | parameter_text | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET | BACKSLASH
 picture_param_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | math_environment | COMMAND_IFNEXTCHAR | commands | group | parameter_text | BACKSLASH | COMMA | EQUALS | OPEN_BRACKET | CLOSE_BRACKET
 
-keyval_pair ::= keyval_key (EQUALS keyval_value)?
+keyval_pair ::= keyval_key (EQUALS keyval_value?)?
 keyval_key ::= keyval_content+ {
     methods=[toString]
 }
