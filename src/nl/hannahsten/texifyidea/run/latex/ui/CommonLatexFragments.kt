@@ -6,6 +6,7 @@ import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.ui.RawCommandLineEditor
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.ui.compiler.LatexCompilerEditor
 import java.util.function.BiConsumer
 import java.util.function.Predicate
 import javax.swing.JLabel
@@ -47,6 +48,29 @@ object CommonLatexFragments {
 
         fragment.isRemovable = false
         fragment.setEditorGetter { e -> e.editorField }
+
+        return fragment
+    }
+
+    fun latexCompiler(commandLinePosition: Int): SettingsEditorFragment<LatexRunConfiguration, LatexCompilerEditor> {
+        val editor = LatexCompilerEditor()
+        val combobox = editor.component
+
+        CommonParameterFragments.setMonospaced(combobox)
+
+        CommandLinePanel.setMinimumWidth(editor, 200)
+        editor.label.isVisible = false
+        combobox.accessibleContext.accessibleName = editor.label.text
+
+        val fragment = SettingsEditorFragment<LatexRunConfiguration, LatexCompilerEditor>(
+            "latexCompiler", "&LaTeX compiler", null, editor, commandLinePosition,
+            { settings, component ->  },
+            { settings, component ->  },
+            { true }
+        )
+
+        fragment.isRemovable = false
+        fragment.setHint("LaTeX compiler or path to executable")
 
         return fragment
     }
