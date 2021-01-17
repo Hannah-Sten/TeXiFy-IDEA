@@ -139,12 +139,13 @@ If you are new to BibTeX, see the link:BibTeX[BibTeX introduction].
 * link:Tools[Detexify]
 
 == UI
-* link:UI#Icons[Fancy icons that fit in with the IntelliJ style]
+* link:Symbol-view[Symbol tool window]
 * https://www.jetbrains.com/help/idea/using-code-editor.html#manage_tabs[Editor tabs]
 * https://www.jetbrains.com/help/idea/using-code-editor.html#split_screen[Split screen editing]
 * https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#fonts[Change display font]
 * https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html#customize-color-scheme[Custom color scheme]
 * https://www.jetbrains.com/help/idea/text-direction.html[RTL/bidirectional support]
+* link:UI#Icons[Fancy icons that fit in with the IntelliJ style]
 
 == Utilities
 * link:Menu-entries#Word-counting-tool[Word counting tool]
