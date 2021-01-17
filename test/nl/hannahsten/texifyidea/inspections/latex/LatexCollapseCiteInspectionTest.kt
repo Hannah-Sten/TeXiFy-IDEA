@@ -16,6 +16,10 @@ class LatexCollapseCiteInspectionTest : TexifyInspectionTestBase(LatexCollapseCi
         myFixture.checkHighlighting()
     }
 
+    fun `test warning non breaking space`() {
+        testHighlighting("<warning>\\cite{a}</warning>~<warning>\\cite{b}</warning>")
+    }
+
     fun `test no warning when both arguments are optional`() {
         testHighlighting("\\cite[p. 1]{book1}\\cite[aardappel]{Groente}")
     }

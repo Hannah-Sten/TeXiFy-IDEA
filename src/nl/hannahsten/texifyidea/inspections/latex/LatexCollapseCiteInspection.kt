@@ -11,10 +11,7 @@ import com.intellij.refactoring.suggested.endOffset
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import java.util.*
@@ -42,11 +39,9 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         val commands = file.commandsInFile()
-        for (cmd in commands) {
-            if (cmd.name !in Magic.Command.bibliographyReference) {
-                continue
-            }
+            .filter { it.name in Magic.Command.bibliographyReference }
 
+        for (cmd in commands) {
             val bundle = cmd.findCiteBundle().filter { it.optionalParameterMap.isEmpty() }
             if (bundle.size < 2 || !bundle.contains(cmd)) {
                 continue
@@ -93,20 +88,34 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
     private fun LatexCommands.previousCite() = searchCite { it.previousSiblingIgnoreWhitespace() as? LatexContent }
 
+    /**
+     * Search for a cite command in the "direction" of [nextThing]. This cite command should be similar to this with
+     * respect to the following:
+     *  - Same cite command (e.g., both `\cite` or both `\footcite`).
+     *  - Both are or both are not the starred version.
+     *
+     * @param nextThing function to get the next psi element that is searched for a cite command.
+     *
+     * @return null if no suitable cite command is found.
+     */
     private inline fun LatexCommands.searchCite(nextThing: (LatexContent) -> LatexContent?): LatexCommands? {
+        // The cite commands are not direct siblings, but their grandparents are.
         val content = grandparent(2) as? LatexContent ?: return null
         val nextContent = nextThing(content) ?: return null
 
         var cite = nextContent.firstChildOfType(LatexCommands::class)
+        // If there is no command inside the sibling grandparent, it can still be a non-breaking space.
         if (cite == null) {
-            if (!nextContent.isCorrect()) {
-                return null
+            // If it is a non-breaking space, we want to check if the next grandparent sibling contains a cite.
+            if (nextContent.isNonBreakingSpace()) {
+                val secondNextContent = nextThing(nextContent) ?: return null
+                cite = secondNextContent.firstChildOfType(LatexCommands::class) ?: return null
             }
-
-            val secondNextContent = nextThing(nextContent) ?: return null
-            cite = secondNextContent.firstChildOfType(LatexCommands::class) ?: return null
+            // If it is not a non-breaking space it is some other text and we won't find another cite in this direction.
+            else return null
         }
 
+        // Check if the found command is a similar cite command as the one we started at.
         val name = cite.name ?: return null
         val nextCommandIsACitation = name in Magic.Command.bibliographyReference
         val previousCommandIsOfTheSameType = this.name == name
@@ -114,9 +123,12 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
         return if (nextCommandIsACitation && previousCommandIsOfTheSameType && equalStars) cite else null
     }
 
-    private fun LatexContent.isCorrect(): Boolean {
-        val normalText = firstChildOfType(LatexParameterText::class) ?: return false
-        return normalText.text.length == 1
+    /**
+     * Check if [LatexContent] is a non breaking space.
+     */
+    private fun LatexContent.isNonBreakingSpace(): Boolean {
+        val normalText = firstChildOfType(LatexNormalText::class) ?: return false
+        return normalText.text == "~"
     }
 
     /**
