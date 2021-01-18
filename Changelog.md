@@ -14,6 +14,7 @@ ETA: First half of February, 2021
 * Added inspection to encourage replacing \text{min} by \min for a lot of similar math operators. (#1737)
 * Added sectioning commands with label live template. (#1746)
 * Added support for custom output directories to the 'Delete generated files' action. (#1726, #1745)
+* Improve performance of file set cache creation for large projects. (#1749)
 
 # Changes
 * Decreased size of gutter icons to 12x12. (#1715)
