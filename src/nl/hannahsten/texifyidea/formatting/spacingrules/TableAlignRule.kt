@@ -23,7 +23,9 @@ fun rightTableSpaceAlign(latexCommonSettings: CommonCodeStyleSettings, parent: A
             ?.firstParentOfType(LatexEnvironment::class)?.environmentName !in Magic.Environment.tableEnvironments
     ) return null
 
+    // Only add spaces after &, unless escaped
     if (left.node?.text?.endsWith("&") == false) return null
+    if (left.node?.text?.endsWith("\\&") == true) return null
 
     return createSpacing(
         minSpaces = 1,
@@ -147,7 +149,8 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
         var removedSpaces = 0
         line.withIndex().forEach { (i, value) ->
             when {
-                value == '&' -> {
+                // Ignore escaped ampersands
+                value == '&' && if (i > 0) line[i - 1] != '\\' else true -> {
                     indices += i - removedSpaces
                 }
                 value == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false -> {
