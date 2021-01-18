@@ -4,8 +4,8 @@ import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.util.Magic
 import java.awt.Component
 import java.awt.FlowLayout
@@ -129,7 +129,7 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.includeBackslashInSelection = includeBackslashInSelection?.isSelected == true
         settings.showPackagesInStructureView = showPackagesInStructureView?.isSelected == true
         settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.values()[automaticQuoteReplacement?.selectedIndex ?: 0]
-        settings.missingLabelMinimumLevel = missingLabelMinimumLevel?.selectedItem as? LatexCommand ?: LatexRegularCommand.SUBSECTION
+        settings.missingLabelMinimumLevel = missingLabelMinimumLevel?.selectedItem as? LatexCommand ?: LatexGenericRegularCommand.SUBSECTION
     }
 
     override fun reset() {

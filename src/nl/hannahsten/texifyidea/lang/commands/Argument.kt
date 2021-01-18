@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea.lang
+package nl.hannahsten.texifyidea.lang.commands
 
 /**
  * @author Sten Wessel

@@ -1,13 +1,13 @@
-package nl.hannahsten.texifyidea.lang
+package nl.hannahsten.texifyidea.lang.commands
 
 /**
  * @author Sten Wessel
  */
 @Suppress("ConvertSecondaryConstructorToPrimary")
-open class RequiredArgument : Argument {
+class OptionalArgument : Argument {
 
     @JvmOverloads
     internal constructor(name: String, type: Type = Type.NORMAL) : super(name, type)
 
-    override fun toString() = "{$name}"
+    override fun toString() = "[$name]"
 }

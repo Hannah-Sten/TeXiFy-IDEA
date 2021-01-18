@@ -4,6 +4,9 @@ import nl.hannahsten.texifyidea.lang.Environment.Context
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.GAUSS
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.name
 import java.util.*
@@ -12,11 +15,11 @@ import java.util.*
  * @author Hannah Schellekens, Sten Wessel
  */
 enum class DefaultEnvironment(
-    override val environmentName: String,
-    override val initialContents: String = "",
-    override val context: Context = Context.NORMAL,
-    override val dependency: LatexPackage = LatexPackage.DEFAULT,
-    override vararg val arguments: Argument,
+        override val environmentName: String,
+        override val initialContents: String = "",
+        override val context: Context = Context.NORMAL,
+        override val dependency: LatexPackage = LatexPackage.DEFAULT,
+        override vararg val arguments: Argument,
 ) : Environment {
 
     // Vanilla LaTeX

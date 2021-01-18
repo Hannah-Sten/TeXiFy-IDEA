@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
+import nl.hannahsten.texifyidea.lang.commands.Argument
+
 /**
  * @author Hannah Schellekens
  */

@@ -1,9 +1,8 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
 import nl.hannahsten.texifyidea.lang.Described
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 
 /**
  * Represents an entry in the Symbol overview tool window.

@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexNoMathInsertHandler
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
 import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.toStringMap
 import nl.hannahsten.texifyidea.util.*
@@ -69,9 +70,8 @@ class LatexCommandProvider internal constructor(private val mode: LatexMode) :
 
     private fun addMathCommands(result: CompletionResultSet) {
         // Find all commands.
-        val commands: MutableList<LatexCommand> = ArrayList()
-        Collections.addAll(commands, *LatexMathCommand.values())
-        commands.add(LatexRegularCommand.BEGIN)
+        val commands: MutableList<LatexCommand> = ArrayList(LatexMathCommand.values())
+        commands.add(LatexGenericRegularCommand.BEGIN)
 
         // Create autocomplete elements.
         result.addAllElements(

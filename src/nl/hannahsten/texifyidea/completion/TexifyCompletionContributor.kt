@@ -17,9 +17,13 @@ import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvi
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.insight.InsightGroup
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
-import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.CommandManager
+import nl.hannahsten.texifyidea.lang.LatexMode
+import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredFolderArgument
+import nl.hannahsten.texifyidea.lang.commands.RequiredPicturePathArgument
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.*

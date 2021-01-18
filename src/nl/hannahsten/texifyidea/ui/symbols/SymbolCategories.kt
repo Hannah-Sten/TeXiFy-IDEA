@@ -1,13 +1,18 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexMathCommand.*
-import nl.hannahsten.texifyidea.lang.LatexMathCommand.BOWTIE
-import nl.hannahsten.texifyidea.lang.LatexMathCommand.DOWN_ARROW
-import nl.hannahsten.texifyidea.lang.LatexMathCommand.LIGHTNING
-import nl.hannahsten.texifyidea.lang.LatexMathCommand.UNDERLINE
-import nl.hannahsten.texifyidea.lang.LatexMathCommand.UP_ARROW
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand.*
+import nl.hannahsten.texifyidea.lang.commands.*
+import nl.hannahsten.texifyidea.lang.commands.LatexArrowCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexColoneqCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexGreekCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexDelimiterCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexEuroCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.UNDERLINE
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexTextSymbolCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexTextcompCommand.*
+import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.*
 
 /**
  * @author Hannah Schellekens

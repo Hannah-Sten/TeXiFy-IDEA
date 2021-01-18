@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
-import nl.hannahsten.texifyidea.lang.LatexCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 
 /**
  * @author Hannah Schellekens

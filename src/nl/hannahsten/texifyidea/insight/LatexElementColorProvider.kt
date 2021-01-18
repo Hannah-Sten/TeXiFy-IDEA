@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexXcolorCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.firstParentOfType
@@ -59,10 +59,10 @@ object LatexElementColorProvider : ElementColorProvider {
 
                 val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
                 when (colorDefinitionCommand?.name?.substring(1)) {
-                    LatexRegularCommand.COLORLET.command -> {
+                    LatexXcolorCommand.COLORLET.command -> {
                         getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"))
                     }
-                    LatexRegularCommand.DEFINECOLOR.command, LatexRegularCommand.PROVIDECOLOR.command -> {
+                    LatexXcolorCommand.DEFINECOLOR.command, LatexXcolorCommand.PROVIDECOLOR.command -> {
                         getColorFromDefineColor(
                             colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
                             colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")

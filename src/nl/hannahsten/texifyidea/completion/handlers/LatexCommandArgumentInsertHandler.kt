@@ -8,10 +8,8 @@ import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TextExpression
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
-import nl.hannahsten.texifyidea.lang.Argument
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.RequiredArgument
+import nl.hannahsten.texifyidea.lang.commands.Argument
+import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.psiFile

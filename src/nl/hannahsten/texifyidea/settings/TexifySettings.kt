@@ -4,8 +4,8 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 /**
@@ -38,7 +38,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var includeBackslashInSelection = false
     var showPackagesInStructureView = false
     var automaticQuoteReplacement = QuoteReplacement.NONE
-    var missingLabelMinimumLevel: LatexCommand = LatexRegularCommand.SUBSECTION
+    var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION
 
     /**
      * Backwards compatibility. This value is never altered, only read from/to memory.

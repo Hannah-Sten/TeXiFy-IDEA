@@ -1,5 +1,6 @@
-package nl.hannahsten.texifyidea.lang
+package nl.hannahsten.texifyidea.lang.commands
 
+import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.inMathContext
 import kotlin.reflect.KClass

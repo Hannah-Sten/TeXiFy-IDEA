@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.util.formatAsFileName
 
 /**

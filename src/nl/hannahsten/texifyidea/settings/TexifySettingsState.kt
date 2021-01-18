@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.settings
 
-import nl.hannahsten.texifyidea.lang.LatexCommand
-import nl.hannahsten.texifyidea.lang.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.run.linuxpdfviewer.PdfViewer
 
 data class TexifySettingsState(
@@ -14,6 +14,6 @@ data class TexifySettingsState(
         var includeBackslashInSelection: Boolean = false,
         var showPackagesInStructureView: Boolean = false,
         var automaticQuoteReplacement: TexifySettings.QuoteReplacement = TexifySettings.QuoteReplacement.NONE,
-        var missingLabelMinimumLevel: LatexCommand = LatexRegularCommand.SUBSECTION,
+        var missingLabelMinimumLevel: LatexCommand = LatexGenericRegularCommand.SUBSECTION,
         var pdfViewer: PdfViewer = PdfViewer.firstAvailable()
 )
