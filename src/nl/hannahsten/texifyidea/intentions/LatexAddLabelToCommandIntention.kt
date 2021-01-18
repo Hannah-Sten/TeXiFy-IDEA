@@ -9,10 +9,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.refactoring.suggested.startOffset
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.Magic
 import nl.hannahsten.texifyidea.util.endOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.firstParentOfType
 import nl.hannahsten.texifyidea.util.formatAsLabel
 
 /**
@@ -55,8 +57,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             )
 
             // Insert label
-            // command -> NoMathContent -> Content -> Container containing the command
-            val commandContent = command.parent.parent
+            val commandContent = command.firstParentOfType(LatexNoMathContent::class) ?: return
             val labelCommand =
                 commandContent.parent.addAfter(factory.createLabelCommand(createdLabel.labelText), commandContent)
 
