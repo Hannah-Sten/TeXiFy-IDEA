@@ -108,7 +108,7 @@ internal fun PsiFile.referencedFiles(rootFile: VirtualFile): Set<PsiFile> {
 private fun PsiFile.referencedFiles(files: MutableCollection<PsiFile>, rootFile: VirtualFile) {
     LatexIncludesIndex.getItems(project, fileSearchScope).forEach command@{ command ->
         command.references.filterIsInstance<InputFileReference>()
-            .mapNotNull { it.resolve(false, rootFile) }
+            .mapNotNull { it.resolve(false, rootFile, false) }
             .forEach {
                 // Do not re-add all referenced files if we already did that
                 if (it in files) return@forEach
