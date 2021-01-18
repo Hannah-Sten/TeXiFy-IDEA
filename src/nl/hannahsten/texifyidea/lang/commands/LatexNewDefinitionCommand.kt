@@ -24,7 +24,7 @@ enum class LatexNewDefinitionCommand(
     NEWENVIRONMENT("newenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Argument.Type.TEXT), "enddef".asRequired(Argument.Type.TEXT)),
     RENEWENVIRONMENT("renewenvironment", "name".asRequired(), "args".asOptional(), "default".asOptional(), "begdef".asRequired(Argument.Type.TEXT), "enddef".asRequired(Argument.Type.TEXT)),
     ;
-    
+
     override val identifyer: String
         get() = name
 }
